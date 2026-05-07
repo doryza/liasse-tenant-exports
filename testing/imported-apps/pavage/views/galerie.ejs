@@ -1,0 +1,41 @@
+<%- include('partials/header') %>
+<section class="py-16 bg-gradient-to-br from-dark-2 to-dark">
+<div class="max-w-7xl mx-auto px-4 text-center">
+<h1 class="section-title gradient-text mb-4"><%= t.gallery_title %></h1>
+<p class="text-gray-400 text-xl"><%= t.gallery_subtitle %></p>
+</div>
+</section>
+<section class="py-12">
+<div class="max-w-7xl mx-auto px-4">
+<div class="flex flex-wrap gap-2 justify-center mb-12">
+<a href="galerie" class="<%= !category ? 'btn-primary' : 'btn-secondary' %>" <%= !category ? 'style="background:linear-gradient(135deg,#8b5cf6 0%,#ec4899 100%);color:#fff"' : '' %>><%= t.filter_all %></a>
+<a href="?cat=driveway" class="<%= category==='driveway' ? 'btn-primary' : 'btn-secondary' %>" <%= category==='driveway' ? 'style="background:linear-gradient(135deg,#8b5cf6 0%,#ec4899 100%);color:#fff"' : '' %>><%= t.filter_driveway %></a>
+<a href="?cat=patio" class="<%= category==='patio' ? 'btn-primary' : 'btn-secondary' %>" <%= category==='patio' ? 'style="background:linear-gradient(135deg,#8b5cf6 0%,#ec4899 100%);color:#fff"' : '' %>><%= t.filter_patio %></a>
+<a href="?cat=walkway" class="<%= category==='walkway' ? 'btn-primary' : 'btn-secondary' %>" <%= category==='walkway' ? 'style="background:linear-gradient(135deg,#8b5cf6 0%,#ec4899 100%);color:#fff"' : '' %>><%= t.filter_walkway %></a>
+<a href="?cat=asphalt" class="<%= category==='asphalt' ? 'btn-primary' : 'btn-secondary' %>" <%= category==='asphalt' ? 'style="background:linear-gradient(135deg,#8b5cf6 0%,#ec4899 100%);color:#fff"' : '' %>><%= t.filter_asphalt %></a>
+</div>
+<% if (typeof projects !== 'undefined' && projects.length > 0) { %>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<% projects.forEach(function(p){ %>
+<a href="galerie/<%= p.id %>" class="card group block">
+<div class="h-72 overflow-hidden relative">
+<img src="<%= p.image_url || 'https://placehold.co/600x400/8b5cf6/ffffff/png' %>" alt="<%= p.title %>" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition flex items-end p-5"><span class="text-white font-semibold"><%= t.btn_view_project %> →</span></div>
+<div class="absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-semibold uppercase" style="background:rgba(139,92,246,.9);color:#fff"><%= p.category %></div>
+</div>
+<div class="p-5">
+<h3 class="font-bold text-lg mb-1"><%= p.title %></h3>
+<div class="flex justify-between text-xs text-gray-400">
+<span>📍 <%= p.location %></span>
+<% if (p.completed_date) { %><span><%= formatDate(p.completed_date, lang) %></span><% } %>
+</div>
+</div>
+</a>
+<% }) %>
+</div>
+<% } else { %>
+<div class="text-center py-20"><p class="text-gray-500 text-lg"><%= t.no_projects %></p><a href="galerie" class="btn-secondary mt-4 inline-block"><%= t.filter_all %></a></div>
+<% } %>
+</div>
+</section>
+<%- include('partials/footer') %>

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin — <%= label %></title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body class="bg-gray-50">
+<%- include('admin-sidebar', { active: module }) %>
+<main class="admin-main">
+<header class="admin-header">
+<button id="sidebarToggle" class="md:hidden p-2 rounded hover:bg-gray-100" aria-label="Menu">☰</button>
+<div>
+<h1 class="text-2xl font-bold"><%= icon %> <%= label %></h1>
+<p id="countLabel" class="text-sm text-gray-500"></p>
+</div>
+<div class="flex gap-2 items-center flex-wrap">
+<input id="searchInput" type="search" placeholder="🔍 Rechercher..." class="px-3 py-2 border rounded-lg text-sm w-44 md:w-56">
+<% if (module === 'quotes') { %>
+<select id="statusFilter" class="px-3 py-2 border rounded-lg text-sm">
+<option value="">Tous les statuts</option>
+<option value="new">Nouveau</option>
+<option value="contacted">Contacté</option>
+<option value="quoted">Soumis</option>
+<option value="won">Gagné</option>
+<option value="lost">Perdu</option>
+</select>
+<% } %>
+<% if (module !== 'quotes') { %><button id="addBtn" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-semibold text-sm" style="background:#8b5cf6;color:#fff">+ Ajouter</button><% } %>
+</div>
+</header>
+<div class="p-6">
+<div id="toast" class="hidden fixed top-20 right-6 z-50 px-4 py-3 rounded-lg shadow-lg font-semibold"></div>
+<div id="loadingState" class="text-center py-16"><div class="inline-block animate-spin rounded-full h-8 w-8 border-2 border-purple-600 border-t-transparent"></div><p class="text-gray-500 mt-3">Chargement...</p></div>
+<div id="emptyState" class="hidden text-center py-16 bg-white rounded-xl"><div class="text-6xl mb-3">📭</div><p class="text-gray-700 font-semibold">Aucun élément</p><p class="text-gray-500 text-sm mt-2"><% if (module !== 'quotes') { %>Cliquez sur « + Ajouter » pour créer le premier.<% } else { %>Les nouvelles demandes apparaîtront ici.<% } %></p></div>
+<div id="itemsContainer" class="hidden"></div>
+</div>
+</main>
+<div id="modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+<div class="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+<div class="p-6 border-b flex justify-between items-center sticky top-0 bg-white z-10">
+<h2 id="modalTitle" class="text-xl font-bold">Modifier</h2>
+<button id="closeModal" class="text-2xl w-9 h-9 rounded-full hover:bg-gray-100 flex items-center justify-center" aria-label="Fermer">×</button>
+</div>
+<form id="itemForm" class="p-6 space-y-4"></form>
+</div>
+</div>
+<script>
+const MODULE = <%- JSON.stringify(module) %>;
+const MODULE_LABEL = <%- JSON.stringify(label) %>;
+let items = [], moduleSchema = null;
+
+function showToast(msg, ok) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'fixed top-20 right-6 z-50 px-4 py-3 rounded-lg shadow-lg font-semibold ' + (ok ? 'bg-green-100 text-green-700 border border-green-300' : 'bg-red-100 text-red-700 border border-red-300');
+  setTimeout(() => t.classList.add('hidden'), 3000);
+}
+
+async function loadSchema() {
+  const res = await fetch('api/admin/modules');
+  const data = await res.json();
+  moduleSchema = data.modules.find(m => m.key === MODULE);
+}
+
+async function loadItems() {
+  const res = await fetch('api/admin/' + MODULE);
+  const data = await res.json();
+  items = data[MODULE] || [];
+  render();
+}
+
+function render() {
+  const loading = document.getElementById('loadingState');
+  const empty = document.getElementById('emptyState');
+  const container = document.getElementById('itemsContainer');
+  loading.classList.add('hidden');
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  const statusFilter = document.getElementById('statusFilter') ? document.getElementById('statusFilter').value : '';
+  let filtered = items.filter(it => !search || JSON.stringify(it).toLowerCase().includes(search));
+  if (statusFilter) filtered = filtered.filter(it => it.status === statusFilter);
+  document.getElementById('countLabel').textContent = filtered.length + ' élément' + (filtered.length !== 1 ? 's' : '') + (search || statusFilter ? ' (filtré)' : '');
+  if (!filtered.length) { empty.classList.remove('hidden'); container.classList.add('hidden'); return; }
+  empty.classList.add('hidden');
+  container.classList.remove('hidden');
+  if (MODULE === 'quotes') {
+    container.className = 'space-y-3';
+    container.innerHTML = filtered.map(it => renderQuoteCard(it)).join('');
+  } else {
+    container.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4';
+    container.innerHTML = filtered.map(it => renderCard(it)).join('');
+  }
+}
+
+function renderCard(it) {
+  const titleField = moduleSchema.fields.find(f => f.name === 'title' || f.name === 'name' || f.name === 'author') || moduleSchema.fields[0];
+  const title = it[titleField.name] || '(sans titre)';
+  const imgField = moduleSchema.fields.find(f => f.type === 'image');
+  const img = imgField && it[imgField.name] ? '<div class="h-36 -mx-4 -mt-4 mb-3 overflow-hidden bg-gray-100"><img src="' + escapeAttr(it[imgField.name]) + '" class="w-full h-full object-cover"></div>' : '<div class="h-2"></div>';
+  const meta = [];
+  if (it.category) meta.push('🏷️ ' + it.category);
+  if (it.location) meta.push('📍 ' + it.location);
+  if (it.price_range) meta.push('💲 ' + it.price_range);
+  if (it.rating) meta.push('⭐ ' + it.rating);
+  const featuredBadge = it.featured == 1 ? '<span class="inline-block px-2 py-0.5 bg-purple-100 text-purple-700 text-xs font-semibold rounded ml-2">⭐ Vedette</span>' : '';
+  const publishedBadge = it.published == 0 ? '<span class="inline-block px-2 py-0.5 bg-gray-200 text-gray-600 text-xs font-semibold rounded ml-2">Brouillon</span>' : '';
+  const desc = it.description || it.content || '';
+  return '<div class="bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition">' + img +
+    '<div class="flex items-start justify-between gap-2 mb-1"><h3 class="font-bold text-base">' + escapeHtml(title) + featuredBadge + publishedBadge + '</h3></div>' +
+    (desc ? '<p class="text-sm text-gray-600 mb-2 line-clamp-2">' + escapeHtml(String(desc).substring(0, 120)) + '</p>' : '') +
+    (meta.length ? '<p class="text-xs text-gray-500 mb-3">' + meta.map(escapeHtml).join(' · ') + '</p>' : '') +
+    '<div class="flex gap-2 pt-2 border-t">' +
+    '<button onclick=\'editItem(' + it.id + ')\' class="flex-1 px-3 py-2 bg-purple-100 text-purple-700 rounded text-sm font-semibold hover:bg-purple-200">✏️ Modifier</button>' +
+    '<button onclick=\'deleteItem(' + it.id + ')\' class="px-3 py-2 bg-red-100 text-red-700 rounded text-sm hover:bg-red-200" aria-label="Supprimer">🗑️</button>' +
+    '</div></div>';
+}
+
+function renderQuoteCard(q) {
+  const date = q.created_at ? new Date(q.created_at).toLocaleString('fr-CA', {dateStyle:'medium', timeStyle:'short'}) : '';
+  const status = q.status || 'new';
+  const statusLabel = ({ new: 'Nouveau', contacted: 'Contacté', quoted: 'Soumis', won: 'Gagné', lost: 'Perdu' })[status] || status;
+  const contact = [];
+  if (q.email) contact.push('<a href="mailto:' + escapeAttr(q.email) + '" class="text-purple-700 hover:underline">✉️ ' + escapeHtml(q.email) + '</a>');
+  if (q.phone) contact.push('<a href="tel:' + escapeAttr(q.phone) + '" class="text-purple-700 hover:underline">📞 ' + escapeHtml(q.phone) + '</a>');
+  return '<div class="bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition">' +
+    '<div class="flex justify-between items-start gap-3 mb-3 flex-wrap">' +
+    '<div><h3 class="font-bold text-lg">' + escapeHtml(q.name) + '</h3><p class="text-xs text-gray-500">' + escapeHtml(date) + '</p></div>' +
+    '<span class="status-pill status-' + status + '">' + escapeHtml(statusLabel) + '</span>' +
+    '</div>' +
+    '<div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm mb-3">' +
+    (contact.length ? '<div class="space-y-1">' + contact.join('<br>') + '</div>' : '') +
+    (q.address || q.project_type || q.surface_area ? '<div class="text-gray-600 space-y-1">' +
+      (q.address ? '<div>📍 ' + escapeHtml(q.address) + '</div>' : '') +
+      (q.project_type ? '<div>🏗️ ' + escapeHtml(q.project_type) + '</div>' : '') +
+      (q.surface_area ? '<div>📐 ' + escapeHtml(q.surface_area) + ' m²</div>' : '') +
+    '</div>' : '') +
+    '</div>' +
+    (q.message ? '<div class="bg-gray-50 rounded p-3 text-sm text-gray-700 mb-3 whitespace-pre-line">' + escapeHtml(q.message) + '</div>' : '') +
+    '<div class="flex gap-2 pt-2 border-t flex-wrap">' +
+    '<button onclick=\'editItem(' + q.id + ')\' class="px-3 py-2 bg-purple-100 text-purple-700 rounded text-sm font-semibold hover:bg-purple-200">Changer le statut</button>' +
+    '<button onclick=\'deleteItem(' + q.id + ')\' class="px-3 py-2 bg-red-100 text-red-700 rounded text-sm hover:bg-red-200">Supprimer</button>' +
+    '</div></div>';
+}
+
+function escapeHtml(s) { return String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function escapeAttr(s) { return escapeHtml(s); }
+
+function openModal(item) {
+  const modal = document.getElementById('modal');
+  const form = document.getElementById('itemForm');
+  document.getElementById('modalTitle').textContent = item ? ('Modifier — ' + MODULE_LABEL) : ('Ajouter — ' + MODULE_LABEL);
+  form.innerHTML = moduleSchema.fields.map(f => fieldHtml(f, item ? item[f.name] : (f.default !== undefined ? f.default : ''))).join('') +
+    '<div class="flex gap-2 pt-4 border-t"><button type="submit" class="flex-1 px-4 py-2.5 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700" style="background:#8b5cf6;color:#fff">💾 Enregistrer</button>' +
+    '<button type="button" onclick="closeM()" class="px-4 py-2.5 bg-gray-200 rounded-lg hover:bg-gray-300">Annuler</button></div>';
+  form.dataset.id = item ? item.id : '';
+  modal.classList.remove('hidden');
+}
+
+function fieldHtml(f, value) {
+  const v = value === null || value === undefined ? '' : value;
+  const desc = f.description ? '<p class="text-xs text-gray-500 mt-1">' + escapeHtml(f.description) + '</p>' : '';
+  const label = f.label || f.name;
+  let input;
+  const ph = f.placeholder ? ' placeholder="' + escapeAttr(f.placeholder) + '"' : '';
+  const cls = ' class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-300 focus:border-purple-500"';
+  if (f.type === 'textarea') input = '<textarea name="' + f.name + '" rows="5"' + cls + ph + '>' + escapeHtml(v) + '</textarea>';
+  else if (f.type === 'boolean') input = '<label class="inline-flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-lg cursor-pointer"><input type="checkbox" name="' + f.name + '" ' + (v == 1 || v === true ? 'checked' : '') + ' class="w-4 h-4"> <span class="text-sm">Activé</span></label>';
+  else if (f.type === 'select') input = '<select name="' + f.name + '"' + cls + '>' + (f.options || []).map(o => '<option value="' + escapeAttr(o) + '"' + (v == o ? ' selected' : '') + '>' + escapeHtml(o) + '</option>').join('') + '</select>';
+  else if (f.type === 'image') input = '<input name="' + f.name + '" type="url" value="' + escapeAttr(v) + '"' + cls + ' placeholder="https://...">' + (v ? '<img src="' + escapeAttr(v) + '" class="mt-2 w-32 h-32 object-cover rounded border">' : '');
+  else if (f.type === 'date') input = '<input name="' + f.name + '" type="date" value="' + (v ? String(v).substring(0,10) : '') + '"' + cls + '>';
+  else if (f.type === 'number') input = '<input name="' + f.name + '" type="number" value="' + escapeAttr(v) + '"' + cls + (f.min !== undefined ? ' min="' + f.min + '"' : '') + (f.max !== undefined ? ' max="' + f.max + '"' : '') + (f.step !== undefined ? ' step="' + f.step + '"' : '') + ph + '>';
+  else if (f.type === 'readonly') input = '<div class="px-3 py-2 bg-gray-100 rounded-lg text-sm break-words whitespace-pre-line">' + (v ? escapeHtml(v) : '<span class="text-gray-400 italic">(vide)</span>') + '</div>';
+  else input = '<input name="' + f.name + '" type="' + (f.type === 'email' ? 'email' : (f.type === 'url' ? 'url' : 'text')) + '" value="' + escapeAttr(v) + '"' + cls + ph + (f.required ? ' required' : '') + '>';
+  return '<div><label class="block text-sm font-semibold mb-1 text-gray-700">' + escapeHtml(label) + (f.required ? ' <span class="text-red-500">*</span>' : '') + '</label>' + input + desc + '</div>';
+}
+
+function closeM() { document.getElementById('modal').classList.add('hidden'); }
+
+window.editItem = function(id) {
+  const it = items.find(x => x.id === id);
+  openModal(it);
+};
+
+window.deleteItem = async function(id) {
+  if (!confirm('Supprimer cet élément ? Cette action est irréversible.')) return;
+  try {
+    const res = await fetch('api/admin/' + MODULE + '/' + id, { method: 'DELETE' });
+    if (res.ok) { showToast('✓ Supprimé', true); loadItems(); }
+    else throw new Error();
+  } catch(e) { showToast('Erreur de suppression', false); }
+};
+
+document.getElementById('addBtn')?.addEventListener('click', () => openModal(null));
+document.getElementById('closeModal').addEventListener('click', closeM);
+document.getElementById('searchInput').addEventListener('input', render);
+document.getElementById('statusFilter')?.addEventListener('change', render);
+document.getElementById('sidebarToggle')?.addEventListener('click', function(){document.querySelector('.admin-sidebar').classList.toggle('open')});
+document.getElementById('modal').addEventListener('click', function(e){ if (e.target === this) closeM(); });
+
+document.getElementById('itemForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const data = {};
+  moduleSchema.fields.forEach(f => {
+    if (f.type === 'readonly') return;
+    if (f.type === 'boolean') data[f.name] = fd.get(f.name) === 'on';
+    else if (f.type === 'number') { const v = fd.get(f.name); if (v !== '' && v !== null) data[f.name] = Number(v); }
+    else { const v = fd.get(f.name); if (v !== null && v !== undefined) data[f.name] = v; }
+  });
+  const id = e.target.dataset.id;
+  const url = 'api/admin/' + MODULE + (id ? '/' + id : '');
+  const method = id ? 'PUT' : 'POST';
+  try {
+    const res = await fetch(url, { method, headers: {'Content-Type':'application/json'}, body: JSON.stringify(data) });
+    if (res.ok) { closeM(); loadItems(); showToast('✓ Enregistré', true); }
+    else { const err = await res.json(); showToast('Erreur: ' + (err.error || 'inconnue'), false); }
+  } catch(err) { showToast('Erreur réseau', false); }
+});
+
+(async function() { await loadSchema(); await loadItems(); })();
+</script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<%- include('partials/header') %>
+<section class="py-16 bg-gradient-to-br from-dark-2 to-dark">
+<div class="max-w-7xl mx-auto px-4 text-center">
+<h1 class="section-title gradient-text mb-4"><%= t.about_title %></h1>
+</div>
+</section>
+<section class="py-16">
+<div class="max-w-5xl mx-auto px-4">
+<div class="card p-8 md:p-12">
+<h2 class="text-3xl font-bold mb-6 gradient-text"><%= settings['about_title_' + lang] || t.about_title %></h2>
+<p class="text-gray-300 text-lg leading-relaxed whitespace-pre-line"><%= settings['about_text_' + lang] || '' %></p>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
+<div class="glass p-6 rounded-xl text-center"><div class="text-3xl font-bold gradient-text mb-1">20+</div><div class="text-xs text-gray-400"><%= settings['stat_years_' + lang] || '' %></div></div>
+<div class="glass p-6 rounded-xl text-center"><div class="text-3xl font-bold gradient-text mb-1">2500+</div><div class="text-xs text-gray-400"><%= settings['stat_projects_' + lang] || '' %></div></div>
+<div class="glass p-6 rounded-xl text-center"><div class="text-3xl font-bold gradient-text mb-1">10</div><div class="text-xs text-gray-400"><%= settings['stat_warranty_' + lang] || '' %></div></div>
+<div class="glass p-6 rounded-xl text-center"><div class="text-3xl font-bold gradient-text mb-1">98%</div><div class="text-xs text-gray-400"><%= settings['stat_satisfaction_' + lang] || '' %></div></div>
+</div>
+</div>
+</section>
+<section class="py-16 bg-dark-2">
+<div class="max-w-7xl mx-auto px-4">
+<h2 class="section-title gradient-text text-center mb-12"><%= t.testimonials_title %></h2>
+<% if (typeof testimonials !== 'undefined' && testimonials.length > 0) { %>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<% testimonials.forEach(function(tt){ %>
+<div class="card p-6">
+<div class="text-yellow-400 mb-3"><% for(var i=0;i<(tt.rating||5);i++){ %>★<% } %></div>
+<p class="text-gray-300 mb-4 italic">"<%= tt.content %>"</p>
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center font-bold" style="background:linear-gradient(135deg,#8b5cf6 0%,#ec4899 100%);color:#fff"><%= (tt.author||'?').charAt(0) %></div>
+<div><div class="font-semibold"><%= tt.author %></div><div class="text-xs text-gray-400"><%= tt.location %></div></div>
+</div>
+</div>
+<% }) %>
+</div>
+<% } else { %>
+<p class="text-center text-gray-500"><%= t.empty_default %></p>
+<% } %>
+</div>
+</section>
+<%- include('partials/footer') %>

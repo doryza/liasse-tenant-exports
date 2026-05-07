@@ -1,0 +1,22 @@
+<aside class="admin-sidebar">
+<div class="admin-brand">
+<div class="text-xl font-bold gradient-text" style="color:#a78bfa;background:linear-gradient(135deg,#8b5cf6 0%,#ec4899 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Pavage Pro</div>
+<div class="text-xs opacity-70">Administration</div>
+</div>
+<nav class="admin-nav">
+<a href="admin" class="admin-nav-item <%= active === 'dashboard' ? 'active' : '' %>" <%= active === 'dashboard' ? 'style="background:linear-gradient(135deg,#8b5cf6,#ec4899);color:#fff"' : '' %>>📊 Tableau de bord</a>
+<div class="text-xs uppercase font-bold text-purple-300/60 px-3 mt-3 mb-1">Contenu</div>
+<a href="admin/posts" class="admin-nav-item <%= active === 'posts' ? 'active' : '' %>" <%= active === 'posts' ? 'style="background:linear-gradient(135deg,#8b5cf6,#ec4899);color:#fff"' : '' %>>📝 Articles</a>
+<a href="admin/projects" class="admin-nav-item <%= active === 'projects' ? 'active' : '' %>" <%= active === 'projects' ? 'style="background:linear-gradient(135deg,#8b5cf6,#ec4899);color:#fff"' : '' %>>🖼️ Projets</a>
+<a href="admin/services" class="admin-nav-item <%= active === 'services' ? 'active' : '' %>" <%= active === 'services' ? 'style="background:linear-gradient(135deg,#8b5cf6,#ec4899);color:#fff"' : '' %>>🔧 Services</a>
+<a href="admin/testimonials" class="admin-nav-item <%= active === 'testimonials' ? 'active' : '' %>" <%= active === 'testimonials' ? 'style="background:linear-gradient(135deg,#8b5cf6,#ec4899);color:#fff"' : '' %>>⭐ Témoignages</a>
+<div class="text-xs uppercase font-bold text-purple-300/60 px-3 mt-3 mb-1">Activité</div>
+<a href="admin/quotes" class="admin-nav-item <%= active === 'quotes' ? 'active' : '' %>" <%= active === 'quotes' ? 'style="background:linear-gradient(135deg,#8b5cf6,#ec4899);color:#fff"' : '' %>>📨 Demandes</a>
+<div class="text-xs uppercase font-bold text-purple-300/60 px-3 mt-3 mb-1">Configuration</div>
+<a href="admin/settings" class="admin-nav-item <%= active === 'settings' ? 'active' : '' %>" <%= active === 'settings' ? 'style="background:linear-gradient(135deg,#8b5cf6,#ec4899);color:#fff"' : '' %>>⚙️ Paramètres</a>
+</nav>
+<div class="admin-footer-nav">
+<a href="." class="admin-nav-item">← Retour au site</a>
+<a href="admin/logout" class="admin-nav-item">🚪 Déconnexion</a>
+</div>
+</aside>

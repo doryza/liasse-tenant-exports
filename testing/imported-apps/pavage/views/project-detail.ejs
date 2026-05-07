@@ -1,0 +1,42 @@
+<%- include('partials/header') %>
+<section class="py-12">
+<div class="max-w-5xl mx-auto px-4">
+<a href="galerie" class="mb-6 inline-block" style="color:#a78bfa">← <%= t.nav_gallery %></a>
+<div class="card overflow-hidden">
+<img src="<%= project.image_url || 'https://placehold.co/1200x675/8b5cf6/ffffff/png' %>" alt="<%= project.title %>" class="w-full h-64 md:h-96 object-cover">
+<div class="p-8">
+<div class="flex flex-wrap gap-3 mb-4">
+<span class="px-3 py-1 rounded-full text-sm font-semibold uppercase" style="background:rgba(139,92,246,.2);color:#a78bfa"><%= project.category %></span>
+</div>
+<h1 class="text-3xl md:text-5xl font-bold mb-6 gradient-text"><%= project.title %></h1>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 pb-8 border-b border-purple-500/20">
+<div><div class="text-xs text-gray-500 uppercase"><%= t.project_loc %></div><div class="font-semibold">📍 <%= project.location || '—' %></div></div>
+<div><div class="text-xs text-gray-500 uppercase"><%= t.project_date %></div><div class="font-semibold"><%= project.completed_date ? formatDate(project.completed_date, lang) : '—' %></div></div>
+<div><div class="text-xs text-gray-500 uppercase"><%= t.project_cat %></div><div class="font-semibold capitalize"><%= project.category %></div></div>
+</div>
+<div class="prose prose-invert max-w-none">
+<p class="text-gray-300 text-lg leading-relaxed whitespace-pre-line"><%= project.description %></p>
+</div>
+<div class="mt-8 pt-8 border-t border-purple-500/20 text-center">
+<a href="soumission" class="btn-primary" style="background:linear-gradient(135deg,#8b5cf6 0%,#ec4899 100%);color:#fff"><%= t.cta_btn %> →</a>
+</div>
+</div>
+</div>
+</div>
+</section>
+<% if (typeof others !== 'undefined' && others.length > 0) { %>
+<section class="py-16 bg-dark-2">
+<div class="max-w-7xl mx-auto px-4">
+<h2 class="text-2xl font-bold mb-8 text-center"><%= t.featured_projects %></h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<% others.forEach(function(p){ %>
+<a href="<%= p.id %>" class="card group block">
+<div class="h-48 overflow-hidden"><img src="<%= p.image_url || 'https://placehold.co/600x400/8b5cf6/ffffff/png' %>" alt="<%= p.title %>" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"></div>
+<div class="p-4"><h3 class="font-bold"><%= p.title %></h3><p class="text-xs text-gray-400 mt-1">📍 <%= p.location %></p></div>
+</a>
+<% }) %>
+</div>
+</div>
+</section>
+<% } %>
+<%- include('partials/footer') %>

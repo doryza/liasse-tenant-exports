@@ -1,0 +1,529 @@
+<!-- voice-module-v1 START -->
+<%
+  const voiceFields = [{"key":"name","label_fr":"Nom","label_en":"Name","type":"text","required":true,"custom":false},{"key":"email","label_fr":"Courriel","label_en":"Email","type":"email","required":true,"custom":false},{"key":"phone","label_fr":"Téléphone","label_en":"Phone","type":"phone","required":true,"custom":false},{"key":"address","label_fr":"Adresse","label_en":"Address","type":"text","required":false,"custom":false},{"key":"message","label_fr":"Détails","label_en":"Project description","type":"textarea","required":false,"custom":false}];
+  const voiceLanguage = 'both';
+  const voiceMaxSec = 300;
+  const vaBrandColor = (typeof settings !== 'undefined' && settings.primary_color)
+    || (typeof business !== 'undefined' && business.primaryColor)
+    || '#8b5cf6';
+  const vaBrandLight = (typeof settings !== 'undefined' && settings.primary_color_light) || vaBrandColor;
+  // Defensive partial-locals merge. Tenant partials/header / partials/footer
+  // are written for the tenant's own pages and frequently reference per-route
+  // locals like `page`, `pageTitle`, `active` (e.g. to highlight nav items).
+  // EJS uses with(locals) in strict mode, so any reference to a name not on
+  // the locals object throws ReferenceError. Pre-build a locals object with
+  // sensible defaults filled in only when missing, then pass it explicitly to
+  // every include() call below.
+  const __vaPartialLocals = Object.assign({}, locals, {
+    page: locals.page || 'voice-assistant',
+    pageTitle: locals.pageTitle || 'Voice Assistant',
+    active: locals.active || 'voice-assistant',
+  });
+  // UI language follows the visitor's site-language toggle (the `lang` local
+  // set by buildLocals/prepareRender from ?lang=en query or pwa_lang cookie),
+  // NOT the install-time voiceLanguage config — that one only constrains the
+  // AI agent's persona/output language. On a bilingual site (voiceLanguage =
+  // 'both') the page chrome would otherwise default to French regardless of
+  // what the visitor selected.
+  const __vaUiLang = (typeof lang !== 'undefined' && lang === 'en') ? 'en' : 'fr';
+%>
+<%- include('partials/header', __vaPartialLocals) %>
+
+<style>
+  /* Voice page — pulsing mic hero + chat modal. Inline so a missing
+     tenant stylesheet can't strip the design. */
+  .va-stage { perspective: 600px; }
+  .va-mic-btn {
+    position: relative; background: transparent; border: 0; padding: 0;
+    cursor: pointer; display: inline-flex; align-items: center;
+    justify-content: center; width: 9rem; height: 9rem;
+    border-radius: 9999px;
+    background: linear-gradient(135deg, <%= vaBrandLight %>, <%= vaBrandColor %>);
+    color: #fff;
+    transition: transform 200ms ease;
+  }
+  @media (min-width: 768px) {
+    .va-mic-btn { width: 11rem; height: 11rem; }
+  }
+  .va-mic-btn:hover { transform: scale(1.05); }
+  .va-mic-btn:active { transform: scale(0.95); }
+  .va-mic-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+  .va-mic-btn::before, .va-mic-btn::after {
+    content: ''; position: absolute; inset: 0; border-radius: 9999px;
+    pointer-events: none;
+    background: <%= vaBrandColor %>; opacity: 0.45;
+    z-index: -1;
+    animation: va-pulse 2.2s cubic-bezier(0,0,0.2,1) infinite;
+  }
+  .va-mic-btn::after { animation-delay: 1.1s; }
+  @keyframes va-pulse {
+    0%   { transform: scale(1);    opacity: 0.55; }
+    100% { transform: scale(2.1);  opacity: 0;    }
+  }
+  @keyframes va-breathe {
+    0%, 100% { box-shadow: 0 22px 48px -12px rgba(139,92,246,0.6), 0 0 0 0 rgba(139,92,246,0.35); }
+    50%      { box-shadow: 0 28px 58px -12px rgba(139,92,246,0.75), 0 0 0 18px rgba(139,92,246,0); }
+  }
+  .va-mic-btn { animation: va-breathe 2.6s ease-in-out infinite; }
+  @media (prefers-reduced-motion: reduce) {
+    .va-mic-btn, .va-mic-btn::before, .va-mic-btn::after { animation: none !important; }
+  }
+
+  /* Chat modal */
+  .va-overlay {
+    position: fixed; inset: 0; z-index: 60;
+    background: rgba(15, 23, 42, 0.55);
+    backdrop-filter: blur(4px);
+    display: none; align-items: flex-end; justify-content: center; padding: 0;
+  }
+  @media (min-width: 640px) {
+    .va-overlay { align-items: center; padding: 1rem; }
+  }
+  .va-overlay.va-open { display: flex; }
+  .va-modal {
+    position: relative; width: 100%; max-width: 36rem;
+    background: #fff; border-radius: 1rem 1rem 0 0;
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+    display: flex; flex-direction: column;
+    max-height: 92vh; overflow: hidden;
+  }
+  @media (min-width: 640px) { .va-modal { border-radius: 1rem; max-height: 85vh; } }
+  .va-msg { padding: 0.6rem 0.85rem; border-radius: 0.85rem; max-width: 80%; word-wrap: break-word; }
+  .va-msg-ai   { background: #f3f4f6; color: #111827; align-self: flex-start; border-top-left-radius: 0.25rem; }
+  .va-msg-user { background: <%= vaBrandColor %>; color: #fff; align-self: flex-end; border-top-right-radius: 0.25rem; }
+</style>
+
+<main class="bg-gray-50 min-h-screen" style="background:#f9fafb">
+  <!-- Voice-first hero -->
+  <section class="max-w-3xl mx-auto px-4 py-12 md:py-16 text-center" style="max-width:48rem;margin-left:auto;margin-right:auto;padding:3rem 1rem;text-align:center">
+    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-5 border" style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.375rem 1rem;border-radius:9999px;font-size:0.75rem;font-weight:bold;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:1.25rem;border:1px solid <%= vaBrandColor %>33;color:<%= vaBrandColor %>;background:<%= vaBrandColor %>14">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+      <%= __vaUiLang === 'en' ? 'AI Voice Assistant' : 'Assistant vocal IA' %>
+    </div>
+
+    <h1 style="font-size:2.25rem;font-weight:800;letter-spacing:-0.025em;line-height:1.1;color:#111827;margin:0">
+      <%= __vaUiLang === 'en' ? 'Talk to us about your needs.' : 'Parlez-nous de vos besoins.' %>
+    </h1>
+    <p style="margin-top:1rem;color:#6b7280;max-width:32rem;margin-left:auto;margin-right:auto;font-size:1.125rem">
+      <%= __vaUiLang === 'en' ? 'Tap the mic, ask anything, or share your details — our AI assistant listens and helps.' : 'Touchez le micro, posez vos questions ou partagez vos coordonnées — notre assistant IA vous écoute et vous aide.' %>
+    </p>
+
+    <div class="va-stage" style="margin-top:2.5rem;display:flex;flex-direction:column;align-items:center;gap:1.25rem">
+      <button id="va-mic" type="button" class="va-mic-btn" aria-label="Start voice session">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+          <line x1="12" x2="12" y1="19" y2="22"/>
+        </svg>
+      </button>
+
+      <p style="font-size:1rem;font-weight:700;color:#111827;margin:0">
+        <%= __vaUiLang === 'en' ? 'Tap to talk' : 'Touchez pour parler' %>
+      </p>
+
+      <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:0.5rem 1.75rem;font-size:0.75rem;color:#6b7280;font-weight:500">
+        <span style="display:inline-flex;align-items:center;gap:0.375rem">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="<%= vaBrandColor %>" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <%= __vaUiLang === 'en' ? '~3 minutes' : '~3 minutes' %>
+        </span>
+        <span style="display:inline-flex;align-items:center;gap:0.375rem">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="<%= vaBrandColor %>" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <%= __vaUiLang === 'en' ? 'No commitment' : 'Sans engagement' %>
+        </span>
+        <span style="display:inline-flex;align-items:center;gap:0.375rem">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="<%= vaBrandColor %>" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          <%= __vaUiLang === 'en' ? 'Quick reply' : 'Réponse rapide' %>
+        </span>
+      </div>
+
+      <button id="va-stop" type="button" style="display:none;padding:0.5rem 1.25rem;border-radius:9999px;background:#fff;color:#dc2626;border:1px solid #fecaca;font-size:0.875rem;font-weight:600;cursor:pointer">
+        <%= __vaUiLang === 'en' ? 'End session' : 'Terminer' %>
+      </button>
+      <span id="va-state" style="font-size:0.875rem;color:#6b7280;min-height:1.25rem"></span>
+      <p id="va-transcript" style="font-size:0.875rem;color:#9ca3af;min-height:1.25rem;font-style:italic;max-width:30rem;margin:0"></p>
+    </div>
+
+    <div style="position:relative;margin:2.5rem 0">
+      <div style="position:absolute;inset:0;display:flex;align-items:center"><div style="width:100%;border-top:1px solid #e5e7eb"></div></div>
+      <div style="position:relative;display:flex;justify-content:center">
+        <span style="background:#f9fafb;padding:0 0.75rem;font-size:0.6875rem;text-transform:uppercase;letter-spacing:0.05em;color:#9ca3af">
+          <%= __vaUiLang === 'en' ? 'or fill the form by hand' : 'ou remplissez le formulaire à la main' %>
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Form (auto-fills from voice when conversation completes) -->
+  <section style="max-width:48rem;margin-left:auto;margin-right:auto;padding:0 1rem 4rem">
+    <form id="va-form" method="POST" action="voice-assistant/submit" style="background:#fff;border-radius:1rem;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1),0 2px 4px -2px rgba(0,0,0,0.1);border:1px solid #f3f4f6;padding:1.5rem;display:grid;gap:1.25rem">
+      <% voiceFields.forEach(function(f) { %>
+        <label style="display:grid;gap:0.25rem">
+          <span style="font-size:0.875rem;font-weight:600;color:#374151"><%= __vaUiLang === 'en' ? f.label_en : f.label_fr %><% if (f.required) { %> <span style="color:<%= vaBrandColor %>">*</span><% } %></span>
+          <% if (f.type === 'textarea') { %>
+            <textarea name="<%= f.key %>" <%= f.required ? 'required' : '' %> rows="4" style="border:1px solid #d1d5db;border-radius:0.5rem;padding:0.625rem 1rem;font-family:inherit;font-size:0.9375rem;outline:none;resize:vertical"></textarea>
+          <% } else { %>
+            <input name="<%= f.key %>" type="<%= f.type === 'email' ? 'email' : f.type === 'phone' ? 'tel' : 'text' %>" <%= f.required ? 'required' : '' %> style="border:1px solid #d1d5db;border-radius:0.5rem;padding:0.625rem 1rem;font-size:0.9375rem;outline:none">
+          <% } %>
+        </label>
+      <% }); %>
+
+      <div style="display:flex;align-items:center;justify-content:flex-end;gap:0.75rem;padding-top:0.25rem">
+        <button type="submit" style="padding:0.875rem 2rem;background:<%= vaBrandColor %>;color:#fff;font-weight:700;text-transform:uppercase;letter-spacing:0.025em;border-radius:0.5rem;border:0;cursor:pointer;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1)">
+          <%= __vaUiLang === 'en' ? 'Submit →' : 'Envoyer →' %>
+        </button>
+      </div>
+    </form>
+    <div id="va-status" style="margin-top:1rem;font-size:0.875rem;color:#6b7280;text-align:center"></div>
+  </section>
+</main>
+
+<!-- Importmap so the module script below can import @google/genai from a CDN -->
+<script type="importmap">{ "imports": { "@google/genai": "https://esm.sh/@google/genai@^1.0.0" } }</script>
+
+<script type="module">
+  import { GoogleGenAI } from '@google/genai';
+
+  const VOICE_LANG = '<%= __vaUiLang %>';
+  const I18N = VOICE_LANG === 'en' ? {
+    connecting: 'Connecting…', listening: 'Listening', speaking: 'Speaking…',
+    micDenied: 'Microphone permission denied.', audioFail: 'Audio not available on this device.',
+    voiceDown: 'Voice unavailable.', connectFail: 'Voice connection failed.',
+  } : {
+    connecting: 'Connexion…', listening: "À l'écoute", speaking: 'Réponse…',
+    micDenied: 'Microphone refusé.', audioFail: 'Audio indisponible sur cet appareil.',
+    voiceDown: 'Voix indisponible.', connectFail: 'Connexion vocale échouée.',
+  };
+
+  const LIVE_INPUT_SAMPLE_RATE = 16000;
+  const LIVE_OUTPUT_SAMPLE_RATE = 24000;
+
+  function base64Encode(bytes) {
+    let s = ''; const c = 0x8000;
+    for (let i = 0; i < bytes.length; i += c) s += String.fromCharCode.apply(null, Array.from(bytes.subarray(i, i + c)));
+    return btoa(s);
+  }
+  function base64Decode(b64) {
+    const b = atob(b64); const o = new Uint8Array(b.length);
+    for (let i = 0; i < b.length; i++) o[i] = b.charCodeAt(i);
+    return o;
+  }
+  function floatToPcm16Base64(f32) {
+    const o = new Int16Array(f32.length);
+    for (let i = 0; i < f32.length; i++) {
+      const s = Math.max(-1, Math.min(1, f32[i]));
+      o[i] = s < 0 ? s * 0x8000 : s * 0x7fff;
+    }
+    return base64Encode(new Uint8Array(o.buffer));
+  }
+  function pcm16Base64ToAudioBuffer(ctx, b64) {
+    const b = base64Decode(b64);
+    const i16 = new Int16Array(b.buffer, b.byteOffset, b.byteLength / 2);
+    const buf = ctx.createBuffer(1, i16.length, LIVE_OUTPUT_SAMPLE_RATE);
+    const ch = buf.getChannelData(0);
+    for (let i = 0; i < i16.length; i++) ch[i] = i16[i] / 0x8000;
+    return buf;
+  }
+
+  const micBtn = document.getElementById('va-mic');
+  const stopBtn = document.getElementById('va-stop');
+  const stateEl = document.getElementById('va-state');
+  const transcriptEl = document.getElementById('va-transcript');
+  const statusEl = document.getElementById('va-status');
+  const formEl = document.getElementById('va-form');
+
+  const formInputs = {};
+  formEl.querySelectorAll('[name]').forEach(function(el) { formInputs[el.name] = el; });
+
+  // Form-draft persistence. Visitors who fill in a few fields, get
+  // distracted, and come back (page reload, navigation away then return)
+  // would otherwise lose their work. We mirror values into localStorage
+  // on every input, hydrate on page load, and clear after a successful
+  // submit (the platform redirects to ?submitted=1, our cue to wipe).
+  // Keyed by pathname so two voice pages on the same domain don't bleed.
+  const VA_DRAFT_KEY = 'va-form-draft:' + window.location.pathname;
+  function saveDraft() {
+    try {
+      const out = {};
+      for (const k in formInputs) {
+        if (formInputs[k] && typeof formInputs[k].value === 'string') out[k] = formInputs[k].value;
+      }
+      window.localStorage.setItem(VA_DRAFT_KEY, JSON.stringify(out));
+    } catch (_) {}
+  }
+  function loadDraft() {
+    try {
+      const raw = window.localStorage.getItem(VA_DRAFT_KEY);
+      if (!raw) return;
+      const draft = JSON.parse(raw);
+      for (const k in draft) {
+        if (formInputs[k] && draft[k]) {
+          formInputs[k].value = draft[k];
+          // Restored values count as user-typed so the voice tool
+          // doesn't overwrite them mid-session.
+          formInputs[k].dataset.userTyped = '1';
+        }
+      }
+    } catch (_) {}
+  }
+  function clearDraft() {
+    try { window.localStorage.removeItem(VA_DRAFT_KEY); } catch (_) {}
+  }
+  loadDraft();
+  // Submission redirects to ?submitted=1 — that's our cue to wipe.
+  if (window.location.search.indexOf('submitted=1') >= 0) clearDraft();
+
+  // Mark fields as user-typed so the voice tool doesn't overwrite manual
+  // entries (STT mishears emails / phone numbers — typed values are
+  // authoritative). Same listener also persists the draft on every keystroke.
+  formEl.querySelectorAll('[name]').forEach(function(el) {
+    el.addEventListener('input', function() {
+      if (el.value && el.value.trim()) el.dataset.userTyped = '1';
+      saveDraft();
+    });
+  });
+  // After a real form submit (POST), wipe the draft — the server will
+  // redirect to ?submitted=1 and the load-time check above clears it
+  // anyway, but doing it here covers same-tab POST replays too.
+  formEl.addEventListener('submit', function() { setTimeout(clearDraft, 0); });
+
+  const state = {
+    session: null, inputCtx: null, outputCtx: null,
+    micStream: null, micSource: null, scriptProcessor: null,
+    playbackSources: new Set(), nextStart: 0,
+    activeSessionId: null, sessionStartedAt: 0, reported: false,
+    usage: { inputTokens: 0, outputTokens: 0 },
+    pendingAssistant: '',
+  };
+
+  function setStatus(t) { statusEl.textContent = t || ''; }
+  function setState(t) { stateEl.textContent = t || ''; }
+  function showRunning(running) {
+    micBtn.style.display = running ? 'none' : '';
+    stopBtn.style.display = running ? '' : 'none';
+  }
+
+  function reportSessionEnd(reason, usage) {
+    if (state.reported || !state.activeSessionId) return;
+    state.reported = true;
+    const u = usage || state.usage;
+    const payload = {
+      sessionId: state.activeSessionId,
+      durationMs: Math.max(0, Date.now() - state.sessionStartedAt),
+      inputTokens: u.inputTokens || 0,
+      outputTokens: u.outputTokens || 0,
+      abortReason: reason || null,
+    };
+    const body = new Blob([JSON.stringify(payload)], { type: 'application/json' });
+    try {
+      if (!(navigator.sendBeacon && navigator.sendBeacon('voice-assistant/finalize', body))) {
+        fetch('voice-assistant/finalize', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload), keepalive: true }).catch(function(){});
+      }
+    } catch (_) {}
+    state.activeSessionId = null;
+    state.sessionStartedAt = 0;
+  }
+
+  function stopPlayback() {
+    state.playbackSources.forEach(function(s) { try { s.stop(); } catch (_) {} });
+    state.playbackSources.clear();
+    state.nextStart = 0;
+  }
+
+  function enqueueAudio(b64) {
+    const ctx = state.outputCtx;
+    if (!ctx) return;
+    let buffer;
+    try { buffer = pcm16Base64ToAudioBuffer(ctx, b64); } catch (_) { return; }
+    const startAt = Math.max(state.nextStart, ctx.currentTime);
+    const src = ctx.createBufferSource();
+    src.buffer = buffer;
+    src.connect(ctx.destination);
+    src.addEventListener('ended', function() {
+      state.playbackSources.delete(src);
+      if (state.playbackSources.size === 0) setState(I18N.listening);
+    });
+    src.start(startAt);
+    state.nextStart = startAt + buffer.duration;
+    state.playbackSources.add(src);
+    setState(I18N.speaking);
+  }
+
+  function wireUpMic() {
+    const stream = state.micStream;
+    const ctx = state.inputCtx;
+    if (!stream || !ctx) return;
+    const source = ctx.createMediaStreamSource(stream);
+    state.micSource = source;
+    const proc = ctx.createScriptProcessor(2048, 1, 1);
+    state.scriptProcessor = proc;
+    proc.onaudioprocess = function(e) {
+      const session = state.session;
+      if (!session) return;
+      const data = e.inputBuffer.getChannelData(0);
+      const copy = new Float32Array(data.length);
+      copy.set(data);
+      try {
+        session.sendRealtimeInput({
+          audio: { data: floatToPcm16Base64(copy), mimeType: 'audio/pcm;rate=' + LIVE_INPUT_SAMPLE_RATE },
+        });
+      } catch (_) {}
+    };
+    source.connect(proc);
+    proc.connect(ctx.destination);
+  }
+
+  function handleToolCall(msg) {
+    const calls = (msg.toolCall && msg.toolCall.functionCalls) || [];
+    if (!calls.length) return;
+    const responses = [];
+    let allComplete = false;
+    for (const call of calls) {
+      try {
+        if (call.name === 'updateFormDraft') {
+          const args = call.args || {};
+          const key = String(args.key || '').trim();
+          const value = String(args.value || '').trim();
+          const complete = !!args.complete;
+          if (key && formInputs[key] && !formInputs[key].dataset.userTyped) {
+            formInputs[key].value = value;
+            formInputs[key].dispatchEvent(new Event('input', { bubbles: true }));
+          }
+          if (complete) allComplete = true;
+          responses.push({ id: call.id, name: call.name, response: { ok: true } });
+        } else {
+          responses.push({ id: call.id, name: call.name, response: { ok: false, reason: 'unknown_tool' } });
+        }
+      } catch (e) {
+        responses.push({ id: call.id, name: call.name, response: { ok: false, reason: 'exception' } });
+      }
+    }
+    if (responses.length) {
+      try { state.session && state.session.sendToolResponse({ functionResponses: responses }); } catch (_) {}
+    }
+    if (allComplete) setTimeout(function() { teardown('completed'); }, 1500);
+  }
+
+  function handleMessage(msg) {
+    if (msg.usageMetadata) {
+      const u = msg.usageMetadata;
+      // Gemini sometimes reports totalTokenCount as session-cumulative, sometimes
+      // emits per-turn deltas — same handling as the dashboard voice client.
+      if (u.totalTokenCount) {
+        state.usage.inputTokens = u.promptTokenCount || Math.round(u.totalTokenCount * 0.4);
+        state.usage.outputTokens = u.candidatesTokenCount || u.responseTokenCount || Math.round(u.totalTokenCount * 0.6);
+      } else {
+        state.usage.inputTokens += (u.promptTokenCount || 0);
+        state.usage.outputTokens += (u.candidatesTokenCount || u.responseTokenCount || 0);
+      }
+    }
+    const server = msg.serverContent;
+    if (server && server.interrupted) stopPlayback();
+    if (server && server.outputTranscription && server.outputTranscription.text) {
+      state.pendingAssistant += server.outputTranscription.text;
+      transcriptEl.textContent = state.pendingAssistant;
+    }
+    const parts = (server && server.modelTurn && server.modelTurn.parts) || [];
+    for (const part of parts) {
+      const inline = part && part.inlineData;
+      if (inline && inline.mimeType && inline.mimeType.indexOf('audio/pcm') === 0 && inline.data) {
+        enqueueAudio(inline.data);
+      }
+    }
+    if (server && (server.turnComplete || server.generationComplete)) state.pendingAssistant = '';
+    if (msg.toolCall) handleToolCall(msg);
+  }
+
+  async function connect() {
+    micBtn.disabled = true;
+    setStatus(I18N.connecting);
+    setState('');
+
+    const AC = window.AudioContext || window.webkitAudioContext;
+    try {
+      state.outputCtx = new AC({ sampleRate: LIVE_OUTPUT_SAMPLE_RATE });
+      state.inputCtx = new AC({ sampleRate: LIVE_INPUT_SAMPLE_RATE });
+    } catch (_) { setStatus(I18N.audioFail); micBtn.disabled = false; return; }
+
+    try {
+      state.micStream = await navigator.mediaDevices.getUserMedia({
+        audio: { channelCount: 1, echoCancellation: true, noiseSuppression: true, autoGainControl: true },
+      });
+    } catch (_) { setStatus(I18N.micDenied); micBtn.disabled = false; return; }
+
+    let tokenData;
+    try {
+      const resp = await fetch('voice-assistant/start', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+      if (!resp.ok) { setStatus(I18N.voiceDown); micBtn.disabled = false; return; }
+      tokenData = await resp.json();
+    } catch (_) { setStatus(I18N.voiceDown); micBtn.disabled = false; return; }
+
+    state.activeSessionId = tokenData.sessionId || null;
+    state.sessionStartedAt = Date.now();
+    state.reported = false;
+    state.usage = { inputTokens: 0, outputTokens: 0 };
+
+    try {
+      const ai = new GoogleGenAI({ apiKey: tokenData.token, httpOptions: { apiVersion: 'v1alpha' } });
+      const sessionPromise = ai.live.connect({
+        model: tokenData.model,
+        config: { responseModalities: ['AUDIO'] },
+        callbacks: {
+          onopen: function() {
+            if (state.outputCtx && state.outputCtx.state === 'suspended') state.outputCtx.resume().catch(function(){});
+            if (state.inputCtx && state.inputCtx.state === 'suspended') state.inputCtx.resume().catch(function(){});
+            showRunning(true);
+            setStatus('');
+            setState(I18N.listening);
+            wireUpMic();
+          },
+          onmessage: handleMessage,
+          onerror: function(e) { console.warn('[voice] error', (e && e.message) || e); setStatus(I18N.connectFail); teardown('error'); },
+          onclose: function(e) { console.log('[voice] closed', e && e.code); if (state.session) teardown('disconnected'); },
+        },
+      });
+      state.session = await sessionPromise;
+    } catch (err) {
+      console.error('[voice] connect failed', err);
+      setStatus(I18N.connectFail);
+      teardown('connect_failed');
+    }
+  }
+
+  function teardown(reason) {
+    reportSessionEnd(reason);
+    try { state.session && state.session.close(); } catch (_) {}
+    state.session = null;
+    if (state.scriptProcessor) {
+      try { state.scriptProcessor.disconnect(); } catch (_) {}
+      state.scriptProcessor.onaudioprocess = null;
+      state.scriptProcessor = null;
+    }
+    if (state.micSource) { try { state.micSource.disconnect(); } catch (_) {} state.micSource = null; }
+    if (state.micStream) {
+      state.micStream.getTracks().forEach(function(t) { try { t.stop(); } catch (_) {} });
+      state.micStream = null;
+    }
+    stopPlayback();
+    if (state.inputCtx) { try { state.inputCtx.close(); } catch (_) {} state.inputCtx = null; }
+    if (state.outputCtx) { try { state.outputCtx.close(); } catch (_) {} state.outputCtx = null; }
+    state.pendingAssistant = '';
+    micBtn.disabled = false;
+    showRunning(false);
+    setState('');
+    transcriptEl.textContent = '';
+  }
+
+  micBtn.addEventListener('click', connect);
+  stopBtn.addEventListener('click', function() { teardown('user_stop'); });
+  window.addEventListener('pagehide', function() { reportSessionEnd('page_unload'); });
+  window.addEventListener('beforeunload', function() { reportSessionEnd('page_unload'); });
+  document.addEventListener('visibilitychange', function() {
+    if (document.visibilityState === 'hidden') reportSessionEnd('visibility_hidden');
+  });
+
+  // External hook for debug / tests; the audio pipeline calls this internally.
+  window.__voiceAssistantReportEnd = reportSessionEnd;
+</script>
+
+<%- include('partials/footer', __vaPartialLocals) %>
+<!-- voice-module-v1 END -->

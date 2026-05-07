@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin — Paramètres</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body class="bg-gray-50">
+<%- include('partials/admin-sidebar', { active: 'settings' }) %>
+<main class="admin-main">
+<header class="admin-header">
+<button id="sidebarToggle" class="md:hidden p-2 rounded hover:bg-gray-100" aria-label="Menu">☰</button>
+<div>
+<h1 class="text-2xl font-bold">⚙️ Paramètres du site</h1>
+<p class="text-sm text-gray-500">Modifiez les textes et liens affichés sur le site public</p>
+</div>
+<a href="." target="_blank" class="px-4 py-2 bg-purple-600 text-white rounded-lg text-sm font-semibold hover:bg-purple-700" style="background:#8b5cf6;color:#fff">↗ Voir le site</a>
+</header>
+<div class="p-6">
+<div id="toast" class="hidden fixed top-20 right-6 z-50 px-4 py-3 rounded-lg shadow-lg font-semibold"></div>
+<div id="settingsContent" class="text-center py-12 text-gray-500">Chargement...</div>
+</div>
+</main>
+<script>
+let currentSettings = {};
+let groups = [];
+
+function showToast(msg, ok) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'fixed top-20 right-6 z-50 px-4 py-3 rounded-lg shadow-lg font-semibold ' + (ok ? 'bg-green-100 text-green-700 border border-green-300' : 'bg-red-100 text-red-700 border border-red-300');
+  setTimeout(() => t.classList.add('hidden'), 3000);
+}
+
+function escapeHtml(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+async function loadSettings() {
+  const res = await fetch('api/admin/settings');
+  const data = await res.json();
+  currentSettings = data.settings || {};
+  groups = data.groups || [];
+  renderForm();
+}
+
+function renderForm() {
+  const container = document.getElementById('settingsContent');
+  if (!groups.length) { container.innerHTML = '<p class="text-gray-500 text-center">Aucun paramètre disponible.</p>'; return; }
+  container.className = 'space-y-6';
+  container.innerHTML = groups.map(g => {
+    return '<section class="bg-white rounded-xl shadow-sm overflow-hidden">' +
+      '<header class="px-6 py-4 border-b bg-gradient-to-r from-purple-50 to-pink-50"><h2 class="font-bold text-lg">' + escapeHtml(g.title) + '</h2></header>' +
+      '<div class="p-6 space-y-4">' +
+      g.fields.map(f => fieldHtml(f, currentSettings[f.key])).join('') +
+      '</div></section>';
+  }).join('');
+  container.querySelectorAll('[data-save-btn]').forEach(btn => {
+    btn.addEventListener('click', async function() {
+      const key = this.dataset.key;
+      const input = document.querySelector('[data-key="' + key + '"]');
+      const value = input.value;
+      this.disabled = true; this.textContent = '...';
+      try {
+        const res = await fetch('api/admin/settings', { method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ key, value }) });
+        if (!res.ok) throw new Error('failed');
+        currentSettings[key] = value;
+        showToast('✓ Enregistré', true);
+      } catch(e) { showToast('Erreur d’enregistrement', false); }
+      finally { this.disabled = false; this.textContent = 'Enregistrer'; }
+    });
+  });
+}
+
+function fieldHtml(f, value) {
+  const v = value == null ? '' : value;
+  let input;
+  if (f.type === 'textarea') input = '<textarea data-key="' + f.key + '" rows="4" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-300">' + escapeHtml(v) + '</textarea>';
+  else if (f.type === 'image') input = '<div class="flex items-start gap-3"><input data-key="' + f.key + '" type="url" value="' + escapeHtml(v) + '" placeholder="https://..." class="flex-1 px-3 py-2 border rounded-lg">' + (v ? '<img src="' + escapeHtml(v) + '" class="w-20 h-20 object-cover rounded">' : '') + '</div>';
+  else input = '<input data-key="' + f.key + '" type="' + (f.type || 'text') + '" value="' + escapeHtml(v) + '" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-300">';
+  return '<div>' +
+    '<label class="block text-sm font-semibold mb-1 text-gray-700">' + escapeHtml(f.label) + '</label>' +
+    '<div class="flex gap-2 items-start">' +
+    '<div class="flex-1">' + input + '</div>' +
+    '<button data-save-btn data-key="' + f.key + '" class="px-3 py-2 bg-purple-600 text-white rounded-lg text-sm hover:bg-purple-700 whitespace-nowrap" style="background:#8b5cf6;color:#fff">Enregistrer</button>' +
+    '</div>' +
+    '</div>';
+}
+
+document.getElementById('sidebarToggle')?.addEventListener('click', () => document.querySelector('.admin-sidebar').classList.toggle('open'));
+loadSettings();
+</script>
+</body>
+</html>

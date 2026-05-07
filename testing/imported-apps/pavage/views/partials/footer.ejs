@@ -1,0 +1,48 @@
+<footer class="mt-20 border-t border-purple-500/20 bg-dark-2">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+<div>
+<h3 class="text-xl font-bold gradient-text mb-3"><%= settings.business_name || t.brand %></h3>
+<p class="text-gray-400 text-sm"><%= t.footer_tagline %></p>
+</div>
+<div>
+<h4 class="font-bold mb-3"><%= t.footer_quick %></h4>
+<ul class="space-y-2 text-gray-400 text-sm">
+<li><a href="services" class="hover:text-white" style="transition:color .2s"><%= t.nav_services %></a></li>
+<li><a href="galerie" class="hover:text-white"><%= t.nav_gallery %></a></li>
+<li><a href="a-propos" class="hover:text-white"><%= t.nav_about %></a></li>
+<li><a href="blogue" class="hover:text-white"><%= t.nav_blog %></a></li>
+<li><a href="soumission" class="hover:text-white"><%= t.nav_contact %></a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold mb-3"><%= t.footer_contact %></h4>
+<ul class="space-y-2 text-gray-400 text-sm">
+<% if (settings.contact_phone) { %><li>📞 <a href="tel:<%= settings.contact_phone %>" class="hover:text-white"><%= settings.contact_phone %></a></li><% } %>
+<% if (settings.contact_email) { %><li>✉️ <a href="mailto:<%= settings.contact_email %>" class="hover:text-white"><%= settings.contact_email %></a></li><% } %>
+<% if (settings.business_address) { %><li>📍 <%= settings.business_address %></li><% } %>
+<% if (settings['hours_' + lang]) { %><li>🕐 <%= settings['hours_' + lang] %></li><% } %>
+</ul>
+</div>
+<div>
+<h4 class="font-bold mb-3"><%= t.footer_follow %></h4>
+<div class="flex gap-3 mb-4">
+<% if (settings.social_facebook) { %><a href="<%= settings.social_facebook %>" target="_blank" rel="noopener" class="w-10 h-10 rounded-full glass flex items-center justify-center hover:scale-110 transition" aria-label="Facebook">f</a><% } %>
+<% if (settings.social_instagram) { %><a href="<%= settings.social_instagram %>" target="_blank" rel="noopener" class="w-10 h-10 rounded-full glass flex items-center justify-center hover:scale-110 transition" aria-label="Instagram">📷</a><% } %>
+<% if (settings.social_linkedin) { %><a href="<%= settings.social_linkedin %>" target="_blank" rel="noopener" class="w-10 h-10 rounded-full glass flex items-center justify-center hover:scale-110 transition" aria-label="LinkedIn">in</a><% } %>
+<% if (settings.social_youtube) { %><a href="<%= settings.social_youtube %>" target="_blank" rel="noopener" class="w-10 h-10 rounded-full glass flex items-center justify-center hover:scale-110 transition" aria-label="YouTube">▶</a><% } %>
+</div>
+<button data-push-btn class="text-sm text-gray-400 hover:text-white">🔔 <%= lang === 'fr' ? 'Activer les notifications' : 'Enable notifications' %></button>
+</div>
+</div>
+<div class="mt-10 pt-6 border-t border-purple-500/10 text-center text-gray-500 text-sm">
+© <%= new Date().getFullYear() %> <%= settings.business_name || t.brand %>. <%= t.footer_rights %>.
+</div>
+</div>
+</footer>
+<script>
+setTimeout(function(){try{if(window.TenantSDK&&TenantSDK.ui){TenantSDK.ui.showInstallBanner();}}catch(e){}},3000);
+setTimeout(function(){try{if(window.TenantSDK&&TenantSDK.ui){TenantSDK.ui.showPushPrompt();}}catch(e){}},9000);
+</script>
+</body>
+</html>

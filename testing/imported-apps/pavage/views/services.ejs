@@ -1,0 +1,41 @@
+<%- include('partials/header') %>
+<section class="py-16 bg-gradient-to-br from-dark-2 to-dark">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+<h1 class="section-title gradient-text mb-4"><%= t.services_title %></h1>
+<p class="text-gray-400 text-xl max-w-2xl mx-auto"><%= t.services_subtitle %></p>
+</div>
+</section>
+<section class="py-16">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<% if (typeof serviceList !== 'undefined' && serviceList.length > 0) { %>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<% serviceList.forEach(function(s, idx){ %>
+<div class="card group flex flex-col md:flex-row">
+<% if (s.image_url) { %><div class="md:w-2/5 h-48 md:h-auto overflow-hidden"><img src="<%= s.image_url %>" alt="<%= s.name %>" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"></div><% } %>
+<div class="p-6 flex-1">
+<h3 class="text-2xl font-bold mb-3 gradient-text"><%= s.name %></h3>
+<p class="text-gray-400 mb-4"><%= s.description %></p>
+<% if (s.price_range) { %><div class="mb-4"><span class="text-xs text-gray-500 uppercase"><%= t.service_price %></span><div class="text-xl font-bold" style="color:#a78bfa"><%= s.price_range %></div></div><% } %>
+<a href="soumission" class="btn-primary text-sm" style="background:linear-gradient(135deg,#8b5cf6 0%,#ec4899 100%);color:#fff"><%= t.service_request %> →</a>
+</div>
+</div>
+<% }) %>
+</div>
+<% } else { %>
+<p class="text-center text-gray-500"><%= t.empty_default %></p>
+<% } %>
+</div>
+</section>
+<section class="py-20 bg-dark-2">
+<div class="max-w-5xl mx-auto px-4 text-center">
+<h2 class="section-title gradient-text mb-4"><%= t.why_us %></h2>
+<p class="text-gray-400 mb-12"><%= t.why_us_sub %></p>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<div class="glass p-6 rounded-2xl"><div class="text-4xl mb-3">⭐</div><h3 class="font-bold mb-2"><%= t.feature1_title %></h3><p class="text-sm text-gray-400"><%= t.feature1_text %></p></div>
+<div class="glass p-6 rounded-2xl"><div class="text-4xl mb-3">🛡️</div><h3 class="font-bold mb-2"><%= t.feature2_title %></h3><p class="text-sm text-gray-400"><%= t.feature2_text %></p></div>
+<div class="glass p-6 rounded-2xl"><div class="text-4xl mb-3">👷</div><h3 class="font-bold mb-2"><%= t.feature3_title %></h3><p class="text-sm text-gray-400"><%= t.feature3_text %></p></div>
+<div class="glass p-6 rounded-2xl"><div class="text-4xl mb-3">🏠</div><h3 class="font-bold mb-2"><%= t.feature4_title %></h3><p class="text-sm text-gray-400"><%= t.feature4_text %></p></div>
+</div>
+</div>
+</section>
+<%- include('partials/footer') %>

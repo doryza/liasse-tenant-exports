@@ -1,0 +1,29 @@
+<%- include('partials/header') %>
+<section class="py-12">
+<div class="max-w-3xl mx-auto px-4">
+<a href="blogue" class="mb-6 inline-block" style="color:#a78bfa"><%= t.blog_back %></a>
+<article class="card p-8 md:p-12">
+<% if (post.category) { %><div class="text-xs font-semibold uppercase mb-3" style="color:#a78bfa"><%= post.category %></div><% } %>
+<h1 class="text-3xl md:text-5xl font-bold mb-4 gradient-text"><%= post.title %></h1>
+<div class="text-sm text-gray-500 mb-6"><%= t.published %> <%= formatDate(post.created_at, lang) %></div>
+<% if (post.image_url) { %><img src="<%= post.image_url %>" alt="<%= post.title %>" class="w-full h-64 md:h-96 object-cover rounded-xl mb-8"><% } %>
+<div class="prose prose-invert max-w-none text-gray-300 text-lg leading-relaxed whitespace-pre-line"><%= post.content %></div>
+</article>
+</div>
+</section>
+<% if (typeof others !== 'undefined' && others.length > 0) { %>
+<section class="py-16 bg-dark-2">
+<div class="max-w-7xl mx-auto px-4">
+<h2 class="text-2xl font-bold mb-8 text-center"><%= t.blog_title %></h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<% others.forEach(function(p){ %>
+<a href="<%= p.id %>" class="card group block">
+<% if (p.image_url) { %><div class="h-40 overflow-hidden"><img src="<%= p.image_url %>" alt="<%= p.title %>" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"></div><% } %>
+<div class="p-4"><h3 class="font-bold"><%= p.title %></h3></div>
+</a>
+<% }) %>
+</div>
+</div>
+</section>
+<% } %>
+<%- include('partials/footer') %>

@@ -1,0 +1,518 @@
+{
+  "exportedAt": "2026-05-07T19:30:28.832Z",
+  "tables": {
+    "admin_invites": {
+      "columns": [
+        "id",
+        "email",
+        "token",
+        "role",
+        "status",
+        "invited_by",
+        "expires_at",
+        "accepted_at",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_webauthn_credentials": {
+      "columns": [
+        "id",
+        "admin_user_id",
+        "credential_id",
+        "public_key",
+        "counter",
+        "device_name",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_users": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "password_hash",
+        "display_name",
+        "role",
+        "active",
+        "activation_token",
+        "invited_by",
+        "invite_token",
+        "invite_expires_at",
+        "last_login_at",
+        "is_active",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_settings": {
+      "columns": [
+        "key",
+        "value",
+        "updated_at"
+      ],
+      "totalRows": 63,
+      "sampleRows": [
+        {
+          "key": "_p_hero_image_url",
+          "value": "https://res.cloudinary.com/duhp69meg/image/upload/v1777444523/tapavis_tenant_pavage/build_pavage_1777444523436.png",
+          "updated_at": "2026-04-29T06:56:39.351Z"
+        },
+        {
+          "key": "business_name",
+          "value": "Pavage Pro Québec",
+          "updated_at": "2026-04-29T06:56:39.358Z"
+        },
+        {
+          "key": "tagline_fr",
+          "value": "L'excellence en pavage résidentiel",
+          "updated_at": "2026-04-29T06:56:39.375Z"
+        },
+        {
+          "key": "tagline_en",
+          "value": "Excellence in residential paving",
+          "updated_at": "2026-04-29T06:56:39.386Z"
+        },
+        {
+          "key": "hero_title_fr",
+          "value": "Transformez votre propriété avec un pavage de qualité supérieure",
+          "updated_at": "2026-04-29T06:56:39.397Z"
+        },
+        {
+          "key": "hero_title_en",
+          "value": "Transform your property with premium paving",
+          "updated_at": "2026-04-29T06:56:39.411Z"
+        },
+        {
+          "key": "hero_subtitle_fr",
+          "value": "Plus de 20 ans d’expertise au service des propriétaires québécois. Devis gratuit, garantie 10 ans.",
+          "updated_at": "2026-04-29T06:56:39.424Z"
+        },
+        {
+          "key": "hero_subtitle_en",
+          "value": "Over 20 years of expertise serving Quebec homeowners. Free quote, 10-year warranty.",
+          "updated_at": "2026-04-29T06:56:39.436Z"
+        },
+        {
+          "key": "about_title_fr",
+          "value": "Notre histoire",
+          "updated_at": "2026-04-29T06:56:39.448Z"
+        },
+        {
+          "key": "about_title_en",
+          "value": "Our story",
+          "updated_at": "2026-04-29T06:56:39.459Z"
+        }
+      ]
+    },
+    "site_visits": {
+      "columns": [
+        "id",
+        "path",
+        "created_at"
+      ],
+      "totalRows": 10,
+      "sampleRows": [
+        {
+          "id": 1,
+          "path": "/",
+          "created_at": "2026-04-29T07:09:15.419Z"
+        },
+        {
+          "id": 2,
+          "path": "/",
+          "created_at": "2026-05-01T03:14:15.209Z"
+        },
+        {
+          "id": 3,
+          "path": "/",
+          "created_at": "2026-05-01T03:14:23.801Z"
+        },
+        {
+          "id": 4,
+          "path": "/services",
+          "created_at": "2026-05-01T03:14:26.353Z"
+        },
+        {
+          "id": 5,
+          "path": "/",
+          "created_at": "2026-05-07T17:50:38.613Z"
+        },
+        {
+          "id": 6,
+          "path": "/",
+          "created_at": "2026-05-07T17:56:58.598Z"
+        },
+        {
+          "id": 7,
+          "path": "/",
+          "created_at": "2026-05-07T18:23:58.194Z"
+        },
+        {
+          "id": 8,
+          "path": "/",
+          "created_at": "2026-05-07T18:57:18.045Z"
+        },
+        {
+          "id": 9,
+          "path": "/soumission",
+          "created_at": "2026-05-07T18:58:22.721Z"
+        },
+        {
+          "id": 10,
+          "path": "/",
+          "created_at": "2026-05-07T18:58:33.537Z"
+        }
+      ]
+    },
+    "posts": {
+      "columns": [
+        "id",
+        "title",
+        "content",
+        "image_url",
+        "category",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Comment choisir le bon type de pavage pour votre propriété",
+          "content": "Le choix du pavage dépend de plusieurs facteurs : esthétique, budget, durabilité et entretien. Les pavés autobloquants offrent une grande flexibilité de design, tandis que l’asphalte est économique et rapide à installer. La pierre naturelle, plus coûteuse, ajoute un cachet unique. Notre équipe vous conseille la meilleure option selon votre projet.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777444519/tapavis_tenant_pavage/build_pavage_1777444519116.png",
+          "category": "Conseils",
+          "published": 1,
+          "created_at": "2026-04-29T06:56:39.938Z",
+          "updated_at": "2026-04-29T06:56:39.938Z"
+        },
+        {
+          "id": 2,
+          "title": "Préparer votre pavage pour l’hiver québécois",
+          "content": "Les hivers québécois sont rigoureux. Pour préserver votre pavage : appliquez un scellant à l’automne, évitez les sels de déglaçage corrosifs, dégagez la neige avec une pelle en plastique et faites inspecter les fissures dès le printemps. Un entretien préventif prolonge la durée de vie de votre investissement.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777444531/tapavis_tenant_pavage/build_pavage_1777444531451.png",
+          "category": "Entretien",
+          "published": 1,
+          "created_at": "2026-04-29T06:56:39.952Z",
+          "updated_at": "2026-04-29T06:56:39.952Z"
+        },
+        {
+          "id": 3,
+          "title": "Tendances 2024 en aménagement paysager",
+          "content": "Cette année, les grands formats de pavés, les motifs géométriques et les couleurs naturelles dominent. Les terrasses extérieures avec foyer intégré et éclairage encastré gagnent en popularité. Pavage Pro Québec vous accompagne dans la création d’espaces extérieurs modernes et durables.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777444529/tapavis_tenant_pavage/build_pavage_1777444529129.png",
+          "category": "Tendances",
+          "published": 1,
+          "created_at": "2026-04-29T06:56:39.961Z",
+          "updated_at": "2026-04-29T06:56:39.961Z"
+        },
+        {
+          "id": 4,
+          "title": "L’importance d’un bon drainage",
+          "content": "Un drainage adéquat est essentiel pour éviter l’accumulation d’eau, le gel-dégel et les déformations. Notre équipe analyse la pente du terrain, installe les drains français nécessaires et garantit une évacuation optimale. Ne négligez jamais cette étape cruciale.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777444520/tapavis_tenant_pavage/build_pavage_1777444520095.png",
+          "category": "Conseils",
+          "published": 1,
+          "created_at": "2026-04-29T06:56:39.969Z",
+          "updated_at": "2026-04-29T06:56:39.969Z"
+        }
+      ]
+    },
+    "projects": {
+      "columns": [
+        "id",
+        "title",
+        "description",
+        "image_url",
+        "category",
+        "location",
+        "completed_date",
+        "featured",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 6,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Entrée à motif chevron - Westmount",
+          "description": "Magnifique entrée résidentielle de 250 m² avec pavés autobloquants en motif chevron. Bordures décoratives et drainage optimisé.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777444519/tapavis_tenant_pavage/build_pavage_1777444519116.png",
+          "category": "driveway",
+          "location": "Westmount, QC",
+          "completed_date": "2024-09-15",
+          "featured": 1,
+          "created_at": "2026-04-29T06:56:39.735Z",
+          "updated_at": "2026-04-29T06:56:39.735Z"
+        },
+        {
+          "id": 2,
+          "title": "Patio arrière de luxe - Laval",
+          "description": "Aménagement complet d’un patio de 80 m² avec pavés de pierre naturelle, foyer extérieur intégré et éclairage paysager.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777444520/tapavis_tenant_pavage/build_pavage_1777444520095.png",
+          "category": "patio",
+          "location": "Laval, QC",
+          "completed_date": "2024-08-20",
+          "featured": 1,
+          "created_at": "2026-04-29T06:56:39.751Z",
+          "updated_at": "2026-04-29T06:56:39.751Z"
+        },
+        {
+          "id": 3,
+          "title": "Asphaltage résidentiel - Brossard",
+          "description": "Asphaltage complet d’une entrée double de 180 m² avec finition lisse, scellant haute qualité et bordures béton.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777444531/tapavis_tenant_pavage/build_pavage_1777444531451.png",
+          "category": "asphalt",
+          "location": "Brossard, QC",
+          "completed_date": "2024-07-10",
+          "featured": 1,
+          "created_at": "2026-04-29T06:56:39.760Z",
+          "updated_at": "2026-04-29T06:56:39.760Z"
+        },
+        {
+          "id": 4,
+          "title": "Allée de jardin - Outremont",
+          "description": "Création d’une allée sinueuse en pavés de pierre naturelle reliant la rue à l’entrée principale. 45 m linéaires.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777444537/tapavis_tenant_pavage/build_pavage_1777444537880.png",
+          "category": "walkway",
+          "location": "Outremont, QC",
+          "completed_date": "2024-06-25",
+          "featured": 1,
+          "created_at": "2026-04-29T06:56:39.775Z",
+          "updated_at": "2026-04-29T06:56:39.775Z"
+        },
+        {
+          "id": 5,
+          "title": "Terrasse de piscine - Saint-Lambert",
+          "description": "Aménagement d’une terrasse de piscine moderne en pavés grand format. Surface antidérapante et résistante au chlore.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777444529/tapavis_tenant_pavage/build_pavage_1777444529129.png",
+          "category": "patio",
+          "location": "Saint-Lambert, QC",
+          "completed_date": "2024-05-30",
+          "featured": 1,
+          "created_at": "2026-04-29T06:56:39.784Z",
+          "updated_at": "2026-04-29T06:56:39.784Z"
+        },
+        {
+          "id": 6,
+          "title": "Entrée circulaire - Mont-Royal",
+          "description": "Entrée circulaire prestigieuse de 320 m² avec bordure décorative et fontaine centrale. Pavés haut de gamme.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777444518/tapavis_tenant_pavage/build_pavage_1777444518893.png",
+          "category": "driveway",
+          "location": "Mont-Royal, QC",
+          "completed_date": "2024-09-05",
+          "featured": 1,
+          "created_at": "2026-04-29T06:56:39.791Z",
+          "updated_at": "2026-04-29T06:56:39.791Z"
+        }
+      ]
+    },
+    "services": {
+      "columns": [
+        "id",
+        "name",
+        "description",
+        "image_url",
+        "icon",
+        "price_range",
+        "featured",
+        "sort_order",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 6,
+      "sampleRows": [
+        {
+          "id": 1,
+          "name": "Pavés autobloquants",
+          "description": "Installation professionnelle de pavés autobloquants pour entrées, patios et allées. Large choix de couleurs et motifs.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777444518/tapavis_tenant_pavage/build_pavage_1777444518413.png",
+          "icon": "grid",
+          "price_range": "85$ - 150$ / m²",
+          "featured": 1,
+          "sort_order": 1,
+          "created_at": "2026-04-29T06:56:39.806Z",
+          "updated_at": "2026-04-29T06:56:39.806Z"
+        },
+        {
+          "id": 2,
+          "name": "Asphaltage",
+          "description": "Asphaltage neuf et resurfaçage de qualité supérieure pour entrées résidentielles. Finition impeccable.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777444519/tapavis_tenant_pavage/build_pavage_1777444519909.png",
+          "icon": "truck",
+          "price_range": "12$ - 20$ / m²",
+          "featured": 1,
+          "sort_order": 2,
+          "created_at": "2026-04-29T06:56:39.814Z",
+          "updated_at": "2026-04-29T06:56:39.814Z"
+        },
+        {
+          "id": 3,
+          "name": "Pierre naturelle",
+          "description": "Aménagement haut de gamme avec pierres naturelles québécoises. Esthétique unique et durable.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777444537/tapavis_tenant_pavage/build_pavage_1777444537880.png",
+          "icon": "mountain",
+          "price_range": "120$ - 250$ / m²",
+          "featured": 1,
+          "sort_order": 3,
+          "created_at": "2026-04-29T06:56:39.821Z",
+          "updated_at": "2026-04-29T06:56:39.821Z"
+        },
+        {
+          "id": 4,
+          "name": "Réparation et scellement",
+          "description": "Réparation de fissures, nivellement et application de scellant pour prolonger la durée de vie de votre pavage.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777444531/tapavis_tenant_pavage/build_pavage_1777444531451.png",
+          "icon": "wrench",
+          "price_range": "Sur devis",
+          "featured": 0,
+          "sort_order": 4,
+          "created_at": "2026-04-29T06:56:39.830Z",
+          "updated_at": "2026-04-29T06:56:39.830Z"
+        },
+        {
+          "id": 5,
+          "name": "Bordures et finitions",
+          "description": "Installation de bordures béton, drainage et finitions décoratives pour parfaire votre projet.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777444520/tapavis_tenant_pavage/build_pavage_1777444520095.png",
+          "icon": "ruler",
+          "price_range": "Sur devis",
+          "featured": 0,
+          "sort_order": 5,
+          "created_at": "2026-04-29T06:56:39.843Z",
+          "updated_at": "2026-04-29T06:56:39.843Z"
+        },
+        {
+          "id": 6,
+          "name": "Aménagement complet",
+          "description": "Service clé en main : conception, excavation, drainage, pavage et aménagement paysager.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777444529/tapavis_tenant_pavage/build_pavage_1777444529129.png",
+          "icon": "home",
+          "price_range": "Sur devis",
+          "featured": 1,
+          "sort_order": 6,
+          "created_at": "2026-04-29T06:56:39.850Z",
+          "updated_at": "2026-04-29T06:56:39.850Z"
+        }
+      ]
+    },
+    "testimonials": {
+      "columns": [
+        "id",
+        "author",
+        "location",
+        "content",
+        "rating",
+        "image_url",
+        "featured",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 6,
+      "sampleRows": [
+        {
+          "id": 1,
+          "author": "Marie-Claude Dubois",
+          "location": "Westmount, QC",
+          "content": "Travail exceptionnel ! L’équipe de Pavage Pro a transformé notre entrée en quelques jours. Le résultat dépasse nos attentes. Hautement recommandé.",
+          "rating": 5,
+          "image_url": null,
+          "featured": 1,
+          "created_at": "2026-04-29T06:56:39.870Z",
+          "updated_at": "2026-04-29T06:56:39.870Z"
+        },
+        {
+          "id": 2,
+          "author": "Jean-François Tremblay",
+          "location": "Laval, QC",
+          "content": "Service professionnel du début à la fin. Le devis était précis, les délais respectés et la qualité du travail est remarquable. Notre patio est magnifique.",
+          "rating": 5,
+          "image_url": null,
+          "featured": 1,
+          "created_at": "2026-04-29T06:56:39.881Z",
+          "updated_at": "2026-04-29T06:56:39.881Z"
+        },
+        {
+          "id": 3,
+          "author": "Sophie Lavoie",
+          "location": "Brossard, QC",
+          "content": "Trois ans après l’installation, notre entrée pavée est encore comme neuve. La garantie 10 ans nous donne une grande tranquillité d’esprit.",
+          "rating": 5,
+          "image_url": null,
+          "featured": 1,
+          "created_at": "2026-04-29T06:56:39.892Z",
+          "updated_at": "2026-04-29T06:56:39.892Z"
+        },
+        {
+          "id": 4,
+          "author": "Robert Côté",
+          "location": "Outremont, QC",
+          "content": "Une équipe à l’écoute, des conseils judicieux et un travail soigné. C’est rare de trouver une entreprise aussi fiable au Québec. Bravo !",
+          "rating": 5,
+          "image_url": null,
+          "featured": 1,
+          "created_at": "2026-04-29T06:56:39.901Z",
+          "updated_at": "2026-04-29T06:56:39.901Z"
+        },
+        {
+          "id": 5,
+          "author": "Isabelle Gagnon",
+          "location": "Mont-Royal, QC",
+          "content": "Notre entrée circulaire est devenue le joyau du quartier. L’attention aux détails et la qualité des matériaux sont impressionnantes.",
+          "rating": 5,
+          "image_url": null,
+          "featured": 1,
+          "created_at": "2026-04-29T06:56:39.911Z",
+          "updated_at": "2026-04-29T06:56:39.911Z"
+        },
+        {
+          "id": 6,
+          "author": "Michel Bergeron",
+          "location": "Saint-Lambert, QC",
+          "content": "Excellente expérience. L’équipe a su gérer un terrain complexe avec professionnalisme. Le drainage fonctionne à merveille.",
+          "rating": 5,
+          "image_url": null,
+          "featured": 1,
+          "created_at": "2026-04-29T06:56:39.922Z",
+          "updated_at": "2026-04-29T06:56:39.922Z"
+        }
+      ]
+    },
+    "quote_requests": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "phone",
+        "address",
+        "project_type",
+        "surface_area",
+        "message",
+        "status",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "voice_submissions": {
+      "columns": [
+        "id",
+        "user_id",
+        "fields",
+        "language",
+        "voice_session_id",
+        "status",
+        "assigned_to_sales_id",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    }
+  }
+}

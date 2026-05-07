@@ -1,0 +1,29 @@
+<%- include('partials/header') %>
+<section class="py-16 bg-gradient-to-br from-dark-2 to-dark">
+<div class="max-w-7xl mx-auto px-4 text-center">
+<h1 class="section-title gradient-text mb-4"><%= t.blog_title %></h1>
+<p class="text-gray-400 text-xl"><%= t.blog_sub %></p>
+</div>
+</section>
+<section class="py-16">
+<div class="max-w-7xl mx-auto px-4">
+<% if (typeof posts !== 'undefined' && posts.length > 0) { %>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<% posts.forEach(function(p){ %>
+<a href="blogue/<%= p.id %>" class="card group block">
+<% if (p.image_url) { %><div class="h-56 overflow-hidden"><img src="<%= p.image_url %>" alt="<%= p.title %>" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"></div><% } %>
+<div class="p-6">
+<% if (p.category) { %><div class="text-xs text-brand-light font-semibold uppercase mb-2"><%= p.category %></div><% } %>
+<h3 class="font-bold text-xl mb-2"><%= p.title %></h3>
+<p class="text-gray-400 text-sm mb-4 line-clamp-3"><%= (p.content || '').substring(0, 150) %>...</p>
+<div class="text-xs text-gray-500"><%= formatDate(p.created_at, lang) %></div>
+</div>
+</a>
+<% }) %>
+</div>
+<% } else { %>
+<p class="text-center text-gray-500"><%= t.empty_default %></p>
+<% } %>
+</div>
+</section>
+<%- include('partials/footer') %>
