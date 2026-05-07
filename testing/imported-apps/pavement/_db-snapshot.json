@@ -1,0 +1,532 @@
+{
+  "exportedAt": "2026-05-07T19:02:56.956Z",
+  "tables": {
+    "voice_submissions": {
+      "columns": [
+        "id",
+        "user_id",
+        "fields",
+        "language",
+        "voice_session_id",
+        "status",
+        "assigned_to_sales_id",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_invites": {
+      "columns": [
+        "id",
+        "email",
+        "token",
+        "role",
+        "status",
+        "invited_by",
+        "expires_at",
+        "accepted_at",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_webauthn_credentials": {
+      "columns": [
+        "id",
+        "admin_user_id",
+        "credential_id",
+        "public_key",
+        "counter",
+        "device_name",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_users": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "password_hash",
+        "display_name",
+        "role",
+        "active",
+        "activation_token",
+        "invited_by",
+        "invite_token",
+        "invite_expires_at",
+        "last_login_at",
+        "is_active",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_settings": {
+      "columns": [
+        "key",
+        "value",
+        "updated_at"
+      ],
+      "totalRows": 55,
+      "sampleRows": [
+        {
+          "key": "_p_hero_image_url",
+          "value": "https://res.cloudinary.com/duhp69meg/image/upload/v1777444528/tapavis_tenant_pavement/build_pavement_1777444528718.png",
+          "updated_at": "2026-04-29T06:57:34.528Z"
+        },
+        {
+          "key": "business_name",
+          "value": "Pavage Depot",
+          "updated_at": "2026-04-29T06:57:34.696Z"
+        },
+        {
+          "key": "tagline_fr",
+          "value": "Pavage résidentiel de qualité au Québec",
+          "updated_at": "2026-04-29T06:57:34.706Z"
+        },
+        {
+          "key": "tagline_en",
+          "value": "Quality residential paving in Quebec",
+          "updated_at": "2026-04-29T06:57:34.714Z"
+        },
+        {
+          "key": "hero_title_fr",
+          "value": "L'expertise du pavage à votre porte",
+          "updated_at": "2026-04-29T06:57:34.725Z"
+        },
+        {
+          "key": "hero_title_en",
+          "value": "Paving expertise at your doorstep",
+          "updated_at": "2026-04-29T06:57:34.732Z"
+        },
+        {
+          "key": "hero_subtitle_fr",
+          "value": "Plus de 20 ans d'expérience à transformer les entrées de cour des Québécois. Soumission gratuite, travail garanti.",
+          "updated_at": "2026-04-29T06:57:34.742Z"
+        },
+        {
+          "key": "hero_subtitle_en",
+          "value": "Over 20 years transforming Quebec driveways. Free quotes, guaranteed work.",
+          "updated_at": "2026-04-29T06:57:34.756Z"
+        },
+        {
+          "key": "hero_cta_fr",
+          "value": "Demander une soumission",
+          "updated_at": "2026-04-29T06:57:34.770Z"
+        },
+        {
+          "key": "hero_cta_en",
+          "value": "Request a quote",
+          "updated_at": "2026-04-29T06:57:34.786Z"
+        }
+      ]
+    },
+    "site_visits": {
+      "columns": [
+        "id",
+        "path",
+        "created_at"
+      ],
+      "totalRows": 74,
+      "sampleRows": [
+        {
+          "id": 1,
+          "path": "/",
+          "created_at": "2026-04-29T07:09:39.742Z"
+        },
+        {
+          "id": 2,
+          "path": "/",
+          "created_at": "2026-04-29T07:09:41.733Z"
+        },
+        {
+          "id": 3,
+          "path": "/",
+          "created_at": "2026-05-01T03:13:57.974Z"
+        },
+        {
+          "id": 4,
+          "path": "/",
+          "created_at": "2026-05-07T16:06:48.561Z"
+        },
+        {
+          "id": 5,
+          "path": "/voice-assistant",
+          "created_at": "2026-05-07T16:20:38.099Z"
+        },
+        {
+          "id": 6,
+          "path": "/",
+          "created_at": "2026-05-07T16:20:43.780Z"
+        },
+        {
+          "id": 7,
+          "path": "/",
+          "created_at": "2026-05-07T16:20:45.397Z"
+        },
+        {
+          "id": 8,
+          "path": "/",
+          "created_at": "2026-05-07T16:20:45.665Z"
+        },
+        {
+          "id": 9,
+          "path": "/",
+          "created_at": "2026-05-07T16:20:46.236Z"
+        },
+        {
+          "id": 10,
+          "path": "/",
+          "created_at": "2026-05-07T16:20:47.086Z"
+        }
+      ]
+    },
+    "posts": {
+      "columns": [
+        "id",
+        "title",
+        "title_en",
+        "content",
+        "content_en",
+        "image_url",
+        "category",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Quand faire paver son entrée au Québec?",
+          "title_en": "When to pave your driveway in Quebec?",
+          "content": "La meilleure saison pour le pavage au Québec s'étend de mai à octobre. Les températures douces permettent à l'asphalte de se compacter correctement. Évitez les périodes de pluie prolongées et les fortes chaleurs. Notre équipe peut vous conseiller sur le moment idéal pour votre projet.",
+          "content_en": "The best season for paving in Quebec runs from May to October. Mild temperatures allow asphalt to compact properly. Avoid prolonged rainy periods and extreme heat. Our team can advise you on the ideal time for your project.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777444525/tapavis_tenant_pavement/build_pavement_1777444525475.png",
+          "category": "Conseils",
+          "published": 1,
+          "created_at": "2026-04-29T06:57:35.076Z",
+          "updated_at": "2026-04-29T06:57:35.076Z"
+        },
+        {
+          "id": 2,
+          "title": "L'importance du scellement",
+          "title_en": "The importance of sealcoating",
+          "content": "Le scellement protège votre asphalte des UV, du sel de déglaçage et de l'humidité. Un scellement appliqué tous les 2-3 ans peut doubler la durée de vie de votre entrée. C'est l'investissement le plus rentable en entretien d'asphalte.",
+          "content_en": "Sealcoating protects your asphalt from UV rays, de-icing salt and moisture. A sealcoat applied every 2-3 years can double the life of your driveway. It's the most cost-effective investment in asphalt maintenance.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777444519/tapavis_tenant_pavement/build_pavement_1777444519858.png",
+          "category": "Entretien",
+          "published": 1,
+          "created_at": "2026-04-29T06:57:35.083Z",
+          "updated_at": "2026-04-29T06:57:35.083Z"
+        },
+        {
+          "id": 3,
+          "title": "Pavage neuf vs resurfaçage: que choisir?",
+          "title_en": "New paving vs resurfacing: which to choose?",
+          "content": "Si votre base est solide et qu'il n'y a pas d'affaissement majeur, le resurfaçage est souvent la solution idéale. Pour une entrée de plus de 25 ans ou présentant des problèmes structurels, le pavage neuf est recommandé. Notre équipe évalue gratuitement votre situation.",
+          "content_en": "If your base is solid with no major sinking, resurfacing is often the ideal solution. For a driveway over 25 years old or with structural issues, new paving is recommended. Our team assesses your situation for free.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777444522/tapavis_tenant_pavement/build_pavement_1777444522462.png",
+          "category": "Conseils",
+          "published": 1,
+          "created_at": "2026-04-29T06:57:35.091Z",
+          "updated_at": "2026-04-29T06:57:35.091Z"
+        },
+        {
+          "id": 4,
+          "title": "Garantie 5 ans: notre engagement",
+          "title_en": "5-year warranty: our commitment",
+          "content": "Tous nos travaux de pavage neuf sont couverts par une garantie de 5 ans. Cela inclut les défauts de fabrication, les fissures prématurées et les problèmes de compactage. La preuve de notre confiance dans la qualité de notre travail.",
+          "content_en": "All our new paving work is covered by a 5-year warranty. This includes manufacturing defects, premature cracks and compaction issues. Proof of our confidence in the quality of our work.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777444528/tapavis_tenant_pavement/build_pavement_1777444528718.png",
+          "category": "À propos",
+          "published": 1,
+          "created_at": "2026-04-29T06:57:35.099Z",
+          "updated_at": "2026-04-29T06:57:35.099Z"
+        }
+      ]
+    },
+    "services": {
+      "columns": [
+        "id",
+        "name",
+        "name_en",
+        "description",
+        "description_en",
+        "image_url",
+        "price_from",
+        "featured",
+        "sort_order",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "name": "Pavage neuf",
+          "name_en": "New paving",
+          "description": "Installation complète d'une nouvelle entrée de cour en asphalte. Préparation du sol, base de pierre concassée, et pavage professionnel avec finition impeccable.",
+          "description_en": "Complete installation of a new asphalt driveway. Soil preparation, crushed stone base, and professional paving with flawless finish.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777444531/tapavis_tenant_pavement/build_pavement_1777444530920.png",
+          "price_from": "à partir de 4,50$/pi²",
+          "featured": 1,
+          "sort_order": 1,
+          "created_at": "2026-04-29T06:57:34.919Z",
+          "updated_at": "2026-04-29T06:57:34.919Z"
+        },
+        {
+          "id": 2,
+          "name": "Réparation et resurfaçage",
+          "name_en": "Repair and resurfacing",
+          "description": "Vous avez des fissures, nids-de-poule ou affaissements? Nous redonnons vie à votre entrée de cour existante avec une nouvelle couche d'asphalte.",
+          "description_en": "Cracks, potholes or sinking? We bring your existing driveway back to life with a new layer of asphalt.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777444517/tapavis_tenant_pavement/build_pavement_1777444517742.png",
+          "price_from": "à partir de 2,75$/pi²",
+          "featured": 1,
+          "sort_order": 2,
+          "created_at": "2026-04-29T06:57:34.927Z",
+          "updated_at": "2026-04-29T06:57:34.927Z"
+        },
+        {
+          "id": 3,
+          "name": "Scellement (sealcoating)",
+          "name_en": "Sealcoating",
+          "description": "Protégez votre investissement avec un scellant de qualité commerciale. Recommandé tous les 2-3 ans pour prolonger la durée de vie de votre asphalte.",
+          "description_en": "Protect your investment with commercial-grade sealant. Recommended every 2-3 years to extend asphalt lifespan.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777444519/tapavis_tenant_pavement/build_pavement_1777444519858.png",
+          "price_from": "à partir de 0,40$/pi²",
+          "featured": 1,
+          "sort_order": 3,
+          "created_at": "2026-04-29T06:57:34.936Z",
+          "updated_at": "2026-04-29T06:57:34.936Z"
+        },
+        {
+          "id": 4,
+          "name": "Excavation et drainage",
+          "name_en": "Excavation and drainage",
+          "description": "Service complet d'excavation pour les nouveaux projets et solutions de drainage pour éviter l'accumulation d'eau sur votre entrée.",
+          "description_en": "Full excavation service for new projects and drainage solutions to prevent water accumulation on your driveway.",
+          "image_url": "",
+          "price_from": "devis personnalisé",
+          "featured": 0,
+          "sort_order": 4,
+          "created_at": "2026-04-29T06:57:34.955Z",
+          "updated_at": "2026-04-29T06:57:34.955Z"
+        }
+      ]
+    },
+    "gallery": {
+      "columns": [
+        "id",
+        "title",
+        "title_en",
+        "description",
+        "description_en",
+        "image_url",
+        "location",
+        "project_year",
+        "sort_order",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 6,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Entrée résidentielle - Brossard",
+          "title_en": "Residential driveway - Brossard",
+          "description": "Pavage neuf avec bordures décoratives. 1200 pi² de surface.",
+          "description_en": "New paving with decorative borders. 1200 sq ft surface.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777444525/tapavis_tenant_pavement/build_pavement_1777444525475.png",
+          "location": "Brossard, QC",
+          "project_year": 2024,
+          "sort_order": 1,
+          "created_at": "2026-04-29T06:57:34.965Z",
+          "updated_at": "2026-04-29T06:57:34.965Z"
+        },
+        {
+          "id": 2,
+          "title": "Allée circulaire - Laval",
+          "title_en": "Circular driveway - Laval",
+          "description": "Allée circulaire avec finition haut de gamme pour résidence luxueuse.",
+          "description_en": "Circular driveway with premium finish for luxury home.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777444526/tapavis_tenant_pavement/build_pavement_1777444526211.png",
+          "location": "Laval, QC",
+          "project_year": 2024,
+          "sort_order": 2,
+          "created_at": "2026-04-29T06:57:34.987Z",
+          "updated_at": "2026-04-29T06:57:34.987Z"
+        },
+        {
+          "id": 3,
+          "title": "Entrée en pente - Saint-Bruno",
+          "title_en": "Sloped driveway - Saint-Bruno",
+          "description": "Solution de pavage avec drainage adapté pour pente prononcée.",
+          "description_en": "Paving solution with adapted drainage for steep slope.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777444522/tapavis_tenant_pavement/build_pavement_1777444522462.png",
+          "location": "Saint-Bruno, QC",
+          "project_year": 2023,
+          "sort_order": 3,
+          "created_at": "2026-04-29T06:57:34.994Z",
+          "updated_at": "2026-04-29T06:57:34.994Z"
+        },
+        {
+          "id": 4,
+          "title": "Long chemin privé - Mont-Saint-Hilaire",
+          "title_en": "Long private road - Mont-Saint-Hilaire",
+          "description": "Pavage de 80 mètres pour résidence champêtre. Travail sur 3 jours.",
+          "description_en": "80m paving for country home. 3-day project.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777444523/tapavis_tenant_pavement/build_pavement_1777444523113.png",
+          "location": "Mont-Saint-Hilaire, QC",
+          "project_year": 2023,
+          "sort_order": 4,
+          "created_at": "2026-04-29T06:57:35.004Z",
+          "updated_at": "2026-04-29T06:57:35.004Z"
+        },
+        {
+          "id": 5,
+          "title": "Resurfaçage - Longueuil",
+          "title_en": "Resurfacing - Longueuil",
+          "description": "Resurfaçage complet d'une entrée de 25 ans. Comme neuve!",
+          "description_en": "Complete resurfacing of a 25-year-old driveway. Like new!",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777444525/tapavis_tenant_pavement/build_pavement_1777444525475.png",
+          "location": "Longueuil, QC",
+          "project_year": 2024,
+          "sort_order": 5,
+          "created_at": "2026-04-29T06:57:35.015Z",
+          "updated_at": "2026-04-29T06:57:35.015Z"
+        },
+        {
+          "id": 6,
+          "title": "Scellement - Boucherville",
+          "title_en": "Sealcoating - Boucherville",
+          "description": "Application de scellant après 2 ans pour protéger l'investissement.",
+          "description_en": "Sealant application after 2 years to protect the investment.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777444526/tapavis_tenant_pavement/build_pavement_1777444526211.png",
+          "location": "Boucherville, QC",
+          "project_year": 2024,
+          "sort_order": 6,
+          "created_at": "2026-04-29T06:57:35.023Z",
+          "updated_at": "2026-04-29T06:57:35.023Z"
+        }
+      ]
+    },
+    "testimonials": {
+      "columns": [
+        "id",
+        "author",
+        "location",
+        "content",
+        "content_en",
+        "rating",
+        "image_url",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "author": "Marie-Claude Tremblay",
+          "location": "Brossard",
+          "content": "Service exceptionnel du début à la fin. L'équipe était professionnelle, ponctuelle et le résultat dépasse mes attentes. Notre entrée a l'air neuve et le prix était très juste.",
+          "content_en": "Exceptional service from start to finish. The team was professional, punctual and the result exceeds my expectations. Our driveway looks new and the price was very fair.",
+          "rating": 5,
+          "image_url": "",
+          "published": 1,
+          "created_at": "2026-04-29T06:57:35.031Z",
+          "updated_at": "2026-04-29T06:57:35.031Z"
+        },
+        {
+          "id": 2,
+          "author": "Jean-François Bouchard",
+          "location": "Laval",
+          "content": "Pavage Depot a fait notre entrée circulaire l'été dernier. Deux ans plus tard, aucune fissure, aucun problème. Je les recommande sans hésitation à mes voisins.",
+          "content_en": "Pavage Depot did our circular driveway last summer. Two years later, no cracks, no problems. I recommend them without hesitation to my neighbors.",
+          "rating": 5,
+          "image_url": "",
+          "published": 1,
+          "created_at": "2026-04-29T06:57:35.040Z",
+          "updated_at": "2026-04-29T06:57:35.040Z"
+        },
+        {
+          "id": 3,
+          "author": "Sylvie Pelletier",
+          "location": "Saint-Bruno",
+          "content": "Soumission claire, prix honnête, travail soigné. Ils ont géré le drainage de notre entrée en pente comme des pros. Très satisfaite!",
+          "content_en": "Clear quote, honest price, careful work. They handled the drainage on our sloped driveway like pros. Very satisfied!",
+          "rating": 5,
+          "image_url": "",
+          "published": 1,
+          "created_at": "2026-04-29T06:57:35.057Z",
+          "updated_at": "2026-04-29T06:57:35.057Z"
+        },
+        {
+          "id": 4,
+          "author": "Robert Gagnon",
+          "location": "Boucherville",
+          "content": "Cinquième fois que je fais affaire avec eux pour différents projets. Toujours impeccable. Une vraie entreprise de confiance.",
+          "content_en": "Fifth time I've worked with them on different projects. Always impeccable. A truly trustworthy company.",
+          "rating": 5,
+          "image_url": "",
+          "published": 1,
+          "created_at": "2026-04-29T06:57:35.068Z",
+          "updated_at": "2026-04-29T06:57:35.068Z"
+        }
+      ]
+    },
+    "quote_requests": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "phone",
+        "address",
+        "project_type",
+        "surface_size",
+        "timeline",
+        "message",
+        "status",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "bookings": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "phone",
+        "address",
+        "preferred_date",
+        "preferred_time",
+        "project_type",
+        "notes",
+        "status",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "contact_messages": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "phone",
+        "message",
+        "status",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    }
+  }
+}

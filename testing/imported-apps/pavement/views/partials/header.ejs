@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#8b5cf6">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="description" content="<%= t.meta_desc %>">
+<title><%= (typeof pageTitle !== 'undefined' && pageTitle) ? pageTitle + ' | ' : '' %><%= settings.business_name || t.site_name %></title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="icon-192.png">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{colors:{brand:'#8b5cf6','brand-dark':'#7c3aed','brand-light':'#a78bfa',ink:'#0f172a'},fontFamily:{display:['Inter','system-ui','sans-serif']}}}}</script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>:root{--brand:#8b5cf6;--brand-dark:#7c3aed;--ink:#0f172a}body{font-family:'Inter',system-ui,sans-serif}.btn-brand{background:#8b5cf6;color:#fff}.btn-brand:hover{background:#7c3aed}.text-brand{color:#8b5cf6}.bg-brand{background:#8b5cf6}.border-brand{border-color:#8b5cf6}.bg-ink{background:#0f172a}.text-ink{color:#0f172a}.gradient-hero{background:linear-gradient(135deg,rgba(139,92,246,.85),rgba(15,23,42,.65))}.fade-in{animation:fadeIn .6s ease-out}@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid #8b5cf6;outline-offset:2px}input:focus,select:focus,textarea:focus{border-color:#8b5cf6;box-shadow:0 0 0 3px rgba(139,92,246,.15);outline:none}</style>
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased">
+<header class="bg-white shadow-sm sticky top-0 z-40 border-b border-slate-200">
+  <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
+      <a href="." class="flex items-center gap-2">
+        <% var logoUrl = (settings._p_nav_logo_url) ? settings._p_nav_logo_url : (typeof appIconUrl !== 'undefined' ? appIconUrl : ''); %>
+        <% if (logoUrl) { %><img src="<%= logoUrl %>" alt="Logo" class="h-9 w-9 rounded-lg object-cover"><% } else { %><div class="h-9 w-9 rounded-lg flex items-center justify-center font-black" style="background-color:#8b5cf6;color:#fff">P</div><% } %>
+        <span class="font-black text-lg text-ink hidden sm:block"><%= settings.business_name || t.site_name %></span>
+      </a>
+      <div class="hidden lg:flex items-center gap-1">
+        <a href="." class="px-3 py-2 text-sm font-medium" style="<%= page==='home'?'color:#8b5cf6':'color:#334155' %>"><%= t.nav_home %></a>
+        <a href="services" class="px-3 py-2 text-sm font-medium" style="<%= page==='services'?'color:#8b5cf6':'color:#334155' %>"><%= t.nav_services %></a>
+        <a href="gallery" class="px-3 py-2 text-sm font-medium" style="<%= page==='gallery'?'color:#8b5cf6':'color:#334155' %>"><%= t.nav_gallery %></a>
+        <a href="about" class="px-3 py-2 text-sm font-medium" style="<%= page==='about'?'color:#8b5cf6':'color:#334155' %>"><%= t.nav_about %></a>
+        <a href="blog" class="px-3 py-2 text-sm font-medium" style="<%= page==='blog'?'color:#8b5cf6':'color:#334155' %>">Blog</a>
+        <a href="contact" class="px-3 py-2 text-sm font-medium" style="<%= page==='contact'?'color:#8b5cf6':'color:#334155' %>"><%= t.nav_contact %></a>
+        <a href="booking" class="ml-2 px-3 py-2 text-sm font-medium border rounded-lg transition" style="border-color:#8b5cf6;color:#8b5cf6"><%= t.nav_booking %></a>
+        <a href="quote" class="px-4 py-2 text-sm font-semibold rounded-lg transition" style="background-color:#8b5cf6;color:#fff"><%= t.btn_quote %></a>
+        <div class="ml-3 flex items-center gap-1 text-xs border-l border-slate-200 pl-3">
+          <a href="?lang=fr" class="px-2 py-1 rounded" style="<%= lang==='fr'?'background-color:#8b5cf6;color:#fff':'color:#64748b' %>">FR</a>
+          <a href="?lang=en" class="px-2 py-1 rounded" style="<%= lang==='en'?'background-color:#8b5cf6;color:#fff':'color:#64748b' %>">EN</a>
+        </div>
+      </div>
+      <button id="mobile-toggle" aria-label="Menu" class="lg:hidden p-2 text-slate-700">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+    </div>
+    <div id="mobile-menu" class="hidden lg:hidden pb-4">
+      <a href="." class="block px-3 py-2 text-base font-medium text-slate-700"><%= t.nav_home %></a>
+      <a href="services" class="block px-3 py-2 text-base font-medium text-slate-700"><%= t.nav_services %></a>
+      <a href="gallery" class="block px-3 py-2 text-base font-medium text-slate-700"><%= t.nav_gallery %></a>
+      <a href="about" class="block px-3 py-2 text-base font-medium text-slate-700"><%= t.nav_about %></a>
+      <a href="blog" class="block px-3 py-2 text-base font-medium text-slate-700">Blog</a>
+      <a href="contact" class="block px-3 py-2 text-base font-medium text-slate-700"><%= t.nav_contact %></a>
+      <a href="booking" class="block px-3 py-2 text-base font-medium" style="color:#8b5cf6"><%= t.nav_booking %></a>
+      <a href="quote" class="block mx-3 mt-2 px-4 py-2 text-center text-sm font-semibold rounded-lg" style="background-color:#8b5cf6;color:#fff"><%= t.btn_quote %></a>
+      <div class="flex items-center gap-2 px-3 pt-3 mt-2 border-t border-slate-200">
+        <a href="?lang=fr" class="px-3 py-1 rounded text-sm" style="<%= lang==='fr'?'background-color:#8b5cf6;color:#fff':'color:#64748b;border:1px solid #cbd5e1' %>">FR</a>
+        <a href="?lang=en" class="px-3 py-1 rounded text-sm" style="<%= lang==='en'?'background-color:#8b5cf6;color:#fff':'color:#64748b;border:1px solid #cbd5e1' %>">EN</a>
+      </div>
+    </div>
+  </nav>
+</header>
+<script>
+(function(){var b=document.getElementById('mobile-toggle');var m=document.getElementById('mobile-menu');if(b&&m){b.addEventListener('click',function(){m.classList.toggle('hidden')});}})();
+</script>

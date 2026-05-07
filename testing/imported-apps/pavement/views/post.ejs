@@ -1,0 +1,18 @@
+<%- include('partials/header') %>
+<% var pTitle = lang==='en'&&post.title_en?post.title_en:post.title; var pContent = lang==='en'&&post.content_en?post.content_en:post.content; %>
+<article class="bg-white">
+  <% if (post.image_url) { %><div class="h-72 md:h-96 overflow-hidden"><img src="<%= post.image_url %>" alt="<%= pTitle %>" class="w-full h-full object-cover"></div><% } %>
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <a href="blog" class="text-sm hover:underline" style="color:#8b5cf6">← <%= t.back %></a>
+    <% if (post.category) { %><span class="inline-block ml-2 text-xs font-semibold uppercase" style="color:#8b5cf6"><%= post.category %></span><% } %>
+    <h1 class="text-3xl md:text-5xl font-black text-ink mt-3"><%= pTitle %></h1>
+    <div class="text-sm text-slate-500 mt-2"><%= t.published_on %> <%= formatDate(post.created_at, lang) %></div>
+    <div class="prose prose-slate max-w-none mt-8 text-slate-700 leading-relaxed whitespace-pre-line text-lg"><%= pContent %></div>
+    <div class="mt-12 p-6 rounded-2xl border" style="background:rgba(139,92,246,0.08);border-color:rgba(139,92,246,0.25)">
+      <h3 class="font-bold text-ink"><%= t.home_cta_title %></h3>
+      <p class="text-sm text-slate-700 mt-1"><%= t.home_cta_subtitle %></p>
+      <a href="quote" class="inline-block mt-4 px-5 py-2.5 rounded-lg text-sm font-semibold" style="background-color:#8b5cf6;color:#fff"><%= t.btn_quote %></a>
+    </div>
+  </div>
+</article>
+<%- include('partials/footer') %>

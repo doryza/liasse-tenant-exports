@@ -1,0 +1,31 @@
+<%- include('partials/admin-header') %>
+<div class="admin-content">
+  <div class="admin-header"><div><h1>📝 Articles</h1><p class="text-muted">Gérez vos articles de blog et conseils</p></div><button class="btn btn-primary" onclick="openModal()">+ Nouvel article</button></div>
+  <div class="toolbar"><input id="q" placeholder="🔍 Rechercher un article…" oninput="render()"><select id="f" onchange="render()"><option value="">Tous les statuts</option><option value="1">Publié</option><option value="0">Brouillon</option></select></div>
+  <div id="list" class="data-list"></div>
+</div>
+<div id="modal" class="modal-overlay hidden"><div class="modal"><div class="modal-header"><h2 id="mtitle">Nouvel article</h2><button onclick="closeModal()" aria-label="Fermer">×</button></div><form id="form" class="modal-body">
+  <input type="hidden" name="id">
+  <label>Titre (FR) *<input name="title" required placeholder="ex. Quand faire paver son entrée?"></label>
+  <label>Titre (EN)<input name="title_en" placeholder="e.g. When to pave your driveway?"></label>
+  <label>Contenu (FR)<textarea name="content" rows="6" placeholder="Écrivez votre article ici…"></textarea></label>
+  <label>Contenu (EN)<textarea name="content_en" rows="6"></textarea></label>
+  <label>Image (URL)<input name="image_url" placeholder="https://…"></label>
+  <label>Catégorie<input name="category" placeholder="Conseils, Entretien, À propos…"></label>
+  <label class="checkbox"><input type="checkbox" name="published" value="1" checked> Publié</label>
+  <div class="modal-actions"><button type="button" onclick="closeModal()">Annuler</button><button type="submit" class="btn-primary">Sauvegarder</button></div>
+</form></div></div>
+<div id="toast" class="toast hidden"></div>
+<script>
+var items = <%- JSON.stringify(items) %>;
+function toast(m,e){var t=document.getElementById('toast');t.textContent=m;t.className='toast'+(e?' err':'');setTimeout(function(){t.classList.add('hidden');},2200);}
+function render(){var q=(document.getElementById('q').value||'').toLowerCase();var f=document.getElementById('f').value;var filtered=items.filter(function(p){if(q&&!(p.title||'').toLowerCase().includes(q)&&!(p.content||'').toLowerCase().includes(q))return false;if(f!==''&&String(p.published||0)!==f)return false;return true;});var h='';if(!filtered.length){h='<div class="empty"><div class="empty-icon">📝</div><h3>Aucun article</h3><p>'+(items.length?'Aucun résultat avec ces filtres.':'Cliquez sur "Nouvel article" pour commencer.')+'</p></div>';}else{filtered.forEach(function(p){h+='<div class="data-item">'+(p.image_url?'<img src="'+p.image_url+'" alt="">':'<div class="placeholder">📝</div>')+'<div class="data-info"><h3>'+escapeHtml(p.title||'')+'</h3><p>'+escapeHtml((p.content||'').substring(0,140))+'</p><div class="meta">'+(p.category?'<span class="chip">'+escapeHtml(p.category)+'</span>':'')+(p.published?' <span class="chip chip-ok">✅ Publié</span>':' <span class="chip chip-warn">📝 Brouillon</span>')+'</div></div><div class="data-actions"><button onclick=\'edit('+JSON.stringify(p)+')\'>✏️ Modifier</button><button class="danger" onclick="del('+p.id+')">🗑️</button></div></div>';});}document.getElementById('list').innerHTML=h;}
+function escapeHtml(s){return String(s||'').replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function openModal(){document.getElementById('mtitle').textContent='Nouvel article';document.getElementById('form').reset();document.querySelector('[name=published]').checked=true;document.querySelector('[name=id]').value='';document.getElementById('modal').classList.remove('hidden');}
+function closeModal(){document.getElementById('modal').classList.add('hidden');}
+function edit(p){document.getElementById('mtitle').textContent='Modifier l\'article';var f=document.getElementById('form');f.reset();for(var k in p){var el=f.querySelector('[name='+k+']');if(el){if(el.type==='checkbox')el.checked=!!p[k];else el.value=p[k]||'';}}document.getElementById('modal').classList.remove('hidden');}
+async function del(id){if(!confirm('Supprimer cet article? Cette action est irréversible.'))return;var r=await fetch('api/admin/posts/'+id,{method:'DELETE'});if(r.ok){items=items.filter(function(s){return s.id!==id});render();toast('Article supprimé');}else{toast('Erreur de suppression',true);}}
+document.getElementById('form').addEventListener('submit',async function(e){e.preventDefault();var fd=new FormData(e.target);var d={};fd.forEach(function(v,k){d[k]=v;});d.published=e.target.published.checked?1:0;var id=d.id;delete d.id;var url='api/admin/posts'+(id?'/'+id:'');var r=await fetch(url,{method:id?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});var j=await r.json();if(r.ok){if(id){items=items.map(function(x){return x.id==id?j.item:x;});}else{items.unshift(j.item);}closeModal();render();toast(id?'Article mis à jour':'Article créé');}else{toast('Erreur: '+(j.error||''),true);}});
+render();
+</script>
+<%- include('partials/admin-footer') %>

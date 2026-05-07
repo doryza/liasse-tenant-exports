@@ -1,0 +1,44 @@
+<footer class="bg-ink text-slate-300 mt-20">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid md:grid-cols-4 gap-8">
+    <div>
+      <div class="flex items-center gap-2 mb-3">
+        <div class="h-9 w-9 rounded-lg flex items-center justify-center font-black" style="background-color:#8b5cf6;color:#fff">P</div>
+        <span class="font-black text-lg" style="color:#fff"><%= settings.business_name || t.site_name %></span>
+      </div>
+      <p class="text-sm text-slate-400"><%= lang==='fr' ? settings.tagline_fr : settings.tagline_en %></p>
+      <p class="text-xs text-slate-500 mt-3"><%= lang==='fr' ? settings.guarantee_text_fr : settings.guarantee_text_en %></p>
+    </div>
+    <div>
+      <h3 class="font-semibold mb-3" style="color:#fff"><%= t.footer_quick %></h3>
+      <ul class="space-y-2 text-sm">
+        <li><a href="services" class="hover:underline" style="color:#cbd5e1"><%= t.nav_services %></a></li>
+        <li><a href="gallery" class="hover:underline" style="color:#cbd5e1"><%= t.nav_gallery %></a></li>
+        <li><a href="about" class="hover:underline" style="color:#cbd5e1"><%= t.nav_about %></a></li>
+        <li><a href="blog" class="hover:underline" style="color:#cbd5e1">Blog</a></li>
+      </ul>
+    </div>
+    <div>
+      <h3 class="font-semibold mb-3" style="color:#fff"><%= t.footer_contact %></h3>
+      <ul class="space-y-2 text-sm">
+        <% if (settings.contact_phone) { %><li><a href="tel:<%= settings.contact_phone %>" style="color:#cbd5e1">📞 <%= settings.contact_phone %></a></li><% } %>
+        <% if (settings.contact_email) { %><li><a href="mailto:<%= settings.contact_email %>" style="color:#cbd5e1">✉ <%= settings.contact_email %></a></li><% } %>
+        <% if (settings.business_address) { %><li style="color:#cbd5e1">📍 <%= settings.business_address %></li><% } %>
+        <li><a href="quote" class="font-semibold" style="color:#a78bfa"><%= t.btn_quote %> →</a></li>
+      </ul>
+    </div>
+    <div>
+      <h3 class="font-semibold mb-3" style="color:#fff"><%= t.service_area %></h3>
+      <p class="text-sm text-slate-400"><%= lang==='fr' ? settings.service_area_fr : settings.service_area_en %></p>
+      <button data-push-btn class="mt-4 px-4 py-2 text-xs font-semibold border border-slate-600 rounded-lg" style="color:#cbd5e1">🔔 <%= lang==='fr'?'Activer les notifications':'Enable notifications' %></button>
+    </div>
+  </div>
+  <div class="border-t border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 text-xs text-slate-500 flex flex-col md:flex-row justify-between gap-2">
+      <span><%= lang==='fr' ? settings.footer_text_fr : settings.footer_text_en %></span>
+      <span><a href="admin" style="color:#94a3b8">Admin</a></span>
+    </div>
+  </div>
+</footer>
+<script>try{if(window.TenantSDK){TenantSDK.ui.showInstallBanner();setTimeout(function(){try{TenantSDK.ui.showPushPrompt({title:'<%- lang==="fr"?"Restez informé":"Stay informed" %>',description:'<%- lang==="fr"?"Conseils, offres et nouveautés sur le pavage":"Tips, offers and paving news" %>'});}catch(e){}},9000);}}catch(e){}</script>
+</body>
+</html>

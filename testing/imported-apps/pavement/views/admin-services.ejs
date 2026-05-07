@@ -1,0 +1,34 @@
+<%- include('partials/admin-header') %>
+<div class="admin-content">
+  <div class="admin-header"><div><h1>🔧 Services</h1><p class="text-muted">Gérez vos offres et tarifs de pavage</p></div><button class="btn btn-primary" onclick="openModal()">+ Nouveau service</button></div>
+  <div class="toolbar"><input id="q" placeholder="🔍 Rechercher un service…" oninput="render()"><select id="f" onchange="render()"><option value="">Tous</option><option value="1">⭐ Vedette</option><option value="0">Standard</option></select></div>
+  <div id="list" class="data-list"></div>
+</div>
+<div id="modal" class="modal-overlay hidden"><div class="modal"><div class="modal-header"><h2 id="mtitle">Nouveau service</h2><button onclick="closeModal()" aria-label="Fermer">×</button></div><form id="form" class="modal-body">
+  <input type="hidden" name="id">
+  <label>Nom (FR) *<input name="name" required placeholder="ex. Pavage neuf"></label>
+  <label>Nom (EN)<input name="name_en" placeholder="e.g. New paving"></label>
+  <label>Description (FR)<textarea name="description" rows="3" placeholder="Décrivez le service…"></textarea></label>
+  <label>Description (EN)<textarea name="description_en" rows="3"></textarea></label>
+  <label>URL de l'image<input name="image_url" placeholder="https://…"></label>
+  <div id="preview" class="image-preview hidden"></div>
+  <div class="row-2"><label>Prix de départ<input name="price_from" placeholder="à partir de 4,50$/pi²"><span class="hint">Texte libre affiché aux clients</span></label><label>Ordre d'affichage<input name="sort_order" type="number" value="0"></label></div>
+  <label class="checkbox"><input type="checkbox" name="featured" value="1"> ⭐ Afficher en vedette sur la page d'accueil</label>
+  <div class="modal-actions"><button type="button" onclick="closeModal()">Annuler</button><button type="submit" class="btn-primary">Sauvegarder</button></div>
+</form></div></div>
+<div id="toast" class="toast hidden"></div>
+<script>
+var items = <%- JSON.stringify(items) %>;
+function toast(m,e){var t=document.getElementById('toast');t.textContent=m;t.className='toast'+(e?' err':'');setTimeout(function(){t.classList.add('hidden');},2200);}
+function render(){var q=(document.getElementById('q').value||'').toLowerCase();var f=document.getElementById('f').value;var filtered=items.filter(function(s){if(q&&!(s.name||'').toLowerCase().includes(q)&&!(s.description||'').toLowerCase().includes(q))return false;if(f!==''&&String(s.featured||0)!==f)return false;return true;});var h='';if(!filtered.length){h='<div class="empty"><div class="empty-icon">🔧</div><h3>Aucun service</h3><p>'+(items.length?'Aucun résultat.':'Cliquez sur "Nouveau service" pour ajouter votre première offre.')+'</p></div>';}else{filtered.forEach(function(s){h+='<div class="data-item">'+(s.image_url?'<img src="'+s.image_url+'" alt="">':'<div class="placeholder">🔧</div>')+'<div class="data-info"><h3>'+escapeHtml(s.name||'')+(s.featured?' <span class="chip chip-star">⭐ Vedette</span>':'')+'</h3><p>'+escapeHtml((s.description||'').substring(0,140))+'</p><div class="meta">'+(s.price_from?'<span class="chip chip-price">'+escapeHtml(s.price_from)+'</span>':'<span class="chip">Sans tarif</span>')+(s.name_en?' <span class="chip">EN ✓</span>':'')+'</div></div><div class="data-actions"><button onclick=\'edit('+JSON.stringify(s)+')\'>✏️ Modifier</button><button class="danger" onclick="del('+s.id+')">🗑️</button></div></div>';});}document.getElementById('list').innerHTML=h;}
+function escapeHtml(s){return String(s||'').replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function openModal(){document.getElementById('mtitle').textContent='Nouveau service';document.getElementById('form').reset();document.querySelector('[name=id]').value='';document.getElementById('preview').classList.add('hidden');document.getElementById('modal').classList.remove('hidden');}
+function closeModal(){document.getElementById('modal').classList.add('hidden');}
+function edit(s){document.getElementById('mtitle').textContent='Modifier le service';var f=document.getElementById('form');f.reset();for(var k in s){var el=f.querySelector('[name='+k+']');if(el){if(el.type==='checkbox')el.checked=!!s[k];else el.value=s[k]||'';}}showPreview(s.image_url);document.getElementById('modal').classList.remove('hidden');}
+function showPreview(url){var p=document.getElementById('preview');if(url){p.innerHTML='<img src="'+url+'" alt="">';p.classList.remove('hidden');}else{p.classList.add('hidden');}}
+document.querySelector('[name=image_url]').addEventListener('input',function(e){showPreview(e.target.value);});
+async function del(id){if(!confirm('Supprimer ce service? Cette action est irréversible.'))return;var r=await fetch('api/admin/services/'+id,{method:'DELETE'});if(r.ok){items=items.filter(function(s){return s.id!==id});render();toast('Service supprimé');}else{toast('Erreur',true);}}
+document.getElementById('form').addEventListener('submit',async function(e){e.preventDefault();var fd=new FormData(e.target);var d={};fd.forEach(function(v,k){d[k]=v;});d.featured=e.target.featured.checked?1:0;var id=d.id;delete d.id;var url='api/admin/services'+(id?'/'+id:'');var r=await fetch(url,{method:id?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});var j=await r.json();if(r.ok){if(id){items=items.map(function(x){return x.id==id?j.item:x;});}else{items.unshift(j.item);}closeModal();render();toast(id?'Service mis à jour':'Service créé');}else{toast('Erreur: '+(j.error||''),true);}});
+render();
+</script>
+<%- include('partials/admin-footer') %>

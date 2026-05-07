@@ -1,0 +1,30 @@
+<%- include('partials/admin-header') %>
+<div class="admin-content">
+  <div class="admin-header"><div><h1>⭐ Témoignages</h1><p class="text-muted">Avis de vos clients satisfaits</p></div><button class="btn btn-primary" onclick="openModal()">+ Nouveau témoignage</button></div>
+  <div class="toolbar"><input id="q" placeholder="🔍 Rechercher (auteur, lieu)…" oninput="render()"><select id="f" onchange="render()"><option value="">Tous</option><option value="1">Publié</option><option value="0">Masqué</option></select></div>
+  <div id="list" class="data-list"></div>
+</div>
+<div id="modal" class="modal-overlay hidden"><div class="modal"><div class="modal-header"><h2 id="mtitle">Nouveau témoignage</h2><button onclick="closeModal()" aria-label="Fermer">×</button></div><form id="form" class="modal-body">
+  <input type="hidden" name="id">
+  <label>Auteur *<input name="author" required placeholder="ex. Marie Tremblay"></label>
+  <label>Lieu<input name="location" placeholder="Brossard, QC"></label>
+  <label>Témoignage (FR) *<textarea name="content" rows="4" required placeholder="Ce que le client a dit…"></textarea></label>
+  <label>Témoignage (EN)<textarea name="content_en" rows="4"></textarea></label>
+  <div class="row-2"><label>Note (1-5 étoiles)<input name="rating" type="number" min="1" max="5" value="5"></label><label>Photo (URL)<input name="image_url" placeholder="https://…"></label></div>
+  <label class="checkbox"><input type="checkbox" name="published" value="1" checked> Publié sur le site</label>
+  <div class="modal-actions"><button type="button" onclick="closeModal()">Annuler</button><button type="submit" class="btn-primary">Sauvegarder</button></div>
+</form></div></div>
+<div id="toast" class="toast hidden"></div>
+<script>
+var items = <%- JSON.stringify(items) %>;
+function toast(m,e){var t=document.getElementById('toast');t.textContent=m;t.className='toast'+(e?' err':'');setTimeout(function(){t.classList.add('hidden');},2200);}
+function render(){var q=(document.getElementById('q').value||'').toLowerCase();var f=document.getElementById('f').value;var filtered=items.filter(function(p){if(q&&!((p.author||'')+' '+(p.location||'')+' '+(p.content||'')).toLowerCase().includes(q))return false;if(f!==''&&String(p.published||0)!==f)return false;return true;});var h='';if(!filtered.length){h='<div class="empty"><div class="empty-icon">⭐</div><h3>Aucun témoignage</h3><p>'+(items.length?'Aucun résultat.':'Cliquez sur "Nouveau témoignage" pour ajouter un avis.')+'</p></div>';}else{filtered.forEach(function(p){var stars='';for(var i=0;i<(p.rating||5);i++)stars+='★';for(var j=(p.rating||5);j<5;j++)stars+='☆';h+='<div class="data-item"><div class="placeholder">⭐</div><div class="data-info"><h3>'+escapeHtml(p.author||'')+' <span style="color:#8b5cf6;font-size:14px">'+stars+'</span>'+(p.published?'':' <span class="chip chip-warn">Masqué</span>')+'</h3><p>«&nbsp;'+escapeHtml((p.content||'').substring(0,180))+'&nbsp;»</p><div class="meta">'+(p.location?'📍 '+escapeHtml(p.location):'')+(p.content_en?' <span class="chip">EN ✓</span>':'')+'</div></div><div class="data-actions"><button onclick=\'edit('+JSON.stringify(p)+')\'>✏️ Modifier</button><button class="danger" onclick="del('+p.id+')">🗑️</button></div></div>';});}document.getElementById('list').innerHTML=h;}
+function escapeHtml(s){return String(s||'').replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function openModal(){document.getElementById('mtitle').textContent='Nouveau témoignage';document.getElementById('form').reset();document.querySelector('[name=published]').checked=true;document.querySelector('[name=id]').value='';document.querySelector('[name=rating]').value=5;document.getElementById('modal').classList.remove('hidden');}
+function closeModal(){document.getElementById('modal').classList.add('hidden');}
+function edit(p){document.getElementById('mtitle').textContent='Modifier le témoignage';var f=document.getElementById('form');f.reset();for(var k in p){var el=f.querySelector('[name='+k+']');if(el){if(el.type==='checkbox')el.checked=!!p[k];else el.value=p[k]||'';}}document.getElementById('modal').classList.remove('hidden');}
+async function del(id){if(!confirm('Supprimer ce témoignage?'))return;var r=await fetch('api/admin/testimonials/'+id,{method:'DELETE'});if(r.ok){items=items.filter(function(s){return s.id!==id});render();toast('Témoignage supprimé');}}
+document.getElementById('form').addEventListener('submit',async function(e){e.preventDefault();var fd=new FormData(e.target);var d={};fd.forEach(function(v,k){d[k]=v;});d.published=e.target.published.checked?1:0;d.rating=parseInt(d.rating)||5;var id=d.id;delete d.id;var url='api/admin/testimonials'+(id?'/'+id:'');var r=await fetch(url,{method:id?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});var j=await r.json();if(r.ok){if(id){items=items.map(function(x){return x.id==id?j.item:x;});}else{items.unshift(j.item);}closeModal();render();toast(id?'Témoignage mis à jour':'Témoignage ajouté');}else{toast('Erreur: '+(j.error||''),true);}});
+render();
+</script>
+<%- include('partials/admin-footer') %>

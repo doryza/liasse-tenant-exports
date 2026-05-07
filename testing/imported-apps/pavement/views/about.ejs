@@ -1,0 +1,62 @@
+<%- include('partials/header') %>
+<section class="bg-ink text-white py-16">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <h1 class="text-4xl md:text-5xl font-black"><%= t.about_title %></h1>
+  </div>
+</section>
+<section class="py-16 bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-12 items-center">
+    <div>
+      <h2 class="text-3xl font-black text-ink"><%= lang==='fr' ? settings.about_title_fr : settings.about_title_en %></h2>
+      <p class="mt-5 text-slate-700 leading-relaxed"><%= lang==='fr' ? settings.about_text_fr : settings.about_text_en %></p>
+      <div class="mt-8 grid grid-cols-3 gap-4">
+        <div class="text-center p-4 bg-slate-50 rounded-xl"><div class="text-3xl font-black" style="color:#8b5cf6">20+</div><div class="text-xs text-slate-600 mt-1"><%= lang==='fr'?'Années':'Years' %></div></div>
+        <div class="text-center p-4 bg-slate-50 rounded-xl"><div class="text-3xl font-black" style="color:#8b5cf6">2000+</div><div class="text-xs text-slate-600 mt-1"><%= lang==='fr'?'Projets':'Projects' %></div></div>
+        <div class="text-center p-4 bg-slate-50 rounded-xl"><div class="text-3xl font-black" style="color:#8b5cf6">5★</div><div class="text-xs text-slate-600 mt-1"><%= lang==='fr'?'Garantie':'Warranty' %></div></div>
+      </div>
+    </div>
+    <div>
+      <img src="https://res.cloudinary.com/duhp69meg/image/upload/v1777444520/tapavis_tenant_pavement/build_pavement_1777444520373.png" alt="About" class="w-full h-96 object-cover rounded-2xl shadow-lg">
+    </div>
+  </div>
+</section>
+<section class="py-16 bg-slate-100">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <h2 class="text-3xl md:text-4xl font-black text-ink text-center mb-12"><%= t.about_features_title %></h2>
+    <div class="grid md:grid-cols-4 gap-6">
+      <div class="bg-white p-6 rounded-2xl text-center shadow-sm"><div class="w-14 h-14 mx-auto rounded-xl flex items-center justify-center text-2xl mb-4" style="background:rgba(139,92,246,0.1);color:#8b5cf6">⏱️</div><h3 class="font-bold text-ink"><%= t.feat_1_t %></h3><p class="text-sm text-slate-600 mt-2"><%= t.feat_1_d %></p></div>
+      <div class="bg-white p-6 rounded-2xl text-center shadow-sm"><div class="w-14 h-14 mx-auto rounded-xl flex items-center justify-center text-2xl mb-4" style="background:rgba(139,92,246,0.1);color:#8b5cf6">🛡️</div><h3 class="font-bold text-ink"><%= t.feat_2_t %></h3><p class="text-sm text-slate-600 mt-2"><%= t.feat_2_d %></p></div>
+      <div class="bg-white p-6 rounded-2xl text-center shadow-sm"><div class="w-14 h-14 mx-auto rounded-xl flex items-center justify-center text-2xl mb-4" style="background:rgba(139,92,246,0.1);color:#8b5cf6">📋</div><h3 class="font-bold text-ink"><%= t.feat_3_t %></h3><p class="text-sm text-slate-600 mt-2"><%= t.feat_3_d %></p></div>
+      <div class="bg-white p-6 rounded-2xl text-center shadow-sm"><div class="w-14 h-14 mx-auto rounded-xl flex items-center justify-center text-2xl mb-4" style="background:rgba(139,92,246,0.1);color:#8b5cf6">⚡</div><h3 class="font-bold text-ink"><%= t.feat_4_t %></h3><p class="text-sm text-slate-600 mt-2"><%= t.feat_4_d %></p></div>
+    </div>
+  </div>
+</section>
+<% if (testimonials && testimonials.length > 0) { %>
+<section class="py-16 bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <h2 class="text-3xl md:text-4xl font-black text-ink text-center mb-12"><%= t.home_testimonials_title %></h2>
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <% testimonials.forEach(function(tm){ var c = lang==='en'&&tm.content_en?tm.content_en:tm.content; %>
+        <div class="bg-slate-50 rounded-2xl p-6">
+          <div class="mb-3" style="color:#8b5cf6"><% for(var i=0;i<(tm.rating||5);i++){ %>★<% } %></div>
+          <p class="text-slate-700 italic">&laquo; <%= c %> &raquo;</p>
+          <div class="mt-4 pt-4 border-t border-slate-200">
+            <p class="font-semibold text-ink"><%= tm.author %></p>
+            <% if (tm.location) { %><p class="text-sm text-slate-500"><%= tm.location %></p><% } %>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+  </div>
+</section>
+<% } %>
+<section class="py-20 text-white" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed)">
+  <div class="max-w-4xl mx-auto px-4 text-center">
+    <h2 class="text-3xl md:text-4xl font-black"><%= t.home_cta_title %></h2>
+    <div class="mt-8 flex flex-wrap justify-center gap-3">
+      <a href="quote" class="px-8 py-3 rounded-lg font-semibold bg-white" style="color:#8b5cf6"><%= t.btn_quote %></a>
+      <a href="booking" class="px-8 py-3 rounded-lg font-semibold bg-white/15 backdrop-blur border border-white/30" style="color:#fff"><%= t.btn_book %></a>
+    </div>
+  </div>
+</section>
+<%- include('partials/footer') %>

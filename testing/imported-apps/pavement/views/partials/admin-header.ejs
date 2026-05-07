@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin · <%= settings.business_name || 'Pavage Depot' %></title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body>
+<button id="sidebar-toggle" class="sidebar-toggle" aria-label="Ouvrir le menu">☰</button>
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-logo">P</div>
+    <div><div class="brand-name"><%= settings.business_name || 'Pavage Depot' %></div><div class="brand-sub">Administration</div></div>
+  </div>
+  <nav class="sidebar-nav">
+    <a href="admin" class="<%= adminPage==='dashboard'?'active':'' %>"><span>📊</span> Tableau de bord</a>
+    <div class="nav-divider">Contenu</div>
+    <a href="admin/services" class="<%= adminPage==='services'?'active':'' %>"><span>🔧</span> Services</a>
+    <a href="admin/gallery" class="<%= adminPage==='gallery'?'active':'' %>"><span>🖼️</span> Galerie</a>
+    <a href="admin/posts" class="<%= adminPage==='posts'?'active':'' %>"><span>📝</span> Articles</a>
+    <a href="admin/testimonials" class="<%= adminPage==='testimonials'?'active':'' %>"><span>⭐</span> Témoignages</a>
+    <div class="nav-divider">Soumissions</div>
+    <a href="admin/quotes" class="<%= adminPage==='quotes'?'active':'' %>"><span>📋</span> Demandes</a>
+    <a href="admin/bookings" class="<%= adminPage==='bookings'?'active':'' %>"><span>📅</span> Consultations</a>
+    <a href="admin/messages" class="<%= adminPage==='messages'?'active':'' %>"><span>✉️</span> Messages</a>
+    <div class="nav-divider"></div>
+    <a href="."><span>↗</span> Voir le site</a>
+    <a href="admin/logout"><span>🚪</span> Déconnexion</a>
+  </nav>
+</aside>
+<main class="main">
+<script>(function(){var b=document.getElementById('sidebar-toggle');if(b){b.addEventListener('click',function(){document.querySelector('.sidebar').classList.toggle('open');});}var links=document.querySelectorAll('.sidebar-nav a');links.forEach(function(l){l.addEventListener('click',function(){if(window.innerWidth<900)document.querySelector('.sidebar').classList.remove('open');});});})();</script>

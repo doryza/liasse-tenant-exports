@@ -1,0 +1,75 @@
+<%- include('partials/admin-header') %>
+<div class="admin-content">
+  <div class="admin-header">
+    <div>
+      <h1>Tableau de bord</h1>
+      <p class="text-muted">Bienvenue dans le panneau d'administration de <%= settings.business_name || 'Pavage Depot' %></p>
+    </div>
+    <div class="admin-header-actions">
+      <a href="." class="btn btn-ghost" target="_blank">↗ Voir le site</a>
+      <a href="admin/quotes" class="btn btn-primary">📋 Demandes (<%= stats.newQuotes %>)</a>
+    </div>
+  </div>
+
+  <% if (stats.newQuotes > 0 || stats.pendingBookings > 0 || stats.newMessages > 0) { %>
+  <div class="alert-banner">
+    <span class="alert-icon">🔔</span>
+    <div>
+      <strong>Activité en attente:</strong>
+      <% if (stats.newQuotes > 0) { %><a href="admin/quotes"><%= stats.newQuotes %> nouvelle<%= stats.newQuotes>1?'s':'' %> demande<%= stats.newQuotes>1?'s':'' %> de soumission</a><% } %>
+      <% if (stats.pendingBookings > 0) { %><% if (stats.newQuotes > 0) { %> · <% } %><a href="admin/bookings"><%= stats.pendingBookings %> consultation<%= stats.pendingBookings>1?'s':'' %> en attente</a><% } %>
+      <% if (stats.newMessages > 0) { %><% if (stats.newQuotes > 0 || stats.pendingBookings > 0) { %> · <% } %><a href="admin/messages"><%= stats.newMessages %> message<%= stats.newMessages>1?'s':'' %> non lu<%= stats.newMessages>1?'s':'' %></a><% } %>
+    </div>
+  </div>
+  <% } %>
+
+  <div class="stat-grid">
+    <a href="admin/quotes" class="stat-card stat-link"><div class="stat-icon">📋</div><div class="stat-body"><div class="stat-label">Soumissions</div><div class="stat-value"><%= stats.quoteCount %></div><div class="stat-sub"><%= stats.newQuotes %> nouvelle<%= stats.newQuotes!==1?'s':'' %></div></div></a>
+    <a href="admin/bookings" class="stat-card stat-link"><div class="stat-icon">📅</div><div class="stat-body"><div class="stat-label">Consultations</div><div class="stat-value"><%= stats.bookingCount %></div><div class="stat-sub"><%= stats.pendingBookings %> en attente</div></div></a>
+    <div class="stat-card"><div class="stat-icon">👁️</div><div class="stat-body"><div class="stat-label">Visites</div><div class="stat-value"><%= stats.totalVisits %></div><div class="stat-sub"><%= stats.recentVisits %> ces 7 jours</div></div></div>
+    <div class="stat-card"><div class="stat-icon">🔔</div><div class="stat-body"><div class="stat-label">Abonnés notifs</div><div class="stat-value"><%= stats.pushCount %></div><div class="stat-sub"><%= stats.userCount %> utilisateur<%= stats.userCount!==1?'s':'' %></div></div></div>
+  </div>
+
+  <div class="admin-grid">
+    <div class="admin-section">
+      <div class="section-header"><h2>📋 Demandes récentes</h2><a href="admin/quotes" class="btn-link">Tout voir →</a></div>
+      <% if (recentQuotes && recentQuotes.length > 0) { %>
+        <table class="admin-table">
+          <thead><tr><th>Nom</th><th>Type</th><th>Date</th><th>Statut</th></tr></thead>
+          <tbody>
+          <% recentQuotes.forEach(function(q){ %>
+            <tr><td><strong><%= q.name %></strong><% if (q.email) { %><br><span class="row-sub"><%= q.email %></span><% } %></td><td><%= q.project_type || '-' %></td><td><%= formatDate(q.created_at,'fr') %></td><td><span class="badge badge-<%= q.status %>"><%= q.status %></span></td></tr>
+          <% }); %>
+          </tbody>
+        </table>
+      <% } else { %><div class="empty-inline"><span>📭</span> Aucune demande pour le moment.</div><% } %>
+    </div>
+    <div class="admin-section">
+      <div class="section-header"><h2>📅 Consultations récentes</h2><a href="admin/bookings" class="btn-link">Tout voir →</a></div>
+      <% if (recentBookings && recentBookings.length > 0) { %>
+        <table class="admin-table">
+          <thead><tr><th>Nom</th><th>Date prévue</th><th>Statut</th></tr></thead>
+          <tbody>
+          <% recentBookings.forEach(function(b){ %>
+            <tr><td><strong><%= b.name %></strong><% if (b.email) { %><br><span class="row-sub"><%= b.email %></span><% } %></td><td><%= b.preferred_date ? formatDate(b.preferred_date,'fr') : '-' %><% if (b.preferred_time) { %><br><span class="row-sub"><%= b.preferred_time %></span><% } %></td><td><span class="badge badge-<%= b.status %>"><%= b.status %></span></td></tr>
+          <% }); %>
+          </tbody>
+        </table>
+      <% } else { %><div class="empty-inline"><span>📭</span> Aucune consultation pour le moment.</div><% } %>
+    </div>
+  </div>
+
+  <div class="admin-section">
+    <div class="section-header"><h2>🗂️ Modules de gestion</h2></div>
+    <div class="module-grid">
+      <a href="admin/services" class="module-card"><div class="module-icon">🔧</div><div class="module-body"><h3>Services</h3><p>Gérer les services offerts (<%= stats.servicesCount %>)</p></div></a>
+      <a href="admin/gallery" class="module-card"><div class="module-icon">🖼️</div><div class="module-body"><h3>Galerie</h3><p>Photos de réalisations (<%= stats.galleryCount %>)</p></div></a>
+      <a href="admin/posts" class="module-card"><div class="module-icon">📝</div><div class="module-body"><h3>Articles</h3><p>Blog et conseils</p></div></a>
+      <a href="admin/testimonials" class="module-card"><div class="module-icon">⭐</div><div class="module-body"><h3>Témoignages</h3><p>Avis de clients</p></div></a>
+      <a href="admin/quotes" class="module-card"><div class="module-icon">📋</div><div class="module-body"><h3>Soumissions</h3><p>Demandes de prix</p></div></a>
+      <a href="admin/bookings" class="module-card"><div class="module-icon">📅</div><div class="module-body"><h3>Consultations</h3><p>Rendez-vous bookés</p></div></a>
+      <a href="admin/messages" class="module-card"><div class="module-icon">✉️</div><div class="module-body"><h3>Messages</h3><p>Formulaire de contact</p></div></a>
+    </div>
+  </div>
+</div>
+<%- include('partials/admin-footer') %>
