@@ -10,23 +10,23 @@ module.exports = function(services) {
       services_title: 'Nos services', services_subtitle: 'Des solutions complètes pour tous vos projets de pavage',
       featured_projects: 'Projets vedettes', featured_projects_sub: 'Découvrez nos réalisations récentes',
       testimonials_title: 'Ce que nos clients disent', testimonials_sub: 'La satisfaction de nos clients est notre meilleure publicité',
-      blog_title: 'Conseils et actualités', blog_sub: 'Conseils d'experts pour vos projets',
+      blog_title: 'Conseils et actualités', blog_sub: 'Conseils d\'experts pour vos projets',
       cta_btn: 'Obtenir mon devis gratuit',
       footer_tagline: 'Excellence en pavage résidentiel depuis plus de 20 ans.', footer_quick: 'Liens rapides', footer_contact: 'Contact', footer_follow: 'Suivez-nous', footer_rights: 'Tous droits réservés',
       gallery_title: 'Notre galerie', gallery_subtitle: 'Une sélection de nos plus belles réalisations à travers le Québec', filter_all: 'Tous', filter_driveway: 'Entrées', filter_patio: 'Patios', filter_walkway: 'Allées', filter_asphalt: 'Asphaltage', no_projects: 'Aucun projet pour cette catégorie.',
-      about_title: 'À propos de nous', why_us: 'Pourquoi nous choisir', why_us_sub: 'L'expertise et l'engagement qui font la différence',
+      about_title: 'À propos de nous', why_us: 'Pourquoi nous choisir', why_us_sub: 'L\'expertise et l\'engagement qui font la différence',
       feature1_title: 'Qualité supérieure', feature1_text: 'Matériaux haut de gamme et techniques éprouvées pour un résultat durable.',
-      feature2_title: 'Garantie 10 ans', feature2_text: 'Protection complète sur tous nos travaux. Tranquillité d'esprit assurée.',
+      feature2_title: 'Garantie 10 ans', feature2_text: 'Protection complète sur tous nos travaux. Tranquillité d\'esprit assurée.',
       feature3_title: 'Équipe certifiée', feature3_text: 'Professionnels formés, assurés et passionnés par leur métier.',
       feature4_title: 'Service local', feature4_text: 'Une entreprise québécoise qui comprend votre réalité climatique.',
       contact_title: 'Demande de soumission', contact_subtitle: 'Remplissez le formulaire ci-dessous et obtenez votre devis gratuit en moins de 48h.',
       form_name: 'Nom complet', form_email: 'Courriel', form_phone: 'Téléphone', form_address: 'Adresse du projet', form_project_type: 'Type de projet', form_surface: 'Surface estimée (m²)', form_message: 'Détails du projet',
       form_select_type: 'Sélectionnez un type', type_driveway: 'Entrée', type_patio: 'Patio', type_walkway: 'Allée', type_asphalt: 'Asphaltage', type_repair: 'Réparation', type_other: 'Autre',
       form_success: 'Merci ! Votre demande a été envoyée. Nous vous contacterons sous 48h.', form_error: 'Une erreur est survenue. Veuillez réessayer ou nous appeler directement.',
-      contact_info: 'Nos coordonnées', email_label: 'Courriel', phone_label: 'Téléphone', address_label: 'Adresse', hours_label: 'Heures d'ouverture',
+      contact_info: 'Nos coordonnées', email_label: 'Courriel', phone_label: 'Téléphone', address_label: 'Adresse', hours_label: 'Heures d\'ouverture',
       project_loc: 'Localisation', project_date: 'Complété en', project_cat: 'Catégorie',
       empty_default: 'Contenu à venir.',
-      blog_read: 'Lire l'article', blog_back: '← Retour au blogue', published: 'Publié le',
+      blog_read: 'Lire l\'article', blog_back: '← Retour au blogue', published: 'Publié le',
       service_price: 'Prix indicatif', service_request: 'Demander pour ce service'
     },
     en: {
@@ -233,9 +233,9 @@ module.exports = function(services) {
       modules: [
         {
           key: 'posts', label: 'Articles de blogue', icon: 'edit', fields: [
-            { name: 'title', type: 'text', required: true, maxLength: 200, label: 'Titre', description: 'Titre de l'article affiché sur la page de blogue', placeholder: 'ex. Comment choisir le bon pavage' },
-            { name: 'content', type: 'textarea', label: 'Contenu', description: 'Contenu de l'article (texte long)', placeholder: 'Rédigez votre article ici...' },
-            { name: 'image_url', type: 'image', label: 'Image vedette', description: 'Image affichée en haut de l'article. Recommandé: 1200×630px' },
+            { name: 'title', type: 'text', required: true, maxLength: 200, label: 'Titre', description: 'Titre de l\'article affiché sur la page de blogue', placeholder: 'ex. Comment choisir le bon pavage' },
+            { name: 'content', type: 'textarea', label: 'Contenu', description: 'Contenu de l\'article (texte long)', placeholder: 'Rédigez votre article ici...' },
+            { name: 'image_url', type: 'image', label: 'Image vedette', description: 'Image affichée en haut de l\'article. Recommandé: 1200×630px' },
             { name: 'category', type: 'text', label: 'Catégorie', description: 'Catégorie pour grouper les articles', placeholder: 'ex. Conseils, Tendances' },
             { name: 'published', type: 'boolean', default: true, label: 'Publié', description: 'Décochez pour sauvegarder en brouillon (caché des visiteurs)' }
           ]
@@ -248,7 +248,7 @@ module.exports = function(services) {
             { name: 'category', type: 'select', label: 'Catégorie', options: ['driveway', 'patio', 'walkway', 'asphalt', 'other'], description: 'Catégorie pour le filtrage de la galerie' },
             { name: 'location', type: 'text', label: 'Ville', description: 'Ville où le projet a été réalisé', placeholder: 'ex. Montréal, QC' },
             { name: 'completed_date', type: 'date', label: 'Date de fin', description: 'Date de fin du projet' },
-            { name: 'featured', type: 'boolean', default: true, label: 'Vedette', description: 'Cochez pour afficher sur la page d'accueil' }
+            { name: 'featured', type: 'boolean', default: true, label: 'Vedette', description: 'Cochez pour afficher sur la page d\'accueil' }
           ]
         },
         {
@@ -257,8 +257,8 @@ module.exports = function(services) {
             { name: 'description', type: 'textarea', label: 'Description', description: 'Description détaillée du service' },
             { name: 'image_url', type: 'image', label: 'Image', description: 'Image illustrant le service. Recommandé: 800×600px' },
             { name: 'price_range', type: 'text', label: 'Prix indicatif', description: 'Fourchette de prix indicative (impacte les pages publiques)', placeholder: 'ex. 85$ - 150$ / m²' },
-            { name: 'sort_order', type: 'number', label: 'Ordre d'affichage', min: 0, step: 1, description: 'Ordre d'affichage (plus petit = en premier)', placeholder: '1' },
-            { name: 'featured', type: 'boolean', default: true, label: 'Vedette', description: 'Cochez pour afficher sur la page d'accueil' }
+            { name: 'sort_order', type: 'number', label: 'Ordre d\'affichage', min: 0, step: 1, description: 'Ordre d\'affichage (plus petit = en premier)', placeholder: '1' },
+            { name: 'featured', type: 'boolean', default: true, label: 'Vedette', description: 'Cochez pour afficher sur la page d\'accueil' }
           ]
         },
         {
@@ -267,7 +267,7 @@ module.exports = function(services) {
             { name: 'location', type: 'text', label: 'Ville', description: 'Ville du client', placeholder: 'ex. Laval, QC' },
             { name: 'content', type: 'textarea', required: true, label: 'Témoignage', description: 'Texte du témoignage' },
             { name: 'rating', type: 'number', label: 'Note', min: 1, max: 5, step: 1, description: 'Note de 1 à 5 étoiles', placeholder: '5' },
-            { name: 'featured', type: 'boolean', default: true, label: 'Vedette', description: 'Cochez pour afficher sur la page d'accueil' }
+            { name: 'featured', type: 'boolean', default: true, label: 'Vedette', description: 'Cochez pour afficher sur la page d\'accueil' }
           ]
         },
         {
@@ -372,12 +372,12 @@ module.exports = function(services) {
     const settings = {};
     for (const r of rows) settings[r.key] = r.value;
     const groups = [
-      { title: 'Identité de l'entreprise', fields: [
-        { key: 'business_name', label: 'Nom de l'entreprise', type: 'text' },
+      { title: 'Identité de l\'entreprise', fields: [
+        { key: 'business_name', label: 'Nom de l\'entreprise', type: 'text' },
         { key: 'tagline_fr', label: 'Slogan (FR)', type: 'text' },
         { key: 'tagline_en', label: 'Slogan (EN)', type: 'text' }
       ]},
-      { title: 'Section d'accueil (Hero)', fields: [
+      { title: 'Section d\'accueil (Hero)', fields: [
         { key: 'hero_title_fr', label: 'Titre principal (FR)', type: 'text' },
         { key: 'hero_title_en', label: 'Titre principal (EN)', type: 'text' },
         { key: 'hero_subtitle_fr', label: 'Sous-titre (FR)', type: 'textarea' },
@@ -400,7 +400,7 @@ module.exports = function(services) {
         { key: 'stat_satisfaction_fr', label: 'Satisfaction (FR)', type: 'text' },
         { key: 'stat_satisfaction_en', label: 'Satisfaction (EN)', type: 'text' }
       ]},
-      { title: 'Bandeau Appel à l'action (CTA)', fields: [
+      { title: 'Bandeau Appel à l\'action (CTA)', fields: [
         { key: 'cta_title_fr', label: 'Titre CTA (FR)', type: 'text' },
         { key: 'cta_title_en', label: 'Titre CTA (EN)', type: 'text' },
         { key: 'cta_subtitle_fr', label: 'Sous-titre CTA (FR)', type: 'text' },
@@ -410,8 +410,8 @@ module.exports = function(services) {
         { key: 'contact_phone', label: 'Téléphone', type: 'text' },
         { key: 'contact_email', label: 'Courriel', type: 'email' },
         { key: 'business_address', label: 'Adresse', type: 'text' },
-        { key: 'hours_fr', label: 'Heures d'ouverture (FR)', type: 'text' },
-        { key: 'hours_en', label: 'Heures d'ouverture (EN)', type: 'text' }
+        { key: 'hours_fr', label: 'Heures d\'ouverture (FR)', type: 'text' },
+        { key: 'hours_en', label: 'Heures d\'ouverture (EN)', type: 'text' }
       ]},
       { title: 'Réseaux sociaux', fields: [
         { key: 'social_facebook', label: 'Facebook (URL)', type: 'url' },
@@ -466,19 +466,19 @@ router.get('/admin/testimonials', async function(req, res) {
 
   // === voice-module-v1 START ===
   router.get('/voice-assistant', services.auth.optionalAuth, async function(req, res) {
-    // Reuse the tenant's existing prepareRender helper if it's defined in
-    // this routes.js — that gives the voice EJS the same locals every other
-    // tenant page receives (lang, t, settings, formatDate, ...) so that
-    // partials/header and partials/footer render correctly. Falls back to
-    // a plain locals object when the tenant's routes.js doesn't expose it,
-    // which is fine because the voice EJS reads settings/business via
-    // typeof guards.
+    // Pass the same locals every other tenant page receives — lang,
+    // settings, t, formatDate — so partials/header and partials/footer
+    // (which reference <%= lang %>, <%= settings %>, <%= t %>) render
+    // cleanly under EJS strict-mode with(locals). The voice EJS reads
+    // settings/business via typeof guards but the partials don't, so
+    // these MUST be provided here.
     try {
-      var ctx = {};
-      if (typeof prepareRender === 'function') {
-        try { ctx = await prepareRender(req, res, { pageTitle: 'Voice Assistant' }); } catch (_) { ctx = {}; }
-      }
-      res.render('voice-assistant', Object.assign(ctx, {
+      const { lang, settings, t } = await baseRender(req, res);
+      res.render('voice-assistant', {
+        lang: lang,
+        settings: settings,
+        t: t,
+        formatDate: formatDate,
         business: (services.config && services.config.business) || services.business || {},
         tenantUser: req.tenantUser || null,
         // Tenants whose partials/header references per-route locals (page,
@@ -489,7 +489,7 @@ router.get('/admin/testimonials', async function(req, res) {
         page: 'voice-assistant',
         pageTitle: 'Voice Assistant',
         active: 'voice-assistant',
-      }));
+      });
     } catch (err) {
       console.error('[voice-assistant render]', err);
       res.status(500).send('Voice page render failed: ' + err.message);
