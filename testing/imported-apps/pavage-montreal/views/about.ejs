@@ -1,0 +1,68 @@
+<%- include('partials/header') %>
+<section class="relative">
+  <img src="<%= settings._p_about_image_url || 'https://placehold.co/1600x500/111112/ffffff/png?text=A+propos' %>" alt="À propos" class="w-full h-[400px] md:h-[500px] object-cover">
+  <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent flex items-center">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-white w-full">
+      <div class="max-w-2xl">
+        <div class="inline-block px-3 py-1 bg-accent text-white text-xs font-bold uppercase tracking-wider rounded mb-5" style="background-color:#ff6a13;color:#fff">Notre histoire</div>
+        <h1 class="text-4xl md:text-5xl font-extrabold mb-4">À propos de nous</h1>
+        <p class="text-lg text-gray-200"><%= settings.pillar || 'Service, Qualité… Professionnalisme' %></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-16 bg-white">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 prose prose-lg">
+    <h2 class="text-3xl font-extrabold text-brand mb-6">Une entreprise familiale depuis 1991</h2>
+    <p class="text-gray-700 leading-relaxed text-lg mb-6"><%= settings.about_text || '' %></p>
+    <div class="grid md:grid-cols-3 gap-6 my-10">
+      <div class="bg-gray-50 p-6 rounded-lg border-l-4 border-accent" style="border-left-color:#ff6a13">
+        <div class="text-3xl font-extrabold text-brand mb-1">30+</div>
+        <div class="text-sm uppercase tracking-wide text-gray-500 font-bold">Années d'expérience</div>
+      </div>
+      <div class="bg-gray-50 p-6 rounded-lg border-l-4 border-accent" style="border-left-color:#ff6a13">
+        <div class="text-3xl font-extrabold text-brand mb-1">12</div>
+        <div class="text-sm uppercase tracking-wide text-gray-500 font-bold">Services offerts</div>
+      </div>
+      <div class="bg-gray-50 p-6 rounded-lg border-l-4 border-accent" style="border-left-color:#ff6a13">
+        <div class="text-3xl font-extrabold text-brand mb-1">1000+</div>
+        <div class="text-sm uppercase tracking-wide text-gray-500 font-bold">Projets réalisés</div>
+      </div>
+    </div>
+    <h3 class="text-2xl font-extrabold text-brand mt-10 mb-4">Nos valeurs fondamentales</h3>
+    <ul class="space-y-4">
+      <li class="flex gap-4"><div class="flex-shrink-0 w-10 h-10 bg-accent rounded-full flex items-center justify-center text-white font-bold" style="background-color:#ff6a13;color:#fff">1</div><div><strong class="text-brand">Qualité sans compromis</strong> — Nous utilisons les meilleurs matériaux et techniques pour chaque projet.</div></li>
+      <li class="flex gap-4"><div class="flex-shrink-0 w-10 h-10 bg-accent rounded-full flex items-center justify-center text-white font-bold" style="background-color:#ff6a13;color:#fff">2</div><div><strong class="text-brand">Service personnalisé</strong> — Chaque client est unique. Nous écoutons et adaptons notre approche.</div></li>
+      <li class="flex gap-4"><div class="flex-shrink-0 w-10 h-10 bg-accent rounded-full flex items-center justify-center text-white font-bold" style="background-color:#ff6a13;color:#fff">3</div><div><strong class="text-brand">Professionnalisme reconnu</strong> — Permis, assurances, équipe formée — tout est en règle.</div></li>
+      <li class="flex gap-4"><div class="flex-shrink-0 w-10 h-10 bg-accent rounded-full flex items-center justify-center text-white font-bold" style="background-color:#ff6a13;color:#fff">4</div><div><strong class="text-brand">Engagement familial</strong> — Trois décennies au service de notre communauté.</div></li>
+    </ul>
+  </div>
+</section>
+
+<% if (typeof testimonials !== 'undefined' && testimonials && testimonials.length > 0) { %>
+<section class="py-16 bg-gray-50">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+    <h2 class="text-3xl font-extrabold text-brand text-center mb-10">Témoignages clients</h2>
+    <div class="grid md:grid-cols-2 gap-6">
+      <% testimonials.forEach(function(t) { %>
+        <div class="bg-white p-6 rounded-lg shadow">
+          <div class="flex gap-0.5 text-accent mb-3" style="color:#ff6a13"><% for(var i=0;i<(t.rating||5);i++){ %>★<% } %></div>
+          <p class="text-gray-700 italic leading-relaxed mb-4">« <%= t.content %> »</p>
+          <div class="font-bold text-brand"><%= t.author %></div>
+          <% if (t.role) { %><div class="text-sm text-gray-500"><%= t.role %></div><% } %>
+        </div>
+      <% }); %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<section class="py-16 bg-brand text-white" style="background-color:#111112">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <h2 class="text-3xl md:text-4xl font-extrabold mb-4">Prêt à démarrer votre projet ?</h2>
+    <p class="text-gray-300 text-lg mb-8">Demandez votre soumission gratuite — réponse rapide garantie.</p>
+    <a href="<%= (typeof mountPath !== 'undefined' ? mountPath : '') %>/soumission" class="inline-block px-8 py-4 bg-accent text-white font-bold uppercase tracking-wide rounded hover:bg-accent-dark transition" style="background-color:#ff6a13;color:#fff">Soumission gratuite</a>
+  </div>
+</section>
+<%- include('partials/footer') %>

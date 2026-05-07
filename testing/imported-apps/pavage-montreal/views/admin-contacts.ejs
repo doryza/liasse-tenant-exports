@@ -1,0 +1,157 @@
+<%- include('partials/admin-header', { pageTitle: 'Soumissions', currentPage: 'contacts' }) %>
+<div class="admin-content">
+  <div class="admin-head"><div><h1 class="admin-h1">Soumissions reçues</h1><p class="admin-sub">Demandes de soumission gratuite des clients. Assignez-les à un commercial pour suivi.</p></div></div>
+  <div id="list" class="sub-list"></div>
+</div>
+
+<style>
+  .assign-row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:10px; padding-top:10px; border-top:1px dashed #e5e7eb; }
+  .assign-label { font-size:12px; color:#6b7280; font-weight:600; }
+  .assign-select { padding:6px 10px; border:1px solid #d1d5db; border-radius:5px; font-size:12px; background:#fff; min-width:220px; }
+  .assign-select:focus { outline:none; border-color:#ff6a13; box-shadow:0 0 0 2px rgba(255,106,19,.15); }
+  .assigned-name { font-size:12px; color:#16a34a; font-weight:700; }
+  .assigned-name.is-pending { color:#92400e; }
+  .assigned-name.is-revoked { color:#991b1b; }
+  .assign-empty-cta { font-size:12px; color:#ff6a13; text-decoration:none; font-weight:700; }
+  .assign-empty-cta:hover { text-decoration:underline; }
+</style>
+
+<script>
+var items = [];
+var members = [];      // active reps (any state) — feed dropdown
+var allMembers = [];   // ALL reps (incl. revoked) — used to label assigned soumissions whose rep was later revoked
+
+async function load() {
+  try {
+    var [contactsRes, membersRes] = await Promise.all([
+      fetch('api/admin/contacts'),
+      fetch('api/admin/sales-team'),
+    ]);
+    var c = await contactsRes.json();
+    var m = await membersRes.json();
+    items = c.contacts || [];
+    allMembers = m.members || [];
+    // Dropdown shows all ACTIVE reps (incl. those still en attente —
+    // admin can pre-assign before activation; the rep will see the
+    // soumission as soon as their next /mon-compte loads). Revoked
+    // reps are filtered out here, but assigned soumissions referencing
+    // a revoked rep still render the rep's name (via allMembers
+    // lookup) so admin can see and reassign.
+    members = allMembers.filter(function (mm) { return !!mm.active; });
+    render();
+  } catch (e) {
+    document.getElementById('list').innerHTML = '<p class="empty">Erreur.</p>';
+  }
+}
+
+function memberLookup(id) {
+  return allMembers.find(function (mm) { return Number(mm.id) === Number(id); }) || null;
+}
+
+function escAttr(s) { return String(s == null ? '' : s).replace(/"/g, '&quot;'); }
+
+function buildAssignBlock(c) {
+  if (members.length === 0) {
+    return ''
+      + '<div class="assign-row">'
+      + '<span class="assign-label">Aucun commercial actif.</span>'
+      + '<a href="admin/sales-team" class="assign-empty-cta">+ Inviter un commercial →</a>'
+      + '</div>';
+  }
+  var options = ['<option value="">Non assigné</option>'].concat(members.map(function (mm) {
+    var sel = (Number(c.assigned_to_sales_id) === Number(mm.id)) ? ' selected' : '';
+    var pendingTag = mm.invite_accepted_at ? '' : ' · en attente';
+    return '<option value="' + mm.id + '"' + sel + '>' + (mm.full_name || '#' + mm.id) + (mm.title ? ' — ' + mm.title : '') + pendingTag + '</option>';
+  }));
+
+  // Assigned-to label — covers three cases:
+  //   • Assigned to an active+activated rep → green
+  //   • Assigned to an active but pending rep → amber, marked "en attente"
+  //   • Assigned to a revoked rep → red, suggest reassigning
+  var assignedTxt = '';
+  if (c.assigned_to_sales_id) {
+    var assignee = memberLookup(c.assigned_to_sales_id);
+    if (assignee) {
+      var cls = !assignee.active ? 'is-revoked' : (assignee.invite_accepted_at ? '' : 'is-pending');
+      var suffix = !assignee.active ? ' (révoqué — réassignez)' : (assignee.invite_accepted_at ? '' : ' (en attente d\'activation)');
+      assignedTxt = '<span class="assigned-name ' + cls + '">→ ' + assignee.full_name + suffix + '</span>';
+    } else {
+      assignedTxt = '<span class="assigned-name is-revoked">→ #' + c.assigned_to_sales_id + ' (introuvable)</span>';
+    }
+  }
+  return ''
+    + '<div class="assign-row">'
+    + '<span class="assign-label">Assigné à :</span>'
+    + '<select class="assign-select" onchange="assign(' + c.id + ', this.value, this);">' + options.join('') + '</select>'
+    + assignedTxt
+    + '</div>';
+}
+
+function render() {
+  var l = document.getElementById('list');
+  if (!items.length) {
+    l.innerHTML = '<p class="empty">Aucune soumission reçue.</p>';
+    return;
+  }
+  l.innerHTML = items.map(function (c) {
+    var d = new Date(c.created_at).toLocaleString('fr-CA');
+    return ''
+      + '<div class="sub-card ' + (c.status === 'new' ? 'new' : '') + '">'
+      + '<div class="sub-head">'
+      + '<div><strong>' + (c.name || 'Anonyme') + '</strong>' + (c.status === 'new' ? ' <span class="badge">Nouveau</span>' : '') + '</div>'
+      + '<div class="sub-date">' + d + '</div>'
+      + '</div>'
+      + '<div class="sub-meta">' + (c.email ? '<a href="mailto:' + c.email + '">' + c.email + '</a>' : '') + (c.phone ? ' · <a href="tel:' + c.phone + '">' + c.phone + '</a>' : '') + '</div>'
+      + (c.address ? '<div class="sub-meta">📍 ' + c.address + '</div>' : '')
+      + '<div class="sub-msg">' + (c.message || '').replace(/\n/g, '<br>') + '</div>'
+      + buildAssignBlock(c)
+      + '<div class="sub-actions">'
+      + (c.status === 'new'
+          ? '<button onclick="mark(' + c.id + ',\'reviewed\')" class="btn-ghost">Marquer comme lu</button>'
+          : '<span class="sub-status">✓ Lu</span>')
+      + '<button onclick="del(' + c.id + ')" class="btn-danger">Supprimer</button>'
+      + '</div>'
+      + '</div>';
+  }).join('');
+}
+
+async function mark(id, s) {
+  await fetch('api/admin/contacts/' + id, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status: s }),
+  });
+  load();
+}
+
+async function del(id) {
+  if (!confirm('Supprimer ?')) return;
+  await fetch('api/admin/contacts/' + id, { method: 'DELETE' });
+  load();
+}
+
+async function assign(submissionId, salesMemberId, selectEl) {
+  var prev = selectEl.dataset.prev || '';
+  selectEl.disabled = true;
+  try {
+    var body = { sales_member_id: salesMemberId === '' ? null : Number(salesMemberId) };
+    var r = await fetch('api/admin/contacts/' + submissionId + '/assign', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    var d = await r.json();
+    if (!r.ok || d.error) throw new Error(d.error || 'Échec');
+    selectEl.dataset.prev = salesMemberId;
+    load();  // refresh the row's "→ Name" label
+  } catch (e) {
+    alert(e.message || 'Erreur');
+    selectEl.value = prev;
+  } finally {
+    selectEl.disabled = false;
+  }
+}
+
+load();
+</script>
+<%- include('partials/admin-footer') %>

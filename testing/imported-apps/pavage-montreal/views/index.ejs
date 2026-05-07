@@ -1,0 +1,246 @@
+<%- include('partials/header') %>
+
+<style>
+  /* Voice CTA strip — pulsing mic link */
+  .vs-mic-link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 5rem;
+    height: 5rem;
+    border-radius: 9999px;
+    background: linear-gradient(135deg, #ff8a3d, #ff6a13, #d6520a);
+    color: #fff;
+    text-decoration: none;
+    box-shadow: 0 10px 28px -6px rgba(255,106,19,0.6);
+    transition: transform 180ms ease;
+    z-index: 0;
+    flex-shrink: 0;
+  }
+  .vs-mic-link:hover { transform: scale(1.07); }
+  .vs-mic-link::before, .vs-mic-link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    background: rgba(255,106,19,0.35);
+    z-index: -1;
+    animation: vs-pulse 2.4s ease-in-out infinite;
+  }
+  .vs-mic-link::after { animation-delay: 1.2s; }
+  @keyframes vs-pulse {
+    0%   { transform: scale(1);   opacity: 0.5; }
+    100% { transform: scale(1.9); opacity: 0;   }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .vs-mic-link::before, .vs-mic-link::after { animation: none; }
+  }
+</style>
+
+<!-- ===== HERO ===== -->
+<section class="relative">
+  <img src="<%= (settings._p_hero_image_url) ? settings._p_hero_image_url : 'https://placehold.co/1600x700/111112/ffffff/png?text=Pavage' %>" alt="Chantier de pavage" class="w-full h-[480px] md:h-[600px] object-cover">
+  <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/30 flex items-center">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-white w-full">
+      <div class="max-w-2xl">
+        <div class="inline-block px-3 py-1 bg-accent text-white text-xs font-bold uppercase tracking-wider rounded mb-5" style="background-color:#ff6a13;color:#fff">Depuis 1991</div>
+        <h1 class="text-4xl md:text-6xl font-extrabold leading-tight mb-5"><%= settings.hero_title || '12 Services offerts' %></h1>
+        <p class="text-lg md:text-xl text-gray-200 mb-8 leading-relaxed"><%= settings.tagline || 'Nous réparons, nettoyons et scellons tout… Nous sommes les spécialistes du pavage depuis 1991.' %></p>
+        <div class="flex flex-wrap gap-3 mb-5">
+          <a href="<%= (typeof mountPath !== 'undefined' ? mountPath : '') %>/soumission" class="px-7 py-3.5 bg-accent text-white font-bold uppercase tracking-wide rounded hover:bg-accent-dark transition" style="background-color:#ff6a13;color:#fff">Soumission gratuite</a>
+          <a href="nos-projets" class="px-7 py-3.5 bg-white/10 backdrop-blur text-white font-bold uppercase tracking-wide rounded hover:bg-white/20 transition border border-white/20">Voir nos projets</a>
+        </div>
+        <a href="<%= (typeof mountPath !== 'undefined' ? mountPath : '') %>/soumission" class="inline-flex items-center gap-2 text-white/80 hover:text-white text-sm font-semibold transition">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+          🎙 Ou obtenez votre soumission par la voix en 2 minutes →
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== VOICE CTA STRIP (NEW) ===== -->
+<section class="py-10 border-b border-orange-100" style="background:linear-gradient(135deg,#fff7ed 0%,#ffffff 55%,#fff7ed 100%)">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-col sm:flex-row items-center gap-6 sm:gap-8">
+      <!-- Animated mic button -->
+      <a href="<%= (typeof mountPath !== 'undefined' ? mountPath : '') %>/soumission" class="vs-mic-link" aria-label="Soumission par la voix">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+          <line x1="12" x2="12" y1="19" y2="22"/>
+        </svg>
+      </a>
+      <!-- Copy -->
+      <div class="flex-1 text-center sm:text-left">
+        <p class="text-xs font-bold uppercase tracking-wider mb-1" style="color:#ff6a13">⚡ Nouveau — Soumission par la voix</p>
+        <p class="font-extrabold text-brand text-lg md:text-xl">Décrivez votre projet en 2 minutes — notre IA prépare tout.</p>
+        <p class="text-gray-600 text-sm mt-1 hidden sm:block">Sans formulaire, sans attente : parlez à notre assistant, révisez le résumé, envoyez. 100&nbsp;% gratuit.</p>
+      </div>
+      <!-- CTA button -->
+      <a href="<%= (typeof mountPath !== 'undefined' ? mountPath : '') %>/soumission" class="flex-shrink-0 inline-flex items-center gap-2 px-6 py-3 bg-accent text-white font-bold uppercase tracking-wide rounded-lg hover:bg-accent-dark transition whitespace-nowrap" style="background-color:#ff6a13;color:#fff">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+        Commencer
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SERVICES ===== -->
+<section class="py-16 bg-gray-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-12">
+      <div class="text-accent font-bold uppercase tracking-widest text-sm mb-2" style="color:#ff6a13">Nos spécialités</div>
+      <h2 class="text-3xl md:text-4xl font-extrabold text-brand">Services de pavage professionnels</h2>
+      <p class="mt-4 text-gray-600 max-w-2xl mx-auto">Asphalte et pavé-uni pour résidentiel, commercial, industriel et municipal.</p>
+    </div>
+    <% if (typeof services !== 'undefined' && services && services.length > 0) { %>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <% services.forEach(function(s) { %>
+          <div class="bg-white rounded-lg overflow-hidden shadow hover:shadow-xl transition-all duration-300 group">
+            <a href="services/<%= s.slug %>" class="block relative overflow-hidden aspect-[4/3]">
+              <img src="<%= s.image_url || 'https://placehold.co/600x450/e5e7eb/6b7280/png?text=Service' %>" alt="<%= s.title %>" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+              <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+              <div class="absolute bottom-3 left-3 right-3">
+                <div class="text-accent text-xs font-bold uppercase tracking-wider" style="color:#ff8a3d"><%= s.title %></div>
+              </div>
+            </a>
+            <div class="p-5">
+              <h3 class="font-bold text-brand mb-1 leading-tight"><%= s.subtitle %></h3>
+              <p class="text-sm text-gray-600 line-clamp-3 mb-3"><%= s.short_desc %></p>
+              <a href="services/<%= s.slug %>" class="inline-flex items-center gap-1 text-sm font-bold text-accent uppercase tracking-wide hover:gap-2 transition-all" style="color:#ff6a13">Voir projets <span>→</span></a>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <p class="text-center text-gray-500">Aucun service à afficher pour le moment.</p>
+    <% } %>
+    <!-- CTA below services -->
+    <div class="text-center mt-10">
+      <a href="<%= (typeof mountPath !== 'undefined' ? mountPath : '') %>/soumission" class="inline-block px-8 py-4 bg-accent text-white font-bold uppercase tracking-wide rounded-lg hover:bg-accent-dark transition shadow-lg" style="background-color:#ff6a13;color:#fff">
+        Demander une soumission gratuite →
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== VALUES ===== -->
+<section class="py-16 bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid md:grid-cols-3 gap-8">
+      <div class="text-center">
+        <div class="w-16 h-16 bg-accent rounded-full flex items-center justify-center mx-auto mb-4" style="background-color:#ff6a13"><svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg></div>
+        <h3 class="text-2xl font-extrabold text-brand mb-2"><%= settings.value_qualite_title || 'Qualité' %></h3>
+        <p class="text-gray-600 leading-relaxed"><%= settings.value_qualite_text || 'Des matériaux supérieurs et un fini impeccable sur chaque projet.' %></p>
+      </div>
+      <div class="text-center">
+        <div class="w-16 h-16 bg-accent rounded-full flex items-center justify-center mx-auto mb-4" style="background-color:#ff6a13"><svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>
+        <h3 class="text-2xl font-extrabold text-brand mb-2"><%= settings.value_service_title || 'Service' %></h3>
+        <p class="text-gray-600 leading-relaxed"><%= settings.value_service_text || "Une équipe à l'écoute, des délais respectés et un suivi personnalisé." %></p>
+      </div>
+      <div class="text-center">
+        <div class="w-16 h-16 bg-accent rounded-full flex items-center justify-center mx-auto mb-4" style="background-color:#ff6a13"><svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg></div>
+        <h3 class="text-2xl font-extrabold text-brand mb-2"><%= settings.value_pro_title || 'Professionnalisme' %></h3>
+        <p class="text-gray-600 leading-relaxed"><%= settings.value_pro_text || "Plus de 30 ans d'expertise au service de notre clientèle." %></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ABOUT ===== -->
+<section class="py-16 bg-gray-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-12 items-center">
+    <div>
+      <img src="<%= settings._p_about_image_url || 'https://placehold.co/800x600/e5e7eb/6b7280/png?text=Equipe' %>" alt="À propos de nous" class="rounded-lg shadow-xl w-full">
+    </div>
+    <div>
+      <div class="text-accent font-bold uppercase tracking-widest text-sm mb-2" style="color:#ff6a13">Une histoire familiale</div>
+      <h2 class="text-3xl md:text-4xl font-extrabold text-brand mb-5"><%= settings.about_title || 'À propos de nous' %></h2>
+      <p class="text-gray-600 leading-relaxed mb-6"><%= settings.about_text || "Pavage Montréal est une entreprise familiale fondée en 1991." %></p>
+      <div class="flex flex-wrap gap-3">
+        <a href="a-propos" class="px-6 py-3 bg-brand text-white font-bold uppercase tracking-wide rounded hover:bg-brand-light transition" style="background-color:#111112;color:#fff">Notre histoire</a>
+        <a href="<%= (typeof mountPath !== 'undefined' ? mountPath : '') %>/soumission" class="px-6 py-3 bg-accent text-white font-bold uppercase tracking-wide rounded hover:bg-accent-dark transition" style="background-color:#ff6a13;color:#fff">Soumission gratuite</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TESTIMONIALS (moved before banner + redesigned) ===== -->
+<% if (typeof testimonials !== 'undefined' && testimonials && testimonials.length > 0) { %>
+<section class="py-16 bg-white">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-12">
+      <div class="text-accent font-bold uppercase tracking-widest text-sm mb-2" style="color:#ff6a13">Avis clients</div>
+      <h2 class="text-3xl md:text-4xl font-extrabold text-brand mb-4">Ils nous font confiance depuis des années</h2>
+      <!-- Aggregate rating -->
+      <div class="inline-flex items-center gap-3 px-5 py-2.5 bg-gray-50 rounded-full border border-gray-200">
+        <div class="flex gap-0.5 text-lg leading-none" style="color:#ff6a13">★★★★★</div>
+        <div>
+          <span class="font-extrabold text-brand">4.9</span><span class="text-gray-500 text-sm">&nbsp;/ 5</span>
+        </div>
+        <div class="w-px h-5 bg-gray-300"></div>
+        <span class="text-gray-600 text-sm">500+ clients satisfaits</span>
+      </div>
+    </div>
+    <div class="grid md:grid-cols-3 gap-6">
+      <% testimonials.forEach(function(t) { %>
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6 flex flex-col hover:shadow-md transition-shadow">
+          <!-- Quote icon -->
+          <div class="w-10 h-10 rounded-full flex items-center justify-center mb-4 flex-shrink-0" style="background-color:rgba(255,106,19,0.1)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#ff6a13" aria-hidden="true"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/></svg>
+          </div>
+          <!-- Stars -->
+          <div class="flex gap-0.5 mb-3" style="color:#ff6a13; font-size:1.05rem">
+            <% for(var i=0;i<(t.rating||5);i++){ %>★<% } %>
+          </div>
+          <!-- Content -->
+          <p class="text-gray-700 leading-relaxed flex-1 mb-5"><%= t.content %></p>
+          <!-- Author -->
+          <div class="flex items-center gap-3 pt-4 border-t border-gray-100">
+            <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0" style="background-color:#ff6a13">
+              <%= t.author.charAt(0).toUpperCase() %>
+            </div>
+            <div>
+              <div class="font-bold text-brand text-sm"><%= t.author %></div>
+              <% if (t.role) { %><div class="text-xs text-gray-500"><%= t.role %></div><% } %>
+            </div>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+    <div class="text-center mt-10">
+      <a href="a-propos" class="inline-flex items-center gap-1 font-bold hover:underline transition" style="color:#ff6a13">
+        Voir tous les témoignages →
+      </a>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<!-- ===== BANNER ===== -->
+<section class="relative py-20 overflow-hidden">
+  <img src="<%= settings._p_banner_image_url || 'https://placehold.co/1600x500/111112/ffffff/png?text=30+ans' %>" alt="30 ans d'expérience" class="absolute inset-0 w-full h-full object-cover">
+  <div class="absolute inset-0 bg-brand/85"></div>
+  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white">
+    <h2 class="text-4xl md:text-6xl font-extrabold mb-4"><%= settings.banner_text || "30 ans d'expérience à votre service" %></h2>
+    <p class="text-xl md:text-2xl text-gray-200 mb-8"><%= settings.pillar || 'Service, Qualité… Professionnalisme' %></p>
+    <div class="flex flex-wrap justify-center gap-4">
+      <a href="<%= (typeof mountPath !== 'undefined' ? mountPath : '') %>/soumission" class="inline-block px-8 py-4 bg-accent text-white font-bold uppercase tracking-wide rounded hover:bg-accent-dark transition" style="background-color:#ff6a13;color:#fff">Demander une soumission</a>
+      <a href="nous-contacter" class="inline-block px-8 py-4 bg-white/10 border border-white/30 text-white font-bold uppercase tracking-wide rounded hover:bg-white/20 transition">Nous contacter</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TRUST BAR ===== -->
+<section class="py-12 bg-gray-100 border-y border-gray-200">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <p class="text-center text-sm uppercase tracking-widest text-gray-500 mb-6 font-bold">Ils nous font confiance</p>
+    <div class="flex flex-wrap justify-center items-center gap-8 md:gap-12 text-gray-400 font-bold text-lg">
+      <div>VILLE DE MONTRÉAL</div><div>•</div><div>CONDOS PLATEAU</div><div>•</div><div>GROUPE IMMOBILIER</div><div>•</div><div>RIVIÈRE-DES-PRAIRIES</div><div>•</div><div>LAVAL CONSTRUCTION</div>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

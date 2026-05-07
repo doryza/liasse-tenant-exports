@@ -1,0 +1,18 @@
+<%- include('partials/admin-header', { pageTitle: 'Témoignages', currentPage: 'testimonials' }) %>
+<div class="admin-content">
+  <div class="admin-head"><div><h1 class="admin-h1">Témoignages</h1><p class="admin-sub">Avis clients affichés sur le site.</p></div><button class="btn-primary" onclick="openModal()">+ Nouveau témoignage</button></div>
+  <div id="list" class="data-grid"></div>
+</div>
+<div id="modal" class="modal hidden"><div class="modal-card"><div class="modal-head"><h2 id="mTitle">Nouveau témoignage</h2><button onclick="closeModal()" class="x">×</button></div><form id="form" class="modal-body"><input type="hidden" name="id"><label>Auteur *<input name="author" required></label><label>Rôle / Contexte<input name="role" placeholder="Propriétaire — Résidence"></label><label>Témoignage *<textarea name="content" rows="4" required></textarea></label><label>Note (1-5)<input name="rating" type="number" min="1" max="5" value="5"></label><label>Image (URL)<input name="image_url"></label><label class="check"><input type="checkbox" name="published" checked> Publié</label><div class="modal-foot"><button type="button" onclick="closeModal()" class="btn-ghost">Annuler</button><button type="submit" class="btn-primary">Enregistrer</button></div></form></div></div>
+<script>
+var items=[];
+async function load(){try{var r=await fetch('api/admin/testimonials');var d=await r.json();items=d.testimonials||[];render();}catch(e){document.getElementById('list').innerHTML='<p class="empty">Erreur.</p>';}}
+function render(){var l=document.getElementById('list');if(!items.length){l.innerHTML='<p class="empty">Aucun témoignage.</p>';return;}l.innerHTML=items.map(function(t){return '<div class="data-card"><div class="dc-body"><div class="dc-tag">'+'★'.repeat(t.rating||5)+'</div><h3>'+(t.author||'')+'</h3><div class="dc-meta">'+(t.role||'')+'</div><p>« '+(t.content||'')+' »</p>'+(t.published?'':'<div class="dc-meta">[Brouillon]</div>')+'<div class="dc-actions"><button onclick="editItem('+t.id+')" class="btn-ghost">Modifier</button><button onclick="delItem('+t.id+')" class="btn-danger">Supprimer</button></div></div></div>';}).join('');}
+function openModal(){document.getElementById('mTitle').textContent='Nouveau témoignage';document.getElementById('form').reset();document.getElementById('form').id.value='';document.getElementById('form').published.checked=true;document.getElementById('modal').classList.remove('hidden');}
+function closeModal(){document.getElementById('modal').classList.add('hidden');}
+function editItem(id){var t=items.find(function(x){return x.id===id;});if(!t)return;var f=document.getElementById('form');f.id.value=t.id;f.author.value=t.author||'';f.role.value=t.role||'';f.content.value=t.content||'';f.rating.value=t.rating||5;f.image_url.value=t.image_url||'';f.published.checked=!!t.published;document.getElementById('mTitle').textContent='Modifier le témoignage';document.getElementById('modal').classList.remove('hidden');}
+async function delItem(id){if(!confirm('Supprimer ?'))return;await fetch('api/admin/testimonials/'+id,{method:'DELETE'});load();}
+document.getElementById('form').addEventListener('submit',async function(e){e.preventDefault();var f=e.target;var d={author:f.author.value,role:f.role.value,content:f.content.value,rating:Number(f.rating.value)||5,image_url:f.image_url.value,published:f.published.checked};var url='api/admin/testimonials'+(f.id.value?'/'+f.id.value:'');var m=f.id.value?'PUT':'POST';await fetch(url,{method:m,headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});closeModal();load();});
+load();
+</script>
+<%- include('partials/admin-footer') %>

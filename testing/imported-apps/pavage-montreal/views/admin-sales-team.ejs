@@ -1,0 +1,200 @@
+<%- include('partials/admin-header', { pageTitle: 'Équipe commerciale', currentPage: 'sales-team' }) %>
+<div class="admin-content">
+  <div class="admin-head">
+    <div>
+      <h1 class="admin-h1">Équipe commerciale</h1>
+      <p class="admin-sub">Invitez des commerciaux et assignez-leur des demandes de soumission depuis la page <a href="admin/contacts" style="color:#ff6a13">Soumissions reçues</a>.</p>
+    </div>
+    <button onclick="openInvite()" class="btn-primary">+ Inviter un commercial</button>
+  </div>
+
+  <div id="list" class="sub-list"></div>
+</div>
+
+<div id="modal" class="modal hidden">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h2>Inviter un commercial</h2>
+      <button onclick="closeModal()" class="x">×</button>
+    </div>
+    <form id="form" class="modal-body" onsubmit="event.preventDefault(); save();">
+      <label>Nom complet *
+        <input name="full_name" required placeholder="Jean Dupont">
+      </label>
+      <label>Courriel *
+        <input name="email" type="email" required placeholder="jean@exemple.com">
+      </label>
+      <label>Mobile (utilisé pour OTP)
+        <input name="mobile" type="tel" placeholder="+1 514 555 1234">
+        <div style="font-size:11px;color:#9ca3af;margin-top:4px">Le commercial pourra activer son compte via courriel OU mobile.</div>
+      </label>
+      <label>Téléphone bureau (optionnel)
+        <input name="phone" type="tel" placeholder="+1 514 555 5678">
+      </label>
+      <label>Titre / poste
+        <input name="title" placeholder="Directeur commercial">
+      </label>
+      <p id="form-error" style="display:none;color:#dc2626;font-size:13px"></p>
+      <div class="modal-foot">
+        <button type="button" onclick="closeModal()" class="btn-ghost">Annuler</button>
+        <button type="submit" class="btn-primary">Envoyer l'invitation</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+var items = [];
+
+async function load() {
+  try {
+    var r = await fetch('api/admin/sales-team');
+    var d = await r.json();
+    items = d.members || [];
+    render();
+  } catch (e) {
+    document.getElementById('list').innerHTML = '<p class="empty">Erreur de chargement.</p>';
+  }
+}
+
+function fmtDate(s) {
+  if (!s) return '';
+  try { return new Date(s).toLocaleString('fr-CA'); } catch (e) { return ''; }
+}
+
+function statusBadge(m) {
+  if (!m.active) {
+    return '<span class="badge" style="background:#dc2626">Révoqué</span>';
+  }
+  if (m.invite_accepted_at) {
+    return '<span class="badge" style="background:#16a34a">Activé</span>';
+  }
+  return '<span class="badge" style="background:#9ca3af">En attente</span>';
+}
+
+function render() {
+  var l = document.getElementById('list');
+  if (!items.length) {
+    l.innerHTML = ''
+      + '<div class="sub-card" style="text-align:center;padding:40px 20px">'
+      + '<p class="empty" style="margin-bottom:14px">Aucun commercial invité pour le moment.</p>'
+      + '<button onclick="openInvite()" class="btn-primary">+ Inviter le premier commercial</button>'
+      + '</div>';
+    return;
+  }
+  l.innerHTML = items.map(function (m) {
+    var lines = [
+      '<div class="sub-meta">' + (m.email ? '<a href="mailto:' + m.email + '">' + m.email + '</a>' : '') + (m.mobile ? ' · <a href="tel:' + m.mobile + '">' + m.mobile + '</a>' : '') + '</div>',
+    ];
+    if (m.title)  lines.push('<div class="sub-meta">' + m.title + '</div>');
+    if (m.phone)  lines.push('<div class="sub-meta">📞 ' + m.phone + ' (bureau)</div>');
+    lines.push('<div class="sub-meta">Invitation envoyée le ' + fmtDate(m.invite_sent_at) + (m.invite_accepted_at ? ' · activée le ' + fmtDate(m.invite_accepted_at) : '') + '</div>');
+
+    var actions = [];
+    if (m.active) {
+      // "Renvoyer" is always available (admins sometimes need to send a
+      // fresh link to an activated rep — e.g. they lost their session
+      // on a different device). The resend handler warns about token
+      // invalidation when the rep is already activated.
+      actions.push('<button onclick="resend(' + m.id + ')" class="btn-ghost">Renvoyer l\'invitation</button>');
+      actions.push('<button onclick="revoke(' + m.id + ')" class="btn-danger">Révoquer</button>');
+    }
+
+    return ''
+      + '<div class="sub-card ' + (m.active && !m.invite_accepted_at ? 'new' : '') + '">'
+      + '<div class="sub-head">'
+      + '<div><strong>' + (m.full_name || '') + '</strong> ' + statusBadge(m) + '</div>'
+      + '<div class="sub-date">' + fmtDate(m.created_at) + '</div>'
+      + '</div>'
+      + lines.join('')
+      + '<div class="sub-actions">' + actions.join('') + '</div>'
+      + '</div>';
+  }).join('');
+}
+
+function openInvite() {
+  document.getElementById('form').reset();
+  document.getElementById('form-error').style.display = 'none';
+  document.getElementById('modal').classList.remove('hidden');
+}
+function closeModal() { document.getElementById('modal').classList.add('hidden'); }
+
+async function save() {
+  var f = document.getElementById('form');
+  var err = document.getElementById('form-error');
+  err.style.display = 'none';
+  var data = {
+    full_name: f.full_name.value.trim(),
+    email: f.email.value.trim(),
+    mobile: f.mobile.value.trim(),
+    phone: f.phone.value.trim(),
+    title: f.title.value.trim(),
+  };
+  if (!data.full_name || !data.email) {
+    err.textContent = 'Nom et courriel requis.';
+    err.style.display = 'block';
+    return;
+  }
+  try {
+    var r = await fetch('api/admin/sales-team', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    var d = await r.json();
+    if (!r.ok || d.error) throw new Error(d.error || 'Échec');
+    closeModal();
+    await load();
+  } catch (e) {
+    err.textContent = e.message || 'Erreur';
+    err.style.display = 'block';
+  }
+}
+
+async function resend(id) {
+  var member = items.find(function (m) { return Number(m.id) === Number(id); });
+  // Already-activated reps: warn that resending invalidates the
+  // existing magic-link. Their current session keeps working (token
+  // is unrelated), but the OLD link in their email won't activate
+  // anymore. Useful when a rep needs a fresh link on a new device.
+  var msg = member && member.invite_accepted_at
+    ? 'Ce commercial est déjà activé. Renvoyer l\'invitation invalidera l\'ancien lien et générera un nouveau lien d\'activation. Sa session actuelle reste valide. Continuer ?'
+    : 'Renvoyer l\'invitation par courriel ?';
+  if (!confirm(msg)) return;
+  try {
+    var r = await fetch('api/admin/sales-team/' + id + '/resend', { method: 'POST' });
+    var d = await r.json();
+    if (!r.ok || d.error) throw new Error(d.error || 'Échec');
+    alert('Invitation renvoyée.');
+    load();
+  } catch (e) { alert(e.message || 'Erreur'); }
+}
+
+async function revoke(id) {
+  // Count currently-assigned soumissions so admin sees the impact.
+  // Best-effort — if the contacts fetch fails we still let revoke
+  // proceed (the warning just lacks the count).
+  var assignedCount = 0;
+  try {
+    var cr = await fetch('api/admin/contacts');
+    var cd = await cr.json();
+    assignedCount = (cd.contacts || []).filter(function (c) {
+      return Number(c.assigned_to_sales_id) === Number(id);
+    }).length;
+  } catch (_) {}
+  var msg = assignedCount > 0
+    ? 'Révoquer l\'accès de ce commercial ? ' + assignedCount + ' soumission' + (assignedCount > 1 ? 's lui sont' : ' lui est') + ' actuellement assignée' + (assignedCount > 1 ? 's' : '') + '. Elles resteront assignées mais le commercial n\'y aura plus accès — vous devriez les réassigner depuis « Soumissions reçues ».'
+    : 'Révoquer l\'accès de ce commercial ? Il ne pourra plus se connecter.';
+  if (!confirm(msg)) return;
+  try {
+    var r = await fetch('api/admin/sales-team/' + id, { method: 'DELETE' });
+    var d = await r.json();
+    if (!r.ok || d.error) throw new Error(d.error || 'Échec');
+    load();
+  } catch (e) { alert(e.message || 'Erreur'); }
+}
+
+load();
+</script>
+
+<%- include('partials/admin-footer') %>

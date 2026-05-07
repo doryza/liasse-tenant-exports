@@ -1,0 +1,73 @@
+<%- include('partials/header') %>
+<section class="relative">
+  <img src="<%= service.image_url || 'https://placehold.co/1600x500/111112/ffffff/png?text=Service' %>" alt="<%= service.title %>" class="w-full h-[380px] md:h-[450px] object-cover">
+  <div class="absolute inset-0 bg-gradient-to-r from-black/85 via-black/60 to-transparent flex items-center">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-white w-full">
+      <a href="nos-projets" class="text-accent text-sm uppercase font-bold tracking-wide hover:underline" style="color:#ff8a3d">← Tous les services</a>
+      <div class="text-accent font-bold uppercase tracking-widest text-sm mt-3 mb-1" style="color:#ff8a3d"><%= service.title %></div>
+      <h1 class="text-4xl md:text-5xl font-extrabold mb-3"><%= service.subtitle %></h1>
+      <p class="text-lg text-gray-200 max-w-2xl"><%= service.short_desc %></p>
+    </div>
+  </div>
+</section>
+
+<section class="py-12 bg-white">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+    <p class="text-gray-700 leading-relaxed text-lg"><%= service.long_desc || service.short_desc %></p>
+  </div>
+</section>
+
+<section class="py-16 bg-gray-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <h2 class="text-3xl font-extrabold text-brand mb-2">Galerie de projets</h2>
+    <p class="text-gray-600 mb-8">Nos réalisations en <%= (service.subtitle || service.title || '').toLowerCase() %>.</p>
+    <% if (typeof projects !== 'undefined' && projects && projects.length > 0) { %>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <% projects.forEach(function(p) { %>
+          <div class="bg-white rounded-lg overflow-hidden shadow group">
+            <div class="relative aspect-[4/3] overflow-hidden">
+              <img src="<%= p.image_url || service.image_url || 'https://placehold.co/600x450/e5e7eb/6b7280/png?text=Projet' %>" alt="<%= p.title %>" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+            </div>
+            <div class="p-5">
+              <h3 class="font-bold text-brand mb-1"><%= p.title %></h3>
+              <% if (p.location) { %><div class="text-xs text-accent uppercase font-bold tracking-wide mb-2" style="color:#ff6a13">📍 <%= p.location %></div><% } %>
+              <p class="text-sm text-gray-600"><%= p.description %></p>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <div class="bg-white rounded-lg p-10 text-center">
+        <p class="text-gray-500 mb-4">Aucun projet n'a encore été ajouté à cette galerie.</p>
+        <a href="<%= (typeof mountPath !== 'undefined' ? mountPath : '') %>/soumission" class="inline-block px-6 py-3 bg-accent text-white font-bold uppercase rounded" style="background-color:#ff6a13;color:#fff">Demandez une soumission</a>
+      </div>
+    <% } %>
+  </div>
+</section>
+
+<% if (typeof allServices !== 'undefined' && allServices && allServices.length > 0) { %>
+<section class="py-16 bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <h2 class="text-2xl font-extrabold text-brand mb-6">Découvrez nos autres services</h2>
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <% allServices.filter(function(s){return s.slug!==service.slug;}).slice(0,4).forEach(function(s) { %>
+        <a href="<%= s.slug %>" class="group block">
+          <div class="aspect-[4/3] overflow-hidden rounded-lg">
+            <img src="<%= s.image_url || 'https://placehold.co/400x300/e5e7eb/6b7280/png?text=Service' %>" alt="<%= s.title %>" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+          </div>
+          <div class="mt-2 text-sm font-bold text-brand group-hover:text-accent transition"><%= s.subtitle || s.title %></div>
+        </a>
+      <% }); %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<section class="py-16 bg-brand text-white" style="background-color:#111112">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <h2 class="text-3xl font-extrabold mb-4">Intéressé par ce service ?</h2>
+    <p class="text-gray-300 mb-8">Demandez votre soumission gratuite dès aujourd'hui.</p>
+    <a href="<%= (typeof mountPath !== 'undefined' ? mountPath : '') %>/soumission" class="inline-block px-8 py-4 bg-accent text-white font-bold uppercase tracking-wide rounded" style="background-color:#ff6a13;color:#fff">Soumission gratuite</a>
+  </div>
+</section>
+<%- include('partials/footer') %>

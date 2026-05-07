@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#111112">
+  <%# Hidden from search engines and crawlers — this is a token-gated invite page,
+      not a public destination. The link is delivered by email, anyone hitting it
+      without an admin-issued token sees the "invitation invalide" branch. %>
+  <meta name="robots" content="noindex,nofollow">
+  <title>Activation — <%= settings.business_name || 'Pavage Montréal' %></title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{colors:{brand:'#111112',accent:'#ff6a13','accent-dark':'#e25a08'}, fontFamily:{sans:['Inter','system-ui','sans-serif']}}}}</script>
+  <style>
+    body { background: #f3f4f6; font-family: 'Inter', system-ui, sans-serif; }
+    .si-card { background:#fff; border-radius:1rem; box-shadow:0 4px 24px rgba(0,0,0,0.08); }
+    .si-btn { display:inline-flex; align-items:center; gap:0.5rem; padding:0.85rem 1.5rem; background:#ff6a13; color:#fff; font-weight:700; font-size:0.95rem; border-radius:0.5rem; text-decoration:none; border:0; cursor:pointer; }
+    .si-btn:hover { background:#e25a08; }
+    .si-btn:disabled { opacity:0.5; cursor:not-allowed; }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center px-4 py-10">
+  <main class="si-card w-full max-w-md p-8">
+    <% if (invalid) { %>
+      <h1 class="text-2xl font-extrabold text-brand mb-2">Invitation invalide</h1>
+      <p class="text-sm text-gray-600">Ce lien d'invitation est invalide ou a été révoqué. Veuillez contacter l'administrateur de <%= settings.business_name || 'Pavage Montréal' %> pour en obtenir un nouveau.</p>
+    <% } else { %>
+      <div class="mb-6 text-center">
+        <div class="w-16 h-16 mx-auto rounded-full bg-orange-100 flex items-center justify-center mb-3">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ff6a13" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m22 11-3 3-2-2"/></svg>
+        </div>
+        <h1 class="text-2xl font-extrabold text-brand">Bienvenue, <%= member.full_name || '' %></h1>
+        <% if (member.title) { %><p class="text-sm text-gray-500 mt-1"><%= member.title %></p><% } %>
+      </div>
+
+      <p class="text-sm text-gray-700 mb-2">Vous avez été invité(e) à rejoindre l'équipe commerciale de <strong><%= settings.business_name || 'Pavage Montréal' %></strong>.</p>
+      <p class="text-sm text-gray-700 mb-5">Pour activer votre accès, connectez-vous en utilisant le courriel <strong><%= member.email %></strong><% if (member.mobile) { %> ou le mobile <strong><%= member.mobile %></strong><% } %>.</p>
+
+      <p id="si-status" class="text-sm text-gray-600 mb-3"></p>
+      <p id="si-error" class="hidden text-sm text-rose-600 mb-3"></p>
+      <p id="si-success" class="hidden text-sm text-emerald-600 mb-3"></p>
+
+      <button id="si-activate" type="button" class="si-btn w-full justify-center">
+        <span id="si-activate-label">Se connecter pour activer</span>
+      </button>
+
+      <p class="text-xs text-gray-400 mt-4 text-center">Si votre courriel ou mobile ne correspond pas à ceux ci-dessus, l'activation sera refusée.</p>
+    <% } %>
+  </main>
+
+  <script>
+    (function () {
+      <% if (invalid) { return; } %>
+      var TOKEN = <%- JSON.stringify(token) %>;
+      var ALREADY_ACTIVATED = <%- JSON.stringify(!!alreadyActivated) %>;
+      // After activation we land on Mon Compte — the unified account page
+      // shows both the rep's profile AND the soumissions admin assigned
+      // to them. /sales/dashboard now 302's here too.
+      var DASHBOARD_URL = <%- JSON.stringify((mountPath || '') + '/mon-compte') %>;
+      var ACTIVATE_URL = <%- JSON.stringify((mountPath || '') + '/api/sales/invite/' + token + '/activate') %>;
+
+      var btn = document.getElementById('si-activate');
+      var btnLabel = document.getElementById('si-activate-label');
+      var statusEl = document.getElementById('si-status');
+      var errEl = document.getElementById('si-error');
+      var okEl = document.getElementById('si-success');
+
+      // === Diagnostic console-trace channel ===
+      // Every meaningful step in the activation flow logs through dlog so
+      // when an end user hits a "stuck on welcome page" path we can ask
+      // them to copy/paste their console and instantly see WHICH step
+      // didn't fire. Prefix tag lets us grep across the entire console.
+      function dlog() {
+        try {
+          var args = Array.prototype.slice.call(arguments);
+          args.unshift('[Sales Activate]');
+          console.log.apply(console, args);
+        } catch (_) {}
+      }
+      dlog('script loaded — TOKEN length:', (TOKEN || '').length, 'ACTIVATE_URL:', ACTIVATE_URL, 'DASHBOARD_URL:', DASHBOARD_URL);
+
+      function showError(msg) {
+        errEl.textContent = msg || 'Erreur';
+        errEl.classList.remove('hidden');
+        okEl.classList.add('hidden');
+        // After a refusal (e.g. "déjà liée à un autre compte" or
+        // "déjà commercial actif"), expose a logout escape so the
+        // visitor can switch accounts without manually navigating
+        // away and clearing storage themselves.
+        showLogoutEscape();
+      }
+      function showSuccess(msg) {
+        okEl.textContent = msg || 'Activation réussie — redirection en cours…';
+        okEl.classList.remove('hidden');
+        errEl.classList.add('hidden');
+      }
+      // === Logout escape ===
+      // Idempotent — only injects the button once. Clicking it logs the
+      // current user out (via the SDK) and reloads the page. The reload
+      // brings them back to the same /sales/invite/<token> URL where
+      // they can click "Se connecter pour activer" again with a fresh
+      // OTP — typically the right move when their existing session was
+      // for a different account that hit a 409 conflict on activate.
+      function showLogoutEscape() {
+        if (document.getElementById('si-logout-escape')) return;
+        var p = document.createElement('p');
+        p.style.cssText = 'margin-top:0.85rem;text-align:center';
+        p.innerHTML = '<button id="si-logout-escape" type="button" style="padding:0.5rem 1rem;background:transparent;border:1px solid #d1d5db;color:#374151;border-radius:0.4rem;cursor:pointer;font-size:0.85rem;font-weight:600">Se déconnecter et essayer avec un autre compte</button>';
+        document.querySelector('main').appendChild(p);
+        document.getElementById('si-logout-escape').addEventListener('click', function () {
+          try { window.TenantSDK?.auth?.logout?.(); } catch (_) {}
+          // Tiny delay so the SDK can persist the logout (clear localStorage
+          // + tenant_token cookie) before we reload — otherwise an
+          // already-cached session would still show as logged in on the
+          // freshly-loaded page.
+          setTimeout(function () { window.location.reload(); }, 150);
+        });
+      }
+
+      // Calls the activate endpoint. Heavy diagnostics so a stuck flow
+      // emits enough on the console to diagnose without server logs.
+      async function attemptActivation() {
+        dlog('attemptActivation: fetching', ACTIVATE_URL);
+        statusEl.textContent = 'Activation en cours…';
+        try {
+          var fetcher = (window.TenantSDK && window.TenantSDK.fetch) ? window.TenantSDK.fetch : fetch;
+          dlog('attemptActivation: using TenantSDK.fetch?', fetcher !== fetch);
+          var res = await fetcher(ACTIVATE_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+          });
+          dlog('attemptActivation: response status', res.status, 'ok?', res.ok);
+          var data = await res.json().catch(function(){ return {}; });
+          dlog('attemptActivation: response body', data);
+          if (!res.ok || data.success === false) {
+            showError(data.error || 'Activation refusée.');
+            statusEl.textContent = '';
+            return;
+          }
+          dlog('attemptActivation: SUCCESS — redirecting to', DASHBOARD_URL);
+          showSuccess('Activation réussie — redirection en cours…');
+          setTimeout(function () { window.location.href = DASHBOARD_URL; }, 800);
+        } catch (e) {
+          dlog('attemptActivation: network error', e && e.message);
+          showError('Erreur réseau — veuillez réessayer. ' + (e && e.message ? '(' + e.message + ')' : ''));
+          statusEl.textContent = '';
+        }
+      }
+
+      // Drive the platform OTP modal then activate. Multiple paths to
+      // catch the login-completion event:
+      //   1. SDK onSuccess callback (documented but deferred behind the
+      //      post-login prompt — sometimes never fires).
+      //   2. Polling sdk.auth.isLoggedIn() every 500ms (fallback).
+      //   3. localStorage 'storage' event when token is set (cross-tab
+      //      AND fires within the same tab on some browsers when the
+      //      SDK calls localStorage.setItem from the modal).
+      //   4. window 'focus' event — when user returns from the modal,
+      //      we re-check.
+      // First to flip wins via _activationStarted.
+      var _activationStarted = false;
+      function activateOnce(reason) {
+        if (_activationStarted) { dlog('activateOnce: skipped (already started, reason was', reason, ')'); return; }
+        _activationStarted = true;
+        dlog('activateOnce: firing for the first time, triggered by', reason);
+        attemptActivation();
+      }
+
+      async function driveLoginThenActivate() {
+        dlog('driveLoginThenActivate: invoked');
+        try { await window.TenantSDK?.ready; dlog('driveLoginThenActivate: TenantSDK.ready resolved'); } catch (e) { dlog('driveLoginThenActivate: TenantSDK.ready threw', e); }
+        var sdk = window.TenantSDK;
+        dlog('driveLoginThenActivate: sdk?', !!sdk, 'sdk.auth?', !!sdk?.auth, 'sdk.ui?', !!sdk?.ui, 'isLoggedIn now?', !!sdk?.auth?.isLoggedIn?.());
+        if (!sdk || !sdk.auth || !sdk.ui) {
+          dlog('driveLoginThenActivate: SDK unavailable, attempting activation directly (likely 401)');
+          activateOnce('no-sdk');
+          return;
+        }
+        if (sdk.auth.isLoggedIn()) {
+          activateOnce('already-logged-in');
+          return;
+        }
+        dlog('driveLoginThenActivate: showing login modal');
+        sdk.ui.showLogin({
+          onSuccess: function () { activateOnce('sdk-onSuccess'); },
+        });
+
+        // Polling fallback — fires within 500ms of OTP regardless of
+        // whether the SDK's onSuccess gets to us.
+        var pollStart = Date.now();
+        var poll = setInterval(function () {
+          if (_activationStarted) { clearInterval(poll); return; }
+          if (Date.now() - pollStart > 180000) { dlog('poll: 3 min timeout'); clearInterval(poll); return; }
+          try {
+            if (sdk.auth.isLoggedIn()) {
+              dlog('poll: detected isLoggedIn=true after', Date.now() - pollStart, 'ms');
+              clearInterval(poll);
+              activateOnce('poll');
+            }
+          } catch (e) { dlog('poll: isLoggedIn threw', e && e.message); }
+        }, 500);
+
+        // localStorage event — some browsers fire this in the same tab
+        // when the SDK calls localStorage.setItem('tenant_token_<slug>').
+        window.addEventListener('storage', function (ev) {
+          if (ev && ev.key && ev.key.indexOf('tenant_token_') === 0 && ev.newValue) {
+            dlog('storage event: token written', ev.key);
+            activateOnce('storage-event');
+          }
+        });
+
+        // window focus — if the user clicks back to this page after the
+        // modal closes, re-check login state.
+        window.addEventListener('focus', function () {
+          if (_activationStarted) return;
+          try {
+            if (sdk.auth.isLoggedIn()) {
+              dlog('focus event: detected logged in');
+              activateOnce('focus-event');
+            } else {
+              dlog('focus event: still not logged in');
+            }
+          } catch (_) {}
+        });
+      }
+
+      // === Manual retry button — appears once after the user has had a
+      // chance to OTP, in case all four paths above somehow miss it.
+      // Clicking it manually triggers attemptActivation, with the
+      // diagnostic logs showing exactly what the server returned.
+      function exposeManualRetry() {
+        if (document.getElementById('si-manual-retry')) return;
+        var p = document.createElement('p');
+        p.style.cssText = 'margin-top:1rem;text-align:center';
+        p.innerHTML = '<button id="si-manual-retry" type="button" style="padding:0.5rem 1rem;background:#fff;border:1px solid #d1d5db;border-radius:0.5rem;color:#374151;font-weight:600;cursor:pointer;font-size:0.85rem">Forcer l\'activation manuellement</button>';
+        document.querySelector('main').appendChild(p);
+        document.getElementById('si-manual-retry').addEventListener('click', function () {
+          _activationStarted = false; // allow retry
+          dlog('manual retry button clicked');
+          activateOnce('manual-retry');
+        });
+      }
+
+      btn.addEventListener('click', function () {
+        driveLoginThenActivate();
+        // After 8 seconds, expose the manual retry button so the user has
+        // an explicit escape hatch if something stalled silently.
+        setTimeout(exposeManualRetry, 8000);
+      });
+
+      // === Page-load fast-path: if the visitor lands here ALREADY signed
+      // in (e.g., they clicked the link from an existing session, or the
+      // page is reopened after OTP completed), kick off activation right
+      // away. No click required.
+      (async function () {
+        try { await window.TenantSDK?.ready; } catch (_) {}
+        try {
+          if (window.TenantSDK?.auth?.isLoggedIn?.()) {
+            dlog('page-load fast-path: already logged in, activating immediately');
+            activateOnce('page-load-already-logged-in');
+          } else {
+            dlog('page-load: not logged in, awaiting button click');
+          }
+        } catch (e) { dlog('page-load fast-path threw', e && e.message); }
+      })();
+
+      // If the invite was already accepted, fast-path: if the visitor is
+      // logged in to the matching account, send them straight to the
+      // dashboard. Otherwise show the same activate button so they can
+      // re-link from a clean session.
+      if (ALREADY_ACTIVATED) {
+        btnLabel.textContent = 'Accéder à mon tableau de bord';
+        btn.addEventListener('click', function (ev) {
+          // Override default — go straight to dashboard, the dashboard
+          // page itself handles "not signed in / not a sales member".
+          ev.preventDefault();
+          ev.stopImmediatePropagation();
+          window.location.href = DASHBOARD_URL;
+        }, { capture: true });
+      }
+    })();
+  </script>
+</body>
+</html>

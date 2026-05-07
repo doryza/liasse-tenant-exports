@@ -1,0 +1,872 @@
+<%- include('partials/header') %>
+
+<style>
+  /* === Voice-first hero — pulsing mic that opens the chat modal === */
+  #sm-stage { perspective: 600px; }
+
+  .sm-mic-btn {
+    position: relative;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 9rem;
+    height: 9rem;
+    border-radius: 9999px;
+    background: linear-gradient(135deg, #ff8a3d, #ff6a13, #d6520a);
+    color: #fff;
+    transition: transform 200ms ease;
+  }
+  @media (min-width: 768px) {
+    .sm-mic-btn { width: 11rem; height: 11rem; }
+  }
+  .sm-mic-btn:hover { transform: scale(1.05); }
+  .sm-mic-btn:active { transform: scale(0.95); }
+
+  .sm-mic-btn::before, .sm-mic-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    pointer-events: none;
+    background: rgba(255, 106, 19, 0.45);
+    z-index: -1;
+    animation: sm-pulse 2.2s cubic-bezier(0,0,0.2,1) infinite;
+  }
+  .sm-mic-btn::after { animation-delay: 1.1s; }
+  @keyframes sm-pulse {
+    0%   { transform: scale(1);    opacity: 0.55; }
+    100% { transform: scale(2.1);  opacity: 0;    }
+  }
+
+  @keyframes sm-breathe {
+    0%, 100% { box-shadow: 0 22px 48px -12px rgba(255,106,19,0.6), 0 0 0 0 rgba(255,106,19,0.35); }
+    50%      { box-shadow: 0 28px 58px -12px rgba(255,106,19,0.75), 0 0 0 18px rgba(255,106,19,0); }
+  }
+  .sm-mic-btn { animation: sm-breathe 2.6s ease-in-out infinite; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sm-mic-btn, .sm-mic-btn::before, .sm-mic-btn::after { animation: none !important; }
+  }
+
+  /* === Chat modal === */
+  #sm-overlay {
+    position: fixed; inset: 0; z-index: 60;
+    background: rgba(15, 23, 42, 0.55);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 0;
+  }
+  @media (min-width: 640px) {
+    #sm-overlay { align-items: center; padding: 1rem; }
+  }
+  #sm-overlay.sm-open { display: flex; }
+
+  #sm-modal {
+    position: relative;
+    width: 100%;
+    max-width: 36rem;
+    background: #fff;
+    border-radius: 1rem 1rem 0 0;
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+    display: flex;
+    flex-direction: column;
+    max-height: 92vh;
+    overflow: hidden;
+  }
+  @media (min-width: 640px) { #sm-modal { border-radius: 1rem; max-height: 85vh; } }
+
+  .sm-msg { padding: 0.6rem 0.85rem; border-radius: 0.85rem; max-width: 80%; word-wrap: break-word; }
+  .sm-msg-ai   { background: #f3f4f6; color: #111827; align-self: flex-start; border-top-left-radius: 0.25rem; }
+  .sm-msg-user { background: #ff6a13; color: #fff;     align-self: flex-end;   border-top-right-radius: 0.25rem; }
+
+  @keyframes sm-mic-ping {
+    0% { transform: scale(1); opacity: 0.6; }
+    80%, 100% { transform: scale(1.7); opacity: 0; }
+  }
+  .sm-mic-ping { animation: sm-mic-ping 1.4s cubic-bezier(0, 0, 0.2, 1) infinite; }
+</style>
+
+<main class="bg-gray-50 min-h-screen">
+  <% if (success) { %>
+    <div class="max-w-3xl mx-auto px-4 pt-8">
+      <div class="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-green-800 flex items-center justify-between gap-3 flex-wrap">
+        <span>Merci ! Votre demande a été reçue — nous vous contacterons sous peu.</span>
+        <a href="<%= mountPath %>/mon-compte#submissions" class="text-sm font-bold underline whitespace-nowrap">Voir mes demandes →</a>
+      </div>
+    </div>
+  <% } %>
+
+  <!-- === Voice-first hero === -->
+  <section class="max-w-3xl mx-auto px-4 py-12 md:py-16 text-center">
+    <!-- Badge -->
+    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-5 border" style="color:#ff6a13;background:rgba(255,106,19,0.08);border-color:rgba(255,106,19,0.25)">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+      Soumission vocale IA
+    </div>
+    <h1 class="text-4xl md:text-5xl font-extrabold text-brand tracking-tight leading-tight">
+      Décrivez votre projet.<br class="hidden sm:block"> Nous nous occupons du reste.
+    </h1>
+    <p class="mt-4 text-gray-500 max-w-xl mx-auto text-lg">
+      Notre assistant IA écoute, pose les bonnes questions et prépare votre demande de soumission — sans formulaire, en environ 3&nbsp;minutes.
+    </p>
+
+    <div id="sm-stage" class="mt-10 flex flex-col items-center gap-5">
+      <button type="button" id="sm-open" class="sm-mic-btn"
+        title="Démarrer la conversation vocale" aria-label="Démarrer la conversation vocale"
+        <%= voiceAvailable ? '' : 'disabled style="opacity:0.55;cursor:not-allowed"' %>>
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+          <line x1="12" x2="12" y1="19" y2="22"/>
+        </svg>
+      </button>
+
+      <p class="text-base font-bold text-gray-900" id="sm-mic-label">Touchez pour parler · meilleure expérience</p>
+
+      <!-- Trust badges below mic -->
+      <div class="flex flex-wrap justify-center gap-x-7 gap-y-2 text-xs text-gray-500 font-medium">
+        <span class="flex items-center gap-1.5">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff6a13" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Environ 3 minutes
+        </span>
+        <span class="flex items-center gap-1.5">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff6a13" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Sans engagement
+        </span>
+        <span class="flex items-center gap-1.5">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff6a13" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 11 19.79 19.79 0 01.22 2.38 2 2 0 012.22.18h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.59 7.91A16 16 0 0012 12.36a16 16 0 004.45-4.41l.89-.89a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 9.22z"/></svg>
+          Réponse en 24h
+        </span>
+      </div>
+
+      <p class="text-xs text-gray-500 max-w-xs" id="sm-mic-hint">
+        Décrivez votre projet à voix haute — l'assistant vous demande nom, courriel et téléphone, puis prépare le résumé.
+      </p>
+      <% if (!voiceAvailable) { %>
+        <p class="text-xs text-rose-600 mt-1 max-w-xs">
+          La conversation vocale n'est pas configurée pour ce site (GEMINI_API_KEY manquante).
+          Vous pouvez quand même remplir le formulaire ci-dessous.
+        </p>
+      <% } %>
+    </div>
+
+    <div class="relative my-10" aria-hidden="true">
+      <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-200"></div></div>
+      <div class="relative flex justify-center">
+        <span class="bg-gray-50 px-3 text-[11px] uppercase tracking-wider text-gray-400">
+          ou remplissez le formulaire à la main
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <!-- === Form (auto-fills from voice when conversation completes) === -->
+  <section class="max-w-3xl mx-auto px-4 pb-16">
+    <%# action MUST stay relative ("api/soumission", no leading slash and no
+        mountPath prefix). The platform router auto-injects <base href="/pwa/<slug>/">
+        on every tenant HTML response AND rewrites any leading-slash form action
+        to relative so it resolves through that base. Hard-coding the absolute
+        "/pwa/<slug>/api/soumission" gets stripped to "pwa/<slug>/api/soumission"
+        and then base-resolved to "/pwa/<slug>/pwa/<slug>/api/soumission" — a
+        doubled path that 404s as "Not found" through the tenant catch-all. %>
+    <form id="sm-form" method="POST" action="api/soumission" class="bg-white rounded-2xl shadow-md border border-gray-100 p-6 md:p-8 space-y-5">
+      <div class="grid sm:grid-cols-2 gap-5">
+        <div>
+          <label for="sm-name" class="block text-sm font-semibold text-gray-700 mb-1">Nom complet <span class="text-accent" style="color:#ff6a13">*</span></label>
+          <input id="sm-name" name="name" type="text" required value="<%= (typeof prefillUser !== 'undefined' && prefillUser) ? prefillUser.name : '' %>" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:border-accent focus:ring-2 focus:ring-orange-100 outline-none" />
+        </div>
+        <div>
+          <label for="sm-phone" class="block text-sm font-semibold text-gray-700 mb-1">Téléphone <span class="text-accent" style="color:#ff6a13">*</span></label>
+          <input id="sm-phone" name="phone" type="tel" required value="<%= (typeof prefillUser !== 'undefined' && prefillUser) ? prefillUser.phone : '' %>" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:border-accent focus:ring-2 focus:ring-orange-100 outline-none" />
+        </div>
+        <div>
+          <label for="sm-email" class="block text-sm font-semibold text-gray-700 mb-1">Courriel <span class="text-accent" style="color:#ff6a13">*</span></label>
+          <input id="sm-email" name="email" type="email" required value="<%= (typeof prefillUser !== 'undefined' && prefillUser) ? prefillUser.email : '' %>" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:border-accent focus:ring-2 focus:ring-orange-100 outline-none" />
+        </div>
+        <div>
+          <label for="sm-address" class="block text-sm font-semibold text-gray-700 mb-1">Adresse du chantier</label>
+          <input id="sm-address" name="address" type="text" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:border-accent focus:ring-2 focus:ring-orange-100 outline-none" />
+        </div>
+      </div>
+
+      <div>
+        <label for="sm-message" class="block text-sm font-semibold text-gray-700 mb-1">Description du projet <span class="text-accent" style="color:#ff6a13">*</span></label>
+        <textarea id="sm-message" name="message" rows="6" required
+          placeholder="Type de travaux, surface approximative, échéancier souhaité…"
+          class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:border-accent focus:ring-2 focus:ring-orange-100 outline-none resize-y"></textarea>
+        <p class="text-xs text-gray-500 mt-1">Si vous avez utilisé l'assistant vocal, le résumé apparaît ici — vous pouvez l'ajuster avant d'envoyer.</p>
+      </div>
+
+      <p id="sm-form-error" class="hidden text-sm text-rose-600"></p>
+
+      <div class="flex items-center justify-between gap-3 pt-1">
+        <!-- Trust indicators beside submit -->
+        <div class="hidden sm:flex items-center gap-3 text-xs text-gray-400">
+          <span class="flex items-center gap-1"><span style="color:#ff6a13">🔒</span> Sécurisé</span>
+          <span class="flex items-center gap-1"><span style="color:#ff6a13">✓</span> Gratuit</span>
+        </div>
+        <button type="submit" class="w-full sm:w-auto px-8 py-3.5 bg-accent text-white font-bold uppercase tracking-wide rounded-lg hover:bg-accent-dark transition shadow-md" style="background-color:#ff6a13;color:#fff">
+          Envoyer ma demande →
+        </button>
+      </div>
+    </form>
+  </section>
+</main>
+
+<!-- === Voice chat modal === -->
+<div id="sm-overlay" role="dialog" aria-modal="true" aria-labelledby="sm-modal-title">
+  <div id="sm-modal" onclick="event.stopPropagation()">
+    <header class="px-4 py-3 border-b border-gray-100 flex items-start justify-between gap-3">
+      <div class="pr-2">
+        <h2 id="sm-modal-title" class="text-base font-semibold text-gray-900">
+          Demande de soumission par la voix
+        </h2>
+        <p class="text-xs text-gray-500 mt-0.5" id="sm-modal-subtitle">
+          Décrivez votre projet — l'assistant pose 3–5 questions et prépare le résumé.
+        </p>
+      </div>
+      <button id="sm-close" class="w-8 h-8 rounded-full text-gray-400 hover:text-gray-700 hover:bg-gray-100 flex items-center justify-center" aria-label="Fermer">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </header>
+
+    <div id="sm-messages" class="flex-1 overflow-y-auto px-4 py-3 flex flex-col gap-3 min-h-[160px]"></div>
+
+    <!-- Draft preview — editable. Voice transcription is great for the
+         project summary but unreliable for emails / phone numbers, so
+         the contact fields are real inputs the visitor can type into.
+         Once a field is touched, Gemini's tool-call updates won't
+         overwrite it. -->
+    <div id="sm-draft" class="px-4 py-3 border-t border-gray-100 bg-gray-50">
+      <p class="text-[11px] uppercase tracking-wider text-gray-500 mb-1.5">Résumé en cours <span class="text-gray-400 normal-case font-normal">— retouchez si besoin</span></p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+        <label class="block">
+          <span class="text-gray-500">Nom</span>
+          <input id="sm-d-name" type="text" placeholder="—"
+            class="mt-0.5 w-full px-2 py-1 rounded border border-gray-300 bg-white text-gray-900 text-xs focus:outline-none focus:border-accent" style="--tw-ring-color:#ff6a13" />
+        </label>
+        <label class="block">
+          <span class="text-gray-500">Téléphone</span>
+          <input id="sm-d-phone" type="tel" inputmode="tel" placeholder="—"
+            class="mt-0.5 w-full px-2 py-1 rounded border border-gray-300 bg-white text-gray-900 text-xs focus:outline-none focus:border-accent" />
+        </label>
+        <label class="block">
+          <span class="text-gray-500">Courriel</span>
+          <input id="sm-d-email" type="email" inputmode="email" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="—"
+            class="mt-0.5 w-full px-2 py-1 rounded border border-gray-300 bg-white text-gray-900 text-xs focus:outline-none focus:border-accent" />
+        </label>
+        <label class="block">
+          <span class="text-gray-500">Adresse</span>
+          <input id="sm-d-address" type="text" placeholder="—"
+            class="mt-0.5 w-full px-2 py-1 rounded border border-gray-300 bg-white text-gray-900 text-xs focus:outline-none focus:border-accent" />
+        </label>
+      </div>
+      <p class="mt-2 text-xs text-gray-700"><span class="text-gray-500">Projet :</span> <span id="sm-d-summary" class="text-gray-900">—</span></p>
+      <p class="mt-1.5 text-[10px] text-gray-500">Astuce : tapez votre courriel et téléphone — la voix les épelle souvent mal.</p>
+    </div>
+
+    <footer class="px-4 py-3 border-t border-gray-100 flex items-center gap-3">
+      <button id="sm-mic-toggle" disabled class="relative w-12 h-12 flex items-center justify-center rounded-full text-white shadow flex-shrink-0 disabled:opacity-50"
+              style="background: linear-gradient(135deg, #ff8a3d, #ff6a13)">
+        <span id="sm-mic-ping" class="hidden absolute inset-0 rounded-full bg-orange-300/60 sm-mic-ping pointer-events-none"></span>
+        <svg id="sm-mic-on" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="relative"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+        <svg id="sm-mic-off" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="relative hidden"><line x1="1" y1="1" x2="23" y2="23"/><path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V5a3 3 0 0 0-5.94-.6"/><path d="M17 16.95A7 7 0 0 1 5 12v-2m14 0v2a7 7 0 0 1-.11 1.23"/><line x1="12" y1="19" x2="12" y2="23"/></svg>
+      </button>
+      <p id="sm-status" class="flex-1 text-sm text-gray-600">Connexion…</p>
+      <button id="sm-finish" class="hidden px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-medium">Terminer</button>
+      <button id="sm-use-draft" class="hidden px-3 py-2 rounded-lg text-white text-xs font-bold shadow"
+              style="background-color:#ff6a13">Utiliser ce résumé</button>
+    </footer>
+  </div>
+</div>
+
+<!-- ESM importmap so the module script below can `import` @google/genai from a CDN -->
+<script type="importmap">
+  { "imports": { "@google/genai": "https://esm.sh/@google/genai@^1.0.0" } }
+</script>
+
+<script type="module">
+import { GoogleGenAI } from '@google/genai';
+
+(function() {
+  const VOICE_AVAILABLE = <%- JSON.stringify(!!voiceAvailable) %>;
+  const VOICE_TOKEN_URL = <%- JSON.stringify(mountPath + '/soumission/voice-token') %>;
+
+  // Build the soumission API URL from the live pathname rather than relying
+  // on `form.action` resolution. The platform's tenant HTML rewriter strips
+  // any leading-slash form action so that `<base href="/pwa/<slug>/">` can
+  // re-prefix it inside the tenant — but if EJS-rendered HTML already has
+  // the slug in the action (e.g. from an older `<%= mountPath %>/api/...`
+  // template that hasn't been re-deployed), the strip-then-base-resolve
+  // produces a doubled `/pwa/<slug>/pwa/<slug>/api/soumission` and every
+  // submit comes back as 404 "Not found" through the platform catch-all.
+  // Deriving from `window.location.pathname` sidesteps the rewriter
+  // entirely — we already know we're on `<mount>/soumission`, so swapping
+  // the last segment for `api/soumission` is the same target the route
+  // expects.
+  function getSoumissionApiUrl() {
+    const p = window.location.pathname || '/soumission';
+    return p.replace(/\/[^/]*$/, '/api/soumission');
+  }
+
+  // Build version marker — print to console on load so we can confirm in
+  // the browser that the deploy actually shipped this revision (and not a
+  // stale EJS-compiled or disk-materialized older version).
+  console.log('[Pavage Soumission] view rev: 2026-05-03-r18 — enlarged mic button + trust badges');
+
+  // Locale: French default; English if browser starts with "en".
+  const navLang = (navigator.language || navigator.userLanguage || 'fr').toLowerCase();
+  const LOCALE = navLang.startsWith('en') ? 'en' : 'fr';
+
+  const T = LOCALE === 'en' ? {
+    micLabel: 'Tap to talk · best experience',
+    micHint: 'Describe your project out loud — the assistant asks for name, email, phone, then prepares the summary.',
+    micButton: 'Start the voice conversation',
+    modalTitle: 'Voice quote request',
+    modalSubtitle: 'Describe your project — the assistant asks 3–5 questions and prepares the summary.',
+    statusConnecting: 'Connecting…',
+    statusListening: 'Listening — just start talking.',
+    statusSpeaking: 'Speaking…',
+    statusMuted: 'Mic off — tap the mic to resume.',
+    statusError: 'Something went wrong. Please try again.',
+    statusComplete: 'All set — review the summary and send when ready.',
+    finish: 'Finish',
+    useDraft: 'Use this summary',
+    closeBtn: 'Close',
+    youLabel: 'You',
+    aiLabel: 'Assistant',
+    formError: 'Please fill in name, email, phone, and a project description.',
+    successTitle: 'Got it — your request is on its way.',
+    fieldName: 'Name', fieldPhone: 'Phone', fieldEmail: 'Email', fieldAddress: 'Address', fieldProject: 'Project',
+  } : {
+    micLabel: 'Touchez pour parler · meilleure expérience',
+    micHint: "Décrivez votre projet à voix haute — l'assistant vous demande nom, courriel et téléphone, puis prépare le résumé.",
+    micButton: 'Démarrer la conversation vocale',
+    modalTitle: 'Demande de soumission par la voix',
+    modalSubtitle: "Décrivez votre projet — l'assistant pose 3–5 questions et prépare le résumé.",
+    statusConnecting: 'Connexion…',
+    statusListening: "J'écoute — parlez-moi.",
+    statusSpeaking: 'En train de parler…',
+    statusMuted: 'Micro coupé — appuyez sur le micro pour reprendre.',
+    statusError: "Une erreur est survenue. Veuillez réessayer.",
+    statusComplete: 'Parfait — vérifiez le résumé et envoyez quand vous êtes prêt.',
+    finish: 'Terminer',
+    useDraft: 'Utiliser ce résumé',
+    closeBtn: 'Fermer',
+    youLabel: 'Vous', aiLabel: 'Liasse',
+    formError: 'Veuillez remplir le nom, le courriel, le téléphone et la description.',
+    successTitle: 'Bien reçu — votre demande est en route.',
+    fieldName: 'Nom', fieldPhone: 'Téléphone', fieldEmail: 'Courriel', fieldAddress: 'Adresse', fieldProject: 'Projet',
+  };
+
+  // Localize hero copy
+  const labelEl = document.getElementById('sm-mic-label');
+  const hintEl = document.getElementById('sm-mic-hint');
+  const titleEl = document.getElementById('sm-modal-title');
+  const subtitleEl = document.getElementById('sm-modal-subtitle');
+  const finishBtn = document.getElementById('sm-finish');
+  const useDraftBtn = document.getElementById('sm-use-draft');
+  if (labelEl) labelEl.textContent = T.micLabel;
+  if (hintEl) hintEl.textContent = T.micHint;
+  if (titleEl) titleEl.textContent = T.modalTitle;
+  if (subtitleEl) subtitleEl.textContent = T.modalSubtitle;
+  if (finishBtn) finishBtn.textContent = T.finish;
+  if (useDraftBtn) useDraftBtn.textContent = T.useDraft;
+
+  // ----- DOM refs
+  const overlay = document.getElementById('sm-overlay');
+  const openBtn = document.getElementById('sm-open');
+  const closeBtn = document.getElementById('sm-close');
+  const messagesEl = document.getElementById('sm-messages');
+  const statusEl = document.getElementById('sm-status');
+  const micToggle = document.getElementById('sm-mic-toggle');
+  const micPing = document.getElementById('sm-mic-ping');
+  const micOnIcon = document.getElementById('sm-mic-on');
+  const micOffIcon = document.getElementById('sm-mic-off');
+  const dName = document.getElementById('sm-d-name');
+  const dEmail = document.getElementById('sm-d-email');
+  const dPhone = document.getElementById('sm-d-phone');
+  const dAddress = document.getElementById('sm-d-address');
+  const dSummary = document.getElementById('sm-d-summary');
+
+  // Form refs
+  const form = document.getElementById('sm-form');
+  const formError = document.getElementById('sm-form-error');
+  const fName = document.getElementById('sm-name');
+  const fEmail = document.getElementById('sm-email');
+  const fPhone = document.getElementById('sm-phone');
+  const fAddress = document.getElementById('sm-address');
+  const fMessage = document.getElementById('sm-message');
+
+  // ----- State
+  const state = {
+    session: null,
+    inputCtx: null, outputCtx: null,
+    micStream: null, micProcessor: null, micSource: null,
+    micMuted: false,
+    audioQueue: [],
+    audioPlaying: false,
+    nextAudioStartTime: 0,
+    draft: { name: '', email: '', phone: '', address: '', projectSummary: '', complete: false },
+    // Once the visitor types into a draft input, that field is locked
+    // against further Gemini tool-call updates — voice STT keeps
+    // mishearing email/phone and re-overwriting them otherwise.
+    userEdited: { name: false, email: false, phone: false, address: false },
+    closing: false,
+  };
+
+  function pushMessage(role, text) {
+    const div = document.createElement('div');
+    div.className = role === 'user' ? 'sm-msg sm-msg-user' : 'sm-msg sm-msg-ai';
+    div.textContent = text;
+    messagesEl.appendChild(div);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
+
+  function setStatus(kind) {
+    if (kind === 'connecting') statusEl.textContent = T.statusConnecting;
+    else if (kind === 'listening') statusEl.textContent = state.micMuted ? T.statusMuted : T.statusListening;
+    else if (kind === 'speaking') statusEl.textContent = T.statusSpeaking;
+    else if (kind === 'error') statusEl.textContent = T.statusError;
+    else if (kind === 'complete') statusEl.textContent = T.statusComplete;
+  }
+
+  // Draft inputs are user-editable; only set their .value from the
+  // model's draft when the user hasn't typed there yet. Anything
+  // already typed wins forever.
+  function renderDraft() {
+    if (!state.userEdited.name)    dName.value    = state.draft.name    || '';
+    if (!state.userEdited.email)   dEmail.value   = state.draft.email   || '';
+    if (!state.userEdited.phone)   dPhone.value   = state.draft.phone   || '';
+    if (!state.userEdited.address) dAddress.value = state.draft.address || '';
+    dSummary.textContent = state.draft.projectSummary || '—';
+    if (state.draft.complete) {
+      finishBtn.classList.add('hidden');
+      useDraftBtn.classList.remove('hidden');
+      setStatus('complete');
+    }
+  }
+
+  // The form is filled from whatever's currently in the modal inputs —
+  // user-typed values when the visitor corrected them, model values
+  // otherwise. Project summary always comes from the model (Gemini's
+  // narrative; user can still edit in the form below).
+  function applyDraftToForm() {
+    const get = (el) => (el.value || '').trim();
+    if (get(dName))    fName.value    = get(dName);
+    if (get(dEmail))   fEmail.value   = get(dEmail);
+    if (get(dPhone))   fPhone.value   = get(dPhone);
+    if (get(dAddress)) fAddress.value = get(dAddress);
+    if (state.draft.projectSummary) fMessage.value = state.draft.projectSummary;
+    closeModal();
+    setTimeout(() => { fMessage.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 100);
+  }
+
+  function closeModal() {
+    state.closing = true;
+    teardownSession();
+    overlay.classList.remove('sm-open');
+    document.body.style.overflow = '';
+  }
+
+  function openModal() {
+    if (!VOICE_AVAILABLE) return;
+    state.closing = false;
+    state.draft = { name: '', email: '', phone: '', address: '', projectSummary: '', complete: false };
+    state.userEdited = { name: false, email: false, phone: false, address: false };
+    // Pre-fill draft inputs from any values the visitor already typed
+    // into the form (lets a fast-mover seed name/email/phone, then
+    // describe the project by voice).
+    const seed = (el) => (el.value || '').trim();
+    dName.value    = seed(fName);
+    dPhone.value   = seed(fPhone);
+    dEmail.value   = seed(fEmail);
+    dAddress.value = seed(fAddress);
+    dSummary.textContent = '—';
+    state.userEdited.name    = !!seed(fName);
+    state.userEdited.phone   = !!seed(fPhone);
+    state.userEdited.email   = !!seed(fEmail);
+    state.userEdited.address = !!seed(fAddress);
+    state.micMuted = false;
+    messagesEl.innerHTML = '';
+    renderDraft();
+    finishBtn.classList.remove('hidden');
+    // "Use this summary" is available the whole time — visitor can
+    // wrap up at any moment, even with empty contact fields. They'll
+    // either type them in the form below or leave them blank if they
+    // already gave the info via voice / pre-fill.
+    useDraftBtn.classList.remove('hidden');
+    overlay.classList.add('sm-open');
+    document.body.style.overflow = 'hidden';
+    setStatus('connecting');
+    startSession().catch(err => {
+      console.error('[Soumission Voice] start failed:', err);
+      setStatus('error');
+    });
+  }
+
+  // Generic auth-gate. If the visitor is signed in (Bearer token alive),
+  // run callback() immediately. Otherwise launch TenantSDK.ui.showLogin
+  // and run callback() after a successful OTP. Always re-seeds the form
+  // identity from /auth/me on a fresh login so the visitor never has to
+  // re-type what they just OTP'd. Falls through to callback() if the
+  // SDK didn't load (server-side requireAuth returns 401 anyway).
+  async function ensureAuthenticated(callback) {
+    try { await window.TenantSDK?.ready; } catch(_) {}
+    const sdk = window.TenantSDK;
+    if (!sdk || !sdk.auth || !sdk.ui) { callback(); return; }
+    if (sdk.auth.isLoggedIn()) { callback(); return; }
+    sdk.ui.showLogin({
+      onSuccess: async function() {
+        try {
+          const me = await sdk.auth.getCurrentUser();
+          if (me) {
+            if (me.display_name && !fName.value)  fName.value  = me.display_name;
+            if (me.email        && !fEmail.value) fEmail.value = me.email;
+            if (me.phone        && !fPhone.value) fPhone.value = me.phone;
+          }
+        } catch(_) {}
+        callback();
+      },
+    });
+  }
+
+  // Gate the mic on platform login. If the visitor isn't signed in
+  // (no Bearer token), bring up TenantSDK.ui.showLogin first; on
+  // success, drop straight into the voice modal — same page, no reload.
+  function requestVoice() {
+    if (!VOICE_AVAILABLE) return;
+    ensureAuthenticated(openModal);
+  }
+
+  // ----- Audio plumbing (16kHz PCM in, 24kHz PCM out — Gemini Live spec) -----
+  async function ensureAudioContexts() {
+    if (!state.outputCtx) {
+      const Ctor = window.AudioContext || window.webkitAudioContext;
+      state.outputCtx = new Ctor({ sampleRate: 24000 });
+      state.nextAudioStartTime = state.outputCtx.currentTime;
+    }
+    if (state.outputCtx.state === 'suspended') await state.outputCtx.resume().catch(() => {});
+  }
+
+  function pcm16ToFloat32(pcm) {
+    const out = new Float32Array(pcm.length / 2);
+    const view = new DataView(pcm.buffer, pcm.byteOffset, pcm.byteLength);
+    for (let i = 0; i < out.length; i++) {
+      out[i] = view.getInt16(i * 2, true) / 32768;
+    }
+    return out;
+  }
+
+  function base64ToBytes(b64) {
+    const bin = atob(b64);
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return bytes;
+  }
+
+  function float32ToPcm16Base64(samples) {
+    const buf = new ArrayBuffer(samples.length * 2);
+    const view = new DataView(buf);
+    for (let i = 0; i < samples.length; i++) {
+      const s = Math.max(-1, Math.min(1, samples[i]));
+      view.setInt16(i * 2, s < 0 ? s * 32768 : s * 32767, true);
+    }
+    let bin = '';
+    const bytes = new Uint8Array(buf);
+    for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+    return btoa(bin);
+  }
+
+  function enqueueAudio(samples) {
+    state.audioQueue.push(samples);
+    playFromQueue();
+  }
+
+  async function playFromQueue() {
+    if (state.audioPlaying || state.audioQueue.length === 0) return;
+    state.audioPlaying = true;
+    setStatus('speaking');
+    while (state.audioQueue.length > 0) {
+      const samples = state.audioQueue.shift();
+      const buffer = state.outputCtx.createBuffer(1, samples.length, 24000);
+      buffer.copyToChannel(samples, 0);
+      const src = state.outputCtx.createBufferSource();
+      src.buffer = buffer;
+      src.connect(state.outputCtx.destination);
+      const startAt = Math.max(state.outputCtx.currentTime, state.nextAudioStartTime);
+      src.start(startAt);
+      state.nextAudioStartTime = startAt + buffer.duration;
+    }
+    // Wait until everything finishes playing
+    const remaining = (state.nextAudioStartTime - state.outputCtx.currentTime) * 1000;
+    setTimeout(() => {
+      state.audioPlaying = false;
+      if (state.audioQueue.length > 0) playFromQueue();
+      else setStatus('listening');
+    }, Math.max(0, remaining + 50));
+  }
+
+  async function wireMic() {
+    state.micStream = await navigator.mediaDevices.getUserMedia({
+      audio: { channelCount: 1, echoCancellation: true, noiseSuppression: true, autoGainControl: true },
+    });
+    const Ctor = window.AudioContext || window.webkitAudioContext;
+    state.inputCtx = new Ctor({ sampleRate: 16000 });
+    state.micSource = state.inputCtx.createMediaStreamSource(state.micStream);
+    state.micProcessor = state.inputCtx.createScriptProcessor(4096, 1, 1);
+    state.micSource.connect(state.micProcessor);
+    state.micProcessor.connect(state.inputCtx.destination);
+    state.micProcessor.onaudioprocess = (e) => {
+      if (state.micMuted || !state.session) return;
+      const samples = e.inputBuffer.getChannelData(0);
+      const b64 = float32ToPcm16Base64(samples);
+      try {
+        state.session.sendRealtimeInput({
+          audio: { data: b64, mimeType: 'audio/pcm;rate=16000' },
+        });
+      } catch (_) {}
+    };
+    micToggle.disabled = false;
+  }
+
+  function teardownSession() {
+    try { if (state.session && state.session.close) state.session.close(); } catch(_) {}
+    state.session = null;
+    try { if (state.micProcessor) { state.micProcessor.disconnect(); state.micProcessor.onaudioprocess = null; } } catch(_) {}
+    try { if (state.micSource) state.micSource.disconnect(); } catch(_) {}
+    try { if (state.inputCtx) state.inputCtx.close(); } catch(_) {}
+    try { if (state.micStream) state.micStream.getTracks().forEach(t => t.stop()); } catch(_) {}
+    state.audioQueue = [];
+    state.audioPlaying = false;
+    state.nextAudioStartTime = 0;
+    micToggle.disabled = true;
+    micPing.classList.add('hidden');
+  }
+
+  function handleLiveMessage(msg) {
+    if (msg.serverContent && msg.serverContent.modelTurn) {
+      const parts = msg.serverContent.modelTurn.parts || [];
+      for (const part of parts) {
+        if (part.inlineData && part.inlineData.data) {
+          const bytes = base64ToBytes(part.inlineData.data);
+          const samples = pcm16ToFloat32(bytes);
+          enqueueAudio(samples);
+        }
+      }
+    }
+    if (msg.serverContent && msg.serverContent.outputTranscription && msg.serverContent.outputTranscription.text) {
+      // append to last AI message or create a new one
+      const text = msg.serverContent.outputTranscription.text;
+      const last = messagesEl.lastElementChild;
+      if (last && last.classList.contains('sm-msg-ai') && !last.dataset.finished) {
+        last.textContent += text;
+      } else {
+        pushMessage('ai', text);
+      }
+    }
+    if (msg.serverContent && msg.serverContent.inputTranscription && msg.serverContent.inputTranscription.text) {
+      const text = msg.serverContent.inputTranscription.text;
+      const last = messagesEl.lastElementChild;
+      if (last && last.classList.contains('sm-msg-user') && !last.dataset.finished) {
+        last.textContent += text;
+      } else {
+        pushMessage('user', text);
+      }
+    }
+    if (msg.serverContent && msg.serverContent.turnComplete) {
+      const last = messagesEl.lastElementChild;
+      if (last) last.dataset.finished = '1';
+    }
+    // Tool call — Gemini wants to update the draft.
+    if (msg.toolCall && Array.isArray(msg.toolCall.functionCalls)) {
+      const responses = [];
+      for (const fc of msg.toolCall.functionCalls) {
+        if (fc.name === 'updateQuoteDraft') {
+          const args = fc.args || {};
+          // Honor user-typed values for contact fields. Voice STT
+          // mishears emails/phones repeatedly; once the visitor has
+          // typed the correct version into the draft input we treat
+          // it as authoritative and ignore further model updates.
+          state.draft = {
+            name:           state.userEdited.name    ? state.draft.name    : (args.name           || state.draft.name           || ''),
+            email:          state.userEdited.email   ? state.draft.email   : (args.email          || state.draft.email          || ''),
+            phone:          state.userEdited.phone   ? state.draft.phone   : (args.phone          || state.draft.phone          || ''),
+            address:        state.userEdited.address ? state.draft.address : (args.address        || state.draft.address        || ''),
+            projectSummary: args.projectSummary || state.draft.projectSummary || '',
+            complete:       !!args.complete,
+          };
+          renderDraft();
+          responses.push({ id: fc.id, name: fc.name, response: { ok: true } });
+        } else {
+          responses.push({ id: fc.id, name: fc.name, response: { ok: false, error: 'unknown tool' } });
+        }
+      }
+      try { state.session.sendToolResponse({ functionResponses: responses }); } catch(_) {}
+    }
+  }
+
+  async function startSession() {
+    await ensureAudioContexts();
+    // TenantSDK.fetch auto-attaches the Bearer token from the visitor's
+    // OTP login session — required by services.auth.requireAuth on
+    // /soumission/voice-token. Falls back to native fetch only if the
+    // SDK hasn't finished loading (the requireAuth check will then
+    // 401 and we surface the error).
+    const fetcher = (window.TenantSDK && window.TenantSDK.fetch) ? window.TenantSDK.fetch : fetch;
+    const tokenRes = await fetcher(VOICE_TOKEN_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ language: LOCALE }),
+    });
+    const tokenData = await tokenRes.json().catch(() => ({}));
+    if (!tokenRes.ok || !tokenData.token || !tokenData.model) {
+      setStatus('error');
+      return;
+    }
+
+    const ai = new GoogleGenAI({ apiKey: tokenData.token, httpOptions: { apiVersion: 'v1alpha' } });
+    const primer = LOCALE === 'fr'
+      ? 'Présente-toi en une phrase et demande une description du projet à soumettre.'
+      : 'Introduce yourself in one sentence and ask for a description of the project to quote.';
+
+    const sessionPromise = ai.live.connect({
+      model: tokenData.model,
+      config: { responseModalities: ['AUDIO'] },
+      callbacks: {
+        onopen: () => {
+          setStatus('listening');
+          wireMic().catch(err => {
+            console.error('[Soumission Voice] mic wire failed:', err);
+            setStatus('error');
+          });
+          sessionPromise.then(s => {
+            try { s.sendRealtimeInput({ text: primer }); } catch(_) {}
+          });
+        },
+        onmessage: handleLiveMessage,
+        onerror: (e) => { console.warn('[Soumission Voice] error:', e?.message || e); setStatus('error'); },
+        onclose: () => { if (!state.closing) setStatus('error'); },
+      },
+    });
+    state.session = await sessionPromise;
+  }
+
+  // ----- Wiring -----
+  if (openBtn && VOICE_AVAILABLE) {
+    openBtn.addEventListener('click', requestVoice);
+  }
+  closeBtn.addEventListener('click', closeModal);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && overlay.classList.contains('sm-open')) closeModal();
+  });
+  // Each draft input flips its userEdited flag the moment the visitor
+  // types. We also nudge Gemini in plain text so it doesn't keep
+  // re-asking or re-transcribing — the value the visitor typed is the
+  // truth from here on.
+  function bindDraftInput(el, key, label) {
+    if (!el) return;
+    el.addEventListener('input', () => {
+      const value = (el.value || '').trim();
+      state.userEdited[key] = value.length > 0;
+      state.draft[key] = value;
+    });
+    // On blur, tell Gemini what the visitor settled on so the model
+    // can move on instead of asking again.
+    el.addEventListener('blur', () => {
+      const value = (el.value || '').trim();
+      if (!value || !state.session) return;
+      try {
+        state.session.sendRealtimeInput({
+          text: (LOCALE === 'fr'
+            ? `Le visiteur a tapé son ${label} : "${value}". Merci de l'utiliser tel quel et de ne pas redemander.`
+            : `The visitor has typed their ${label}: "${value}". Use it as-is and don't ask again.`),
+        });
+      } catch (_) {}
+    });
+  }
+  bindDraftInput(dName,    'name',    LOCALE === 'fr' ? 'nom' : 'name');
+  bindDraftInput(dEmail,   'email',   LOCALE === 'fr' ? 'courriel' : 'email');
+  bindDraftInput(dPhone,   'phone',   LOCALE === 'fr' ? 'téléphone' : 'phone');
+  bindDraftInput(dAddress, 'address', LOCALE === 'fr' ? 'adresse' : 'address');
+
+  micToggle.addEventListener('click', () => {
+    state.micMuted = !state.micMuted;
+    micOnIcon.classList.toggle('hidden', state.micMuted);
+    micOffIcon.classList.toggle('hidden', !state.micMuted);
+    micPing.classList.toggle('hidden', state.micMuted);
+    setStatus('listening');
+  });
+  finishBtn.addEventListener('click', () => {
+    // Nudge the model to wrap up.
+    if (state.session) {
+      try {
+        state.session.sendRealtimeInput({
+          text: LOCALE === 'fr' ? "C'est tout pour moi — résume et termine." : "That's all from me — summarize and wrap up.",
+        });
+      } catch(_) {}
+    }
+  });
+  useDraftBtn.addEventListener('click', applyDraftToForm);
+
+  // Form submit — runs through ensureAuthenticated() so the visitor
+  // completes the platform OTP flow before the request goes out.
+  // TenantSDK.fetch attaches the Bearer token automatically; the
+  // requireAuth middleware on POST /api/soumission rejects anything
+  // without one.
+  async function performSubmit() {
+    try {
+      const fetcher = (window.TenantSDK && window.TenantSDK.fetch) ? window.TenantSDK.fetch : fetch;
+      const submitUrl = getSoumissionApiUrl();
+      // Keep the form's visible action attribute in sync so non-JS submits
+      // (very rare but possible if our handler throws before fetch fires)
+      // also hit the right URL.
+      try { form.action = submitUrl; } catch(_) {}
+      const res = await fetcher(submitUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: fName.value.trim(), email: fEmail.value.trim(), phone: fPhone.value.trim(),
+          address: fAddress.value.trim(), message: fMessage.value.trim(),
+        }),
+      });
+      // 401 means the visitor's session expired between gate-pass and
+      // submit (or never had one). Re-launch the login modal and
+      // retry the same submit on success.
+      if (res.status === 401) {
+        ensureAuthenticated(performSubmit);
+        return;
+      }
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || data.success === false) {
+        throw new Error(data.error || 'submit failed');
+      }
+      window.location.href = window.location.pathname + '?success=1';
+    } catch(err) {
+      formError.textContent = err.message || T.formError;
+      formError.classList.remove('hidden');
+    }
+  }
+
+  form.addEventListener('submit', (ev) => {
+    ev.preventDefault();
+    formError.classList.add('hidden');
+    if (!fName.value.trim() || !fEmail.value.trim() || !fPhone.value.trim() || !fMessage.value.trim()) {
+      formError.textContent = T.formError;
+      formError.classList.remove('hidden');
+      return;
+    }
+    ensureAuthenticated(performSubmit);
+  });
+})();
+</script>
+
+<%- include('partials/footer') %>

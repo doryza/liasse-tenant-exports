@@ -1,0 +1,50 @@
+<%- include('partials/admin-header', { pageTitle: 'Tableau de bord', currentPage: 'dashboard' }) %>
+<div class="admin-content">
+  <h1 class="admin-h1">Tableau de bord</h1>
+  <p class="admin-sub">Bienvenue dans votre console d'administration.</p>
+
+  <div class="stat-grid">
+    <div class="stat-card"><div class="stat-label">Visites totales</div><div class="stat-value"><%= stats.totalVisits %></div><div class="stat-sub"><%= stats.recentVisits %> ces 7 derniers jours</div></div>
+    <div class="stat-card"><div class="stat-label">Utilisateurs</div><div class="stat-value"><%= stats.userCount %></div><div class="stat-sub">comptes inscrits</div></div>
+    <div class="stat-card"><div class="stat-label">Notifications push</div><div class="stat-value"><%= stats.pushCount %></div><div class="stat-sub">abonnés</div></div>
+    <div class="stat-card highlight"><div class="stat-label">Nouvelles soumissions</div><div class="stat-value"><%= stats.newContacts %></div><div class="stat-sub"><%= stats.contacts %> au total</div></div>
+    <div class="stat-card highlight"><div class="stat-label">Nouvelles candidatures</div><div class="stat-value"><%= stats.newApplications %></div><div class="stat-sub"><%= stats.applications %> au total</div></div>
+  </div>
+
+  <h2 class="admin-h2">Modules de contenu</h2>
+  <div class="module-grid">
+    <a href="admin/services" class="module-card"><div class="module-icon">🧱</div><div><div class="module-title">Services</div><div class="module-count"><%= stats.services %> services</div></div></a>
+    <a href="admin/projects" class="module-card"><div class="module-icon">📷</div><div><div class="module-title">Projets</div><div class="module-count"><%= stats.projects %> projets</div></div></a>
+    <a href="admin/testimonials" class="module-card"><div class="module-icon">⭐</div><div><div class="module-title">Témoignages</div><div class="module-count"><%= stats.testimonials %> témoignages</div></div></a>
+    <a href="admin/jobs" class="module-card"><div class="module-icon">💼</div><div><div class="module-title">Emplois</div><div class="module-count"><%= stats.jobs %> postes</div></div></a>
+    <a href="admin/posts" class="module-card"><div class="module-icon">📝</div><div><div class="module-title">Articles</div><div class="module-count"><%= stats.posts %> articles</div></div></a>
+    <a href="admin/contacts" class="module-card"><div class="module-icon">📨</div><div><div class="module-title">Soumissions</div><div class="module-count"><%= stats.contacts %> reçues</div></div></a>
+    <a href="admin/applications" class="module-card"><div class="module-icon">👤</div><div><div class="module-title">Candidatures</div><div class="module-count"><%= stats.applications %> reçues</div></div></a>
+  </div>
+
+  <div class="two-col">
+    <div class="panel">
+      <h3>Soumissions récentes</h3>
+      <% if (recentContacts && recentContacts.length > 0) { %>
+        <ul class="recent-list">
+          <% recentContacts.forEach(function(c) { %>
+            <li><div class="r-name"><%= c.name || 'Anonyme' %></div><div class="r-meta"><%= c.email || '' %> · <%= fmtDate(c.created_at) %></div><div class="r-msg"><%= truncate(c.message, 100) %></div></li>
+          <% }); %>
+        </ul>
+        <a href="admin/contacts" class="see-all">Voir toutes les soumissions →</a>
+      <% } else { %><p class="empty">Aucune soumission pour le moment.</p><% } %>
+    </div>
+    <div class="panel">
+      <h3>Candidatures récentes</h3>
+      <% if (recentApplications && recentApplications.length > 0) { %>
+        <ul class="recent-list">
+          <% recentApplications.forEach(function(a) { %>
+            <li><div class="r-name"><%= a.name %></div><div class="r-meta"><%= a.position %> · <%= fmtDate(a.created_at) %></div><div class="r-msg"><%= a.email || '' %></div></li>
+          <% }); %>
+        </ul>
+        <a href="admin/applications" class="see-all">Voir toutes les candidatures →</a>
+      <% } else { %><p class="empty">Aucune candidature pour le moment.</p><% } %>
+    </div>
+  </div>
+</div>
+<%- include('partials/admin-footer') %>

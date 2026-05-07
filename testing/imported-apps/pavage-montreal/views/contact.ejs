@@ -1,0 +1,88 @@
+<%- include('partials/header') %>
+<section class="bg-brand text-white py-16" style="background-color:#111112">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-accent font-bold uppercase tracking-widest text-sm mb-2" style="color:#ff6a13"><%= settings.cta_quote_title || 'Soumission Gratuite' %></div>
+    <h1 class="text-4xl md:text-5xl font-extrabold mb-4">Nous contacter</h1>
+    <p class="text-lg text-gray-300 max-w-2xl"><%= settings.cta_quote_subtitle || 'Demandez votre estimation sans frais — réponse rapide garantie.' %></p>
+  </div>
+</section>
+
+<section class="py-16 bg-gray-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-3 gap-8">
+    <div class="lg:col-span-2">
+      <div class="bg-white rounded-lg shadow-lg p-6 md:p-10">
+        <h2 class="text-2xl font-extrabold text-brand mb-2">Demande de soumission</h2>
+        <p class="text-gray-600 mb-6">Remplissez le formulaire ci-dessous. Nous vous répondrons dans les plus brefs délais.</p>
+        <div id="successMsg" class="hidden bg-green-50 border border-green-200 text-green-800 p-4 rounded mb-6">
+          <strong class="block mb-1">✓ Demande envoyée avec succès !</strong>
+          <span class="text-sm">Merci de nous avoir contactés. Un membre de notre équipe vous joindra sous peu pour discuter de votre projet.</span>
+        </div>
+        <div id="errorMsg" class="hidden bg-red-50 border border-red-200 text-red-800 p-4 rounded mb-6 text-sm"></div>
+        <form id="contactForm" class="space-y-5">
+          <div class="grid md:grid-cols-2 gap-5">
+            <div>
+              <label class="block text-sm font-bold text-brand uppercase tracking-wide mb-2">Nom complet *</label>
+              <input type="text" name="name" required class="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent" placeholder="Votre nom">
+            </div>
+            <div>
+              <label class="block text-sm font-bold text-brand uppercase tracking-wide mb-2">Téléphone</label>
+              <input type="tel" name="phone" class="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:border-accent" placeholder="514-321-7325">
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-bold text-brand uppercase tracking-wide mb-2">Courriel</label>
+            <input type="email" name="email" class="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:border-accent" placeholder="votre@courriel.com">
+          </div>
+          <div>
+            <label class="block text-sm font-bold text-brand uppercase tracking-wide mb-2">Adresse du projet</label>
+            <input type="text" name="address" class="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:border-accent" placeholder="Rue, ville, code postal">
+          </div>
+          <div>
+            <label class="block text-sm font-bold text-brand uppercase tracking-wide mb-2">Décrivez votre projet *</label>
+            <textarea name="message" rows="5" required class="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:border-accent" placeholder="Type de travaux, dimensions approximatives, échéancier souhaité…"></textarea>
+          </div>
+          <button type="submit" id="submitBtn" class="w-full px-6 py-4 bg-accent text-white font-bold uppercase tracking-wide rounded hover:bg-accent-dark transition" style="background-color:#ff6a13;color:#fff">Envoyer ma demande</button>
+        </form>
+      </div>
+    </div>
+    <div class="space-y-6">
+      <div class="bg-brand text-white rounded-lg p-6" style="background-color:#111112">
+        <h3 class="text-xl font-extrabold mb-4">Coordonnées</h3>
+        <ul class="space-y-4 text-sm">
+          <% if (settings.business_address) { %><li><div class="text-accent text-xs uppercase font-bold tracking-wide mb-1" style="color:#ff8a3d">Adresse</div><%= settings.business_address %></li><% } %>
+          <% if (settings.contact_phone) { %><li><div class="text-accent text-xs uppercase font-bold tracking-wide mb-1" style="color:#ff8a3d">Téléphone</div><a href="tel:<%= (settings.contact_phone||'').replace(/[^0-9+]/g,'') %>" class="hover:text-accent text-lg font-bold"><%= settings.contact_phone %></a><% if (settings.contact_phone_alt) { %><br><span class="text-gray-300"><%= settings.contact_phone_alt %></span><% } %></li><% } %>
+          <% if (settings.contact_email) { %><li><div class="text-accent text-xs uppercase font-bold tracking-wide mb-1" style="color:#ff8a3d">Courriel</div><a href="mailto:<%= settings.contact_email %>" class="hover:text-accent"><%= settings.contact_email %></a></li><% } %>
+          <% if (settings.hours) { %><li><div class="text-accent text-xs uppercase font-bold tracking-wide mb-1" style="color:#ff8a3d">Heures d'ouverture</div><%= settings.hours %></li><% } %>
+        </ul>
+      </div>
+      <div class="bg-white rounded-lg p-6 border border-gray-200">
+        <h3 class="font-extrabold text-brand mb-3">Pourquoi nous choisir ?</h3>
+        <ul class="space-y-2 text-sm text-gray-700">
+          <li class="flex gap-2"><span class="text-accent font-bold" style="color:#ff6a13">✓</span><span>30+ ans d'expérience</span></li>
+          <li class="flex gap-2"><span class="text-accent font-bold" style="color:#ff6a13">✓</span><span>Soumission gratuite et sans engagement</span></li>
+          <li class="flex gap-2"><span class="text-accent font-bold" style="color:#ff6a13">✓</span><span>Équipe certifiée et assurée</span></li>
+          <li class="flex gap-2"><span class="text-accent font-bold" style="color:#ff6a13">✓</span><span>Garantie sur les travaux</span></li>
+          <li class="flex gap-2"><span class="text-accent font-bold" style="color:#ff6a13">✓</span><span>Service rapide et professionnel</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+document.getElementById('contactForm').addEventListener('submit', async function(e){
+  e.preventDefault();
+  var form=e.target, btn=document.getElementById('submitBtn'), succ=document.getElementById('successMsg'), err=document.getElementById('errorMsg');
+  err.classList.add('hidden'); succ.classList.add('hidden');
+  btn.disabled=true; btn.textContent='Envoi en cours…';
+  var data={name:form.name.value,email:form.email.value,phone:form.phone.value,address:form.address.value,message:form.message.value};
+  try {
+    var r=await fetch('api/contact',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+    var j=await r.json();
+    if (r.ok && j.success) { succ.classList.remove('hidden'); form.reset(); window.scrollTo({top:succ.offsetTop-100,behavior:'smooth'}); }
+    else { err.textContent=j.error||'Une erreur est survenue. Veuillez réessayer.'; err.classList.remove('hidden'); }
+  } catch(ex) { err.textContent='Erreur de connexion. Veuillez réessayer.'; err.classList.remove('hidden'); }
+  btn.disabled=false; btn.textContent='Envoyer ma demande';
+});
+</script>
+<%- include('partials/footer') %>

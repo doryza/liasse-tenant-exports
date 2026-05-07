@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#000000">
+  <title><%= settings.business_name || 'Pavage Montréal' %> — Soumission gratuite</title>
+
+  <meta property="og:title" content="<%= settings.business_name || 'Pavage Montréal' %>">
+  <meta property="og:description" content="Choisir un entrepreneur en pavage qui s'occupe de tout. Soumission gratuite.">
+  <meta property="og:type" content="website">
+
+  <style>
+    html, body { height: 100%; margin: 0; }
+    body {
+      background: #000;
+      color: #fff;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    }
+
+    .video-bg {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: 0;
+      background: #000;
+    }
+    .video-bg video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+      border: 0;
+    }
+
+    .scrim {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      background: linear-gradient(180deg,
+        rgba(0,0,0,0.55) 0%,
+        rgba(0,0,0,0.30) 38%,
+        rgba(0,0,0,0.75) 100%);
+    }
+
+    .content {
+      position: relative;
+      z-index: 2;
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 1.5rem;
+    }
+
+    .title {
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      line-height: 1.05;
+      font-size: clamp(2.25rem, 7.5vw, 5.25rem);
+      max-width: 18ch;
+      text-shadow: 0 2px 24px rgba(0,0,0,0.6);
+    }
+    .subtitle {
+      font-weight: 500;
+      margin-top: 1.1rem;
+      font-size: clamp(1.05rem, 2.4vw, 1.5rem);
+      max-width: 42ch;
+      text-shadow: 0 1px 12px rgba(0,0,0,0.55);
+      opacity: 0.95;
+    }
+
+    .cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-top: 2.25rem;
+      padding: 1rem 2rem;
+      background: #ff6a13;
+      color: #fff;
+      font-weight: 800;
+      font-size: clamp(1.05rem, 2vw, 1.25rem);
+      border-radius: 9999px;
+      text-decoration: none;
+      box-shadow: 0 10px 30px rgba(255, 106, 19, 0.45), 0 2px 6px rgba(0,0,0,0.4);
+      transition: transform 150ms ease, background-color 150ms ease;
+    }
+    .cta:hover { background: #e25a08; transform: translateY(-1px); }
+    .cta:active { transform: translateY(0); }
+    .cta .arrow { transition: transform 150ms ease; }
+    .cta:hover .arrow { transform: translateX(4px); }
+
+    .since {
+      position: absolute;
+      bottom: 1.25rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+      font-size: 0.75rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      opacity: 0.7;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+    }
+  </style>
+</head>
+<body>
+  <div class="video-bg" id="video-bg"></div>
+  <div class="scrim"></div>
+
+  <main class="content">
+    <h1 class="title" id="title">Choisir un entrepreneur en pavage<br>qui s'occupe de&nbsp;tout.</h1>
+    <p class="subtitle" id="subtitle">On partage notre savoir-faire — à commencer par votre soumission gratuite.</p>
+    <a class="cta" id="cta" href="<%= (typeof mountPath !== 'undefined' ? mountPath : '') %>/soumission">
+      <span id="cta-text">Entrer sur notre site</span>
+      <span class="arrow" aria-hidden="true">&rarr;</span>
+    </a>
+  </main>
+
+  <p class="since" id="since">Depuis 1991</p>
+
+  <script>
+    (function () {
+      var nav = (navigator.language || navigator.userLanguage || "fr").toLowerCase();
+      var lang = nav.indexOf("en") === 0 ? "en" : "fr";
+      document.documentElement.lang = lang;
+      if (lang === "en") {
+        document.getElementById("title").innerHTML = "Choosing a paving company<br>that does it&nbsp;all.";
+        document.getElementById("subtitle").textContent = "We share our know-how — starting with your free quote.";
+        document.getElementById("cta-text").textContent = "Enter our site";
+        document.getElementById("since").textContent = "Since 1991";
+        document.title = "<%= settings.business_name || 'Pavage Montréal' %> — Free quote";
+      }
+    })();
+
+    (function () {
+      var VIDEO_URL = "https://pub-1f03741254f54363b665374d765db3a8.r2.dev/pavagemontreal/Generated%20Video%20May%2002%2C%202026%20-%2011_45PM.mp4";
+      var bg = document.getElementById("video-bg");
+      var v = document.createElement("video");
+      v.autoplay = true;
+      v.muted = true;
+      v.defaultMuted = true;
+      v.loop = true;
+      v.playsInline = true;
+      v.setAttribute("playsinline", "");
+      v.setAttribute("webkit-playsinline", "");
+      v.setAttribute("muted", "");
+      v.preload = "auto";
+      v.src = VIDEO_URL;
+      bg.appendChild(v);
+      var play = function () { v.play().catch(function(){}); };
+      play();
+      document.addEventListener("touchstart", play, { once: true, passive: true });
+      document.addEventListener("click", play, { once: true });
+    })();
+  </script>
+</body>
+</html>

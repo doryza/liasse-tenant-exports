@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin — <%= settings.business_name || 'Pavage Montréal' %></title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body class="admin-body">
+<button id="sbToggle" class="sb-toggle" aria-label="Menu">☰</button>
+<aside class="sidebar" id="sidebar">
+  <div class="sb-brand">
+    <div class="sb-name"><%= settings.business_name || 'Pavage Montréal' %></div>
+    <div class="sb-sub">Administration</div>
+  </div>
+  <nav class="sb-nav">
+    <a href="admin" class="<%= currentPage==='dashboard' ? 'active' : '' %>">📊 Tableau de bord</a>
+    <a href="admin/services" class="<%= currentPage==='services' ? 'active' : '' %>">🧱 Services</a>
+    <a href="admin/projects" class="<%= currentPage==='projects' ? 'active' : '' %>">📷 Projets</a>
+    <a href="admin/testimonials" class="<%= currentPage==='testimonials' ? 'active' : '' %>">⭐ Témoignages</a>
+    <a href="admin/jobs" class="<%= currentPage==='jobs' ? 'active' : '' %>">💼 Emplois</a>
+    <a href="admin/posts" class="<%= currentPage==='posts' ? 'active' : '' %>">📝 Articles</a>
+    <a href="admin/contacts" class="<%= currentPage==='contacts' ? 'active' : '' %>">📨 Soumissions</a>
+    <a href="admin/sales-team" class="<%= currentPage==='sales-team' ? 'active' : '' %>">🤝 Équipe commerciale</a>
+    <a href="admin/applications" class="<%= currentPage==='applications' ? 'active' : '' %>">👤 Candidatures</a>
+  </nav>
+  <div class="sb-foot">
+    <a href="<%= (typeof mountPath !== 'undefined' ? mountPath : '') %>/accueil" class="sb-foot-link">← Voir le site</a>
+    <a href="admin/logout" class="sb-foot-link">Déconnexion</a>
+  </div>
+</aside>
+<main class="main">

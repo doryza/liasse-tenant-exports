@@ -1,0 +1,18 @@
+<%- include('partials/admin-header', { pageTitle: 'Projets', currentPage: 'projects' }) %>
+<div class="admin-content">
+  <div class="admin-head"><div><h1 class="admin-h1">Projets</h1><p class="admin-sub">Photos et descriptions de vos réalisations.</p></div><button class="btn-primary" onclick="openModal()">+ Nouveau projet</button></div>
+  <div id="list" class="data-grid"></div>
+</div>
+<div id="modal" class="modal hidden"><div class="modal-card"><div class="modal-head"><h2 id="mTitle">Nouveau projet</h2><button onclick="closeModal()" class="x">×</button></div><form id="form" class="modal-body"><input type="hidden" name="id"><label>Titre *<input name="title" required></label><label>Description<textarea name="description" rows="3"></textarea></label><label>Slug du service (ex: pave-uni)<input name="service_slug"></label><label>Lieu<input name="location" placeholder="Anjou, Montréal"></label><label>Image (URL)<input name="image_url"></label><label>Ordre<input name="sort_order" type="number" value="0"></label><div class="modal-foot"><button type="button" onclick="closeModal()" class="btn-ghost">Annuler</button><button type="submit" class="btn-primary">Enregistrer</button></div></form></div></div>
+<script>
+var items=[];
+async function load(){try{var r=await fetch('api/admin/projects');var d=await r.json();items=d.projects||[];render();}catch(e){document.getElementById('list').innerHTML='<p class="empty">Erreur de chargement.</p>';}}
+function render(){var l=document.getElementById('list');if(!items.length){l.innerHTML='<p class="empty">Aucun projet.</p>';return;}l.innerHTML=items.map(function(p){return '<div class="data-card"><div class="dc-img">'+(p.image_url?'<img src="'+p.image_url+'" alt="">':'')+'</div><div class="dc-body"><h3>'+(p.title||'')+'</h3><p>'+(p.description||'')+'</p><div class="dc-meta">'+(p.location||'')+' · '+(p.service_slug||'')+'</div><div class="dc-actions"><button onclick="editItem('+p.id+')" class="btn-ghost">Modifier</button><button onclick="delItem('+p.id+')" class="btn-danger">Supprimer</button></div></div></div>';}).join('');}
+function openModal(){document.getElementById('mTitle').textContent='Nouveau projet';document.getElementById('form').reset();document.getElementById('form').id.value='';document.getElementById('modal').classList.remove('hidden');}
+function closeModal(){document.getElementById('modal').classList.add('hidden');}
+function editItem(id){var p=items.find(function(x){return x.id===id;});if(!p)return;var f=document.getElementById('form');f.id.value=p.id;f.title.value=p.title||'';f.description.value=p.description||'';f.service_slug.value=p.service_slug||'';f.location.value=p.location||'';f.image_url.value=p.image_url||'';f.sort_order.value=p.sort_order||0;document.getElementById('mTitle').textContent='Modifier le projet';document.getElementById('modal').classList.remove('hidden');}
+async function delItem(id){if(!confirm('Supprimer ce projet ?'))return;await fetch('api/admin/projects/'+id,{method:'DELETE'});load();}
+document.getElementById('form').addEventListener('submit',async function(e){e.preventDefault();var f=e.target;var d={title:f.title.value,description:f.description.value,service_slug:f.service_slug.value,location:f.location.value,image_url:f.image_url.value,sort_order:Number(f.sort_order.value)||0};var url='api/admin/projects'+(f.id.value?'/'+f.id.value:'');var m=f.id.value?'PUT':'POST';await fetch(url,{method:m,headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});closeModal();load();});
+load();
+</script>
+<%- include('partials/admin-footer') %>

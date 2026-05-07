@@ -1,0 +1,736 @@
+{
+  "exportedAt": "2026-05-07T15:50:52.367Z",
+  "tables": {
+    "admin_users": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "password_hash",
+        "display_name",
+        "role",
+        "active",
+        "activation_token",
+        "invited_by",
+        "invite_token",
+        "invite_expires_at",
+        "last_login_at",
+        "is_active",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_invites": {
+      "columns": [
+        "id",
+        "email",
+        "token",
+        "role",
+        "status",
+        "invited_by",
+        "expires_at",
+        "accepted_at",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_webauthn_credentials": {
+      "columns": [
+        "id",
+        "admin_user_id",
+        "credential_id",
+        "public_key",
+        "counter",
+        "device_name",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_settings": {
+      "columns": [
+        "key",
+        "value",
+        "updated_at"
+      ],
+      "totalRows": 48,
+      "sampleRows": [
+        {
+          "key": "tagline",
+          "value": "Nous réparons, nettoyons et scellons tout… Nous sommes les spécialistes du pavage depuis 1991.",
+          "updated_at": "2026-05-03T02:51:17.928Z"
+        },
+        {
+          "key": "hero_title",
+          "value": "12 Services offerts",
+          "updated_at": "2026-05-03T02:51:17.935Z"
+        },
+        {
+          "key": "hero_subtitle",
+          "value": "Spécialistes du pavage depuis 1991 — Asphalte et Pavé-Uni",
+          "updated_at": "2026-05-03T02:51:17.944Z"
+        },
+        {
+          "key": "pillar",
+          "value": "Service, Qualité… Professionnalisme",
+          "updated_at": "2026-05-03T02:51:17.951Z"
+        },
+        {
+          "key": "about_title",
+          "value": "À propos de nous",
+          "updated_at": "2026-05-03T02:51:17.959Z"
+        },
+        {
+          "key": "banner_text",
+          "value": "30 ans d'expérience à votre service",
+          "updated_at": "2026-05-03T02:51:17.973Z"
+        },
+        {
+          "key": "hours",
+          "value": "Lundi au Samedi : 08h00 – 17h00",
+          "updated_at": "2026-05-03T02:51:18.015Z"
+        },
+        {
+          "key": "cta_quote_title",
+          "value": "Soumission Gratuite",
+          "updated_at": "2026-05-03T02:51:18.037Z"
+        },
+        {
+          "key": "cta_quote_subtitle",
+          "value": "Demandez votre estimation sans frais — réponse rapide garantie.",
+          "updated_at": "2026-05-03T02:51:18.045Z"
+        },
+        {
+          "key": "value_qualite_title",
+          "value": "Qualité",
+          "updated_at": "2026-05-03T02:51:18.052Z"
+        }
+      ]
+    },
+    "site_visits": {
+      "columns": [
+        "id",
+        "path",
+        "created_at"
+      ],
+      "totalRows": 839,
+      "sampleRows": [
+        {
+          "id": 1,
+          "path": "/",
+          "created_at": "2026-05-03T02:52:25.910Z"
+        },
+        {
+          "id": 2,
+          "path": "/services/conception",
+          "created_at": "2026-05-03T02:52:44.071Z"
+        },
+        {
+          "id": 3,
+          "path": "/",
+          "created_at": "2026-05-03T02:52:53.115Z"
+        },
+        {
+          "id": 4,
+          "path": "/nous-contacter",
+          "created_at": "2026-05-03T02:52:58.146Z"
+        },
+        {
+          "id": 5,
+          "path": "/emplois",
+          "created_at": "2026-05-03T02:53:06.976Z"
+        },
+        {
+          "id": 6,
+          "path": "/",
+          "created_at": "2026-05-03T02:53:52.163Z"
+        },
+        {
+          "id": 7,
+          "path": "/",
+          "created_at": "2026-05-03T03:08:12.547Z"
+        },
+        {
+          "id": 8,
+          "path": "/",
+          "created_at": "2026-05-03T03:09:56.874Z"
+        },
+        {
+          "id": 9,
+          "path": "/",
+          "created_at": "2026-05-03T03:10:16.408Z"
+        },
+        {
+          "id": 10,
+          "path": "/",
+          "created_at": "2026-05-03T03:10:28.018Z"
+        }
+      ]
+    },
+    "posts": {
+      "columns": [
+        "id",
+        "title",
+        "content",
+        "image_url",
+        "category",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Comment prolonger la durée de vie de votre asphalte",
+          "content": "Le scellement régulier de votre asphalte (tous les 2 à 3 ans) protège la surface contre les rayons UV, l'humidité et les sels de déglaçage. Un scellement préventif coûte une fraction d'un resurfaçage complet et peut doubler la longévité de votre stationnement.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777775419/tapavis_tenant_pavage-montreal/build_pavage-montreal_1777775419796.png",
+          "category": "Conseils",
+          "published": 1,
+          "created_at": "2026-05-03T02:51:18.344Z",
+          "updated_at": "2026-05-03T02:51:18.344Z"
+        },
+        {
+          "id": 2,
+          "title": "Pavé-Uni vs Asphalte : que choisir ?",
+          "content": "Le choix dépend de l'usage, du budget et de l'esthétique recherchée. L'asphalte est rapide à installer et économique. Le pavé-uni offre une apparence haut de gamme et permet des réparations localisées sans casser une surface entière.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777775430/tapavis_tenant_pavage-montreal/build_pavage-montreal_1777775430172.png",
+          "category": "Guide",
+          "published": 1,
+          "created_at": "2026-05-03T02:51:18.352Z",
+          "updated_at": "2026-05-03T02:51:18.352Z"
+        },
+        {
+          "id": 3,
+          "title": "Préparer votre projet pour le printemps",
+          "content": "L'automne est le moment idéal pour planifier vos travaux de pavage du printemps suivant. Contactez-nous dès maintenant pour réserver votre place dans notre calendrier de la saison.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777775421/tapavis_tenant_pavage-montreal/build_pavage-montreal_1777775421170.png",
+          "category": "Saison",
+          "published": 1,
+          "created_at": "2026-05-03T02:51:18.359Z",
+          "updated_at": "2026-05-03T02:51:18.359Z"
+        },
+        {
+          "id": 4,
+          "title": "30 ans d'expertise — Notre histoire",
+          "content": "Fondée en 1991, Pavage Company est née d'une passion familiale pour le travail bien fait. Trois décennies plus tard, nous demeurons fidèles aux valeurs qui nous ont menés ici : qualité, service et professionnalisme.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777775432/tapavis_tenant_pavage-montreal/build_pavage-montreal_1777775432100.png",
+          "category": "Entreprise",
+          "published": 1,
+          "created_at": "2026-05-03T02:51:18.366Z",
+          "updated_at": "2026-05-07T02:17:35.273Z"
+        }
+      ]
+    },
+    "services": {
+      "columns": [
+        "id",
+        "slug",
+        "title",
+        "subtitle",
+        "short_desc",
+        "long_desc",
+        "image_url",
+        "sort_order",
+        "featured",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 8,
+      "sampleRows": [
+        {
+          "id": 1,
+          "slug": "unite-mobile-reparation",
+          "title": "Unité mobile",
+          "subtitle": "Réparation d'asphalte rapide",
+          "short_desc": "Notre unité mobile se déplace partout pour des réparations d'asphalte rapides et durables, en toute saison.",
+          "long_desc": "Notre unité mobile spécialisée intervient rapidement sur votre site pour réparer nids-de-poule, fissures et zones endommagées. Solution efficace pour stationnements, voies d'accès et infrastructures qui ne peuvent attendre.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777775425/tapavis_tenant_pavage-montreal/build_pavage-montreal_1777775425802.png",
+          "sort_order": 1,
+          "featured": 1,
+          "created_at": "2026-05-03T02:51:18.129Z",
+          "updated_at": "2026-05-03T02:51:18.129Z"
+        },
+        {
+          "id": 2,
+          "slug": "unite-mobile-resurfacage",
+          "title": "Unité mobile",
+          "subtitle": "Resurfaçage",
+          "short_desc": "Resurfaçage professionnel sur place pour redonner vie à vos surfaces asphaltées usées.",
+          "long_desc": "Le resurfaçage prolonge la durée de vie de votre asphalte tout en restaurant son apparence. Idéal pour les surfaces présentant des signes d'usure mais dont la base demeure solide.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777775419/tapavis_tenant_pavage-montreal/build_pavage-montreal_1777775419796.png",
+          "sort_order": 2,
+          "featured": 1,
+          "created_at": "2026-05-03T02:51:18.137Z",
+          "updated_at": "2026-05-03T02:51:18.137Z"
+        },
+        {
+          "id": 3,
+          "slug": "asphalte-industriel",
+          "title": "Asphalte Industriel",
+          "subtitle": "Nids-de-poule",
+          "short_desc": "Réparation industrielle de nids-de-poule pour usines, entrepôts et zones de circulation lourde.",
+          "long_desc": "Surfaces soumises à des charges lourdes : nous utilisons des mélanges spécialement conçus pour résister au passage répété de camions et d'équipement industriel.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777775417/tapavis_tenant_pavage-montreal/build_pavage-montreal_1777775417499.png",
+          "sort_order": 3,
+          "featured": 1,
+          "created_at": "2026-05-03T02:51:18.145Z",
+          "updated_at": "2026-05-03T02:51:18.145Z"
+        },
+        {
+          "id": 4,
+          "slug": "asphalte-commercial",
+          "title": "Asphalte Commercial",
+          "subtitle": "Stationnements",
+          "short_desc": "Stationnements commerciaux clé en main : excavation, drainage, asphaltage, lignage.",
+          "long_desc": "De la planification au lignage final, nous réalisons des stationnements commerciaux durables qui valorisent votre propriété et améliorent l'expérience client.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777775428/tapavis_tenant_pavage-montreal/build_pavage-montreal_1777775428303.png",
+          "sort_order": 4,
+          "featured": 1,
+          "created_at": "2026-05-03T02:51:18.152Z",
+          "updated_at": "2026-05-03T02:51:18.152Z"
+        },
+        {
+          "id": 5,
+          "slug": "asphalte-souterrain",
+          "title": "Asphalte Souterrain",
+          "subtitle": "Condos et bâtiments",
+          "short_desc": "Asphalte souterrain pour stationnements de condos, immeubles à logements et bâtiments commerciaux.",
+          "long_desc": "Travaux spécialisés en milieu fermé avec ventilation contrôlée. Solutions adaptées aux contraintes des stationnements souterrains et garages d'immeubles.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777775430/tapavis_tenant_pavage-montreal/build_pavage-montreal_1777775430769.png",
+          "sort_order": 5,
+          "featured": 1,
+          "created_at": "2026-05-03T02:51:18.166Z",
+          "updated_at": "2026-05-03T02:51:18.166Z"
+        },
+        {
+          "id": 6,
+          "slug": "asphalte-residentielle",
+          "title": "Asphalte Résidentielle",
+          "subtitle": "Nouveau et réparation",
+          "short_desc": "Entrées résidentielles neuves ou réparées avec finition soignée et durable.",
+          "long_desc": "Que vous prépariez une nouvelle entrée ou souhaitiez restaurer l'existante, nous offrons un fini soigné qui rehausse l'apparence de votre propriété.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777775421/tapavis_tenant_pavage-montreal/build_pavage-montreal_1777775421170.png",
+          "sort_order": 6,
+          "featured": 1,
+          "created_at": "2026-05-03T02:51:18.173Z",
+          "updated_at": "2026-05-03T02:51:18.173Z"
+        },
+        {
+          "id": 7,
+          "slug": "pave-uni",
+          "title": "Pavé-Uni",
+          "subtitle": "Résidentiel, Commercial, Industriel, Municipal",
+          "short_desc": "Installation experte de pavé-uni pour tous types de projets : entrées, terrasses, places publiques.",
+          "long_desc": "Spécialistes du pavé-uni depuis plus de 30 ans. Conception, choix de matériaux, installation et scellement — un travail d'artisan pour un résultat exceptionnel.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777775430/tapavis_tenant_pavage-montreal/build_pavage-montreal_1777775430172.png",
+          "sort_order": 7,
+          "featured": 1,
+          "created_at": "2026-05-03T02:51:18.180Z",
+          "updated_at": "2026-05-03T02:51:18.180Z"
+        },
+        {
+          "id": 8,
+          "slug": "conception",
+          "title": "Conception",
+          "subtitle": "Avant / Après",
+          "short_desc": "Service de conception et transformation : visualisez votre projet avant les travaux.",
+          "long_desc": "Notre équipe vous accompagne dans la conception de votre projet avec des visuels avant/après pour vous aider à prendre la meilleure décision.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777775424/tapavis_tenant_pavage-montreal/build_pavage-montreal_1777775424542.png",
+          "sort_order": 8,
+          "featured": 1,
+          "created_at": "2026-05-03T02:51:18.191Z",
+          "updated_at": "2026-05-03T02:51:18.191Z"
+        }
+      ]
+    },
+    "projects": {
+      "columns": [
+        "id",
+        "title",
+        "description",
+        "service_slug",
+        "location",
+        "image_url",
+        "sort_order",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 8,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Stationnement commercial — Anjou",
+          "description": "Stationnement de 80 places refait à neuf : excavation, drainage, asphaltage et lignage.",
+          "service_slug": "asphalte-commercial",
+          "location": "Anjou, Montréal",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777775428/tapavis_tenant_pavage-montreal/build_pavage-montreal_1777775428303.png",
+          "sort_order": 1,
+          "created_at": "2026-05-03T02:51:18.198Z",
+          "updated_at": "2026-05-03T02:51:18.198Z"
+        },
+        {
+          "id": 2,
+          "title": "Réparation rapide — Boulevard Henri-Bourassa",
+          "description": "Intervention d'urgence avec notre unité mobile : 14 nids-de-poule réparés en une journée.",
+          "service_slug": "unite-mobile-reparation",
+          "location": "Montréal-Nord",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777775425/tapavis_tenant_pavage-montreal/build_pavage-montreal_1777775425802.png",
+          "sort_order": 2,
+          "created_at": "2026-05-03T02:51:18.205Z",
+          "updated_at": "2026-05-03T02:51:18.205Z"
+        },
+        {
+          "id": 3,
+          "title": "Entrée résidentielle — Rivière-des-Prairies",
+          "description": "Nouvelle entrée d'asphalte avec bordure de pavé-uni décorative.",
+          "service_slug": "asphalte-residentielle",
+          "location": "Rivière-des-Prairies",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777775421/tapavis_tenant_pavage-montreal/build_pavage-montreal_1777775421170.png",
+          "sort_order": 3,
+          "created_at": "2026-05-03T02:51:18.215Z",
+          "updated_at": "2026-05-03T02:51:18.215Z"
+        },
+        {
+          "id": 4,
+          "title": "Terrasse en pavé-uni — Laval",
+          "description": "Terrasse arrière en pavé-uni avec motif circulaire et joints scellés.",
+          "service_slug": "pave-uni",
+          "location": "Laval",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777775430/tapavis_tenant_pavage-montreal/build_pavage-montreal_1777775430172.png",
+          "sort_order": 4,
+          "created_at": "2026-05-03T02:51:18.223Z",
+          "updated_at": "2026-05-03T02:51:18.223Z"
+        },
+        {
+          "id": 5,
+          "title": "Stationnement souterrain — Condos Plateau",
+          "description": "Reprise complète d'un stationnement souterrain de 3 niveaux.",
+          "service_slug": "asphalte-souterrain",
+          "location": "Plateau-Mont-Royal",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777775430/tapavis_tenant_pavage-montreal/build_pavage-montreal_1777775430769.png",
+          "sort_order": 5,
+          "created_at": "2026-05-03T02:51:18.232Z",
+          "updated_at": "2026-05-03T02:51:18.232Z"
+        },
+        {
+          "id": 6,
+          "title": "Resurfaçage industriel — Saint-Léonard",
+          "description": "Resurfaçage de 4500 m² pour un site industriel à fort achalandage.",
+          "service_slug": "asphalte-industriel",
+          "location": "Saint-Léonard",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777775417/tapavis_tenant_pavage-montreal/build_pavage-montreal_1777775417499.png",
+          "sort_order": 6,
+          "created_at": "2026-05-03T02:51:18.240Z",
+          "updated_at": "2026-05-03T02:51:18.240Z"
+        },
+        {
+          "id": 7,
+          "title": "Allée commerciale — Centre commercial",
+          "description": "Resurfaçage des allées d'un centre commercial réalisé en travail de nuit.",
+          "service_slug": "unite-mobile-resurfacage",
+          "location": "Pointe-aux-Trembles",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777775419/tapavis_tenant_pavage-montreal/build_pavage-montreal_1777775419796.png",
+          "sort_order": 7,
+          "created_at": "2026-05-03T02:51:18.247Z",
+          "updated_at": "2026-05-03T02:51:18.247Z"
+        },
+        {
+          "id": 8,
+          "title": "Cour intérieure — Projet résidentiel",
+          "description": "Conception complète d'une cour avec pavé-uni, bordures et drainage intégré.",
+          "service_slug": "conception",
+          "location": "Mercier-Est",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777775424/tapavis_tenant_pavage-montreal/build_pavage-montreal_1777775424542.png",
+          "sort_order": 8,
+          "created_at": "2026-05-03T02:51:18.255Z",
+          "updated_at": "2026-05-03T02:51:18.255Z"
+        }
+      ]
+    },
+    "testimonials": {
+      "columns": [
+        "id",
+        "author",
+        "role",
+        "content",
+        "rating",
+        "image_url",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "author": "Marc Lévesque",
+          "role": "Propriétaire — Résidence",
+          "content": "Travail impeccable du début à la fin. L'équipe a été ponctuelle, propre et le résultat dépasse mes attentes. Je recommande sans hésiter.",
+          "rating": 5,
+          "image_url": null,
+          "published": 1,
+          "created_at": "2026-05-03T02:51:18.264Z",
+          "updated_at": "2026-05-03T02:51:18.264Z"
+        },
+        {
+          "id": 4,
+          "author": "Caroline Dubé",
+          "role": "Cliente résidentielle",
+          "content": "Mon entrée en pavé-uni est magnifique. Les conseils en conception nous ont permis de visualiser le résultat avant même les travaux.",
+          "rating": 5,
+          "image_url": null,
+          "published": 1,
+          "created_at": "2026-05-03T02:51:18.286Z",
+          "updated_at": "2026-05-03T02:51:18.286Z"
+        },
+        {
+          "id": 2,
+          "author": "Sylvie Tremblay",
+          "role": "Gestionnaire d'immeuble",
+          "content": "Pavage Company a refait notre stationnement souterrain : organisation parfaite, communication claire avec les locataires et finition de qualité.",
+          "rating": 5,
+          "image_url": null,
+          "published": 1,
+          "created_at": "2026-05-03T02:51:18.271Z",
+          "updated_at": "2026-05-07T02:17:35.267Z"
+        },
+        {
+          "id": 3,
+          "author": "Jean-François Boucher",
+          "role": "Directeur — Industriel",
+          "content": "Notre site demande une fiabilité absolue. Pavage Company livre toujours dans les délais et la qualité est constante depuis 8 ans.",
+          "rating": 5,
+          "image_url": null,
+          "published": 1,
+          "created_at": "2026-05-03T02:51:18.278Z",
+          "updated_at": "2026-05-07T02:17:35.267Z"
+        }
+      ]
+    },
+    "jobs": {
+      "columns": [
+        "id",
+        "title",
+        "description",
+        "requirements",
+        "location",
+        "employment_type",
+        "image_url",
+        "active",
+        "sort_order",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 6,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Installateur Pavé-Uni",
+          "description": "Nous recherchons un installateur expérimenté en pavé-uni pour rejoindre notre équipe. Travail varié sur des projets résidentiels, commerciaux et municipaux.",
+          "requirements": "3 ans d'expérience minimum • Maîtrise des techniques de pose • Esprit d'équipe • Permis de conduire valide",
+          "location": "Montréal et région",
+          "employment_type": "Temps plein",
+          "image_url": null,
+          "active": 1,
+          "sort_order": 1,
+          "created_at": "2026-05-03T02:51:18.294Z",
+          "updated_at": "2026-05-03T02:51:18.294Z"
+        },
+        {
+          "id": 2,
+          "title": "Ouvrier d'asphalte",
+          "description": "Ouvrier d'asphalte pour travaux de pose, réparation et resurfaçage. Saison de mars à novembre.",
+          "requirements": "Bonne forme physique • Expérience un atout • Ponctualité • Travail d'équipe",
+          "location": "Montréal",
+          "employment_type": "Temps plein saisonnier",
+          "image_url": null,
+          "active": 1,
+          "sort_order": 2,
+          "created_at": "2026-05-03T02:51:18.302Z",
+          "updated_at": "2026-05-03T02:51:18.302Z"
+        },
+        {
+          "id": 3,
+          "title": "Chauffeur classe 1",
+          "description": "Chauffeur classe 1 pour transport de matériaux et équipement entre les chantiers.",
+          "requirements": "Permis classe 1 valide • Dossier de conduite impeccable • 2 ans d'expérience",
+          "location": "Montréal et région",
+          "employment_type": "Temps plein",
+          "image_url": null,
+          "active": 1,
+          "sort_order": 3,
+          "created_at": "2026-05-03T02:51:18.311Z",
+          "updated_at": "2026-05-03T02:51:18.311Z"
+        },
+        {
+          "id": 4,
+          "title": "Opérateur de pelle",
+          "description": "Opérateur de pelle mécanique pour préparation de sols, excavation et travaux de terrassement.",
+          "requirements": "Carte de compétence ASP • 5 ans d'expérience • Précision et rigueur",
+          "location": "Montréal",
+          "employment_type": "Temps plein",
+          "image_url": null,
+          "active": 1,
+          "sort_order": 4,
+          "created_at": "2026-05-03T02:51:18.319Z",
+          "updated_at": "2026-05-03T02:51:18.319Z"
+        },
+        {
+          "id": 5,
+          "title": "Mécanicien diesel",
+          "description": "Mécanicien diesel pour entretien et réparation de notre flotte d'équipements lourds.",
+          "requirements": "DEP en mécanique • Expérience sur équipement lourd • Autonomie",
+          "location": "Atelier Rivière-des-Prairies",
+          "employment_type": "Temps plein",
+          "image_url": null,
+          "active": 1,
+          "sort_order": 5,
+          "created_at": "2026-05-03T02:51:18.326Z",
+          "updated_at": "2026-05-03T02:51:18.326Z"
+        },
+        {
+          "id": 6,
+          "title": "Vendeur",
+          "description": "Représentant des ventes pour développer les relations avec une clientèle commerciale et municipale.",
+          "requirements": "Expérience en vente B2B • Sens du service à la clientèle • Bilinguisme un atout",
+          "location": "Montréal",
+          "employment_type": "Temps plein",
+          "image_url": null,
+          "active": 1,
+          "sort_order": 6,
+          "created_at": "2026-05-03T02:51:18.333Z",
+          "updated_at": "2026-05-03T02:51:18.333Z"
+        }
+      ]
+    },
+    "contact_submissions": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "phone",
+        "address",
+        "message",
+        "status",
+        "created_at",
+        "user_id",
+        "assigned_to_sales_id",
+        "assigned_at"
+      ],
+      "totalRows": 1,
+      "sampleRows": [
+        {
+          "id": 2,
+          "name": "Paul Lecompte",
+          "email": "paul@liasse.tech",
+          "phone": "4508581310",
+          "address": "123 main",
+          "message": "Aidez moi a paver",
+          "status": "new",
+          "created_at": "2026-05-03T17:54:05.688Z",
+          "user_id": 6,
+          "assigned_to_sales_id": 4,
+          "assigned_at": "2026-05-03T17:54:47.755Z"
+        }
+      ]
+    },
+    "job_applications": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "phone",
+        "position",
+        "experience",
+        "message",
+        "status",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "sales_team_members": {
+      "columns": [
+        "id",
+        "full_name",
+        "email",
+        "phone",
+        "mobile",
+        "title",
+        "invite_token",
+        "invite_sent_at",
+        "invite_accepted_at",
+        "user_id",
+        "active",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "full_name": "Dory Zawahry",
+          "email": "doryzz@liasse.tech",
+          "phone": "",
+          "mobile": "4387630060",
+          "title": "Sales rep",
+          "invite_token": "5672d15b9ebb7c2cc44412aa6fd53929d977ba0977aefbf5",
+          "invite_sent_at": "2026-05-03T16:15:01.080Z",
+          "invite_accepted_at": null,
+          "user_id": null,
+          "active": 0,
+          "created_at": "2026-05-03T15:12:17.215Z",
+          "updated_at": "2026-05-03T16:25:34.722Z"
+        },
+        {
+          "id": 2,
+          "full_name": "Dory Zawahry",
+          "email": "doryz@liasse.tech",
+          "phone": "",
+          "mobile": "4387630060",
+          "title": "Sales rep",
+          "invite_token": "bac05d846036f6b86c2326a4c77ede0bfb70e6d17063d8d6",
+          "invite_sent_at": "2026-05-03T16:26:13.146Z",
+          "invite_accepted_at": "2026-05-03T16:27:11.235Z",
+          "user_id": 4,
+          "active": 0,
+          "created_at": "2026-05-03T16:26:13.146Z",
+          "updated_at": "2026-05-03T16:37:41.274Z"
+        },
+        {
+          "id": 3,
+          "full_name": "Dory Zawahry",
+          "email": "doryzzz@liasse.tech",
+          "phone": "",
+          "mobile": "4387630060",
+          "title": "Sales member",
+          "invite_token": "121ff7b87a6059e4e4d0fd075ed8e53a518349ef303ed5b4",
+          "invite_sent_at": "2026-05-03T16:39:10.726Z",
+          "invite_accepted_at": "2026-05-03T16:40:12.868Z",
+          "user_id": 5,
+          "active": 0,
+          "created_at": "2026-05-03T16:39:10.726Z",
+          "updated_at": "2026-05-03T17:33:27.931Z"
+        },
+        {
+          "id": 4,
+          "full_name": "Dory Zawahry",
+          "email": "doryzzzz@liasse.tech",
+          "phone": "",
+          "mobile": "4387630060",
+          "title": "Sales rep",
+          "invite_token": "d3d07fee688d5755fe147f367e41c25573b2c0d090f05536",
+          "invite_sent_at": "2026-05-03T17:33:20.922Z",
+          "invite_accepted_at": "2026-05-03T17:52:00.603Z",
+          "user_id": 2,
+          "active": 1,
+          "created_at": "2026-05-03T17:33:20.922Z",
+          "updated_at": "2026-05-03T21:35:43.470Z"
+        }
+      ]
+    }
+  }
+}

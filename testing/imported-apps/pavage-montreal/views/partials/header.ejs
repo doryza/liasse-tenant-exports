@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#111112">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="description" content="<%= settings.tagline || 'Spécialistes du pavage depuis 1991 — Asphalte et Pavé-Uni' %>">
+<title><%= (typeof pageTitle !== 'undefined' ? pageTitle + ' — ' : '') + (settings.business_name || 'Pavage Montréal') %></title>
+<link rel="manifest" href="manifest.json">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{colors:{brand:'#111112','brand-dark':'#000000','brand-light':'#2a2a2c',accent:'#ff6a13','accent-dark':'#e25a08'}, fontFamily:{sans:['Inter','system-ui','sans-serif']}}}}</script>
+<link rel="stylesheet" href="public/css/styles.css">
+<%# === Connexion-link interceptor ===
+    The platform's SDK auto-wires every [data-login-btn] (and any
+    text-matched "Connexion" link) to a default showLogin call whose
+    onSuccess does a page-reload — leaving the rep on /soumission after
+    OTP, which is exactly the bug we're fixing. Both our and the SDK's
+    listeners use document-capture; in capture phase listeners fire in
+    REGISTRATION ORDER, so whichever script runs first wins. The SDK
+    script is auto-injected by the platform right before </head> via a
+    `body.replace(/<\/head>/, '<script src="…/sdk.js">…</head>')`, so
+    placing this script earlier in <head> means its addEventListener
+    registers BEFORE the SDK's. We then call stopImmediatePropagation
+    to keep the SDK's auto-handler out of the way and run our own
+    showLogin with onSuccess: navigate to /mon-compte.
+
+    Earlier attempt (PR #40) put this in partials/footer.ejs — too
+    late. The SDK's listener registered first in that ordering and
+    its stopImmediatePropagation kept ours from firing. Moving the
+    same logic up here is the actual fix. %>
+<script>
+(function () {
+  if (window.__pavageConnexionRedirect) return;
+  window.__pavageConnexionRedirect = true;
+  var MON_COMPTE = '<%= (typeof mountPath !== "undefined" ? mountPath : "") %>/mon-compte';
+
+  document.addEventListener('click', function (ev) {
+    if (!ev.target || ev.target.nodeType !== 1) return;
+    var loginBtn = ev.target.closest && ev.target.closest('[data-login-btn]');
+    var authOnly = ev.target.closest && ev.target.closest('[data-auth-only]');
+    // SDK's own modal internals — skip clicks coming from inside any
+    // tsdk overlay so we don't accidentally hijack their close buttons.
+    var insideOverlay =
+      (loginBtn && loginBtn.closest('#tsdk-login-overlay')) ||
+      (loginBtn && loginBtn.closest('#tsdk-post-login-overlay')) ||
+      (authOnly && authOnly.closest('#tsdk-login-overlay')) ||
+      (authOnly && authOnly.closest('#tsdk-post-login-overlay'));
+    if (insideOverlay) return;
+
+    if (loginBtn) {
+      // Connexion link — open the OTP modal and redirect to /mon-compte
+      // after success.
+      ev.preventDefault();
+      ev.stopPropagation();
+      ev.stopImmediatePropagation();
+      function tryShowLogin() {
+        var sdk = window.TenantSDK;
+        if (!sdk || !sdk.ui || !sdk.ui.showLogin) return false;
+        if (sdk.auth && sdk.auth.isLoggedIn && sdk.auth.isLoggedIn()) {
+          window.location.href = MON_COMPTE;
+          return true;
+        }
+        sdk.ui.showLogin({
+          onSuccess: function () { window.location.href = MON_COMPTE; },
+        });
+        return true;
+      }
+      if (!tryShowLogin()) {
+        // SDK script comes right after this one in <head>; the retry
+        // is belt-and-suspenders for rage-click-during-boot.
+        var tries = 0;
+        var t = setInterval(function () {
+          tries++;
+          if (tryShowLogin() || tries > 30) clearInterval(t);
+        }, 100);
+      }
+      return;
+    }
+
+    if (authOnly) {
+      // [data-auth-only] links (e.g. "Mon compte") — let them navigate
+      // normally. The SDK's auto-wire treats "mon compte" as a login
+      // keyword (it's in LOGIN_KEYWORDS) and would otherwise call
+      // preventDefault + showLogin, which on certain pages manifests as
+      // "click does nothing but refresh" because safeReload runs on
+      // already-authenticated users. We stopImmediatePropagation to
+      // suppress the SDK's listener but we do NOT preventDefault — the
+      // browser navigates to the href as the user expects.
+      ev.stopImmediatePropagation();
+      // Don't preventDefault.
+    }
+  }, true);
+})();
+</script>
+</head>
+<body class="bg-white text-gray-900 antialiased">
+<header class="bg-white border-b border-gray-100 sticky top-0 z-40 shadow-sm">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-20">
+      <a href="<%= (typeof mountPath !== 'undefined' ? mountPath : '') %>/accueil" class="flex items-center gap-3">
+        <% var logoSrc=(typeof settings!=='undefined' && settings._p_nav_logo_url) ? settings._p_nav_logo_url : (typeof appIconUrl!=='undefined' && appIconUrl ? appIconUrl : ''); %>
+        <% if (logoSrc) { %><img src="<%= logoSrc %>" alt="Logo" class="h-14 w-auto object-contain"><% } else { %><div class="h-14 w-14 bg-accent rounded-md flex items-center justify-center text-white font-bold text-lg">P</div><% } %>
+        <div>
+          <div class="text-lg font-extrabold text-brand leading-tight"><%= settings.business_name || 'Pavage Montréal' %></div>
+          <div class="text-xs text-gray-500 hidden sm:block">Depuis 1991</div>
+        </div>
+      </a>
+      <nav class="hidden lg:flex items-center gap-1">
+        <a href="<%= (typeof mountPath !== 'undefined' ? mountPath : '') %>/accueil" class="px-4 py-2 text-sm font-semibold uppercase tracking-wide hover:text-accent transition">Accueil</a>
+        <a href="a-propos" class="px-4 py-2 text-sm font-semibold uppercase tracking-wide hover:text-accent transition">À propos</a>
+        <a href="nos-projets" class="px-4 py-2 text-sm font-semibold uppercase tracking-wide hover:text-accent transition">Nos projets</a>
+        <a href="emplois" class="px-4 py-2 text-sm font-semibold uppercase tracking-wide hover:text-accent transition">Emplois</a>
+        <a href="nous-contacter" class="px-4 py-2 text-sm font-semibold uppercase tracking-wide hover:text-accent transition">Nous contacter</a>
+        <a href="<%= (typeof mountPath !== 'undefined' ? mountPath : '') %>/soumission" class="ml-3 px-5 py-2.5 bg-accent text-white text-sm font-bold uppercase tracking-wide rounded hover:bg-accent-dark transition" style="background-color:#ff6a13;color:#fff">Soumission gratuite</a>
+        <a href="#" data-login-btn class="ml-2 px-3 py-2 text-sm font-semibold text-gray-700 hover:text-accent transition">Connexion</a>
+        <a href="<%= (typeof mountPath !== 'undefined' ? mountPath : '') %>/mon-compte" data-auth-only style="display:none" class="ml-2 px-3 py-2 text-sm font-semibold text-gray-700 hover:text-accent">Mon compte</a>
+      </nav>
+      <button id="hamburgerBtn" aria-label="Menu" class="lg:hidden p-2 text-brand">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+  <div id="mobileMenu" class="lg:hidden hidden border-t border-gray-100 bg-white">
+    <div class="px-4 py-3 space-y-1">
+      <a href="<%= (typeof mountPath !== 'undefined' ? mountPath : '') %>/accueil" class="block px-3 py-2.5 text-sm font-semibold uppercase tracking-wide hover:bg-gray-50 rounded">Accueil</a>
+      <a href="a-propos" class="block px-3 py-2.5 text-sm font-semibold uppercase tracking-wide hover:bg-gray-50 rounded">À propos</a>
+      <a href="nos-projets" class="block px-3 py-2.5 text-sm font-semibold uppercase tracking-wide hover:bg-gray-50 rounded">Nos projets</a>
+      <a href="emplois" class="block px-3 py-2.5 text-sm font-semibold uppercase tracking-wide hover:bg-gray-50 rounded">Emplois</a>
+      <a href="nous-contacter" class="block px-3 py-2.5 text-sm font-semibold uppercase tracking-wide hover:bg-gray-50 rounded">Nous contacter</a>
+      <a href="<%= (typeof mountPath !== 'undefined' ? mountPath : '') %>/soumission" class="block px-3 py-2.5 text-sm font-bold uppercase tracking-wide bg-accent text-white rounded text-center mt-2" style="background-color:#ff6a13;color:#fff">Soumission gratuite</a>
+      <a href="#" data-login-btn class="block px-3 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 rounded">Connexion</a>
+      <a href="<%= (typeof mountPath !== 'undefined' ? mountPath : '') %>/mon-compte" data-auth-only style="display:none" class="block px-3 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 rounded">Mon compte</a>
+    </div>
+  </div>
+</header>
+<script>
+(function(){
+  var btn=document.getElementById('hamburgerBtn'),menu=document.getElementById('mobileMenu');
+  if(btn&&menu){btn.addEventListener('click',function(){menu.classList.toggle('hidden');});}
+})();
+</script>

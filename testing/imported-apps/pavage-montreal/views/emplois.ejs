@@ -1,0 +1,104 @@
+<%- include('partials/header') %>
+<section class="bg-brand text-white py-16" style="background-color:#111112">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-accent font-bold uppercase tracking-widest text-sm mb-2" style="color:#ff6a13">Carrières</div>
+    <h1 class="text-4xl md:text-5xl font-extrabold mb-4">Joignez notre équipe</h1>
+    <p class="text-lg text-gray-300 max-w-2xl">Pavage Montréal recrute des professionnels passionnés. Découvrez nos postes ouverts et postulez en quelques clics.</p>
+  </div>
+</section>
+
+<section class="py-16 bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <h2 class="text-3xl font-extrabold text-brand mb-2">Postes ouverts</h2>
+    <p class="text-gray-600 mb-10">Cliquez sur un poste pour postuler.</p>
+    <% if (typeof jobs !== 'undefined' && jobs && jobs.length > 0) { %>
+      <div class="grid md:grid-cols-2 gap-5">
+        <% jobs.forEach(function(j) { %>
+          <div class="bg-white border border-gray-200 rounded-lg p-6 hover:border-accent transition">
+            <div class="flex items-start justify-between mb-3">
+              <h3 class="text-xl font-extrabold text-brand"><%= j.title %></h3>
+              <span class="px-3 py-1 bg-accent text-white text-xs font-bold uppercase rounded" style="background-color:#ff6a13;color:#fff"><%= j.employment_type || 'Temps plein' %></span>
+            </div>
+            <% if (j.location) { %><div class="text-sm text-gray-500 mb-3">📍 <%= j.location %></div><% } %>
+            <% if (j.description) { %><p class="text-sm text-gray-700 mb-3"><%= j.description %></p><% } %>
+            <% if (j.requirements) { %><div class="bg-gray-50 p-3 rounded text-sm text-gray-700 mb-4"><strong class="block text-xs uppercase tracking-wide text-brand mb-1">Exigences</strong><%= j.requirements %></div><% } %>
+            <button onclick="selectJob('<%= j.title.replace(/'/g, "\\'") %>')" class="w-full px-5 py-3 bg-brand text-white font-bold uppercase tracking-wide rounded hover:bg-brand-light transition" style="background-color:#111112;color:#fff">Postuler</button>
+          </div>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <div class="bg-gray-50 p-10 rounded-lg text-center"><p class="text-gray-500">Aucun poste ouvert pour le moment. Revenez bientôt !</p></div>
+    <% } %>
+  </div>
+</section>
+
+<section id="applySection" class="py-16 bg-gray-50">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="bg-white rounded-lg shadow-lg p-6 md:p-10">
+      <h2 class="text-2xl font-extrabold text-brand mb-2">Soumettre ma candidature</h2>
+      <p class="text-gray-600 mb-6">Remplissez le formulaire ci-dessous. Nous étudions toutes les candidatures avec attention.</p>
+      <div id="applySuccess" class="hidden bg-green-50 border border-green-200 text-green-800 p-4 rounded mb-6">
+        <strong class="block mb-1">✓ Candidature envoyée !</strong>
+        <span class="text-sm">Merci de votre intérêt. Notre équipe RH vous contactera si votre profil correspond à nos besoins.</span>
+      </div>
+      <div id="applyError" class="hidden bg-red-50 border border-red-200 text-red-800 p-4 rounded mb-6 text-sm"></div>
+      <form id="applyForm" class="space-y-5">
+        <div class="grid md:grid-cols-2 gap-5">
+          <div>
+            <label class="block text-sm font-bold text-brand uppercase tracking-wide mb-2">Nom complet *</label>
+            <input type="text" name="name" required class="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:border-accent">
+          </div>
+          <div>
+            <label class="block text-sm font-bold text-brand uppercase tracking-wide mb-2">Téléphone *</label>
+            <input type="tel" name="phone" required class="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:border-accent">
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-bold text-brand uppercase tracking-wide mb-2">Courriel *</label>
+          <input type="email" name="email" required class="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:border-accent">
+        </div>
+        <div>
+          <label class="block text-sm font-bold text-brand uppercase tracking-wide mb-2">Poste convoité *</label>
+          <select name="position" id="positionSelect" required class="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:border-accent">
+            <option value="">— Sélectionnez un poste —</option>
+            <% if (typeof jobs !== 'undefined' && jobs) { jobs.forEach(function(j) { %><option value="<%= j.title %>"><%= j.title %></option><% }); } %>
+            <option value="Autre">Autre / Candidature spontanée</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-bold text-brand uppercase tracking-wide mb-2">Années d'expérience</label>
+          <input type="text" name="experience" class="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:border-accent" placeholder="Ex. 5 ans en pavage commercial">
+        </div>
+        <div>
+          <label class="block text-sm font-bold text-brand uppercase tracking-wide mb-2">Message / Lettre de présentation</label>
+          <textarea name="message" rows="5" class="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:border-accent" placeholder="Parlez-nous de vous, vos expériences, vos atouts…"></textarea>
+        </div>
+        <button type="submit" id="applyBtn" class="w-full px-6 py-4 bg-accent text-white font-bold uppercase tracking-wide rounded hover:bg-accent-dark transition" style="background-color:#ff6a13;color:#fff">Envoyer ma candidature</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<script>
+function selectJob(title) {
+  var sel=document.getElementById('positionSelect');
+  if (sel) { for (var i=0;i<sel.options.length;i++) { if (sel.options[i].value===title) { sel.selectedIndex=i; break; } } }
+  var s=document.getElementById('applySection');
+  if (s) window.scrollTo({top:s.offsetTop-80,behavior:'smooth'});
+}
+document.getElementById('applyForm').addEventListener('submit', async function(e){
+  e.preventDefault();
+  var form=e.target, btn=document.getElementById('applyBtn'), succ=document.getElementById('applySuccess'), err=document.getElementById('applyError');
+  err.classList.add('hidden'); succ.classList.add('hidden');
+  btn.disabled=true; btn.textContent='Envoi en cours…';
+  var data={name:form.name.value,email:form.email.value,phone:form.phone.value,position:form.position.value,experience:form.experience.value,message:form.message.value};
+  try {
+    var r=await fetch('api/apply',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+    var j=await r.json();
+    if (r.ok && j.success) { succ.classList.remove('hidden'); form.reset(); window.scrollTo({top:succ.offsetTop-100,behavior:'smooth'}); }
+    else { err.textContent=j.error||'Une erreur est survenue.'; err.classList.remove('hidden'); }
+  } catch(ex) { err.textContent='Erreur de connexion. Veuillez réessayer.'; err.classList.remove('hidden'); }
+  btn.disabled=false; btn.textContent='Envoyer ma candidature';
+});
+</script>
+<%- include('partials/footer') %>

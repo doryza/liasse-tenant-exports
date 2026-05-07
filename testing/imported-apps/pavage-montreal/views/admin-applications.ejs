@@ -1,0 +1,14 @@
+<%- include('partials/admin-header', { pageTitle: 'Candidatures', currentPage: 'applications' }) %>
+<div class="admin-content">
+  <div class="admin-head"><div><h1 class="admin-h1">Candidatures reçues</h1><p class="admin-sub">Candidatures soumises pour les postes ouverts.</p></div></div>
+  <div id="list" class="sub-list"></div>
+</div>
+<script>
+var items=[];
+async function load(){try{var r=await fetch('api/admin/applications');var d=await r.json();items=d.applications||[];render();}catch(e){document.getElementById('list').innerHTML='<p class="empty">Erreur.</p>';}}
+function render(){var l=document.getElementById('list');if(!items.length){l.innerHTML='<p class="empty">Aucune candidature reçue.</p>';return;}l.innerHTML=items.map(function(a){var d=new Date(a.created_at).toLocaleString('fr-CA');return '<div class="sub-card '+(a.status==='new'?'new':'')+'"><div class="sub-head"><div><strong>'+(a.name||'')+'</strong>'+(a.status==='new'?' <span class="badge">Nouveau</span>':'')+'</div><div class="sub-date">'+d+'</div></div><div class="sub-meta"><strong>Poste:</strong> '+(a.position||'')+'</div><div class="sub-meta">'+(a.email?'<a href="mailto:'+a.email+'">'+a.email+'</a>':'')+(a.phone?' · <a href="tel:'+a.phone+'">'+a.phone+'</a>':'')+'</div>'+(a.experience?'<div class="sub-meta"><strong>Expérience:</strong> '+a.experience+'</div>':'')+(a.message?'<div class="sub-msg">'+a.message.replace(/\n/g,'<br>')+'</div>':'')+'<div class="sub-actions">'+(a.status==='new'?'<button onclick="mark('+a.id+',\'reviewed\')" class="btn-ghost">Marquer comme lu</button>':'<span class="sub-status">✓ Lu</span>')+'<button onclick="del('+a.id+')" class="btn-danger">Supprimer</button></div></div>';}).join('');}
+async function mark(id,s){await fetch('api/admin/applications/'+id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:s})});load();}
+async function del(id){if(!confirm('Supprimer ?'))return;await fetch('api/admin/applications/'+id,{method:'DELETE'});load();}
+load();
+</script>
+<%- include('partials/admin-footer') %>

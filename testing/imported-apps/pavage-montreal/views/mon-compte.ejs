@@ -1,0 +1,727 @@
+<%- include('partials/header') %>
+
+<style>
+  .mc-card { background:#fff; border:1px solid #f3f4f6; border-radius:1rem; box-shadow:0 1px 2px rgba(0,0,0,0.04); }
+  .mc-input { width:100%; padding:0.6rem 0.85rem; border:1px solid #d1d5db; border-radius:0.5rem; font-size:0.9rem; outline:none; }
+  .mc-input:focus { border-color:#ff6a13; box-shadow:0 0 0 3px rgba(255,106,19,0.15); }
+  .mc-btn { display:inline-flex; align-items:center; gap:0.5rem; padding:0.65rem 1.25rem; background:#ff6a13; color:#fff; font-weight:700; font-size:0.9rem; border-radius:0.5rem; text-decoration:none; border:0; cursor:pointer; }
+  .mc-btn:hover { background:#e25a08; }
+  .mc-btn:disabled { opacity:0.55; cursor:not-allowed; }
+  .mc-btn-ghost { background:transparent; color:#374151; border:1px solid #d1d5db; }
+  .mc-btn-ghost:hover { background:#f9fafb; }
+  .mc-badge { display:inline-flex; align-items:center; padding:0.15rem 0.55rem; border-radius:9999px; font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; }
+  .mc-badge-new { background:#dbeafe; color:#1e40af; }
+  .mc-badge-reviewed { background:#fef3c7; color:#92400e; }
+  .mc-badge-done { background:#d1fae5; color:#065f46; }
+  .mc-badge-default { background:#e5e7eb; color:#374151; }
+  .mc-badge-verified { background:#d1fae5; color:#065f46; }
+  .mc-badge-unverified { background:#fee2e2; color:#991b1b; }
+  /* Locked-input look used for sales-rep profile fields. The fields are
+     readonly server-side (and the client form has tabindex=-1 + readonly
+     so the visitor can't tab into them) — this just signals visually
+     that the field isn't editable and explains the contact-admin path. */
+  .mc-input-locked { background:#f9fafb; color:#6b7280; cursor:not-allowed; }
+  .mc-input-locked:focus { border-color:#d1d5db; box-shadow:none; }
+  .mc-lock { font-size:0.75rem; opacity:0.55; user-select:none; }
+  /* Tiny "Vérifier" button shown next to unverified badges so the rep
+     can OTP-confirm their second channel and unlock cross-channel
+     login (email-OR-mobile reaching the same sales-team account). */
+  .mc-verify-btn { display:inline-flex; align-items:center; gap:0.3rem; margin-left:0.5rem; padding:0.2rem 0.55rem; background:#fff; border:1px solid #ff6a13; color:#ff6a13; font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; border-radius:9999px; cursor:pointer; }
+  .mc-verify-btn:hover { background:#ff6a13; color:#fff; }
+  .mc-verify-btn:disabled { opacity:0.5; cursor:not-allowed; }
+  /* Inline OTP-code panel that pops below the field after sending. */
+  .mc-otp-panel { margin-top:0.5rem; padding:0.65rem 0.75rem; background:#fff7ed; border:1px solid #fed7aa; border-radius:0.5rem; display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; }
+  .mc-otp-panel input { flex:1; min-width:120px; padding:0.4rem 0.6rem; border:1px solid #d1d5db; border-radius:0.4rem; font-size:0.85rem; letter-spacing:0.15em; font-family:monospace; text-align:center; }
+  .mc-otp-panel input:focus { outline:none; border-color:#ff6a13; box-shadow:0 0 0 2px rgba(255,106,19,0.15); }
+  .mc-otp-panel-msg { font-size:0.7rem; color:#6b7280; flex-basis:100%; }
+  /* === Tab nav ===
+     Sales reps default to "Demandes assignées" (their day-to-day view);
+     regular users default to "Profil". Tabs are pure-CSS-friendly via
+     [data-tab-active] but we drive them with JS for keyboard/aria. */
+  .mc-tabs { display:flex; gap:0.25rem; border-bottom:1px solid #e5e7eb; margin-bottom:1.25rem; overflow-x:auto; -webkit-overflow-scrolling:touch; }
+  .mc-tab { display:inline-flex; align-items:center; gap:0.4rem; padding:0.7rem 1rem; background:transparent; border:0; border-bottom:2px solid transparent; color:#6b7280; font-size:0.9rem; font-weight:600; cursor:pointer; white-space:nowrap; }
+  .mc-tab:hover { color:#111; }
+  .mc-tab[aria-selected="true"] { color:#ff6a13; border-bottom-color:#ff6a13; }
+  .mc-tab .mc-tab-count { display:inline-flex; align-items:center; justify-content:center; min-width:1.25rem; height:1.25rem; padding:0 0.4rem; background:#f3f4f6; color:#6b7280; border-radius:9999px; font-size:0.7rem; font-weight:700; }
+  .mc-tab[aria-selected="true"] .mc-tab-count { background:rgba(255,106,19,0.12); color:#ff6a13; }
+  .mc-tab-panel { display:none; }
+  .mc-tab-panel.is-active { display:block; }
+</style>
+
+<main class="bg-gray-50 min-h-screen">
+  <section class="max-w-4xl mx-auto px-4 py-10 md:py-14">
+    <header class="mb-8">
+      <h1 id="mc-h1" class="text-3xl md:text-4xl font-extrabold text-brand tracking-tight">Mon compte</h1>
+      <p id="mc-h2" class="mt-2 text-gray-600">Vos coordonnées et l'historique de vos demandes de soumission.</p>
+    </header>
+
+    <% if (!signedIn) { %>
+      <div id="mc-login-gate" class="mc-card p-6 md:p-8 text-center">
+        <p id="mc-login-msg" class="text-gray-700 mb-4">Connectez-vous pour voir vos demandes et mettre à jour votre profil.</p>
+        <button id="mc-login-btn" class="mc-btn" type="button">
+          <span id="mc-login-btn-label">Se connecter</span>
+        </button>
+      </div>
+    <% } else { %>
+
+      <%# === Tabs ===
+          Layout (left → right):
+            • [Demandes assignées] — sales reps only, default for them
+            • Mes demandes — default for non-rep users
+            • Profil — always rightmost
+          Profile sits on the right because it's the least-used tab in
+          everyday flow; the rep's day-to-day is the leads + their own
+          submissions, the customer's day-to-day is reviewing requests
+          they've sent. %>
+      <% var hasSalesAccess = (typeof salesMember !== 'undefined' && salesMember); %>
+      <% var defaultTab = hasSalesAccess ? 'leads' : 'submissions'; %>
+      <nav class="mc-tabs" role="tablist" aria-label="Mon compte">
+        <% if (hasSalesAccess) { %>
+          <button type="button" role="tab" aria-controls="mc-pane-leads" aria-selected="<%= defaultTab === 'leads' ? 'true' : 'false' %>" data-mc-tab="leads" class="mc-tab" data-tab-label-fr="Demandes assignées" data-tab-label-en="Assigned leads">
+            <span data-tab-label>Demandes assignées</span>
+            <% if (assignedSubmissions && assignedSubmissions.length) { %><span class="mc-tab-count"><%= assignedSubmissions.length %></span><% } %>
+          </button>
+        <% } %>
+        <button type="button" role="tab" aria-controls="mc-pane-submissions" aria-selected="<%= defaultTab === 'submissions' ? 'true' : 'false' %>" data-mc-tab="submissions" class="mc-tab" data-tab-label-fr="Mes demandes" data-tab-label-en="My requests">
+          <span data-tab-label>Mes demandes</span>
+          <% if (submissions && submissions.length) { %><span class="mc-tab-count"><%= submissions.length %></span><% } %>
+        </button>
+        <button type="button" role="tab" aria-controls="mc-pane-profile" aria-selected="false" data-mc-tab="profile" class="mc-tab" data-tab-label-fr="Profil" data-tab-label-en="Profile">
+          <span data-tab-label>Profil</span>
+        </button>
+      </nav>
+
+      <div id="mc-pane-profile" class="mc-tab-panel" role="tabpanel" aria-labelledby="mc-tab-profile">
+      <!-- ============ Profile card ============ -->
+      <div class="mc-card p-6 md:p-8 mb-6">
+        <div class="flex items-start justify-between gap-4 mb-5">
+          <div>
+            <h2 id="mc-profile-h" class="text-lg font-bold text-gray-900">Vos coordonnées</h2>
+            <% if (typeof salesMember !== 'undefined' && salesMember) { %>
+              <p id="mc-profile-sub" class="text-sm text-gray-500 mt-0.5">Coordonnées synchronisées avec votre profil d'équipe commerciale. Pour les modifier, contactez votre administrateur.</p>
+            <% } else { %>
+              <p id="mc-profile-sub" class="text-sm text-gray-500 mt-0.5">Modifiez votre nom, courriel ou téléphone à tout moment.</p>
+            <% } %>
+          </div>
+        </div>
+
+        <%# When the user is an activated sales-team member, the profile
+            fields are admin-managed: locked to read-only with a help icon
+            that explains how to request a change. Regular users keep the
+            existing editable form unchanged. The lock is purely UI —
+            the platform's PATCH /auth/me endpoint isn't tenant-aware, so
+            even if a rep bypassed the readonly attribute they'd still
+            update their own users row, but the activation route would
+            backfill it back from the canonical sales_team_members entry
+            on the next page load (and the tooltip explains the path
+            forward anyway). %>
+        <% var profileLocked = (typeof salesMember !== 'undefined' && salesMember); %>
+
+        <form id="mc-profile-form" class="space-y-4">
+          <div>
+            <label for="mc-name" id="mc-label-name" class="block text-sm font-semibold text-gray-700 mb-1 flex items-center gap-1.5">
+              <span>Nom complet</span>
+              <% if (profileLocked) { %><span class="mc-lock" aria-hidden="true">🔒</span><% } %>
+            </label>
+            <input id="mc-name" name="display_name" type="text" class="mc-input <%= profileLocked ? 'mc-input-locked' : '' %>" value="<%= prefillUser.name %>" <%= profileLocked ? 'readonly tabindex="-1"' : '' %> />
+          </div>
+
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label for="mc-email" id="mc-label-email" class="block text-sm font-semibold text-gray-700 mb-1 flex items-center gap-1.5">
+                <span>Courriel</span>
+                <% if (profileLocked) { %><span class="mc-lock" aria-hidden="true">🔒</span><% } %>
+              </label>
+              <input id="mc-email" name="email" type="email" class="mc-input <%= profileLocked ? 'mc-input-locked' : '' %>" value="<%= prefillUser.email %>" <%= profileLocked ? 'readonly tabindex="-1"' : '' %> />
+              <% if (prefillUser.email) { %>
+                <div class="mt-1 flex items-center flex-wrap">
+                  <span class="inline-block mc-badge <%= prefillUser.email_verified ? 'mc-badge-verified' : 'mc-badge-unverified' %>" id="mc-email-badge">
+                    <%= prefillUser.email_verified ? 'Vérifié' : 'Non vérifié' %>
+                  </span>
+                  <% if (profileLocked && !prefillUser.email_verified) { %>
+                    <button type="button" class="mc-verify-btn" data-verify-channel="email" data-verify-target="<%= prefillUser.email %>">Vérifier maintenant</button>
+                  <% } %>
+                </div>
+                <div id="mc-email-otp-panel" class="mc-otp-panel" style="display:none">
+                  <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="------" data-otp-input="email" />
+                  <button type="button" class="mc-btn" data-otp-submit="email" style="padding:0.4rem 0.85rem;font-size:0.8rem">Confirmer</button>
+                  <span class="mc-otp-panel-msg" data-otp-msg="email"></span>
+                </div>
+              <% } %>
+            </div>
+            <div>
+              <label for="mc-phone" id="mc-label-phone" class="block text-sm font-semibold text-gray-700 mb-1 flex items-center gap-1.5">
+                <span>Téléphone</span>
+                <% if (profileLocked) { %><span class="mc-lock" aria-hidden="true">🔒</span><% } %>
+              </label>
+              <input id="mc-phone" name="phone" type="tel" class="mc-input <%= profileLocked ? 'mc-input-locked' : '' %>" value="<%= prefillUser.phone %>" <%= profileLocked ? 'readonly tabindex="-1"' : '' %> />
+              <% if (prefillUser.phone) { %>
+                <div class="mt-1 flex items-center flex-wrap">
+                  <span class="inline-block mc-badge <%= prefillUser.phone_verified ? 'mc-badge-verified' : 'mc-badge-unverified' %>" id="mc-phone-badge">
+                    <%= prefillUser.phone_verified ? 'Vérifié' : 'Non vérifié' %>
+                  </span>
+                  <% if (profileLocked && !prefillUser.phone_verified) { %>
+                    <button type="button" class="mc-verify-btn" data-verify-channel="phone" data-verify-target="<%= prefillUser.phone %>">Vérifier maintenant</button>
+                  <% } %>
+                </div>
+                <div id="mc-phone-otp-panel" class="mc-otp-panel" style="display:none">
+                  <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="------" data-otp-input="phone" />
+                  <button type="button" class="mc-btn" data-otp-submit="phone" style="padding:0.4rem 0.85rem;font-size:0.8rem">Confirmer</button>
+                  <span class="mc-otp-panel-msg" data-otp-msg="phone"></span>
+                </div>
+              <% } %>
+            </div>
+          </div>
+
+          <% if (profileLocked) { %>
+            <p id="mc-profile-note" class="text-xs text-gray-500 flex items-start gap-1.5">
+              <span class="text-base leading-none mt-0.5">ℹ️</span>
+              <span>Vos coordonnées sont gérées par votre administrateur (équipe commerciale). Pour les mettre à jour, contactez-le directement.</span>
+            </p>
+          <% } else { %>
+            <p id="mc-profile-note" class="text-xs text-gray-500">Modifier votre courriel ou téléphone met à jour votre profil mais marquera la nouvelle valeur comme « non vérifiée » jusqu'à votre prochaine connexion par code.</p>
+          <% } %>
+
+          <p id="mc-profile-error" class="hidden text-sm text-rose-600"></p>
+          <p id="mc-profile-success" class="hidden text-sm text-emerald-600"></p>
+
+          <div class="flex items-center justify-between gap-3">
+            <button type="button" id="mc-logout-btn" class="mc-btn mc-btn-ghost">
+              <span id="mc-logout-label">Se déconnecter</span>
+            </button>
+            <% if (!profileLocked) { %>
+              <button type="submit" id="mc-save-btn" class="mc-btn">
+                <span id="mc-save-label">Enregistrer</span>
+              </button>
+            <% } %>
+          </div>
+        </form>
+      </div>
+      </div><!-- /#mc-pane-profile -->
+
+      <% if (hasSalesAccess) { %>
+      <div id="mc-pane-leads" class="mc-tab-panel <%= defaultTab === 'leads' ? 'is-active' : '' %>" role="tabpanel" aria-labelledby="mc-tab-leads">
+        <!-- ============ Sales-rep assigned soumissions (shown only when
+                          signed-in user is an activated sales-team member) ============ -->
+        <div class="mc-card p-6 md:p-8 mb-6" style="border-left:4px solid #ff6a13">
+          <div class="flex items-start justify-between gap-4 mb-5">
+            <div>
+              <h2 id="mc-asg-h" class="text-lg font-bold text-gray-900">Demandes assignées <span class="text-xs uppercase tracking-wider text-accent" style="color:#ff6a13;font-weight:700">— équipe commerciale</span></h2>
+              <p id="mc-asg-sub" class="text-sm text-gray-500 mt-0.5">Soumissions clients que l'administration vous a assignées. Mettez à jour le statut au fur et à mesure du suivi.</p>
+            </div>
+          </div>
+
+          <div id="mc-asg-list">
+            <% if (!assignedSubmissions || assignedSubmissions.length === 0) { %>
+              <p id="mc-asg-empty" class="text-sm text-gray-500 italic py-6 text-center">Aucune soumission assignée pour le moment. Quand l'administration vous en assigne, elle apparaîtra ici.</p>
+            <% } else { %>
+              <ul class="space-y-3">
+                <% assignedSubmissions.forEach(function(s) {
+                  var statusKey = (s.status || 'new').toLowerCase();
+                  var badgeCls = ({
+                    new: 'mc-badge-new',
+                    contacted: 'mc-badge-default',
+                    quoted: 'mc-badge-reviewed',
+                    won: 'mc-badge-done',
+                    lost: 'mc-badge-default',
+                  })[statusKey] || 'mc-badge-default';
+                %>
+                  <li class="border border-gray-100 rounded-lg p-4 hover:bg-gray-50 transition" data-asg-id="<%= s.id %>">
+                    <details>
+                      <summary class="flex items-center justify-between gap-3 cursor-pointer list-none">
+                        <div class="flex-1 min-w-0">
+                          <div class="flex items-center gap-2 flex-wrap">
+                            <span class="text-sm font-semibold text-gray-900"><%= s.name || ('Demande #' + s.id) %></span>
+                            <span class="mc-badge <%= badgeCls %>" data-asg-status-badge><%= statusKey %></span>
+                          </div>
+                          <div class="text-xs text-gray-500 mt-1"><% if (s.assigned_at) { %>Assignée le <%= fmtDate(s.assigned_at) %> · <% } %>Reçue le <%= fmtDate(s.created_at) %></div>
+                          <div class="text-sm text-gray-700 mt-1 truncate"><%= truncate(s.message || '', 110) %></div>
+                        </div>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400 flex-shrink-0"><path d="m6 9 6 6 6-6"/></svg>
+                      </summary>
+                      <div class="mt-3 pt-3 border-t border-gray-100 text-sm text-gray-700 space-y-1.5">
+                        <% if (s.email) { %><div><span class="text-gray-500">Courriel : </span><a href="mailto:<%= s.email %>" style="color:#ff6a13" class="hover:underline"><%= s.email %></a></div><% } %>
+                        <% if (s.phone) { %><div><span class="text-gray-500">Téléphone : </span><a href="tel:<%= s.phone %>" style="color:#ff6a13" class="hover:underline"><%= s.phone %></a></div><% } %>
+                        <% if (s.address) { %><div><span class="text-gray-500">Adresse : </span><%= s.address %></div><% } %>
+                        <% if (s.message) { %>
+                          <div class="mt-2">
+                            <div class="text-gray-500 mb-1">Description du projet :</div>
+                            <div class="whitespace-pre-line bg-gray-50 rounded p-3 text-gray-800 text-sm"><%= s.message %></div>
+                          </div>
+                        <% } %>
+                        <div class="mt-3 flex items-center gap-2 flex-wrap">
+                          <label class="text-xs text-gray-500 font-semibold">Mettre à jour le statut :</label>
+                          <select class="mc-input" style="width:auto;font-size:0.8rem;padding:0.4rem 0.65rem" data-asg-status-select onchange="window.__mcUpdateAsgStatus(<%= s.id %>, this.value, this);">
+                            <option value="new"       <%= statusKey === 'new'       ? 'selected' : '' %>>Nouvelle</option>
+                            <option value="contacted" <%= statusKey === 'contacted' ? 'selected' : '' %>>Contactée</option>
+                            <option value="quoted"    <%= statusKey === 'quoted'    ? 'selected' : '' %>>Soumise</option>
+                            <option value="won"       <%= statusKey === 'won'       ? 'selected' : '' %>>Gagnée</option>
+                            <option value="lost"      <%= statusKey === 'lost'      ? 'selected' : '' %>>Perdue</option>
+                          </select>
+                          <span data-asg-msg class="text-xs text-gray-500"></span>
+                        </div>
+                      </div>
+                    </details>
+                  </li>
+                <% }); %>
+              </ul>
+            <% } %>
+          </div>
+        </div>
+      </div><!-- /#mc-pane-leads -->
+      <% } %>
+
+      <div id="mc-pane-submissions" class="mc-tab-panel <%= defaultTab === 'submissions' ? 'is-active' : '' %>" role="tabpanel" aria-labelledby="mc-tab-submissions">
+      <!-- ============ Submissions list ============ -->
+      <div class="mc-card p-6 md:p-8">
+        <div class="flex items-start justify-between gap-4 mb-5">
+          <div>
+            <h2 id="mc-subs-h" class="text-lg font-bold text-gray-900">Vos demandes</h2>
+            <p id="mc-subs-sub" class="text-sm text-gray-500 mt-0.5">L'historique complet de vos demandes de soumission et messages.</p>
+          </div>
+          <%# "Nouvelle demande" CTA hidden for sales reps — they're not the
+              consumer of the soumission form, they're the one fielding the
+              soumissions other people submit. Showing the button on their
+              own dashboard sends confusing signals about role. Regular
+              customers still get it. %>
+          <% if (!hasSalesAccess) { %>
+            <a id="mc-new-btn" class="mc-btn" href="<%= mountPath %>/soumission">
+              <span id="mc-new-label">Nouvelle demande</span>
+            </a>
+          <% } %>
+        </div>
+
+        <div id="mc-subs-list">
+          <% if (!submissions || submissions.length === 0) { %>
+            <% if (hasSalesAccess) { %>
+              <p id="mc-subs-empty" class="text-sm text-gray-500 italic py-6 text-center">Aucune demande personnelle de votre part — vos leads assignés sont dans l'onglet « Demandes assignées ».</p>
+            <% } else { %>
+              <p id="mc-subs-empty" class="text-sm text-gray-500 italic py-6 text-center">Vous n'avez encore envoyé aucune demande. Cliquez sur « Nouvelle demande » pour commencer.</p>
+            <% } %>
+          <% } else { %>
+            <ul class="space-y-3">
+              <% submissions.forEach(function(s) {
+                var statusKey = (s.status || 'new').toLowerCase();
+                var badgeCls = statusKey === 'new' ? 'mc-badge-new'
+                  : statusKey === 'reviewed' ? 'mc-badge-reviewed'
+                  : (statusKey === 'done' || statusKey === 'closed' || statusKey === 'completed') ? 'mc-badge-done'
+                  : 'mc-badge-default';
+              %>
+                <li class="border border-gray-100 rounded-lg p-4 hover:bg-gray-50 transition">
+                  <details>
+                    <summary class="flex items-center justify-between gap-3 cursor-pointer list-none">
+                      <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-2 flex-wrap">
+                          <span class="text-sm font-semibold text-gray-900">Demande #<%= s.id %></span>
+                          <span class="mc-badge <%= badgeCls %>" data-status-badge="<%= statusKey %>"><%= s.status || 'new' %></span>
+                        </div>
+                        <div class="text-xs text-gray-500 mt-1"><%= fmtDate(s.created_at) %></div>
+                        <div class="text-sm text-gray-700 mt-1 truncate"><%= truncate(s.message || '', 110) %></div>
+                      </div>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400 flex-shrink-0"><path d="m6 9 6 6 6-6"/></svg>
+                    </summary>
+                    <div class="mt-3 pt-3 border-t border-gray-100 text-sm text-gray-700 space-y-1.5">
+                      <% if (s.name) { %><div><span class="text-gray-500">Nom : </span><%= s.name %></div><% } %>
+                      <% if (s.email) { %><div><span class="text-gray-500">Courriel : </span><%= s.email %></div><% } %>
+                      <% if (s.phone) { %><div><span class="text-gray-500">Téléphone : </span><%= s.phone %></div><% } %>
+                      <% if (s.address) { %><div><span class="text-gray-500">Adresse : </span><%= s.address %></div><% } %>
+                      <% if (s.message) { %>
+                        <div class="mt-2">
+                          <div class="text-gray-500 mb-1">Message :</div>
+                          <div class="whitespace-pre-line bg-gray-50 rounded p-3 text-gray-800 text-sm"><%= s.message %></div>
+                        </div>
+                      <% } %>
+                    </div>
+                  </details>
+                </li>
+              <% }); %>
+            </ul>
+          <% } %>
+        </div>
+      </div>
+      </div><!-- /#mc-pane-submissions -->
+    <% } %>
+  </section>
+</main>
+
+<script>
+(function () {
+  // ── Bilingual labels ─────────────────────────────────────────
+  // The platform's <html lang> is stamped server-side, but the page copy
+  // is rendered in French by default. Mirror the soumission flow: detect
+  // navigator.language, swap the visible strings if the visitor reads English.
+  var nav = (navigator.language || navigator.userLanguage || 'fr').toLowerCase();
+  var lang = nav.indexOf('en') === 0 ? 'en' : 'fr';
+
+  // Some labels differ when the profile is locked (sales rep) — those
+  // variants live alongside the editable strings so we can swap a couple
+  // of lines without re-translating the whole T table.
+  var IS_PROFILE_LOCKED = <%- JSON.stringify((typeof salesMember !== 'undefined' && !!salesMember)) %>;
+
+  var T_FR = {
+    h1: 'Mon compte',
+    h2: 'Vos coordonnées et l’historique de vos demandes de soumission.',
+    loginMsg: 'Connectez-vous pour voir vos demandes et mettre à jour votre profil.',
+    loginBtn: 'Se connecter',
+    profileH: 'Vos coordonnées',
+    profileSub: IS_PROFILE_LOCKED
+      ? 'Coordonnées synchronisées avec votre profil d’équipe commerciale. Pour les modifier, contactez votre administrateur.'
+      : 'Modifiez votre nom, courriel ou téléphone à tout moment.',
+    labelName: 'Nom complet',
+    labelEmail: 'Courriel',
+    labelPhone: 'Téléphone',
+    profileNote: IS_PROFILE_LOCKED
+      ? 'Vos coordonnées sont gérées par votre administrateur (équipe commerciale). Pour les mettre à jour, contactez-le directement. Vous pouvez vérifier le canal secondaire (mobile ou courriel) pour pouvoir vous connecter avec l’un ou l’autre.'
+      : 'Modifier votre courriel ou téléphone met à jour votre profil mais marquera la nouvelle valeur comme « non vérifiée » jusqu’à votre prochaine connexion par code.',
+    lockTip: 'Pour modifier vos coordonnées, contactez votre administrateur.',
+    verifyBtn: 'Vérifier maintenant',
+    verifySending: 'Envoi du code…',
+    verifySent: 'Code envoyé. Entrez-le ci-dessous.',
+    verifyConfirm: 'Confirmer',
+    verifyConfirming: 'Vérification…',
+    verifySuccess: '✓ Vérifié',
+    verifyFailed: 'Code invalide.',
+    verifyError: 'Erreur. Réessayez.',
+    save: 'Enregistrer',
+    saving: 'Enregistrement…',
+    saved: 'Profil enregistré.',
+    logout: 'Se déconnecter',
+    subsH: 'Vos demandes',
+    subsSub: 'L’historique complet de vos demandes de soumission et messages.',
+    subsEmpty: IS_PROFILE_LOCKED
+      ? 'Aucune demande personnelle de votre part — vos leads assignés sont dans l’onglet « Demandes assignées ».'
+      : 'Vous n’avez encore envoyé aucune demande. Cliquez sur « Nouvelle demande » pour commencer.',
+    newBtn: 'Nouvelle demande',
+    statusNew: 'Nouvelle',
+    statusReviewed: 'Examinée',
+    statusDone: 'Terminée',
+  };
+  var T_EN = {
+    h1: 'My account',
+    h2: 'Your contact details and history of quote requests.',
+    loginMsg: 'Sign in to view your requests and update your profile.',
+    loginBtn: 'Sign in',
+    profileH: 'Your contact details',
+    profileSub: IS_PROFILE_LOCKED
+      ? 'Contact details are synced with your sales-team profile. To update them, please contact your administrator.'
+      : 'Update your name, email or phone any time.',
+    labelName: 'Full name',
+    labelEmail: 'Email',
+    labelPhone: 'Phone',
+    profileNote: IS_PROFILE_LOCKED
+      ? 'Your contact details are managed by your administrator (sales team). To update them, please contact them directly. You can verify the secondary channel (mobile or email) so you can sign in with either.'
+      : 'Editing your email or phone updates your profile but marks the new value as "unverified" until you sign in again with a code.',
+    lockTip: 'To update your contact details, please contact your administrator.',
+    verifyBtn: 'Verify now',
+    verifySending: 'Sending code…',
+    verifySent: 'Code sent. Enter it below.',
+    verifyConfirm: 'Confirm',
+    verifyConfirming: 'Verifying…',
+    verifySuccess: '✓ Verified',
+    verifyFailed: 'Invalid code.',
+    verifyError: 'Error. Try again.',
+    save: 'Save',
+    saving: 'Saving…',
+    saved: 'Profile saved.',
+    logout: 'Sign out',
+    subsH: 'Your requests',
+    subsSub: 'Full history of your quote requests and messages.',
+    subsEmpty: IS_PROFILE_LOCKED
+      ? 'No personal requests from you — your assigned leads are in the "Assigned leads" tab.'
+      : 'You haven’t sent any requests yet. Click "New request" to get started.',
+    newBtn: 'New request',
+    statusNew: 'New',
+    statusReviewed: 'Reviewed',
+    statusDone: 'Done',
+  };
+  var T = lang === 'en' ? T_EN : T_FR;
+  document.documentElement.lang = lang;
+
+  function set(id, txt) { var el = document.getElementById(id); if (el) el.textContent = txt; }
+  set('mc-h1', T.h1);
+  set('mc-h2', T.h2);
+  set('mc-login-msg', T.loginMsg);
+  set('mc-login-btn-label', T.loginBtn);
+  set('mc-profile-h', T.profileH);
+  set('mc-profile-sub', T.profileSub);
+  // Labels include the lock icon when profileLocked — set the visible
+  // span text without nuking the icon, and refresh the tooltip text.
+  function setLabelText(id, txt) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    var span = el.querySelector('span:first-child');
+    if (span) span.textContent = txt; else el.textContent = txt;
+  }
+  setLabelText('mc-label-name', T.labelName);
+  setLabelText('mc-label-email', T.labelEmail);
+  setLabelText('mc-label-phone', T.labelPhone);
+  document.querySelectorAll('.mc-lock').forEach(function (el) { el.title = T.lockTip; });
+  set('mc-profile-note', T.profileNote);
+  set('mc-save-label', T.save);
+  set('mc-logout-label', T.logout);
+  set('mc-subs-h', T.subsH);
+  set('mc-subs-sub', T.subsSub);
+  set('mc-subs-empty', T.subsEmpty);
+  set('mc-new-label', T.newBtn);
+
+  // Translate already-rendered status badges (server emitted raw status keys).
+  document.querySelectorAll('[data-status-badge]').forEach(function(b) {
+    var k = b.getAttribute('data-status-badge');
+    if (k === 'new') b.textContent = T.statusNew;
+    else if (k === 'reviewed') b.textContent = T.statusReviewed;
+    else if (k === 'done' || k === 'closed' || k === 'completed') b.textContent = T.statusDone;
+  });
+
+  // ── Sales-rep assigned-soumissions: localize section + status badges ─
+  var asgH = document.getElementById('mc-asg-h');
+  var asgSub = document.getElementById('mc-asg-sub');
+  var asgEmpty = document.getElementById('mc-asg-empty');
+  if (asgH) {
+    var ASG_STR = lang === 'en'
+      ? { h: 'Assigned requests', label: '— sales team', sub: 'Customer soumissions assigned to you. Update the status as you follow up.', empty: 'No assigned soumissions yet. They\'ll appear here once admin assigns them.' }
+      : { h: 'Demandes assignées', label: '— équipe commerciale', sub: 'Soumissions clients que l\'administration vous a assignées. Mettez à jour le statut au fur et à mesure du suivi.', empty: 'Aucune soumission assignée pour le moment. Quand l\'administration vous en assigne, elle apparaîtra ici.' };
+    asgH.innerHTML = ASG_STR.h + ' <span class="text-xs uppercase tracking-wider" style="color:#ff6a13;font-weight:700">' + ASG_STR.label + '</span>';
+    if (asgSub) asgSub.textContent = ASG_STR.sub;
+    if (asgEmpty) asgEmpty.textContent = ASG_STR.empty;
+    var ASG_BADGE = lang === 'en'
+      ? { new: 'New', contacted: 'Contacted', quoted: 'Quoted', won: 'Won', lost: 'Lost' }
+      : { new: 'Nouvelle', contacted: 'Contactée', quoted: 'Soumise', won: 'Gagnée', lost: 'Perdue' };
+    document.querySelectorAll('[data-asg-status-badge]').forEach(function (b) {
+      var k = (b.textContent || '').trim().toLowerCase();
+      if (ASG_BADGE[k]) b.textContent = ASG_BADGE[k];
+    });
+  }
+
+  // Status update for assigned soumissions — hits the /api/sales/* endpoint
+  // (requireSalesMember-gated server-side). Same surface the standalone
+  // /sales/dashboard used to call before unification.
+  window.__mcUpdateAsgStatus = async function (submissionId, newStatus, selectEl) {
+    var li = selectEl.closest('li[data-asg-id]');
+    var msg = li && li.querySelector('[data-asg-msg]');
+    var badge = li && li.querySelector('[data-asg-status-badge]');
+    if (msg) { msg.textContent = lang === 'en' ? 'Saving…' : 'Mise à jour…'; msg.style.color = '#6b7280'; }
+    try {
+      var fetcher = (window.TenantSDK && window.TenantSDK.fetch) ? window.TenantSDK.fetch : fetch;
+      var url = (window.location.pathname.replace(/\/[^/]*$/, '') || '') + '/api/sales/submissions/' + submissionId + '/status';
+      var res = await fetcher(url, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      var data = await res.json().catch(function(){ return {}; });
+      if (!res.ok || data.success === false) throw new Error(data.error || (lang === 'en' ? 'Update failed' : 'Échec de la mise à jour'));
+      if (msg) { msg.textContent = lang === 'en' ? 'Saved ✓' : 'Enregistré ✓'; msg.style.color = '#059669'; }
+      if (badge) {
+        var ASG_BADGE2 = lang === 'en'
+          ? { new: 'New', contacted: 'Contacted', quoted: 'Quoted', won: 'Won', lost: 'Lost' }
+          : { new: 'Nouvelle', contacted: 'Contactée', quoted: 'Soumise', won: 'Gagnée', lost: 'Perdue' };
+        badge.textContent = ASG_BADGE2[newStatus] || newStatus;
+        badge.classList.remove('mc-badge-new', 'mc-badge-reviewed', 'mc-badge-done', 'mc-badge-default');
+        var cls = ({
+          new: 'mc-badge-new',
+          contacted: 'mc-badge-default',
+          quoted: 'mc-badge-reviewed',
+          won: 'mc-badge-done',
+          lost: 'mc-badge-default',
+        })[newStatus] || 'mc-badge-default';
+        badge.classList.add(cls);
+      }
+      setTimeout(function () { if (msg) msg.textContent = ''; }, 2000);
+    } catch (e) {
+      if (msg) { msg.textContent = e.message || 'Erreur'; msg.style.color = '#dc2626'; }
+    }
+  };
+
+  // ── Tabs (Leads / Profile / Submissions) ────────────────────
+  // Localize tab labels then wire click → switch active panel.
+  // We also support deep-linking via URL hash (#leads, #profile,
+  // #submissions) so a "Voir mes demandes →" link from the soumission
+  // success banner can land on the right tab.
+  document.querySelectorAll('[data-mc-tab]').forEach(function (btn) {
+    var label = btn.querySelector('[data-tab-label]');
+    if (label) {
+      var key = lang === 'en' ? 'data-tab-label-en' : 'data-tab-label-fr';
+      var v = btn.getAttribute(key);
+      if (v) label.textContent = v;
+    }
+    btn.addEventListener('click', function () { switchTab(btn.getAttribute('data-mc-tab')); });
+  });
+  function switchTab(name) {
+    document.querySelectorAll('[data-mc-tab]').forEach(function (b) {
+      b.setAttribute('aria-selected', b.getAttribute('data-mc-tab') === name ? 'true' : 'false');
+    });
+    document.querySelectorAll('.mc-tab-panel').forEach(function (p) {
+      p.classList.toggle('is-active', p.id === 'mc-pane-' + name);
+    });
+    if (history && history.replaceState) {
+      try { history.replaceState(null, '', '#' + name); } catch(_) {}
+    }
+  }
+  // Honor URL hash on load (overrides server-side default-tab).
+  (function () {
+    var h = (window.location.hash || '').replace('#', '');
+    if (h && document.querySelector('[data-mc-tab="' + h + '"]')) {
+      switchTab(h);
+    }
+  })();
+
+  // ── Login gate (visitor landed here logged out) ─────────────
+  var loginBtn = document.getElementById('mc-login-btn');
+  if (loginBtn) {
+    loginBtn.addEventListener('click', async function () {
+      try { await window.TenantSDK?.ready; } catch(_) {}
+      var sdk = window.TenantSDK;
+      if (sdk && sdk.ui && sdk.ui.showLogin) {
+        sdk.ui.showLogin({
+          onSuccess: function () { window.location.reload(); },
+        });
+      }
+    });
+    // Auto-open the modal if the visitor explicitly hit a "please sign in"
+    // redirect — saves a click. Triggered when ?login=1 is on the URL.
+    if (/[?&]login=1\b/.test(window.location.search)) {
+      setTimeout(function(){ loginBtn.click(); }, 200);
+    }
+  }
+
+  // ── Logout ──────────────────────────────────────────────────
+  var logoutBtn = document.getElementById('mc-logout-btn');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', function () {
+      try { window.TenantSDK?.auth?.logout?.(); } catch(_) {}
+      window.location.href = '<%= mountPath %>/accueil';
+    });
+  }
+
+  // ── Verify secondary channel (sales reps) ─────────────────────
+  // Lets a rep OTP-confirm whichever channel admin entered but they
+  // didn't sign in with. Once verified, the platform's verify endpoint
+  // marks *_verified=1 on the SAME user record (because the phone/email
+  // already maps to it from the activation backfill), which means
+  // they can subsequently log in via EITHER email or mobile and
+  // reach the same sales-team account.
+  document.querySelectorAll('.mc-verify-btn').forEach(function (btn) {
+    btn.addEventListener('click', async function () {
+      var channel = btn.getAttribute('data-verify-channel'); // 'email' | 'phone'
+      var target = btn.getAttribute('data-verify-target') || '';
+      if (!target) return;
+      var panel = document.getElementById('mc-' + channel + '-otp-panel');
+      var msg = document.querySelector('[data-otp-msg="' + channel + '"]');
+      btn.disabled = true;
+      var origText = btn.textContent;
+      btn.textContent = T.verifySending;
+      try {
+        await window.TenantSDK?.ready;
+        var sdk = window.TenantSDK;
+        if (!sdk) throw new Error('SDK indisponible');
+        if (channel === 'phone') {
+          await sdk.auth.sendSmsCode(target);
+        } else {
+          await sdk.auth.sendEmailCode(target);
+        }
+        if (msg) { msg.textContent = T.verifySent + ' (' + target + ')'; msg.style.color = '#6b7280'; }
+        if (panel) panel.style.display = 'flex';
+        btn.style.display = 'none';
+      } catch (e) {
+        btn.disabled = false;
+        btn.textContent = origText;
+        alert(T.verifyError + ' ' + (e.message || ''));
+      }
+    });
+  });
+
+  document.querySelectorAll('[data-otp-submit]').forEach(function (sub) {
+    sub.addEventListener('click', async function () {
+      var channel = sub.getAttribute('data-otp-submit');
+      var input = document.querySelector('[data-otp-input="' + channel + '"]');
+      var msg = document.querySelector('[data-otp-msg="' + channel + '"]');
+      var btnEl = document.querySelector('[data-verify-channel="' + channel + '"]');
+      var target = btnEl ? btnEl.getAttribute('data-verify-target') : '';
+      var code = (input && input.value || '').trim();
+      if (!/^\d{4,8}$/.test(code)) {
+        if (msg) { msg.textContent = T.verifyFailed; msg.style.color = '#dc2626'; }
+        return;
+      }
+      sub.disabled = true;
+      var origText = sub.textContent;
+      sub.textContent = T.verifyConfirming;
+      try {
+        var sdk = window.TenantSDK;
+        var res = channel === 'phone'
+          ? await sdk.auth.verifySmsCode(target, code)
+          : await sdk.auth.verifyEmailCode(target, code);
+        if (res && (res.success === false)) throw new Error(res.error || 'Échec');
+        // SDK auto-stored the new token (same user_id; the existing user
+        // record already had this channel populated from the activation
+        // backfill, so the verify just flips the *_verified flag).
+        if (msg) { msg.textContent = T.verifySuccess; msg.style.color = '#059669'; }
+        // Reload so the badge re-renders as "Vérifié" and the button
+        // disappears for this channel.
+        setTimeout(function () { window.location.reload(); }, 600);
+      } catch (e) {
+        sub.disabled = false;
+        sub.textContent = origText;
+        if (msg) { msg.textContent = (e && e.message) || T.verifyFailed; msg.style.color = '#dc2626'; }
+      }
+    });
+  });
+
+  // Translate the "Vérifier maintenant" buttons to the active locale.
+  document.querySelectorAll('.mc-verify-btn').forEach(function (b) { b.textContent = T.verifyBtn; });
+  document.querySelectorAll('[data-otp-submit]').forEach(function (b) { b.textContent = T.verifyConfirm; });
+
+  // ── Profile save ────────────────────────────────────────────
+  var profileForm = document.getElementById('mc-profile-form');
+  if (profileForm) {
+    var nameInput = document.getElementById('mc-name');
+    var emailInput = document.getElementById('mc-email');
+    var phoneInput = document.getElementById('mc-phone');
+    var saveBtn = document.getElementById('mc-save-btn');
+    var saveLabel = document.getElementById('mc-save-label');
+    var errEl = document.getElementById('mc-profile-error');
+    var okEl = document.getElementById('mc-profile-success');
+
+    profileForm.addEventListener('submit', async function (ev) {
+      ev.preventDefault();
+      errEl.classList.add('hidden');
+      okEl.classList.add('hidden');
+      saveBtn.disabled = true;
+      saveLabel.textContent = T.saving;
+      try {
+        try { await window.TenantSDK?.ready; } catch(_) {}
+        var sdk = window.TenantSDK;
+        if (!sdk || !sdk.auth || !sdk.auth.updateProfile) throw new Error('SDK unavailable');
+        var updated = await sdk.auth.updateProfile({
+          display_name: (nameInput.value || '').trim(),
+          email: (emailInput.value || '').trim(),
+          phone: (phoneInput.value || '').trim(),
+        });
+        // Refresh verified badges from the server's response so the user
+        // sees that changing email/phone reset *_verified to 0.
+        var emailBadge = document.getElementById('mc-email-badge');
+        var phoneBadge = document.getElementById('mc-phone-badge');
+        function badge(el, verified, hasValue) {
+          if (!el) return;
+          if (!hasValue) { el.style.display = 'none'; return; }
+          el.style.display = '';
+          el.classList.toggle('mc-badge-verified', !!verified);
+          el.classList.toggle('mc-badge-unverified', !verified);
+          el.textContent = verified ? (lang === 'en' ? 'Verified' : 'Vérifié') : (lang === 'en' ? 'Unverified' : 'Non vérifié');
+        }
+        badge(emailBadge, updated.email_verified, !!updated.email);
+        badge(phoneBadge, updated.phone_verified, !!updated.phone);
+        okEl.textContent = T.saved;
+        okEl.classList.remove('hidden');
+      } catch (err) {
+        errEl.textContent = (err && err.message) ? err.message : 'Error';
+        errEl.classList.remove('hidden');
+      } finally {
+        saveBtn.disabled = false;
+        saveLabel.textContent = T.save;
+      }
+    });
+  }
+})();
+</script>
+
+<%- include('partials/footer') %>
