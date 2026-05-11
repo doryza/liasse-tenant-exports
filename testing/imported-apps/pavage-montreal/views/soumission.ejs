@@ -297,7 +297,7 @@ import { GoogleGenAI } from '@google/genai';
 
 (function() {
   const VOICE_AVAILABLE = <%- JSON.stringify(!!voiceAvailable) %>;
-  const VOICE_TOKEN_URL = <%- JSON.stringify(mountPath + '/soumission/voice-token') %>;
+  const VOICE_TOKEN_URL = 'soumission/voice-token';
 
   // Build the soumission API URL from the live pathname rather than relying
   // on `form.action` resolution. The platform's tenant HTML rewriter strips
