@@ -33,14 +33,16 @@ module.exports = function(services) {
     next();
   });
 
-  // Root route now serves the accueil homepage directly.
-  // The video gate that previously sat at / has been removed.
+  // Video gate — the lead-capture landing page. A full-bleed video splash
+  // with a single CTA that drops visitors into /soumission (the custom
+  // free-quote form, not the platform's built-in lead-capture facility).
+  // The actual home content lives at /accueil; internal "Home" links
+  // throughout the site point there so a visitor who has dismissed the
+  // gate once never sees it again on subsequent navigation.
   router.get('/', async function(req, res) {
     try {
       const ctx = await baseCtx(req);
-      const servicesList = await db.all('SELECT * FROM services ORDER BY sort_order ASC, id ASC');
-      const testimonials = await db.all('SELECT * FROM testimonials WHERE published = 1 ORDER BY id DESC LIMIT 3');
-      res.render('index', Object.assign(ctx, { services: servicesList, testimonials }));
+      res.render('gate', ctx);
     } catch(e) { console.error(e); res.status(500).send('Erreur'); }
   });
 
