@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#6366f1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title><%= (typeof pageTitle !== 'undefined' && pageTitle) ? pageTitle + ' — ' : '' %><%= (settings && settings.business_name) || 'Nova Injectables' %></title>
+<meta name="description" content="<%= (settings && settings.footer_about) || 'Clinique d\'esthétique médicale dédiée à votre éclat naturel.' %>">
+<link rel="manifest" href="manifest.json">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{colors:{brand:'#6366f1','brand-dark':'#4f46e5','brand-light':'#a5b4fc',cream:'#faf8f5',champagne:'#e8dcc7',sand:'#d4c4a8',ink:'#1a1a1a'},fontFamily:{display:['Cormorant Garamond','serif'],body:['Inter','system-ui','sans-serif']}}}}</script>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="public/css/styles.css">
+</head>
+<body class="font-body bg-cream text-ink antialiased">
+<header class="site-header sticky top-0 z-40 bg-cream/95 backdrop-blur border-b border-champagne/40">
+<div class="max-w-7xl mx-auto px-4 md:px-6 flex items-center justify-between h-20">
+<a href="." class="flex items-center gap-3 group">
+<img src="<%= (typeof settings!=='undefined' && settings._p_nav_logo_url) ? settings._p_nav_logo_url : (typeof appIconUrl!=='undefined' ? appIconUrl : '') %>" alt="Nova Injectables" class="h-10 w-auto" onerror="this.style.display='none'">
+<div class="flex flex-col leading-none">
+<span class="font-display text-2xl tracking-wide text-ink">Nova</span>
+<span class="text-[10px] tracking-[0.3em] uppercase text-ink/60">Injectables</span>
+</div>
+</a>
+<nav class="hidden lg:flex items-center gap-8">
+<a href="." class="text-sm tracking-wide hover:text-brand transition"><%= t.nav_home %></a>
+<a href="services" class="text-sm tracking-wide hover:text-brand transition"><%= t.nav_services %></a>
+<a href="about" class="text-sm tracking-wide hover:text-brand transition"><%= t.nav_about %></a>
+<a href="gallery" class="text-sm tracking-wide hover:text-brand transition"><%= t.nav_gallery %></a>
+<a href="blog" class="text-sm tracking-wide hover:text-brand transition"><%= t.nav_blog %></a>
+<a href="contact" class="text-sm tracking-wide hover:text-brand transition"><%= t.nav_contact %></a>
+</nav>
+<div class="flex items-center gap-3">
+<div class="hidden md:flex items-center gap-1 text-xs tracking-widest border border-champagne rounded-full px-1 py-1">
+<a href="?lang=fr" class="px-2 py-1 rounded-full <%= lang==='fr' ? 'bg-brand text-white' : 'text-ink/60 hover:text-ink' %>" style="<%= lang==='fr' ? 'background-color:#6366f1;color:#fff' : '' %>">FR</a>
+<a href="?lang=en" class="px-2 py-1 rounded-full <%= lang==='en' ? 'bg-brand text-white' : 'text-ink/60 hover:text-ink' %>" style="<%= lang==='en' ? 'background-color:#6366f1;color:#fff' : '' %>">EN</a>
+</div>
+<a href="#" data-login-btn class="hidden md:inline-block text-sm tracking-wide hover:text-brand transition"><%= t.login %></a>
+<a href="booking" class="hidden md:inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-brand text-white text-sm tracking-wide hover:bg-brand-dark transition" style="background-color:#6366f1;color:#fff"><%= t.nav_book %></a>
+<button id="mobile-menu-btn" aria-label="Menu" class="lg:hidden p-2">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+</button>
+</div>
+</div>
+<div id="mobile-menu" class="lg:hidden hidden border-t border-champagne/40 bg-cream">
+<nav class="max-w-7xl mx-auto px-4 py-6 flex flex-col gap-4">
+<a href="." class="py-2 text-base"><%= t.nav_home %></a>
+<a href="services" class="py-2 text-base"><%= t.nav_services %></a>
+<a href="about" class="py-2 text-base"><%= t.nav_about %></a>
+<a href="gallery" class="py-2 text-base"><%= t.nav_gallery %></a>
+<a href="blog" class="py-2 text-base"><%= t.nav_blog %></a>
+<a href="contact" class="py-2 text-base"><%= t.nav_contact %></a>
+<a href="#" data-login-btn class="py-2 text-base"><%= t.login %></a>
+<a href="booking" class="mt-2 inline-flex items-center justify-center px-5 py-3 rounded-full bg-brand text-white text-sm tracking-wide" style="background-color:#6366f1;color:#fff"><%= t.nav_book %></a>
+<div class="flex gap-2 mt-2">
+<a href="?lang=fr" class="flex-1 text-center py-2 rounded-full border <%= lang==='fr' ? 'bg-brand text-white border-brand' : 'border-champagne' %>" style="<%= lang==='fr' ? 'background-color:#6366f1;color:#fff' : '' %>">FR</a>
+<a href="?lang=en" class="flex-1 text-center py-2 rounded-full border <%= lang==='en' ? 'bg-brand text-white border-brand' : 'border-champagne' %>" style="<%= lang==='en' ? 'background-color:#6366f1;color:#fff' : '' %>">EN</a>
+</div>
+</nav>
+</div>
+</header>
+<script>
+(function(){var b=document.getElementById('mobile-menu-btn'),m=document.getElementById('mobile-menu');if(b&&m){b.addEventListener('click',function(){m.classList.toggle('hidden');});}})();
+</script>

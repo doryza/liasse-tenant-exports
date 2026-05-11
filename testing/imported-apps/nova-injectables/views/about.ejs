@@ -1,0 +1,42 @@
+<%- include('partials/header') %>
+<section class="py-16 md:py-24 bg-cream">
+<div class="max-w-5xl mx-auto px-4 md:px-6">
+<div class="text-center mb-14">
+<div class="text-xs tracking-[0.4em] uppercase text-brand mb-3"><%= t.about_subtitle %></div>
+<h1 class="font-display text-5xl md:text-6xl text-ink mb-4"><%= (settings && settings.about_title) || t.about_title %></h1>
+</div>
+<div class="aspect-[16/9] rounded-3xl overflow-hidden mb-12">
+<img src="<%= (settings && settings._p_about_image_url) || 'https://placehold.co/1600x900/e8dcc7/6366f1/png' %>" alt="Nova" class="w-full h-full object-cover">
+</div>
+<div class="prose prose-lg max-w-none text-ink/80">
+<% ((settings && settings.about_text) || 'Nova Injectables...').split('\n').forEach(function(p){ if(p.trim()){ %><p class="mb-6 leading-relaxed text-lg"><%= p %></p><% } }) %>
+</div>
+<% if (settings && settings.about_mission) { %>
+<blockquote class="border-l-2 border-brand pl-8 italic font-display text-3xl text-ink/80 my-12">« <%= settings.about_mission %> »</blockquote>
+<% } %>
+</div>
+</section>
+<% if (typeof testimonials !== 'undefined' && testimonials.length > 0) { %>
+<section class="py-20 bg-champagne/20">
+<div class="max-w-6xl mx-auto px-4 md:px-6">
+<h2 class="font-display text-4xl md:text-5xl text-ink text-center mb-14"><%= t.testimonials_title %></h2>
+<div class="grid md:grid-cols-2 gap-6">
+<% testimonials.forEach(function(tm){ %>
+<div class="bg-white rounded-2xl p-8">
+<div class="flex gap-1 text-brand mb-4"><% for(var i=0;i<(tm.rating||5);i++){ %>★<% } %></div>
+<p class="font-display text-xl text-ink/80 leading-relaxed mb-6">« <%= tm.content %> »</p>
+<div class="font-medium text-ink"><%= tm.author %></div>
+<% if (tm.role) { %><div class="text-sm text-ink/50"><%= tm.role %></div><% } %>
+</div>
+<% }) %>
+</div>
+</div>
+</section>
+<% } %>
+<section class="py-20 bg-ink text-cream text-center">
+<div class="max-w-3xl mx-auto px-4 md:px-6">
+<h2 class="font-display text-4xl md:text-5xl mb-6"><%= t.cta_section_title %></h2>
+<a href="booking" class="inline-flex items-center gap-2 px-10 py-4 rounded-full bg-brand text-white tracking-wide hover:bg-brand-dark transition mt-4" style="background-color:#6366f1;color:#fff"><%= t.hero_cta %> →</a>
+</div>
+</section>
+<%- include('partials/footer') %>

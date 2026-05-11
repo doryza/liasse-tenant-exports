@@ -1,0 +1,74 @@
+{
+  "slug": "nova-injectables",
+  "displayName": "Nova injectables",
+  "description": "Type de projet: Site web transactionnel\n\nObjectif: Présenter des services d'esthétique (soins PRP, injections d'agents de comblement) et permettre la prise de rendez-vous avec acompte.\n\nFonctionnalités clés:\n- Prise de rendez-vous en ligne\n- Paiement d'acomptes sécurisé\n- Présentation détaillée des services\n\nDesign & brand:\n- Ambiance luxueuse et professionnelle\n\nIntégrations & extras:\n- Plateforme de paiement pour les acomptes",
+  "status": "active",
+  "generationVersion": 1,
+  "primaryColor": "#6366f1",
+  "iconUrl": "https://res.cloudinary.com/duhp69meg/image/upload/v1778461405/tapavis_tenant_nova-injectables/icon_nova-injectables_1778461405630.png",
+  "enabledAuthMethods": [
+    "webauthn",
+    "sms",
+    "email"
+  ],
+  "notificationsEnabled": true,
+  "geolocationEnabled": true,
+  "customConfig": {
+    "language": "both",
+    "aiSummary": {
+      "en": {
+        "dashboard": "Welcome to your new control center! This is where you'll manage your entire 'Nova injectables' website. We designed it to be simple and straightforward.\n\nFrom your Admin Dashboard, you can easily update all your content:\n\n*   **Manage Your Offerings**: Go to the 'Services' section to add new treatments, update details on existing ones, or remove any you no longer offer.\n*   **Share Your Expertise**: In the 'Blog Posts' area, you can write and publish articles to connect with your clients.\n*   **Showcase Your Work**: Head to the 'Gallery' to upload beautiful photos of your results.\n*   **Build Trust**: You can add, edit, or approve new customer 'Testimonials' to display on your site.\n\nThis is also where you'll manage your business operations:\n\n*   **View Bookings**: The 'Appointments' tab shows all your upcoming client bookings in one place.\n*   **Check Messages**: See all the messages sent through your contact page under 'Submissions'.\n*   **Site Settings**: You can also change general site information in the 'Settings' area.\n\nYour dashboard's main page gives you a quick snapshot of your site's activity. Have fun exploring!",
+        "variables": "Hello! Your new web app for 'Nova injectables' is almost ready to go. There’s just one small step to complete so you can start accepting secure down payments for appointments.\n\nYour app uses a service called Stripe to handle payments. To connect it, you'll need a special 'Secret Key' from them. Think of it like giving your app a secure key to the cash register.\n\nHere’s how to get it:\n1.  Go to the Stripe website and create a free account if you don't have one.\n2.  In your Stripe dashboard, find your 'API Keys'. You're looking for the one called the 'Secret Key'.\n3.  Copy that key.\n4.  Come back to your app, go to the 'Admin' section, and look for a 'Settings' or 'Required Keys' area. Paste your key there and save.\n\nThat's it! Once you do that, your booking system will be fully up and running. If you need any help, we're here for you!"
+      },
+      "fr": {
+        "dashboard": "Bienvenue dans votre nouveau panneau de contrôle! C'est ici que vous allez gérer l'ensemble de votre site web « Nova injectables ». Nous l'avons conçu pour qu'il soit simple et facile à utiliser.\n\nDepuis votre tableau de bord Admin, vous pouvez facilement mettre à jour tout votre contenu :\n\n*   **Gérez vos offres** : Allez dans la section « Services » pour ajouter de nouveaux soins, modifier les détails des soins existants ou retirer ceux que vous n'offrez plus.\n*   **Partagez votre expertise** : Dans la section « Articles de blogue », vous pouvez rédiger et publier des articles pour interagir avec votre clientèle.\n*   **Mettez en valeur votre travail** : Rendez-vous dans la « Galerie » pour téléverser de superbes photos de vos résultats.\n*   **Bâtissez la confiance** : Vous pouvez ajouter, modifier ou approuver de nouveaux « Témoignages » de clients à afficher sur votre site.\n\nC'est aussi ici que vous gérerez les opérations de votre entreprise :\n\n*   **Consultez les réservations** : L'onglet « Rendez-vous » vous montre toutes les réservations de vos clients en un seul endroit.\n*   **Vérifiez vos messages** : Voyez tous les messages envoyés via votre page contact sous « Soumissions ».\n*   **Paramètres du site** : Vous pouvez aussi changer les informations générales du site dans la section « Paramètres ».\n\nLa page principale de votre tableau de bord vous donne un aperçu rapide de l'activité sur votre site. Amusez-vous bien à l'explorer!",
+        "variables": "Bonjour! Votre nouvelle application web pour « Nova injectables » est presque prête. Il ne reste qu'une petite étape pour que vous puissiez commencer à accepter des acomptes de façon sécuritaire pour les rendez-vous.\n\nVotre application utilise un service nommé Stripe pour gérer les paiements. Pour la connecter, vous aurez besoin d'une « Clé secrète » spéciale. C'est un peu comme donner à votre application une clé sécurisée pour la caisse.\n\nVoici comment l'obtenir :\n1.  Allez sur le site de Stripe et créez un compte gratuit si vous n'en avez pas.\n2.  Dans votre tableau de bord Stripe, trouvez vos « Clés API ». Cherchez celle qui s'appelle la « Clé secrète ».\n3.  Copiez cette clé.\n4.  Revenez sur votre application, allez dans la section « Admin », et cherchez un onglet « Paramètres » ou « Clés requises ». Collez-y votre clé et sauvegardez.\n\nEt voilà! Une fois cette étape terminée, votre système de prise de rendez-vous sera pleinement fonctionnel. N'hésitez pas si vous avez besoin d'aide!"
+      }
+    },
+    "aiSummaryVersion": 1
+  },
+  "promptHistory": [
+    {
+      "prompt": "Type de projet: Site web transactionnel\n\nObjectif: Présenter des services d'esthétique (soins PRP, injections d'agents de comblement) et permettre la prise de rendez-vous avec acompte.\n\nFonctionnalités clés:\n- Prise de rendez-vous en ligne\n- Paiement d'acomptes sécurisé\n- Présentation détaillée des services\n\nDesign & brand:\n- Ambiance luxueuse et professionnelle\n\nIntégrations & extras:\n- Plateforme de paiement pour les acomptes",
+      "timestamp": "2026-05-11T01:03:34.598Z",
+      "changeNotes": "Initial complete build of Nova Injectables — a luxurious bilingual (FR/EN) aesthetic medicine clinic PWA. Features: full services catalog (PRP, fillers, botox, skin boosters), online booking with Stripe-secured deposits, contact form, gallery, testimonials, blog, and a complete admin dashboard with CRUD for every content table. Implements server-side language switching via cookies, OTP login, push notifications, install banner, and an elegant indigo/champagne luxury aesthetic.\n\nAdmin enrichment pass: (1) Enhanced admin dashboard with richer stat cards, better visual hierarchy, action buttons, and improved empty states. (2) Upgraded admin-shell with image thumbnails in tables, smarter column display, sticky modal headers/footers, inline status badges, search functionality, and improved form field rendering with image preview/upload UX. (3) Polished admin sidebar with clearer active states and improved typography. (4) Refined admin-styles.css with better focus states, hover transitions, badges, accessible focus rings, and improved table styling. (5) Improved admin settings page with grouped sections, cleaner inputs, autosave feedback. (6) Added SEO metadata for FR/EN bilingual app. (7) Maintained all existing routes, schema, and functionality. (8) All custom brand colors include inline style fallbacks for critical CTAs.",
+      "generationId": 1039,
+      "filesModified": [
+        "manifest.json",
+        "public/css/admin-styles.css",
+        "public/css/styles.css",
+        "routes.js",
+        "schema.sql",
+        "seed.js",
+        "views/about.ejs",
+        "views/admin-.ejs",
+        "views/admin-appointments.ejs",
+        "views/admin-gallery.ejs",
+        "views/admin-posts.ejs",
+        "views/admin-services.ejs",
+        "views/admin-settings.ejs",
+        "views/admin-submissions.ejs",
+        "views/admin-testimonials.ejs",
+        "views/admin.ejs",
+        "views/blog-post.ejs",
+        "views/blog.ejs",
+        "views/booking-cancelled.ejs",
+        "views/booking-confirmed.ejs",
+        "views/booking.ejs",
+        "views/contact.ejs",
+        "views/gallery.ejs",
+        "views/index.ejs",
+        "views/partials/admin-shell.ejs",
+        "views/partials/admin-sidebar.ejs",
+        "views/partials/footer.ejs",
+        "views/partials/header.ejs",
+        "views/service-detail.ejs",
+        "views/services.ejs"
+      ]
+    }
+  ],
+  "apiVariables": [],
+  "createdAt": "2026-05-11T00:30:33.602Z",
+  "updatedAt": "2026-05-11T01:04:03.176Z",
+  "exportedAt": "2026-05-11T01:33:14.969Z"
+}

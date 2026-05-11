@@ -1,0 +1,23 @@
+<%- include('partials/header') %>
+<section class="py-20 md:py-32 bg-cream min-h-[60vh]">
+<div class="max-w-2xl mx-auto px-4 md:px-6 text-center">
+<div class="w-20 h-20 mx-auto mb-8 rounded-full bg-brand/10 flex items-center justify-center" style="background-color:rgba(99,102,241,0.1)">
+<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+</div>
+<h1 class="font-display text-4xl md:text-5xl text-ink mb-6"><%= (typeof appointment !== 'undefined' && appointment) ? t.book_confirmed_title : t.book_request_title %></h1>
+<p class="text-ink/70 text-lg mb-10 leading-relaxed"><%= (typeof appointment !== 'undefined' && appointment) ? t.book_confirmed_msg : t.book_request_msg %></p>
+<% if (typeof appointment !== 'undefined' && appointment) { %>
+<div class="bg-white rounded-2xl p-8 text-left mb-10 inline-block min-w-[300px]">
+<div class="text-xs tracking-widest uppercase text-brand mb-4"><%= lang==='en' ? 'Your appointment' : 'Votre rendez-vous' %></div>
+<% if (appointment.service_name) { %><div class="mb-3"><div class="text-xs text-ink/40 uppercase tracking-widest"><%= t.book_select_service %></div><div class="font-display text-xl text-ink"><%= appointment.service_name %></div></div><% } %>
+<div class="mb-3"><div class="text-xs text-ink/40 uppercase tracking-widest"><%= t.book_date %></div><div class="text-ink"><%= formatDate(appointment.appointment_date) %> <% if(appointment.appointment_time){ %>· <%= appointment.appointment_time %><% } %></div></div>
+<div><div class="text-xs text-ink/40 uppercase tracking-widest"><%= t.book_name %></div><div class="text-ink"><%= appointment.client_name %></div></div>
+</div>
+<% } %>
+<div class="flex flex-wrap gap-4 justify-center">
+<a href="." class="px-8 py-3 rounded-full bg-brand text-white tracking-wide hover:bg-brand-dark transition" style="background-color:#6366f1;color:#fff"><%= t.book_back_home %></a>
+<a href="services" class="px-8 py-3 rounded-full border border-ink/20 tracking-wide hover:border-brand hover:text-brand transition"><%= t.services_view_all %></a>
+</div>
+</div>
+</section>
+<%- include('partials/footer') %>

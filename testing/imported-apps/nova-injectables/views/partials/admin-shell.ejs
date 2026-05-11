@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Admin · <%= title %></title><script src="https://cdn.tailwindcss.com"></script><script>tailwind.config={theme:{extend:{colors:{brand:'#6366f1','brand-dark':'#4f46e5'}}}}</script><link rel="stylesheet" href="../public/css/admin-styles.css"></head>
+<body class="bg-slate-50 min-h-screen">
+<%- include('admin-sidebar') %>
+<main class="admin-main">
+<header class="flex items-center justify-between mb-6 flex-wrap gap-4">
+<div>
+<div class="text-[11px] tracking-[0.3em] uppercase text-slate-400 mb-1">Gestion du contenu</div>
+<h1 class="text-3xl font-semibold text-slate-900"><%= title %></h1>
+<p class="text-slate-500 mt-1 text-sm" id="items-count">Chargement...</p>
+</div>
+<div class="flex gap-2 items-center flex-wrap">
+<div class="search-bar hidden md:block">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+<input id="search-input" type="text" placeholder="Rechercher..." class="field-input" oninput="filterRows()">
+</div>
+<button onclick="document.getElementById('admin-sidebar').classList.toggle('mobile-open')" class="md:hidden p-2 bg-white rounded-lg shadow border border-slate-200" aria-label="Menu">☰</button>
+<button onclick="openEditor()" class="btn btn-primary" style="background-color:#6366f1;color:#fff"><span style="font-size:16px;line-height:1">+</span> Ajouter</button>
+</div>
+</header>
+<div id="status" class="hidden mb-4 p-3 rounded-lg text-sm"></div>
+<div id="items-table" class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden"><div class="empty-state"><div class="empty-state-icon">⏳</div><div class="empty-state-title">Chargement...</div></div></div>
+</main>
+<div id="editor-modal" class="editor-modal hidden">
+<div class="editor-backdrop" onclick="closeEditor()"></div>
+<div class="editor-panel">
+<header class="editor-header"><div><h2 id="editor-title" class="text-xl font-semibold text-slate-900">Nouvel élément</h2><p id="editor-subtitle" class="text-xs text-slate-500 mt-0.5"></p></div><button onclick="closeEditor()" class="editor-close" aria-label="Fermer">×</button></header>
+<form id="editor-form" class="editor-body"></form>
+<footer class="editor-footer"><button type="button" onclick="closeEditor()" class="btn btn-secondary">Annuler</button><button type="button" onclick="saveItem()" id="save-btn" class="btn btn-primary" style="background-color:#6366f1;color:#fff">Enregistrer</button></footer>
+</div>
+</div>
+<script>
+const MODULE_KEY = '<%- moduleKey %>';
+const MODULE_LABEL = '<%- moduleLabel %>';
+let items = [];
+let currentItem = null;
+let moduleFields = [];
+let allRows = [];
+
+async function loadModule() {
+  try {
+    const r = await fetch('../api/admin/modules');
+    const d = await r.json();
+    const m = (d.modules || []).find(x => x.key === MODULE_KEY);
+    if (m) moduleFields = m.fields || [];
+  } catch(e) { console.error(e); }
+}
+async function loadItems() {
+  try {
+    const r = await fetch('../api/admin/' + MODULE_KEY);
+    const d = await r.json();
+    items = d[MODULE_KEY] || [];
+    document.getElementById('items-count').textContent = items.length + (items.length > 1 ? ' éléments' : ' élément');
+    renderTable();
+  } catch(e) {
+    document.getElementById('items-table').innerHTML = '<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-title">Erreur de chargement</div><div class="empty-state-meta">Veuillez rafraîchir la page.</div></div>';
+  }
+}
+function escapeHtml(s) {
+  return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+function formatCents(c) {
+  if (c == null || c === '' || isNaN(c)) return '—';
+  return (parseInt(c)/100).toFixed(2).replace('.', ',') + ' $';
+}
+function badgeFor(status) {
+  if (!status) return '';
+  return '<span class="badge badge-' + escapeHtml(String(status).toLowerCase()) + '">' + escapeHtml(status) + '</span>';
+}
+function renderTable() {
+  const c = document.getElementById('items-table');
+  if (items.length === 0) {
+    c.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📭</div><div class="empty-state-title">Aucun élément pour le moment</div><div class="empty-state-meta">Cliquez sur « + Ajouter » pour créer le premier.</div></div>';
+    return;
+  }
+  // Pick columns: image (if exists) + 3 text columns
+  const imgField = moduleFields.find(f => f.type === 'image');
+  const textFields = moduleFields.filter(f => f.type !== 'textarea' && f.type !== 'image' && f.type !== 'readonly').slice(0, 3);
+  const hasStatus = moduleFields.find(f => f.name === 'status');
+  const hasPublished = moduleFields.find(f => f.name === 'published');
+
+  let html = '<div class="overflow-x-auto"><table class="admin-table"><thead><tr>';
+  html += '<th style="width:40px">#</th>';
+  if (imgField) html += '<th style="width:64px"></th>';
+  textFields.forEach(f => { html += '<th>' + escapeHtml(f.label || f.name) + '</th>'; });
+  if (hasStatus) html += '<th>État</th>';
+  if (hasPublished) html += '<th>Visible</th>';
+  html += '<th style="text-align:right">Actions</th></tr></thead><tbody id="tbody">';
+  items.forEach(it => {
+    let row = '<tr data-search="' + escapeHtml(JSON.stringify(it).toLowerCase()) + '"><td class="row-id">#' + it.id + '</td>';
+    if (imgField) {
+      const url = it[imgField.name];
+      row += '<td>' + (url ? '<img class="row-thumb" src="' + escapeHtml(url) + '" alt="">' : '<div class="row-thumb" style="display:flex;align-items:center;justify-content:center;color:#cbd5e1;font-size:18px">🖼</div>') + '</td>';
+    }
+    textFields.forEach(f => {
+      let v = it[f.name];
+      if (v === null || v === undefined) v = '';
+      if (f.name === 'price_cents' || f.name === 'deposit_cents' || f.name === 'deposit_amount_cents') v = formatCents(v);
+      else if (f.type === 'boolean') v = v == 1 ? '✓' : '—';
+      else if (typeof v === 'string' && v.length > 60) v = v.slice(0, 60) + '…';
+      row += '<td>' + escapeHtml(v) + '</td>';
+    });
+    if (hasStatus) row += '<td>' + badgeFor(it.status) + '</td>';
+    if (hasPublished) row += '<td>' + (it.published == 1 ? '<span class="badge badge-published">Publié</span>' : '<span class="badge badge-draft">Brouillon</span>') + '</td>';
+    row += '<td style="text-align:right;white-space:nowrap"><button onclick=\'openEditor(' + JSON.stringify(it).replace(/'/g, '&#39;') + ')\' class="btn-link">Modifier</button> <button onclick="deleteItem(' + it.id + ')" class="btn-danger">Supprimer</button></td>';
+    row += '</tr>';
+    html += row;
+  });
+  html += '</tbody></table></div>';
+  c.innerHTML = html;
+  allRows = Array.from(document.querySelectorAll('#tbody tr'));
+}
+function filterRows() {
+  const q = (document.getElementById('search-input').value || '').toLowerCase().trim();
+  let visible = 0;
+  allRows.forEach(tr => {
+    if (!q || tr.dataset.search.indexOf(q) !== -1) { tr.style.display = ''; visible++; }
+    else { tr.style.display = 'none'; }
+  });
+}
+function openEditor(item) {
+  currentItem = item || null;
+  document.getElementById('editor-title').textContent = item ? 'Modifier ' + MODULE_LABEL.toLowerCase() : 'Ajouter ' + MODULE_LABEL.toLowerCase();
+  document.getElementById('editor-subtitle').textContent = item ? '#' + item.id : '';
+  const form = document.getElementById('editor-form');
+  form.innerHTML = '';
+  moduleFields.forEach(f => {
+    if (f.type === 'readonly' && !item) return;
+    const wrap = document.createElement('div');
+    wrap.style.marginBottom = '18px';
+    let val = item ? (item[f.name] != null ? item[f.name] : '') : (f.default !== undefined ? f.default : '');
+    let inputHtml = '';
+    const lbl = '<label class="field-label">' + escapeHtml(f.label || f.name) + (f.required ? '<span class="field-required">*</span>' : '') + '</label>';
+    const hint = f.description ? '<p class="field-hint">' + escapeHtml(f.description) + '</p>' : '';
+    if (f.type === 'textarea') {
+      inputHtml = '<textarea name="' + f.name + '" rows="4" class="field-input" style="resize:vertical;font-family:inherit" placeholder="' + escapeHtml(f.placeholder || '') + '">' + escapeHtml(val) + '</textarea>';
+    } else if (f.type === 'boolean') {
+      inputHtml = '<label style="display:inline-flex;align-items:center;gap:8px;padding:8px 0;cursor:pointer"><input type="checkbox" name="' + f.name + '" ' + (val == 1 || val === true ? 'checked' : '') + ' style="width:18px;height:18px;accent-color:#6366f1"><span style="font-size:14px;color:#0f172a">Activé</span></label>';
+    } else if (f.type === 'select') {
+      inputHtml = '<select name="' + f.name + '" class="field-input">';
+      (f.options || []).forEach(o => { inputHtml += '<option value="' + escapeHtml(o) + '" ' + (String(val) === String(o) ? 'selected' : '') + '>' + escapeHtml(o) + '</option>'; });
+      inputHtml += '</select>';
+    } else if (f.type === 'image') {
+      inputHtml = '<input type="url" name="' + f.name + '" value="' + escapeHtml(val) + '" placeholder="https://..." class="field-input" oninput="updatePreview(this)">';
+      inputHtml += '<div class="image-preview ' + (val ? '' : 'empty') + '" style="' + (val ? 'background-image:url(' + escapeHtml(val) + ')' : '') + '" data-preview-for="' + f.name + '">' + (val ? '' : 'Aperçu') + '</div>';
+    } else if (f.type === 'date') {
+      inputHtml = '<input type="date" name="' + f.name + '" value="' + (val ? String(val).substring(0,10) : '') + '" class="field-input">';
+    } else if (f.type === 'readonly') {
+      inputHtml = '<div style="padding:10px 12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;color:#475569;white-space:pre-wrap;word-break:break-word">' + escapeHtml(val) + '</div>';
+    } else {
+      const inputType = f.type === 'email' ? 'email' : (f.type === 'url' ? 'url' : (f.type === 'number' ? 'number' : 'text'));
+      const extra = f.type === 'number' ? (' min="' + (f.min != null ? f.min : '') + '" max="' + (f.max != null ? f.max : '') + '" step="' + (f.step != null ? f.step : '1') + '"') : '';
+      inputHtml = '<input type="' + inputType + '" name="' + f.name + '" value="' + escapeHtml(val) + '" placeholder="' + escapeHtml(f.placeholder || '') + '"' + extra + ' class="field-input">';
+    }
+    wrap.innerHTML = lbl + inputHtml + hint;
+    form.appendChild(wrap);
+  });
+  document.getElementById('editor-modal').classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+}
+function updatePreview(input) {
+  const preview = document.querySelector('[data-preview-for="' + input.name + '"]');
+  if (!preview) return;
+  if (input.value && /^https?:\/\//.test(input.value)) {
+    preview.style.backgroundImage = 'url(' + input.value.replace(/"/g,'') + ')';
+    preview.classList.remove('empty');
+    preview.textContent = '';
+  } else {
+    preview.style.backgroundImage = '';
+    preview.classList.add('empty');
+    preview.textContent = 'Aperçu';
+  }
+}
+function closeEditor() {
+  document.getElementById('editor-modal').classList.add('hidden');
+  document.body.style.overflow = '';
+}
+async function saveItem() {
+  const form = document.getElementById('editor-form');
+  const data = {};
+  moduleFields.forEach(f => {
+    if (f.type === 'readonly') return;
+    const el = form.elements[f.name];
+    if (!el) return;
+    if (f.type === 'boolean') data[f.name] = el.checked ? 1 : 0;
+    else if (f.type === 'number') data[f.name] = el.value ? parseInt(el.value) : 0;
+    else data[f.name] = el.value;
+  });
+  const btn = document.getElementById('save-btn');
+  btn.disabled = true; btn.textContent = 'Enregistrement...';
+  try {
+    const url = '../api/admin/' + MODULE_KEY + (currentItem ? '/' + currentItem.id : '');
+    const method = currentItem ? 'PUT' : 'POST';
+    const r = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+    if (!r.ok) { const j = await r.json(); showStatus('Erreur : ' + (j.error || 'inconnue'), 'error'); }
+    else { closeEditor(); showStatus(currentItem ? 'Élément modifié avec succès.' : 'Élément créé avec succès.', 'success'); await loadItems(); }
+  } catch(e) { showStatus('Erreur réseau. Veuillez réessayer.', 'error'); }
+  btn.disabled = false; btn.textContent = 'Enregistrer';
+}
+async function deleteItem(id) {
+  if (!confirm('Supprimer définitivement cet élément ? Cette action est irréversible.')) return;
+  try {
+    const r = await fetch('../api/admin/' + MODULE_KEY + '/' + id, { method: 'DELETE' });
+    if (r.ok) { showStatus('Élément supprimé.', 'success'); await loadItems(); }
+    else showStatus('Erreur lors de la suppression.', 'error');
+  } catch(e) { showStatus('Erreur réseau.', 'error'); }
+}
+function showStatus(msg, type) {
+  const s = document.getElementById('status');
+  s.textContent = msg;
+  s.className = 'mb-4 p-3 rounded-lg text-sm ' + (type === 'success' ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200');
+  s.classList.remove('hidden');
+  setTimeout(() => s.classList.add('hidden'), 3500);
+}
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape' && !document.getElementById('editor-modal').classList.contains('hidden')) closeEditor();
+});
+(async function(){ await loadModule(); await loadItems(); })();
+</script>
+</body></html>

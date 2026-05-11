@@ -1,0 +1,28 @@
+<%- include('partials/header') %>
+<section class="py-16 md:py-24 bg-cream">
+<div class="max-w-7xl mx-auto px-4 md:px-6">
+<div class="text-center mb-14">
+<div class="text-xs tracking-[0.4em] uppercase text-brand mb-3"><%= t.nav_gallery %></div>
+<h1 class="font-display text-5xl md:text-6xl text-ink mb-4"><%= t.gallery_title %></h1>
+<p class="text-ink/60 max-w-2xl mx-auto"><%= t.gallery_subtitle %></p>
+</div>
+<% if (typeof items !== 'undefined' && items.length > 0) { %>
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+<% items.forEach(function(g, i){ %>
+<div class="group relative overflow-hidden rounded-2xl bg-champagne/30 <%= i % 5 === 0 ? 'md:col-span-2 md:row-span-2' : '' %> aspect-square">
+<img src="<%= g.image_url || 'https://placehold.co/600x600/e8dcc7/6366f1/png' %>" alt="<%= g.title || 'Nova' %>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+<% if (g.title || g.description) { %>
+<div class="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-ink/80 to-transparent text-white opacity-0 group-hover:opacity-100 transition">
+<% if (g.title) { %><div class="font-display text-lg"><%= g.title %></div><% } %>
+<% if (g.description) { %><div class="text-xs text-white/80"><%= g.description %></div><% } %>
+</div>
+<% } %>
+</div>
+<% }) %>
+</div>
+<% } else { %>
+<div class="text-center py-20"><p class="text-ink/50"><%= t.empty_gallery %></p></div>
+<% } %>
+</div>
+</section>
+<%- include('partials/footer') %>

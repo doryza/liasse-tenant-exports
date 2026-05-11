@@ -1,0 +1,7 @@
+<%- include('partials/header') %>
+<main class="max-w-4xl mx-auto px-4 py-12">
+  <h1 class="text-3xl font-bold mb-4"><%= typeof t !== 'undefined' && t.admin__title ? t.admin__title : 'Admin ' %></h1>
+  <p class="text-gray-500"><%= typeof t !== 'undefined' && t.admin__empty ? t.admin__empty : 'Content coming soon.' %></p>
+  <a href="." class="inline-block mt-6 text-purple-600 hover:underline">&larr; <%= typeof t !== 'undefined' && t.back_home ? t.back_home : 'Back' %></a>
+</main>
+<%- include('partials/footer') %>

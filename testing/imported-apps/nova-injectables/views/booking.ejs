@@ -1,0 +1,81 @@
+<%- include('partials/header') %>
+<section class="py-12 md:py-20 bg-cream min-h-[70vh]">
+<div class="max-w-3xl mx-auto px-4 md:px-6">
+<div class="text-center mb-10">
+<div class="text-xs tracking-[0.4em] uppercase text-brand mb-3"><%= t.nav_book %></div>
+<h1 class="font-display text-4xl md:text-5xl text-ink mb-4"><%= t.book_title %></h1>
+<p class="text-ink/60"><%= (settings && settings.booking_intro) || t.book_subtitle %></p>
+</div>
+<div class="bg-white rounded-3xl shadow-sm p-6 md:p-10">
+<% if (typeof allServices !== 'undefined' && allServices.length > 0) { %>
+<form id="booking-form" class="space-y-6">
+<div>
+<label class="block text-xs tracking-widest uppercase text-ink/60 mb-2"><%= t.book_select_service %> *</label>
+<select name="service_id" id="service-select" required class="w-full px-4 py-3 border border-champagne rounded-xl focus:border-brand focus:ring-2 focus:ring-brand/20 outline-none">
+<option value=""><%= t.book_choose_service %></option>
+<% allServices.forEach(function(s){ %>
+<option value="<%= s.id %>" data-deposit="<%= s.deposit_cents %>" data-price="<%= s.price_cents %>" data-duration="<%= s.duration_minutes %>" <%= (preselectedId && preselectedId===s.id) ? 'selected' : '' %>><%= s.name %> — <%= formatPrice(s.price_cents) %></option>
+<% }) %>
+</select>
+</div>
+<div id="deposit-info" class="hidden p-4 bg-brand/5 border border-brand/20 rounded-xl text-sm">
+<div class="flex justify-between items-center">
+<span class="text-ink/70"><%= t.book_total_deposit %></span>
+<span class="font-display text-2xl text-brand" id="deposit-amount">—</span>
+</div>
+</div>
+<div class="grid sm:grid-cols-2 gap-4">
+<div>
+<label class="block text-xs tracking-widest uppercase text-ink/60 mb-2"><%= t.book_date %> *</label>
+<input type="date" name="appointment_date" required min="<%= new Date(Date.now()+86400000).toISOString().split('T')[0] %>" class="w-full px-4 py-3 border border-champagne rounded-xl focus:border-brand focus:ring-2 focus:ring-brand/20 outline-none">
+</div>
+<div>
+<label class="block text-xs tracking-widest uppercase text-ink/60 mb-2"><%= t.book_time %></label>
+<select name="appointment_time" class="w-full px-4 py-3 border border-champagne rounded-xl focus:border-brand focus:ring-2 focus:ring-brand/20 outline-none">
+<option value="">—</option>
+<option>09h00</option><option>10h00</option><option>11h00</option><option>13h00</option><option>14h00</option><option>15h00</option><option>16h00</option><option>17h00</option>
+</select>
+</div>
+</div>
+<div>
+<label class="block text-xs tracking-widest uppercase text-ink/60 mb-2"><%= t.book_name %> *</label>
+<input type="text" name="client_name" required class="w-full px-4 py-3 border border-champagne rounded-xl focus:border-brand focus:ring-2 focus:ring-brand/20 outline-none">
+</div>
+<div class="grid sm:grid-cols-2 gap-4">
+<div>
+<label class="block text-xs tracking-widest uppercase text-ink/60 mb-2"><%= t.book_email %> *</label>
+<input type="email" name="client_email" required class="w-full px-4 py-3 border border-champagne rounded-xl focus:border-brand focus:ring-2 focus:ring-brand/20 outline-none">
+</div>
+<div>
+<label class="block text-xs tracking-widest uppercase text-ink/60 mb-2"><%= t.book_phone %></label>
+<input type="tel" name="client_phone" class="w-full px-4 py-3 border border-champagne rounded-xl focus:border-brand focus:ring-2 focus:ring-brand/20 outline-none">
+</div>
+</div>
+<div>
+<label class="block text-xs tracking-widest uppercase text-ink/60 mb-2"><%= t.book_notes %></label>
+<textarea name="notes" rows="3" class="w-full px-4 py-3 border border-champagne rounded-xl focus:border-brand focus:ring-2 focus:ring-brand/20 outline-none"></textarea>
+</div>
+<div class="text-sm text-ink/60 p-4 bg-champagne/20 rounded-xl leading-relaxed">
+<%= lang==='en' ? (settings.payment_default_en || t.book_deposit_info) : (settings.payment_default_fr || t.book_deposit_info) %>
+<% if (settings && settings.booking_policy) { %><br><br><span class="text-ink/50"><%= settings.booking_policy %></span><% } %>
+</div>
+<div id="booking-error" class="hidden p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700"></div>
+<button type="submit" id="booking-submit" class="w-full py-4 rounded-full bg-brand text-white tracking-wide hover:bg-brand-dark transition disabled:opacity-50" style="background-color:#6366f1;color:#fff"><%= t.book_pay_deposit %></button>
+</form>
+<% } else { %>
+<p class="text-center text-ink/50 py-12"><%= t.empty_services %></p>
+<% } %>
+</div>
+</div>
+</section>
+<script>
+(function(){
+var sel=document.getElementById('service-select'),info=document.getElementById('deposit-info'),amt=document.getElementById('deposit-amount'),form=document.getElementById('booking-form'),btn=document.getElementById('booking-submit'),err=document.getElementById('booking-error');
+if(!sel)return;
+function fmt(c){if(!c)return '—';var v=(c/100).toFixed(2);return '<%- lang %>'==='en'?'$'+v:v.replace('.',',')+' $';}
+function upd(){var o=sel.options[sel.selectedIndex];if(o&&o.value){var d=parseInt(o.dataset.deposit)||0;if(d>0){info.classList.remove('hidden');amt.textContent=fmt(d);btn.textContent='<%- t.book_pay_deposit %>';}else{info.classList.add('hidden');btn.textContent='<%- t.book_no_deposit %>';}}else{info.classList.add('hidden');}}
+sel.addEventListener('change',upd);upd();
+form.addEventListener('submit',async function(e){e.preventDefault();err.classList.add('hidden');btn.disabled=true;btn.textContent='<%- t.loading %>';var fd=new FormData(form),data={};fd.forEach(function(v,k){data[k]=v;});try{var r=await fetch('./api/booking',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});var j=await r.json();if(!r.ok){err.textContent=j.error||'Error';err.classList.remove('hidden');btn.disabled=false;upd();return;}if(j.checkoutUrl){window.location.href=j.checkoutUrl;}else if(j.success){window.location.href='booking-confirmed?request=1';}}catch(ex){err.textContent='<%- t.contact_error %>';err.classList.remove('hidden');btn.disabled=false;upd();}});
+})();
+</script>
+<%- include('partials/footer') %>

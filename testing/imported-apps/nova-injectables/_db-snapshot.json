@@ -1,0 +1,497 @@
+{
+  "exportedAt": "2026-05-11T01:33:15.046Z",
+  "tables": {
+    "admin_users": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "password_hash",
+        "display_name",
+        "role",
+        "active",
+        "activation_token",
+        "invited_by",
+        "invite_token",
+        "invite_expires_at",
+        "last_login_at",
+        "is_active",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_invites": {
+      "columns": [
+        "id",
+        "email",
+        "token",
+        "role",
+        "status",
+        "invited_by",
+        "expires_at",
+        "accepted_at",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_webauthn_credentials": {
+      "columns": [
+        "id",
+        "admin_user_id",
+        "credential_id",
+        "public_key",
+        "counter",
+        "device_name",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_settings": {
+      "columns": [
+        "key",
+        "value",
+        "updated_at"
+      ],
+      "totalRows": 51,
+      "sampleRows": [
+        {
+          "key": "tagline",
+          "value": "L'art de la beauté médicale",
+          "updated_at": "2026-05-11T01:03:10.200Z"
+        },
+        {
+          "key": "hero_title",
+          "value": "Révélez votre éclat naturel",
+          "updated_at": "2026-05-11T01:03:10.210Z"
+        },
+        {
+          "key": "hero_subtitle",
+          "value": "Soins esthétiques de pointe — PRP, agents de comblement et plus. Expertise médicale, résultats raffinés.",
+          "updated_at": "2026-05-11T01:03:10.219Z"
+        },
+        {
+          "key": "hero_cta",
+          "value": "Prendre rendez-vous",
+          "updated_at": "2026-05-11T01:03:10.228Z"
+        },
+        {
+          "key": "about_title",
+          "value": "L'expertise au service de votre beauté",
+          "updated_at": "2026-05-11T01:03:10.237Z"
+        },
+        {
+          "key": "about_text",
+          "value": "Nova Injectables est une clinique d'esthétique médicale dédiée à révéler votre beauté naturelle. Notre équipe d'infirmières et médecins certifiés combine expertise scientifique et sens artistique pour offrir des résultats raffinés et harmonieux. Chaque traitement est personnalisé selon votre morphologie et vos objectifs, dans un environnement chaleureux et confidentiel.",
+          "updated_at": "2026-05-11T01:03:10.247Z"
+        },
+        {
+          "key": "about_mission",
+          "value": "Sublimer votre beauté avec délicatesse, sécurité et excellence.",
+          "updated_at": "2026-05-11T01:03:10.256Z"
+        },
+        {
+          "key": "contact_email",
+          "value": "nina.novainjectables@gmail.com",
+          "updated_at": "2026-05-11T01:03:10.267Z"
+        },
+        {
+          "key": "contact_phone",
+          "value": "",
+          "updated_at": "2026-05-11T01:03:10.279Z"
+        },
+        {
+          "key": "business_name",
+          "value": "Nova Injectables",
+          "updated_at": "2026-05-11T01:03:10.289Z"
+        }
+      ]
+    },
+    "site_visits": {
+      "columns": [
+        "id",
+        "path",
+        "created_at"
+      ],
+      "totalRows": 27,
+      "sampleRows": [
+        {
+          "id": 1,
+          "path": "/",
+          "created_at": "2026-05-11T01:04:31.233Z"
+        },
+        {
+          "id": 2,
+          "path": "/booking",
+          "created_at": "2026-05-11T01:05:38.821Z"
+        },
+        {
+          "id": 3,
+          "path": "/",
+          "created_at": "2026-05-11T01:05:52.875Z"
+        },
+        {
+          "id": 4,
+          "path": "/about",
+          "created_at": "2026-05-11T01:05:58.049Z"
+        },
+        {
+          "id": 5,
+          "path": "/contact",
+          "created_at": "2026-05-11T01:06:02.067Z"
+        },
+        {
+          "id": 6,
+          "path": "/contact",
+          "created_at": "2026-05-11T01:06:03.246Z"
+        },
+        {
+          "id": 7,
+          "path": "/contact",
+          "created_at": "2026-05-11T01:06:03.427Z"
+        },
+        {
+          "id": 8,
+          "path": "/contact",
+          "created_at": "2026-05-11T01:06:03.440Z"
+        },
+        {
+          "id": 9,
+          "path": "/admin",
+          "created_at": "2026-05-11T01:25:15.028Z"
+        },
+        {
+          "id": 10,
+          "path": "/admin",
+          "created_at": "2026-05-11T01:25:16.669Z"
+        }
+      ]
+    },
+    "posts": {
+      "columns": [
+        "id",
+        "title",
+        "content",
+        "excerpt",
+        "image_url",
+        "category",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 3,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "PRP : la science derrière le rajeunissement naturel",
+          "content": "Le Plasma Riche en Plaquettes (PRP) est devenu en quelques années l'un des soins esthétiques les plus prisés. Et pour cause : il utilise les facteurs de croissance présents dans votre propre sang pour stimuler la régénération cellulaire. Le résultat? Une peau plus ferme, lumineuse, et un effet rajeunissement progressif et naturel.\n\nLe protocole est simple : nous prélevons une petite quantité de sang, que nous centrifugeons pour isoler le plasma riche en plaquettes. Ce plasma est ensuite réinjecté en microponctions dans les zones à traiter — visage, cou, décolleté, cuir chevelu.\n\nPour des résultats optimaux, nous recommandons une cure de 3 séances espacées de 4 semaines, puis un entretien annuel.",
+          "excerpt": "Le PRP utilise vos propres facteurs de croissance pour régénérer la peau de l'intérieur.",
+          "image_url": null,
+          "category": "Conseils experts",
+          "published": 1,
+          "created_at": "2026-05-11T01:03:10.544Z",
+          "updated_at": "2026-05-11T01:03:10.544Z"
+        },
+        {
+          "id": 2,
+          "title": "Bien préparer son rendez-vous d'injection",
+          "content": "Quelques règles simples pour optimiser vos résultats et minimiser les ecchymoses : évitez l'alcool 48h avant, les anti-inflammatoires (Advil, Aspirine) 5 jours avant, et hydratez-vous bien. Le jour J, venez démaquillée. Après l'injection, évitez le sport intense, le sauna et l'exposition solaire pendant 48h.",
+          "excerpt": "Les 5 règles d'or pour des résultats optimaux et un confort maximal.",
+          "image_url": null,
+          "category": "Conseils experts",
+          "published": 1,
+          "created_at": "2026-05-11T01:03:10.553Z",
+          "updated_at": "2026-05-11T01:03:10.553Z"
+        },
+        {
+          "id": 3,
+          "title": "Lèvres sublimées : trouver le bon équilibre",
+          "content": "L'art des lèvres réside dans la subtilité. Chez Nova, notre philosophie est claire : sublimer sans dénaturer. Nous étudions la morphologie de chaque visage, les proportions, et travaillons par couches légères pour un résultat harmonieux. Oubliez les lèvres « bouche de canard » — place à des lèvres pulpeuses, naturelles, parfaitement intégrées à votre sourire.",
+          "excerpt": "L'art subtil des lèvres pulpeuses qui restent naturelles.",
+          "image_url": null,
+          "category": "Tendances",
+          "published": 1,
+          "created_at": "2026-05-11T01:03:10.562Z",
+          "updated_at": "2026-05-11T01:03:10.562Z"
+        }
+      ]
+    },
+    "services": {
+      "columns": [
+        "id",
+        "name",
+        "slug",
+        "short_description",
+        "description",
+        "image_url",
+        "price_cents",
+        "deposit_cents",
+        "duration_minutes",
+        "category",
+        "featured",
+        "published",
+        "sort_order",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 6,
+      "sampleRows": [
+        {
+          "id": 1,
+          "name": "PRP Visage",
+          "slug": "prp-visage",
+          "short_description": "Rajeunissement du visage par plasma riche en plaquettes",
+          "description": "Le PRP (Plasma Riche en Plaquettes) utilise les facteurs de croissance de votre propre sang pour régénérer la peau, atténuer les rides et redonner éclat et fermeté. Idéal pour le visage, le cou et le décolleté. Résultats progressifs et naturels sur 3 à 6 mois. Aucune éviction sociale.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778460315/tapavis_tenant_nova-injectables/build_nova-injectables_1778460315531.png",
+          "price_cents": 60000,
+          "deposit_cents": 10000,
+          "duration_minutes": 75,
+          "category": "PRP",
+          "featured": 1,
+          "published": 1,
+          "sort_order": 0,
+          "created_at": "2026-05-11T01:03:10.419Z",
+          "updated_at": "2026-05-11T01:03:10.419Z"
+        },
+        {
+          "id": 2,
+          "name": "PRP Cheveux",
+          "slug": "prp-cheveux",
+          "short_description": "Stimulation capillaire par plasma autologue",
+          "description": "Traitement capillaire de référence pour densifier la chevelure et freiner la chute. Injections de PRP directement dans le cuir chevelu pour stimuler les follicules. Protocole recommandé : 3 séances espacées de 4 semaines, puis entretien annuel.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778460320/tapavis_tenant_nova-injectables/build_nova-injectables_1778460320647.png",
+          "price_cents": 50000,
+          "deposit_cents": 10000,
+          "duration_minutes": 60,
+          "category": "PRP",
+          "featured": 1,
+          "published": 1,
+          "sort_order": 0,
+          "created_at": "2026-05-11T01:03:10.428Z",
+          "updated_at": "2026-05-11T01:03:10.428Z"
+        },
+        {
+          "id": 3,
+          "name": "Lèvres sublimées",
+          "slug": "agents-comblement-levres",
+          "short_description": "Volume et hydratation des lèvres à l'acide hyaluronique",
+          "description": "Sublimer vos lèvres avec délicatesse — volume, contour, hydratation. Utilisation d'agents de comblement à base d'acide hyaluronique de dernière génération pour un résultat naturel et harmonieux. Anesthésie topique pour un confort optimal.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778460318/tapavis_tenant_nova-injectables/build_nova-injectables_1778460318726.png",
+          "price_cents": 55000,
+          "deposit_cents": 10000,
+          "duration_minutes": 45,
+          "category": "Agents de comblement",
+          "featured": 1,
+          "published": 1,
+          "sort_order": 0,
+          "created_at": "2026-05-11T01:03:10.437Z",
+          "updated_at": "2026-05-11T01:03:10.437Z"
+        },
+        {
+          "id": 4,
+          "name": "Sculpting visage",
+          "slug": "agents-comblement-visage",
+          "short_description": "Volumisation et contour du visage",
+          "description": "Restauration des volumes du visage : pommettes, mâchoire, sillons, vallée des larmes. Technique artistique pour rehausser la structure et adoucir les traits du temps. Effet immédiat, résultats durant 9 à 18 mois.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778460324/tapavis_tenant_nova-injectables/build_nova-injectables_1778460324246.png",
+          "price_cents": 70000,
+          "deposit_cents": 15000,
+          "duration_minutes": 60,
+          "category": "Agents de comblement",
+          "featured": 0,
+          "published": 1,
+          "sort_order": 0,
+          "created_at": "2026-05-11T01:03:10.445Z",
+          "updated_at": "2026-05-11T01:03:10.445Z"
+        },
+        {
+          "id": 5,
+          "name": "Botox / Neuromodulation",
+          "slug": "neuromodulation",
+          "short_description": "Lissage des rides d'expression",
+          "description": "Traitement de référence pour atténuer les rides du front, de la patte d'oie et de la glabelle. Approche subtile pour conserver une expression naturelle. Résultats visibles sous 7 à 14 jours, durée moyenne de 4 mois.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778460320/tapavis_tenant_nova-injectables/build_nova-injectables_1778460320729.png",
+          "price_cents": 35000,
+          "deposit_cents": 7500,
+          "duration_minutes": 30,
+          "category": "Anti-âge",
+          "featured": 1,
+          "published": 1,
+          "sort_order": 0,
+          "created_at": "2026-05-11T01:03:10.459Z",
+          "updated_at": "2026-05-11T01:03:10.459Z"
+        },
+        {
+          "id": 6,
+          "name": "Skin Booster",
+          "slug": "skin-booster",
+          "short_description": "Hydratation profonde et éclat",
+          "description": "Microinjections d'acide hyaluronique non volumateur pour une hydratation en profondeur. Peau repulpée, lumineuse, plus ferme. Recommandé en cure de 2 à 3 séances espacées de 3 semaines. Idéal en préparation événement.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778460328/tapavis_tenant_nova-injectables/build_nova-injectables_1778460328624.png",
+          "price_cents": 45000,
+          "deposit_cents": 10000,
+          "duration_minutes": 45,
+          "category": "Anti-âge",
+          "featured": 0,
+          "published": 1,
+          "sort_order": 0,
+          "created_at": "2026-05-11T01:03:10.470Z",
+          "updated_at": "2026-05-11T01:03:10.470Z"
+        }
+      ]
+    },
+    "testimonials": {
+      "columns": [
+        "id",
+        "author",
+        "role",
+        "content",
+        "image_url",
+        "rating",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "author": "Sophie L.",
+          "role": "Cliente fidèle",
+          "content": "Une expérience exceptionnelle. Nina a su comprendre exactement ce que je voulais — un résultat naturel, élégant. Je rayonne de confiance depuis. Mon salon de beauté de référence à Montréal.",
+          "image_url": null,
+          "rating": 5,
+          "published": 1,
+          "created_at": "2026-05-11T01:03:10.497Z",
+          "updated_at": "2026-05-11T01:03:10.497Z"
+        },
+        {
+          "id": 2,
+          "author": "Marie-Claude D.",
+          "role": "Première visite",
+          "content": "Accueil chaleureux, conseils honnêtes et professionnalisme impeccable. Le PRP visage a transformé ma peau en 3 mois. Je recommande à toutes mes amies!",
+          "image_url": null,
+          "rating": 5,
+          "published": 1,
+          "created_at": "2026-05-11T01:03:10.507Z",
+          "updated_at": "2026-05-11T01:03:10.507Z"
+        },
+        {
+          "id": 3,
+          "author": "Catherine T.",
+          "role": "Cliente régulière",
+          "content": "Nova c'est l'élégance et la confiance. Chaque rendez-vous est un moment privilégié et les résultats parlent d'eux-mêmes. Merci pour votre art!",
+          "image_url": null,
+          "rating": 5,
+          "published": 1,
+          "created_at": "2026-05-11T01:03:10.519Z",
+          "updated_at": "2026-05-11T01:03:10.519Z"
+        },
+        {
+          "id": 4,
+          "author": "Émilie R.",
+          "role": "Mariée comblée",
+          "content": "J'avais besoin d'être à mon meilleur pour mon mariage. Le skin booster et la touche subtile de Nina ont fait toute la différence. Résultats sublimes et naturels.",
+          "image_url": null,
+          "rating": 5,
+          "published": 1,
+          "created_at": "2026-05-11T01:03:10.527Z",
+          "updated_at": "2026-05-11T01:03:10.527Z"
+        }
+      ]
+    },
+    "appointments": {
+      "columns": [
+        "id",
+        "service_id",
+        "client_name",
+        "client_email",
+        "client_phone",
+        "appointment_date",
+        "appointment_time",
+        "notes",
+        "status",
+        "deposit_status",
+        "deposit_amount_cents",
+        "stripe_session_id",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "gallery": {
+      "columns": [
+        "id",
+        "title",
+        "description",
+        "image_url",
+        "category",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Notre univers",
+          "description": "Un cocon de raffinement",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778460322/tapavis_tenant_nova-injectables/build_nova-injectables_1778460322821.png",
+          "category": "Clinique",
+          "published": 1,
+          "created_at": "2026-05-11T01:03:10.580Z",
+          "updated_at": "2026-05-11T01:03:10.580Z"
+        },
+        {
+          "id": 2,
+          "title": "Expérience Nova",
+          "description": "Le luxe d'un soin sur mesure",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778460315/tapavis_tenant_nova-injectables/build_nova-injectables_1778460315166.png",
+          "category": "Soins",
+          "published": 1,
+          "created_at": "2026-05-11T01:03:10.590Z",
+          "updated_at": "2026-05-11T01:03:10.590Z"
+        },
+        {
+          "id": 3,
+          "title": "PRP signature",
+          "description": "Notre protocole de référence",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778460315/tapavis_tenant_nova-injectables/build_nova-injectables_1778460315531.png",
+          "category": "Soins",
+          "published": 1,
+          "created_at": "2026-05-11T01:03:10.600Z",
+          "updated_at": "2026-05-11T01:03:10.600Z"
+        },
+        {
+          "id": 4,
+          "title": "Lèvres sublimées",
+          "description": "L'art du naturel",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778460318/tapavis_tenant_nova-injectables/build_nova-injectables_1778460318726.png",
+          "category": "Résultats",
+          "published": 1,
+          "created_at": "2026-05-11T01:03:10.609Z",
+          "updated_at": "2026-05-11T01:03:10.609Z"
+        }
+      ]
+    },
+    "form_submissions": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "phone",
+        "message",
+        "image_url",
+        "status",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    }
+  }
+}

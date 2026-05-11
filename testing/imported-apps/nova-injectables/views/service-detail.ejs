@@ -1,0 +1,41 @@
+<%- include('partials/header') %>
+<section class="py-12 md:py-20 bg-cream">
+<div class="max-w-6xl mx-auto px-4 md:px-6">
+<a href="services" class="inline-flex items-center gap-2 text-sm text-ink/60 hover:text-brand mb-8">← <%= t.back_to_services %></a>
+<div class="grid lg:grid-cols-2 gap-12 items-start">
+<div class="aspect-[4/5] rounded-2xl overflow-hidden bg-champagne/30 sticky top-28">
+<img src="<%= service.image_url || 'https://placehold.co/800x1000/e8dcc7/6366f1/png' %>" alt="<%= service.name %>" class="w-full h-full object-cover">
+</div>
+<div>
+<% if (service.category) { %><div class="text-xs tracking-[0.4em] uppercase text-brand mb-3"><%= service.category %></div><% } %>
+<h1 class="font-display text-4xl md:text-5xl text-ink mb-4"><%= service.name %></h1>
+<p class="text-lg text-ink/70 mb-8 leading-relaxed"><%= service.short_description || '' %></p>
+<div class="grid grid-cols-3 gap-4 mb-8 p-6 bg-white rounded-2xl">
+<div><div class="text-[10px] tracking-widest uppercase text-ink/40 mb-1"><%= t.services_from %></div><div class="font-display text-2xl text-ink"><%= formatPrice(service.price_cents) %></div></div>
+<div><div class="text-[10px] tracking-widest uppercase text-ink/40 mb-1"><%= t.services_duration %></div><div class="font-display text-2xl text-ink"><%= service.duration_minutes %> <%= t.services_minutes %></div></div>
+<div><div class="text-[10px] tracking-widest uppercase text-ink/40 mb-1"><%= t.services_deposit %></div><div class="font-display text-2xl text-brand"><%= formatPrice(service.deposit_cents) %></div></div>
+</div>
+<div class="prose prose-lg max-w-none mb-10 text-ink/80">
+<% (service.description || '').split('\n').forEach(function(p){ if(p.trim()){ %><p class="mb-4 leading-relaxed"><%= p %></p><% } }) %>
+</div>
+<a href="booking?service=<%= service.id %>" class="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-brand text-white tracking-wide hover:bg-brand-dark transition" style="background-color:#6366f1;color:#fff"><%= t.services_book_btn %> <span>→</span></a>
+</div>
+</div>
+</div>
+</section>
+<% if (typeof otherServices !== 'undefined' && otherServices.length > 0) { %>
+<section class="py-20 bg-white">
+<div class="max-w-7xl mx-auto px-4 md:px-6">
+<h2 class="font-display text-3xl md:text-4xl text-ink text-center mb-12"><%= lang==='en' ? 'You may also like' : 'Vous pourriez aussi aimer' %></h2>
+<div class="grid md:grid-cols-3 gap-6">
+<% otherServices.forEach(function(os){ %>
+<a href="services/<%= os.slug %>" class="group block bg-cream rounded-2xl overflow-hidden hover:shadow-xl transition">
+<div class="aspect-[4/3] overflow-hidden"><img src="<%= os.image_url || 'https://placehold.co/600x450/e8dcc7/6366f1/png' %>" alt="<%= os.name %>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"></div>
+<div class="p-6"><h3 class="font-display text-xl text-ink group-hover:text-brand transition"><%= os.name %></h3><div class="mt-2 text-sm text-ink/50"><%= formatPrice(os.price_cents) %></div></div>
+</a>
+<% }) %>
+</div>
+</div>
+</section>
+<% } %>
+<%- include('partials/footer') %>

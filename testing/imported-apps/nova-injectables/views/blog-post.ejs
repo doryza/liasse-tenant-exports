@@ -1,0 +1,29 @@
+<%- include('partials/header') %>
+<article class="py-12 md:py-20 bg-cream">
+<div class="max-w-3xl mx-auto px-4 md:px-6">
+<a href="blog" class="inline-flex items-center gap-2 text-sm text-ink/60 hover:text-brand mb-8">← <%= t.back_to_blog %></a>
+<% if (post.category) { %><div class="text-xs tracking-[0.4em] uppercase text-brand mb-3"><%= post.category %></div><% } %>
+<h1 class="font-display text-4xl md:text-5xl text-ink mb-4"><%= post.title %></h1>
+<div class="text-sm text-ink/50 mb-10"><%= formatDate(post.created_at) %></div>
+<% if (post.image_url) { %><div class="aspect-[16/9] rounded-2xl overflow-hidden mb-10"><img src="<%= post.image_url %>" alt="<%= post.title %>" class="w-full h-full object-cover"></div><% } %>
+<div class="prose prose-lg max-w-none text-ink/80">
+<% (post.content || '').split('\n').forEach(function(p){ if(p.trim()){ %><p class="mb-5 leading-relaxed text-lg"><%= p %></p><% } }) %>
+</div>
+</div>
+</article>
+<% if (typeof otherPosts !== 'undefined' && otherPosts.length > 0) { %>
+<section class="py-16 bg-white border-t border-champagne/40">
+<div class="max-w-6xl mx-auto px-4 md:px-6">
+<h2 class="font-display text-3xl text-ink mb-10 text-center"><%= lang==='en' ? 'Keep reading' : 'À lire aussi' %></h2>
+<div class="grid md:grid-cols-3 gap-6">
+<% otherPosts.forEach(function(op){ %>
+<a href="<%= op.id %>" class="group block bg-cream rounded-2xl overflow-hidden hover:shadow-xl transition">
+<div class="aspect-[4/3] overflow-hidden"><img src="<%= op.image_url || 'https://placehold.co/600x450/e8dcc7/6366f1/png' %>" alt="<%= op.title %>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"></div>
+<div class="p-5"><h3 class="font-display text-lg text-ink group-hover:text-brand transition"><%= op.title %></h3></div>
+</a>
+<% }) %>
+</div>
+</div>
+</section>
+<% } %>
+<%- include('partials/footer') %>

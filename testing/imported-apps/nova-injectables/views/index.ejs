@@ -1,0 +1,118 @@
+<%- include('partials/header') %>
+<section class="relative overflow-hidden">
+<img src="<%= (typeof settings!=='undefined' && settings._p_hero_image_url) ? settings._p_hero_image_url : 'https://placehold.co/1600x900/e8dcc7/6366f1/png?text=Nova' %>" alt="Nova" class="w-full h-[560px] md:h-[680px] object-cover">
+<div class="absolute inset-0 bg-gradient-to-r from-ink/70 via-ink/40 to-transparent flex items-center">
+<div class="max-w-7xl mx-auto px-4 md:px-6 w-full">
+<div class="max-w-2xl text-white">
+<div class="text-xs tracking-[0.4em] uppercase text-brand-light mb-6"><%= (settings && settings.tagline) || (lang==='en' ? 'The art of medical beauty' : 'L\'art de la beauté médicale') %></div>
+<h1 class="font-display text-5xl md:text-7xl leading-tight mb-6"><%= (settings && settings.hero_title) || t.hero_title %></h1>
+<p class="text-lg md:text-xl text-white/85 mb-10 max-w-xl leading-relaxed"><%= (settings && settings.hero_subtitle) || t.hero_subtitle %></p>
+<div class="flex flex-wrap gap-4">
+<a href="booking" class="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-brand text-white tracking-wide hover:bg-brand-dark transition" style="background-color:#6366f1;color:#fff"><%= (settings && settings.hero_cta) || t.hero_cta %> <span aria-hidden>→</span></a>
+<a href="services" class="inline-flex items-center gap-2 px-8 py-4 rounded-full border border-white/40 text-white tracking-wide hover:bg-white hover:text-ink transition"><%= t.hero_cta_secondary %></a>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="py-20 bg-cream">
+<div class="max-w-7xl mx-auto px-4 md:px-6">
+<div class="text-center mb-14">
+<div class="text-xs tracking-[0.4em] uppercase text-brand mb-3"><%= t.featured_services %></div>
+<h2 class="font-display text-4xl md:text-5xl text-ink mb-4"><%= t.services_title %></h2>
+<p class="text-ink/60 max-w-2xl mx-auto"><%= t.services_subtitle %></p>
+</div>
+<% if (typeof featuredServices !== 'undefined' && featuredServices && featuredServices.length > 0) { %>
+<div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+<% featuredServices.forEach(function(s){ %>
+<a href="services/<%= s.slug %>" class="group block bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500">
+<div class="aspect-[4/3] overflow-hidden bg-champagne/30">
+<img src="<%= s.image_url || 'https://placehold.co/600x450/e8dcc7/6366f1/png' %>" alt="<%= s.name %>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+</div>
+<div class="p-6">
+<% if (s.category) { %><div class="text-[10px] tracking-[0.3em] uppercase text-brand mb-2"><%= s.category %></div><% } %>
+<h3 class="font-display text-2xl mb-2 text-ink group-hover:text-brand transition"><%= s.name %></h3>
+<p class="text-sm text-ink/60 mb-4"><%= s.short_description || '' %></p>
+<div class="flex items-center justify-between text-sm">
+<span class="text-ink/50"><%= t.services_from %> <strong class="text-ink"><%= formatPrice(s.price_cents) %></strong></span>
+<span class="text-brand group-hover:translate-x-1 transition-transform">→</span>
+</div>
+</div>
+</a>
+<% }) %>
+</div>
+<div class="text-center mt-12"><a href="services" class="inline-flex items-center gap-2 text-brand hover:text-brand-dark tracking-wide"><%= t.services_view_all %> <span>→</span></a></div>
+<% } else { %>
+<div class="text-center py-16"><p class="text-ink/50"><%= t.empty_services %></p></div>
+<% } %>
+</div>
+</section>
+<section class="py-24 bg-white">
+<div class="max-w-7xl mx-auto px-4 md:px-6 grid lg:grid-cols-2 gap-16 items-center">
+<div class="order-2 lg:order-1">
+<div class="text-xs tracking-[0.4em] uppercase text-brand mb-4"><%= t.about_subtitle %></div>
+<h2 class="font-display text-4xl md:text-5xl text-ink mb-6"><%= (settings && settings.about_title) || t.about_title %></h2>
+<p class="text-ink/70 leading-relaxed text-lg mb-6"><%= (settings && settings.about_text) || 'Nova Injectables est une clinique d\'esthétique médicale dédiée à révéler votre beauté naturelle.' %></p>
+<% if (settings && settings.about_mission) { %><blockquote class="border-l-2 border-brand pl-6 italic font-display text-2xl text-ink/80 mb-8">« <%= settings.about_mission %> »</blockquote><% } %>
+<a href="about" class="inline-flex items-center gap-2 text-brand hover:text-brand-dark tracking-wide"><%= t.learn_more %> <span>→</span></a>
+</div>
+<div class="order-1 lg:order-2">
+<img src="<%= (settings && settings._p_about_image_url) || 'https://placehold.co/800x1000/e8dcc7/6366f1/png' %>" alt="Nova" class="w-full rounded-2xl shadow-2xl">
+</div>
+</div>
+</section>
+<% if (typeof testimonials !== 'undefined' && testimonials && testimonials.length > 0) { %>
+<section class="py-24 bg-champagne/20">
+<div class="max-w-7xl mx-auto px-4 md:px-6">
+<div class="text-center mb-14">
+<div class="text-xs tracking-[0.4em] uppercase text-brand mb-3"><%= t.testimonials_subtitle %></div>
+<h2 class="font-display text-4xl md:text-5xl text-ink"><%= t.testimonials_title %></h2>
+</div>
+<div class="grid md:grid-cols-3 gap-6">
+<% testimonials.forEach(function(tm){ %>
+<div class="bg-white rounded-2xl p-8 shadow-sm">
+<div class="flex gap-1 text-brand mb-4"><% for(var i=0;i<(tm.rating||5);i++){ %>★<% } %></div>
+<p class="font-display text-xl text-ink/80 leading-relaxed mb-6">« <%= tm.content %> »</p>
+<div>
+<div class="font-medium text-ink"><%= tm.author %></div>
+<% if (tm.role) { %><div class="text-sm text-ink/50"><%= tm.role %></div><% } %>
+</div>
+</div>
+<% }) %>
+</div>
+</div>
+</section>
+<% } %>
+<% if (typeof latestPosts !== 'undefined' && latestPosts && latestPosts.length > 0) { %>
+<section class="py-24 bg-white">
+<div class="max-w-7xl mx-auto px-4 md:px-6">
+<div class="flex items-end justify-between mb-12 flex-wrap gap-4">
+<div>
+<div class="text-xs tracking-[0.4em] uppercase text-brand mb-3"><%= t.blog_subtitle %></div>
+<h2 class="font-display text-4xl md:text-5xl text-ink"><%= t.blog_title %></h2>
+</div>
+<a href="blog" class="text-brand hover:text-brand-dark tracking-wide"><%= t.services_view_all %> →</a>
+</div>
+<div class="grid md:grid-cols-3 gap-8">
+<% latestPosts.forEach(function(p){ %>
+<a href="blog/<%= p.id %>" class="group block">
+<div class="aspect-[4/3] overflow-hidden rounded-2xl bg-champagne/30 mb-4">
+<img src="<%= p.image_url || 'https://placehold.co/600x450/e8dcc7/6366f1/png' %>" alt="<%= p.title %>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+</div>
+<% if (p.category) { %><div class="text-[10px] tracking-[0.3em] uppercase text-brand mb-2"><%= p.category %></div><% } %>
+<h3 class="font-display text-2xl text-ink group-hover:text-brand transition mb-2"><%= p.title %></h3>
+<p class="text-sm text-ink/60"><%= truncate(p.excerpt || p.content || '', 110) %></p>
+</a>
+<% }) %>
+</div>
+</div>
+</section>
+<% } %>
+<section class="py-24 bg-ink text-cream">
+<div class="max-w-4xl mx-auto px-4 md:px-6 text-center">
+<h2 class="font-display text-4xl md:text-6xl mb-6"><%= t.cta_section_title %></h2>
+<p class="text-cream/70 text-lg mb-10"><%= t.cta_section_subtitle %></p>
+<a href="booking" class="inline-flex items-center gap-2 px-10 py-4 rounded-full bg-brand text-white tracking-wide hover:bg-brand-dark transition" style="background-color:#6366f1;color:#fff"><%= t.nav_book %> <span aria-hidden>→</span></a>
+</div>
+</section>
+<%- include('partials/footer') %>
