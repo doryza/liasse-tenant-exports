@@ -9,8 +9,7 @@
 <title><%= (typeof pageTitle !== 'undefined' && pageTitle) ? pageTitle + ' — ' : '' %><%= (settings && settings.business_name) || 'Nova Injectables' %></title>
 <meta name="description" content="<%= (settings && settings.footer_about) || 'Clinique d\'esthétique médicale dédiée à votre éclat naturel.' %>">
 <link rel="manifest" href="manifest.json">
-<script src="https://cdn.tailwindcss.com"></script>
-<script>tailwind.config={theme:{extend:{colors:{brand:'#6366f1','brand-dark':'#4f46e5','brand-light':'#a5b4fc',cream:'#faf8f5',champagne:'#e8dcc7',sand:'#d4c4a8',ink:'#1a1a1a'},fontFamily:{display:['Cormorant Garamond','serif'],body:['Inter','system-ui','sans-serif']}}}}</script>
+<link rel="stylesheet" href="public/css/tailwind.css">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="public/css/styles.css">
 </head>

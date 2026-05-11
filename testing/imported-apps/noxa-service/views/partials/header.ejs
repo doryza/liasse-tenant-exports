@@ -9,8 +9,7 @@
 <title><%= (typeof pageTitle !== 'undefined') ? pageTitle : ((typeof settings !== 'undefined' && settings.business_name) ? settings.business_name : 'Noxa Service') %></title>
 <meta name="description" content="<%= (typeof settings !== 'undefined' && settings.tagline) ? settings.tagline : 'Service professionnel de ménage au Québec' %>">
 <link rel="manifest" href="manifest.json">
-<script src="https://cdn.tailwindcss.com"></script>
-<script>tailwind.config={theme:{extend:{colors:{brand:'#6366f1','brand-dark':'#4f46e5','brand-light':'#a5b4fc'}}}}</script>
+<link rel="stylesheet" href="public/css/tailwind.css">
 <link rel="stylesheet" href="public/css/styles.css">
 </head>
 <body class="bg-white text-gray-800 antialiased">
