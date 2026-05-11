@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin · <%= (settings && settings['business_name']) || 'Soutien AA' %></title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body>
+<% var activeModule = 'dashboard'; %>
+<%- include('partials/admin-sidebar') %>
+<main class="admin-main">
+<div class="admin-header">
+<button class="mobile-toggle" onclick="document.getElementById('adminSidebar').classList.toggle('open')" aria-label="Menu">☰</button>
+<div>
+<h1>Tableau de bord</h1>
+<p class="admin-subtitle">Bienvenue. Voici un aperçu de votre activité.</p>
+</div>
+<a href="." target="_blank" class="btn btn-secondary">🌐 Voir le site →</a>
+</div>
+
+<div class="stats-grid">
+<div class="stat-card"><div class="stat-icon" style="background:#eef2ff;color:#6366f1">👁️</div><div class="stat-body"><div class="label">Visites totales</div><div class="value accent"><%= stats.totalVisits %></div></div></div>
+<div class="stat-card"><div class="stat-icon" style="background:#dbeafe;color:#1e40af">📈</div><div class="stat-body"><div class="label">Visites (7j)</div><div class="value"><%= stats.recentVisits %></div></div></div>
+<div class="stat-card"><div class="stat-icon" style="background:#d1fae5;color:#065f46">👥</div><div class="stat-body"><div class="label">Utilisateurs</div><div class="value"><%= stats.userCount %></div></div></div>
+<div class="stat-card"><div class="stat-icon" style="background:#fed7aa;color:#9a3412">🔔</div><div class="stat-body"><div class="label">Notifications push</div><div class="value"><%= stats.pushCount %></div></div></div>
+</div>
+
+<h2 class="admin-section-title">Contenu du site</h2>
+<div class="stats-grid">
+<div class="stat-card module-card">
+<div class="module-head"><span class="module-emoji">📖</span><div><div class="label">Partages</div><div class="value accent"><%= stats.postCount %></div></div></div>
+<a href="admin/temoignages" class="btn btn-sm btn-primary" style="background-color:#6366f1;color:#fff;width:100%;justify-content:center">Gérer →</a>
+</div>
+<div class="stat-card module-card">
+<div class="module-head"><span class="module-emoji">🔗</span><div><div class="label">Ressources</div><div class="value accent"><%= stats.resCount %></div></div></div>
+<a href="admin/ressources" class="btn btn-sm btn-primary" style="background-color:#6366f1;color:#fff;width:100%;justify-content:center">Gérer →</a>
+</div>
+<div class="stat-card module-card">
+<div class="module-head"><span class="module-emoji">📅</span><div><div class="label">Réunions</div><div class="value accent"><%= stats.reunCount %></div></div></div>
+<a href="admin/reunions" class="btn btn-sm btn-primary" style="background-color:#6366f1;color:#fff;width:100%;justify-content:center">Gérer →</a>
+</div>
+<div class="stat-card module-card">
+<div class="module-head"><span class="module-emoji">✉️</span><div><div class="label">Messages <% if (stats.unread > 0) { %><span class="badge badge-warning"><%= stats.unread %> non lus</span><% } %></div><div class="value accent"><%= stats.msgCount %></div></div></div>
+<a href="admin/messages" class="btn btn-sm btn-primary" style="background-color:#6366f1;color:#fff;width:100%;justify-content:center">Voir →</a>
+</div>
+</div>
+
+<div class="admin-card">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem">
+<h2 style="margin:0">📬 Messages récents</h2>
+<a href="admin/messages" class="btn btn-sm btn-secondary">Voir tout →</a>
+</div>
+<% if (recentMessages && recentMessages.length > 0) { %>
+<% recentMessages.forEach(function(m) { %>
+<div class="message-card <%= !m.read_at ? 'unread' : '' %>">
+<div class="head"><span class="from"><%= m.name %><% if (!m.read_at) { %> <span class="badge badge-warning">Nouveau</span><% } %></span><span><%= new Date(m.created_at).toLocaleString('fr-CA') %></span></div>
+<% if (m.email) { %><div style="font-size:.85rem;color:#64748b">📧 <%= m.email %></div><% } %>
+<div class="body"><%= (m.message || '').substring(0, 200) %><%= (m.message || '').length > 200 ? '...' : '' %></div>
+</div>
+<% }); %>
+<% } else { %>
+<div class="admin-empty"><div class="admin-empty-icon">📭</div><h3>Aucun message pour le moment</h3><p>Les messages reçus via le formulaire de contact apparaîtront ici.</p></div>
+<% } %>
+</div>
+
+<div class="admin-card" style="background:linear-gradient(135deg,#6366f1,#4f46e5);color:#fff;border:none">
+<h2 style="color:#fff">💡 Conseils rapides</h2>
+<ul style="margin-top:1rem;padding-left:1.5rem;line-height:1.9">
+<li>Publiez régulièrement des partages pour inspirer les visiteurs.</li>
+<li>Maintenez l'horaire des réunions à jour.</li>
+<li>Répondez aux messages dans les 24h pour offrir un soutien réel.</li>
+<li>Respectez l'anonymat dans tous les contenus publiés.</li>
+</ul>
+</div>
+</main>
+</body>
+</html>

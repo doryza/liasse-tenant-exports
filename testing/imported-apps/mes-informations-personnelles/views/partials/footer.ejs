@@ -1,0 +1,29 @@
+<footer>
+<div class="container">
+<div>
+<h4><%= (settings && settings['business_name']) || t.site_name %></h4>
+<p style="font-size:.9rem;color:#94a3b8;margin-top:.5rem"><%= t.footer_anonymity %></p>
+</div>
+<div>
+<h4><%= t.footer_links %></h4>
+<a href="."><%= t.nav_home %></a>
+<a href="coordonnees"><%= t.nav_coordonnees %></a>
+<a href="ressources"><%= t.nav_ressources %></a>
+<a href="reunions"><%= t.nav_reunions %></a>
+<a href="contact"><%= t.nav_contact %></a>
+</div>
+<div>
+<h4><%= t.emergency_title %></h4>
+<a href="tel:<%= (settings && settings['emergency_aa_phone']) || '1-866-376-6378' %>">AA Québec: <%= (settings && settings['emergency_aa_phone']) || '1-866-376-6378' %></a>
+<a href="tel:<%= (settings && settings['emergency_drug_phone']) || '1-800-265-2626' %>">Aide: <%= (settings && settings['emergency_drug_phone']) || '1-800-265-2626' %></a>
+<a href="tel:811">Info-Social: 811</a>
+</div>
+<div class="copyright">© <%= new Date().getFullYear() %> <%= (settings && settings['business_name']) || t.site_name %>. <%= t.footer_copyright %>.</div>
+</div>
+</footer>
+<script src="public/js/app.js"></script>
+<script>
+try { if (window.TenantSDK) { TenantSDK.ui.showInstallBanner(); setTimeout(function(){ try { TenantSDK.ui.showPushPrompt(); } catch(e){} }, 8000); } } catch(e){}
+</script>
+</body>
+</html>

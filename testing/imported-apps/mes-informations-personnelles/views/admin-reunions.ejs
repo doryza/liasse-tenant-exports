@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Réunions · Admin</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body>
+<% var activeModule = 'reunions'; %>
+<%- include('partials/admin-sidebar') %>
+<main class="admin-main">
+<div class="admin-header">
+<button class="mobile-toggle" onclick="document.getElementById('adminSidebar').classList.toggle('open')" aria-label="Menu">☰</button>
+<div>
+<h1>Réunions</h1>
+<p class="admin-subtitle">Gérez l'horaire des réunions affiché aux visiteurs.</p>
+</div>
+<button class="btn btn-primary" onclick="openModal()" style="background-color:#6366f1;color:#fff">+ Nouvelle réunion</button>
+</div>
+
+<div class="toolbar">
+<input type="search" id="searchInput" placeholder="🔍 Rechercher (lieu, jour, type)..." class="search-input" oninput="renderItems()">
+</div>
+
+<div class="admin-card">
+<div class="table-wrap">
+<table><thead><tr><th>Jour</th><th>Heure</th><th>Lieu</th><th>Type</th><th>Actions</th></tr></thead><tbody id="tbody"><tr><td colspan="5" style="text-align:center;padding:2rem;color:#64748b">Chargement...</td></tr></tbody></table>
+</div>
+</div>
+</main>
+<div class="modal-overlay" id="modal"><div class="modal"><div class="modal-head"><h2 id="modalTitle">Nouvelle réunion</h2><button type="button" class="modal-close" onclick="closeModal()" aria-label="Fermer">✕</button></div><form id="itemForm"><input type="hidden" name="id"><div class="form-grid-2"><div class="form-group"><label>Jour *</label><select name="day" required><option>Lundi</option><option>Mardi</option><option>Mercredi</option><option>Jeudi</option><option>Vendredi</option><option>Samedi</option><option>Dimanche</option></select></div><div class="form-group"><label>Heure *</label><input type="text" name="time" placeholder="ex: 19h30" required></div></div><div class="form-group"><label>Lieu *</label><input type="text" name="location" placeholder="ex: Centre communautaire" required></div><div class="form-group"><label>Adresse</label><input type="text" name="address" placeholder="ex: 123 rue Principale, Québec"></div><div class="form-group"><label>Type</label><select name="type"><option value="">-- Aucun --</option><option>Ouverte</option><option>Fermée</option><option>Discussion</option><option>Étapes</option><option>Tradition</option><option>Débutants</option></select></div><div class="form-group"><label>Notes</label><textarea name="notes" placeholder="Accessibilité, instructions..."></textarea></div><div class="form-group"><label>URL image (optionnel)</label><input type="url" name="image_url" placeholder="https://..."></div><div class="modal-actions"><button type="button" class="btn btn-secondary" onclick="closeModal()">Annuler</button><button type="submit" class="btn btn-primary" style="background-color:#6366f1;color:#fff">💾 Enregistrer</button></div></form></div></div>
+<div id="toast" class="toast"></div>
+<script>
+var allItems = [];
+async function loadItems() {
+  try {
+    var res = await fetch('api/admin/reunions');
+    var data = await res.json();
+    allItems = data.reunions || [];
+    renderItems();
+  } catch(e) { showToast('Erreur de chargement', 'error'); }
+}
+function renderItems() {
+  var q = (document.getElementById('searchInput').value || '').toLowerCase().trim();
+  var items = allItems.filter(function(r){
+    if (!q) return true;
+    return ((r.day||'') + ' ' + (r.time||'') + ' ' + (r.location||'') + ' ' + (r.type||'') + ' ' + (r.address||'')).toLowerCase().indexOf(q) >= 0;
+  });
+  var tbody = document.getElementById('tbody');
+  if (items.length === 0) {
+    tbody.innerHTML = '<tr class="empty-row"><td colspan="5">' + (allItems.length === 0 ? 'Aucune réunion. Cliquez sur "Nouvelle réunion".' : 'Aucun résultat pour cette recherche.') + '</td></tr>';
+    return;
+  }
+  tbody.innerHTML = items.map(function(r) {
+    return '<tr><td><strong>' + escapeHtml(r.day) + '</strong></td><td><span class="time-pill">' + escapeHtml(r.time||'') + '</span></td><td><strong>' + escapeHtml(r.location||'') + '</strong><div style="font-size:.8rem;color:#64748b">' + escapeHtml(r.address||'') + '</div></td><td>' + (r.type ? '<span class="badge badge-info">' + escapeHtml(r.type) + '</span>' : '—') + '</td><td><div class="actions"><button class="btn btn-sm btn-secondary" onclick=\'edit(' + JSON.stringify(r) + ')\' title="Modifier">✏️</button><button class="btn btn-sm btn-danger" onclick="del(' + r.id + ')" title="Supprimer">🗑️</button></div></td></tr>';
+  }).join('');
+}
+function escapeHtml(s) { return String(s||'').replace(/[&<>"']/g, function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+function openModal() { document.getElementById('itemForm').reset(); document.getElementById('itemForm').id.value=''; document.getElementById('modalTitle').textContent = 'Nouvelle réunion'; document.getElementById('modal').classList.add('open'); }
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+function edit(r) { var f = document.getElementById('itemForm'); f.id.value = r.id; f.day.value = r.day||'Lundi'; f.time.value = r.time||''; f.location.value = r.location||''; f.address.value = r.address||''; f.type.value = r.type||''; f.notes.value = r.notes||''; f.image_url.value = r.image_url||''; document.getElementById('modalTitle').textContent = 'Modifier la réunion'; document.getElementById('modal').classList.add('open'); }
+async function del(id) { if (!confirm('Supprimer cette réunion?')) return; try { await fetch('api/admin/reunions/' + id, { method: 'DELETE' }); showToast('Réunion supprimée', 'success'); loadItems(); } catch(e){ showToast('Erreur', 'error'); } }
+function showToast(msg, type) { var t = document.getElementById('toast'); t.textContent = msg; t.className = 'toast show ' + (type||''); setTimeout(function(){ t.className = 'toast'; }, 2500); }
+document.getElementById('itemForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  var f = e.target;
+  var payload = { day: f.day.value, time: f.time.value, location: f.location.value, address: f.address.value, type: f.type.value, notes: f.notes.value, image_url: f.image_url.value };
+  var id = f.id.value;
+  try {
+    var res = await fetch(id ? 'api/admin/reunions/' + id : 'api/admin/reunions', { method: id ? 'PUT' : 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+    if (res.ok) { closeModal(); showToast(id ? 'Réunion mise à jour' : 'Réunion ajoutée', 'success'); loadItems(); } else { showToast('Erreur', 'error'); }
+  } catch(e){ showToast('Erreur', 'error'); }
+});
+document.getElementById('modal').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
+document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeModal(); });
+loadItems();
+</script>
+</body>
+</html>

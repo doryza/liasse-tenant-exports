@@ -1,0 +1,476 @@
+{
+  "exportedAt": "2026-05-11T21:43:26.954Z",
+  "tables": {
+    "admin_users": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "password_hash",
+        "display_name",
+        "role",
+        "active",
+        "activation_token",
+        "invited_by",
+        "invite_token",
+        "invite_expires_at",
+        "last_login_at",
+        "is_active",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_invites": {
+      "columns": [
+        "id",
+        "email",
+        "token",
+        "role",
+        "status",
+        "invited_by",
+        "expires_at",
+        "accepted_at",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_webauthn_credentials": {
+      "columns": [
+        "id",
+        "admin_user_id",
+        "credential_id",
+        "public_key",
+        "counter",
+        "device_name",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_settings": {
+      "columns": [
+        "key",
+        "value",
+        "updated_at"
+      ],
+      "totalRows": 50,
+      "sampleRows": [
+        {
+          "key": "_p_hero_image_url",
+          "value": "https://res.cloudinary.com/duhp69meg/image/upload/v1778533218/tapavis_tenant_mes-informations-personnelles/build_mes-informations-personnelles_1778533217904.png",
+          "updated_at": "2026-05-11T21:16:35.752Z"
+        },
+        {
+          "key": "business_name",
+          "value": "Soutien AA - Yves",
+          "updated_at": "2026-05-11T21:16:35.762Z"
+        },
+        {
+          "key": "contact_email",
+          "value": "yves.gagnon70@gmail.com",
+          "updated_at": "2026-05-11T21:16:35.770Z"
+        },
+        {
+          "key": "contact_phone",
+          "value": "",
+          "updated_at": "2026-05-11T21:16:35.779Z"
+        },
+        {
+          "key": "contact_phone_display",
+          "value": "Sur demande par courriel",
+          "updated_at": "2026-05-11T21:16:35.788Z"
+        },
+        {
+          "key": "contact_availability_fr",
+          "value": "Disponible tous les jours de 8h à 22h. N'hésitez pas à laisser un message à tout moment.",
+          "updated_at": "2026-05-11T21:16:35.798Z"
+        },
+        {
+          "key": "contact_availability_en",
+          "value": "Available daily from 8am to 10pm. Feel free to leave a message anytime.",
+          "updated_at": "2026-05-11T21:16:35.806Z"
+        },
+        {
+          "key": "contact_location_fr",
+          "value": "Québec, Canada",
+          "updated_at": "2026-05-11T21:16:35.818Z"
+        },
+        {
+          "key": "contact_location_en",
+          "value": "Quebec, Canada",
+          "updated_at": "2026-05-11T21:16:35.831Z"
+        },
+        {
+          "key": "owner_name",
+          "value": "Yves G.",
+          "updated_at": "2026-05-11T21:16:35.841Z"
+        }
+      ]
+    },
+    "site_visits": {
+      "columns": [
+        "id",
+        "path",
+        "created_at"
+      ],
+      "totalRows": 87,
+      "sampleRows": [
+        {
+          "id": 1,
+          "path": "/",
+          "created_at": "2026-05-11T21:16:53.590Z"
+        },
+        {
+          "id": 2,
+          "path": "/coordonnees",
+          "created_at": "2026-05-11T21:17:17.147Z"
+        },
+        {
+          "id": 3,
+          "path": "/ressources",
+          "created_at": "2026-05-11T21:17:29.914Z"
+        },
+        {
+          "id": 4,
+          "path": "/reunions",
+          "created_at": "2026-05-11T21:17:36.090Z"
+        },
+        {
+          "id": 5,
+          "path": "/temoignages",
+          "created_at": "2026-05-11T21:17:43.178Z"
+        },
+        {
+          "id": 6,
+          "path": "/contact",
+          "created_at": "2026-05-11T21:17:44.016Z"
+        },
+        {
+          "id": 7,
+          "path": "/",
+          "created_at": "2026-05-11T21:18:30.023Z"
+        },
+        {
+          "id": 8,
+          "path": "/contact",
+          "created_at": "2026-05-11T21:19:29.635Z"
+        },
+        {
+          "id": 9,
+          "path": "/",
+          "created_at": "2026-05-11T21:19:59.255Z"
+        },
+        {
+          "id": 10,
+          "path": "/coordonnees",
+          "created_at": "2026-05-11T21:20:02.656Z"
+        }
+      ]
+    },
+    "posts": {
+      "columns": [
+        "id",
+        "title",
+        "author",
+        "content",
+        "image_url",
+        "category",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 5,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Un jour à la fois",
+          "author": "Anonyme",
+          "content": "Quand j'ai assisté à ma première réunion, j'étais terrifié. Aujourd'hui, après plusieurs années de sobriété, je peux dire que cette décision a sauvé ma vie. Le programme fonctionne si on le travaille. Un jour à la fois, parfois une heure à la fois, parfois une minute à la fois. Vous n'êtes pas seul.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778533223/tapavis_tenant_mes-informations-personnelles/build_mes-informations-personnelles_1778533223154.png",
+          "category": "Espoir",
+          "published": 1,
+          "created_at": "2026-05-11T21:16:35.948Z",
+          "updated_at": "2026-05-11T21:16:35.948Z"
+        },
+        {
+          "id": 2,
+          "title": "La force de la fraternité",
+          "author": "Marie L.",
+          "content": "Je pensais pouvoir m'en sortir seule. J'avais tort. C'est en acceptant l'aide des autres membres que j'ai trouvé ma véritable force. Les liens créés en salle sont précieux et durables. Aujourd'hui, je rends ce qu'on m'a donné en parrainant à mon tour.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778533227/tapavis_tenant_mes-informations-personnelles/build_mes-informations-personnelles_1778533227645.png",
+          "category": "Force",
+          "published": 1,
+          "created_at": "2026-05-11T21:16:35.958Z",
+          "updated_at": "2026-05-11T21:16:35.958Z"
+        },
+        {
+          "id": 3,
+          "title": "Mes 24 heures",
+          "author": "Yves G.",
+          "content": "Chaque matin, je demande la force de rester sobre pour les prochaines 24 heures. Ce simple geste a transformé ma vie. Je ne pense plus à l'avenir comme un fardeau, mais comme une succession de petites victoires quotidiennes.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778533233/tapavis_tenant_mes-informations-personnelles/build_mes-informations-personnelles_1778533233656.png",
+          "category": "Méditation",
+          "published": 1,
+          "created_at": "2026-05-11T21:16:35.965Z",
+          "updated_at": "2026-05-11T21:16:35.965Z"
+        },
+        {
+          "id": 4,
+          "title": "Les douze étapes m'ont sauvé",
+          "author": "Anonyme",
+          "content": "Travailler les étapes avec mon parrain a été le voyage le plus difficile et le plus enrichissant de ma vie. La 4e étape m'a permis de regarder en face ce que j'évitais depuis des années. La 9e m'a libéré du poids du passé. Je recommande à tout nouveau de prendre un parrain et de travailler les étapes sérieusement.",
+          "image_url": "",
+          "category": "Étapes",
+          "published": 1,
+          "created_at": "2026-05-11T21:16:35.974Z",
+          "updated_at": "2026-05-11T21:16:35.974Z"
+        },
+        {
+          "id": 5,
+          "title": "La sérénité retrouvée",
+          "author": "Jean P.",
+          "content": "La prière de la sérénité accompagne mes journées. Accepter ce que je ne peux changer, avoir le courage de changer ce que je peux, et la sagesse d'en connaître la différence. C'est devenu ma boussole.",
+          "image_url": "",
+          "category": "Espoir",
+          "published": 1,
+          "created_at": "2026-05-11T21:16:35.982Z",
+          "updated_at": "2026-05-11T21:16:35.982Z"
+        }
+      ]
+    },
+    "ressources": {
+      "columns": [
+        "id",
+        "title",
+        "description",
+        "url",
+        "phone",
+        "category",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 8,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "AA Québec",
+          "description": "Aide et information sur les Alcooliques Anonymes au Québec. Lignes téléphoniques 24h/24.",
+          "url": "https://aa-quebec.org",
+          "phone": "1-866-376-6378",
+          "category": "AA",
+          "image_url": "",
+          "created_at": "2026-05-11T21:16:35.997Z",
+          "updated_at": "2026-05-11T21:16:35.997Z"
+        },
+        {
+          "id": 2,
+          "title": "AA International (français)",
+          "description": "Site officiel des Alcooliques Anonymes mondiaux, section francophone. Littérature, ressources et information.",
+          "url": "https://www.aa.org/fr",
+          "phone": "",
+          "category": "AA",
+          "image_url": "",
+          "created_at": "2026-05-11T21:16:36.008Z",
+          "updated_at": "2026-05-11T21:16:36.008Z"
+        },
+        {
+          "id": 3,
+          "title": "Drogue: Aide et Référence",
+          "description": "Service d'écoute, d'information et de référence gratuit, confidentiel et bilingue 24h/24, 7j/7.",
+          "url": "https://aidedrogue.ca",
+          "phone": "1-800-265-2626",
+          "category": "Urgence",
+          "image_url": "",
+          "created_at": "2026-05-11T21:16:36.020Z",
+          "updated_at": "2026-05-11T21:16:36.020Z"
+        },
+        {
+          "id": 4,
+          "title": "Al-Anon Québec",
+          "description": "Soutien pour les familles et amis des personnes aux prises avec l'alcoolisme.",
+          "url": "https://al-anon-quebec.org",
+          "phone": "1-844-725-2666",
+          "category": "Famille",
+          "image_url": "",
+          "created_at": "2026-05-11T21:16:36.029Z",
+          "updated_at": "2026-05-11T21:16:36.029Z"
+        },
+        {
+          "id": 5,
+          "title": "Info-Social 811",
+          "description": "Service de consultation téléphonique psychosociale 24h/24 au Québec.",
+          "url": "tel:811",
+          "phone": "811",
+          "category": "Urgence",
+          "image_url": "",
+          "created_at": "2026-05-11T21:16:36.037Z",
+          "updated_at": "2026-05-11T21:16:36.037Z"
+        },
+        {
+          "id": 6,
+          "title": "Le Gros Livre (Big Book) en ligne",
+          "description": "Le texte de base des Alcooliques anonymes, disponible gratuitement en ligne.",
+          "url": "https://www.aa.org/fr/le-gros-livre",
+          "phone": "",
+          "category": "Lecture",
+          "image_url": "",
+          "created_at": "2026-05-11T21:16:36.044Z",
+          "updated_at": "2026-05-11T21:16:36.044Z"
+        },
+        {
+          "id": 7,
+          "title": "Pensée du jour",
+          "description": "Méditations quotidiennes pour soutenir votre rétablissement.",
+          "url": "https://www.aa.org/fr/meditations-quotidiennes",
+          "phone": "",
+          "category": "Méditation",
+          "image_url": "",
+          "created_at": "2026-05-11T21:16:36.053Z",
+          "updated_at": "2026-05-11T21:16:36.053Z"
+        },
+        {
+          "id": 8,
+          "title": "Suicide Action Montréal",
+          "description": "Soutien et écoute pour personnes en détresse et leurs proches.",
+          "url": "https://suicideactionmontreal.org",
+          "phone": "1-866-277-3553",
+          "category": "Urgence",
+          "image_url": "",
+          "created_at": "2026-05-11T21:16:36.062Z",
+          "updated_at": "2026-05-11T21:16:36.062Z"
+        }
+      ]
+    },
+    "reunions": {
+      "columns": [
+        "id",
+        "day",
+        "time",
+        "location",
+        "address",
+        "type",
+        "notes",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 7,
+      "sampleRows": [
+        {
+          "id": 1,
+          "day": "Lundi",
+          "time": "19h30",
+          "location": "Centre communautaire Saint-Joseph",
+          "address": "125 rue de l'Église, Québec",
+          "type": "Ouverte",
+          "notes": "Réunion accessible à tous, accessible aux personnes à mobilité réduite.",
+          "image_url": "",
+          "created_at": "2026-05-11T21:16:36.079Z",
+          "updated_at": "2026-05-11T21:16:36.079Z"
+        },
+        {
+          "id": 2,
+          "day": "Mardi",
+          "time": "12h00",
+          "location": "Église Notre-Dame",
+          "address": "88 boulevard Charest, Québec",
+          "type": "Discussion",
+          "notes": "Réunion du midi, café offert.",
+          "image_url": "",
+          "created_at": "2026-05-11T21:16:36.087Z",
+          "updated_at": "2026-05-11T21:16:36.087Z"
+        },
+        {
+          "id": 3,
+          "day": "Mercredi",
+          "time": "20h00",
+          "location": "Salle paroissiale Sainte-Marie",
+          "address": "450 rue Principale, Québec",
+          "type": "Étapes",
+          "notes": "Étude des 12 étapes, parfait pour les débutants.",
+          "image_url": "",
+          "created_at": "2026-05-11T21:16:36.096Z",
+          "updated_at": "2026-05-11T21:16:36.096Z"
+        },
+        {
+          "id": 4,
+          "day": "Jeudi",
+          "time": "19h00",
+          "location": "Centre Jean-XXIII",
+          "address": "2275 chemin Sainte-Foy, Québec",
+          "type": "Débutants",
+          "notes": "Réunion spécialement pour les nouveaux membres.",
+          "image_url": "",
+          "created_at": "2026-05-11T21:16:36.104Z",
+          "updated_at": "2026-05-11T21:16:36.104Z"
+        },
+        {
+          "id": 5,
+          "day": "Vendredi",
+          "time": "20h00",
+          "location": "Église Saint-Charles",
+          "address": "700 boulevard Charest Est, Québec",
+          "type": "Ouverte",
+          "notes": "Témoignages, ouverte aux proches et amis.",
+          "image_url": "",
+          "created_at": "2026-05-11T21:16:36.112Z",
+          "updated_at": "2026-05-11T21:16:36.112Z"
+        },
+        {
+          "id": 6,
+          "day": "Samedi",
+          "time": "10h00",
+          "location": "Centre Durocher",
+          "address": "1450 boulevard Wilfrid-Hamel, Québec",
+          "type": "Tradition",
+          "notes": "Étude des traditions AA.",
+          "image_url": "",
+          "created_at": "2026-05-11T21:16:36.121Z",
+          "updated_at": "2026-05-11T21:16:36.121Z"
+        },
+        {
+          "id": 7,
+          "day": "Dimanche",
+          "time": "11h00",
+          "location": "Salle communautaire Limoilou",
+          "address": "2330 1re Avenue, Québec",
+          "type": "Discussion",
+          "notes": "Réunion du dimanche matin, atmosphère chaleureuse.",
+          "image_url": "",
+          "created_at": "2026-05-11T21:16:36.131Z",
+          "updated_at": "2026-05-11T21:16:36.131Z"
+        }
+      ]
+    },
+    "form_submissions": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "phone",
+        "message",
+        "read_at",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "voice_submissions": {
+      "columns": [
+        "id",
+        "user_id",
+        "fields",
+        "language",
+        "voice_session_id",
+        "status",
+        "assigned_to_sales_id",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    }
+  }
+}

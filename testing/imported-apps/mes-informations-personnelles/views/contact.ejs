@@ -1,0 +1,57 @@
+<%- include('partials/header') %>
+<section class="section">
+<div class="container">
+<h1 class="section-title"><%= t.contact_title %></h1>
+<p class="section-subtitle"><%= t.contact_intro %></p>
+<div class="form">
+<div id="alertBox"></div>
+<form id="contactForm">
+<div class="form-group">
+<label><%= t.contact_name %> *</label>
+<input type="text" name="name" required>
+</div>
+<div class="form-group">
+<label><%= t.contact_email %></label>
+<input type="email" name="email">
+</div>
+<div class="form-group">
+<label><%= t.contact_phone %></label>
+<input type="tel" name="phone">
+</div>
+<div class="form-group">
+<label><%= t.contact_message %> *</label>
+<textarea name="message" required></textarea>
+</div>
+<button type="submit" class="btn btn-primary btn-block" id="submitBtn" style="background-color:#6366f1;color:#fff"><%= t.contact_send %></button>
+</form>
+</div>
+<div style="text-align:center;margin-top:2rem;color:#64748b;font-size:.9rem">
+🔒 <%= t.footer_anonymity %>
+</div>
+</div>
+</section>
+<script>
+document.getElementById('contactForm').addEventListener('submit', async function(e) {
+e.preventDefault();
+var btn = document.getElementById('submitBtn');
+var alertBox = document.getElementById('alertBox');
+var fd = new FormData(e.target);
+var data = { name: fd.get('name'), email: fd.get('email'), phone: fd.get('phone'), message: fd.get('message') };
+btn.disabled = true; btn.textContent = '<%- t.contact_sending %>';
+try {
+var res = await fetch('api/contact', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data) });
+var j = await res.json();
+if (res.ok && j.success) {
+alertBox.innerHTML = '<div class="alert alert-success"><%- t.contact_success %></div>';
+e.target.reset();
+} else {
+alertBox.innerHTML = '<div class="alert alert-error"><%- t.contact_error %></div>';
+}
+} catch(err) {
+alertBox.innerHTML = '<div class="alert alert-error"><%- t.contact_error %></div>';
+}
+btn.disabled = false; btn.textContent = '<%- t.contact_send %>';
+window.scrollTo({top:0,behavior:'smooth'});
+});
+</script>
+<%- include('partials/footer') %>

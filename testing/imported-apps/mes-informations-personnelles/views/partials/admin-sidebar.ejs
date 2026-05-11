@@ -1,0 +1,17 @@
+<aside class="admin-sidebar" id="adminSidebar">
+<div class="admin-sidebar-head">
+<h2>🔧 Admin</h2>
+<p><%= (settings && settings['business_name']) || 'Soutien AA' %></p>
+</div>
+<nav class="admin-nav">
+<a href="admin" class="<%= (typeof activeModule !== 'undefined' && activeModule==='dashboard') ? 'active' : '' %>">📊 Tableau de bord</a>
+<a href="admin/temoignages" class="<%= (typeof activeModule !== 'undefined' && activeModule==='posts') ? 'active' : '' %>">📖 Partages</a>
+<a href="admin/ressources" class="<%= (typeof activeModule !== 'undefined' && activeModule==='ressources') ? 'active' : '' %>">🔗 Ressources</a>
+<a href="admin/reunions" class="<%= (typeof activeModule !== 'undefined' && activeModule==='reunions') ? 'active' : '' %>">📅 Réunions</a>
+<a href="admin/messages" class="<%= (typeof activeModule !== 'undefined' && activeModule==='messages') ? 'active' : '' %>">✉️ Messages</a>
+</nav>
+<div class="admin-sidebar-foot">
+<a href="." target="_blank">🌐 Voir le site</a>
+<a href="admin/logout">🚪 Déconnexion</a>
+</div>
+</aside>

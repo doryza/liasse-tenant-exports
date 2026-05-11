@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ressources · Admin</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body>
+<% var activeModule = 'ressources'; %>
+<%- include('partials/admin-sidebar') %>
+<main class="admin-main">
+<div class="admin-header">
+<button class="mobile-toggle" onclick="document.getElementById('adminSidebar').classList.toggle('open')" aria-label="Menu">☰</button>
+<div>
+<h1>Ressources</h1>
+<p class="admin-subtitle">Liens et numéros d'aide affichés sur le site.</p>
+</div>
+<button class="btn btn-primary" onclick="openModal()" style="background-color:#6366f1;color:#fff">+ Nouvelle ressource</button>
+</div>
+
+<div class="toolbar">
+<input type="search" id="searchInput" placeholder="🔍 Rechercher..." class="search-input" oninput="renderItems()">
+<select id="catFilter" class="filter-select" onchange="renderItems()">
+<option value="">Toutes catégories</option>
+<option>Urgence</option><option>AA</option><option>Soutien</option><option>Famille</option><option>Lecture</option><option>Méditation</option>
+</select>
+</div>
+
+<div class="admin-card">
+<div class="table-wrap">
+<table><thead><tr><th>Titre</th><th>Catégorie</th><th>Lien</th><th>Téléphone</th><th>Actions</th></tr></thead><tbody id="tbody"><tr><td colspan="5" style="text-align:center;padding:2rem;color:#64748b">Chargement...</td></tr></tbody></table>
+</div>
+</div>
+</main>
+<div class="modal-overlay" id="modal"><div class="modal"><div class="modal-head"><h2 id="modalTitle">Nouvelle ressource</h2><button type="button" class="modal-close" onclick="closeModal()" aria-label="Fermer">✕</button></div><form id="itemForm"><input type="hidden" name="id"><div class="form-group"><label>Titre *</label><input type="text" name="title" required placeholder="ex: AA Québec"></div><div class="form-group"><label>Description</label><textarea name="description" placeholder="Brève description..."></textarea></div><div class="form-grid-2"><div class="form-group"><label>URL</label><input type="url" name="url" placeholder="https://..."></div><div class="form-group"><label>Téléphone</label><input type="text" name="phone" placeholder="1-800-..."></div></div><div class="form-group"><label>Catégorie</label><select name="category"><option value="">-- Aucune --</option><option>Urgence</option><option>AA</option><option>Soutien</option><option>Famille</option><option>Lecture</option><option>Méditation</option></select></div><div class="form-group"><label>URL image (optionnel)</label><input type="url" name="image_url" placeholder="https://..."></div><div class="modal-actions"><button type="button" class="btn btn-secondary" onclick="closeModal()">Annuler</button><button type="submit" class="btn btn-primary" style="background-color:#6366f1;color:#fff">💾 Enregistrer</button></div></form></div></div>
+<div id="toast" class="toast"></div>
+<script>
+var allItems = [];
+async function loadItems() {
+  try { var res = await fetch('api/admin/ressources'); var data = await res.json(); allItems = data.ressources || []; renderItems(); } catch(e){ showToast('Erreur de chargement', 'error'); }
+}
+function renderItems() {
+  var q = (document.getElementById('searchInput').value || '').toLowerCase().trim();
+  var cat = document.getElementById('catFilter').value;
+  var items = allItems.filter(function(r){
+    if (cat && r.category !== cat) return false;
+    if (!q) return true;
+    return ((r.title||'') + ' ' + (r.description||'') + ' ' + (r.phone||'')).toLowerCase().indexOf(q) >= 0;
+  });
+  var tbody = document.getElementById('tbody');
+  if (items.length === 0) { tbody.innerHTML = '<tr class="empty-row"><td colspan="5">' + (allItems.length === 0 ? 'Aucune ressource. Cliquez sur "Nouvelle ressource".' : 'Aucun résultat.') + '</td></tr>'; return; }
+  tbody.innerHTML = items.map(function(r) {
+    return '<tr><td><strong>' + escapeHtml(r.title) + '</strong><div style="font-size:.8rem;color:#64748b">' + escapeHtml((r.description||'').substring(0,80)) + '</div></td><td>' + (r.category ? '<span class="badge badge-info">' + escapeHtml(r.category) + '</span>' : '—') + '</td><td>' + (r.url ? '<a href="' + r.url + '" target="_blank" rel="noopener">🔗 Ouvrir</a>' : '—') + '</td><td>' + (r.phone ? '<a href="tel:' + escapeHtml(r.phone) + '">' + escapeHtml(r.phone) + '</a>' : '—') + '</td><td><div class="actions"><button class="btn btn-sm btn-secondary" onclick=\'edit(' + JSON.stringify(r) + ')\' title="Modifier">✏️</button><button class="btn btn-sm btn-danger" onclick="del(' + r.id + ')" title="Supprimer">🗑️</button></div></td></tr>';
+  }).join('');
+}
+function escapeHtml(s) { return String(s||'').replace(/[&<>"']/g, function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+function openModal() { document.getElementById('itemForm').reset(); document.getElementById('itemForm').id.value=''; document.getElementById('modalTitle').textContent = 'Nouvelle ressource'; document.getElementById('modal').classList.add('open'); }
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+function edit(r) { var f = document.getElementById('itemForm'); f.id.value = r.id; f.title.value = r.title||''; f.description.value = r.description||''; f.url.value = r.url||''; f.phone.value = r.phone||''; f.category.value = r.category||''; f.image_url.value = r.image_url||''; document.getElementById('modalTitle').textContent = 'Modifier la ressource'; document.getElementById('modal').classList.add('open'); }
+async function del(id) { if (!confirm('Supprimer cette ressource?')) return; try { await fetch('api/admin/ressources/' + id, { method: 'DELETE' }); showToast('Ressource supprimée', 'success'); loadItems(); } catch(e){ showToast('Erreur', 'error'); } }
+function showToast(msg, type) { var t = document.getElementById('toast'); t.textContent = msg; t.className = 'toast show ' + (type||''); setTimeout(function(){ t.className = 'toast'; }, 2500); }
+document.getElementById('itemForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  var f = e.target;
+  var payload = { title: f.title.value, description: f.description.value, url: f.url.value, phone: f.phone.value, category: f.category.value, image_url: f.image_url.value };
+  var id = f.id.value;
+  try {
+    var res = await fetch(id ? 'api/admin/ressources/' + id : 'api/admin/ressources', { method: id ? 'PUT' : 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+    if (res.ok) { closeModal(); showToast(id ? 'Ressource mise à jour' : 'Ressource ajoutée', 'success'); loadItems(); } else { showToast('Erreur', 'error'); }
+  } catch(e){ showToast('Erreur', 'error'); }
+});
+document.getElementById('modal').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
+document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeModal(); });
+loadItems();
+</script>
+</body>
+</html>

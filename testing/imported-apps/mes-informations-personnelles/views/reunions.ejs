@@ -1,0 +1,25 @@
+<%- include('partials/header') %>
+<section class="section">
+<div class="container">
+<h1 class="section-title"><%= t.reu_title %></h1>
+<p class="section-subtitle"><%= t.reu_intro %></p>
+<% if (typeof reunions !== 'undefined' && reunions.length > 0) { %>
+<div class="meeting-grid">
+<% reunions.forEach(function(r) { %>
+<div class="meeting-card">
+<div class="meeting-day"><%= r.day %></div>
+<div class="meeting-time">🕒 <%= r.time %></div>
+<div class="meeting-location">📍 <%= r.location %></div>
+<% if (r.address) { %><div class="meeting-address"><%= r.address %></div><% } %>
+<% if (r.type) { %><div style="margin-top:.5rem"><span class="badge"><%= r.type %></span></div><% } %>
+<% if (r.notes) { %><div class="meeting-notes"><%= r.notes %></div><% } %>
+<% if (r.address) { %><div style="margin-top:.75rem"><a href="https://www.google.com/maps/search/?api=1&query=<%= encodeURIComponent(r.address) %>" target="_blank" rel="noopener" class="btn btn-sm btn-secondary" style="background:#fff;color:#6366f1;border:2px solid #6366f1">🗺️ <%= lang==='en' ? 'Directions' : 'Itinéraire' %></a></div><% } %>
+</div>
+<% }); %>
+</div>
+<% } else { %>
+<div class="empty-state"><div class="empty-state-icon">📅</div><p><%= t.empty_meetings %></p></div>
+<% } %>
+</div>
+</section>
+<%- include('partials/footer') %>

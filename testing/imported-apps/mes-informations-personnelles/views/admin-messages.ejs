@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Messages · Admin</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body>
+<% var activeModule = 'messages'; %>
+<%- include('partials/admin-sidebar') %>
+<main class="admin-main">
+<div class="admin-header">
+<button class="mobile-toggle" onclick="document.getElementById('adminSidebar').classList.toggle('open')" aria-label="Menu">☰</button>
+<div>
+<h1>Messages reçus</h1>
+<p class="admin-subtitle">Messages envoyés via le formulaire de contact.</p>
+</div>
+</div>
+
+<div class="toolbar">
+<input type="search" id="searchInput" placeholder="🔍 Rechercher un message..." class="search-input">
+<div class="filter-pills">
+<button class="pill active" data-filter="all">Tous</button>
+<button class="pill" data-filter="unread">Non lus</button>
+<button class="pill" data-filter="read">Lus</button>
+</div>
+</div>
+
+<div class="admin-card">
+<% if (typeof messages !== 'undefined' && messages.length > 0) { %>
+<div id="messagesList">
+<% messages.forEach(function(m) { %>
+<div class="message-card <%= !m.read_at ? 'unread' : 'read' %>" id="msg-<%= m.id %>" data-status="<%= !m.read_at ? 'unread' : 'read' %>" data-search="<%= ((m.name||'') + ' ' + (m.email||'') + ' ' + (m.message||'')).toLowerCase() %>">
+<div class="head">
+<span class="from"><%= m.name %><% if (!m.read_at) { %> <span class="badge badge-warning">Nouveau</span><% } %></span>
+<span><%= new Date(m.created_at).toLocaleString('fr-CA') %></span>
+</div>
+<div class="contact-row">
+<% if (m.email) { %><a href="mailto:<%= m.email %>" class="contact-pill">📧 <%= m.email %></a><% } %>
+<% if (m.phone) { %><a href="tel:<%= m.phone %>" class="contact-pill">📞 <%= m.phone %></a><% } %>
+</div>
+<div class="body"><%= m.message %></div>
+<div class="acts">
+<% if (m.email) { %><a href="mailto:<%= m.email %>" class="btn btn-sm btn-primary" style="background-color:#6366f1;color:#fff">↩️ Répondre</a><% } %>
+<% if (!m.read_at) { %><button class="btn btn-sm btn-secondary" onclick="markRead(<%= m.id %>)">✓ Marquer comme lu</button><% } %>
+<button class="btn btn-sm btn-danger" onclick="delMsg(<%= m.id %>)">🗑️ Supprimer</button>
+</div>
+</div>
+<% }); %>
+</div>
+<div id="emptyFilter" class="admin-empty" style="display:none"><div class="admin-empty-icon">🔍</div><h3>Aucun résultat</h3><p>Aucun message ne correspond à votre recherche.</p></div>
+<% } else { %>
+<div class="admin-empty"><div class="admin-empty-icon">📭</div><h3>Aucun message</h3><p>Les messages reçus via le formulaire de contact apparaîtront ici.</p></div>
+<% } %>
+</div>
+</main>
+<script>
+async function markRead(id) {
+  try { await fetch('api/admin/messages/' + id + '/read', { method: 'POST' }); var el = document.getElementById('msg-' + id); if (el) { el.classList.remove('unread'); el.classList.add('read'); el.dataset.status='read'; var b = el.querySelector('.badge-warning'); if (b) b.remove(); var btn = el.querySelector('.acts button.btn-secondary'); if (btn && btn.textContent.indexOf('Marquer')>=0) btn.remove(); } } catch(e){ alert('Erreur'); }
+}
+async function delMsg(id) {
+  if (!confirm('Supprimer définitivement ce message?')) return;
+  try { await fetch('api/admin/messages/' + id, { method: 'DELETE' }); var el = document.getElementById('msg-' + id); if (el) el.remove(); applyFilters(); } catch(e){ alert('Erreur'); }
+}
+var currentFilter = 'all';
+function applyFilters() {
+  var q = (document.getElementById('searchInput').value || '').toLowerCase().trim();
+  var cards = document.querySelectorAll('#messagesList .message-card');
+  var visible = 0;
+  cards.forEach(function(c){
+    var statusOk = currentFilter === 'all' || c.dataset.status === currentFilter;
+    var searchOk = !q || (c.dataset.search || '').indexOf(q) >= 0;
+    var show = statusOk && searchOk;
+    c.style.display = show ? '' : 'none';
+    if (show) visible++;
+  });
+  var empty = document.getElementById('emptyFilter');
+  if (empty) empty.style.display = (visible === 0 && cards.length > 0) ? 'block' : 'none';
+}
+var si = document.getElementById('searchInput');
+if (si) si.addEventListener('input', applyFilters);
+document.querySelectorAll('.pill').forEach(function(p){
+  p.addEventListener('click', function(){
+    document.querySelectorAll('.pill').forEach(function(x){ x.classList.remove('active'); });
+    p.classList.add('active');
+    currentFilter = p.dataset.filter;
+    applyFilters();
+  });
+});
+</script>
+</body>
+</html>

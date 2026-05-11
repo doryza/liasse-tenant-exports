@@ -1,0 +1,66 @@
+{
+  "slug": "mes-informations-personnelles",
+  "displayName": "Mes informations personnelles",
+  "description": "Aider et soutenir les membres AA\nEt donner mes coordonnées personnelles.\nsite pour soutenir les membres AA et partager des coordonnées de manière sécurisée.",
+  "status": "active",
+  "generationVersion": 2,
+  "primaryColor": "#6366f1",
+  "iconUrl": "https://res.cloudinary.com/duhp69meg/image/upload/v1778530955/subscriber_pwa_icons/tyhao4gf7r5aqxsfkqvi.jpg",
+  "enabledAuthMethods": [
+    "webauthn",
+    "sms",
+    "email"
+  ],
+  "notificationsEnabled": true,
+  "geolocationEnabled": true,
+  "customConfig": {
+    "language": "both",
+    "aiSummary": {
+      "en": {
+        "dashboard": "Your admin dashboard is the control center for your site.\n\nFrom the Admin area, you can manage the main content on your app:\n- Testimonials: add new stories, update existing ones, or remove any you no longer want displayed.\n- Resources: add helpful support information, links, or guidance for members.\n- Meetings: add meeting details, update schedules, or delete old entries.\n- Messages and contact submissions: review what visitors send through the contact form, mark messages as read, and delete messages you no longer need.\n\nTo add something new, go to the matching Admin section and choose the option to create a new item. To make changes, open an existing item, update the information, and save. To remove something, use the delete option in that same section.\n\nFor site settings, go to the Admin area and open Settings. This is where you can update general site information and adjust how your app presents itself.\n\nTo check app activity, use the dashboard overview. You’ll be able to see site stats such as visits and submission activity, which helps you understand how people are using the site.\n\nIf you want to send notifications to users, use the Admin area where submissions and messages are managed. That’s the best place to follow up with people who contacted you and keep track of responses.\n\nIn short: use Admin to keep your contact info current, post helpful resources, maintain meeting details, manage testimonials, review incoming messages, and monitor overall activity.",
+        "variables": "Great news! Your app is ready to go — no extra setup is required.\n\nYour site already includes the main tools needed to support AA members and share your contact details in a simple, secure way. That means you can start using it right away without connecting any outside services.\n\nYour app includes public pages for your home page, contact details, resources, meetings, testimonials, and a contact form. It also includes an admin area where you can manage content and review messages people send you.\n\nThere is also a voice assistant feature built in, along with a place to review voice submissions if you choose to use that part of the app.\n\nIn short: no API keys, no extra accounts, no technical setup. You can move straight to adding your information and customizing the site content."
+      },
+      "fr": {
+        "dashboard": "Le tableau de bord d’administration est l’endroit central pour gérer votre site.\n\nDans la section Admin, vous pouvez gérer les principaux types de contenu de votre application :\n- Témoignages : ajouter de nouveaux témoignages, modifier ceux déjà en ligne ou supprimer ceux qui ne sont plus pertinents.\n- Ressources : ajouter de l’information utile, des liens ou du soutien pour les membres.\n- Réunions : inscrire les détails des réunions, mettre l’horaire à jour ou retirer les anciennes entrées.\n- Messages et demandes reçues : consulter les messages envoyés via le formulaire de contact, les marquer comme lus et supprimer ceux dont vous n’avez plus besoin.\n\nPour ajouter du contenu, allez dans la section Admin correspondante puis choisissez l’option pour créer un nouvel élément. Pour modifier quelque chose, ouvrez l’élément existant, faites les changements voulus, puis enregistrez. Pour supprimer, utilisez l’option de suppression dans cette même section.\n\nPour changer les réglages du site, allez dans Admin puis dans les paramètres. C’est là que vous pouvez mettre à jour les informations générales du site et ajuster sa présentation.\n\nPour voir l’activité de l’application, consultez la vue d’ensemble du tableau de bord. Vous pourrez y suivre des statistiques comme les visites du site et les demandes reçues.\n\nSi vous souhaitez envoyer des notifications ou faire un suivi auprès des utilisateurs, passez par la section Admin liée aux messages et aux demandes. C’est le meilleur endroit pour répondre aux personnes qui vous ont contacté et garder le tout bien organisé.\n\nEn résumé : l’espace Admin vous permet de garder vos coordonnées à jour, publier des ressources utiles, gérer les réunions, administrer les témoignages, consulter les messages entrants et suivre l’activité générale du site.",
+        "variables": "Bonne nouvelle! Votre application est prête à être utilisée telle quelle — aucune configuration supplémentaire n’est nécessaire.\n\nVotre site comprend déjà les outils essentiels pour soutenir les membres AA et partager vos coordonnées de façon simple et sécuritaire. Vous n’avez donc pas besoin de brancher de services externes ni d’ouvrir d’autres comptes.\n\nL’application inclut des pages publiques pour l’accueil, vos coordonnées, les ressources, les réunions, les témoignages et un formulaire de contact. Il y a aussi un espace d’administration pour gérer votre contenu et consulter les messages envoyés par les visiteurs.\n\nUne fonction d’assistant vocal est également incluse, avec un espace pour consulter les envois vocaux si vous décidez d’utiliser cette option.\n\nEn bref : aucune clé à ajouter, aucun réglage technique à faire. Vous pouvez commencer tout de suite à entrer vos informations et personnaliser le contenu du site."
+      }
+    },
+    "aiSummaryVersion": 2
+  },
+  "promptHistory": [
+    {
+      "prompt": "Aider et soutenir les membres AA\nEt donner mes coordonnées personnelles.\nsite pour soutenir les membres AA et partager des coordonnées de manière sécurisée.",
+      "timestamp": "2026-05-11T21:16:37.448Z",
+      "changeNotes": "Application complète bilingue (FR/EN) pour soutenir les membres AA et partager les coordonnées personnelles d'Yves de manière confidentielle. Inclut: page d'accueil avec mission et témoignages, page Mes coordonnées (carte personnelle avec contact), page Ressources organisée par catégories avec liens et numéros d'urgence, horaire des Réunions avec adresses et itinéraires Google Maps, page Témoignages/Partages anonymes, formulaire de Contact confidentiel. Backend admin complet avec tableau de bord, gestion des partages, ressources, réunions et messages reçus. Anonymat respecté en tout temps.\n\nAdmin enrichment pass: (1) Redesigned admin dashboard with stat-card icons, dedicated module cards with prominent 'Manage' CTAs, recent messages section with rich empty state, and tips panel. (2) Added toolbars with search and filter pills/select to all admin module pages (Partages: status filter; Ressources: category filter; Reunions: search; Messages: status filter + search). (3) Upgraded all admin modals with proper headers, close buttons, two-column form grids, Escape-to-close, and toast notifications for create/update/delete feedback. (4) Improved tables with sticky headers, image fallbacks, hover states, responsive table wrappers. (5) Polished admin sidebar with gradient background and active-state highlighting. (6) Added rich empty-state component (.admin-empty) used across admin pages. (7) Improved front-end CSS: focus-visible rings, button shadow on hover, brand-light card hover borders, gradient list-card icons, language toggle pill background, stronger hero text color, post-detail responsive tweaks. (8) Added active nav highlighting in app.js. (9) Inline color fallbacks on all critical CTAs and brand-colored buttons to survive CSS load failures. (10) Better contrast and semantic structure throughout admin and public pages. No functional/business logic changes — CRUD endpoints and data flows preserved.",
+      "generationId": 1074,
+      "filesModified": [
+        "manifest.json",
+        "public/css/admin-styles.css",
+        "public/css/styles.css",
+        "public/js/app.js",
+        "routes.js",
+        "schema.sql",
+        "seed.js",
+        "views/admin-messages.ejs",
+        "views/admin-ressources.ejs",
+        "views/admin-reunions.ejs",
+        "views/admin-temoignages.ejs",
+        "views/admin.ejs",
+        "views/contact.ejs",
+        "views/coordonnees.ejs",
+        "views/index.ejs",
+        "views/partials/admin-sidebar.ejs",
+        "views/partials/footer.ejs",
+        "views/partials/header.ejs",
+        "views/ressources.ejs",
+        "views/reunions.ejs",
+        "views/temoignage-detail.ejs",
+        "views/temoignages.ejs"
+      ]
+    }
+  ],
+  "apiVariables": [],
+  "createdAt": "2026-05-11T20:48:05.791Z",
+  "updatedAt": "2026-05-11T21:42:03.611Z",
+  "exportedAt": "2026-05-11T21:43:26.934Z"
+}

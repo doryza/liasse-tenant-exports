@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Partages · Admin</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body>
+<% var activeModule = 'posts'; %>
+<%- include('partials/admin-sidebar') %>
+<main class="admin-main">
+<div class="admin-header">
+<button class="mobile-toggle" onclick="document.getElementById('adminSidebar').classList.toggle('open')" aria-label="Menu">☰</button>
+<div>
+<h1>Partages</h1>
+<p class="admin-subtitle">Témoignages et messages d'espoir publiés sur le site.</p>
+</div>
+<button class="btn btn-primary" onclick="openModal()" style="background-color:#6366f1;color:#fff">+ Nouveau partage</button>
+</div>
+
+<div class="toolbar">
+<input type="search" id="searchInput" placeholder="🔍 Rechercher un partage..." class="search-input" oninput="renderItems()">
+<div class="filter-pills">
+<button class="pill active" data-filter="all" onclick="setFilter('all', this)">Tous</button>
+<button class="pill" data-filter="published" onclick="setFilter('published', this)">Publiés</button>
+<button class="pill" data-filter="draft" onclick="setFilter('draft', this)">Brouillons</button>
+</div>
+</div>
+
+<div class="admin-card">
+<div class="table-wrap">
+<table id="itemTable"><thead><tr><th>Image</th><th>Titre</th><th>Auteur</th><th>Catégorie</th><th>Statut</th><th>Actions</th></tr></thead><tbody id="tbody"><tr><td colspan="6" style="text-align:center;padding:2rem;color:#64748b">Chargement...</td></tr></tbody></table>
+</div>
+</div>
+</main>
+<div class="modal-overlay" id="modal"><div class="modal"><div class="modal-head"><h2 id="modalTitle">Nouveau partage</h2><button type="button" class="modal-close" onclick="closeModal()" aria-label="Fermer">✕</button></div><form id="itemForm"><input type="hidden" name="id"><div class="form-group"><label>Titre *</label><input type="text" name="title" required placeholder="ex: Un jour à la fois"></div><div class="form-grid-2"><div class="form-group"><label>Auteur</label><input type="text" name="author" placeholder="ex: Anonyme"><span class="help">Prénom seulement ou "Anonyme"</span></div><div class="form-group"><label>Catégorie</label><select name="category"><option value="">-- Aucune --</option><option>Espoir</option><option>Expérience</option><option>Force</option><option>Étapes</option><option>Méditation</option></select></div></div><div class="form-group"><label>Contenu *</label><textarea name="content" required style="min-height:200px" placeholder="Écrivez le partage ici..."></textarea></div><div class="form-group"><label>URL de l'image (optionnel)</label><input type="url" name="image_url" placeholder="https://..."><span class="help">Recommandé: 1200×630px paysage</span></div><div class="form-group"><div class="form-check"><input type="checkbox" name="published" id="pub" checked><label for="pub">Publier (visible aux visiteurs)</label></div></div><div class="modal-actions"><button type="button" class="btn btn-secondary" onclick="closeModal()">Annuler</button><button type="submit" class="btn btn-primary" style="background-color:#6366f1;color:#fff">💾 Enregistrer</button></div></form></div></div>
+<div id="toast" class="toast"></div>
+<script>
+var allItems = [];
+var currentFilter = 'all';
+async function loadItems() {
+  try { var res = await fetch('api/admin/posts'); var data = await res.json(); allItems = data.posts || []; renderItems(); } catch(e){ showToast('Erreur de chargement', 'error'); }
+}
+function setFilter(f, el) {
+  currentFilter = f;
+  document.querySelectorAll('.pill').forEach(function(p){ p.classList.remove('active'); });
+  el.classList.add('active');
+  renderItems();
+}
+function renderItems() {
+  var q = (document.getElementById('searchInput').value || '').toLowerCase().trim();
+  var items = allItems.filter(function(p){
+    if (currentFilter === 'published' && !p.published) return false;
+    if (currentFilter === 'draft' && p.published) return false;
+    if (!q) return true;
+    return ((p.title||'') + ' ' + (p.author||'') + ' ' + (p.content||'') + ' ' + (p.category||'')).toLowerCase().indexOf(q) >= 0;
+  });
+  var tbody = document.getElementById('tbody');
+  if (items.length === 0) { tbody.innerHTML = '<tr class="empty-row"><td colspan="6">' + (allItems.length === 0 ? 'Aucun partage. Cliquez sur "Nouveau partage".' : 'Aucun résultat.') + '</td></tr>'; return; }
+  tbody.innerHTML = items.map(function(p) {
+    return '<tr><td>' + (p.image_url ? '<img src="' + p.image_url + '" class="table-img" alt="">' : '<div class="table-img" style="background:#f1f5f9;display:flex;align-items:center;justify-content:center;color:#94a3b8">📖</div>') + '</td><td><strong>' + escapeHtml(p.title) + '</strong><div style="font-size:.8rem;color:#64748b;max-width:300px">' + escapeHtml((p.content||'').substring(0,80)) + (p.content && p.content.length > 80 ? '...' : '') + '</div></td><td>' + escapeHtml(p.author || '—') + '</td><td>' + (p.category ? '<span class="badge badge-info">' + escapeHtml(p.category) + '</span>' : '—') + '</td><td>' + (p.published ? '<span class="badge badge-success">Publié</span>' : '<span class="badge badge-warning">Brouillon</span>') + '</td><td><div class="actions"><button class="btn btn-sm btn-secondary" onclick=\'edit(' + JSON.stringify(p) + ')\' title="Modifier">✏️</button><button class="btn btn-sm btn-danger" onclick="del(' + p.id + ')" title="Supprimer">🗑️</button></div></td></tr>';
+  }).join('');
+}
+function escapeHtml(s) { return String(s||'').replace(/[&<>"']/g, function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+function openModal() { document.getElementById('itemForm').reset(); document.getElementById('itemForm').id.value=''; document.getElementById('modalTitle').textContent = 'Nouveau partage'; document.getElementById('pub').checked = true; document.getElementById('modal').classList.add('open'); }
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+function edit(p) { var f = document.getElementById('itemForm'); f.id.value = p.id; f.title.value = p.title || ''; f.author.value = p.author || ''; f.content.value = p.content || ''; f.image_url.value = p.image_url || ''; f.category.value = p.category || ''; document.getElementById('pub').checked = !!p.published; document.getElementById('modalTitle').textContent = 'Modifier le partage'; document.getElementById('modal').classList.add('open'); }
+async function del(id) { if (!confirm('Supprimer ce partage définitivement?')) return; try { await fetch('api/admin/posts/' + id, { method: 'DELETE' }); showToast('Partage supprimé', 'success'); loadItems(); } catch(e){ showToast('Erreur', 'error'); } }
+function showToast(msg, type) { var t = document.getElementById('toast'); t.textContent = msg; t.className = 'toast show ' + (type||''); setTimeout(function(){ t.className = 'toast'; }, 2500); }
+document.getElementById('itemForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  var f = e.target;
+  var payload = { title: f.title.value, author: f.author.value, content: f.content.value, image_url: f.image_url.value, category: f.category.value, published: f.published.checked };
+  var id = f.id.value;
+  var url = id ? 'api/admin/posts/' + id : 'api/admin/posts';
+  var method = id ? 'PUT' : 'POST';
+  try {
+    var res = await fetch(url, { method: method, headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+    if (res.ok) { closeModal(); showToast(id ? 'Partage mis à jour' : 'Partage ajouté', 'success'); loadItems(); } else { showToast('Erreur', 'error'); }
+  } catch(e){ showToast('Erreur', 'error'); }
+});
+document.getElementById('modal').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
+document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeModal(); });
+loadItems();
+</script>
+</body>
+</html>

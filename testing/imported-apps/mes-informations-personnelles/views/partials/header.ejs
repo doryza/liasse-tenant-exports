@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#6366f1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="description" content="<%= t.tagline %>">
+<title><%= (typeof pageTitle !== 'undefined' ? pageTitle + ' - ' : '') + ((settings && settings['business_name']) || t.site_name) %></title>
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="public/css/styles.css">
+</head>
+<body>
+<nav class="nav">
+<div class="nav-inner">
+<a href="." class="nav-brand">
+<img src="<%= (settings && settings._p_nav_logo_url) ? settings._p_nav_logo_url : (typeof appIconUrl !== 'undefined' && appIconUrl ? appIconUrl : '') %>" alt="Logo" onerror="this.style.display='none'">
+<span><%= (settings && settings['business_name']) || t.site_name %></span>
+</a>
+<div class="nav-links">
+<a href="."><%= t.nav_home %></a>
+<a href="coordonnees"><%= t.nav_coordonnees %></a>
+<a href="ressources"><%= t.nav_ressources %></a>
+<a href="reunions"><%= t.nav_reunions %></a>
+<a href="temoignages"><%= t.nav_temoignages %></a>
+<a href="contact"><%= t.nav_contact %></a>
+</div>
+<div class="nav-actions">
+<div class="lang-toggle">
+<a href="?lang=fr" class="<%= lang==='fr'?'active':'' %>">FR</a>
+<a href="?lang=en" class="<%= lang==='en'?'active':'' %>">EN</a>
+</div>
+<a href="#" data-login-btn class="btn btn-sm btn-secondary"><%= t.login %></a>
+<button id="hamburger" class="hamburger" aria-label="Menu">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+</button>
+</div>
+</div>
+</nav>
+<div id="mobileMenu" class="mobile-menu">
+<div class="mobile-menu-head">
+<strong><%= t.menu %></strong>
+<button id="mobileMenuClose" class="btn btn-ghost btn-sm" aria-label="<%= t.close %>">✕</button>
+</div>
+<a href="."><%= t.nav_home %></a>
+<a href="coordonnees"><%= t.nav_coordonnees %></a>
+<a href="ressources"><%= t.nav_ressources %></a>
+<a href="reunions"><%= t.nav_reunions %></a>
+<a href="temoignages"><%= t.nav_temoignages %></a>
+<a href="contact"><%= t.nav_contact %></a>
+<a href="#" data-login-btn><%= t.login %></a>
+<button data-push-btn class="btn btn-primary" style="margin-top:1rem;background-color:#6366f1;color:#fff"><%= t.enable_notif %></button>
+<div style="margin-top:1rem;display:flex;gap:.5rem;justify-content:center">
+<a href="?lang=fr" class="btn btn-ghost btn-sm <%= lang==='fr'?'btn-primary':'' %>" <% if(lang==='fr'){ %>style="background-color:#6366f1;color:#fff"<% } %>>FR</a>
+<a href="?lang=en" class="btn btn-ghost btn-sm <%= lang==='en'?'btn-primary':'' %>" <% if(lang==='en'){ %>style="background-color:#6366f1;color:#fff"<% } %>>EN</a>
+</div>
+</div>

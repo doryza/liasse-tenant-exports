@@ -1,0 +1,43 @@
+<%- include('partials/header') %>
+<section class="section">
+<div class="container">
+<h1 class="section-title"><%= t.coord_title %></h1>
+<p class="section-subtitle"><%= t.coord_intro %></p>
+<div class="coord-card">
+<div class="coord-avatar"><%= ((settings && settings.owner_name) || 'Y').charAt(0).toUpperCase() %></div>
+<div class="coord-name"><%= (settings && settings.owner_name) || 'Yves G.' %></div>
+<div class="coord-role"><%= lang==='en' ? ((settings && settings.owner_role_en) || 'AA Member - Sponsor available') : ((settings && settings.owner_role_fr) || 'Membre AA - Parrain disponible') %></div>
+<div style="text-align:left;margin-top:1rem">
+<div class="coord-row">
+<span class="coord-label">📧 <%= t.coord_email %></span>
+<span class="coord-value"><a href="mailto:<%= (settings && settings.contact_email) || services.config.contactEmail || '' %>"><%= (settings && settings.contact_email) || 'Contact via formulaire' %></a></span>
+</div>
+<% if (settings && (settings.contact_phone || settings.contact_phone_display)) { %>
+<div class="coord-row">
+<span class="coord-label">📞 <%= t.coord_phone %></span>
+<span class="coord-value"><% if (settings.contact_phone) { %><a href="tel:<%= settings.contact_phone %>"><%= settings.contact_phone %></a><% } else { %><%= settings.contact_phone_display %><% } %></span>
+</div>
+<% } %>
+<div class="coord-row">
+<span class="coord-label">📍 <%= t.coord_location %></span>
+<span class="coord-value"><%= lang==='en' ? ((settings && settings.contact_location_en) || 'Quebec, Canada') : ((settings && settings.contact_location_fr) || 'Québec, Canada') %></span>
+</div>
+<div class="coord-row">
+<span class="coord-label">🕒 <%= t.coord_availability %></span>
+<span class="coord-value" style="max-width:60%"><%= lang==='en' ? ((settings && settings.contact_availability_en) || '') : ((settings && settings.contact_availability_fr) || '') %></span>
+</div>
+</div>
+<div class="coord-actions">
+<a href="mailto:<%= (settings && settings.contact_email) || '' %>" class="btn btn-primary" style="background-color:#6366f1;color:#fff"><%= t.coord_email_btn %></a>
+<% if (settings && settings.contact_phone) { %><a href="tel:<%= settings.contact_phone %>" class="btn btn-secondary" style="background:#fff;color:#6366f1;border:2px solid #6366f1"><%= t.coord_call_btn %></a><% } %>
+<a href="contact" class="btn btn-secondary" style="background:#fff;color:#6366f1;border:2px solid #6366f1"><%= t.nav_contact %></a>
+</div>
+</div>
+<div class="cta-strip" style="margin-top:3rem">
+<h2><%= t.footer_anonymity %></h2>
+<p style="max-width:600px;margin:0 auto 1.5rem"><%= lang==='en' ? 'All communications are strictly confidential. Your anonymity is sacred and protected.' : 'Toutes les communications sont strictement confidentielles. Votre anonymat est sacré et protégé.' %></p>
+<a href="contact" class="btn" style="background:#fff;color:#6366f1"><%= t.contact_send %></a>
+</div>
+</div>
+</section>
+<%- include('partials/footer') %>

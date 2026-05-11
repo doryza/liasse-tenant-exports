@@ -1,0 +1,31 @@
+<%- include('partials/header') %>
+<section class="section">
+<div class="container">
+<h1 class="section-title"><%= t.res_title %></h1>
+<p class="section-subtitle"><%= t.res_intro %></p>
+<% if (typeof ressources !== 'undefined' && ressources.length > 0) { %>
+<% var grouped = {}; ressources.forEach(function(r){ var c = r.category || 'Autres'; if(!grouped[c]) grouped[c] = []; grouped[c].push(r); }); %>
+<% Object.keys(grouped).forEach(function(cat) { %>
+<h2 style="font-size:1.3rem;margin:2rem 0 1rem;color:#6366f1"><%= cat %></h2>
+<div class="grid grid-2">
+<% grouped[cat].forEach(function(r) { %>
+<div class="list-card">
+<div class="list-card-icon"><%= (r.title || '?').charAt(0).toUpperCase() %></div>
+<div class="list-card-body">
+<h3><%= r.title %></h3>
+<p><%= r.description || '' %></p>
+<div class="list-card-actions">
+<% if (r.url) { %><a href="<%= r.url %>" target="_blank" rel="noopener">🔗 <%= t.res_visit %></a><% } %>
+<% if (r.phone) { %><a href="tel:<%= r.phone %>">📞 <%= r.phone %></a><% } %>
+</div>
+</div>
+</div>
+<% }); %>
+</div>
+<% }); %>
+<% } else { %>
+<div class="empty-state"><div class="empty-state-icon">🔗</div><p><%= t.empty_resources %></p></div>
+<% } %>
+</div>
+</section>
+<%- include('partials/footer') %>

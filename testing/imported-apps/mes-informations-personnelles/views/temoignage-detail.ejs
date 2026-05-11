@@ -1,0 +1,17 @@
+<%- include('partials/header') %>
+<section class="section">
+<div class="container">
+<div style="max-width:800px;margin:0 auto 1.5rem"><a href="temoignages" class="btn btn-ghost">← <%= t.nav_temoignages %></a></div>
+<article class="post-detail">
+<% if (post.category) { %><div style="margin-bottom:1rem"><span class="badge"><%= post.category %></span></div><% } %>
+<h1><%= post.title %></h1>
+<div class="meta"><%= t.tem_by %> <strong><%= post.author || 'Anonyme' %></strong> · <%= formatDate(post.created_at) %></div>
+<% if (post.image_url) { %><img src="<%= post.image_url %>" alt="<%= post.title %>" style="width:100%;border-radius:12px;margin-bottom:1.5rem;max-height:400px;object-fit:cover"><% } %>
+<div class="content"><%= post.content %></div>
+</article>
+<div style="text-align:center;margin-top:2rem">
+<a href="contact" class="btn btn-primary" style="background-color:#6366f1;color:#fff"><%= t.hero_cta_contact %></a>
+</div>
+</div>
+</section>
+<%- include('partials/footer') %>
