@@ -389,9 +389,14 @@ res.json({ success: true });
     // which is fine because the voice EJS reads settings/business via
     // typeof guards and the platform wraps res.render's locals in a Proxy
     // that returns a safe default for missing keys.
-    var ctx = {};
+    // The local `tenantLocals` name avoids shadowing the outer `ctx` function
+    // (this tenant's locals helper is named `ctx`, not `prepareRender`); a
+    // `var ctx = {}` here would have hidden it from the `typeof ctx` check.
+    var tenantLocals = {};
     if (typeof prepareRender === 'function') {
-      try { ctx = await prepareRender(req, res, { pageTitle: 'Voice Assistant' }); } catch (_) { ctx = {}; }
+      try { tenantLocals = await prepareRender(req, res, { pageTitle: 'Voice Assistant' }); } catch (_) { tenantLocals = {}; }
+    } else if (typeof ctx === 'function') {
+      try { tenantLocals = await ctx(req); } catch (_) { tenantLocals = {}; }
     }
     // Three-layer locals: defaults < ctx (prepareRender output) < hard overrides.
     //
@@ -412,7 +417,7 @@ res.json({ success: true });
       currentPage: null,
       user: req.tenantUser || null,
       formatDate: function(d) { return d == null ? '' : String(d); },
-    }, ctx, {
+    }, tenantLocals, {
       business: (services.config && services.config.business) || services.business || {},
       tenantUser: req.tenantUser || null,
       // Tenants whose partials/header references per-route locals (page,
