@@ -214,7 +214,12 @@ ${wrapInstr}`;
       }
 
       const lng = (req.body && req.body.language) === 'en' ? 'en' : 'fr';
-      const voiceName = lng === 'fr' ? 'Aoede' : 'Puck';
+      // Pinned to 'Puck' across every language — 'Aoede' is not available
+      // on gemini-3.1-flash-live-preview and the websocket closes with
+      // 1011 ("unexpected condition") as soon as the client connects with
+      // a token that referenced it. The platform's own voice mint
+      // (services.voiceTokenMint) hard-pins Puck for the same reason.
+      const voiceName = 'Puck';
       const systemInstruction = await buildQuoteSystemInstruction(lng, req.tenantUser || null);
 
       const tokenClient = new GoogleGenAI({
