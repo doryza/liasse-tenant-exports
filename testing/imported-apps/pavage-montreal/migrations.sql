@@ -46,3 +46,18 @@ CREATE INDEX IF NOT EXISTS idx_sales_team_email_lower ON sales_team_members((LOW
 ALTER TABLE contact_submissions ADD COLUMN IF NOT EXISTS assigned_to_sales_id INTEGER;
 ALTER TABLE contact_submissions ADD COLUMN IF NOT EXISTS assigned_at TIMESTAMPTZ;
 CREATE INDEX IF NOT EXISTS idx_contact_submissions_assigned_to_sales ON contact_submissions(assigned_to_sales_id);
+
+-- === voice-module-v1 START ===
+CREATE TABLE IF NOT EXISTS voice_submissions (
+  id BIGSERIAL PRIMARY KEY,
+  user_id INTEGER,
+  fields JSONB NOT NULL,
+  language TEXT,
+  voice_session_id TEXT,
+  status TEXT DEFAULT 'new',
+  assigned_to_sales_id INTEGER,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_voice_submissions_status ON voice_submissions (status);
+CREATE INDEX IF NOT EXISTS idx_voice_submissions_created ON voice_submissions (created_at DESC);
+-- === voice-module-v1 END ===

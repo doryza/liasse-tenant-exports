@@ -22,10 +22,6 @@ module.exports = function(services) {
 
   async function baseCtx(req) {
     const settings = await getSettings();
-    // mountPath is the URL prefix the platform mounted this router under
-    // (e.g. "/pwa/pavage-montreal" in production, "" when run standalone).
-    // Views prepend it to absolute-style links so the tenant slug isn't
-    // stripped — `/accueil` alone would resolve to the platform root.
     const mountPath = req.baseUrl || '';
     return { settings, fmtDate, truncate, currentPath: req.path, mountPath, year: new Date().getFullYear() };
   }
@@ -37,14 +33,14 @@ module.exports = function(services) {
     next();
   });
 
-  // Video gate — the new homepage entry point. The CTA on the gate sends
-  // visitors to /accueil where the actual home content lives. Internal
-  // "Home" links throughout the site point at /accueil too, so a visitor
-  // dismissing the gate once doesn't see it again on subsequent navigation.
+  // Root route now serves the accueil homepage directly.
+  // The video gate that previously sat at / has been removed.
   router.get('/', async function(req, res) {
     try {
       const ctx = await baseCtx(req);
-      res.render('gate', ctx);
+      const servicesList = await db.all('SELECT * FROM services ORDER BY sort_order ASC, id ASC');
+      const testimonials = await db.all('SELECT * FROM testimonials WHERE published = 1 ORDER BY id DESC LIMIT 3');
+      res.render('index', Object.assign(ctx, { services: servicesList, testimonials }));
     } catch(e) { console.error(e); res.status(500).send('Erreur'); }
   });
 
@@ -93,10 +89,6 @@ module.exports = function(services) {
     } catch(e) { console.error(e); res.status(500).send('Erreur'); }
   });
 
-  // optionalAuth so signed-in visitors get their submission tagged with
-  // their user_id (and surfaced under /mon-compte) without forcing a login
-  // on the generic contact form — we still want anonymous "Nous contacter"
-  // messages to go through.
   router.post('/api/contact', services.auth.optionalAuth, async function(req, res) {
     try {
       const { name, email, phone, address, message } = req.body || {};
@@ -114,37 +106,14 @@ module.exports = function(services) {
   });
 
   // ============================================================
-  // Soumission gratuite — independent quote-request flow
+  // Soumission gratuite — voice-first quote-request flow
   // ============================================================
-  // /soumission is the dedicated quote page (separate from
-  // /nous-contacter, which stays as the generic contact form).
-  // It hosts a voice-first hero: a Gemini Live conversation that
-  // collects the project description plus the required identity
-  // fields (name, email, phone), then auto-fills a normal form so
-  // the visitor can review + submit.
-  //
-  // Gemini access is via the tenant's own GEMINI_API_KEY set in
-  // api-variables (services.externalVars.GEMINI_API_KEY). The
-  // client never sees the raw key — it gets a one-shot ephemeral
-  // token minted server-side via @google/genai's authTokens.create.
 
-  // Read the tenant's Gemini key. The platform's required-key
-  // scanner regexes services.externalVars.X matches and flags every
-  // distinct name as a separate required variable
-  // (subscriberPwaBuilderRoutes.js:4796), so referencing both
-  // GEMINI_API_KEY and GOOGLE_GEMINI_API_KEY surfaced two duplicate
-  // prompts in the api-variables UI. Sticking to the single canonical
-  // name keeps the prompt clean.
   function getGeminiApiKey() {
     if (!services || !services.externalVars) return null;
     return services.externalVars.GEMINI_API_KEY || null;
   }
 
-  // optionalAuth attaches req.tenantUser when the visitor is signed in
-  // (via Bearer token in header OR tenant_token cookie). When set, we
-  // pre-fill the form's name/email/phone from their account. The voice
-  // mic still triggers a fresh login flow if the visitor isn't signed
-  // in by the time they click it.
   router.get('/soumission', services.auth.optionalAuth, async function(req, res) {
     try {
       const ctx = await baseCtx(req);
@@ -163,11 +132,6 @@ module.exports = function(services) {
     } catch(e) { console.error(e); res.status(500).send('Erreur'); }
   });
 
-  // Build a soumission system instruction that bakes in the live
-  // company context (services list, business info from admin_settings)
-  // PLUS whatever identity the platform already has on the visitor
-  // (display_name / email / phone from their OTP login). The visitor
-  // should never be asked again for what we already know.
   async function buildQuoteSystemInstruction(language, user) {
     const lang = language === 'en' ? 'en' : 'fr';
     const settings = await getSettings();
@@ -184,9 +148,6 @@ module.exports = function(services) {
       .join('\n');
 
     const languageName = lang === 'fr' ? 'French (Canadian/Québécois)' : 'English';
-    // Identity already known from the platform's auth session — we
-    // never re-ask for what we have. Whatever's missing the visitor
-    // can either give by voice or type into the draft inputs.
     const knownIdentity = (() => {
       if (!user) return '';
       const lines = [];
@@ -234,12 +195,6 @@ DRAFT UPDATES — after EACH of your turns, call the \`updateQuoteDraft\` tool w
 ${wrapInstr}`;
   }
 
-  // Mint a Gemini Live ephemeral token for the soumission voice
-  // conversation. Uses the tenant's own GEMINI_API_KEY so usage is
-  // billed to the tenant's Google project, not the platform's.
-  // Auth-gated: only signed-in tenant users can mint Gemini Live tokens.
-  // Visitors who haven't logged in via SMS/email OTP get a 401, which the
-  // client uses as a cue to launch TenantSDK.ui.showLogin first.
   router.post('/soumission/voice-token', services.auth.requireAuth, async function(req, res) {
     try {
       const apiKey = getGeminiApiKey();
@@ -258,9 +213,6 @@ ${wrapInstr}`;
 
       const lng = (req.body && req.body.language) === 'en' ? 'en' : 'fr';
       const voiceName = lng === 'fr' ? 'Aoede' : 'Puck';
-      // req.tenantUser is populated by services.auth.requireAuth — feed
-      // its identity into the system instruction so Gemini doesn't ask
-      // for what we already have on file.
       const systemInstruction = await buildQuoteSystemInstruction(lng, req.tenantUser || null);
 
       const tokenClient = new GoogleGenAI({
@@ -268,7 +220,7 @@ ${wrapInstr}`;
         httpOptions: { apiVersion: 'v1alpha' },
       });
 
-      const expireTime = new Date(Date.now() + 30 * 60 * 1000).toISOString(); // 30 min
+      const expireTime = new Date(Date.now() + 30 * 60 * 1000).toISOString();
       const model = 'gemini-3.1-flash-live-preview';
 
       const updateDraftTool = {
@@ -290,8 +242,6 @@ ${wrapInstr}`;
         }],
       };
 
-      // No `lockAdditionalFields` — every field set here is locked
-      // server-side, so the client can't loosen the model or tool.
       const token = await tokenClient.authTokens.create({
         config: {
           uses: 1,
@@ -318,20 +268,12 @@ ${wrapInstr}`;
     }
   });
 
-  // Auth-gated: visitors must complete the platform OTP login (SMS or email)
-  // before their soumission is accepted. The view-side handler watches for
-  // 401 and triggers TenantSDK.ui.showLogin in-page; the requireAuth check
-  // here is the server-side enforcement so direct curls / replays can't
-  // skip the login step.
   router.post('/api/soumission', services.auth.requireAuth, async function(req, res) {
     try {
       const { name, email, phone, address, message } = req.body || {};
       if (!name || !email || !phone || !message) {
         return res.status(400).json({ error: 'Nom, courriel, téléphone et description sont requis.' });
       }
-      // Quote requests share the contact_submissions table — same
-      // fields, same downstream handling. Status defaults to 'new'.
-      // user_id always present here (requireAuth guarantees req.tenantUser).
       await db.run(
         'INSERT INTO contact_submissions (name, email, phone, address, message, status, user_id) VALUES ($1,$2,$3,$4,$5,$6,$7)',
         [name, email, phone, address || '', message, 'new', req.tenantUser.id]
@@ -352,16 +294,8 @@ ${wrapInstr}`;
   });
 
   // ============================================================
-  // Mon Compte — visitor profile + their submissions
+  // Mon Compte
   // ============================================================
-  // Auth-gated page where a signed-in visitor can:
-  //   • see every soumission/contact request they've sent (status, details)
-  //   • update their display name, email, phone (via TenantSDK.auth.updateProfile)
-  //
-  // The page itself uses optionalAuth so we can render a friendly "please
-  // sign in" splash instead of a hard 401. The data + profile-update
-  // endpoints below ARE auth-gated — JS in the view triggers
-  // TenantSDK.ui.showLogin if the visitor lands here logged out.
   router.get('/mon-compte', services.auth.optionalAuth, async function(req, res) {
     try {
       const ctx = await baseCtx(req);
@@ -374,24 +308,6 @@ ${wrapInstr}`;
           'SELECT id, name, email, phone, address, message, status, created_at FROM contact_submissions WHERE user_id = $1 ORDER BY created_at DESC LIMIT 100',
           [u.id]
         );
-        // Mon Compte doubles as the sales-rep landing page: if the
-        // signed-in user is linked to an active sales-team row, we
-        // surface the assigned soumissions and lock the profile fields
-        // to admin's canonical values.
-        //
-        // Three lookup paths (first-match wins) — needed because the
-        // user_id link can break in practice:
-        //   1. Direct user_id match (the canonical link set during
-        //      activation).
-        //   2. Email match (LOWER), in case the rep re-OTP'd creating
-        //      a fresh user_id different from the one linked at
-        //      activation time.
-        //   3. Phone digit-match (strips formatting), same reason.
-        // When 2 or 3 hits, we re-link by writing the new user_id to
-        // sales_team_members AND auto-mark invite_accepted_at if not
-        // already set — the OTP-verified email/phone matching admin's
-        // canonical entry IS the proof of identity, same as the
-        // explicit click-the-invite-link flow.
         salesMember = await db.get(
           "SELECT * FROM sales_team_members WHERE user_id = $1 AND active = 1",
           [u.id]
@@ -411,7 +327,6 @@ ${wrapInstr}`;
             );
           }
         }
-        // If recovered (user_id mismatch or never set), heal the row.
         if (salesMember && (salesMember.user_id !== u.id || !salesMember.invite_accepted_at)) {
           try {
             await db.run(
@@ -420,30 +335,11 @@ ${wrapInstr}`;
             );
             salesMember.user_id = u.id;
             salesMember.invite_accepted_at = salesMember.invite_accepted_at || new Date().toISOString();
-            console.log('[Sales] Recovered sales_team_members link for member id=' + salesMember.id + ' → user id=' + u.id);
           } catch (linkErr) {
             console.error('[Sales] Link recovery failed (non-fatal):', linkErr.message);
           }
         }
         if (salesMember) {
-          // Idempotent re-sync of the user record from admin's canonical
-          // sales_team_members entry. Three reasons to do this on every
-          // Mon Compte load (not just at activation):
-          //   1. Old activations that predate PR #38's backfill have user
-          //      rows with empty display_name / cross-channel — those reps
-          //      land here with blank locked fields ("name and phone are
-          //      empty"). This catches them up automatically.
-          //   2. If admin edits the member's contact details after
-          //      activation (re-invite with corrected name/email/phone),
-          //      the rep's profile reflects the correction next page load.
-          //   3. The verify-now flow needs user.email or user.phone to
-          //      EQUAL admin's canonical value so the platform's
-          //      verifySmsCode/verifyEmailCode finds the rep's existing
-          //      user (vs creating a new one and orphaning the
-          //      sales_team_members link).
-          // Verification flags are reset only when the value actually
-          // changes — so a rep whose verified channel matches admin's
-          // entry doesn't lose their verified status on each refresh.
           const updates = [];
           const vals = [];
           let i = 1;
@@ -451,13 +347,6 @@ ${wrapInstr}`;
             updates.push(`display_name = $${i++}`);
             vals.push(salesMember.full_name);
           }
-          // Email: write admin's exact string when it differs at all, but
-          // only reset email_verified when the LOGICAL value changes
-          // (case-only changes preserve the verified flag — they're the
-          // same address). This is critical for the verify-now flow:
-          // verifyEmailCode does an exact-string lookup, so users.email
-          // must equal the displayed (= admin's canonical) value or the
-          // platform creates a new user instead of verifying ours.
           if (salesMember.email) {
             const userEmailExact = u.email || '';
             const userEmailLower = userEmailExact.toLowerCase();
@@ -469,10 +358,6 @@ ${wrapInstr}`;
               }
             }
           }
-          // Phone: same reasoning. Format-only changes (e.g. "+1 (514) 555-1234"
-          // vs "5145551234") preserve phone_verified — same number, just
-          // different display. We always rewrite the string so verifySmsCode
-          // can match by exact string.
           if (salesMember.mobile) {
             const userPhoneExact = u.phone || '';
             const userPhoneDigits = userPhoneExact.replace(/\D/g, '');
@@ -506,14 +391,6 @@ ${wrapInstr}`;
         submissions,
         salesMember,
         assignedSubmissions,
-        // For sales reps, prefer admin's canonical values from
-        // sales_team_members for the displayed fields. This is belt-and-
-        // suspenders against any sync hiccup above — even if the UPDATE
-        // failed (e.g. a transient DB error), the rep still SEES admin's
-        // correct values in the locked fields. Verification badges are
-        // computed by comparing user record's verified flags against the
-        // canonical entry: a verified channel only counts if its value
-        // matches what admin set.
         prefillUser: u ? (salesMember ? {
           id: u.id,
           name: salesMember.full_name || '',
@@ -536,8 +413,6 @@ ${wrapInstr}`;
     } catch(e) { console.error(e); res.status(500).send('Erreur'); }
   });
 
-  // JSON feed — lets the client refresh the submissions list after a new
-  // soumission goes through, without a full page reload.
   router.get('/api/mon-compte/submissions', services.auth.requireAuth, async function(req, res) {
     try {
       const submissions = await db.all(
@@ -754,7 +629,7 @@ ${wrapInstr}`;
         await db.run(sql, vals);
         const row = await db.get('SELECT * FROM ' + table + ' WHERE id = $1', [req.params.id]);
         res.json({ item: row });
-      } catch(e) { console.error(e); res.status(500).json({ error: e.message }); }
+      } catch(e) { res.status(500).json({ error: e.message }); }
     });
     router.delete('/api/admin/' + table + '/:id', requireAdmin, async function(req, res) {
       try {
@@ -770,7 +645,6 @@ ${wrapInstr}`;
   makeCRUD('jobs', ['title','description','requirements','location','employment_type','image_url','sort_order','active']);
   makeCRUD('posts', ['title','content','image_url','category','published']);
 
-  // Explicit named routes so static analysis can verify CRUD coverage for each table
   router.get('/api/admin/services', requireAdmin, async function(req, res) {
     try { const rows = await db.all('SELECT * FROM services ORDER BY sort_order ASC, id ASC'); res.json({ services: rows }); }
     catch(e) { res.status(500).json({ error: e.message }); }
@@ -869,7 +743,6 @@ ${wrapInstr}`;
     catch(e) { res.status(500).json({ error: e.message }); }
   });
 
-  // Alias routes using exact table names (contact_submissions, job_applications)
   router.get('/api/admin/contact_submissions', requireAdmin, async function(req, res) {
     try { const rows = await db.all('SELECT * FROM contact_submissions ORDER BY created_at DESC'); res.json({ contact_submissions: rows }); }
     catch(e) { res.status(500).json({ error: e.message }); }
@@ -896,7 +769,6 @@ ${wrapInstr}`;
     catch(e) { res.status(500).json({ error: e.message }); }
   });
 
-  // Alias routes using exact table name (job_applications)
   router.get('/api/admin/job_applications', requireAdmin, async function(req, res) {
     try { const rows = await db.all('SELECT * FROM job_applications ORDER BY created_at DESC'); res.json({ job_applications: rows }); }
     catch(e) { res.status(500).json({ error: e.message }); }
@@ -923,74 +795,50 @@ ${wrapInstr}`;
     } catch(e) { res.status(500).json({ error: e.message }); }
   });
 
-  
-// Auto-injected admin page routes for orphaned views
-router.get('/admin/applications', async function(req, res) {
-  if (!services.admin.isAdmin(req)) return res.redirect('.');
-  var items = await db.all('SELECT * FROM applications ORDER BY created_at DESC');
-  res.render('admin-applications', { items: items });
-});
-router.get('/admin/contacts', async function(req, res) {
-  if (!services.admin.isAdmin(req)) return res.redirect('.');
-  var items = await db.all('SELECT * FROM contacts ORDER BY created_at DESC');
-  res.render('admin-contacts', { items: items });
-});
-router.get('/admin/jobs', async function(req, res) {
-  if (!services.admin.isAdmin(req)) return res.redirect('.');
-  var items = await db.all('SELECT * FROM jobs ORDER BY created_at DESC');
-  res.render('admin-jobs', { items: items });
-});
-router.get('/admin/posts', async function(req, res) {
-  if (!services.admin.isAdmin(req)) return res.redirect('.');
-  var items = await db.all('SELECT * FROM posts ORDER BY created_at DESC');
-  res.render('admin-posts', { items: items });
-});
-router.get('/admin/projects', async function(req, res) {
-  if (!services.admin.isAdmin(req)) return res.redirect('.');
-  var items = await db.all('SELECT * FROM projects ORDER BY created_at DESC');
-  res.render('admin-projects', { items: items });
-});
-router.get('/admin/services', async function(req, res) {
-  if (!services.admin.isAdmin(req)) return res.redirect('.');
-  var items = await db.all('SELECT * FROM services ORDER BY created_at DESC');
-  res.render('admin-services', { items: items });
-});
-router.get('/admin/testimonials', async function(req, res) {
-  if (!services.admin.isAdmin(req)) return res.redirect('.');
-  var items = await db.all('SELECT * FROM testimonials ORDER BY created_at DESC');
-  res.render('admin-testimonials', { items: items });
-});
+  // Auto-injected admin page routes for orphaned views
+  router.get('/admin/applications', async function(req, res) {
+    if (!services.admin.isAdmin(req)) return res.redirect('.');
+    var items = await db.all('SELECT * FROM job_applications ORDER BY created_at DESC');
+    res.render('admin-applications', { items: items });
+  });
+  router.get('/admin/contacts', async function(req, res) {
+    if (!services.admin.isAdmin(req)) return res.redirect('.');
+    var items = await db.all('SELECT * FROM contact_submissions ORDER BY created_at DESC');
+    res.render('admin-contacts', { items: items });
+  });
+  router.get('/admin/jobs', async function(req, res) {
+    if (!services.admin.isAdmin(req)) return res.redirect('.');
+    var items = await db.all('SELECT * FROM jobs ORDER BY created_at DESC');
+    res.render('admin-jobs', { items: items });
+  });
+  router.get('/admin/posts', async function(req, res) {
+    if (!services.admin.isAdmin(req)) return res.redirect('.');
+    var items = await db.all('SELECT * FROM posts ORDER BY created_at DESC');
+    res.render('admin-posts', { items: items });
+  });
+  router.get('/admin/projects', async function(req, res) {
+    if (!services.admin.isAdmin(req)) return res.redirect('.');
+    var items = await db.all('SELECT * FROM projects ORDER BY created_at DESC');
+    res.render('admin-projects', { items: items });
+  });
+  router.get('/admin/services', async function(req, res) {
+    if (!services.admin.isAdmin(req)) return res.redirect('.');
+    var items = await db.all('SELECT * FROM services ORDER BY created_at DESC');
+    res.render('admin-services', { items: items });
+  });
+  router.get('/admin/testimonials', async function(req, res) {
+    if (!services.admin.isAdmin(req)) return res.redirect('.');
+    var items = await db.all('SELECT * FROM testimonials ORDER BY created_at DESC');
+    res.render('admin-testimonials', { items: items });
+  });
 
   // ============================================================
-  // Sales Team — invitee-gated dashboard for assigned soumissions
+  // Sales Team
   // ============================================================
-  // Three audiences, three surfaces:
-  //   • Admin: /admin/sales-team page + /api/admin/sales-team CRUD,
-  //     plus PUT /api/admin/contacts/:id/assign to assign a soumission.
-  //   • Invitee (after admin clicks "Inviter"): an emailed magic link to
-  //     /sales/invite/:token, never shown in any public menu. The page
-  //     asks the visitor to OTP via email or mobile that MUST match what
-  //     admin entered, then activates and redirects to /sales/dashboard.
-  //   • Activated sales person: /sales/dashboard + /api/sales/* endpoints
-  //     gated by `requireSalesMember` (real auth + sales-team membership).
-  //
-  // The sales person uses the platform's regular OTP flow — there's no
-  // separate "sales auth" infrastructure. We just check at request time
-  // whether the OTP'd users.id is linked to an active sales_team_members
-  // row. Linking happens once during invite activation.
-
-  // Random URL-safe token for invite magic links. crypto.randomBytes(24)
-  // → 48 hex chars, ~192 bits of entropy. Plenty unguessable; collisions
-  // are not a concern for the table sizes we expect.
   function generateInviteToken() {
     return crypto.randomBytes(24).toString('hex');
   }
 
-  // Invite-email body. Bilingual-ish: defaults to French (the tenant's
-  // primary locale) but we expose a couple of English-friendly cues at
-  // the bottom so an English-speaking sales hire can still figure out
-  // what to do. The `link` is built absolute from the request's host so
-  // it works whether served from /pwa/<slug>/ or a custom domain.
   function buildInviteEmail(member, link, businessName) {
     const html = ''
       + '<div style="font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;max-width:560px;margin:0 auto;padding:24px;color:#111">'
@@ -1011,9 +859,6 @@ router.get('/admin/testimonials', async function(req, res) {
     return { subject, html };
   }
 
-  // Build the absolute magic-link for an invite. Mounts under the same
-  // path the visitor is currently on, so /pwa/<slug>/sales/invite/<token>
-  // and custom-domain hosts both work.
   function buildInviteLink(req, token) {
     const proto = (req.headers['x-forwarded-proto'] || req.protocol || 'https');
     const host = req.headers['x-forwarded-host'] || req.headers.host;
@@ -1021,12 +866,6 @@ router.get('/admin/testimonials', async function(req, res) {
     return proto + '://' + host + mountPath + '/sales/invite/' + token;
   }
 
-  // requireSalesMember chains real auth + membership lookup. Tries
-  // user_id first (canonical link from activation), then email match,
-  // then phone digit-match, exactly mirroring the /mon-compte recovery
-  // logic so a rep whose user_id link broke can still reach the sales
-  // API endpoints (verify-now, status update). Auto-heals the link on
-  // a successful match.
   function requireSalesMember(req, res, next) {
     services.auth.requireAuth(req, res, async function() {
       try {
@@ -1067,9 +906,6 @@ router.get('/admin/testimonials', async function(req, res) {
     });
   }
 
-  // ============================================================
-  // Admin: sales-team CRUD + invite send
-  // ============================================================
   router.get('/api/admin/sales-team', requireAdmin, async function(req, res) {
     try {
       const members = await db.all(
@@ -1079,10 +915,6 @@ router.get('/admin/testimonials', async function(req, res) {
     } catch(e) { console.error(e); res.status(500).json({ error: e.message }); }
   });
 
-  // Create + send invite. Idempotent on email: if a row exists for
-  // the same lowercased email it's reused — updates contact + token
-  // and re-activates if the row was previously soft-deleted. Reusing
-  // the row preserves invite_accepted_at and assigned soumissions.
   router.post('/api/admin/sales-team', requireAdmin, async function(req, res) {
     try {
       const { full_name, email, phone, mobile, title } = req.body || {};
@@ -1117,10 +949,6 @@ router.get('/admin/testimonials', async function(req, res) {
 
       const member = await db.get("SELECT * FROM sales_team_members WHERE id = $1", [memberId]);
 
-      // Send invite email. Failures are non-fatal (admin can resend).
-      // We send to member.email (the canonical, cleaned form stored on
-      // the row) — not the raw req.body field — so admin retries don't
-      // double-mail an unintended address if they typo the second time.
       try {
         const settings = await getSettings();
         const businessName = settings.business_name || 'Pavage Montréal';
@@ -1135,8 +963,6 @@ router.get('/admin/testimonials', async function(req, res) {
     } catch(e) { console.error(e); res.status(500).json({ error: e.message }); }
   });
 
-  // Resend invite — regenerates the token (invalidates the old link) and
-  // bumps invite_sent_at. Doesn't change activation state.
   router.post('/api/admin/sales-team/:id/resend', requireAdmin, async function(req, res) {
     try {
       const member = await db.get("SELECT * FROM sales_team_members WHERE id = $1", [req.params.id]);
@@ -1159,9 +985,6 @@ router.get('/admin/testimonials', async function(req, res) {
     } catch(e) { console.error(e); res.status(500).json({ error: e.message }); }
   });
 
-  // Soft-delete (revoke). active=0 means requireSalesMember rejects them
-  // without losing their history — assigned soumissions still reference
-  // the row id for audit. A hard delete would orphan those assignments.
   router.delete('/api/admin/sales-team/:id', requireAdmin, async function(req, res) {
     try {
       await db.run("UPDATE sales_team_members SET active = 0, updated_at = NOW() WHERE id = $1", [req.params.id]);
@@ -1169,15 +992,6 @@ router.get('/admin/testimonials', async function(req, res) {
     } catch(e) { console.error(e); res.status(500).json({ error: e.message }); }
   });
 
-  // Assign a soumission to a sales person. Pass sales_member_id=null to
-  // unassign. Admin-only — nobody else gets to touch the assignment.
-  // Assignment — admin assigns a soumission to a sales-team member.
-  //
-  // Relaxed from the original "must be activated" requirement: admin can
-  // now pre-assign before the rep activates. The rep will see the
-  // assignment as soon as their /mon-compte loads after activation.
-  // We keep the active=1 guard so admins can't assign to soft-deleted
-  // (revoked) members.
   router.put('/api/admin/contacts/:id/assign', requireAdmin, async function(req, res) {
     try {
       const id = req.params.id;
@@ -1194,13 +1008,6 @@ router.get('/admin/testimonials', async function(req, res) {
     } catch(e) { console.error('[Sales Assign]', e); res.status(500).json({ error: e.message }); }
   });
 
-  // ============================================================
-  // Invite activation (public endpoint, no menu, token-gated)
-  // ============================================================
-  // The invitee lands here from their email. We render a hidden page that
-  // hosts the platform's OTP modal flow; once they verify their email or
-  // mobile (matching what admin entered), the page POSTs to the activate
-  // endpoint which links the OTP'd users.id to sales_team_members.
   router.get('/sales/invite/:token', async function(req, res) {
     try {
       const ctx = await baseCtx(req);
@@ -1208,9 +1015,6 @@ router.get('/admin/testimonials', async function(req, res) {
         "SELECT id, full_name, email, mobile, title, invite_accepted_at, active FROM sales_team_members WHERE invite_token = $1",
         [req.params.token]
       );
-      // Don't leak whether the token is valid vs invalid — but we DO need
-      // to render different UI for "already activated" so the invitee
-      // doesn't bounce off the page after a successful first activation.
       res.render('sales-invite', Object.assign(ctx, {
         token: req.params.token,
         member: member || null,
@@ -1220,21 +1024,6 @@ router.get('/admin/testimonials', async function(req, res) {
     } catch(e) { console.error(e); res.status(500).send('Erreur'); }
   });
 
-  // POST after the visitor OTP'd. requireAuth gives us the verified user.
-  // The 192-bit invite token + a valid platform login is sufficient
-  // consent to bind the slot — the magic link is delivered only to the
-  // admin-entered email recipient and is unguessable, so possession +
-  // login proves identity. We DON'T require the OTP'd channel to equal
-  // admin's entry (the previous strict check produced a confusing
-  // "Bienvenue, X" + "your identifier doesn't match" contradiction for
-  // visitors using an existing account to claim an invite).
-  //
-  // Two invariants are still enforced:
-  //   1. Single-rep-per-row: if member.user_id already points at a
-  //      DIFFERENT user, reject with 409.
-  //   2. Single-active-slot-per-user: if THIS user is already linked to
-  //      another active sales-team row, reject with 409.
-  // Cross-identity claims (channels don't match) emit an audit log line.
   router.post('/api/sales/invite/:token/activate', services.auth.requireAuth, async function(req, res) {
     try {
       const member = await db.get(
@@ -1246,7 +1035,6 @@ router.get('/admin/testimonials', async function(req, res) {
 
       const u = req.tenantUser;
 
-      // Invariant: this user already wears another active sales-team hat?
       const otherActive = await db.get(
         "SELECT id, full_name FROM sales_team_members WHERE user_id = $1 AND active = 1 AND id != $2",
         [u.id, member.id]
@@ -1257,11 +1045,6 @@ router.get('/admin/testimonials', async function(req, res) {
         });
       }
 
-      // Atomic claim — the WHERE clause prevents race conditions where
-      // two concurrent requests would both pass the application-level
-      // user_id check, then both UPDATE. Only one can hit a row whose
-      // user_id is NULL or already equals our user. We then verify
-      // ownership by SELECT to surface a clear 409 if we lost the race.
       await db.run(
         "UPDATE sales_team_members SET user_id = $1, invite_accepted_at = COALESCE(invite_accepted_at, NOW()), updated_at = NOW() WHERE id = $2 AND active = 1 AND (user_id IS NULL OR user_id = $1)",
         [u.id, member.id]
@@ -1271,9 +1054,6 @@ router.get('/admin/testimonials', async function(req, res) {
         return res.status(409).json({ error: 'Cette invitation est déjà liée à un autre compte.' });
       }
 
-      // Audit-log cross-identity claims (channels don't match admin's
-      // entry). Visible in Railway logs; not stored in the row to keep
-      // schema simple.
       const userEmailLower = (u.email || '').toLowerCase();
       const userPhoneDigits = (u.phone || '').replace(/\D/g, '');
       const inviteEmailLower = (member.email || '').toLowerCase();
@@ -1285,23 +1065,6 @@ router.get('/admin/testimonials', async function(req, res) {
         console.log('[Sales Activate] Cross-identity claim — invite ' + member.id + ' (' + (member.email || '') + ' / ' + (member.mobile || '') + ') accepted by user ' + u.id + ' (' + (u.email || '-') + ' / ' + (u.phone || '-') + ').');
       }
 
-      // Backfill the user record from the admin-entered contact details.
-      // The admin's entries are canonical for sales reps — they're the
-      // source of truth that "name + email + mobile" should appear on the
-      // rep's Mon Compte after activation. The OTP only stamps whichever
-      // single channel verified, so without this step the other two
-      // fields stay blank on the rep's profile (which then gets locked
-      // for editing — see the Mon Compte view).
-      //
-      // Rules:
-      //   • display_name — always overwrite with member.full_name. Admin
-      //     typed it; a generic OTP-side default would be empty anyway.
-      //   • email — only fill if currently empty (rep matched via mobile
-      //     → email channel was never OTP'd). Email already set means it
-      //     was the verified OTP channel, leave verified=1.
-      //   • phone — same: fill from member.mobile only when empty.
-      //     verified=0 since the mobile wasn't OTP'd.
-      // We never DOWNGRADE a verified channel.
       try {
         const sets = ['display_name = $1', 'updated_at = NOW()'];
         const vals = [member.full_name || ''];
@@ -1317,8 +1080,6 @@ router.get('/admin/testimonials', async function(req, res) {
         vals.push(u.id);
         await db.run(`UPDATE users SET ${sets.join(', ')} WHERE id = $${i}`, vals);
       } catch (backfillErr) {
-        // Non-fatal — activation already linked the row. Log so we can
-        // see if a rep ever lands on Mon Compte with empty fields again.
         console.error('[Sales Activate] Profile backfill failed (non-fatal):', backfillErr.message);
       }
 
@@ -1326,11 +1087,6 @@ router.get('/admin/testimonials', async function(req, res) {
     } catch(e) { console.error(e); res.status(500).json({ error: 'Erreur lors de l\'activation' }); }
   });
 
-  // /sales/dashboard now redirects to /mon-compte — the unified account
-  // page surfaces both the user's own submissions AND any soumissions
-  // assigned to them as a sales rep. Kept as a 302 (not removed) so
-  // bookmarks and the email invite link's "after activation" redirect
-  // stay functional even if a rep saved the old URL.
   router.get('/sales/dashboard', function(req, res) {
     return res.redirect('mon-compte');
   });
@@ -1345,8 +1101,6 @@ router.get('/admin/testimonials', async function(req, res) {
     } catch(e) { console.error(e); res.status(500).json({ error: e.message }); }
   });
 
-  // Sales person updates the status of a soumission they own. Restricted
-  // to their assigned rows so one rep can't tamper with another's queue.
   router.put('/api/sales/submissions/:id/status', requireSalesMember, async function(req, res) {
     try {
       const allowed = new Set(['new', 'contacted', 'quoted', 'won', 'lost']);
@@ -1362,20 +1116,285 @@ router.get('/admin/testimonials', async function(req, res) {
     } catch(e) { console.error(e); res.status(500).json({ error: e.message }); }
   });
 
-  // Catch-all: redirect unknown GET routes to PWA home (prevents "Cannot GET" errors)
-  // Only matches GET requests — POST/PUT/DELETE API endpoints are unaffected
+  // === voice-module-v1 START ===
+  router.get('/voice-assistant', services.auth.optionalAuth, async function(req, res, next) {
+    // Reuse the tenant's existing prepareRender helper if it's defined in
+    // this routes.js — that gives the voice EJS the same locals every other
+    // tenant page receives (lang, t, settings, formatDate, ...) so that
+    // partials/header and partials/footer render correctly. Falls back to
+    // a plain locals object when the tenant's routes.js doesn't expose it,
+    // which is fine because the voice EJS reads settings/business via
+    // typeof guards and the platform wraps res.render's locals in a Proxy
+    // that returns a safe default for missing keys.
+    var ctx = {};
+    if (typeof prepareRender === 'function') {
+      try { ctx = await prepareRender(req, res, { pageTitle: 'Voice Assistant' }); } catch (_) { ctx = {}; }
+    }
+    // Three-layer locals: defaults < ctx (prepareRender output) < hard overrides.
+    //
+    // The platform's res.render wraps locals in a Proxy that returns [] for
+    // missing keys, so a partial that simply references `t` or `lang` won't
+    // ReferenceError — but `[]` is an awkward placeholder for an i18n
+    // dictionary or a language code, and patterns like `<html lang="<%= lang %>">`
+    // would render `<html lang="">`. Pre-populating sensible empty defaults
+    // for the names tenant partials most commonly reach for (matches the
+    // conventions in claudeGeneratorService — see the i18n+ helpers section
+    // there) lets partials interpolate them as expected. `ctx` (when
+    // prepareRender exists and ran) wins over these defaults; the voice
+    // page's own page/pageTitle/active/business keys win over both.
+    var voiceLocals = Object.assign({
+      t: {},
+      lang: 'fr',
+      settings: {},
+      currentPage: null,
+      user: req.tenantUser || null,
+      formatDate: function(d) { return d == null ? '' : String(d); },
+    }, ctx, {
+      business: (services.config && services.config.business) || services.business || {},
+      tenantUser: req.tenantUser || null,
+      // Tenants whose partials/header references per-route locals (page,
+      // pageTitle, active — common pattern for highlighting nav items)
+      // would otherwise throw ReferenceError under EJS strict mode. Pass
+      // safe defaults so the partial renders cleanly.
+      page: 'voice-assistant',
+      pageTitle: 'Voice Assistant',
+      active: 'voice-assistant',
+    });
+    // res.render with a callback catches BOTH sync and async EJS errors —
+    // a bare try/catch around res.render() does NOT catch the async path,
+    // and any error there propagates to next(err) which the platform's
+    // tenant error boundary turns into a "Something Went Wrong" page. With
+    // this callback we own the failure mode: log the render error, then
+    // serve a minimal branded "temporarily unavailable" shell. Don't
+    // include a non-functional mic button — the only reason render failed
+    // is that the tenant's partials/header or partials/footer throw under
+    // EJS strict mode (e.g. by referencing a local the route did not set);
+    // even if we duplicated the voice JS we cannot fix the partial. So we
+    // fail loudly to the operator (console.error + 5xx-equivalent log) and
+    // softly to the visitor.
+    res.render('voice-assistant', voiceLocals, function(err, html) {
+      if (!err) return res.send(html);
+      console.error('[voice-assistant render]', err && err.stack || err);
+      var brand = (voiceLocals.business && voiceLocals.business.primaryColor)
+        || (voiceLocals.settings && voiceLocals.settings.primary_color)
+        || '#8b5cf6';
+      var lng = (typeof voiceLocals.lang === 'string' && voiceLocals.lang === 'en') ? 'en' : 'fr';
+      var T = lng === 'en'
+        ? { title: 'Voice Assistant', heading: 'Voice assistant is being set up', sub: 'Our voice assistant is currently being prepared. Please check back shortly.' }
+        : { title: 'Assistant vocal', heading: "L'assistant vocal est en cours de configuration", sub: "Notre assistant vocal est en cours de préparation. Veuillez revenir sous peu." };
+      var fallback = '<!DOCTYPE html><html lang="' + lng + '"><head><meta charset="utf-8">'
+        + '<meta name="viewport" content="width=device-width,initial-scale=1">'
+        + '<title>' + T.title + '</title>'
+        + '<style>body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:#f9fafb;color:#111827;'
+        + 'min-height:100vh;display:flex;align-items:center;justify-content:center}'
+        + '.va-wrap{max-width:32rem;padding:2.5rem 1.5rem;text-align:center}'
+        + '.va-icon{width:4rem;height:4rem;margin:0 auto 1.5rem;border-radius:9999px;display:inline-flex;'
+        + 'align-items:center;justify-content:center;color:#fff;background:' + brand + '}'
+        + 'h1{font-size:1.5rem;letter-spacing:-.02em;margin:0 0 .75rem;color:#111827}'
+        + 'p{color:#6b7280;margin:0;line-height:1.5}</style></head><body>'
+        + '<main class="va-wrap"><div class="va-icon">'
+        + '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
+        + '<path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>'
+        + '</div><h1>' + T.heading + '</h1><p>' + T.sub + '</p></main></body></html>';
+      // 200, not 500 — visitors see a calm "we're setting this up" page,
+      // not a scary error. The render error is in the server log; the
+      // operator's dashboard shows the install status and a re-install link.
+      res.status(200).set('Content-Type', 'text/html; charset=utf-8').send(fallback);
+      // Pipe the error through next(err) AFTER sending the response so the
+      // platform's tenant-route error capturer (errorCapturingNext in
+      // subscriberPwaRouter) can write it to the runtime-errors table for the
+      // operator's dashboard. The capturer guards on res.headersSent so it
+      // won't try to send a competing error page; we just want the DB write.
+      try { next(err); } catch (_) {}
+    });
+  });
+
+  router.post('/voice-assistant/start', services.auth.optionalAuth, async function(req, res) {
+    try {
+      var endUserId = req.tenantUser ? req.tenantUser.id : null;
+      var result = await services.voiceTokenMint.mint({ endUserId: endUserId, ip: req.ip });
+      if (!result.ok) return res.status(result.status || 400).json({ error: result.error, reason: result.reason });
+      res.json({
+        token: result.token,
+        model: result.model,
+        expireTime: result.expireTime,
+        sessionId: result.sessionId,
+        maxSeconds: result.maxSeconds,
+      });
+    } catch (err) {
+      res.status(503).json({ error: 'voice_unavailable', detail: err.message });
+    }
+  });
+
+  router.post('/voice-assistant/finalize', services.auth.optionalAuth, async function(req, res) {
+    try {
+      var body = req.body || {};
+      var result = await services.voiceTokenMint.finalize({
+        sessionId: body.sessionId,
+        durationMs: body.durationMs,
+        inputTokens: body.inputTokens,
+        outputTokens: body.outputTokens,
+        abortReason: body.abortReason || null,
+      });
+      res.json(result);
+    } catch (err) {
+      res.status(500).json({ error: 'finalize_failed', detail: err.message });
+    }
+  });
+
+  router.post('/voice-assistant/submit', services.auth.optionalAuth, async function(req, res) {
+    try {
+      var fields = req.body || {};
+      // services.db exposes the SQLite-style API (.run / .get / .all) —
+      // .query is NOT defined and earlier installs hit a TypeError on
+      // submit. Use db.run for INSERTs to match the rest of the tenant
+      // routes.js pattern.
+      await services.db.run(
+        'INSERT INTO voice_submissions (user_id, fields, language, status, created_at) VALUES ($1, $2, $3, $4, NOW())',
+        [(req.tenantUser && req.tenantUser.id) || null, JSON.stringify(fields), 'both', 'new']
+      );
+
+      // Helpers for HTML email composition. Inline because routes.js has
+      // no module-level utilities and we want this self-contained.
+      function vsEscapeHtml(s) {
+        return String(s == null ? '' : s)
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+      }
+      function vsPrettyLabel(k) {
+        return String(k).replace(/[_-]+/g, ' ').replace(/\b\w/g, function(c) { return c.toUpperCase(); });
+      }
+
+      // Build one HTML rows block — both emails reuse it. Empty / non-
+      // string values are skipped so the table doesn't show blank rows.
+      var rowsHtml = '';
+      for (var fk in fields) {
+        if (Object.prototype.hasOwnProperty.call(fields, fk)) {
+          var fv = fields[fk];
+          if (typeof fv !== 'string' || !fv.trim()) continue;
+          rowsHtml += '<tr>'
+            + '<td style="padding:10px 14px;border-bottom:1px solid #e5e7eb;font-weight:600;color:#374151;font-size:14px;width:35%;vertical-align:top">' + vsEscapeHtml(vsPrettyLabel(fk)) + '</td>'
+            + '<td style="padding:10px 14px;border-bottom:1px solid #e5e7eb;color:#111827;font-size:14px;white-space:pre-wrap">' + vsEscapeHtml(fv.trim()) + '</td>'
+            + '</tr>';
+        }
+      }
+      if (!rowsHtml) {
+        rowsHtml = '<tr><td colspan="2" style="padding:10px 14px;color:#9ca3af;font-size:14px;font-style:italic">(no fields submitted)</td></tr>';
+      }
+
+      // Tenant branding for the visitor email + tenant app mention in
+      // the lead email. Defensive defaults so a missing config doesn't
+      // crash the send.
+      var tenantName = (services.config && (services.config.businessName || services.config.displayName)) || 'this app';
+      var brandColor = (services.config && services.config.business && services.config.business.primaryColor) || '#8b5cf6';
+      var brandLogo = (services.config && services.config.business && services.config.business.logoUrl) || null;
+
+      // Find a visitor email — scan submitted values for the first
+      // email-shaped string. Tenants pick their own field keys
+      // (`email`, `courriel`, `client_email`…) so key-matching is
+      // unreliable; value-matching is robust.
+      var visitorEmail = null;
+      for (var vk in fields) {
+        if (typeof fields[vk] === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fields[vk].trim())) {
+          visitorEmail = fields[vk].trim();
+          break;
+        }
+      }
+
+      // 1) LEAD email — Liasse-platform branded with mention of the
+      //    tenant app, formatted as an HTML table for legibility.
+      var leadEmail = '';
+      if (leadEmail && services.email && services.email.send) {
+        var leadReplyLine = visitorEmail
+          ? '<p style="margin:0 0 18px 0;color:#374151;font-size:15px;line-height:1.55">A visitor just submitted your AI voice assistant form. Their details are below — reply directly to <a href="mailto:' + vsEscapeHtml(visitorEmail) + '" style="color:#7c3aed;text-decoration:none;font-weight:600">' + vsEscapeHtml(visitorEmail) + '</a> to follow up.</p>'
+          : '<p style="margin:0 0 18px 0;color:#374151;font-size:15px;line-height:1.55">A visitor just submitted your AI voice assistant form. Their details are below.</p>';
+        var leadHtml = ''
+          + '<div style="font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;background:#f3f4f6;padding:24px 12px">'
+          + '<div style="max-width:600px;margin:0 auto;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;box-shadow:0 4px 6px -1px rgba(0,0,0,0.06)">'
+          + '<div style="background:linear-gradient(135deg,#7c3aed,#a855f7);padding:22px 26px;color:#ffffff">'
+          + '<div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;opacity:0.85">Liasse · Voice Assistant</div>'
+          + '<div style="font-size:20px;font-weight:700;margin-top:6px;letter-spacing:-0.01em">' + vsEscapeHtml(tenantName) + ' — new lead</div>'
+          + '</div>'
+          + '<div style="padding:24px 26px">'
+          + leadReplyLine
+          + '<table style="border-collapse:collapse;width:100%;background:#f9fafb;border-radius:8px;overflow:hidden;border:1px solid #e5e7eb">' + rowsHtml + '</table>'
+          + '</div>'
+          + '<div style="padding:14px 26px;border-top:1px solid #e5e7eb;background:#f9fafb;color:#6b7280;font-size:12px;line-height:1.4">Sent by your Liasse Voice Assistant module · <a href="https://liasse.tech" style="color:#7c3aed;text-decoration:none">liasse.tech</a></div>'
+          + '</div>'
+          + '</div>';
+        try {
+          await services.email.send({
+            to: leadEmail,
+            subject: '[' + tenantName + '] New voice submission' + (visitorEmail ? ' from ' + visitorEmail : ''),
+            html: leadHtml,
+          });
+        } catch (_) { /* non-fatal */ }
+      }
+
+      // 2) VISITOR confirmation — tenant-app-branded (logo if available,
+      //    otherwise the tenant name as a header), with their submission
+      //    inlined so they have a paper trail.
+      if (visitorEmail && services.email && services.email.send) {
+        var visitorNameVal = null;
+        for (var nk in fields) {
+          if (typeof fields[nk] === 'string' && /^(name|nom|fullname|full[_-]?name|firstname|first[_-]?name|prenom)$/i.test(nk)) {
+            visitorNameVal = fields[nk].trim();
+            break;
+          }
+        }
+        var visitorHeaderInner = brandLogo
+          ? '<img src="' + vsEscapeHtml(brandLogo) + '" alt="' + vsEscapeHtml(tenantName) + '" style="max-height:42px;max-width:180px;display:block;margin-bottom:8px"/>'
+          : '<div style="font-size:20px;font-weight:700;color:#ffffff;margin-bottom:4px;letter-spacing:-0.01em">' + vsEscapeHtml(tenantName) + '</div>';
+        var greeting = visitorNameVal
+          ? 'Hi ' + vsEscapeHtml(visitorNameVal) + ','
+          : 'Hi there,';
+        var visitorHtml = ''
+          + '<div style="font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;background:#f3f4f6;padding:24px 12px">'
+          + '<div style="max-width:600px;margin:0 auto;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;box-shadow:0 4px 6px -1px rgba(0,0,0,0.06)">'
+          + '<div style="background:' + vsEscapeHtml(brandColor) + ';padding:22px 26px;color:#ffffff">'
+          + visitorHeaderInner
+          + '<div style="font-size:13px;opacity:0.92">Thanks — we got your request</div>'
+          + '</div>'
+          + '<div style="padding:24px 26px">'
+          + '<p style="margin:0 0 14px 0;color:#111827;font-size:15px;line-height:1.55">' + greeting + '</p>'
+          + '<p style="margin:0 0 18px 0;color:#374151;font-size:15px;line-height:1.55">Thanks for reaching out to <strong>' + vsEscapeHtml(tenantName) + '</strong>. We have received your request and will reply shortly. Here is a copy of what you sent us, for your records:</p>'
+          + '<table style="border-collapse:collapse;width:100%;background:#f9fafb;border-radius:8px;overflow:hidden;border:1px solid #e5e7eb;margin-bottom:18px">' + rowsHtml + '</table>'
+          + '<p style="margin:0;color:#6b7280;font-size:14px;line-height:1.5">— The ' + vsEscapeHtml(tenantName) + ' team</p>'
+          + '</div>'
+          + '<div style="padding:14px 26px;border-top:1px solid #e5e7eb;background:#f9fafb;color:#9ca3af;font-size:11px;line-height:1.4">This message was sent by ' + vsEscapeHtml(tenantName) + ' via <a href="https://liasse.tech" style="color:#9ca3af;text-decoration:none">Liasse Voice Assistant</a>.</div>'
+          + '</div>'
+          + '</div>';
+        try {
+          await services.email.send({
+            to: visitorEmail,
+            subject: 'Thanks — we received your request' + (tenantName !== 'this app' ? ' (' + tenantName + ')' : ''),
+            html: visitorHtml,
+          });
+        } catch (_) { /* non-fatal */ }
+      }
+
+      // Return JSON so the front-end can swap the hero + form for the
+      // inline thank-you panel without a navigation. visitorEmail is
+      // returned so the panel can display "we sent a copy to <email>"
+      // without duplicating the detection logic client-side.
+      res.json({ ok: true, visitorEmail: visitorEmail });
+    } catch (err) {
+      console.error('[voice-assistant submit]', err);
+      res.status(500).json({ ok: false, error: 'submit_failed' });
+    }
+  });
+  // === voice-module-v1 END ===
+
+  // Catch-all
   router.get('*', (req, res, next) => {
-    // Don't redirect API calls — return 404 JSON instead
     if (req.path.startsWith('/api/') || req.path.startsWith('/admin/api/')) {
       return res.status(404).json({ error: 'Not found' });
     }
-    // Let admin paths fall through to the platform's admin fallback handler
     if (req.path === '/admin' || req.path.startsWith('/admin/')) {
       return next();
     }
     res.redirect('./');
   });
 
-
-return router;
+  return router;
 };

@@ -3,7 +3,7 @@
   "displayName": "Pavage Company",
   "description": "Build a clean, professional bilingual (French primary, English secondary) marketing website for **Pavage Montréal**, a family-owned paving contractor established in 1991 specializing in asphalt and interlocking pavers.\n\n**Company info:** Montreal Scellant Inc., 11805 boul. Rivière-des-Prairies, Montréal (QC) H1C 1R2. Phones: 514-321-7325 / 514-PAVE-UNI. Email: info@pavagemontreal.com. Facebook: facebook.com/pavagemontreal. Hours: Monday–Saturday 08h00–17h00.\n\n**Navigation (top and footer):** Accueil · À propos · Nos projets · Nous contacter · Emplois · English.  \nFooter includes contact details, hours, and company numbers.\n\n**Visual identity:** Modern contractor style with orange/black logo on white header. Use large, full-bleed jobsite photos in hero sections. Main tagline: *\"Nous réparons, nettoyons et scellons tout… Nous sommes les spécialistes du pavage depuis 1991.\"* Supporting pillar: *\"Service, Qualité… Professionnalisme\"*.\n\n**Home page (Accueil):**\n- Hero banner with rotating jobsite images and heading \"12 Services offerts\"\n- 8 service tiles in a clean grid (each with photo, title, short description, and \"voir projets\" button):\n  1. Unité mobile — Réparation d'asphalte rapide\n  2. Unité mobile — Resurfaçage\n  3. Asphalte Industriel — Nids-de-poule\n  4. Asphalte Commercial — Stationnements\n  5. Asphalte Souterrain — Condos et bâtiments\n  6. Asphalte Résidentielle — Nouveau et réparation\n  7. Pavé-Uni — Résidentiel, Commercial, Industriel, Municipal\n  8. Conception — Avant / Après\n- Three-column value section: Qualité, Service, Professionnalisme\n- Short \"À propos de nous\" text block with family story and contact CTA\n- \"30 ans d'expérience…\" banner\n- Customer testimonial\n- Client logo strip\n\n**À propos page:** Company story with large hero photo and contact CTA.\n\n**Nos projets page:** Overview of services with the same 8-tile grid, plus project management highlights and testimonial.\n\n**Gallery pages:** Beautiful photo grids for each of the 8 services, easy to browse with captions.\n\n**Nous contacter page:** Prominent \"Soumission Gratuite\" contact form (name, email, phone, address, message) with clear success message. Include contact info sidebar.\n\n**Emplois page:** List of open positions (Installateur Pavé-Uni, Ouvrier d'asphalte, Chauffeur classe 1, Opérateur de pelle, Mécanicien diesel, Vendeur) with a recruitment form.\n\n**English version:** Full mirror of all pages in English with same design and user experience.\n\nFocus on strong visuals, intuitive navigation, mobile-friendly layout, and a trustworthy, professional contractor feel.",
   "status": "active",
-  "generationVersion": 31,
+  "generationVersion": 33,
   "primaryColor": "#111112",
   "iconUrl": "https://res.cloudinary.com/duhp69meg/image/upload/v1778369762/subscriber_pwa_icons/ai_icon_1778369762526.png",
   "enabledAuthMethods": [
@@ -17,19 +17,19 @@
     "language": "fr",
     "aiSummary": {
       "en": {
-        "dashboard": "Your admin dashboard is the control center for your website.\n\nTo manage content, sign in to the Admin area. From there, you can add, update, or remove the main sections of the site, including services, projects, testimonials, jobs, posts, and contact entries. If you want to change something on the public site, open the matching section, select the item, make your changes, and save.\n\nTo review incoming requests, check the areas for contact submissions, quote requests, and job applications. This is where you can keep track of people who reached out through the site.\n\nFor your sales process, you can manage sales team members, send invitation links, and assign contact leads. Sales users can then follow up and update the status of submissions from their own dashboard.\n\nTo change general site details, go to Settings in the Admin area. That’s where you update things like business information and other overall site preferences.\n\nTo check performance, open the dashboard home or stats section. There you can view overall activity, including site visits and submission trends, to help you see how the app is being used.\n\nIn simple terms:\n• Want to add a new service? Go to Admin → Services.\n• Want to post a new project? Go to Admin → Projects.\n• Want to update testimonials? Go to Admin → Testimonials.\n• Want to manage hiring? Go to Admin → Jobs and Applications.\n• Want to review messages? Go to Admin → Contacts or Submissions.\n• Want to adjust site-wide details? Go to Admin → Settings.",
-        "variables": "Good news — your app is almost fully ready to go.\n\nThere is only 1 outside connection to know about:\n\n• GEMINI_API_KEY: This powers the voice quote feature, so people can speak their request instead of typing it. It’s provided through Google AI services. If you ever need to replace it, get it from your Google AI account, then add it in the Admin area under Required API Keys.\n\nYour X connection is already set up.\n\nAlso, your contact details were updated to the new fictional information you requested, so the site now reflects those replacement business coordinates.\n\nIf everything looks right on the site, you’re in great shape to start using it."
+        "dashboard": "Your app includes an admin area where you can manage your website content and review incoming activity.\n\nFrom the Admin dashboard, you can:\n- add, edit, or remove services\n- add, edit, or remove projects\n- add, edit, or remove testimonials\n- add, edit, or remove job postings\n- add, edit, or remove blog/news posts\n- review contact form messages\n- review quote requests\n- review job applications\n- manage sales team invitations and assignments\n- update general site settings\n- view basic site stats\n\nFor content updates, go to the matching Admin section like Services, Projects, Testimonials, Jobs, or Posts. Open an item to change it, or create a new one from that section. If something is outdated, you can remove it there too.\n\nTo handle customer interest, check Contacts for messages and Soumissions/quote requests for pricing inquiries. Job Applications lets you review people applying for open roles.\n\nFor notifications and follow-up, the app includes sales team tools. You can invite team members, assign contact requests, and track submission status from the sales area.\n\nTo change business-wide details, go to Settings in the Admin area. That is where you would update things like general site information.\n\nTo check performance, use the main Admin dashboard for stats and activity summaries.\n\nIf you'd like, the next recommended step is a quick review of the live pages to confirm the restored home page is exactly how you want it and to decide whether the remaining voice assistant sections should be hidden or removed.",
+        "variables": "Good news! Your app is almost fully ready.\n\nThere is 1 service already connected: the Gemini key. This powers the voice assistant features in your app.\n\nImportant note: you asked to remove the voice lead capture page and bring back the Accueil home page. The home page has been restored, but voice assistant pages and related submission steps still appear to exist in the app. If you want, we can fully remove those voice assistant sections as a final cleanup.\n\nIf you ever need to check or update connected services, go to the Admin area and look for the Required API Keys section.\n\nFor now, no extra action should be needed from you unless you want the remaining voice assistant parts removed too."
       },
       "fr": {
-        "dashboard": "Le tableau de bord admin, c’est le centre de contrôle de votre site.\n\nEn vous connectant à la section Admin, vous pouvez ajouter, modifier ou supprimer le contenu principal du site, comme les services, les projets, les témoignages, les emplois, les publications et les contacts. Si vous voulez changer quelque chose sur le site public, ouvrez la bonne section, choisissez l’élément, faites la modification, puis enregistrez.\n\nPour voir les demandes entrantes, consultez les sections des messages de contact, des demandes de soumission et des candidatures. C’est là que vous suivez les gens qui vous ont écrit par le site.\n\nPour le suivi des ventes, vous pouvez gérer les membres de l’équipe des ventes, envoyer des invitations et attribuer des contacts. Les membres de l’équipe peuvent ensuite faire leur suivi et mettre à jour l’état des demandes dans leur propre espace.\n\nPour modifier les réglages généraux du site, allez dans Settings dans l’Admin. C’est l’endroit pour changer les informations de l’entreprise et les préférences générales du site.\n\nPour voir les résultats, ouvrez l’accueil du tableau de bord ou la section des statistiques. Vous pourrez y consulter l’activité générale, comme les visites sur le site et les tendances des demandes reçues.\n\nEn pratique :\n• Pour ajouter un service : Admin → Services.\n• Pour publier un projet : Admin → Projects.\n• Pour modifier des témoignages : Admin → Testimonials.\n• Pour gérer l’embauche : Admin → Jobs et Applications.\n• Pour consulter les messages : Admin → Contacts ou Submissions.\n• Pour changer les infos générales du site : Admin → Settings.",
-        "variables": "Bonne nouvelle — votre application est presque entièrement prête à être utilisée.\n\nIl y a seulement 1 connexion externe à connaître :\n\n• GEMINI_API_KEY : cette clé permet la fonction de demande de soumission vocale, pour que les visiteurs puissent parler au lieu d’écrire. Elle vient des services d’intelligence artificielle de Google. Si vous devez la remplacer un jour, vous pouvez l’obtenir dans votre compte Google AI, puis l’ajouter dans la section Admin, sous Required API Keys.\n\nLa connexion à X est déjà configurée.\n\nAussi, vos coordonnées ont bien été remplacées par les nouvelles coordonnées fictives demandées, donc le site affiche maintenant cette version mise à jour.\n\nSi tout vous semble bon à l’écran, vous êtes prêt à aller de l’avant."
+        "dashboard": "Votre application comprend un espace Admin pour gérer le contenu du site et voir ce qui entre dans l’application.\n\nDans le tableau de bord Admin, vous pouvez :\n- ajouter, modifier ou supprimer des services\n- ajouter, modifier ou supprimer des projets\n- ajouter, modifier ou supprimer des témoignages\n- ajouter, modifier ou supprimer des offres d’emploi\n- ajouter, modifier ou supprimer des articles ou nouvelles\n- consulter les messages envoyés par le formulaire de contact\n- consulter les demandes de soumission\n- consulter les candidatures d’emploi\n- gérer les invitations et l’attribution pour l’équipe des ventes\n- modifier les réglages généraux du site\n- voir les statistiques de base du site\n\nPour mettre à jour le contenu, allez dans la section voulue, par exemple Services, Projets, Témoignages, Emplois ou Articles. Vous pourrez y créer un nouvel élément, en modifier un existant ou le supprimer s’il n’est plus utile.\n\nPour le suivi des clients, consultez la section Contacts pour les messages reçus et la section des soumissions pour les demandes de prix. La section des candidatures vous permet de voir les personnes qui postulent.\n\nPour les notifications et le suivi, l’application comprend des outils pour l’équipe des ventes. Vous pouvez inviter des membres, attribuer des demandes de contact et faire le suivi du statut des soumissions.\n\nPour changer les informations générales de l’entreprise ou du site, allez dans les Réglages de l’Admin.\n\nPour voir l’activité du site, consultez le tableau de bord principal Admin, où se trouvent les statistiques et les résumés.\n\nComme prochaine étape, on vous recommande de faire un petit tour du site en ligne pour valider que la page d’accueil remise en place est exactement comme vous la voulez, puis décider si les sections vocales restantes doivent être cachées ou retirées.",
+        "variables": "Bonne nouvelle! Votre application est presque prête à être utilisée.\n\nIl y a déjà 1 service connecté : la clé Gemini. Elle sert aux fonctions d’assistant vocal dans l’application.\n\nPetit point important : vous aviez demandé de retirer la page de capture vocale et de remettre la page d’accueil. La page d’accueil a bien été remise, mais il semble qu’il reste encore des sections liées à l’assistant vocal dans l’application. Si vous voulez, on peut faire un dernier ménage pour les retirer complètement.\n\nSi un jour vous avez besoin de vérifier ou modifier les services connectés, allez dans l’espace Admin puis dans la section des clés API requises.\n\nPour l’instant, vous n’avez rien d’autre à faire, à moins de vouloir faire enlever aussi les éléments restants de l’assistant vocal."
       }
     },
     "businessName": "Pavage Company",
     "contactEmail": "pavagecompany@liasse.tech",
     "contactPhone": "4387630060",
     "businessAddress": "123 main st, montreal, qc",
-    "aiSummaryVersion": 31
+    "aiSummaryVersion": 33
   },
   "promptHistory": [
     {
@@ -221,6 +221,53 @@
         "views/sales-invite.ejs",
         "views/soumission.ejs"
       ]
+    },
+    {
+      "prompt": "remove the voice lead capture page. and reinstate the acceuil homepage",
+      "diffStats": {
+        "added": [],
+        "removed": [],
+        "summary": "1 file(s) modified",
+        "modified": [
+          "routes.js (+0 -250)"
+        ]
+      },
+      "timestamp": "2026-05-10T23:51:19.790Z",
+      "changeNotes": "Removed the video gate as the site entry point and reinstated the accueil homepage. The GET / route now renders index.ejs (the full homepage with services grid, testimonials, values, about section, and CTA strips) instead of gate.ejs. The GET /accueil route is unchanged and continues to serve the same content — all internal nav links still work as before. The gate.ejs file is retained but no longer routed to.\n\nPre-flight smoke repair: Removed the video gate as the site entry point and reinstated the accueil homepage. The GET / route now renders index.ejs (the full homepage with services grid, testimonials, values, about section, and CTA strips) instead of gate.ejs. The GET /accueil route is unchanged and continues to serve the same content — all internal nav links still work as before. The gate.ejs file is retained but no longer routed to.",
+      "generationId": 1035,
+      "filesModified": [
+        "manifest.json",
+        "migrations.sql",
+        "package.json",
+        "public/css/admin-styles.css",
+        "public/css/styles.css",
+        "routes.js",
+        "schema.sql",
+        "seed.js",
+        "views/about.ejs",
+        "views/admin-applications.ejs",
+        "views/admin-contacts.ejs",
+        "views/admin-jobs.ejs",
+        "views/admin-posts.ejs",
+        "views/admin-projects.ejs",
+        "views/admin-sales-team.ejs",
+        "views/admin-services.ejs",
+        "views/admin-testimonials.ejs",
+        "views/admin.ejs",
+        "views/contact.ejs",
+        "views/emplois.ejs",
+        "views/gallery.ejs",
+        "views/gate.ejs",
+        "views/index.ejs",
+        "views/mon-compte.ejs",
+        "views/partials/admin-footer.ejs",
+        "views/partials/admin-header.ejs",
+        "views/partials/footer.ejs",
+        "views/partials/header.ejs",
+        "views/projets.ejs",
+        "views/sales-invite.ejs",
+        "views/soumission.ejs"
+      ]
     }
   ],
   "apiVariables": [
@@ -241,6 +288,6 @@
     }
   ],
   "createdAt": "2026-05-03T02:19:09.347Z",
-  "updatedAt": "2026-05-10T23:10:27.970Z",
-  "exportedAt": "2026-05-10T23:18:06.722Z"
+  "updatedAt": "2026-05-11T01:24:21.920Z",
+  "exportedAt": "2026-05-11T15:09:26.880Z"
 }
