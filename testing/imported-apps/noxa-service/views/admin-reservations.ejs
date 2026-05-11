@@ -86,7 +86,7 @@ function viewItem(r){
 }
 async function deleteItem(id){
   if(!confirm('Supprimer cette réservation?')) return;
-  await fetch('../api/admin/reservations/' + id, { method: 'DELETE' });
+  await fetch('api/admin/reservations/' + id, { method: 'DELETE' });
   location.reload();
 }
 document.getElementById('itemForm').addEventListener('submit', async function(e){
@@ -94,7 +94,7 @@ document.getElementById('itemForm').addEventListener('submit', async function(e)
   var f = e.target;
   var data = { name:f.name.value, phone:f.phone.value, email:f.email.value, service_type:f.service_type.value, preferred_date:f.preferred_date.value||null, address:f.address.value, message:f.message.value, status:f.status.value };
   var id = f.id.value;
-  var url = '../api/admin/reservations' + (id ? '/' + id : '');
+  var url = 'api/admin/reservations' + (id ? '/' + id : '');
   var method = id ? 'PUT' : 'POST';
   var res = await fetch(url, { method: method, headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) });
   if (res.ok) location.reload();

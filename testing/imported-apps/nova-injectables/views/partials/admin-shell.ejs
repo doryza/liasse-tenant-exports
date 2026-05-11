@@ -40,7 +40,7 @@ let allRows = [];
 
 async function loadModule() {
   try {
-    const r = await fetch('../api/admin/modules');
+    const r = await fetch('api/admin/modules');
     const d = await r.json();
     const m = (d.modules || []).find(x => x.key === MODULE_KEY);
     if (m) moduleFields = m.fields || [];
@@ -48,7 +48,7 @@ async function loadModule() {
 }
 async function loadItems() {
   try {
-    const r = await fetch('../api/admin/' + MODULE_KEY);
+    const r = await fetch('api/admin/' + MODULE_KEY);
     const d = await r.json();
     items = d[MODULE_KEY] || [];
     document.getElementById('items-count').textContent = items.length + (items.length > 1 ? ' éléments' : ' élément');
@@ -190,7 +190,7 @@ async function saveItem() {
   const btn = document.getElementById('save-btn');
   btn.disabled = true; btn.textContent = 'Enregistrement...';
   try {
-    const url = '../api/admin/' + MODULE_KEY + (currentItem ? '/' + currentItem.id : '');
+    const url = 'api/admin/' + MODULE_KEY + (currentItem ? '/' + currentItem.id : '');
     const method = currentItem ? 'PUT' : 'POST';
     const r = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
     if (!r.ok) { const j = await r.json(); showStatus('Erreur : ' + (j.error || 'inconnue'), 'error'); }
@@ -201,7 +201,7 @@ async function saveItem() {
 async function deleteItem(id) {
   if (!confirm('Supprimer définitivement cet élément ? Cette action est irréversible.')) return;
   try {
-    const r = await fetch('../api/admin/' + MODULE_KEY + '/' + id, { method: 'DELETE' });
+    const r = await fetch('api/admin/' + MODULE_KEY + '/' + id, { method: 'DELETE' });
     if (r.ok) { showStatus('Élément supprimé.', 'success'); await loadItems(); }
     else showStatus('Erreur lors de la suppression.', 'error');
   } catch(e) { showStatus('Erreur réseau.', 'error'); }

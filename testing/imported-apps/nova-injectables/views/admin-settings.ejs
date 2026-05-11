@@ -29,9 +29,9 @@ let fields = [];
 let currentSettings = {};
 async function load() {
   try {
-    const m = await (await fetch('../api/admin/modules')).json();
+    const m = await (await fetch('api/admin/modules')).json();
     fields = m.settingsFields || [];
-    const s = await (await fetch('../api/admin/settings')).json();
+    const s = await (await fetch('api/admin/settings')).json();
     currentSettings = s.settings || {};
     render();
   } catch(e) { showStatus('Erreur de chargement', 'error'); }
@@ -56,7 +56,7 @@ async function saveAll() {
     const el = document.getElementsByName(field.name)[0];
     if (!el) continue;
     try {
-      const r = await fetch('../api/admin/settings', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ key: field.name, value: el.value }) });
+      const r = await fetch('api/admin/settings', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ key: field.name, value: el.value }) });
       if (!r.ok) ok = false;
     } catch(e) { ok = false; }
   }

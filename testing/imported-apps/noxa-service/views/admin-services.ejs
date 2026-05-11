@@ -76,7 +76,7 @@ function editItem(s){
 }
 async function deleteItem(id){
   if(!confirm('Supprimer ce service?')) return;
-  await fetch('../api/admin/services/' + id, { method: 'DELETE' });
+  await fetch('api/admin/services/' + id, { method: 'DELETE' });
   location.reload();
 }
 document.getElementById('itemForm').addEventListener('submit', async function(e){
@@ -89,7 +89,7 @@ document.getElementById('itemForm').addEventListener('submit', async function(e)
     published: f.published.checked ? 1 : 0
   };
   var id = f.id.value;
-  var url = '../api/admin/services' + (id ? '/' + id : '');
+  var url = 'api/admin/services' + (id ? '/' + id : '');
   var method = id ? 'PUT' : 'POST';
   var res = await fetch(url, { method: method, headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) });
   if (res.ok) location.reload();

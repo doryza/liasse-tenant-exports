@@ -72,7 +72,7 @@ function editItem(t){
 }
 async function deleteItem(id){
   if(!confirm('Supprimer ce témoignage?')) return;
-  await fetch('../api/admin/testimonials/' + id, { method: 'DELETE' });
+  await fetch('api/admin/testimonials/' + id, { method: 'DELETE' });
   location.reload();
 }
 document.getElementById('itemForm').addEventListener('submit', async function(e){
@@ -80,7 +80,7 @@ document.getElementById('itemForm').addEventListener('submit', async function(e)
   var f = e.target;
   var data = { author:f.author.value, role:f.role.value, content:f.content.value, rating:parseInt(f.rating.value)||5, avatar_url:f.avatar_url.value, published:f.published.checked?1:0 };
   var id = f.id.value;
-  var url = '../api/admin/testimonials' + (id ? '/' + id : '');
+  var url = 'api/admin/testimonials' + (id ? '/' + id : '');
   var method = id ? 'PUT' : 'POST';
   var res = await fetch(url, { method: method, headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) });
   if (res.ok) location.reload();
