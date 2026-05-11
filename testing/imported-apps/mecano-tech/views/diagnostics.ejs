@@ -1,0 +1,28 @@
+<%- include('partials/header') %>
+<section class="section">
+  <div class="container">
+    <h1 class="section-title"><%= t.nav_diagnostics %></h1>
+    <p class="section-sub">Trouvez la cause et la solution pour chaque symptôme.</p>
+    <form method="GET" class="search-bar" action="diagnostics">
+      <input type="text" name="q" value="<%= q || '' %>" placeholder="Rechercher par symptôme, cause, mot-clé…" class="input">
+      <button type="submit" class="btn btn-primary" style="background-color:#6366f1;color:#fff"><%= t.btn_search %></button>
+    </form>
+    <% if (typeof items !== 'undefined' && items.length > 0) { %>
+      <div class="grid grid-2">
+        <% items.forEach(function(d){ %>
+          <a href="diagnostics/<%= d.id %>" class="card card-link">
+            <% var sev = d.severity || 'Modérée'; var cls = sev==='Critique'||sev==='Élevée'?'badge-danger':(sev==='Modérée'?'badge-warning':'badge-success'); %>
+            <span class="badge <%= cls %>"><%= sev %></span>
+            <% if (d.vehicle_type) { %><span class="badge badge-info" style="margin-left:.3rem"><%= d.vehicle_type %></span><% } %>
+            <h3 style="margin-top:.7rem"><%= d.title %></h3>
+            <p style="color:#64748b"><%= truncate(d.symptoms || '', 160) %></p>
+            <span class="btn btn-sm btn-outline" style="margin-top:.5rem">Consulter →</span>
+          </a>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <div class="empty-state"><div class="icon">🔍</div><p><%= q ? 'Aucun résultat pour « ' + q + ' ».' : t.empty_diagnostics %></p></div>
+    <% } %>
+  </div>
+</section>
+<%- include('partials/footer') %>

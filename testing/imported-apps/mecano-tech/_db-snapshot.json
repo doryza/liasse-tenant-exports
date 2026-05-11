@@ -1,0 +1,657 @@
+{
+  "exportedAt": "2026-05-11T12:46:34.478Z",
+  "tables": {
+    "admin_invites": {
+      "columns": [
+        "id",
+        "email",
+        "token",
+        "role",
+        "status",
+        "invited_by",
+        "expires_at",
+        "accepted_at",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_webauthn_credentials": {
+      "columns": [
+        "id",
+        "admin_user_id",
+        "credential_id",
+        "public_key",
+        "counter",
+        "device_name",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_users": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "password_hash",
+        "display_name",
+        "role",
+        "active",
+        "activation_token",
+        "invited_by",
+        "invite_token",
+        "invite_expires_at",
+        "last_login_at",
+        "is_active",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_settings": {
+      "columns": [
+        "key",
+        "value",
+        "updated_at"
+      ],
+      "totalRows": 33,
+      "sampleRows": [
+        {
+          "key": "business_name",
+          "value": "MécanoTech",
+          "updated_at": "2026-05-11T08:02:38.627Z"
+        },
+        {
+          "key": "tagline",
+          "value": "L'assistant intelligent du mécanicien moderne",
+          "updated_at": "2026-05-11T08:02:38.630Z"
+        },
+        {
+          "key": "hero_title",
+          "value": "Diagnostiquez plus vite, réparez mieux",
+          "updated_at": "2026-05-11T08:02:38.634Z"
+        },
+        {
+          "key": "hero_subtitle",
+          "value": "Diagnostics IA, reconnaissance de pièces par photo, guidage vocal et inventaire intégré. Tout ce dont vous avez besoin, dans votre poche.",
+          "updated_at": "2026-05-11T08:02:38.636Z"
+        },
+        {
+          "key": "about_text",
+          "value": "MécanoTech accompagne les mécaniciens à chaque étape de leur journée. Décrivez un problème à voix haute, prenez en photo une pièce inconnue, suivez une procédure pas à pas — sans jamais lâcher vos outils.",
+          "updated_at": "2026-05-11T08:02:38.639Z"
+        },
+        {
+          "key": "contact_email",
+          "value": "jimmybernard47@gmail.com",
+          "updated_at": "2026-05-11T08:02:38.642Z"
+        },
+        {
+          "key": "contact_phone",
+          "value": "",
+          "updated_at": "2026-05-11T08:02:38.644Z"
+        },
+        {
+          "key": "business_address",
+          "value": "",
+          "updated_at": "2026-05-11T08:02:38.647Z"
+        },
+        {
+          "key": "_p_hero_image_url",
+          "value": "https://res.cloudinary.com/duhp69meg/image/upload/v1778485222/tapavis_tenant_mecano-tech/build_mecano-tech_1778485222439.png",
+          "updated_at": "2026-05-11T08:02:38.650Z"
+        },
+        {
+          "key": "_seed_version",
+          "value": "671c3d8f4c86",
+          "updated_at": "2026-05-11T08:02:38.840Z"
+        }
+      ]
+    },
+    "site_visits": {
+      "columns": [
+        "id",
+        "path",
+        "created_at"
+      ],
+      "totalRows": 34,
+      "sampleRows": [
+        {
+          "id": 1,
+          "path": "/",
+          "created_at": "2026-05-11T10:48:32.266Z"
+        },
+        {
+          "id": 2,
+          "path": "/",
+          "created_at": "2026-05-11T10:48:40.734Z"
+        },
+        {
+          "id": 3,
+          "path": "/procedures",
+          "created_at": "2026-05-11T10:48:49.381Z"
+        },
+        {
+          "id": 4,
+          "path": "/assistant",
+          "created_at": "2026-05-11T10:48:52.289Z"
+        },
+        {
+          "id": 5,
+          "path": "/admin",
+          "created_at": "2026-05-11T10:49:03.563Z"
+        },
+        {
+          "id": 6,
+          "path": "/admin",
+          "created_at": "2026-05-11T10:49:04.232Z"
+        },
+        {
+          "id": 7,
+          "path": "/admin",
+          "created_at": "2026-05-11T10:49:04.682Z"
+        },
+        {
+          "id": 8,
+          "path": "/admin",
+          "created_at": "2026-05-11T10:49:04.859Z"
+        },
+        {
+          "id": 9,
+          "path": "/admin",
+          "created_at": "2026-05-11T10:49:04.993Z"
+        },
+        {
+          "id": 10,
+          "path": "/",
+          "created_at": "2026-05-11T10:49:06.656Z"
+        }
+      ]
+    },
+    "posts": {
+      "columns": [
+        "id",
+        "title",
+        "content",
+        "image_url",
+        "category",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "5 astuces pour économiser sur les réparations de freinage",
+          "content": "Avant de remplacer un système de freinage complet, vérifiez si le voilage des disques peut être corrigé par un simple usinage au tour. Mesurez l'épaisseur résiduelle avec un micromètre — si elle est supérieure à la cote mini constructeur + 1 mm, l'usinage est possible. Économie potentielle: 60% sur le coût pièces. Pensez aussi à nettoyer et regraisser les coulisses d'étriers avant tout diagnostic — un grippage est souvent confondu avec une usure prématurée des plaquettes.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778485225/tapavis_tenant_mecano-tech/build_mecano-tech_1778485225605.png",
+          "category": "Astuces économiques",
+          "published": 1,
+          "created_at": "2026-05-11T08:02:38.753Z",
+          "updated_at": "2026-05-11T08:02:38.753Z"
+        },
+        {
+          "id": 2,
+          "title": "Comment lire un code OBD-II comme un pro",
+          "content": "Un code défaut ne vous dit jamais quoi remplacer — il vous dit où chercher. Le code P0420 (rendement catalyseur faible) ne signifie pas systématiquement un catalyseur défectueux. Dans 40% des cas, c'est le capteur O2 aval qui est en cause. Toujours croiser le code avec les données en temps réel: tension du capteur O2 aval, températures, ratés d'allumage. Un bon scanner avec graphique vaut son pesant d'or — comptez 200-400 $ pour un appareil semi-pro.",
+          "image_url": null,
+          "category": "Diagnostics",
+          "published": 1,
+          "created_at": "2026-05-11T08:02:38.755Z",
+          "updated_at": "2026-05-11T08:02:38.755Z"
+        },
+        {
+          "id": 3,
+          "title": "L'importance du couple de serrage",
+          "content": "Le couple de serrage n'est pas une suggestion — c'est une science. Un boulon sous-serré peut se desserrer en service; un boulon trop serré peut fluer ou casser. Investissez dans une clé dynamométrique de qualité (75-150 $) et un schéma de couples adapté à votre marché. Les bougies, les écrous de roue et les boulons de chapeau de palier sont les pièces les plus critiques. Sur l'aluminium, méfiez-vous: 5 N·m de trop suffisent à arracher un filet.",
+          "image_url": null,
+          "category": "Techniques",
+          "published": 1,
+          "created_at": "2026-05-11T08:02:38.758Z",
+          "updated_at": "2026-05-11T08:02:38.758Z"
+        },
+        {
+          "id": 4,
+          "title": "Pourquoi vos clients reviennent pour la même panne",
+          "content": "La satisfaction client passe par la prévention. Quand vous remplacez une pièce, prenez 2 minutes pour expliquer la cause réelle et les signes à surveiller. Un client qui comprend revient pour de l'entretien préventif — pas pour des pannes répétées. Documentez chaque intervention avec photos avant/après. Ça vous protège juridiquement et démontre votre professionnalisme.",
+          "image_url": null,
+          "category": "Astuces économiques",
+          "published": 1,
+          "created_at": "2026-05-11T08:02:38.760Z",
+          "updated_at": "2026-05-11T08:02:38.760Z"
+        }
+      ]
+    },
+    "diagnostics": {
+      "columns": [
+        "id",
+        "title",
+        "vehicle_type",
+        "severity",
+        "symptoms",
+        "causes",
+        "solutions",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 6,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Voyant moteur allumé — code P0420",
+          "vehicle_type": "Tous véhicules à essence",
+          "severity": "Modérée",
+          "symptoms": "Voyant moteur allumé en continu\nLégère perte de performance possible\nConsommation d'essence accrue",
+          "causes": "Catalyseur usé ou inefficace\nCapteur d'oxygène défectueux (aval)\nFuite d'échappement avant le catalyseur\nRatés d'allumage non corrigés",
+          "solutions": "Vérifier les codes secondaires avant tout remplacement\nInspecter visuellement l'échappement à la recherche de fuites\nTester les capteurs O2 amont et aval — le capteur aval est souvent en cause et coûte 4× moins cher que le catalyseur\nNettoyer le système avec un additif de qualité avant remplacement",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778485220/tapavis_tenant_mecano-tech/build_mecano-tech_1778485220342.png",
+          "created_at": "2026-05-11T08:02:38.659Z",
+          "updated_at": "2026-05-11T08:02:38.659Z"
+        },
+        {
+          "id": 2,
+          "title": "Bruit de claquement au démarrage à froid",
+          "vehicle_type": "Moteur 4 cyl., souvent kilométrage élevé",
+          "severity": "Modérée",
+          "symptoms": "Cliquetis métallique pendant 5 à 30 secondes après démarrage à froid\nDisparaît une fois le moteur chaud",
+          "causes": "Tendeur de chaîne de distribution faible\nPoulie folle défectueuse\nUsure des paliers de bielle (cas plus grave)\nNiveau d'huile bas ou huile de mauvaise qualité",
+          "solutions": "Vérifier d'abord le niveau et la qualité de l'huile — solution gratuite\nInspecter la tension de la courroie accessoire\nÉcouter avec un stéthoscope mécanique pour localiser la source\nRemplacer le tendeur de chaîne avant la chaîne complète",
+          "image_url": null,
+          "created_at": "2026-05-11T08:02:38.662Z",
+          "updated_at": "2026-05-11T08:02:38.662Z"
+        },
+        {
+          "id": 3,
+          "title": "Vibration au freinage",
+          "vehicle_type": "Tous véhicules",
+          "severity": "Modérée",
+          "symptoms": "Volant qui tremble lors du freinage à haute vitesse\nPédale de frein qui pulse",
+          "causes": "Disques de frein voilés (souvent par surchauffe)\nPlaquettes inégales ou collées\nÉtriers grippés\nRoulement de roue endommagé",
+          "solutions": "Mesurer le voilage des disques avec un comparateur (économique)\nUsiner les disques au tour si l'épaisseur le permet — moitié prix d'un remplacement\nNettoyer et regraisser les coulisses d'étriers\nRemplacer uniquement si nécessaire",
+          "image_url": null,
+          "created_at": "2026-05-11T08:02:38.664Z",
+          "updated_at": "2026-05-11T08:02:38.664Z"
+        },
+        {
+          "id": 4,
+          "title": "Démarrage difficile à chaud",
+          "vehicle_type": "Injection essence",
+          "severity": "Modérée",
+          "symptoms": "Le moteur peine à démarrer après un arrêt court par temps chaud\nDémarrage normal à froid",
+          "causes": "Sonde de température moteur défectueuse\nRégulateur de pression d'essence qui fuit\nInjecteurs qui gouttent\nProblème de masse électrique",
+          "solutions": "Tester la sonde CTS avec un multimètre — souvent une simple correction\nVérifier la pression résiduelle du circuit essence\nNettoyer les masses moteur (gratuit !)\nTest d'injecteurs si nécessaire",
+          "image_url": null,
+          "created_at": "2026-05-11T08:02:38.668Z",
+          "updated_at": "2026-05-11T08:02:38.668Z"
+        },
+        {
+          "id": 5,
+          "title": "Surchauffe moteur intermittente",
+          "vehicle_type": "Tous véhicules",
+          "severity": "Élevée",
+          "symptoms": "Température qui monte en circulation lente\nRetour à la normale en autoroute\nVentilateur qui ne se déclenche pas systématiquement",
+          "causes": "Thermostat partiellement bloqué\nVentilateur électrique défectueux\nRadiateur encrassé extérieurement\nPompe à eau en fin de vie",
+          "solutions": "Tester le fonctionnement du ventilateur en pontant le relais — diagnostic gratuit\nNettoyer le radiateur à l'air comprimé avant remplacement\nRincer le circuit de refroidissement\nRemplacer le thermostat avant la pompe (10× moins cher)",
+          "image_url": null,
+          "created_at": "2026-05-11T08:02:38.671Z",
+          "updated_at": "2026-05-11T08:02:38.671Z"
+        },
+        {
+          "id": 6,
+          "title": "Boîte automatique qui patine",
+          "vehicle_type": "Boîte automatique conventionnelle",
+          "severity": "Élevée",
+          "symptoms": "Régime moteur qui monte sans accélération proportionnelle\nPassages de vitesses brutaux ou inexistants\nFluide ATF noir ou brûlé",
+          "causes": "Niveau d'ATF bas ou contaminé\nFiltre de transmission colmaté\nÉlectrovannes (solénoïdes) défectueuses\nUsure interne avancée",
+          "solutions": "Vérifier le niveau et l'état de l'ATF en premier — réparation potentielle à 50 $\nVidange + filtre avant tout autre intervention\nDiagnostic électronique pour identifier la solénoïde en cause\nÉviter le rinçage complet si fluide noir (peut aggraver)",
+          "image_url": null,
+          "created_at": "2026-05-11T08:02:38.674Z",
+          "updated_at": "2026-05-11T08:02:38.674Z"
+        }
+      ]
+    },
+    "procedures": {
+      "columns": [
+        "id",
+        "title",
+        "description",
+        "difficulty",
+        "duration_min",
+        "tools_needed",
+        "steps",
+        "image_url",
+        "video_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 5,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Vidange d'huile moteur complète",
+          "description": "Vidange standard avec remplacement du filtre. Procédure de base à maîtriser parfaitement.",
+          "difficulty": "Facile",
+          "duration_min": 30,
+          "tools_needed": "Clé à filtre, bac de vidange, cric ou pont, chandelles, entonnoir, clé carrée 8 mm ou 3/8 po, gants",
+          "steps": "1. Faire tourner le moteur 2-3 minutes pour fluidifier l'huile\n2. Lever le véhicule et sécuriser sur chandelles\n3. Placer le bac sous le bouchon de vidange\n4. Dévisser le bouchon avec précaution (huile chaude)\n5. Laisser couler 10 minutes minimum\n6. Remplacer le joint du bouchon si nécessaire\n7. Resserrer le bouchon au couple constructeur\n8. Retirer l'ancien filtre à huile\n9. Lubrifier le joint du nouveau filtre avec de l'huile neuve\n10. Visser le nouveau filtre à la main + 3/4 de tour\n11. Remplir avec la quantité spécifiée d'huile neuve\n12. Faire tourner le moteur 1 minute et vérifier les fuites\n13. Couper le moteur, attendre 5 minutes et vérifier le niveau à la jauge\n14. Compléter si nécessaire\n15. Réinitialiser l'indicateur de vidange sur le tableau de bord",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778485221/tapavis_tenant_mecano-tech/build_mecano-tech_1778485221583.png",
+          "video_url": "",
+          "created_at": "2026-05-11T08:02:38.682Z",
+          "updated_at": "2026-05-11T08:02:38.682Z"
+        },
+        {
+          "id": 2,
+          "title": "Remplacement des plaquettes de frein avant",
+          "description": "Procédure complète pour des freins avant à disque ventilé. Inspection des disques incluse.",
+          "difficulty": "Moyen",
+          "duration_min": 60,
+          "tools_needed": "Cric, chandelles, clé à roue, clés Allen ou Torx, repousse-piston, lubrifiant céramique haute température, pinceau, brosse métallique",
+          "steps": "1. Desserrer les écrous de roue avant de lever le véhicule\n2. Lever et sécuriser sur chandelles\n3. Retirer la roue complètement\n4. Inspecter l'état des plaquettes et du disque\n5. Retirer les vis de l'étrier (généralement 2)\n6. Soulever l'étrier et le suspendre — ne pas laisser pendre par le flexible\n7. Retirer les anciennes plaquettes\n8. Repousser le piston d'étrier avec l'outil approprié\n9. Vérifier le niveau de liquide de frein (risque de débordement)\n10. Nettoyer la cage de l'étrier à la brosse\n11. Appliquer du lubrifiant sur les points de contact\n12. Installer les nouvelles plaquettes\n13. Remettre l'étrier et serrer au couple\n14. Remonter la roue et serrer à la main\n15. Pomper la pédale plusieurs fois avant de rouler",
+          "image_url": null,
+          "video_url": "",
+          "created_at": "2026-05-11T08:02:38.687Z",
+          "updated_at": "2026-05-11T08:02:38.687Z"
+        },
+        {
+          "id": 3,
+          "title": "Remplacement des bougies d'allumage",
+          "description": "Procédure pour moteur 4 cylindres en ligne. Manipulation délicate des bobines individuelles.",
+          "difficulty": "Facile",
+          "duration_min": 45,
+          "tools_needed": "Douille à bougie avec aimant, rallonge, cliquet, jauge d'écartement, antigrippant haute température",
+          "steps": "1. Moteur froid obligatoire\n2. Débrancher la batterie (négatif)\n3. Localiser et déclipper les bobines individuelles\n4. Retirer les vis de fixation des bobines\n5. Extraire chaque bobine avec précaution\n6. Nettoyer l'orifice à l'air comprimé pour éviter chute de débris\n7. Dévisser l'ancienne bougie avec la douille aimantée\n8. Vérifier l'écartement de la nouvelle bougie\n9. Appliquer une fine couche d'antigrippant sur le filetage\n10. Visser à la main puis serrer au couple (généralement 18-25 N·m)\n11. Réinstaller la bobine\n12. Répéter pour chaque cylindre\n13. Rebrancher la batterie\n14. Démarrer et vérifier le bon fonctionnement",
+          "image_url": null,
+          "video_url": "",
+          "created_at": "2026-05-11T08:02:38.694Z",
+          "updated_at": "2026-05-11T08:02:38.694Z"
+        },
+        {
+          "id": 4,
+          "title": "Remplacement de la courroie de distribution",
+          "description": "Procédure expert. Le timing doit être parfait — toute erreur peut endommager le moteur.",
+          "difficulty": "Expert",
+          "duration_min": 240,
+          "tools_needed": "Outils de calage moteur, clé dynamométrique, kit complet de distribution, support moteur, douilles longues",
+          "steps": "1. Étudier le manuel constructeur — chaque moteur est différent\n2. Débrancher la batterie\n3. Lever le véhicule et déposer la roue avant droite\n4. Retirer le carter de protection inférieur\n5. Soutenir le moteur par dessous\n6. Déposer le support moteur supérieur\n7. Retirer les caches de distribution\n8. Mettre le moteur au PMH en alignant les repères de calage\n9. Installer les outils de calage pour bloquer arbres à cames et vilebrequin\n10. Détendre puis retirer l'ancienne courroie\n11. Remplacer le tendeur et la pompe à eau (recommandé)\n12. Installer la nouvelle courroie en respectant le sens\n13. Régler la tension selon les spécifications\n14. Tourner le moteur à la main sur 2 tours pour vérifier le calage\n15. Remonter dans l'ordre inverse et tester",
+          "image_url": null,
+          "video_url": "",
+          "created_at": "2026-05-11T08:02:38.700Z",
+          "updated_at": "2026-05-11T08:02:38.700Z"
+        },
+        {
+          "id": 5,
+          "title": "Purge du circuit de freinage",
+          "description": "Purge en circuit fermé pour évacuer l'air après intervention sur les freins.",
+          "difficulty": "Moyen",
+          "duration_min": 45,
+          "tools_needed": "Clé à purger, tuyau transparent, bouteille de récupération, liquide de frein DOT neuf, assistant ou outil de purge sous vide",
+          "steps": "1. Vérifier le type de liquide spécifié par le constructeur\n2. Remplir le bocal de maître-cylindre à niveau MAX\n3. Commencer par l'étrier le plus éloigné du maître-cylindre\n4. Brancher le tuyau sur la vis de purge\n5. Faire pomper la pédale 3-4 fois par l'assistant\n6. Maintenir la pédale enfoncée\n7. Ouvrir la vis de purge — laisser couler\n8. Refermer avant de relâcher la pédale\n9. Répéter jusqu'à liquide propre sans bulles\n10. Surveiller constamment le niveau dans le bocal\n11. Passer à l'étrier suivant dans l'ordre\n12. Terminer par l'étrier le plus proche\n13. Vérifier la fermeté de la pédale\n14. Compléter le niveau au repère MAX\n15. Test routier en zone sécurisée",
+          "image_url": null,
+          "video_url": "",
+          "created_at": "2026-05-11T08:02:38.704Z",
+          "updated_at": "2026-05-11T08:02:38.704Z"
+        }
+      ]
+    },
+    "parts": {
+      "columns": [
+        "id",
+        "name",
+        "part_number",
+        "category",
+        "description",
+        "specs",
+        "price",
+        "stock",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 7,
+      "sampleRows": [
+        {
+          "id": 1,
+          "name": "Plaquettes de frein avant céramique",
+          "part_number": "BP-2245-A",
+          "category": "Freinage",
+          "description": "Plaquettes céramique haute performance, faible production de poussière, freinage progressif. Compatibles avec la plupart des berlines compactes.",
+          "specs": "Matériau: composé céramique\nÉpaisseur neuve: 12 mm\nÉpaisseur mini: 3 mm\nIndicateur d'usure intégré",
+          "price": 89.99,
+          "stock": 18,
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778485225/tapavis_tenant_mecano-tech/build_mecano-tech_1778485225071.png",
+          "created_at": "2026-05-11T08:02:38.714Z",
+          "updated_at": "2026-05-11T08:02:38.714Z"
+        },
+        {
+          "id": 2,
+          "name": "Filtre à huile moteur premium",
+          "part_number": "FT-9921",
+          "category": "Moteur",
+          "description": "Filtre à huile spin-on avec valve anti-retour et media synthétique. Filtration jusqu'à 99% à 25 microns.",
+          "specs": "Filtration: 99% à 25 μm\nCapacité: 14 g de contaminants\nValve anti-retour: oui",
+          "price": 12.5,
+          "stock": 45,
+          "image_url": null,
+          "created_at": "2026-05-11T08:02:38.720Z",
+          "updated_at": "2026-05-11T08:02:38.720Z"
+        },
+        {
+          "id": 3,
+          "name": "Capteur d'oxygène aval universel",
+          "part_number": "O2-AVAL-4F",
+          "category": "Échappement",
+          "description": "Capteur lambda 4 fils pour position aval (après catalyseur). Compatible OBD-II. Économique vs. pièces d'origine.",
+          "specs": "Type: chauffé 4 fils\nTension: 0,1-0,9 V\nTemps de chauffe: <15 s\nFil universel à raccorder",
+          "price": 65,
+          "stock": 9,
+          "image_url": null,
+          "created_at": "2026-05-11T08:02:38.728Z",
+          "updated_at": "2026-05-11T08:02:38.728Z"
+        },
+        {
+          "id": 4,
+          "name": "Bougies d'allumage iridium (jeu de 4)",
+          "part_number": "IR-PLT-04",
+          "category": "Allumage",
+          "description": "Jeu de 4 bougies à pointe iridium longue durée (jusqu'à 100 000 km). Démarrage facile, économie de carburant améliorée.",
+          "specs": "Type: iridium fine pointe\nÉcartement: 0,80 mm pré-réglé\nLongévité: 100 000 km\nCouple de serrage: 22 N·m",
+          "price": 48,
+          "stock": 22,
+          "image_url": null,
+          "created_at": "2026-05-11T08:02:38.732Z",
+          "updated_at": "2026-05-11T08:02:38.732Z"
+        },
+        {
+          "id": 5,
+          "name": "Tendeur de courroie accessoire",
+          "part_number": "TC-2188",
+          "category": "Moteur",
+          "description": "Tendeur automatique à ressort pour courroie serpentine. Remplacement recommandé tous les 100 000 km ou avec la courroie.",
+          "specs": "Type: automatique à ressort\nDiamètre poulie: 70 mm\nFiletage: M10 × 1,5\nMatière: acier estampé",
+          "price": 56.75,
+          "stock": 7,
+          "image_url": null,
+          "created_at": "2026-05-11T08:02:38.735Z",
+          "updated_at": "2026-05-11T08:02:38.735Z"
+        },
+        {
+          "id": 6,
+          "name": "Filtre à air moteur haute performance",
+          "part_number": "FA-5572",
+          "category": "Admission",
+          "description": "Filtre à air panel haute capacité. Compatible avec la plupart des moteurs 4 cylindres récents.",
+          "specs": "Surface filtrante: 280 cm²\nEfficacité: 98% à 10 μm\nLavable: non\nIntervalle: 24 000 km",
+          "price": 24.99,
+          "stock": 28,
+          "image_url": null,
+          "created_at": "2026-05-11T08:02:38.746Z",
+          "updated_at": "2026-05-11T08:02:38.746Z"
+        },
+        {
+          "id": 7,
+          "name": "Joint de bouchon de vidange (sachet de 10)",
+          "part_number": "JT-CRUSH-10",
+          "category": "Vidange",
+          "description": "Joints écrasables en cuivre/aluminium pour bouchon de vidange. À remplacer à chaque vidange.",
+          "specs": "Matière: aluminium recuit\nDiamètre intérieur: 14 mm\nÉpaisseur: 1,5 mm",
+          "price": 4.5,
+          "stock": 120,
+          "image_url": null,
+          "created_at": "2026-05-11T08:02:38.748Z",
+          "updated_at": "2026-05-11T08:02:38.748Z"
+        }
+      ]
+    },
+    "inventaire": {
+      "columns": [
+        "id",
+        "item_name",
+        "sku",
+        "quantity",
+        "location",
+        "supplier",
+        "unit_price",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 8,
+      "sampleRows": [
+        {
+          "id": 1,
+          "item_name": "Huile moteur 5W-30 synthétique (5L)",
+          "sku": "INV-OIL-5W30-5L",
+          "quantity": 36,
+          "location": "Allée A, étagère 1",
+          "supplier": "Castrol",
+          "unit_price": 38.5,
+          "image_url": null,
+          "created_at": "2026-05-11T08:02:38.764Z",
+          "updated_at": "2026-05-11T08:02:38.764Z"
+        },
+        {
+          "id": 2,
+          "item_name": "Liquide de frein DOT 4 (1L)",
+          "sku": "INV-BRK-DOT4-1L",
+          "quantity": 22,
+          "location": "Allée A, étagère 2",
+          "supplier": "NAPA",
+          "unit_price": 12.75,
+          "image_url": null,
+          "created_at": "2026-05-11T08:02:38.767Z",
+          "updated_at": "2026-05-11T08:02:38.767Z"
+        },
+        {
+          "id": 3,
+          "item_name": "Antigel longue durée (4L)",
+          "sku": "INV-COOL-LL-4L",
+          "quantity": 14,
+          "location": "Allée A, étagère 3",
+          "supplier": "Prestone",
+          "unit_price": 24.99,
+          "image_url": null,
+          "created_at": "2026-05-11T08:02:38.769Z",
+          "updated_at": "2026-05-11T08:02:38.769Z"
+        },
+        {
+          "id": 4,
+          "item_name": "Liquide de transmission ATF Dexron VI (1L)",
+          "sku": "INV-ATF-DEX6-1L",
+          "quantity": 18,
+          "location": "Allée A, étagère 2",
+          "supplier": "Mobil",
+          "unit_price": 14.5,
+          "image_url": null,
+          "created_at": "2026-05-11T08:02:38.771Z",
+          "updated_at": "2026-05-11T08:02:38.771Z"
+        },
+        {
+          "id": 5,
+          "item_name": "Graisse haute température (cartouche)",
+          "sku": "INV-GRS-HT",
+          "quantity": 12,
+          "location": "Allée B, étagère 1",
+          "supplier": "Mobilgrease",
+          "unit_price": 8.99,
+          "image_url": null,
+          "created_at": "2026-05-11T08:02:38.774Z",
+          "updated_at": "2026-05-11T08:02:38.774Z"
+        },
+        {
+          "id": 6,
+          "item_name": "Nettoyant frein aérosol (500 ml)",
+          "sku": "INV-CLN-BRK",
+          "quantity": 28,
+          "location": "Allée B, étagère 2",
+          "supplier": "CRC",
+          "unit_price": 6.5,
+          "image_url": null,
+          "created_at": "2026-05-11T08:02:38.776Z",
+          "updated_at": "2026-05-11T08:02:38.776Z"
+        },
+        {
+          "id": 7,
+          "item_name": "Joints toriques assortis (kit 200 pcs)",
+          "sku": "INV-ORG-KIT",
+          "quantity": 4,
+          "location": "Allée C, tiroir 1",
+          "supplier": "Générique",
+          "unit_price": 18,
+          "image_url": null,
+          "created_at": "2026-05-11T08:02:38.778Z",
+          "updated_at": "2026-05-11T08:02:38.778Z"
+        },
+        {
+          "id": 8,
+          "item_name": "Colliers de serrage métalliques (boîte 50)",
+          "sku": "INV-CLP-50",
+          "quantity": 8,
+          "location": "Allée C, tiroir 2",
+          "supplier": "Oetiker",
+          "unit_price": 22,
+          "image_url": null,
+          "created_at": "2026-05-11T08:02:38.781Z",
+          "updated_at": "2026-05-11T08:02:38.781Z"
+        }
+      ]
+    },
+    "favoris": {
+      "columns": [
+        "id",
+        "user_id",
+        "item_type",
+        "item_id",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "form_submissions": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "phone",
+        "message",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "ai_queries": {
+      "columns": [
+        "id",
+        "user_id",
+        "query",
+        "response",
+        "query_type",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    }
+  }
+}

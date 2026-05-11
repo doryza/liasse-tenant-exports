@@ -1,0 +1,29 @@
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <h4><%= (settings && settings.business_name) || t.app_name %></h4>
+        <p style="color:#94a3b8"><%= (settings && settings.tagline) || t.tagline %></p>
+        <button class="btn btn-sm btn-ghost" data-push-btn>🔔 Activer les notifications</button>
+      </div>
+      <div>
+        <h4>Navigation</h4>
+        <a href="." style="display:block;padding:.25rem 0"><%= t.nav_home %></a>
+        <a href="diagnostics" style="display:block;padding:.25rem 0"><%= t.nav_diagnostics %></a>
+        <a href="procedures" style="display:block;padding:.25rem 0"><%= t.nav_procedures %></a>
+        <a href="parts" style="display:block;padding:.25rem 0"><%= t.nav_parts %></a>
+        <a href="assistant" style="display:block;padding:.25rem 0"><%= t.nav_assistant %></a>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <% if (settings && settings.contact_email) { %><p style="color:#94a3b8">📧 <%= settings.contact_email %></p><% } %>
+        <% if (settings && settings.contact_phone) { %><p style="color:#94a3b8">📞 <%= settings.contact_phone %></p><% } %>
+        <% if (settings && settings.business_address) { %><p style="color:#94a3b8">📍 <%= settings.business_address %></p><% } %>
+      </div>
+    </div>
+    <div class="footer-bottom">© <%= new Date().getFullYear() %> <%= (settings && settings.business_name) || t.app_name %>. <%= t.footer_rights %> <%= t.footer_built %></div>
+  </div>
+</footer>
+<script src="public/js/app.js"></script>
+</body>
+</html>

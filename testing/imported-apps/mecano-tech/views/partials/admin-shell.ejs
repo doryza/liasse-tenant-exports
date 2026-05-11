@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title><%= title %> — MécanoTech Admin</title>
+<base href="<%= typeof tenantBase !== 'undefined' ? tenantBase : '/' %>">
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body>
+<div class="admin-layout">
+<%- include('admin-sidebar', { activePage: (typeof activePage !== 'undefined' ? activePage : moduleKey) }) %>
+<main class="main">
+  <div class="toolbar">
+    <div>
+      <h1><%= title %></h1>
+      <p class="toolbar-sub" id="item-count">Chargement…</p>
+    </div>
+    <div class="toolbar-right">
+      <input type="text" id="search" class="search" placeholder="🔍 Rechercher…">
+      <button class="btn btn-primary" onclick="openCreate()" style="background-color:#6366f1;color:#fff">+ Nouveau <%= moduleLabel.toLowerCase() %></button>
+    </div>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <div id="table-container" style="overflow-x:auto">
+      <p class="empty">⏳ Chargement…</p>
+    </div>
+  </div>
+</main>
+</div>
+<div id="toast-host"></div>
+<script>
+var MODULE_KEY = '<%- moduleKey %>';
+var MODULE_LABEL = '<%- moduleLabel %>';
+var items = [];
+var fields = [];
+var editingId = null;
+
+function toast(msg, type){ var el=document.createElement('div'); el.className='toast-admin'+(type?' '+type:''); el.textContent=msg; document.body.appendChild(el); setTimeout(function(){el.classList.add('show');},10); setTimeout(function(){el.classList.remove('show'); setTimeout(function(){el.remove();},300);},2800); }
+
+async function loadModules() {
+  var r = await fetch('api/admin/modules'); var d = await r.json();
+  var m = d.modules.find(function(x){ return x.key === MODULE_KEY; });
+  fields = m ? m.fields : [];
+}
+
+async function loadItems() {
+  var r = await fetch('api/admin/' + MODULE_KEY); var d = await r.json();
+  items = d[MODULE_KEY] || [];
+  render();
+}
+
+function labelFor(name) {
+  var map = { title:'Titre', name:'Nom', vehicle_type:'Véhicule', severity:'Gravité', symptoms:'Symptômes', causes:'Causes', solutions:'Solutions', description:'Description', difficulty:'Difficulté', duration_min:'Durée (min)', tools_needed:'Outils requis', steps:'Étapes', video_url:'Vidéo', part_number:'N° pièce', category:'Catégorie', specs:'Spécifications', price:'Prix', stock:'Stock', content:'Contenu', published:'Publié', image_url:'Image', item_name:'Article', sku:'SKU', quantity:'Quantité', location:'Emplacement', supplier:'Fournisseur', unit_price:'Prix unitaire' };
+  return map[name] || name;
+}
+
+function renderBadge(field, value) {
+  if (value == null || value === '') return '<span style="color:#94a3b8">—</span>';
+  if (field === 'severity') { var cls = value==='Critique'||value==='Élevée'?'badge-danger':(value==='Modérée'?'badge-warning':'badge-success'); return '<span class="badge '+cls+'">'+escapeHtml(value)+'</span>'; }
+  if (field === 'difficulty') { var cls2 = value==='Expert'||value==='Difficile'?'badge-danger':(value==='Moyen'?'badge-warning':'badge-success'); return '<span class="badge '+cls2+'">'+escapeHtml(value)+'</span>'; }
+  if (field === 'stock' || field === 'quantity') { var n = parseInt(value,10); if (n > 5) return '<span class="badge badge-success">'+n+'</span>'; if (n > 0) return '<span class="badge badge-warning">'+n+'</span>'; return '<span class="badge badge-danger">0</span>'; }
+  if (field === 'published') { return value ? '<span class="badge badge-success">Publié</span>' : '<span class="badge badge-warning">Brouillon</span>'; }
+  if (field === 'price' || field === 'unit_price') { return Number(value).toFixed(2) + ' $'; }
+  if (field === 'category' || field === 'vehicle_type') { return '<span class="badge">'+escapeHtml(value)+'</span>'; }
+  return escapeHtml(String(value));
+}
+
+function render() {
+  var q = (document.getElementById('search').value || '').toLowerCase();
+  var filtered = items.filter(function(it){ if (!q) return true; return JSON.stringify(it).toLowerCase().indexOf(q) !== -1; });
+  document.getElementById('item-count').textContent = items.length + ' entrée' + (items.length>1?'s':'') + (q && filtered.length !== items.length ? ' · ' + filtered.length + ' trouvée' + (filtered.length>1?'s':'') : '');
+  if (filtered.length === 0) {
+    if (items.length === 0) {
+      document.getElementById('table-container').innerHTML = '<div class="empty-state-card"><div class="icon">📭</div><h3>Aucun ' + escapeHtml(MODULE_LABEL.toLowerCase()) + ' pour le moment</h3><p>Commencez par créer votre premier élément.</p><button class="btn btn-primary" onclick="openCreate()" style="background-color:#6366f1;color:#fff">+ Nouveau ' + escapeHtml(MODULE_LABEL.toLowerCase()) + '</button></div>';
+    } else {
+      document.getElementById('table-container').innerHTML = '<div class="empty-state-card"><div class="icon">🔍</div><h3>Aucun résultat</h3><p>Essayez avec un autre mot-clé.</p></div>';
+    }
+    return;
+  }
+  var firstTextField = fields.find(function(f){ return f.type === 'text'; }) || fields[0];
+  var displayCols = [];
+  fields.forEach(function(f){ if (f.name !== firstTextField.name && f.type !== 'image' && f.type !== 'textarea' && f.type !== 'url' && displayCols.length < 3) displayCols.push(f); });
+  var hasImage = fields.some(function(f){return f.type==='image';});
+  var html = '<table><thead><tr>';
+  if (hasImage) html += '<th style="width:70px"></th>';
+  html += '<th>' + escapeHtml(labelFor(firstTextField.name)) + '</th>';
+  displayCols.forEach(function(f){ html += '<th>' + escapeHtml(labelFor(f.name)) + '</th>'; });
+  html += '<th style="text-align:right">Actions</th></tr></thead><tbody>';
+  filtered.forEach(function(it){
+    html += '<tr>';
+    if (hasImage) { html += '<td>' + (it.image_url ? '<img src="' + escapeHtml(it.image_url) + '" alt="">' : '<div style="width:50px;height:50px;background:#f1f5f9;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#cbd5e1">📷</div>') + '</td>'; }
+    html += '<td><strong>' + escapeHtml(it[firstTextField.name] || '—') + '</strong></td>';
+    displayCols.forEach(function(f){ html += '<td>' + renderBadge(f.name, it[f.name]) + '</td>'; });
+    html += '<td class="actions"><button class="btn btn-sm btn-ghost" onclick="openEdit(' + it.id + ')">✏️ Modifier</button><button class="btn btn-sm btn-danger" onclick="deleteItem(' + it.id + ')">🗑</button></td>';
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  document.getElementById('table-container').innerHTML = html;
+}
+
+function escapeHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function openCreate() { editingId = null; openModal({}); }
+function openEdit(id) { editingId = id; var it = items.find(function(x){return x.id===id;}); openModal(it || {}); }
+
+function openModal(data) {
+  var modeBadge = editingId ? '<span class="badge badge-info">Modifier</span>' : '<span class="badge badge-success">Nouveau</span>';
+  var html = '<div class="modal-bg" id="modal" onclick="if(event.target===this)closeModal()"><div class="modal"><h2>' + escapeHtml(MODULE_LABEL) + ' ' + modeBadge + '</h2><form id="f">';
+  fields.forEach(function(f){
+    var v = data[f.name];
+    html += '<div class="form-row"><label>' + escapeHtml(labelFor(f.name)) + (f.required ? ' <span class="req">*</span>' : '') + '</label>';
+    if (f.type === 'textarea') {
+      html += '<textarea name="' + f.name + '" class="textarea" ' + (f.required?'required':'') + ' placeholder="' + escapeHtml(f.placeholder||'') + '">' + escapeHtml(v==null?'':v) + '</textarea>';
+    } else if (f.type === 'select') {
+      html += '<select name="' + f.name + '" class="select">';
+      html += '<option value="">—</option>';
+      (f.options||[]).forEach(function(o){ html += '<option ' + (v===o?'selected':'') + '>' + escapeHtml(o) + '</option>'; });
+      html += '</select>';
+    } else if (f.type === 'boolean') {
+      html += '<label style="display:inline-flex;align-items:center;gap:.5rem;font-weight:400;margin-bottom:0"><input type="checkbox" name="' + f.name + '" ' + (v||f.default?'checked':'') + '> Activé</label>';
+    } else if (f.type === 'image') {
+      html += '<div class="image-tools"><input type="text" name="' + f.name + '" class="input" value="' + escapeHtml(v||'') + '" placeholder="URL de l\'image (https://…)" style="flex:1;min-width:200px"><button type="button" class="btn btn-sm btn-ghost" onclick="genImage(\'' + f.name + '\')">✨ Générer avec IA</button></div><div class="image-preview">' + (v?'<img src="'+escapeHtml(v)+'" alt="">':'') + '</div>';
+    } else {
+      var inputType = f.type === 'number' ? 'number' : (f.type === 'url' ? 'url' : 'text');
+      var step = f.step ? ' step="'+f.step+'"' : '';
+      var min = f.min!=null ? ' min="'+f.min+'"' : '';
+      var max = f.max!=null ? ' max="'+f.max+'"' : '';
+      html += '<input type="' + inputType + '" name="' + f.name + '" class="input" value="' + escapeHtml(v==null?'':v) + '" ' + (f.required?'required':'') + step + min + max + ' placeholder="' + escapeHtml(f.placeholder||'') + '">';
+    }
+    if (f.description) html += '<div class="desc">' + escapeHtml(f.description) + '</div>';
+    html += '</div>';
+  });
+  html += '<div class="modal-actions"><button type="button" class="btn btn-ghost" onclick="closeModal()">Annuler</button><button type="submit" class="btn btn-primary" style="background-color:#6366f1;color:#fff">💾 Enregistrer</button></div></form></div></div>';
+  document.body.insertAdjacentHTML('beforeend', html);
+  document.getElementById('f').addEventListener('submit', saveItem);
+}
+function closeModal() { var m = document.getElementById('modal'); if (m) m.remove(); }
+
+async function genImage(fieldName) {
+  var prompt = window.prompt('Décrivez l\'image à générer :');
+  if (!prompt) return;
+  var input = document.querySelector('[name="'+fieldName+'"]');
+  var ratio = (fieldName === 'image_url' && (MODULE_KEY === 'parts' || MODULE_KEY === 'inventaire')) ? '1:1' : '4:3';
+  var orig = input.value;
+  input.disabled = true; input.value = '✨ Génération en cours…';
+  try {
+    var r = await fetch('api/admin/generate-image', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ prompt: prompt, aspectRatio: ratio }) });
+    var d = await r.json();
+    input.disabled = false;
+    if (r.ok) { input.value = d.imageUrl; var prev = input.closest('.form-row').querySelector('.image-preview'); if (prev) prev.innerHTML = '<img src="'+escapeHtml(d.imageUrl)+'" alt="">'; toast('Image générée ✨', 'success'); }
+    else { input.value = orig; toast(d.error || 'Échec de la génération', 'error'); }
+  } catch(e) { input.disabled=false; input.value=orig; toast('Erreur réseau', 'error'); }
+}
+
+async function saveItem(e) {
+  e.preventDefault();
+  var fd = new FormData(e.target);
+  var data = {};
+  fields.forEach(function(f){
+    if (f.type === 'boolean') data[f.name] = e.target.elements[f.name].checked ? 1 : 0;
+    else data[f.name] = fd.get(f.name);
+  });
+  var url = 'api/admin/' + MODULE_KEY + (editingId ? '/' + editingId : '');
+  var method = editingId ? 'PUT' : 'POST';
+  var btn = e.target.querySelector('button[type=submit]'); btn.disabled = true; btn.textContent = 'Enregistrement…';
+  try {
+    var r = await fetch(url, { method: method, headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) });
+    if (r.ok) { closeModal(); await loadItems(); toast(editingId ? 'Modifié ✓' : 'Créé ✓', 'success'); }
+    else { var d = await r.json(); toast('Erreur: ' + (d.error || 'inconnue'), 'error'); btn.disabled=false; btn.textContent='💾 Enregistrer'; }
+  } catch(e2) { toast('Erreur réseau', 'error'); btn.disabled=false; btn.textContent='💾 Enregistrer'; }
+}
+
+async function deleteItem(id) {
+  if (!confirm('Supprimer cette entrée ? Cette action est définitive.')) return;
+  try {
+    var r = await fetch('api/admin/' + MODULE_KEY + '/' + id, { method: 'DELETE' });
+    if (r.ok) { loadItems(); toast('Supprimé ✓', 'success'); }
+    else toast('Échec de la suppression', 'error');
+  } catch(e) { toast('Erreur réseau', 'error'); }
+}
+
+document.getElementById('search').addEventListener('input', render);
+(async function(){ await loadModules(); await loadItems(); })();
+</script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tableau de bord — MécanoTech Admin</title>
+<base href="<%= typeof tenantBase !== 'undefined' ? tenantBase : '/' %>">
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body>
+<div class="admin-layout">
+<%- include('partials/admin-sidebar', { activePage: 'overview' }) %>
+<main class="main">
+  <div class="toolbar">
+    <div>
+      <h1>📊 Tableau de bord</h1>
+      <p class="toolbar-sub">Vue d'ensemble de votre application MécanoTech.</p>
+    </div>
+    <a href="." target="_blank" class="btn btn-ghost">↗ Voir le site public</a>
+  </div>
+
+  <div class="welcome-banner">
+    <div>
+      <h2 style="margin:0 0 .3rem;color:#fff">Bienvenue dans l'administration 🔧</h2>
+      <p style="margin:0;opacity:.9">Gérez les diagnostics, procédures, pièces et inventaire de votre application.</p>
+    </div>
+    <div class="quick-actions">
+      <a href="admin/diagnostics" class="quick-chip">+ Diagnostic</a>
+      <a href="admin/procedures" class="quick-chip">+ Procédure</a>
+      <a href="admin/parts" class="quick-chip">+ Pièce</a>
+    </div>
+  </div>
+
+  <h2 class="section-h">Trafic</h2>
+  <div class="stats-grid">
+    <div class="stat"><div class="stat-icon" style="background:#dbeafe;color:#1e40af">👁</div><div class="label">Visites totales</div><div class="value"><%= stats.totalVisits %></div></div>
+    <div class="stat"><div class="stat-icon" style="background:#d1fae5;color:#065f46">📈</div><div class="label">7 derniers jours</div><div class="value"><%= stats.recentVisits %></div></div>
+    <div class="stat"><div class="stat-icon" style="background:#fef3c7;color:#92400e">👥</div><div class="label">Utilisateurs</div><div class="value"><%= stats.users %></div></div>
+    <div class="stat"><div class="stat-icon" style="background:#fce7f3;color:#9d174d">🔔</div><div class="label">Abonnés push</div><div class="value"><%= stats.push %></div></div>
+  </div>
+
+  <h2 class="section-h">Contenu</h2>
+  <div class="stats-grid">
+    <a href="admin/diagnostics" class="stat stat-link"><div class="stat-icon" style="background:#eef2ff;color:#4f46e5">🩺</div><div class="label">Diagnostics</div><div class="value"><%= stats.diagnostics %></div><div class="stat-cta">Gérer →</div></a>
+    <a href="admin/procedures" class="stat stat-link"><div class="stat-icon" style="background:#eef2ff;color:#4f46e5">📋</div><div class="label">Procédures</div><div class="value"><%= stats.procedures %></div><div class="stat-cta">Gérer →</div></a>
+    <a href="admin/parts" class="stat stat-link"><div class="stat-icon" style="background:#eef2ff;color:#4f46e5">📦</div><div class="label">Pièces</div><div class="value"><%= stats.parts %></div><div class="stat-cta">Gérer →</div></a>
+    <a href="admin/posts" class="stat stat-link"><div class="stat-icon" style="background:#eef2ff;color:#4f46e5">📝</div><div class="label">Articles</div><div class="value"><%= stats.posts %></div><div class="stat-cta">Gérer →</div></a>
+    <a href="admin/inventaire" class="stat stat-link"><div class="stat-icon" style="background:#eef2ff;color:#4f46e5">📥</div><div class="label">Inventaire</div><div class="value"><%= stats.inventaire %></div><div class="stat-cta">Gérer →</div></a>
+    <div class="stat"><div class="stat-icon" style="background:#f3e8ff;color:#6b21a8">🤖</div><div class="label">Requêtes IA</div><div class="value"><%= stats.aiQueries %></div></div>
+    <div class="stat"><div class="stat-icon" style="background:#fee2e2;color:#991b1b">✉️</div><div class="label">Messages reçus</div><div class="value"><%= stats.submissions %></div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-h"><h2>✉️ Messages récents</h2><span class="badge"><%= submissions ? submissions.length : 0 %></span></div>
+    <% if (submissions && submissions.length > 0) { %>
+      <div style="overflow-x:auto"><table><thead><tr><th>Date</th><th>Nom</th><th>Courriel</th><th>Message</th></tr></thead><tbody>
+      <% submissions.forEach(function(s){ %><tr><td><%= formatDate(s.created_at) %></td><td><strong><%= s.name %></strong></td><td style="color:#64748b"><%= s.email || '—' %></td><td><%= truncate(s.message, 80) %></td></tr><% }); %>
+      </tbody></table></div>
+    <% } else { %><p class="empty">📭 Aucun message pour le moment. Les messages envoyés via le formulaire de contact apparaîtront ici.</p><% } %>
+  </div>
+
+  <div class="card">
+    <div class="card-h"><h2>🤖 Requêtes IA récentes</h2><span class="badge"><%= aiQueries ? aiQueries.length : 0 %></span></div>
+    <% if (aiQueries && aiQueries.length > 0) { %>
+      <div style="overflow-x:auto"><table><thead><tr><th>Date</th><th>Type</th><th>Requête</th></tr></thead><tbody>
+      <% aiQueries.forEach(function(q){ %><tr><td><%= formatDate(q.created_at) %></td><td><% var qt = q.query_type || 'diag'; var bcls = qt==='photo'?'badge-info':(qt==='procedure'?'badge-success':'badge'); %><span class="<%= bcls %>"><%= qt %></span></td><td><%= truncate(q.query, 100) %></td></tr><% }); %>
+      </tbody></table></div>
+    <% } else { %><p class="empty">🧠 Aucune requête IA enregistrée pour le moment.</p><% } %>
+  </div>
+</main>
+</div>
+</body>
+</html>

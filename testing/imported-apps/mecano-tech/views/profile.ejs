@@ -1,0 +1,44 @@
+<%- include('partials/header') %>
+<section class="section">
+  <div class="container" style="max-width:900px">
+    <% if (user) { %>
+      <h1>Mon compte</h1>
+      <p style="color:#64748b">Bienvenue<%= user.display_name ? ', ' + user.display_name : '' %>.</p>
+      <div class="card" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem">
+        <div><strong>Compte:</strong> <%= user.email || user.phone || ('Utilisateur #' + user.id) %></div>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap"><button class="btn btn-sm btn-outline" data-push-btn>🔔 Activer notifications</button><button class="btn btn-sm btn-ghost" onclick="TenantSDK.auth.logout();window.location.href='.';">Déconnexion</button></div>
+      </div>
+      <h2 style="margin-top:2rem">⭐ Mes favoris</h2>
+      <% var hasAny = (favs.diagnostics && favs.diagnostics.length) || (favs.procedures && favs.procedures.length) || (favs.parts && favs.parts.length); %>
+      <% if (!hasAny) { %>
+        <div class="empty-state"><div class="icon">⭐</div><p><%= t.empty_favorites %></p></div>
+      <% } %>
+      <% if (favs.diagnostics && favs.diagnostics.length > 0) { %>
+        <h3 style="margin-top:1.5rem">Diagnostics</h3>
+        <div class="grid grid-2"><% favs.diagnostics.forEach(function(d){ %>
+          <a href="diagnostics/<%= d.id %>" class="card card-link"><h4><%= d.title %></h4><p style="color:#64748b"><%= truncate(d.symptoms || '', 100) %></p></a>
+        <% }); %></div>
+      <% } %>
+      <% if (favs.procedures && favs.procedures.length > 0) { %>
+        <h3 style="margin-top:1.5rem">Procédures</h3>
+        <div class="grid grid-2"><% favs.procedures.forEach(function(p){ %>
+          <a href="procedures/<%= p.id %>" class="card card-link"><h4><%= p.title %></h4><p style="color:#64748b"><%= truncate(p.description || '', 100) %></p></a>
+        <% }); %></div>
+      <% } %>
+      <% if (favs.parts && favs.parts.length > 0) { %>
+        <h3 style="margin-top:1.5rem">Pièces</h3>
+        <div class="grid grid-3"><% favs.parts.forEach(function(p){ %>
+          <a href="parts/<%= p.id %>" class="card card-link"><h4><%= p.name %></h4><% if (p.price != null) { %><p style="font-weight:700;color:#6366f1"><%= formatPrice(p.price) %></p><% } %></a>
+        <% }); %></div>
+      <% } %>
+    <% } else { %>
+      <div class="card" style="text-align:center;padding:3rem 1.5rem">
+        <div style="font-size:3rem;margin-bottom:1rem">🔒</div>
+        <h2>Connectez-vous</h2>
+        <p style="color:#64748b"><%= t.login_required %></p>
+        <button class="btn btn-primary" style="background-color:#6366f1;color:#fff" data-login-btn><%= t.login_link %></button>
+      </div>
+    <% } %>
+  </div>
+</section>
+<%- include('partials/footer') %>

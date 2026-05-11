@@ -1,0 +1,46 @@
+<%- include('partials/header') %>
+<section class="section">
+  <div class="container" style="max-width:820px">
+    <p><a href="procedures">← Toutes les procédures</a></p>
+    <% if (item.difficulty) { %><span class="badge"><%= item.difficulty %></span><% } %>
+    <% if (item.duration_min) { %><span class="badge badge-info" style="margin-left:.3rem">⏱ <%= item.duration_min %> <%= t.minutes %></span><% } %>
+    <h1 style="margin-top:.7rem"><%= item.title %></h1>
+    <button class="fav-btn" data-fav data-fav-type="procedure" data-fav-id="<%= item.id %>">☆ Favori</button>
+    <% if (item.image_url) { %><img src="<%= item.image_url %>" alt="<%= item.title %>" style="width:100%;border-radius:10px;margin:1.5rem 0"><% } %>
+    <% if (item.description) { %><p style="font-size:1.05rem"><%= item.description %></p><% } %>
+    <% if (item.tools_needed) { %>
+      <div class="list-block"><h4>🛠️ <%= t.tools_needed %></h4><p><%= item.tools_needed %></p></div>
+    <% } %>
+    <% if (item.steps) { %>
+      <div class="list-block"><h4>📝 Étapes</h4><ol><% item.steps.split('\n').filter(function(s){return s.trim();}).forEach(function(s){ %><li><%= s.replace(/^\d+\.\s*/, '') %></li><% }); %></ol>
+      <button id="speak-steps" class="btn btn-outline" style="margin-top:1rem">🔊 Lecture vocale étape par étape</button>
+      </div>
+    <% } %>
+    <% if (item.video_url) { %>
+      <div class="list-block"><h4>🎬 Vidéo de démonstration</h4><p><a href="<%= item.video_url %>" target="_blank" rel="noopener">Ouvrir la vidéo →</a></p></div>
+    <% } %>
+  </div>
+</section>
+<script>
+(function(){
+  var btn = document.getElementById('speak-steps');
+  if (!btn || !window.speechSynthesis) return;
+  var speaking = false;
+  btn.addEventListener('click', function(){
+    if (speaking) { window.speechSynthesis.cancel(); speaking = false; btn.textContent='🔊 Lecture vocale étape par étape'; return; }
+    var items = document.querySelectorAll('.list-block ol li');
+    if (!items.length) return;
+    speaking = true; btn.textContent='⏹ Arrêter la lecture';
+    var idx = 0;
+    function speakNext(){
+      if (idx >= items.length) { speaking = false; btn.textContent='🔊 Lecture vocale étape par étape'; return; }
+      var u = new SpeechSynthesisUtterance('Étape ' + (idx+1) + '. ' + items[idx].textContent);
+      u.lang = 'fr-FR'; u.rate = 0.95;
+      u.onend = function(){ idx++; if (speaking) speakNext(); };
+      window.speechSynthesis.speak(u);
+    }
+    speakNext();
+  });
+})();
+</script>
+<%- include('partials/footer') %>

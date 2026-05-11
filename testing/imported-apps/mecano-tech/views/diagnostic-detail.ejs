@@ -1,0 +1,23 @@
+<%- include('partials/header') %>
+<section class="section">
+  <div class="container" style="max-width:820px">
+    <p><a href="diagnostics">← Retour aux diagnostics</a></p>
+    <% var sev = item.severity || 'Modérée'; var cls = sev==='Critique'||sev==='Élevée'?'badge-danger':(sev==='Modérée'?'badge-warning':'badge-success'); %>
+    <span class="badge <%= cls %>"><%= sev %></span>
+    <% if (item.vehicle_type) { %><span class="badge badge-info" style="margin-left:.3rem"><%= item.vehicle_type %></span><% } %>
+    <h1 style="margin-top:.7rem"><%= item.title %></h1>
+    <button class="fav-btn" data-fav data-fav-type="diagnostic" data-fav-id="<%= item.id %>">☆ Favori</button>
+    <% if (item.image_url) { %><img src="<%= item.image_url %>" alt="<%= item.title %>" style="width:100%;border-radius:10px;margin:1.5rem 0"><% } %>
+    <% if (item.symptoms) { %>
+      <div class="list-block"><h4>📋 <%= t.symptoms %></h4><ul><% item.symptoms.split('\n').filter(function(s){return s.trim();}).forEach(function(s){ %><li><%= s %></li><% }); %></ul></div>
+    <% } %>
+    <% if (item.causes) { %>
+      <div class="list-block"><h4>🔍 <%= t.causes %></h4><ul><% item.causes.split('\n').filter(function(s){return s.trim();}).forEach(function(s){ %><li><%= s %></li><% }); %></ul></div>
+    <% } %>
+    <% if (item.solutions) { %>
+      <div class="list-block"><h4>🔧 <%= t.solutions %></h4><ol><% item.solutions.split('\n').filter(function(s){return s.trim();}).forEach(function(s){ %><li><%= s %></li><% }); %></ol></div>
+    <% } %>
+    <div class="notice notice-info">💡 Vous voulez une analyse personnalisée de ce problème ? <a href="assistant" style="color:inherit;text-decoration:underline">Posez la question à l'assistant IA</a>.</div>
+  </div>
+</section>
+<%- include('partials/footer') %>

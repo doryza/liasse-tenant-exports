@@ -1,0 +1,10 @@
+CREATE TABLE IF NOT EXISTS admin_settings (key TEXT PRIMARY KEY, value TEXT, updated_at TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS site_visits (id SERIAL PRIMARY KEY, path TEXT, created_at TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS posts (id SERIAL PRIMARY KEY, title TEXT NOT NULL, content TEXT, image_url TEXT, category TEXT, published INTEGER DEFAULT 1, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS diagnostics (id SERIAL PRIMARY KEY, title TEXT NOT NULL, vehicle_type TEXT, severity TEXT, symptoms TEXT, causes TEXT, solutions TEXT, image_url TEXT, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS procedures (id SERIAL PRIMARY KEY, title TEXT NOT NULL, description TEXT, difficulty TEXT, duration_min INTEGER, tools_needed TEXT, steps TEXT, image_url TEXT, video_url TEXT, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS parts (id SERIAL PRIMARY KEY, name TEXT NOT NULL, part_number TEXT, category TEXT, description TEXT, specs TEXT, price DOUBLE PRECISION, stock INTEGER DEFAULT 0, image_url TEXT, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS inventaire (id SERIAL PRIMARY KEY, item_name TEXT NOT NULL, sku TEXT, quantity INTEGER DEFAULT 0, location TEXT, supplier TEXT, unit_price DOUBLE PRECISION, image_url TEXT, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS favoris (id SERIAL PRIMARY KEY, user_id INTEGER NOT NULL, item_type TEXT NOT NULL, item_id INTEGER NOT NULL, created_at TIMESTAMPTZ DEFAULT NOW(), UNIQUE(user_id, item_type, item_id));
+CREATE TABLE IF NOT EXISTS form_submissions (id SERIAL PRIMARY KEY, name TEXT, email TEXT, phone TEXT, message TEXT, created_at TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS ai_queries (id SERIAL PRIMARY KEY, user_id INTEGER, query TEXT, response TEXT, query_type TEXT, created_at TIMESTAMPTZ DEFAULT NOW());

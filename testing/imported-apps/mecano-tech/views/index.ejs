@@ -1,0 +1,119 @@
+<%- include('partials/header') %>
+<section class="hero">
+  <img class="hero-img" src="<%= (settings && settings._p_hero_image_url) ? settings._p_hero_image_url : 'https://placehold.co/1600x800/0f172a/ffffff/png?text=MecanoTech' %>" alt="MécanoTech">
+  <div class="hero-overlay">
+    <div class="hero-content">
+      <h1><%= (settings && settings.hero_title) || 'Diagnostiquez plus vite, réparez mieux' %></h1>
+      <p class="lead"><%= (settings && settings.hero_subtitle) || 'Diagnostics IA, reconnaissance de pièces par photo, guidage vocal et inventaire intégré.' %></p>
+      <div class="hero-buttons">
+        <a href="assistant" class="btn btn-primary" style="background-color:#6366f1;color:#fff">🎙️ <%= t.hero_cta_assistant %></a>
+        <a href="diagnostics" class="btn btn-ghost"><%= t.hero_cta_diagnostics %></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <h2 class="section-title"><%= t.section_features %></h2>
+    <p class="section-sub">Conçu avec et pour les mécaniciens. Rapide, professionnel, mains libres.</p>
+    <div class="grid grid-3">
+      <div class="card"><div class="card-icon">🧠</div><h3><%= t.feature_diag_title %></h3><p><%= t.feature_diag_desc %></p></div>
+      <div class="card"><div class="card-icon">🎙️</div><h3><%= t.feature_voice_title %></h3><p><%= t.feature_voice_desc %></p></div>
+      <div class="card"><div class="card-icon">📷</div><h3><%= t.feature_photo_title %></h3><p><%= t.feature_photo_desc %></p></div>
+      <div class="card"><div class="card-icon">📋</div><h3><%= t.feature_guide_title %></h3><p><%= t.feature_guide_desc %></p></div>
+      <div class="card"><div class="card-icon">📦</div><h3><%= t.feature_inv_title %></h3><p><%= t.feature_inv_desc %></p></div>
+      <div class="card"><div class="card-icon">💰</div><h3><%= t.feature_eco_title %></h3><p><%= t.feature_eco_desc %></p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-soft">
+  <div class="container">
+    <h2 class="section-title"><%= t.section_recent_diag %></h2>
+    <p class="section-sub">Pannes courantes et leurs solutions économiques.</p>
+    <% if (typeof recentDiag !== 'undefined' && recentDiag.length > 0) { %>
+      <div class="grid grid-2">
+        <% recentDiag.forEach(function(d){ %>
+          <a href="diagnostics/<%= d.id %>" class="card card-link">
+            <% var sev = d.severity || 'Modérée'; var cls = sev==='Critique'||sev==='Élevée'?'badge-danger':(sev==='Modérée'?'badge-warning':'badge-success'); %>
+            <span class="badge <%= cls %>"><%= sev %></span>
+            <% if (d.vehicle_type) { %><span class="badge badge-info" style="margin-left:.3rem"><%= d.vehicle_type %></span><% } %>
+            <h3 style="margin-top:.7rem"><%= d.title %></h3>
+            <p style="color:#64748b"><%= truncate(d.symptoms || '', 120) %></p>
+          </a>
+        <% }); %>
+      </div>
+      <p style="text-align:center;margin-top:2rem"><a href="diagnostics" class="btn btn-outline">Voir tous les diagnostics →</a></p>
+    <% } else { %>
+      <div class="empty-state"><div class="icon">🔧</div><p><%= t.empty_diagnostics %></p></div>
+    <% } %>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <h2 class="section-title"><%= t.section_procedures %></h2>
+    <p class="section-sub">Procédures détaillées avec guidage vocal disponible.</p>
+    <% if (typeof popularProc !== 'undefined' && popularProc.length > 0) { %>
+      <div class="grid grid-3">
+        <% popularProc.forEach(function(p){ %>
+          <a href="procedures/<%= p.id %>" class="card card-link">
+            <% if (p.image_url) { %><img class="card-img" src="<%= p.image_url %>" alt="<%= p.title %>"><% } else { %><div class="card-icon">🔧</div><% } %>
+            <% if (p.difficulty) { %><span class="badge"><%= p.difficulty %></span><% } %>
+            <% if (p.duration_min) { %><span class="badge badge-info" style="margin-left:.3rem">⏱ <%= p.duration_min %> <%= t.min %></span><% } %>
+            <h3 style="margin-top:.7rem"><%= p.title %></h3>
+            <p style="color:#64748b"><%= truncate(p.description || '', 100) %></p>
+          </a>
+        <% }); %>
+      </div>
+      <p style="text-align:center;margin-top:2rem"><a href="procedures" class="btn btn-outline">Toutes les procédures →</a></p>
+    <% } else { %>
+      <div class="empty-state"><div class="icon">📋</div><p><%= t.empty_procedures %></p></div>
+    <% } %>
+  </div>
+</section>
+
+<section class="section section-soft">
+  <div class="container">
+    <h2 class="section-title"><%= t.section_tips %></h2>
+    <% if (typeof recentPosts !== 'undefined' && recentPosts.length > 0) { %>
+      <div class="grid grid-3">
+        <% recentPosts.forEach(function(post){ %>
+          <div class="card">
+            <% if (post.image_url) { %><img class="card-img" src="<%= post.image_url %>" alt="<%= post.title %>"><% } %>
+            <% if (post.category) { %><span class="badge"><%= post.category %></span><% } %>
+            <h3 style="margin-top:.7rem"><%= post.title %></h3>
+            <p style="color:#64748b"><%= truncate(post.content || '', 140) %></p>
+          </div>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <div class="empty-state"><div class="icon">💡</div><p><%= t.empty_posts %></p></div>
+    <% } %>
+  </div>
+</section>
+
+<section class="section" style="background:linear-gradient(135deg,#6366f1,#4f46e5);color:#fff;text-align:center">
+  <div class="container">
+    <h2 style="color:#fff">Prêt à essayer l'assistant ?</h2>
+    <p style="opacity:.95;max-width:600px;margin:0 auto 1.5rem;color:#fff">Décrivez un problème à voix haute, prenez en photo une pièce inconnue, ou demandez le pas-à-pas d'une procédure.</p>
+    <a href="assistant" class="btn btn-ghost" style="font-size:1.05rem;padding:.85rem 1.6rem;background:#fff;color:#4f46e5;border-color:#fff">🎙️ Démarrer maintenant</a>
+  </div>
+</section>
+
+<section class="section section-soft">
+  <div class="container" style="max-width:640px">
+    <h2 class="section-title"><%= t.contact_title %></h2>
+    <p class="section-sub">Une suggestion, une question, un besoin spécifique ? Contactez-nous.</p>
+    <form id="contact-form" class="card">
+      <div class="form-row"><label><%= t.contact_name %> *</label><input name="name" class="input" required></div>
+      <div class="form-row"><label><%= t.contact_email %></label><input name="email" type="email" class="input"></div>
+      <div class="form-row"><label><%= t.contact_phone %></label><input name="phone" type="tel" class="input"></div>
+      <div class="form-row"><label><%= t.contact_message %> *</label><textarea name="message" class="textarea" required></textarea></div>
+      <button type="submit" class="btn btn-primary btn-block" style="background-color:#6366f1;color:#fff"><%= t.btn_submit %></button>
+    </form>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

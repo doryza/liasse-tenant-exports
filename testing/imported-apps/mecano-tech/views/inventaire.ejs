@@ -1,0 +1,27 @@
+<%- include('partials/header') %>
+<section class="section">
+  <div class="container">
+    <h1 class="section-title"><%= t.nav_inventory %></h1>
+    <p class="section-sub">Inventaire du garage en temps réel.</p>
+    <form method="GET" class="search-bar" action="inventaire">
+      <input type="text" name="q" value="<%= q || '' %>" placeholder="Rechercher par nom ou SKU…" class="input">
+      <button type="submit" class="btn btn-primary" style="background-color:#6366f1;color:#fff"><%= t.btn_search %></button>
+    </form>
+    <% if (typeof items !== 'undefined' && items.length > 0) { %>
+      <div class="card" style="overflow-x:auto;padding:0">
+        <table style="width:100%;border-collapse:collapse">
+          <thead><tr style="background:#f8fafc"><th style="padding:.8rem;text-align:left;border-bottom:1px solid #e2e8f0">Article</th><th style="padding:.8rem;text-align:left;border-bottom:1px solid #e2e8f0">SKU</th><th style="padding:.8rem;text-align:left;border-bottom:1px solid #e2e8f0">Qté</th><th style="padding:.8rem;text-align:left;border-bottom:1px solid #e2e8f0">Emplacement</th><th style="padding:.8rem;text-align:left;border-bottom:1px solid #e2e8f0">Fournisseur</th><th style="padding:.8rem;text-align:left;border-bottom:1px solid #e2e8f0">Prix</th></tr></thead>
+          <tbody>
+            <% items.forEach(function(it){ %>
+              <tr><td style="padding:.7rem;border-bottom:1px solid #f1f5f9"><strong><%= it.item_name %></strong></td><td style="padding:.7rem;border-bottom:1px solid #f1f5f9;font-family:monospace;font-size:.85rem"><%= it.sku || '—' %></td><td style="padding:.7rem;border-bottom:1px solid #f1f5f9"><% if (it.quantity > 5) { %><span class="badge badge-success"><%= it.quantity %></span><% } else if (it.quantity > 0) { %><span class="badge badge-warning"><%= it.quantity %></span><% } else { %><span class="badge badge-danger">0</span><% } %></td><td style="padding:.7rem;border-bottom:1px solid #f1f5f9"><%= it.location || '—' %></td><td style="padding:.7rem;border-bottom:1px solid #f1f5f9"><%= it.supplier || '—' %></td><td style="padding:.7rem;border-bottom:1px solid #f1f5f9"><%= it.unit_price != null ? formatPrice(it.unit_price) : '—' %></td></tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    <% } else { %>
+      <div class="empty-state"><div class="icon">📦</div><p><%= q ? 'Aucun résultat pour « ' + q + ' ».' : t.empty_inventory %></p></div>
+    <% } %>
+    <div class="notice notice-info" style="margin-top:1.5rem">💡 Intégration possible avec votre système de gestion existant. <a href=".#contact" style="color:inherit;text-decoration:underline">Contactez-nous</a> pour plus d'infos.</div>
+  </div>
+</section>
+<%- include('partials/footer') %>

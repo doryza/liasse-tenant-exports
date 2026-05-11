@@ -1,0 +1,23 @@
+<%- include('partials/header') %>
+<section class="section">
+  <div class="container">
+    <h1 class="section-title"><%= t.nav_procedures %></h1>
+    <p class="section-sub">Procédures pas à pas avec outils requis et niveau de difficulté.</p>
+    <% if (typeof items !== 'undefined' && items.length > 0) { %>
+      <div class="grid grid-3">
+        <% items.forEach(function(p){ %>
+          <a href="procedures/<%= p.id %>" class="card card-link">
+            <% if (p.image_url) { %><img class="card-img" src="<%= p.image_url %>" alt="<%= p.title %>"><% } else { %><div class="card-icon">🔧</div><% } %>
+            <% if (p.difficulty) { %><span class="badge"><%= p.difficulty %></span><% } %>
+            <% if (p.duration_min) { %><span class="badge badge-info" style="margin-left:.3rem">⏱ <%= p.duration_min %> <%= t.min %></span><% } %>
+            <h3 style="margin-top:.7rem"><%= p.title %></h3>
+            <p style="color:#64748b"><%= truncate(p.description || '', 140) %></p>
+          </a>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <div class="empty-state"><div class="icon">📋</div><p><%= t.empty_procedures %></p></div>
+    <% } %>
+  </div>
+</section>
+<%- include('partials/footer') %>

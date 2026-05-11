@@ -1,0 +1,17 @@
+<aside class="sidebar">
+  <h2>🔧 MécanoTech</h2>
+  <small>Pilotage</small>
+  <a href="admin" class="<%= (typeof activePage !== 'undefined' && activePage==='overview')?'active':'' %>">📊 Aperçu</a>
+  <div class="divider"></div>
+  <small>Bibliothèque technique</small>
+  <a href="admin/diagnostics" class="<%= (typeof activePage !== 'undefined' && activePage==='diagnostics')?'active':'' %>">🩺 Diagnostics</a>
+  <a href="admin/procedures" class="<%= (typeof activePage !== 'undefined' && activePage==='procedures')?'active':'' %>">📋 Procédures</a>
+  <a href="admin/parts" class="<%= (typeof activePage !== 'undefined' && activePage==='parts')?'active':'' %>">📦 Pièces</a>
+  <a href="admin/inventaire" class="<%= (typeof activePage !== 'undefined' && activePage==='inventaire')?'active':'' %>">📥 Inventaire</a>
+  <div class="divider"></div>
+  <small>Communication</small>
+  <a href="admin/posts" class="<%= (typeof activePage !== 'undefined' && activePage==='posts')?'active':'' %>">📝 Articles & astuces</a>
+  <div class="divider"></div>
+  <a href="." target="_blank">↗ Voir le site public</a>
+  <a href="admin/logout">🚪 Déconnexion</a>
+</aside>

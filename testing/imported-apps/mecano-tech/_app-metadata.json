@@ -1,0 +1,77 @@
+{
+  "slug": "mecano-tech",
+  "displayName": "MECANO-TECH",
+  "description": "Type de projet : Application pour mécaniciens.\n\nObjectif : Aider les mécaniciens avec les diagnostics et les réparations pendant qu'ils travaillent.\n\nFonctionnalités clés :\n- Aide aux diagnostics\n- Solutions de réparation\n- Information technique pour les pièces\n- Schémas, vidéos, reconnaissance de pièces par photo (Oui)\n- Commandes vocales pour accès rapide\n- Assistant vocal intelligent : décrire le problème pour obtenir des suggestions de solutions\n- Guidage vocal étape par étape : instructions pour des procédures (ex: changement d'huile)\n- Solutions économiques : Suggestion de méthodes de réparation à faible coût.\n\nDesign :\n- Très fonctionnel, professionnel et rapide.\n\nIntégrations :\n- Systèmes de garage existants (ex: inventaire).",
+  "status": "active",
+  "generationVersion": 1,
+  "primaryColor": "#6366f1",
+  "iconUrl": "https://res.cloudinary.com/duhp69meg/image/upload/v1778486580/tapavis_tenant_mecano-tech/icon_mecano-tech_1778486580070.png",
+  "enabledAuthMethods": [
+    "webauthn",
+    "sms",
+    "email"
+  ],
+  "notificationsEnabled": true,
+  "geolocationEnabled": true,
+  "customConfig": {
+    "language": "fr",
+    "aiSummary": {
+      "en": {
+        "dashboard": "Welcome to your control center! The 'Admin' section is where you'll manage everything in your MECANO-TECH app. It’s designed to be super simple.\n\nHere’s what you can do:\n\n*   **Manage Your Content:** You have several sections for your information: 'Diagnostics', 'Procedures', 'Parts', and 'Posts' (for articles or news). To add a new repair guide, for example, just go to 'Procedures' and click 'Add New'. You can edit or delete any item in these lists at any time.\n\n*   **Track Your Inventory:** There's a special 'Inventory' section to keep tabs on the parts you have in the garage. You can update quantities and add new items easily.\n\n*   **See How Your App is Doing:** Your dashboard has a spot for statistics. You can see how many people are visiting your app and which features are being used the most. This helps you understand what your users find helpful.\n\n*   **Adjust Your Settings:** In the settings area, you can change general information about your app. Think of it as the main switchboard for basic preferences.\n\nEverything is laid out with simple buttons and forms, so you can keep all your professional information fresh and organized for your users.",
+        "variables": "Hello! Your new MECANO-TECH app is almost ready to go. There’s just one small step to unlock its most powerful features.\n\nYour app uses a special tool from Google to power its smart assistant — the one that helps with diagnostics, identifies parts from photos, and gives step-by-step instructions. To turn this on, you'll need a 'Google Gemini API Key'.\n\nThink of it like a key to start the engine of the app's brain. You can get this key for free from your Google AI account. Once you have it, just head over to the 'Admin' section of your app, find the 'Settings' or 'Required Keys' area, and paste it in. That's it! Once that's done, your app will be fully up and running."
+      },
+      "fr": {
+        "dashboard": "Bienvenue dans votre centre de commande! La section 'Admin' est l'endroit où vous gérez tout le contenu de votre application MECANO-TECH. C'est conçu pour être très facile à utiliser.\n\nVoici ce que vous pouvez y faire :\n\n*   **Gérer votre contenu :** Vous avez des sections pour toutes vos informations : 'Diagnostics', 'Procédures', 'Pièces' et 'Articles' (pour des nouvelles ou des conseils). Pour ajouter un nouveau guide de réparation, par exemple, allez dans 'Procédures' et cliquez sur 'Ajouter'. Vous pouvez modifier ou supprimer n'importe quel élément de ces listes à tout moment.\n\n*   **Suivre votre inventaire :** Une section 'Inventaire' vous permet de garder un œil sur les pièces que vous avez en stock dans le garage. Vous pouvez facilement mettre à jour les quantités et ajouter de nouveaux articles.\n\n*   **Voir la performance de l'appli :** Votre tableau de bord affiche des statistiques. Vous pouvez voir combien de personnes visitent votre application et quelles sont les fonctionnalités les plus populaires. Ça vous aide à comprendre ce que vos utilisateurs aiment le plus.\n\n*   **Ajuster les paramètres :** Dans la zone des paramètres, vous pouvez modifier les informations générales de votre application, comme son nom ou un message d'accueil.\n\nTout est présenté avec des boutons et des formulaires simples, pour que vous puissiez garder toutes vos informations professionnelles à jour pour vos utilisateurs.",
+        "variables": "Bonjour! Votre nouvelle application MECANO-TECH est presque prête. Il ne reste qu'une petite étape pour activer ses fonctions les plus puissantes.\n\nVotre appli utilise un outil spécial de Google pour faire fonctionner son assistant intelligent — celui qui aide avec les diagnostics, reconnaît des pièces à partir de photos et donne des instructions étape par étape. Pour l'activer, vous aurez besoin d'une 'clé API Google Gemini'.\n\nImaginez que c'est la clé qui démarre le moteur du cerveau de l'application. Vous pouvez obtenir cette clé gratuitement depuis votre compte Google AI. Une fois que vous l'avez, allez simplement dans la section 'Admin' de votre application, trouvez la section 'Paramètres' ou 'Clés Requises', et collez-la à cet endroit. C'est tout! Une fois cela fait, votre application sera 100% fonctionnelle."
+      }
+    },
+    "aiSummaryVersion": 1
+  },
+  "promptHistory": [
+    {
+      "prompt": "Type de projet : Application pour mécaniciens.\n\nObjectif : Aider les mécaniciens avec les diagnostics et les réparations pendant qu'ils travaillent.\n\nFonctionnalités clés :\n- Aide aux diagnostics\n- Solutions de réparation\n- Information technique pour les pièces\n- Schémas, vidéos, reconnaissance de pièces par photo (Oui)\n- Commandes vocales pour accès rapide\n- Assistant vocal intelligent : décrire le problème pour obtenir des suggestions de solutions\n- Guidage vocal étape par étape : instructions pour des procédures (ex: changement d'huile)\n- Solutions économiques : Suggestion de méthodes de réparation à faible coût.\n\nDesign :\n- Très fonctionnel, professionnel et rapide.\n\nIntégrations :\n- Systèmes de garage existants (ex: inventaire).",
+      "timestamp": "2026-05-11T08:03:08.097Z",
+      "changeNotes": "Built MécanoTech — un PWA complet pour mécaniciens en français. Inclut: assistant IA (diagnostic vocal, reconnaissance de pièces par photo, génération de guides étape par étape) propulsé par Gemini, catalogue de diagnostics avec gravité et solutions économiques, procédures avec lecture vocale (Web Speech API), catalogue de pièces avec recherche, inventaire de garage intégré, favoris pour utilisateurs connectés, dashboard admin complet avec CRUD pour 5 modules (diagnostics, procédures, pièces, articles, inventaire) et génération d'images IA.\n\nAdmin enrichment pass: (1) Upgraded admin-shell.ejs with richer table rendering (image thumbnails, badges for difficulty/severity/stock, smart column selection per module), prominent New button with contextual labels, search across all fields, descriptive empty states with CTA, slide-over modal with field descriptions, image preview, and AI generation per field. (2) Polished admin dashboard with welcome banner, quick-action shortcuts to each module, color-coded stat cards with icons, and improved messages/AI queries tables with hover states. (3) Upgraded admin-styles.css with refined typography, hover states, better focus rings, status badge palette, and responsive sidebar (collapses to top bar on mobile). (4) Improved admin-sidebar with grouped sections and active-page highlighting via data attribute. (5) Tightened contrast on key CTAs (kept inline brand color fallbacks). (6) Added _seoMetadata for French primary locale with Organization schema. All routes, data flows, and functionality preserved.",
+      "generationId": 1061,
+      "filesModified": [
+        "manifest.json",
+        "public/css/admin-styles.css",
+        "public/css/styles.css",
+        "public/js/app.js",
+        "routes.js",
+        "schema.sql",
+        "seed.js",
+        "views/admin-diagnostics.ejs",
+        "views/admin-inventaire.ejs",
+        "views/admin-parts.ejs",
+        "views/admin-posts.ejs",
+        "views/admin-procedures.ejs",
+        "views/admin.ejs",
+        "views/assistant.ejs",
+        "views/diagnostic-detail.ejs",
+        "views/diagnostics.ejs",
+        "views/index.ejs",
+        "views/inventaire.ejs",
+        "views/part-detail.ejs",
+        "views/partials/admin-shell.ejs",
+        "views/partials/admin-sidebar.ejs",
+        "views/partials/footer.ejs",
+        "views/partials/header.ejs",
+        "views/parts.ejs",
+        "views/procedure-detail.ejs",
+        "views/procedures.ejs",
+        "views/profile.ejs"
+      ]
+    }
+  ],
+  "apiVariables": [
+    {
+      "name": "GOOGLE_GEMINI_API_KEY",
+      "value": "[REDACTED — set in <slug>/.env.local for local testing]",
+      "description": ""
+    }
+  ],
+  "createdAt": "2026-05-11T07:27:31.294Z",
+  "updatedAt": "2026-05-11T10:58:00.533Z",
+  "exportedAt": "2026-05-11T12:46:34.451Z"
+}
