@@ -1,0 +1,38 @@
+<footer class="bg-gray-900 text-gray-300 mt-16">
+  <div class="max-w-7xl mx-auto px-4 py-12 grid md:grid-cols-4 gap-8">
+    <div class="md:col-span-2">
+      <h3 class="text-white text-2xl font-bold mb-3"><%= (typeof settings!=='undefined' && settings.business_name) ? settings.business_name : 'Noxa Service' %></h3>
+      <p class="text-gray-400 max-w-md"><%= (typeof settings!=='undefined' && settings.footer_text) ? settings.footer_text : 'Service de ménage professionnel.' %></p>
+      <button data-push-btn class="mt-4 px-4 py-2 rounded-lg border border-gray-700 text-sm text-gray-300 hover:bg-gray-800">🔔 <%= t.enable_notif %></button>
+    </div>
+    <div>
+      <h4 class="text-white font-semibold mb-3">Navigation</h4>
+      <ul class="space-y-2 text-sm">
+        <li><a href="." class="hover:text-white"><%= t.nav_home %></a></li>
+        <li><a href="services" class="hover:text-white"><%= t.nav_services %></a></li>
+        <li><a href="a-propos" class="hover:text-white"><%= t.nav_about %></a></li>
+        <li><a href="contact" class="hover:text-white"><%= t.nav_contact %></a></li>
+      </ul>
+    </div>
+    <div>
+      <h4 class="text-white font-semibold mb-3">Contact</h4>
+      <ul class="space-y-2 text-sm">
+        <% var ph = (typeof settings!=='undefined' && settings.contact_phone) ? settings.contact_phone : '438-376-6883'; %>
+        <% var em = (typeof settings!=='undefined' && settings.contact_email) ? settings.contact_email : ''; %>
+        <% var ad = (typeof settings!=='undefined' && settings.business_address) ? settings.business_address : ''; %>
+        <li>📞 <a href="tel:<%= ph.replace(/\D/g,'') %>" class="hover:text-white"><%= ph %></a></li>
+        <% if (em) { %><li>✉️ <a href="mailto:<%= em %>" class="hover:text-white"><%= em %></a></li><% } %>
+        <% if (ad) { %><li>📍 <%= ad %></li><% } %>
+      </ul>
+    </div>
+  </div>
+  <div class="border-t border-gray-800 py-4 text-center text-sm text-gray-500">
+    © <%= new Date().getFullYear() %> <%= (typeof settings!=='undefined' && settings.business_name) ? settings.business_name : 'Noxa Service' %>. <%= t.footer_rights %>
+  </div>
+</footer>
+<script>
+setTimeout(function(){ try { if(window.TenantSDK) { TenantSDK.ui.showInstallBanner(); } } catch(e){} }, 3000);
+setTimeout(function(){ try { if(window.TenantSDK) { TenantSDK.ui.showPushPrompt(); } } catch(e){} }, 8000);
+</script>
+</body>
+</html>

@@ -1,0 +1,348 @@
+{
+  "exportedAt": "2026-05-11T03:17:09.432Z",
+  "tables": {
+    "admin_invites": {
+      "columns": [
+        "id",
+        "email",
+        "token",
+        "role",
+        "status",
+        "invited_by",
+        "expires_at",
+        "accepted_at",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_users": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "password_hash",
+        "display_name",
+        "role",
+        "active",
+        "activation_token",
+        "invited_by",
+        "invite_token",
+        "invite_expires_at",
+        "last_login_at",
+        "is_active",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_webauthn_credentials": {
+      "columns": [
+        "id",
+        "admin_user_id",
+        "credential_id",
+        "public_key",
+        "counter",
+        "device_name",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_settings": {
+      "columns": [
+        "key",
+        "value",
+        "updated_at"
+      ],
+      "totalRows": 25,
+      "sampleRows": [
+        {
+          "key": "_p_hero_image_url",
+          "value": "https://res.cloudinary.com/duhp69meg/image/upload/v1778467522/tapavis_tenant_noxa-service/build_noxa-service_1778467522148.png",
+          "updated_at": "2026-05-11T03:01:45.677Z"
+        },
+        {
+          "key": "business_name",
+          "value": "Noxa Service",
+          "updated_at": "2026-05-11T03:01:45.682Z"
+        },
+        {
+          "key": "tagline",
+          "value": "Service professionnel de ménage au Québec",
+          "updated_at": "2026-05-11T03:01:45.686Z"
+        },
+        {
+          "key": "hero_title",
+          "value": "Un ménage impeccable, à chaque fois",
+          "updated_at": "2026-05-11T03:01:45.690Z"
+        },
+        {
+          "key": "hero_subtitle",
+          "value": "Noxa Service offre un nettoyage professionnel après construction, commercial et avant/après déménagement. Soumission gratuite, équipe certifiée.",
+          "updated_at": "2026-05-11T03:01:45.693Z"
+        },
+        {
+          "key": "contact_phone",
+          "value": "438-376-6883",
+          "updated_at": "2026-05-11T03:01:45.697Z"
+        },
+        {
+          "key": "contact_email",
+          "value": "myk.bindustrie@gmail.com",
+          "updated_at": "2026-05-11T03:01:45.702Z"
+        },
+        {
+          "key": "business_address",
+          "value": "Région du Grand Montréal, QC",
+          "updated_at": "2026-05-11T03:01:45.706Z"
+        },
+        {
+          "key": "about_title",
+          "value": "À propos de Noxa Service",
+          "updated_at": "2026-05-11T03:01:45.711Z"
+        },
+        {
+          "key": "about_text",
+          "value": "Noxa Service est une entreprise québécoise spécialisée dans le ménage professionnel. Depuis nos débuts, nous mettons un point d'honneur à offrir un service rigoureux, ponctuel et adapté à chaque type d'environnement: chantiers de construction, espaces commerciaux et résidences en transition. Notre équipe est formée, assurée et utilise des produits sécuritaires pour offrir un résultat impeccable à chaque visite.",
+          "updated_at": "2026-05-11T03:01:45.715Z"
+        }
+      ]
+    },
+    "site_visits": {
+      "columns": [
+        "id",
+        "path",
+        "visited_at"
+      ],
+      "totalRows": 19,
+      "sampleRows": [
+        {
+          "id": 1,
+          "path": "/admin",
+          "visited_at": "2026-05-11T03:05:24.685Z"
+        },
+        {
+          "id": 2,
+          "path": "/",
+          "visited_at": "2026-05-11T03:05:30.679Z"
+        },
+        {
+          "id": 3,
+          "path": "/",
+          "visited_at": "2026-05-11T03:05:48.039Z"
+        },
+        {
+          "id": 4,
+          "path": "/",
+          "visited_at": "2026-05-11T03:07:29.192Z"
+        },
+        {
+          "id": 5,
+          "path": "/",
+          "visited_at": "2026-05-11T03:09:37.285Z"
+        },
+        {
+          "id": 6,
+          "path": "/",
+          "visited_at": "2026-05-11T03:10:57.366Z"
+        },
+        {
+          "id": 7,
+          "path": "/",
+          "visited_at": "2026-05-11T03:13:52.743Z"
+        },
+        {
+          "id": 8,
+          "path": "/admin",
+          "visited_at": "2026-05-11T03:14:05.844Z"
+        },
+        {
+          "id": 9,
+          "path": "/admin/services",
+          "visited_at": "2026-05-11T03:14:07.672Z"
+        },
+        {
+          "id": 10,
+          "path": "/admin/services",
+          "visited_at": "2026-05-11T03:14:10.651Z"
+        }
+      ]
+    },
+    "services": {
+      "columns": [
+        "id",
+        "name",
+        "slug",
+        "short_description",
+        "description",
+        "icon",
+        "image_url",
+        "display_order",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 3,
+      "sampleRows": [
+        {
+          "id": 1,
+          "name": "Ménage après construction",
+          "slug": "menage-apres-construction",
+          "short_description": "Nettoyage complet et minutieux après vos travaux de construction ou rénovation.",
+          "description": "Vous venez de terminer des travaux de construction ou de rénovation? Noxa Service prend en charge le nettoyage complet de votre chantier pour que vous puissiez profiter pleinement de votre nouvel espace. Nous éliminons la poussière de plâtre, les résidus de peinture, les traces de colle, les débris et les particules fines qui s'incrustent partout après les travaux. Notre équipe utilise des équipements professionnels (aspirateurs HEPA, nettoyeurs vapeur, échelles télescopiques) pour atteindre chaque recoin: planchers, plafonds, ventilations, fenêtres, armoires, salles de bain, garages. Que ce soit pour une résidence neuve, un condo rénové ou un commerce en construction, nous vous remettons les clés d'un espace prêt à habiter, sain et étincelant. Service offert aux entrepreneurs généraux, promoteurs immobiliers et propriétaires.",
+          "icon": "🏗️",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778467516/tapavis_tenant_noxa-service/build_noxa-service_1778467516104.png",
+          "display_order": 1,
+          "published": 1,
+          "created_at": "2026-05-11T03:01:45.735Z",
+          "updated_at": "2026-05-11T03:01:45.735Z"
+        },
+        {
+          "id": 2,
+          "name": "Ménage commercial",
+          "slug": "menage-commercial",
+          "short_description": "Entretien régulier ou ponctuel pour bureaux, commerces et espaces professionnels.",
+          "description": "Un environnement de travail propre, c'est une équipe productive et des clients confiants. Noxa Service offre des services d'entretien commercial sur mesure pour bureaux, cliniques, boutiques, restaurants, centres de conditionnement physique, entrepôts et copropriétés. Nous établissons avec vous un horaire de nettoyage flexible — quotidien, hebdomadaire, bihebdomadaire ou mensuel — adapté à votre réalité opérationnelle. Nos services incluent: aspiration et lavage des planchers, désinfection des surfaces de contact, nettoyage des salles de bain et cuisinettes, vidage des poubelles, dépoussiérage des espaces de travail, nettoyage des vitres intérieures, désinfection complète selon les normes sanitaires en vigueur. Tous nos employés sont assurés, formés et discrets. Soumission personnalisée gratuite selon la superficie et la fréquence requise.",
+          "icon": "🏢",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778467523/tapavis_tenant_noxa-service/build_noxa-service_1778467523628.png",
+          "display_order": 2,
+          "published": 1,
+          "created_at": "2026-05-11T03:01:45.739Z",
+          "updated_at": "2026-05-11T03:01:45.739Z"
+        },
+        {
+          "id": 3,
+          "name": "Ménage avant/après déménagement",
+          "slug": "menage-demenagement",
+          "short_description": "Préparez votre logement avant la livraison ou nettoyez en profondeur après votre départ.",
+          "description": "Le déménagement est déjà une période stressante — laissez-nous prendre en charge le ménage. Noxa Service offre un nettoyage en profondeur de votre logement, que ce soit avant votre emménagement (pour vous accueillir dans un espace impeccable) ou après votre départ (pour remettre les clés sans souci et récupérer votre dépôt). Nous nettoyons à fond toutes les pièces vidées: planchers, plinthes, fenêtres, armoires intérieures et extérieures, électroménagers (four, frigo, micro-ondes), salles de bain (bain, douche, toilette, lavabo, joints), cuisine (comptoirs, dosserets, hottes), lumières, ventilations, garde-robes et placards. Idéal pour locataires, propriétaires, agents immobiliers et entreprises de déménagement. Tarification au logement ou à l'heure selon vos besoins. Soumission rapide en moins de 24h.",
+          "icon": "📦",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778467527/tapavis_tenant_noxa-service/build_noxa-service_1778467527227.png",
+          "display_order": 3,
+          "published": 1,
+          "created_at": "2026-05-11T03:01:45.742Z",
+          "updated_at": "2026-05-11T03:01:45.742Z"
+        }
+      ]
+    },
+    "reservations": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "phone",
+        "service_type",
+        "preferred_date",
+        "address",
+        "message",
+        "image_url",
+        "status",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "testimonials": {
+      "columns": [
+        "id",
+        "author",
+        "role",
+        "content",
+        "rating",
+        "avatar_url",
+        "image_url",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "author": "Sophie Bergeron",
+          "role": "Propriétaire résidentielle",
+          "content": "Équipe Noxa exceptionnelle! Après notre rénovation de cuisine, ils ont tout nettoyé en profondeur — pas un grain de poussière restant. Service rapide, ponctuel et très professionnel. Je recommande sans hésiter.",
+          "rating": 5,
+          "avatar_url": null,
+          "image_url": null,
+          "published": 1,
+          "created_at": "2026-05-11T03:01:45.754Z",
+          "updated_at": "2026-05-11T03:01:45.754Z"
+        },
+        {
+          "id": 2,
+          "author": "Marc-André Lavoie",
+          "role": "Gestionnaire d'immeuble",
+          "content": "Nous faisons affaire avec Noxa Service pour l'entretien hebdomadaire de notre immeuble de bureaux. Toujours impeccable, équipe discrète et fiable. Excellent rapport qualité-prix.",
+          "rating": 5,
+          "avatar_url": null,
+          "image_url": null,
+          "published": 1,
+          "created_at": "2026-05-11T03:01:45.758Z",
+          "updated_at": "2026-05-11T03:01:45.758Z"
+        },
+        {
+          "id": 3,
+          "author": "Julie Tremblay",
+          "role": "Locataire",
+          "content": "J'ai fait appel à Noxa pour le ménage après mon déménagement. Mon ancien propriétaire m'a remis mon dépôt complet — l'appartement était plus propre qu'à mon arrivée! Merci à toute l'équipe.",
+          "rating": 5,
+          "avatar_url": null,
+          "image_url": null,
+          "published": 1,
+          "created_at": "2026-05-11T03:01:45.763Z",
+          "updated_at": "2026-05-11T03:01:45.763Z"
+        },
+        {
+          "id": 4,
+          "author": "Patrick Dubois",
+          "role": "Entrepreneur général",
+          "content": "Partenaire de confiance pour le ménage post-construction de nos projets. Toujours à l'heure, méticuleux et respectueux des lieux. Un vrai professionnel du domaine.",
+          "rating": 5,
+          "avatar_url": null,
+          "image_url": null,
+          "published": 1,
+          "created_at": "2026-05-11T03:01:45.767Z",
+          "updated_at": "2026-05-11T03:01:45.767Z"
+        }
+      ]
+    },
+    "posts": {
+      "columns": [
+        "id",
+        "title",
+        "content",
+        "image_url",
+        "category",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 2,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "5 conseils pour un nettoyage post-construction efficace",
+          "content": "Après des travaux, la poussière s'infiltre partout. Voici nos conseils de pros: 1) Commencez toujours du haut vers le bas. 2) Utilisez un aspirateur HEPA pour les particules fines. 3) Changez les filtres de ventilation. 4) Lavez les fenêtres en deux étapes (intérieur et extérieur). 5) Faites appel à des professionnels pour les chantiers majeurs — le temps économisé en vaut le coût.",
+          "image_url": null,
+          "category": "Conseils",
+          "published": 1,
+          "created_at": "2026-05-11T03:01:45.773Z",
+          "updated_at": "2026-05-11T03:01:45.773Z"
+        },
+        {
+          "id": 2,
+          "title": "Pourquoi un entretien commercial régulier est rentable",
+          "content": "Un milieu de travail propre, c'est moins d'absences, plus de productivité et une meilleure image auprès de votre clientèle. Découvrez comment un contrat d'entretien sur mesure peut transformer votre entreprise.",
+          "image_url": null,
+          "category": "Entreprise",
+          "published": 1,
+          "created_at": "2026-05-11T03:01:45.777Z",
+          "updated_at": "2026-05-11T03:01:45.777Z"
+        }
+      ]
+    }
+  }
+}

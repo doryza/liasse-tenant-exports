@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Réservations — Admin Noxa</title>
+<link rel="stylesheet" href="../public/css/admin-styles.css">
+</head>
+<body>
+<%- include('partials/admin-sidebar', { active: 'reservations' }) %>
+<main class="admin-main">
+  <header class="admin-header">
+    <h1>Réservations</h1>
+    <button class="btn btn-primary" onclick="openModal()">+ Ajouter</button>
+  </header>
+  <section class="panel">
+    <% if (items && items.length > 0) { %>
+      <table class="admin-table">
+        <thead><tr><th>Date</th><th>Client</th><th>Téléphone</th><th>Service</th><th>Date souhaitée</th><th>Statut</th><th>Actions</th></tr></thead>
+        <tbody>
+          <% items.forEach(function(r){ %>
+            <tr>
+              <td><%= new Date(r.created_at).toLocaleDateString('fr-CA') %></td>
+              <td><strong><%= r.name %></strong><% if(r.email){ %><br><small class="muted"><%= r.email %></small><% } %></td>
+              <td><a href="tel:<%= (r.phone||'').replace(/\D/g,'') %>"><%= r.phone %></a></td>
+              <td><%= r.service_type || '-' %></td>
+              <td><%= r.preferred_date ? new Date(r.preferred_date).toLocaleDateString('fr-CA') : '-' %></td>
+              <td><span class="badge badge-<%= r.status %>"><%= r.status %></span></td>
+              <td>
+                <button class="btn-sm" onclick='viewItem(<%= JSON.stringify(r) %>)'>Voir</button>
+                <button class="btn-sm btn-danger" onclick="deleteItem(<%= r.id %>)">Suppr.</button>
+              </td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    <% } else { %>
+      <p class="muted">Aucune réservation pour le moment.</p>
+    <% } %>
+  </section>
+</main>
+<div id="modal" class="modal hidden">
+  <div class="modal-content">
+    <h2 id="modalTitle">Réservation</h2>
+    <form id="itemForm">
+      <input type="hidden" name="id">
+      <label>Nom *<input name="name" required></label>
+      <label>Téléphone *<input name="phone" required></label>
+      <label>Courriel<input name="email" type="email"></label>
+      <label>Type de service<input name="service_type"></label>
+      <label>Date souhaitée<input name="preferred_date" type="date"></label>
+      <label>Adresse<input name="address"></label>
+      <label>Message<textarea name="message" rows="4"></textarea></label>
+      <label>Statut
+        <select name="status">
+          <option value="nouveau">Nouveau</option>
+          <option value="contacte">Contacté</option>
+          <option value="confirme">Confirmé</option>
+          <option value="complete">Complété</option>
+          <option value="annule">Annulé</option>
+        </select>
+      </label>
+      <div class="modal-actions">
+        <button type="button" class="btn" onclick="closeModal()">Fermer</button>
+        <button type="submit" class="btn btn-primary">Enregistrer</button>
+      </div>
+    </form>
+  </div>
+</div>
+<script>
+function openModal(){ document.getElementById('modal').classList.remove('hidden'); document.getElementById('itemForm').reset(); document.querySelector('[name=id]').value=''; document.getElementById('modalTitle').textContent='Nouvelle réservation'; }
+function closeModal(){ document.getElementById('modal').classList.add('hidden'); }
+function viewItem(r){
+  document.getElementById('modal').classList.remove('hidden');
+  document.getElementById('modalTitle').textContent='Détails — ' + r.name;
+  var f = document.getElementById('itemForm');
+  f.id.value = r.id;
+  f.name.value = r.name || '';
+  f.phone.value = r.phone || '';
+  f.email.value = r.email || '';
+  f.service_type.value = r.service_type || '';
+  f.preferred_date.value = r.preferred_date ? String(r.preferred_date).substring(0,10) : '';
+  f.address.value = r.address || '';
+  f.message.value = r.message || '';
+  f.status.value = r.status || 'nouveau';
+}
+async function deleteItem(id){
+  if(!confirm('Supprimer cette réservation?')) return;
+  await fetch('../api/admin/reservations/' + id, { method: 'DELETE' });
+  location.reload();
+}
+document.getElementById('itemForm').addEventListener('submit', async function(e){
+  e.preventDefault();
+  var f = e.target;
+  var data = { name:f.name.value, phone:f.phone.value, email:f.email.value, service_type:f.service_type.value, preferred_date:f.preferred_date.value||null, address:f.address.value, message:f.message.value, status:f.status.value };
+  var id = f.id.value;
+  var url = '../api/admin/reservations' + (id ? '/' + id : '');
+  var method = id ? 'PUT' : 'POST';
+  var res = await fetch(url, { method: method, headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) });
+  if (res.ok) location.reload();
+  else alert('Erreur');
+});
+</script>
+</body>
+</html>

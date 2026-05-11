@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#6366f1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title><%= (typeof pageTitle !== 'undefined') ? pageTitle : ((typeof settings !== 'undefined' && settings.business_name) ? settings.business_name : 'Noxa Service') %></title>
+<meta name="description" content="<%= (typeof settings !== 'undefined' && settings.tagline) ? settings.tagline : 'Service professionnel de ménage au Québec' %>">
+<link rel="manifest" href="manifest.json">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{colors:{brand:'#6366f1','brand-dark':'#4f46e5','brand-light':'#a5b4fc'}}}}</script>
+<link rel="stylesheet" href="public/css/styles.css">
+</head>
+<body class="bg-white text-gray-800 antialiased">
+<header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-gray-100">
+  <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+    <a href="." class="flex items-center gap-2">
+      <img src="<%= (typeof settings!=='undefined' && settings._p_nav_logo_url) ? settings._p_nav_logo_url : (typeof appIconUrl!=='undefined' ? appIconUrl : '') %>" alt="Logo" class="w-10 h-10 rounded-lg object-cover" onerror="this.style.display='none'">
+      <span class="text-xl font-bold text-gray-900"><%= (typeof settings!=='undefined' && settings.business_name) ? settings.business_name : 'Noxa Service' %></span>
+    </a>
+    <nav class="hidden md:flex items-center gap-7">
+      <a href="." class="text-gray-700 hover:text-brand font-medium"><%= t.nav_home %></a>
+      <a href="services" class="text-gray-700 hover:text-brand font-medium"><%= t.nav_services %></a>
+      <a href="a-propos" class="text-gray-700 hover:text-brand font-medium"><%= t.nav_about %></a>
+      <a href="contact" class="text-gray-700 hover:text-brand font-medium"><%= t.nav_contact %></a>
+      <a href="contact" class="px-5 py-2 rounded-lg text-white font-semibold shadow-sm hover:shadow-md transition" style="background-color:#6366f1">Réserver</a>
+      <a href="#" data-login-btn class="text-gray-600 hover:text-brand text-sm font-medium"><%= t.nav_login %></a>
+    </nav>
+    <button id="menuToggle" class="md:hidden p-2" aria-label="Menu">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
+  </div>
+  <div id="mobileMenu" class="hidden md:hidden border-t border-gray-100 bg-white">
+    <div class="px-4 py-3 flex flex-col gap-2">
+      <a href="." class="py-2 text-gray-700 font-medium"><%= t.nav_home %></a>
+      <a href="services" class="py-2 text-gray-700 font-medium"><%= t.nav_services %></a>
+      <a href="a-propos" class="py-2 text-gray-700 font-medium"><%= t.nav_about %></a>
+      <a href="contact" class="py-2 text-gray-700 font-medium"><%= t.nav_contact %></a>
+      <a href="contact" class="mt-1 px-4 py-2 rounded-lg text-white font-semibold text-center" style="background-color:#6366f1">Réserver</a>
+      <a href="#" data-login-btn class="py-2 text-gray-600 text-sm"><%= t.nav_login %></a>
+    </div>
+  </div>
+</header>
+<script>
+(function(){
+  var t = document.getElementById('menuToggle');
+  var m = document.getElementById('mobileMenu');
+  if (t && m) { t.addEventListener('click', function(){ m.classList.toggle('hidden'); }); }
+})();
+</script>

@@ -1,0 +1,17 @@
+<aside class="admin-sidebar">
+  <div class="brand">
+    <h2>Noxa</h2>
+    <span>Administration</span>
+  </div>
+  <nav>
+    <a href="admin" class="<%= (typeof active!=='undefined' && active==='dashboard') ? 'active' : '' %>">📊 Tableau de bord</a>
+    <a href="admin/services" class="<%= (typeof active!=='undefined' && active==='services') ? 'active' : '' %>">📦 Services</a>
+    <a href="admin/reservations" class="<%= (typeof active!=='undefined' && active==='reservations') ? 'active' : '' %>">📅 Réservations</a>
+    <a href="admin/testimonials" class="<%= (typeof active!=='undefined' && active==='testimonials') ? 'active' : '' %>">⭐ Témoignages</a>
+    <a href="admin/posts" class="<%= (typeof active!=='undefined' && active==='posts') ? 'active' : '' %>">📝 Articles</a>
+  </nav>
+  <div class="sidebar-footer">
+    <a href="." class="link">← Retour au site</a>
+    <a href="admin/logout" class="link">Déconnexion</a>
+  </div>
+</aside>

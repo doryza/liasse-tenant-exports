@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Noxa Service</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body>
+<%- include('partials/admin-sidebar', { active: 'dashboard' }) %>
+<main class="admin-main">
+  <header class="admin-header">
+    <h1>Tableau de bord</h1>
+    <p class="muted">Bienvenue dans l'administration de Noxa Service.</p>
+  </header>
+  <section class="stats-grid">
+    <div class="stat-card"><div class="stat-label">Réservations totales</div><div class="stat-value"><%= stats.reservationCount %></div></div>
+    <div class="stat-card highlight"><div class="stat-label">Nouvelles demandes</div><div class="stat-value"><%= stats.newReservations %></div></div>
+    <div class="stat-card"><div class="stat-label">Services</div><div class="stat-value"><%= stats.serviceCount %></div></div>
+    <div class="stat-card"><div class="stat-label">Témoignages</div><div class="stat-value"><%= stats.testimonialCount %></div></div>
+    <div class="stat-card"><div class="stat-label">Articles</div><div class="stat-value"><%= stats.postCount %></div></div>
+    <div class="stat-card"><div class="stat-label">Utilisateurs</div><div class="stat-value"><%= stats.userCount %></div></div>
+    <div class="stat-card"><div class="stat-label">Abonnés push</div><div class="stat-value"><%= stats.pushCount %></div></div>
+    <div class="stat-card"><div class="stat-label">Visites totales</div><div class="stat-value"><%= stats.totalVisits %></div></div>
+    <div class="stat-card"><div class="stat-label">Visites (7 jours)</div><div class="stat-value"><%= stats.recentVisits %></div></div>
+  </section>
+  <section class="panel">
+    <h2>Réservations récentes</h2>
+    <% if (recentReservations && recentReservations.length > 0) { %>
+      <table class="admin-table">
+        <thead><tr><th>Date</th><th>Nom</th><th>Téléphone</th><th>Service</th><th>Statut</th></tr></thead>
+        <tbody>
+          <% recentReservations.forEach(function(r){ %>
+            <tr>
+              <td><%= new Date(r.created_at).toLocaleDateString('fr-CA') %></td>
+              <td><strong><%= r.name %></strong></td>
+              <td><%= r.phone %></td>
+              <td><%= r.service_type || '-' %></td>
+              <td><span class="badge badge-<%= r.status %>"><%= r.status %></span></td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+      <a href="admin/reservations" class="btn">Voir toutes les réservations →</a>
+    <% } else { %>
+      <p class="muted">Aucune réservation pour le moment.</p>
+    <% } %>
+  </section>
+  <section class="quick-grid">
+    <a href="admin/services" class="quick-card"><div class="icon">📦</div><h3>Gérer les services</h3><p>Modifier les services offerts</p></a>
+    <a href="admin/reservations" class="quick-card"><div class="icon">📅</div><h3>Réservations</h3><p>Voir toutes les demandes</p></a>
+    <a href="admin/testimonials" class="quick-card"><div class="icon">⭐</div><h3>Témoignages</h3><p>Gérer les avis clients</p></a>
+    <a href="admin/posts" class="quick-card"><div class="icon">📝</div><h3>Articles</h3><p>Gérer le blogue</p></a>
+  </section>
+</main>
+</body>
+</html>

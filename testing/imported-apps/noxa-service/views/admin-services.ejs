@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Services — Admin Noxa</title>
+<link rel="stylesheet" href="../public/css/admin-styles.css">
+</head>
+<body>
+<%- include('partials/admin-sidebar', { active: 'services' }) %>
+<main class="admin-main">
+  <header class="admin-header">
+    <h1>Services</h1>
+    <button class="btn btn-primary" onclick="openModal()">+ Ajouter un service</button>
+  </header>
+  <section class="panel">
+    <% if (items && items.length > 0) { %>
+      <table class="admin-table">
+        <thead><tr><th>Ordre</th><th>Nom</th><th>Slug</th><th>Publié</th><th>Actions</th></tr></thead>
+        <tbody>
+          <% items.forEach(function(s){ %>
+            <tr>
+              <td><%= s.display_order %></td>
+              <td><strong><%= s.icon || '' %> <%= s.name %></strong><br><small class="muted"><%= (s.short_description||'').substring(0,80) %></small></td>
+              <td><code><%= s.slug %></code></td>
+              <td><%= s.published ? '✓' : '✗' %></td>
+              <td>
+                <button class="btn-sm" onclick='editItem(<%= JSON.stringify(s) %>)'>Modifier</button>
+                <button class="btn-sm btn-danger" onclick="deleteItem(<%= s.id %>)">Supprimer</button>
+              </td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    <% } else { %>
+      <p class="muted">Aucun service. Cliquez sur "+ Ajouter" pour commencer.</p>
+    <% } %>
+  </section>
+</main>
+<div id="modal" class="modal hidden">
+  <div class="modal-content">
+    <h2 id="modalTitle">Service</h2>
+    <form id="itemForm">
+      <input type="hidden" name="id">
+      <label>Nom *<input name="name" required></label>
+      <label>Slug (URL) *<input name="slug" required pattern="[a-z0-9-]+"></label>
+      <label>Icône (emoji)<input name="icon" placeholder="🏗️"></label>
+      <label>Description courte<input name="short_description"></label>
+      <label>Description complète<textarea name="description" rows="6"></textarea></label>
+      <label>URL de l'image<input name="image_url" type="url"></label>
+      <label>Ordre d'affichage<input name="display_order" type="number" value="0"></label>
+      <label class="checkbox"><input name="published" type="checkbox" value="1" checked> Publié</label>
+      <div class="modal-actions">
+        <button type="button" class="btn" onclick="closeModal()">Annuler</button>
+        <button type="submit" class="btn btn-primary">Enregistrer</button>
+      </div>
+    </form>
+  </div>
+</div>
+<script>
+function openModal(){ document.getElementById('modal').classList.remove('hidden'); document.getElementById('itemForm').reset(); document.querySelector('[name=id]').value=''; document.getElementById('modalTitle').textContent='Nouveau service'; }
+function closeModal(){ document.getElementById('modal').classList.add('hidden'); }
+function editItem(s){
+  document.getElementById('modal').classList.remove('hidden');
+  document.getElementById('modalTitle').textContent='Modifier le service';
+  var f = document.getElementById('itemForm');
+  f.id.value = s.id;
+  f.name.value = s.name || '';
+  f.slug.value = s.slug || '';
+  f.icon.value = s.icon || '';
+  f.short_description.value = s.short_description || '';
+  f.description.value = s.description || '';
+  f.image_url.value = s.image_url || '';
+  f.display_order.value = s.display_order || 0;
+  f.published.checked = !!s.published;
+}
+async function deleteItem(id){
+  if(!confirm('Supprimer ce service?')) return;
+  await fetch('../api/admin/services/' + id, { method: 'DELETE' });
+  location.reload();
+}
+document.getElementById('itemForm').addEventListener('submit', async function(e){
+  e.preventDefault();
+  var f = e.target;
+  var data = {
+    name: f.name.value, slug: f.slug.value, icon: f.icon.value,
+    short_description: f.short_description.value, description: f.description.value,
+    image_url: f.image_url.value, display_order: parseInt(f.display_order.value)||0,
+    published: f.published.checked ? 1 : 0
+  };
+  var id = f.id.value;
+  var url = '../api/admin/services' + (id ? '/' + id : '');
+  var method = id ? 'PUT' : 'POST';
+  var res = await fetch(url, { method: method, headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) });
+  if (res.ok) location.reload();
+  else alert('Erreur');
+});
+</script>
+</body>
+</html>
