@@ -29,7 +29,7 @@ module.exports = function(services) {
       account_heading: 'Mon compte', account_welcome: 'Bienvenue',
       account_login_required: 'Connectez-vous pour accéder à votre espace membre, voir votre abonnement et vos identifiants IPTV.',
       account_my_sub: 'Mon abonnement actif', account_my_orders: 'Mes commandes', account_credentials: 'Mes identifiants IPTV',
-      account_no_sub: 'Vous n''avez aucun abonnement actif. Découvrez nos forfaits ci-dessous.',
+      account_no_sub: 'Vous n\'avez aucun abonnement actif. Découvrez nos forfaits ci-dessous.',
       account_browse_plans: 'Voir les forfaits',
       cred_url: 'URL serveur (M3U/Xtream)', cred_user: "Nom d'utilisateur", cred_pass: 'Mot de passe', cred_copy: 'Copier', cred_copied: 'Copié!',
       cred_help: 'Utilisez ces identifiants dans votre application IPTV (IPTV Smarters, TiviMate, Perfect Player, etc.)',
@@ -110,7 +110,7 @@ module.exports = function(services) {
         { name: 'description', type: 'textarea', description: 'Description courte (français).', placeholder: "L'expérience ultime." },
         { name: 'description_en', type: 'textarea', description: 'Description courte (anglais).', placeholder: 'The ultimate experience.' },
         { name: 'price_cents', type: 'number', min: 0, step: 1, required: true, description: 'Prix en cents canadiens. Ex: 1999 = 19,99 $. Ne pas inclure de virgule ni de symbole.', placeholder: '1999' },
-        { name: 'duration_days', type: 'number', min: 1, default: 30, description: 'Durée de l''abonnement en jours.', placeholder: '30' },
+        { name: 'duration_days', type: 'number', min: 1, default: 30, description: 'Durée de l\'abonnement en jours.', placeholder: '30' },
         { name: 'features', type: 'textarea', description: "Liste des fonctionnalités, une par ligne (français). Chaque ligne apparaîtra avec une coche verte.", placeholder: '10 000+ chaînes\n4K Ultra HD\n3 appareils' },
         { name: 'features_en', type: 'textarea', description: 'Liste des fonctionnalités, une par ligne (anglais).', placeholder: '10,000+ channels\n4K Ultra HD\n3 devices' },
         { name: 'image_url', type: 'image', description: 'Image illustrative du forfait. Recommandé: 800×600 carré ou paysage.' },
@@ -129,7 +129,7 @@ module.exports = function(services) {
         { name: 'plan_id', type: 'number', description: "ID du forfait commandé. Voir l'onglet Forfaits pour les IDs.", placeholder: '1' },
         { name: 'amount_cents', type: 'number', min: 0, description: 'Montant total en cents.', placeholder: '1999' },
         { name: 'currency', type: 'text', maxLength: 3, description: 'Code devise ISO (CAD, USD, EUR).', placeholder: 'CAD' },
-        { name: 'status', type: 'select', options: ['pending', 'paid', 'cancelled', 'refunded'], description: 'Statut de la commande. Passer à "paid" active automatiquement l''abonnement du client.' },
+        { name: 'status', type: 'select', options: ['pending', 'paid', 'cancelled', 'refunded'], description: 'Statut de la commande. Passer à "paid" active automatiquement l\'abonnement du client.' },
         { name: 'payment_method', type: 'text', description: 'Méthode de paiement utilisée.', placeholder: 'Interac' },
         { name: 'payment_ref', type: 'text', description: 'Référence ou numéro de confirmation du paiement.', placeholder: 'ETXF-2024-001' },
         { name: 'notes', type: 'textarea', description: 'Notes internes (non visibles par le client).' }
@@ -141,7 +141,7 @@ module.exports = function(services) {
         { name: 'user_id', type: 'number', required: true, description: "ID de l'utilisateur propriétaire.", placeholder: '1' },
         { name: 'plan_id', type: 'number', description: "ID du forfait associé.", placeholder: '1' },
         { name: 'order_id', type: 'number', description: "ID de la commande d'origine (si applicable).", placeholder: '1' },
-        { name: 'status', type: 'select', options: ['active', 'expired', 'cancelled'], description: 'Statut de l''abonnement.' },
+        { name: 'status', type: 'select', options: ['active', 'expired', 'cancelled'], description: 'Statut de l\'abonnement.' },
         { name: 'starts_at', type: 'datetime', description: "Date et heure de début de l'abonnement." },
         { name: 'expires_at', type: 'datetime', description: "Date et heure d'expiration. L'abonnement passera automatiquement en \"expired\" après cette date." },
         { name: 'm3u_url', type: 'text', description: "URL du serveur M3U ou Xtream Codes à fournir au client.", placeholder: 'http://serveur.com:8080/get.php?username=...&password=...&type=m3u_plus' },
@@ -176,7 +176,7 @@ module.exports = function(services) {
       fields: [
         { name: 'name', type: 'text', required: true, maxLength: 100, description: 'Nom de la chaîne TV.', placeholder: 'TVA Sports' },
         { name: 'category', type: 'text', maxLength: 50, description: 'Catégorie de la chaîne (Sport, Cinéma, Actualités, etc.).', placeholder: 'Sport' },
-        { name: 'country', type: 'text', maxLength: 50, description: 'Pays d''origine de la chaîne.', placeholder: 'Canada' },
+        { name: 'country', type: 'text', maxLength: 50, description: 'Pays d\'origine de la chaîne.', placeholder: 'Canada' },
         { name: 'logo_url', type: 'image', description: 'Logo officiel de la chaîne. Format carré recommandé.' },
         { name: 'featured', type: 'boolean', description: "Afficher cette chaîne dans la section vedette de la page d'accueil." }
       ]
