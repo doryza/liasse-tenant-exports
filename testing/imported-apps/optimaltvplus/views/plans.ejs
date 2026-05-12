@@ -1,0 +1,38 @@
+<%- include('partials/header') %>
+<section class="page-header">
+  <div class="container">
+    <h1><%= t.plans_heading %></h1>
+    <p><%= t.plans_subheading %></p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <% if (typeof plans !== 'undefined' && plans.length > 0) { %>
+      <div class="plans-grid plans-grid-full">
+        <% plans.forEach(function(p){ %>
+          <div class="plan-card <%= p.featured ? 'featured' : '' %>">
+            <% if (p.badge) { %><div class="plan-badge" style="background-color:#22c55e;color:#fff"><%= p.badge %></div><% } %>
+            <% if (p.image_url) { %><img src="<%= p.image_url %>" alt="<%= lang === 'en' && p.name_en ? p.name_en : p.name %>" class="plan-img"><% } %>
+            <h3><%= lang === 'en' && p.name_en ? p.name_en : p.name %></h3>
+            <p class="plan-desc"><%= lang === 'en' && p.description_en ? p.description_en : (p.description || '') %></p>
+            <div class="plan-price">
+              <span class="price-amount"><%= formatPrice(p.price_cents, 'CAD', lang) %></span>
+              <span class="price-period"><%= t.valid_for.replace('{n}', p.duration_days) %></span>
+            </div>
+            <h4 class="features-title"><%= t.features_label %></h4>
+            <ul class="plan-features">
+              <% var feats = ((lang === 'en' && p.features_en) ? p.features_en : (p.features || '')).split('\n').filter(function(f){return f.trim()}); %>
+              <% feats.forEach(function(f){ %><li>✓ <%= f.trim() %></li><% }); %>
+            </ul>
+            <a href="checkout/<%= p.id %>" class="btn-primary plan-cta" style="background-color:#22c55e;color:#fff"><%= t.cta_subscribe %></a>
+          </div>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <div class="empty-state"><p><%= t.empty_no_plans %></p></div>
+    <% } %>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

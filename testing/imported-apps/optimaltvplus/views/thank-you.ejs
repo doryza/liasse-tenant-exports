@@ -1,0 +1,79 @@
+<%- include('partials/header') %>
+<section class="page-header thank-you-header">
+  <div class="container">
+    <div class="thank-you-icon">✅</div>
+    <h1><%= t.thank_you_heading %></h1>
+    <p><%= t.thank_you_subheading %></p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container container-narrow">
+    <div class="thank-you-card">
+      <div class="summary-row big">
+        <span><%= t.thank_you_order_num %></span>
+        <strong>#<%= order.id %></strong>
+      </div>
+      <div class="summary-row">
+        <span><%= t.checkout_plan %></span>
+        <strong><%= lang === 'en' && order.plan_name_en ? order.plan_name_en : (order.plan_name || '-') %></strong>
+      </div>
+      <div class="summary-row">
+        <span><%= t.thank_you_amount %></span>
+        <strong><%= formatPrice(order.amount_cents, order.currency, lang) %></strong>
+      </div>
+      <div class="summary-row">
+        <span><%= lang === 'en' ? 'Status' : 'Statut' %></span>
+        <span class="badge badge-<%= order.status %>"><%= statusLabel(order.status, t) %></span>
+      </div>
+    </div>
+
+    <div class="payment-instructions">
+      <h2>💸 <%= t.thank_you_payment_title %></h2>
+      <% if (settings.payment_etransfer_email) { %>
+        <div class="etransfer-box">
+          <span><%= t.thank_you_payment_email %></span>
+          <strong><%= settings.payment_etransfer_email %></strong>
+          <button type="button" class="btn-copy" data-copy="<%= settings.payment_etransfer_email %>"><%= t.cred_copy %></button>
+        </div>
+      <% } else { %>
+        <div class="warning-box"><strong>⚠️ <%= lang === 'en' ? 'Payment email not configured' : 'Courriel de paiement non configuré' %></strong><p><%= lang === 'en' ? 'Please contact us to receive payment instructions.' : 'Veuillez nous contacter pour recevoir les instructions de paiement.' %></p></div>
+      <% } %>
+      <div class="payment-amount-display">
+        <span><%= lang === 'en' ? 'Send exactly' : 'Envoyer exactement' %></span>
+        <strong><%= formatPrice(order.amount_cents, order.currency, lang) %></strong>
+      </div>
+      <div class="note-box">
+        <strong>⚠️ <%= t.thank_you_payment_note %></strong>
+        <p><%= lang === 'en' ? 'Order number to include in message: ' : 'Numéro de commande à inscrire: ' %><strong>#<%= order.id %></strong></p>
+      </div>
+      <div class="instructions-text">
+        <%- (lang === 'en' ? (settings.payment_instructions_en || '') : (settings.payment_instructions_fr || '')).replace(/\n/g, '<br>') %>
+      </div>
+    </div>
+
+    <div class="next-steps">
+      <h2>📲 <%= lang === 'en' ? 'Next steps' : 'Prochaines étapes' %></h2>
+      <p><%= t.thank_you_next_steps %></p>
+      <a href="account" class="btn-primary btn-lg" style="background-color:#22c55e;color:#fff"><%= t.thank_you_view_account %> →</a>
+      <button data-push-btn class="btn-outline" style="margin-left:1rem">🔔 <%= t.enable_notifs %></button>
+    </div>
+  </div>
+</section>
+
+<script>
+(function(){
+  var COPIED = <%- JSON.stringify(t.cred_copied) %>;
+  var COPY = <%- JSON.stringify(t.cred_copy) %>;
+  document.querySelectorAll('[data-copy]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var v = btn.getAttribute('data-copy');
+      try { navigator.clipboard.writeText(v); } catch(e) {}
+      btn.textContent = COPIED;
+      setTimeout(function(){ btn.textContent = COPY; }, 1500);
+    });
+  });
+})();
+</script>
+
+<%- include('partials/footer') %>

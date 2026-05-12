@@ -1,0 +1,37 @@
+<%- include('partials/header') %>
+<section class="page-header">
+  <div class="container">
+    <h1><%= t.features_heading %></h1>
+    <p><%= t.features_subheading %></p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="features-grid features-grid-full">
+      <div class="feature-card large"><div class="feature-icon">📡</div><h3><%= t.feat1_title %></h3><p><%= t.feat1_desc %></p></div>
+      <div class="feature-card large"><div class="feature-icon">🎬</div><h3><%= t.feat2_title %></h3><p><%= t.feat2_desc %></p></div>
+      <div class="feature-card large"><div class="feature-icon">📱</div><h3><%= t.feat3_title %></h3><p><%= t.feat3_desc %></p></div>
+      <div class="feature-card large"><div class="feature-icon">💬</div><h3><%= t.feat4_title %></h3><p><%= t.feat4_desc %></p></div>
+      <div class="feature-card large"><div class="feature-icon">🎥</div><h3><%= t.feat5_title %></h3><p><%= t.feat5_desc %></p></div>
+      <div class="feature-card large"><div class="feature-icon">⚡</div><h3><%= t.feat6_title %></h3><p><%= t.feat6_desc %></p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-img">
+        <img src="<%= settings._p_about_image_url || 'https://placehold.co/800x600/0a0a0a/22c55e/png?text=Optimal+TV+Plus' %>" alt="About">
+      </div>
+      <div class="about-text">
+        <h2><%= lang === 'en' ? 'About Optimal TV Plus' : 'À propos de Optimal TV Plus' %></h2>
+        <p><%= lang === 'en' ? (settings.about_text_en || '') : (settings.about_text_fr || '') %></p>
+        <a href="plans" class="btn-primary" style="background-color:#22c55e;color:#fff"><%= t.cta_get_started %> →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

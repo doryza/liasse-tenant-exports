@@ -1,0 +1,72 @@
+{
+  "slug": "optimaltvplus",
+  "displayName": "Optimaltvplus",
+  "description": "Type de projet: Site web\nObjectif: Vendre des abonnements IPTV.\n\nFonctionnalités clés:\n- Système de paiement en ligne.\n- Espace membre pour les clients.\n\nDesign & brand: Moderne, accrocheur (\"flash\"), conçu pour la vente.\nIntégrations & extras: Non spécifié.",
+  "status": "active",
+  "generationVersion": 1,
+  "primaryColor": "#22c55e",
+  "iconUrl": "https://res.cloudinary.com/duhp69meg/image/upload/v1778608720/subscriber_pwa_icons/k3gxu9enwkoayow7swit.png",
+  "enabledAuthMethods": [
+    "webauthn",
+    "sms",
+    "email"
+  ],
+  "notificationsEnabled": true,
+  "geolocationEnabled": true,
+  "customConfig": {
+    "language": "both",
+    "aiSummary": {
+      "en": {
+        "dashboard": "Welcome to your new control center! You can manage everything for your Optimaltvplus website from the 'Admin' section.\n\nThink of it as your command post. Here’s a quick tour of what you can do:\n\n- **Manage Your Products**: This is where you'll spend most of your time. You can go to 'Plans' to add, edit, or remove your IPTV subscription packages. You can also update your 'Channels' list to show customers what they're getting.\n\n- **Connect with Customers**: In 'Posts', you can write blog articles or announcements. You can also approve and display customer feedback by managing 'Testimonials'. Want to see who has reached out? All messages from your contact form are saved under 'Submissions'.\n\n- **Run Your Business**: Keep an eye on your success! You can view all 'Orders' and manage your active customer 'Subscriptions'. The main dashboard also shows you important stats, like how many people are visiting your site.\n\n- **Adjust Your Site**: Under 'Settings', you can change basic information about your website, like its name or contact details.\n\nTo get started, just log in and click on the 'Admin' tab. Everything is organized to be as simple as possible!",
+        "variables": "Great news! Your new app, Optimaltvplus, is all set up and ready to go. You don't need to worry about any complicated setup or finding special keys to make it work. Everything is built-in and configured for you.\n\nYou can jump right in and start adding your subscription plans, sharing news with your customers, and growing your business. We wanted to make sure you could get started as smoothly as possible. Congratulations on your new web app!"
+      },
+      "fr": {
+        "dashboard": "Bienvenue dans votre nouveau centre de contrôle! Vous pouvez tout gérer pour votre site web Optimaltvplus à partir de la section 'Admin'.\n\nConsidérez-le comme votre poste de commande. Voici un petit tour de ce que vous pouvez y faire :\n\n- **Gérer vos produits**: C'est ici que vous passerez le plus de temps. Vous pouvez aller dans 'Forfaits' pour ajouter, modifier ou supprimer vos forfaits d'abonnement IPTV. Vous pouvez aussi mettre à jour votre liste de 'Chaînes' pour montrer aux clients ce qu'ils obtiennent.\n\n- **Communiquer avec les clients**: Dans 'Articles', vous pouvez rédiger des publications de blog ou des annonces. Vous pouvez également approuver et afficher les commentaires des clients en gérant les 'Témoignages'. Vous voulez voir qui vous a contacté? Tous les messages de votre formulaire de contact sont sauvegardés sous 'Soumissions'.\n\n- **Gérer votre entreprise**: Gardez un œil sur votre succès! Vous pouvez consulter toutes les 'Commandes' et gérer les 'Abonnements' actifs de vos clients. Le tableau de bord principal vous montre aussi des statistiques importantes, comme le nombre de visiteurs sur votre site.\n\n- **Ajuster votre site**: Sous 'Paramètres', vous pouvez modifier les informations de base de votre site web, comme son nom ou vos coordonnées.\n\nPour commencer, connectez-vous et cliquez simplement sur l'onglet 'Admin'. Tout a été organisé pour être le plus simple possible!",
+        "variables": "Excellente nouvelle! Votre nouvelle application, Optimaltvplus, est entièrement configurée et prête à être utilisée. Vous n'avez pas besoin de vous soucier d'une installation compliquée ou de trouver des clés spéciales pour la faire fonctionner. Tout est déjà intégré et prêt pour vous.\n\nVous pouvez commencer dès maintenant à ajouter vos forfaits d'abonnement, à partager des nouvelles avec vos clients et à faire croître votre entreprise. Nous voulions nous assurer que votre départ se fasse le plus facilement possible. Félicitations pour votre nouvelle application web!"
+      }
+    },
+    "aiSummaryVersion": 1
+  },
+  "promptHistory": [
+    {
+      "prompt": "Type de projet: Site web\nObjectif: Vendre des abonnements IPTV.\n\nFonctionnalités clés:\n- Système de paiement en ligne.\n- Espace membre pour les clients.\n\nDesign & brand: Moderne, accrocheur (\"flash\"), conçu pour la vente.\nIntégrations & extras: Non spécifié.",
+      "timestamp": "2026-05-12T18:34:52.028Z",
+      "changeNotes": "Initial generation of Optimal TV Plus, a bilingual (FR/EN) IPTV subscription PWA. Built with a dark, flashy green-accented design, a hero with 4 stat callouts, 4 subscription plans (Essentiel, Famille, Premium, Annuel), features grid, multi-device showcase, channel catalog, testimonials, blog. Implemented full end-to-end subscription flow: plan selection → login (built-in OTP via TenantSDK) → checkout → order creation → e-Transfer payment instructions → admin approves → subscription auto-activates with IPTV credentials visible in member area. Admin backend covers Plans, Orders (approving sets status=paid which auto-creates the subscription and sends a push notification), Subscriptions (M3U/Xtream credentials), Posts, Testimonials, Channels, Submissions. Server-side language switching via cookie+query. Hourly cron auto-expires subscriptions. Hero, devices, about, CTA, plans, posts all have AI-generated images.\n\nAdmin UX/UI enrichment: (1) Rebuilt admin-shell partial with polished modals, improved field rendering (labels prettified, bilingual hints, character counters for textareas, image preview always available, datetime/date/number with min/max enforcement), confirm-dialogs, success/error toasts, and proper empty states with CTA. (2) Dashboard now uses a richer stats grid with semantic color tokens, quick-action panel, recent orders & messages preview with status badges. (3) Admin sidebar polished with active state, mobile-friendly slide-over, footer links. (4) Improved admin-styles.css: toast system, modal animations, badge palette, accessible focus rings, larger touch targets, responsive table behavior, dark sidebar contrast. (5) Public CSS: stronger contrast on hero, fallback inline colors preserved on brand CTAs, improved card hover states. (6) Every module now has full CRUD UI via the shared shell (Add / Edit / Delete buttons wired to APIs, confirm before delete, toast feedback). (7) Functional content (plans, channels, testimonials, posts, orders, subscriptions) remains admin-manageable with all functional fields editable. (8) SEO metadata emitted as _seoMetadata for bilingual app.",
+      "generationId": 1087,
+      "filesModified": [
+        "crons.js",
+        "manifest.json",
+        "public/css/admin-styles.css",
+        "public/css/styles.css",
+        "public/js/app.js",
+        "routes.js",
+        "schema.sql",
+        "seed.js",
+        "views/account.ejs",
+        "views/admin-channels.ejs",
+        "views/admin-orders.ejs",
+        "views/admin-plans.ejs",
+        "views/admin-posts.ejs",
+        "views/admin-submissions.ejs",
+        "views/admin-subscriptions.ejs",
+        "views/admin-testimonials.ejs",
+        "views/admin.ejs",
+        "views/checkout.ejs",
+        "views/contact.ejs",
+        "views/features.ejs",
+        "views/index.ejs",
+        "views/partials/admin-shell.ejs",
+        "views/partials/admin-sidebar.ejs",
+        "views/partials/footer.ejs",
+        "views/partials/header.ejs",
+        "views/plans.ejs",
+        "views/post.ejs",
+        "views/thank-you.ejs"
+      ]
+    }
+  ],
+  "apiVariables": [],
+  "createdAt": "2026-05-12T17:59:55.561Z",
+  "updatedAt": "2026-05-12T18:35:19.975Z",
+  "exportedAt": "2026-05-12T18:37:10.105Z"
+}

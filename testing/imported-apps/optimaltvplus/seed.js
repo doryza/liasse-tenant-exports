@@ -1,0 +1,72 @@
+module.exports = async function(db) {
+  const settings = [
+    ['contact_email', null],
+    ['contact_phone', null],
+    ['business_name', null],
+    ['business_address', null],
+    ['tagline_fr', "L'IPTV nouvelle génération"],
+    ['tagline_en', 'Next-generation IPTV'],
+    ['hero_title_fr', 'Streaming illimité en qualité Ultra HD'],
+    ['hero_title_en', 'Unlimited streaming in Ultra HD quality'],
+    ['hero_subtitle_fr', 'Plus de 10 000 chaînes en direct, films et séries à la demande. Disponible sur tous vos appareils.'],
+    ['hero_subtitle_en', 'Over 10,000 live channels, movies and series on demand. Available on all your devices.'],
+    ['about_text_fr', "Optimal TV Plus est votre passerelle vers le divertissement sans frontières. Nous offrons un service IPTV premium avec plus de 10 000 chaînes en direct, des dizaines de milliers de films et séries à la demande, le tout en qualité 4K Ultra HD. Notre infrastructure de serveurs ultrarapides garantit un streaming fluide sans interruption, où que vous soyez."],
+    ['about_text_en', 'Optimal TV Plus is your gateway to entertainment without borders. We offer premium IPTV service with over 10,000 live channels, tens of thousands of movies and series on demand, all in 4K Ultra HD quality. Our ultra-fast server infrastructure ensures smooth streaming without interruption, wherever you are.'],
+    ['payment_etransfer_email', ''],
+    ['payment_instructions_fr', "Envoyez le montant exact par virement Interac à l'adresse courriel ci-dessus. Indiquez votre numéro de commande dans le message. Votre abonnement sera activé dans les 30 minutes suivant la réception du paiement."],
+    ['payment_instructions_en', 'Send the exact amount via Interac e-Transfer to the email above. Include your order number in the message. Your subscription will be activated within 30 minutes of payment receipt.']
+  ];
+  for (const [k, v] of settings) {
+    await db.run('INSERT INTO admin_settings (key, value) VALUES ($1, $2) ON CONFLICT (key) DO NOTHING', [k, v]);
+  }
+  await db.run("INSERT INTO admin_settings (key, value) VALUES ('_p_hero_image_url', 'https://res.cloudinary.com/duhp69meg/image/upload/v1778609717/tapavis_tenant_optimaltvplus/build_optimaltvplus_1778609716936.png') ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = NOW()");
+  await db.run("INSERT INTO admin_settings (key, value) VALUES ('_p_about_image_url', 'https://res.cloudinary.com/duhp69meg/image/upload/v1778609724/tapavis_tenant_optimaltvplus/build_optimaltvplus_1778609724549.png') ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = NOW()");
+  await db.run("INSERT INTO admin_settings (key, value) VALUES ('_p_devices_image_url', 'https://res.cloudinary.com/duhp69meg/image/upload/v1778609716/tapavis_tenant_optimaltvplus/build_optimaltvplus_1778609716503.png') ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = NOW()");
+  await db.run("INSERT INTO admin_settings (key, value) VALUES ('_p_cta_image_url', 'https://res.cloudinary.com/duhp69meg/image/upload/v1778609725/tapavis_tenant_optimaltvplus/build_optimaltvplus_1778609724977.png') ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = NOW()");
+
+  const planCount = await db.get('SELECT COUNT(*)::int AS c FROM plans');
+  if (!planCount || planCount.c === 0) {
+    await db.run("INSERT INTO plans (name, name_en, description, description_en, price_cents, duration_days, features, features_en, image_url, badge, featured, sort_order, active) VALUES ('Essentiel', 'Essential', 'Idéal pour découvrir le service.', 'Perfect to discover the service.', 1499, 30, '5 000+ chaînes\nQualité HD 1080p\n1 appareil simultané\nSupport par courriel\nVOD inclus', '5,000+ channels\nHD 1080p quality\n1 simultaneous device\nEmail support\nVOD included', 'https://res.cloudinary.com/duhp69meg/image/upload/v1778609735/tapavis_tenant_optimaltvplus/build_optimaltvplus_1778609735474.png', NULL, 0, 1, 1)");
+    await db.run("INSERT INTO plans (name, name_en, description, description_en, price_cents, duration_days, features, features_en, image_url, badge, featured, sort_order, active) VALUES ('Famille', 'Family', 'Le meilleur rapport qualité-prix.', 'Best value for the family.', 2499, 30, '10 000+ chaînes\nQualité 4K Ultra HD\n3 appareils simultanés\nSupport prioritaire 24/7\nVOD + Séries premium\nGuide TV intégré', '10,000+ channels\n4K Ultra HD quality\n3 simultaneous devices\n24/7 priority support\nVOD + Premium series\nIntegrated TV guide', 'https://res.cloudinary.com/duhp69meg/image/upload/v1778609727/tapavis_tenant_optimaltvplus/build_optimaltvplus_1778609727042.png', 'POPULAIRE', 1, 2, 1)");
+    await db.run("INSERT INTO plans (name, name_en, description, description_en, price_cents, duration_days, features, features_en, image_url, badge, featured, sort_order, active) VALUES ('Premium', 'Premium', 'L''expérience ultime sans compromis.', 'The ultimate no-compromise experience.', 3999, 30, '15 000+ chaînes mondiales\nQualité 4K HDR\n5 appareils simultanés\nSupport VIP dédié 24/7\nVOD illimité + Adulte\nChaînes PPV incluses\nEnregistrement cloud', '15,000+ global channels\n4K HDR quality\n5 simultaneous devices\nDedicated VIP 24/7 support\nUnlimited VOD + Adult\nPPV channels included\nCloud recording', 'https://res.cloudinary.com/duhp69meg/image/upload/v1778609717/tapavis_tenant_optimaltvplus/build_optimaltvplus_1778609717593.png', 'VIP', 0, 3, 1)");
+    await db.run("INSERT INTO plans (name, name_en, description, description_en, price_cents, duration_days, features, features_en, image_url, badge, featured, sort_order, active) VALUES ('Annuel Famille', 'Annual Family', '12 mois au prix de 10 - économisez 50$.', '12 months at the price of 10 - save $50.', 24999, 365, '10 000+ chaînes\nQualité 4K Ultra HD\n3 appareils simultanés\nSupport 24/7\nÉconomie de 50$\nGarantie de remboursement 7 jours', '10,000+ channels\n4K Ultra HD quality\n3 simultaneous devices\n24/7 support\n$50 savings\n7-day money back', 'https://res.cloudinary.com/duhp69meg/image/upload/v1778609727/tapavis_tenant_optimaltvplus/build_optimaltvplus_1778609727042.png', 'MEILLEURE OFFRE', 0, 4, 1)");
+  }
+
+  const testCount = await db.get('SELECT COUNT(*)::int AS c FROM testimonials');
+  if (!testCount || testCount.c === 0) {
+    await db.run("INSERT INTO testimonials (author, role, content, content_en, rating, published) VALUES ('Mathieu G.', 'Montréal, QC', 'Le meilleur service IPTV que j''ai essayé! Aucune coupure, qualité 4K impeccable et le support client répond en quelques minutes. Je recommande à 100%.', 'The best IPTV service I have tried! No cuts, impeccable 4K quality and customer support responds in minutes. 100% recommended.', 5, 1)");
+    await db.run("INSERT INTO testimonials (author, role, content, content_en, rating, published) VALUES ('Sophie R.', 'Québec, QC', 'Je regarde toutes les chaînes francophones et internationales sur ma Smart TV. L''installation a pris moins de 5 minutes! Excellent rapport qualité-prix.', 'I watch all French-language and international channels on my Smart TV. Setup took less than 5 minutes! Excellent value.', 5, 1)");
+    await db.run("INSERT INTO testimonials (author, role, content, content_en, rating, published) VALUES ('Karim B.', 'Laval, QC', 'Plus besoin du câble! Pour le prix d''un mois chez le câblodistributeur, j''ai 1 an de chaînes du monde entier. Service au top.', 'No more cable! For the price of one month with the cable provider, I get 1 year of worldwide channels. Top service.', 5, 1)");
+    await db.run("INSERT INTO testimonials (author, role, content, content_en, rating, published) VALUES ('Élodie T.', 'Sherbrooke, QC', 'Le forfait Famille est parfait, je l''utilise sur 3 appareils en même temps. Le contenu jeunesse pour les enfants est fantastique.', 'The Family plan is perfect, I use it on 3 devices at the same time. The kids content is fantastic.', 5, 1)");
+    await db.run("INSERT INTO testimonials (author, role, content, content_en, rating, published) VALUES ('Daniel L.', 'Gatineau, QC', 'Fan de hockey et de soccer, j''ai accès à toutes les chaînes sportives. Le streaming est fluide même en 4K. Bravo!', 'Hockey and soccer fan, I have access to all sports channels. Streaming is smooth even in 4K. Bravo!', 5, 1)");
+  }
+
+  const chanCount = await db.get('SELECT COUNT(*)::int AS c FROM channels');
+  if (!chanCount || chanCount.c === 0) {
+    const chans = [
+      ['TVA Sports', 'Sport', 'Canada', 1],
+      ['RDS', 'Sport', 'Canada', 1],
+      ['beIN Sports', 'Sport', 'International', 1],
+      ['Sky Sports', 'Sport', 'Royaume-Uni', 1],
+      ['HBO', 'Cinéma', 'États-Unis', 1],
+      ['Netflix Live', 'Cinéma', 'International', 0],
+      ['Disney+', 'Famille', 'International', 1],
+      ['TF1', 'Généraliste', 'France', 1],
+      ['Radio-Canada', 'Généraliste', 'Canada', 1],
+      ['CNN', 'Actualités', 'États-Unis', 0],
+      ['BBC World', 'Actualités', 'Royaume-Uni', 0],
+      ['Discovery', 'Documentaire', 'International', 0]
+    ];
+    for (const [n, c, co, f] of chans) {
+      await db.run('INSERT INTO channels (name, category, country, featured) VALUES ($1, $2, $3, $4)', [n, c, co, f]);
+    }
+  }
+
+  const postCount = await db.get('SELECT COUNT(*)::int AS c FROM posts');
+  if (!postCount || postCount.c === 0) {
+    await db.run("INSERT INTO posts (title, content, category, published) VALUES ('Nouvelles chaînes ajoutées en novembre', 'Ce mois-ci, nous avons ajouté plus de 200 nouvelles chaînes à notre catalogue, incluant des chaînes sportives internationales et des chaînes premium en 4K. Connectez-vous à votre espace membre pour les découvrir.', 'Nouveautés', 1)");
+    await db.run("INSERT INTO posts (title, content, category, published) VALUES ('Comment installer Optimal TV Plus sur votre Smart TV', 'L''installation est simple et rapide. Étape 1: Téléchargez l''application IPTV Smarters Pro. Étape 2: Entrez vos identifiants reçus par courriel. Étape 3: Profitez! Le tout en moins de 5 minutes.', 'Guides', 1)");
+    await db.run("INSERT INTO posts (title, content, category, published) VALUES ('Promotion spéciale: -20% sur les abonnements annuels', 'Pour une durée limitée, économisez 20% sur tous nos forfaits annuels. Utilisez le code promo IPTV20 lors de votre commande.', 'Promotions', 1)");
+    await db.run("INSERT INTO posts (title, content, category, published) VALUES ('Les meilleurs appareils pour regarder l''IPTV', 'Découvrez notre sélection des meilleurs appareils compatibles avec notre service: Amazon Fire TV Stick 4K, MAG 524, Formuler Z11, et bien plus.', 'Guides', 1)");
+  }
+};

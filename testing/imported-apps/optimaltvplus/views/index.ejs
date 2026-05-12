@@ -1,0 +1,178 @@
+<%- include('partials/header') %>
+<section class="hero">
+  <img src="<%= settings._p_hero_image_url || 'https://placehold.co/1600x900/0a0a0a/22c55e/png?text=Optimal+TV+Plus' %>" alt="<%= t.site_title %>" class="hero-img">
+  <div class="hero-overlay">
+    <div class="hero-content">
+      <div class="hero-badges">
+        <span class="pill">⚡ <%= t.badge_live %></span>
+        <span class="pill">📺 <%= t.badge_4k %></span>
+        <span class="pill">🔒 <%= t.badge_secure %></span>
+      </div>
+      <h1><%= t.hero_title %></h1>
+      <p><%= t.hero_subtitle %></p>
+      <div class="hero-cta">
+        <a href="plans" class="btn-primary btn-lg" style="background-color:#22c55e;color:#fff"><%= t.hero_cta_primary %> →</a>
+        <a href="features" class="btn-secondary btn-lg"><%= t.hero_cta_secondary %></a>
+      </div>
+      <div class="hero-stats">
+        <div><strong>10K+</strong><span><%= lang === 'en' ? 'Channels' : 'Chaînes' %></span></div>
+        <div><strong>50K+</strong><span><%= lang === 'en' ? 'VOD titles' : 'Films & Séries' %></span></div>
+        <div><strong>4K</strong><span>Ultra HD</span></div>
+        <div><strong>24/7</strong><span>Support</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-plans">
+  <div class="container">
+    <div class="section-head">
+      <h2><%= t.plans_heading %></h2>
+      <p><%= t.plans_subheading %></p>
+    </div>
+    <% if (typeof plans !== 'undefined' && plans.length > 0) { %>
+      <div class="plans-grid">
+        <% plans.forEach(function(p){ %>
+          <div class="plan-card <%= p.featured ? 'featured' : '' %>">
+            <% if (p.badge) { %><div class="plan-badge" style="background-color:#22c55e;color:#fff"><%= p.badge %></div><% } %>
+            <% if (p.image_url) { %><img src="<%= p.image_url %>" alt="<%= lang === 'en' && p.name_en ? p.name_en : p.name %>" class="plan-img"><% } %>
+            <h3><%= lang === 'en' && p.name_en ? p.name_en : p.name %></h3>
+            <p class="plan-desc"><%= lang === 'en' && p.description_en ? p.description_en : (p.description || '') %></p>
+            <div class="plan-price">
+              <span class="price-amount"><%= formatPrice(p.price_cents, 'CAD', lang) %></span>
+              <span class="price-period"><%= t.valid_for.replace('{n}', p.duration_days) %></span>
+            </div>
+            <ul class="plan-features">
+              <% var feats = ((lang === 'en' && p.features_en) ? p.features_en : (p.features || '')).split('\n').filter(function(f){return f.trim()}); %>
+              <% feats.forEach(function(f){ %><li>✓ <%= f.trim() %></li><% }); %>
+            </ul>
+            <a href="checkout/<%= p.id %>" class="btn-primary plan-cta" style="background-color:#22c55e;color:#fff"><%= t.cta_choose_plan %></a>
+          </div>
+        <% }); %>
+      </div>
+      <div class="text-center" style="margin-top:2rem"><a href="plans" class="btn-outline"><%= t.cta_view_all %> →</a></div>
+    <% } else { %>
+      <div class="empty-state"><p><%= t.empty_no_plans %></p></div>
+    <% } %>
+  </div>
+</section>
+
+<section class="section section-features">
+  <div class="container">
+    <div class="section-head">
+      <h2><%= t.features_heading %></h2>
+      <p><%= t.features_subheading %></p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card"><div class="feature-icon">📡</div><h3><%= t.feat1_title %></h3><p><%= t.feat1_desc %></p></div>
+      <div class="feature-card"><div class="feature-icon">🎬</div><h3><%= t.feat2_title %></h3><p><%= t.feat2_desc %></p></div>
+      <div class="feature-card"><div class="feature-icon">📱</div><h3><%= t.feat3_title %></h3><p><%= t.feat3_desc %></p></div>
+      <div class="feature-card"><div class="feature-icon">💬</div><h3><%= t.feat4_title %></h3><p><%= t.feat4_desc %></p></div>
+      <div class="feature-card"><div class="feature-icon">🎥</div><h3><%= t.feat5_title %></h3><p><%= t.feat5_desc %></p></div>
+      <div class="feature-card"><div class="feature-icon">⚡</div><h3><%= t.feat6_title %></h3><p><%= t.feat6_desc %></p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-devices">
+  <div class="container">
+    <div class="devices-grid">
+      <div class="devices-text">
+        <h2><%= lang === 'en' ? 'Watch on all your devices' : 'Regardez sur tous vos appareils' %></h2>
+        <p><%= lang === 'en' ? 'Compatible with Smart TV, Android, iOS, Fire Stick, MAG, Formuler, Apple TV, computer and more. Up to 5 simultaneous devices.' : 'Compatible avec Smart TV, Android, iOS, Fire Stick, MAG, Formuler, Apple TV, ordinateur et plus. Jusqu''à 5 appareils simultanés.' %></p>
+        <ul class="check-list">
+          <li>✓ Smart TV (Samsung, LG, Sony, Hisense)</li>
+          <li>✓ Amazon Fire TV Stick 4K</li>
+          <li>✓ Android Box, MAG, Formuler</li>
+          <li>✓ iPhone, iPad, Android</li>
+          <li>✓ Windows, macOS, Linux</li>
+        </ul>
+      </div>
+      <div class="devices-image">
+        <img src="<%= settings._p_devices_image_url || 'https://placehold.co/800x600/0a0a0a/22c55e/png?text=Multi-device' %>" alt="<%= lang === 'en' ? 'Multi-device' : 'Multi-appareils' %>">
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-channels">
+  <div class="container">
+    <div class="section-head">
+      <h2><%= t.channels_heading %></h2>
+      <p><%= t.channels_more %></p>
+    </div>
+    <% if (typeof channels !== 'undefined' && channels.length > 0) { %>
+      <div class="channels-grid">
+        <% channels.forEach(function(c){ %>
+          <div class="channel-card">
+            <% if (c.logo_url) { %><img src="<%= c.logo_url %>" alt="<%= c.name %>"><% } else { %><div class="channel-placeholder">📺</div><% } %>
+            <div class="channel-name"><%= c.name %></div>
+            <% if (c.category) { %><div class="channel-meta"><%= c.category %><% if (c.country) { %> • <%= c.country %><% } %></div><% } %>
+          </div>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <div class="empty-state"><p><%= t.empty_no_channels %></p></div>
+    <% } %>
+  </div>
+</section>
+
+<section class="section section-testimonials">
+  <div class="container">
+    <div class="section-head">
+      <h2><%= t.testimonials_heading %></h2>
+    </div>
+    <% if (typeof testimonials !== 'undefined' && testimonials.length > 0) { %>
+      <div class="testimonials-grid">
+        <% testimonials.forEach(function(tm){ %>
+          <div class="testimonial-card">
+            <div class="stars"><% for (var i=0; i<(tm.rating||5); i++) { %>★<% } %></div>
+            <p>"<%= lang === 'en' && tm.content_en ? tm.content_en : tm.content %>"</p>
+            <div class="testimonial-author">
+              <% if (tm.avatar_url) { %><img src="<%= tm.avatar_url %>" alt="<%= tm.author %>"><% } else { %><div class="avatar-placeholder"><%= tm.author.charAt(0) %></div><% } %>
+              <div><strong><%= tm.author %></strong><% if (tm.role) { %><span><%= tm.role %></span><% } %></div>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <div class="empty-state"><p><%= t.empty_no_testimonials %></p></div>
+    <% } %>
+  </div>
+</section>
+
+<% if (typeof posts !== 'undefined' && posts.length > 0) { %>
+<section class="section section-blog">
+  <div class="container">
+    <div class="section-head">
+      <h2><%= t.blog_heading %></h2>
+      <p><%= t.blog_subheading %></p>
+    </div>
+    <div class="posts-grid">
+      <% posts.forEach(function(p){ %>
+        <a href="post/<%= p.id %>" class="post-card">
+          <% if (p.image_url) { %><img src="<%= p.image_url %>" alt="<%= p.title %>"><% } else { %><div class="post-img-placeholder">📰</div><% } %>
+          <div class="post-card-body">
+            <% if (p.category) { %><span class="post-cat"><%= p.category %></span><% } %>
+            <h3><%= p.title %></h3>
+            <% if (p.content) { %><p><%= p.content.length > 120 ? p.content.substring(0, 120) + '...' : p.content %></p><% } %>
+            <span class="post-read"><%= t.read_more %> →</span>
+          </div>
+        </a>
+      <% }); %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<section class="cta-section" style="background-image:url('<%= settings._p_cta_image_url || "" %>')">
+  <div class="cta-overlay">
+    <div class="container text-center">
+      <h2><%= lang === 'en' ? 'Ready to upgrade your TV experience?' : 'Prêt à révolutionner votre expérience TV?' %></h2>
+      <p><%= lang === 'en' ? 'Subscribe today and start streaming in minutes.' : 'Abonnez-vous aujourd''hui et commencez à streamer en quelques minutes.' %></p>
+      <a href="plans" class="btn-primary btn-lg" style="background-color:#fff;color:#16a34a"><%= t.cta_subscribe_now %> →</a>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

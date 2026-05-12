@@ -1,0 +1,127 @@
+<%- include('partials/header') %>
+<section class="page-header">
+  <div class="container">
+    <h1><%= t.account_heading %></h1>
+    <% if (user) { %>
+      <p><%= t.account_welcome %><% if (user.display_name) { %>, <%= user.display_name %><% } else if (user.email) { %>, <%= user.email %><% } %>!</p>
+    <% } %>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <% if (!user) { %>
+      <div class="account-login-prompt">
+        <div class="empty-state-large">
+          <div class="empty-icon">🔒</div>
+          <h2><%= t.login_required_action %></h2>
+          <p><%= t.account_login_required %></p>
+          <a href="#" class="btn-primary btn-lg" data-login-btn style="background-color:#22c55e;color:#fff"><%= t.login_btn %></a>
+        </div>
+      </div>
+    <% } else { %>
+      <div class="account-block">
+        <h2><%= t.account_my_sub %></h2>
+        <% if (subscription) { %>
+          <div class="sub-card">
+            <div class="sub-header">
+              <div>
+                <span class="badge badge-active"><%= statusLabel(subscription.status, t) %></span>
+                <h3><%= lang === 'en' && subscription.plan_name_en ? subscription.plan_name_en : (subscription.plan_name || 'Plan') %></h3>
+              </div>
+              <div class="sub-expiry">
+                <span><%= t.expires_on %></span>
+                <strong><%= formatDate(subscription.expires_at, lang) %></strong>
+              </div>
+            </div>
+            <% if (subscription.m3u_url || subscription.credentials_username) { %>
+              <div class="credentials">
+                <h4><%= t.account_credentials %></h4>
+                <p class="cred-help"><%= t.cred_help %></p>
+                <% if (subscription.m3u_url) { %>
+                  <div class="cred-row">
+                    <label><%= t.cred_url %></label>
+                    <div class="cred-value">
+                      <code><%= subscription.m3u_url %></code>
+                      <button type="button" class="btn-copy" data-copy="<%= subscription.m3u_url %>"><%= t.cred_copy %></button>
+                    </div>
+                  </div>
+                <% } %>
+                <% if (subscription.credentials_username) { %>
+                  <div class="cred-row">
+                    <label><%= t.cred_user %></label>
+                    <div class="cred-value">
+                      <code><%= subscription.credentials_username %></code>
+                      <button type="button" class="btn-copy" data-copy="<%= subscription.credentials_username %>"><%= t.cred_copy %></button>
+                    </div>
+                  </div>
+                <% } %>
+                <% if (subscription.credentials_password) { %>
+                  <div class="cred-row">
+                    <label><%= t.cred_pass %></label>
+                    <div class="cred-value">
+                      <code><%= subscription.credentials_password %></code>
+                      <button type="button" class="btn-copy" data-copy="<%= subscription.credentials_password %>"><%= t.cred_copy %></button>
+                    </div>
+                  </div>
+                <% } %>
+              </div>
+            <% } else { %>
+              <p class="cred-help"><%= lang === 'en' ? 'Your credentials will be available here shortly. Check back in a few minutes.' : 'Vos identifiants seront disponibles ici sous peu. Revenez dans quelques minutes.' %></p>
+            <% } %>
+          </div>
+        <% } else { %>
+          <div class="empty-state">
+            <p><%= t.account_no_sub %></p>
+            <a href="plans" class="btn-primary" style="background-color:#22c55e;color:#fff"><%= t.account_browse_plans %></a>
+          </div>
+        <% } %>
+      </div>
+
+      <div class="account-block">
+        <h2><%= t.account_my_orders %></h2>
+        <% if (orders && orders.length > 0) { %>
+          <div class="orders-list">
+            <% orders.forEach(function(o){ %>
+              <div class="order-row">
+                <div>
+                  <strong>#<%= o.id %></strong>
+                  <span class="order-plan"><%= lang === 'en' && o.plan_name_en ? o.plan_name_en : (o.plan_name || '-') %></span>
+                </div>
+                <div class="order-amount"><%= formatPrice(o.amount_cents, o.currency, lang) %></div>
+                <div class="order-date"><%= formatDate(o.created_at, lang) %></div>
+                <div><span class="badge badge-<%= o.status %>"><%= statusLabel(o.status, t) %></span></div>
+              </div>
+            <% }); %>
+          </div>
+        <% } else { %>
+          <p class="empty-text"><%= t.empty_no_orders %></p>
+        <% } %>
+      </div>
+
+      <div class="account-block">
+        <h2><%= t.enable_notifs %></h2>
+        <p><%= t.enable_notifs_desc %></p>
+        <button data-push-btn class="btn-primary" style="background-color:#22c55e;color:#fff">🔔 <%= t.enable_notifs %></button>
+      </div>
+    <% } %>
+  </div>
+</section>
+
+<script>
+(function(){
+  var COPIED = <%- JSON.stringify(t.cred_copied) %>;
+  var COPY = <%- JSON.stringify(t.cred_copy) %>;
+  document.querySelectorAll('[data-copy]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var v = btn.getAttribute('data-copy');
+      try { navigator.clipboard.writeText(v); } catch(e) {}
+      var orig = btn.textContent;
+      btn.textContent = COPIED;
+      setTimeout(function(){ btn.textContent = COPY; }, 1500);
+    });
+  });
+})();
+</script>
+
+<%- include('partials/footer') %>

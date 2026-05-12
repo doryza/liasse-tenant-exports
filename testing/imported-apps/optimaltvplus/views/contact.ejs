@@ -1,0 +1,82 @@
+<%- include('partials/header') %>
+<section class="page-header">
+  <div class="container">
+    <h1><%= t.contact_heading %></h1>
+    <p><%= t.contact_subheading %></p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="contact-grid">
+      <div class="contact-info">
+        <h2><%= t.footer_contact_us %></h2>
+        <% if (settings.contact_email || contactEmail) { %>
+          <div class="contact-item"><span class="contact-ico">📧</span><div><strong><%= t.form_email %></strong><a href="mailto:<%= settings.contact_email || contactEmail %>"><%= settings.contact_email || contactEmail %></a></div></div>
+        <% } %>
+        <% if (settings.contact_phone || contactPhone) { %>
+          <div class="contact-item"><span class="contact-ico">📱</span><div><strong><%= t.form_phone %></strong><a href="tel:<%= settings.contact_phone || contactPhone %>"><%= settings.contact_phone || contactPhone %></a></div></div>
+        <% } %>
+        <% if (settings.business_address) { %>
+          <div class="contact-item"><span class="contact-ico">📍</span><div><strong><%= lang === 'en' ? 'Address' : 'Adresse' %></strong><span><%= settings.business_address %></span></div></div>
+        <% } %>
+        <div class="contact-item"><span class="contact-ico">💬</span><div><strong>Support 24/7</strong><span><%= lang === 'en' ? 'We respond within 1 hour' : 'Nous répondons en moins d''une heure' %></span></div></div>
+      </div>
+      <div class="contact-form-wrap">
+        <form id="contactForm" class="contact-form">
+          <div class="form-row">
+            <label><%= t.form_name %> *</label>
+            <input type="text" name="name" required>
+          </div>
+          <div class="form-row">
+            <label><%= t.form_email %> *</label>
+            <input type="email" name="email" required>
+          </div>
+          <div class="form-row">
+            <label><%= t.form_phone %></label>
+            <input type="tel" name="phone">
+          </div>
+          <div class="form-row">
+            <label><%= t.form_subject %></label>
+            <input type="text" name="subject">
+          </div>
+          <div class="form-row">
+            <label><%= t.form_message %> *</label>
+            <textarea name="message" rows="6" required></textarea>
+          </div>
+          <button type="submit" class="btn-primary btn-lg" id="contactSubmit" style="background-color:#22c55e;color:#fff"><%= t.form_send %></button>
+          <div id="contactMsg" class="form-msg"></div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+(function(){
+  var form = document.getElementById('contactForm');
+  var btn = document.getElementById('contactSubmit');
+  var msg = document.getElementById('contactMsg');
+  var T_SENDING = <%- JSON.stringify(t.form_sending) %>;
+  var T_SEND = <%- JSON.stringify(t.form_send) %>;
+  var T_THANKS = <%- JSON.stringify(t.form_thanks) %>;
+  var T_ERROR = <%- JSON.stringify(t.form_error) %>;
+  if (!form) return;
+  form.addEventListener('submit', async function(e){
+    e.preventDefault();
+    btn.disabled = true; btn.textContent = T_SENDING; msg.textContent = ''; msg.className = 'form-msg';
+    var data = { name: form.name.value, email: form.email.value, phone: form.phone.value, subject: form.subject.value, message: form.message.value };
+    try {
+      var res = await fetch('api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+      var json = await res.json();
+      if (res.ok && json.success) {
+        msg.textContent = T_THANKS; msg.className = 'form-msg form-msg-success';
+        form.reset();
+      } else { msg.textContent = (json && json.error) || T_ERROR; msg.className = 'form-msg form-msg-error'; }
+    } catch (err) { msg.textContent = T_ERROR; msg.className = 'form-msg form-msg-error'; }
+    btn.disabled = false; btn.textContent = T_SEND;
+  });
+})();
+</script>
+
+<%- include('partials/footer') %>

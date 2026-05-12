@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="<%= typeof lang !== 'undefined' ? lang : 'fr' %>">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title><%= title %> — Admin</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body class="admin-body">
+<%- include('admin-sidebar') %>
+<main class="admin-main">
+  <header class="admin-page-header">
+    <div>
+      <h1><%= title %></h1>
+      <p class="page-subtitle" id="itemCount"></p>
+    </div>
+    <div class="header-actions">
+      <a href="admin" class="btn-secondary">← Dashboard</a>
+      <button class="btn-primary" id="addBtn" style="background-color:#22c55e;color:#fff">＋ Ajouter</button>
+    </div>
+  </header>
+  <div class="admin-content">
+    <div class="admin-toolbar">
+      <input type="text" id="searchInput" placeholder="🔍 Rechercher dans la liste…" class="admin-search">
+      <span class="admin-toolbar-info" id="toolbarInfo"></span>
+    </div>
+    <div class="table-wrap" id="tableWrap">
+      <table class="data-table">
+        <thead><tr id="tableHead"></tr></thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+    <div id="emptyState" class="admin-empty" style="display:none">
+      <div class="empty-emoji">📭</div>
+      <h3>Aucun élément</h3>
+      <p>Cliquez sur <strong>＋ Ajouter</strong> pour créer le premier <%= moduleLabel.toLowerCase() %>.</p>
+      <button class="btn-primary" id="emptyAddBtn" style="background-color:#22c55e;color:#fff">＋ Créer maintenant</button>
+    </div>
+  </div>
+</main>
+
+<div id="modal" class="modal" style="display:none" role="dialog" aria-modal="true">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 id="modalTitle">Ajouter</h2>
+      <button class="modal-close" id="modalClose" aria-label="Fermer">×</button>
+    </div>
+    <form id="itemForm" class="modal-form" onsubmit="return false"></form>
+    <div class="modal-footer">
+      <button type="button" class="btn-secondary" id="cancelBtn">Annuler</button>
+      <button type="button" class="btn-primary" id="saveBtn" style="background-color:#22c55e;color:#fff">💾 Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<div id="toastHost"></div>
+
+<script>
+const MODULE_KEY = <%- JSON.stringify(moduleKey) %>;
+const MODULE_LABEL = <%- JSON.stringify(moduleLabel) %>;
+const FIELDS = <%- JSON.stringify(fields) %>;
+let items = <%- JSON.stringify(items || []) %>;
+let editingId = null;
+
+const tableHead = document.getElementById('tableHead');
+const tableBody = document.getElementById('tableBody');
+const tableWrap = document.getElementById('tableWrap');
+const emptyState = document.getElementById('emptyState');
+const modal = document.getElementById('modal');
+const modalTitle = document.getElementById('modalTitle');
+const itemForm = document.getElementById('itemForm');
+const searchInput = document.getElementById('searchInput');
+const toolbarInfo = document.getElementById('toolbarInfo');
+const itemCount = document.getElementById('itemCount');
+
+function prettyLabel(name) {
+  return name.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+function escapeHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function escapeAttr(s) { return String(s).replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+
+function toast(msg, type) {
+  const host = document.getElementById('toastHost');
+  const el = document.createElement('div');
+  el.className = 'toast ' + (type ? 'toast-' + type : '');
+  el.textContent = (type === 'success' ? '✅ ' : type === 'error' ? '⚠️ ' : '') + msg;
+  host.appendChild(el);
+  setTimeout(() => { el.style.opacity = '0'; el.style.transition = 'opacity .3s'; }, 2400);
+  setTimeout(() => el.remove(), 2800);
+}
+
+function visibleCols() {
+  return FIELDS.filter(f => f.type !== 'textarea' && !f.hidden).slice(0, 5);
+}
+
+function renderHead() {
+  let html = '<th>ID</th>';
+  visibleCols().forEach(f => { html += '<th>' + prettyLabel(f.name) + '</th>'; });
+  html += '<th style="text-align:right">Actions</th>';
+  tableHead.innerHTML = html;
+}
+
+function renderCell(f, v, item) {
+  if (v === null || v === undefined || v === '') return '<span style="color:#9ca3af">—</span>';
+  if (f.type === 'boolean') return (v == 1 || v === true) ? '<span class="badge badge-active">Oui</span>' : '<span style="color:#9ca3af">Non</span>';
+  if (f.type === 'image' && v) return '<img src="' + escapeAttr(v) + '" style="width:44px;height:44px;object-fit:cover;border-radius:6px;border:1px solid #e5e7eb">';
+  if (f.type === 'select' && f.name === 'status') return '<span class="badge badge-' + escapeAttr(v) + '">' + escapeHtml(v) + '</span>';
+  if (f.name === 'price_cents' || f.name === 'amount_cents') return '<strong>' + (Number(v) / 100).toFixed(2) + ' $</strong>';
+  if (f.type === 'datetime' || f.type === 'date') { try { return escapeHtml(new Date(v).toLocaleDateString('fr-CA')); } catch (e) { return escapeHtml(String(v)); } }
+  if (typeof v === 'string' && v.length > 60) return escapeHtml(v.substring(0, 60) + '…');
+  return escapeHtml(String(v));
+}
+
+function renderRow(item) {
+  let html = '<td><strong>#' + item.id + '</strong></td>';
+  visibleCols().forEach(f => {
+    html += '<td>' + renderCell(f, item[f.name], item) + '</td>';
+  });
+  html += '<td class="actions-cell">'
+    + '<button class="btn-edit" data-id="' + item.id + '" title="Modifier">✏️ Modifier</button>'
+    + '<button class="btn-delete" data-id="' + item.id + '" title="Supprimer">🗑️</button>'
+    + '</td>';
+  return html;
+}
+
+function render() {
+  const q = searchInput.value.toLowerCase().trim();
+  let filtered = items;
+  if (q) filtered = items.filter(it => Object.values(it).some(v => v != null && String(v).toLowerCase().includes(q)));
+  itemCount.textContent = items.length + ' élément' + (items.length > 1 ? 's' : '') + ' au total';
+  toolbarInfo.textContent = q ? (filtered.length + ' résultat' + (filtered.length > 1 ? 's' : '') + ' affiché' + (filtered.length > 1 ? 's' : '')) : '';
+  tableBody.innerHTML = '';
+  if (items.length === 0) {
+    tableWrap.style.display = 'none';
+    emptyState.style.display = 'block';
+  } else if (filtered.length === 0) {
+    tableWrap.style.display = 'none';
+    emptyState.style.display = 'block';
+  } else {
+    tableWrap.style.display = 'block';
+    emptyState.style.display = 'none';
+    filtered.forEach(item => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = renderRow(item);
+      tableBody.appendChild(tr);
+    });
+    tableBody.querySelectorAll('.btn-edit').forEach(b => b.addEventListener('click', () => openEdit(parseInt(b.dataset.id))));
+    tableBody.querySelectorAll('.btn-delete').forEach(b => b.addEventListener('click', () => deleteItem(parseInt(b.dataset.id))));
+  }
+}
+
+function openAdd() {
+  editingId = null;
+  modalTitle.textContent = 'Ajouter — ' + MODULE_LABEL;
+  buildForm({});
+  modal.style.display = 'flex';
+}
+
+function openEdit(id) {
+  const item = items.find(i => i.id === id);
+  if (!item) return;
+  editingId = id;
+  modalTitle.textContent = 'Modifier #' + id + ' — ' + MODULE_LABEL;
+  buildForm(item);
+  modal.style.display = 'flex';
+}
+
+function closeModal() { modal.style.display = 'none'; }
+
+function buildForm(data) {
+  itemForm.innerHTML = '';
+  FIELDS.forEach(f => {
+    const wrap = document.createElement('div');
+    wrap.className = 'form-field';
+    const labelEl = document.createElement('label');
+    labelEl.innerHTML = (f.label || prettyLabel(f.name)) + (f.required ? ' <span class="required">*</span>' : '');
+    wrap.appendChild(labelEl);
+    let input;
+    const val = data[f.name];
+    if (f.type === 'textarea') {
+      input = document.createElement('textarea');
+      input.rows = 4;
+      input.value = val || '';
+      if (f.readonly) input.readOnly = true;
+    } else if (f.type === 'boolean') {
+      input = document.createElement('input');
+      input.type = 'checkbox';
+      input.checked = (val == 1 || val === true || (val === undefined && f.default));
+      wrap.classList.add('form-field-checkbox');
+      wrap.innerHTML = '';
+      wrap.appendChild(input);
+      labelEl.style.marginBottom = '0';
+      wrap.appendChild(labelEl);
+    } else if (f.type === 'select') {
+      input = document.createElement('select');
+      (f.options || []).forEach(opt => {
+        const o = document.createElement('option');
+        o.value = opt; o.textContent = opt;
+        if (val === opt) o.selected = true;
+        input.appendChild(o);
+      });
+    } else if (f.type === 'image') {
+      const container = document.createElement('div');
+      container.className = 'image-field';
+      input = document.createElement('input');
+      input.type = 'text';
+      input.placeholder = 'URL de l\'image';
+      input.value = val || '';
+      const preview = document.createElement('img');
+      preview.className = 'image-preview';
+      preview.style.display = val ? 'block' : 'none';
+      if (val) preview.src = val;
+      preview.onerror = () => { preview.style.display = 'none'; };
+      const controls = document.createElement('div');
+      controls.className = 'image-controls';
+      const fileInput = document.createElement('input');
+      fileInput.type = 'file';
+      fileInput.accept = 'image/*';
+      fileInput.style.display = 'none';
+      const uploadBtn = document.createElement('button');
+      uploadBtn.type = 'button';
+      uploadBtn.className = 'btn-secondary btn-sm';
+      uploadBtn.textContent = '📎 Téléverser une image';
+      uploadBtn.addEventListener('click', () => fileInput.click());
+      const clearBtn = document.createElement('button');
+      clearBtn.type = 'button';
+      clearBtn.className = 'btn-secondary btn-sm';
+      clearBtn.textContent = '✖ Retirer';
+      clearBtn.addEventListener('click', () => { input.value = ''; preview.style.display = 'none'; });
+      fileInput.addEventListener('change', async () => {
+        const file = fileInput.files[0];
+        if (!file) return;
+        if (file.size > 8 * 1024 * 1024) { toast('Fichier trop volumineux (max 8 Mo)', 'error'); return; }
+        const origText = uploadBtn.textContent;
+        uploadBtn.textContent = '⏳ Envoi…';
+        uploadBtn.disabled = true;
+        try {
+          const dataUri = await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(file); });
+          const res = await fetch('api/admin/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ dataUri, folder: MODULE_KEY }) });
+          const json = await res.json();
+          if (json.url) { input.value = json.url; preview.src = json.url; preview.style.display = 'block'; toast('Image téléversée', 'success'); }
+          else toast(json.error || 'Échec du téléversement', 'error');
+        } catch (e) { toast('Échec du téléversement', 'error'); }
+        uploadBtn.textContent = origText;
+        uploadBtn.disabled = false;
+      });
+      input.addEventListener('input', () => { if (input.value) { preview.src = input.value; preview.style.display = 'block'; } else preview.style.display = 'none'; });
+      container.appendChild(input);
+      container.appendChild(preview);
+      controls.appendChild(uploadBtn);
+      controls.appendChild(clearBtn);
+      controls.appendChild(fileInput);
+      container.appendChild(controls);
+      wrap.appendChild(container);
+      if (f.description) { const d = document.createElement('small'); d.className = 'field-desc'; d.textContent = f.description; wrap.appendChild(d); }
+      input.name = f.name;
+      itemForm.appendChild(wrap);
+      return;
+    } else if (f.type === 'datetime') {
+      input = document.createElement('input');
+      input.type = 'datetime-local';
+      if (val) { try { input.value = new Date(val).toISOString().slice(0, 16); } catch (e) {} }
+    } else if (f.type === 'date') {
+      input = document.createElement('input');
+      input.type = 'date';
+      if (val) { try { input.value = new Date(val).toISOString().slice(0, 10); } catch (e) {} }
+    } else if (f.type === 'number') {
+      input = document.createElement('input');
+      input.type = 'number';
+      if (f.step != null) input.step = f.step;
+      if (f.min != null) input.min = f.min;
+      if (f.max != null) input.max = f.max;
+      input.value = (val != null) ? val : (f.default != null ? f.default : '');
+    } else {
+      input = document.createElement('input');
+      input.type = (f.type === 'email') ? 'email' : (f.type === 'url' ? 'url' : 'text');
+      input.value = val || '';
+      if (f.readonly) input.readOnly = true;
+      if (f.maxLength) input.maxLength = f.maxLength;
+    }
+    input.name = f.name;
+    if (f.placeholder) input.placeholder = f.placeholder;
+    if (f.required) input.required = true;
+    if (f.type !== 'boolean') wrap.appendChild(input);
+    if (f.description) { const d = document.createElement('small'); d.className = 'field-desc'; d.textContent = f.description; wrap.appendChild(d); }
+    itemForm.appendChild(wrap);
+  });
+}
+
+async function save() {
+  const data = {};
+  let invalid = null;
+  FIELDS.forEach(f => {
+    const el = itemForm.querySelector('[name="' + f.name + '"]');
+    if (!el) return;
+    if (f.type === 'boolean') data[f.name] = el.checked ? 1 : 0;
+    else if (f.type === 'number') data[f.name] = el.value === '' ? null : Number(el.value);
+    else data[f.name] = el.value;
+    if (f.required && (data[f.name] === '' || data[f.name] === null)) invalid = f.name;
+  });
+  if (invalid) { toast('Le champ « ' + prettyLabel(invalid) + ' » est requis', 'error'); return; }
+  const saveBtn = document.getElementById('saveBtn');
+  const origText = saveBtn.textContent;
+  saveBtn.disabled = true;
+  saveBtn.textContent = '⏳ Enregistrement…';
+  try {
+    const url = editingId ? ('api/admin/' + MODULE_KEY + '/' + editingId) : ('api/admin/' + MODULE_KEY);
+    const res = await fetch(url, { method: editingId ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+    const json = await res.json();
+    if (!res.ok) { toast(json.error || 'Erreur lors de l\'enregistrement', 'error'); saveBtn.disabled = false; saveBtn.textContent = origText; return; }
+    toast(editingId ? 'Modifié avec succès' : 'Créé avec succès', 'success');
+    await reload();
+    closeModal();
+  } catch (e) { toast('Erreur réseau', 'error'); }
+  saveBtn.disabled = false;
+  saveBtn.textContent = origText;
+}
+
+async function deleteItem(id) {
+  if (!confirm('Êtes-vous sûr de vouloir supprimer cet élément ? Cette action est irréversible.')) return;
+  try {
+    const res = await fetch('api/admin/' + MODULE_KEY + '/' + id, { method: 'DELETE' });
+    if (!res.ok) { toast('Échec de la suppression', 'error'); return; }
+    toast('Élément supprimé', 'success');
+    await reload();
+  } catch (e) { toast('Erreur réseau', 'error'); }
+}
+
+async function reload() {
+  try {
+    const res = await fetch('api/admin/' + MODULE_KEY);
+    const json = await res.json();
+    items = json[MODULE_KEY] || [];
+    render();
+  } catch (e) {}
+}
+
+document.getElementById('addBtn').addEventListener('click', openAdd);
+document.getElementById('emptyAddBtn').addEventListener('click', openAdd);
+document.getElementById('modalClose').addEventListener('click', closeModal);
+document.getElementById('cancelBtn').addEventListener('click', closeModal);
+document.getElementById('saveBtn').addEventListener('click', save);
+searchInput.addEventListener('input', render);
+modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && modal.style.display === 'flex') closeModal(); });
+
+const sidebarToggle = document.getElementById('sidebarToggle');
+const sidebarClose = document.getElementById('sidebarClose');
+const sidebar = document.getElementById('adminSidebar');
+if (sidebarToggle) sidebarToggle.addEventListener('click', () => sidebar.classList.toggle('open'));
+if (sidebarClose) sidebarClose.addEventListener('click', () => sidebar.classList.remove('open'));
+
+renderHead();
+render();
+</script>
+</body>
+</html>

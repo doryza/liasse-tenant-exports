@@ -1,0 +1,537 @@
+{
+  "exportedAt": "2026-05-12T18:37:10.129Z",
+  "tables": {
+    "admin_invites": {
+      "columns": [
+        "id",
+        "email",
+        "token",
+        "role",
+        "status",
+        "invited_by",
+        "expires_at",
+        "accepted_at",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_webauthn_credentials": {
+      "columns": [
+        "id",
+        "admin_user_id",
+        "credential_id",
+        "public_key",
+        "counter",
+        "device_name",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_users": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "password_hash",
+        "display_name",
+        "role",
+        "active",
+        "activation_token",
+        "invited_by",
+        "invite_token",
+        "invite_expires_at",
+        "last_login_at",
+        "is_active",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_settings": {
+      "columns": [
+        "key",
+        "value",
+        "updated_at"
+      ],
+      "totalRows": 49,
+      "sampleRows": [
+        {
+          "key": "contact_email",
+          "value": null,
+          "updated_at": "2026-05-12T18:34:50.247Z"
+        },
+        {
+          "key": "contact_phone",
+          "value": null,
+          "updated_at": "2026-05-12T18:34:50.258Z"
+        },
+        {
+          "key": "business_name",
+          "value": null,
+          "updated_at": "2026-05-12T18:34:50.268Z"
+        },
+        {
+          "key": "business_address",
+          "value": null,
+          "updated_at": "2026-05-12T18:34:50.282Z"
+        },
+        {
+          "key": "tagline_fr",
+          "value": "L'IPTV nouvelle génération",
+          "updated_at": "2026-05-12T18:34:50.293Z"
+        },
+        {
+          "key": "tagline_en",
+          "value": "Next-generation IPTV",
+          "updated_at": "2026-05-12T18:34:50.302Z"
+        },
+        {
+          "key": "hero_title_fr",
+          "value": "Streaming illimité en qualité Ultra HD",
+          "updated_at": "2026-05-12T18:34:50.312Z"
+        },
+        {
+          "key": "hero_title_en",
+          "value": "Unlimited streaming in Ultra HD quality",
+          "updated_at": "2026-05-12T18:34:50.321Z"
+        },
+        {
+          "key": "hero_subtitle_fr",
+          "value": "Plus de 10 000 chaînes en direct, films et séries à la demande. Disponible sur tous vos appareils.",
+          "updated_at": "2026-05-12T18:34:50.328Z"
+        },
+        {
+          "key": "hero_subtitle_en",
+          "value": "Over 10,000 live channels, movies and series on demand. Available on all your devices.",
+          "updated_at": "2026-05-12T18:34:50.337Z"
+        }
+      ]
+    },
+    "site_visits": {
+      "columns": [
+        "id",
+        "path",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "posts": {
+      "columns": [
+        "id",
+        "title",
+        "content",
+        "image_url",
+        "category",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Nouvelles chaînes ajoutées en novembre",
+          "content": "Ce mois-ci, nous avons ajouté plus de 200 nouvelles chaînes à notre catalogue, incluant des chaînes sportives internationales et des chaînes premium en 4K. Connectez-vous à votre espace membre pour les découvrir.",
+          "image_url": null,
+          "category": "Nouveautés",
+          "published": 1,
+          "created_at": "2026-05-12T18:34:50.692Z",
+          "updated_at": "2026-05-12T18:34:50.692Z"
+        },
+        {
+          "id": 2,
+          "title": "Comment installer Optimal TV Plus sur votre Smart TV",
+          "content": "L'installation est simple et rapide. Étape 1: Téléchargez l'application IPTV Smarters Pro. Étape 2: Entrez vos identifiants reçus par courriel. Étape 3: Profitez! Le tout en moins de 5 minutes.",
+          "image_url": null,
+          "category": "Guides",
+          "published": 1,
+          "created_at": "2026-05-12T18:34:50.699Z",
+          "updated_at": "2026-05-12T18:34:50.699Z"
+        },
+        {
+          "id": 3,
+          "title": "Promotion spéciale: -20% sur les abonnements annuels",
+          "content": "Pour une durée limitée, économisez 20% sur tous nos forfaits annuels. Utilisez le code promo IPTV20 lors de votre commande.",
+          "image_url": null,
+          "category": "Promotions",
+          "published": 1,
+          "created_at": "2026-05-12T18:34:50.707Z",
+          "updated_at": "2026-05-12T18:34:50.707Z"
+        },
+        {
+          "id": 4,
+          "title": "Les meilleurs appareils pour regarder l'IPTV",
+          "content": "Découvrez notre sélection des meilleurs appareils compatibles avec notre service: Amazon Fire TV Stick 4K, MAG 524, Formuler Z11, et bien plus.",
+          "image_url": null,
+          "category": "Guides",
+          "published": 1,
+          "created_at": "2026-05-12T18:34:50.719Z",
+          "updated_at": "2026-05-12T18:34:50.719Z"
+        }
+      ]
+    },
+    "plans": {
+      "columns": [
+        "id",
+        "name",
+        "name_en",
+        "description",
+        "description_en",
+        "price_cents",
+        "duration_days",
+        "features",
+        "features_en",
+        "image_url",
+        "badge",
+        "featured",
+        "sort_order",
+        "active",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "name": "Essentiel",
+          "name_en": "Essential",
+          "description": "Idéal pour découvrir le service.",
+          "description_en": "Perfect to discover the service.",
+          "price_cents": 1499,
+          "duration_days": 30,
+          "features": "5 000+ chaînes\nQualité HD 1080p\n1 appareil simultané\nSupport par courriel\nVOD inclus",
+          "features_en": "5,000+ channels\nHD 1080p quality\n1 simultaneous device\nEmail support\nVOD included",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778609735/tapavis_tenant_optimaltvplus/build_optimaltvplus_1778609735474.png",
+          "badge": null,
+          "featured": 0,
+          "sort_order": 1,
+          "active": 1,
+          "created_at": "2026-05-12T18:34:50.440Z",
+          "updated_at": "2026-05-12T18:34:50.440Z"
+        },
+        {
+          "id": 2,
+          "name": "Famille",
+          "name_en": "Family",
+          "description": "Le meilleur rapport qualité-prix.",
+          "description_en": "Best value for the family.",
+          "price_cents": 2499,
+          "duration_days": 30,
+          "features": "10 000+ chaînes\nQualité 4K Ultra HD\n3 appareils simultanés\nSupport prioritaire 24/7\nVOD + Séries premium\nGuide TV intégré",
+          "features_en": "10,000+ channels\n4K Ultra HD quality\n3 simultaneous devices\n24/7 priority support\nVOD + Premium series\nIntegrated TV guide",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778609727/tapavis_tenant_optimaltvplus/build_optimaltvplus_1778609727042.png",
+          "badge": "POPULAIRE",
+          "featured": 1,
+          "sort_order": 2,
+          "active": 1,
+          "created_at": "2026-05-12T18:34:50.447Z",
+          "updated_at": "2026-05-12T18:34:50.447Z"
+        },
+        {
+          "id": 3,
+          "name": "Premium",
+          "name_en": "Premium",
+          "description": "L'expérience ultime sans compromis.",
+          "description_en": "The ultimate no-compromise experience.",
+          "price_cents": 3999,
+          "duration_days": 30,
+          "features": "15 000+ chaînes mondiales\nQualité 4K HDR\n5 appareils simultanés\nSupport VIP dédié 24/7\nVOD illimité + Adulte\nChaînes PPV incluses\nEnregistrement cloud",
+          "features_en": "15,000+ global channels\n4K HDR quality\n5 simultaneous devices\nDedicated VIP 24/7 support\nUnlimited VOD + Adult\nPPV channels included\nCloud recording",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778609717/tapavis_tenant_optimaltvplus/build_optimaltvplus_1778609717593.png",
+          "badge": "VIP",
+          "featured": 0,
+          "sort_order": 3,
+          "active": 1,
+          "created_at": "2026-05-12T18:34:50.457Z",
+          "updated_at": "2026-05-12T18:34:50.457Z"
+        },
+        {
+          "id": 4,
+          "name": "Annuel Famille",
+          "name_en": "Annual Family",
+          "description": "12 mois au prix de 10 - économisez 50$.",
+          "description_en": "12 months at the price of 10 - save $50.",
+          "price_cents": 24999,
+          "duration_days": 365,
+          "features": "10 000+ chaînes\nQualité 4K Ultra HD\n3 appareils simultanés\nSupport 24/7\nÉconomie de 50$\nGarantie de remboursement 7 jours",
+          "features_en": "10,000+ channels\n4K Ultra HD quality\n3 simultaneous devices\n24/7 support\n$50 savings\n7-day money back",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778609727/tapavis_tenant_optimaltvplus/build_optimaltvplus_1778609727042.png",
+          "badge": "MEILLEURE OFFRE",
+          "featured": 0,
+          "sort_order": 4,
+          "active": 1,
+          "created_at": "2026-05-12T18:34:50.466Z",
+          "updated_at": "2026-05-12T18:34:50.466Z"
+        }
+      ]
+    },
+    "orders": {
+      "columns": [
+        "id",
+        "user_id",
+        "plan_id",
+        "customer_name",
+        "customer_email",
+        "customer_phone",
+        "amount_cents",
+        "currency",
+        "status",
+        "payment_method",
+        "payment_ref",
+        "notes",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "subscriptions": {
+      "columns": [
+        "id",
+        "user_id",
+        "plan_id",
+        "order_id",
+        "status",
+        "starts_at",
+        "expires_at",
+        "m3u_url",
+        "credentials_username",
+        "credentials_password",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "testimonials": {
+      "columns": [
+        "id",
+        "author",
+        "role",
+        "content",
+        "content_en",
+        "rating",
+        "avatar_url",
+        "image_url",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 5,
+      "sampleRows": [
+        {
+          "id": 1,
+          "author": "Mathieu G.",
+          "role": "Montréal, QC",
+          "content": "Le meilleur service IPTV que j'ai essayé! Aucune coupure, qualité 4K impeccable et le support client répond en quelques minutes. Je recommande à 100%.",
+          "content_en": "The best IPTV service I have tried! No cuts, impeccable 4K quality and customer support responds in minutes. 100% recommended.",
+          "rating": 5,
+          "avatar_url": null,
+          "image_url": null,
+          "published": 1,
+          "created_at": "2026-05-12T18:34:50.487Z",
+          "updated_at": "2026-05-12T18:34:50.487Z"
+        },
+        {
+          "id": 2,
+          "author": "Sophie R.",
+          "role": "Québec, QC",
+          "content": "Je regarde toutes les chaînes francophones et internationales sur ma Smart TV. L'installation a pris moins de 5 minutes! Excellent rapport qualité-prix.",
+          "content_en": "I watch all French-language and international channels on my Smart TV. Setup took less than 5 minutes! Excellent value.",
+          "rating": 5,
+          "avatar_url": null,
+          "image_url": null,
+          "published": 1,
+          "created_at": "2026-05-12T18:34:50.495Z",
+          "updated_at": "2026-05-12T18:34:50.495Z"
+        },
+        {
+          "id": 3,
+          "author": "Karim B.",
+          "role": "Laval, QC",
+          "content": "Plus besoin du câble! Pour le prix d'un mois chez le câblodistributeur, j'ai 1 an de chaînes du monde entier. Service au top.",
+          "content_en": "No more cable! For the price of one month with the cable provider, I get 1 year of worldwide channels. Top service.",
+          "rating": 5,
+          "avatar_url": null,
+          "image_url": null,
+          "published": 1,
+          "created_at": "2026-05-12T18:34:50.503Z",
+          "updated_at": "2026-05-12T18:34:50.503Z"
+        },
+        {
+          "id": 4,
+          "author": "Élodie T.",
+          "role": "Sherbrooke, QC",
+          "content": "Le forfait Famille est parfait, je l'utilise sur 3 appareils en même temps. Le contenu jeunesse pour les enfants est fantastique.",
+          "content_en": "The Family plan is perfect, I use it on 3 devices at the same time. The kids content is fantastic.",
+          "rating": 5,
+          "avatar_url": null,
+          "image_url": null,
+          "published": 1,
+          "created_at": "2026-05-12T18:34:50.514Z",
+          "updated_at": "2026-05-12T18:34:50.514Z"
+        },
+        {
+          "id": 5,
+          "author": "Daniel L.",
+          "role": "Gatineau, QC",
+          "content": "Fan de hockey et de soccer, j'ai accès à toutes les chaînes sportives. Le streaming est fluide même en 4K. Bravo!",
+          "content_en": "Hockey and soccer fan, I have access to all sports channels. Streaming is smooth even in 4K. Bravo!",
+          "rating": 5,
+          "avatar_url": null,
+          "image_url": null,
+          "published": 1,
+          "created_at": "2026-05-12T18:34:50.530Z",
+          "updated_at": "2026-05-12T18:34:50.530Z"
+        }
+      ]
+    },
+    "channels": {
+      "columns": [
+        "id",
+        "name",
+        "category",
+        "country",
+        "logo_url",
+        "image_url",
+        "featured",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 12,
+      "sampleRows": [
+        {
+          "id": 1,
+          "name": "TVA Sports",
+          "category": "Sport",
+          "country": "Canada",
+          "logo_url": null,
+          "image_url": null,
+          "featured": 1,
+          "created_at": "2026-05-12T18:34:50.558Z",
+          "updated_at": "2026-05-12T18:34:50.558Z"
+        },
+        {
+          "id": 2,
+          "name": "RDS",
+          "category": "Sport",
+          "country": "Canada",
+          "logo_url": null,
+          "image_url": null,
+          "featured": 1,
+          "created_at": "2026-05-12T18:34:50.570Z",
+          "updated_at": "2026-05-12T18:34:50.570Z"
+        },
+        {
+          "id": 3,
+          "name": "beIN Sports",
+          "category": "Sport",
+          "country": "International",
+          "logo_url": null,
+          "image_url": null,
+          "featured": 1,
+          "created_at": "2026-05-12T18:34:50.577Z",
+          "updated_at": "2026-05-12T18:34:50.577Z"
+        },
+        {
+          "id": 4,
+          "name": "Sky Sports",
+          "category": "Sport",
+          "country": "Royaume-Uni",
+          "logo_url": null,
+          "image_url": null,
+          "featured": 1,
+          "created_at": "2026-05-12T18:34:50.585Z",
+          "updated_at": "2026-05-12T18:34:50.585Z"
+        },
+        {
+          "id": 5,
+          "name": "HBO",
+          "category": "Cinéma",
+          "country": "États-Unis",
+          "logo_url": null,
+          "image_url": null,
+          "featured": 1,
+          "created_at": "2026-05-12T18:34:50.593Z",
+          "updated_at": "2026-05-12T18:34:50.593Z"
+        },
+        {
+          "id": 6,
+          "name": "Netflix Live",
+          "category": "Cinéma",
+          "country": "International",
+          "logo_url": null,
+          "image_url": null,
+          "featured": 0,
+          "created_at": "2026-05-12T18:34:50.607Z",
+          "updated_at": "2026-05-12T18:34:50.607Z"
+        },
+        {
+          "id": 7,
+          "name": "Disney+",
+          "category": "Famille",
+          "country": "International",
+          "logo_url": null,
+          "image_url": null,
+          "featured": 1,
+          "created_at": "2026-05-12T18:34:50.618Z",
+          "updated_at": "2026-05-12T18:34:50.618Z"
+        },
+        {
+          "id": 8,
+          "name": "TF1",
+          "category": "Généraliste",
+          "country": "France",
+          "logo_url": null,
+          "image_url": null,
+          "featured": 1,
+          "created_at": "2026-05-12T18:34:50.632Z",
+          "updated_at": "2026-05-12T18:34:50.632Z"
+        },
+        {
+          "id": 9,
+          "name": "Radio-Canada",
+          "category": "Généraliste",
+          "country": "Canada",
+          "logo_url": null,
+          "image_url": null,
+          "featured": 1,
+          "created_at": "2026-05-12T18:34:50.644Z",
+          "updated_at": "2026-05-12T18:34:50.644Z"
+        },
+        {
+          "id": 10,
+          "name": "CNN",
+          "category": "Actualités",
+          "country": "États-Unis",
+          "logo_url": null,
+          "image_url": null,
+          "featured": 0,
+          "created_at": "2026-05-12T18:34:50.657Z",
+          "updated_at": "2026-05-12T18:34:50.657Z"
+        }
+      ]
+    },
+    "submissions": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "phone",
+        "subject",
+        "message",
+        "status",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    }
+  }
+}

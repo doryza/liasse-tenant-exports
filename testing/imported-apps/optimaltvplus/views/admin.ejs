@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tableau de bord — <%= t.site_title %></title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body class="admin-body">
+<%- include('partials/admin-sidebar') %>
+<main class="admin-main">
+  <header class="admin-page-header">
+    <div>
+      <h1>Tableau de bord</h1>
+      <p class="page-subtitle">Vue d'ensemble de votre activité IPTV</p>
+    </div>
+    <div class="header-actions">
+      <a href="." target="_blank" class="btn-secondary">🌐 Voir le site</a>
+    </div>
+  </header>
+  <div class="admin-content">
+    <section class="kpi-section">
+      <h2 class="section-label">📊 Indicateurs clés</h2>
+      <div class="stats-grid">
+        <div class="stat-card brand">
+          <div class="stat-ico">💰</div>
+          <div class="stat-body"><strong><%= (stats.revenue / 100).toFixed(2) %> $</strong><span>Revenus totaux</span></div>
+        </div>
+        <div class="stat-card success">
+          <div class="stat-ico">📺</div>
+          <div class="stat-body"><strong><%= stats.activeSubs %></strong><span>Abonnements actifs</span></div>
+        </div>
+        <div class="stat-card highlight">
+          <div class="stat-ico">🧾</div>
+          <div class="stat-body"><strong><%= stats.pendingOrders %></strong><span>Commandes en attente</span></div>
+        </div>
+        <div class="stat-card success-soft">
+          <div class="stat-ico">✅</div>
+          <div class="stat-body"><strong><%= stats.paidOrders %></strong><span>Commandes payées</span></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-ico">👥</div>
+          <div class="stat-body"><strong><%= stats.userCount %></strong><span>Utilisateurs inscrits</span></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-ico">🔔</div>
+          <div class="stat-body"><strong><%= stats.pushCount %></strong><span>Abonnés push</span></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-ico">👁️</div>
+          <div class="stat-body"><strong><%= stats.totalVisits %></strong><span>Visites totales</span></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-ico">📈</div>
+          <div class="stat-body"><strong><%= stats.recentVisits %></strong><span>Visites · 7 jours</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="dashboard-grid">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>🧾 Commandes récentes</h2>
+          <a href="admin/orders" class="panel-link">Voir tout →</a>
+        </div>
+        <% if (recentOrders && recentOrders.length > 0) { %>
+          <div class="panel-body table-wrap">
+            <table class="data-table compact">
+              <thead><tr><th>#</th><th>Client</th><th>Forfait</th><th>Montant</th><th>Statut</th></tr></thead>
+              <tbody>
+                <% recentOrders.forEach(function(o){ %>
+                  <tr>
+                    <td><strong>#<%= o.id %></strong></td>
+                    <td><%= o.customer_name || '—' %></td>
+                    <td><%= o.plan_name || '—' %></td>
+                    <td><strong><%= (o.amount_cents / 100).toFixed(2) %> $</strong></td>
+                    <td><span class="badge badge-<%= o.status %>"><%= statusLabel(o.status, t) %></span></td>
+                  </tr>
+                <% }); %>
+              </tbody>
+            </table>
+          </div>
+        <% } else { %>
+          <div class="panel-empty">
+            <div class="empty-emoji">🧾</div>
+            <p>Aucune commande pour le moment.</p>
+          </div>
+        <% } %>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h2>✉️ Nouveaux messages</h2>
+          <a href="admin/submissions" class="panel-link">Voir tout →</a>
+        </div>
+        <% if (recentSubmissions && recentSubmissions.length > 0) { %>
+          <div class="panel-body">
+            <% recentSubmissions.forEach(function(s){ %>
+              <div class="message-item">
+                <div class="msg-head">
+                  <strong><%= s.name || 'Anonyme' %></strong>
+                  <span class="badge badge-new">Nouveau</span>
+                </div>
+                <div class="msg-meta"><%= s.email || '—' %></div>
+                <div class="message-subject"><%= s.subject || 'Sans sujet' %></div>
+                <p class="msg-excerpt"><%= (s.message || '').substring(0, 140) %><% if ((s.message || '').length > 140) { %>…<% } %></p>
+              </div>
+            <% }); %>
+          </div>
+        <% } else { %>
+          <div class="panel-empty">
+            <div class="empty-emoji">📭</div>
+            <p>Aucun nouveau message.</p>
+          </div>
+        <% } %>
+      </div>
+    </section>
+
+    <section class="modules-quick">
+      <h2 class="section-label">⚙️ Gestion du contenu</h2>
+      <div class="modules-grid">
+        <a href="admin/plans" class="module-card"><span class="module-ico">📦</span><strong>Forfaits</strong><span>Prix, durée, fonctionnalités</span></a>
+        <a href="admin/orders" class="module-card"><span class="module-ico">🧾</span><strong>Commandes</strong><span>Approuver les paiements</span></a>
+        <a href="admin/subscriptions" class="module-card"><span class="module-ico">👥</span><strong>Abonnements</strong><span>Identifiants IPTV clients</span></a>
+        <a href="admin/posts" class="module-card"><span class="module-ico">📝</span><strong>Articles</strong><span>Blog &amp; nouvelles</span></a>
+        <a href="admin/testimonials" class="module-card"><span class="module-ico">⭐</span><strong>Témoignages</strong><span>Avis clients publiés</span></a>
+        <a href="admin/channels" class="module-card"><span class="module-ico">📺</span><strong>Chaînes</strong><span>Catalogue de chaînes TV</span></a>
+        <a href="admin/submissions" class="module-card"><span class="module-ico">✉️</span><strong>Messages</strong><span>Demandes de contact</span></a>
+      </div>
+    </section>
+  </div>
+</main>
+<script>
+const sidebarToggle = document.getElementById('sidebarToggle');
+const sidebarClose = document.getElementById('sidebarClose');
+const sidebar = document.getElementById('adminSidebar');
+if (sidebarToggle) sidebarToggle.addEventListener('click', () => sidebar.classList.toggle('open'));
+if (sidebarClose) sidebarClose.addEventListener('click', () => sidebar.classList.remove('open'));
+</script>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#22c55e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="description" content="<%= t.hero_subtitle %>">
+<title><%= typeof pageTitle !== 'undefined' ? pageTitle + ' - ' : '' %><%= t.site_title %></title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="<%= (typeof appIconUrl !== 'undefined' && appIconUrl) ? appIconUrl : 'icon-192.png' %>">
+<link rel="apple-touch-icon" href="<%= (typeof appIconUrl !== 'undefined' && appIconUrl) ? appIconUrl : 'icon-192.png' %>">
+<link rel="stylesheet" href="public/css/styles.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="nav-container">
+    <a href="." class="logo">
+      <img src="<%= (settings._p_nav_logo_url) ? settings._p_nav_logo_url : ((typeof appIconUrl !== 'undefined' && appIconUrl) ? appIconUrl : '') %>" alt="Logo" class="logo-img" onerror="this.style.display='none'">
+      <span class="logo-text"><%= t.site_title %></span>
+    </a>
+    <nav class="desktop-nav">
+      <a href="."><%= t.nav_home %></a>
+      <a href="plans"><%= t.nav_plans %></a>
+      <a href="features"><%= t.nav_features %></a>
+      <a href="contact"><%= t.nav_contact %></a>
+      <a href="account" data-auth-only style="display:none"><%= t.nav_account %></a>
+    </nav>
+    <div class="nav-right">
+      <div class="lang-toggle">
+        <a href="?lang=fr" class="<%= lang === 'fr' ? 'active' : '' %>">FR</a>
+        <span>|</span>
+        <a href="?lang=en" class="<%= lang === 'en' ? 'active' : '' %>">EN</a>
+      </div>
+      <a href="#" class="btn-login" data-login-btn style="background-color:#22c55e;color:#fff"><%= t.nav_login %></a>
+      <a href="account" class="btn-login" data-auth-only style="display:none;background-color:#22c55e;color:#fff"><%= t.nav_account %></a>
+      <button class="hamburger" id="hamburgerBtn" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="."><%= t.nav_home %></a>
+    <a href="plans"><%= t.nav_plans %></a>
+    <a href="features"><%= t.nav_features %></a>
+    <a href="contact"><%= t.nav_contact %></a>
+    <a href="account" data-auth-only style="display:none"><%= t.nav_account %></a>
+    <a href="#" data-login-btn><%= t.nav_login %></a>
+    <div class="mobile-lang">
+      <a href="?lang=fr" class="<%= lang === 'fr' ? 'active' : '' %>">Français</a>
+      <a href="?lang=en" class="<%= lang === 'en' ? 'active' : '' %>">English</a>
+    </div>
+  </div>
+</header>
+<script>
+(function(){
+  var btn = document.getElementById('hamburgerBtn');
+  var menu = document.getElementById('mobileMenu');
+  if (btn && menu) {
+    btn.addEventListener('click', function(){
+      btn.classList.toggle('open');
+      menu.classList.toggle('open');
+    });
+  }
+})();
+</script>

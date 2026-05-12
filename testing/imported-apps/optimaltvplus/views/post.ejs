@@ -1,0 +1,42 @@
+<%- include('partials/header') %>
+<section class="page-header">
+  <div class="container">
+    <% if (post.category) { %><span class="post-cat"><%= post.category %></span><% } %>
+    <h1><%= post.title %></h1>
+    <p><%= t.published_on %> <%= formatDate(post.created_at, lang) %></p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container container-narrow">
+    <% if (post.image_url) { %><img src="<%= post.image_url %>" alt="<%= post.title %>" class="post-hero-img"><% } %>
+    <div class="post-body">
+      <% (post.content || '').split('\n').filter(function(p){return p.trim()}).forEach(function(p){ %>
+        <p><%= p %></p>
+      <% }); %>
+    </div>
+    <a href="." class="btn-outline" style="margin-top:2rem">← <%= t.back_home %></a>
+  </div>
+</section>
+
+<% if (related && related.length > 0) { %>
+<section class="section section-blog">
+  <div class="container">
+    <h2><%= lang === 'en' ? 'Related posts' : 'Articles connexes' %></h2>
+    <div class="posts-grid">
+      <% related.forEach(function(p){ %>
+        <a href="post/<%= p.id %>" class="post-card">
+          <% if (p.image_url) { %><img src="<%= p.image_url %>" alt="<%= p.title %>"><% } else { %><div class="post-img-placeholder">📰</div><% } %>
+          <div class="post-card-body">
+            <% if (p.category) { %><span class="post-cat"><%= p.category %></span><% } %>
+            <h3><%= p.title %></h3>
+            <span class="post-read"><%= t.read_more %> →</span>
+          </div>
+        </a>
+      <% }); %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,32 @@
+<footer class="site-footer">
+  <div class="footer-container">
+    <div class="footer-col">
+      <h4><%= t.site_title %></h4>
+      <p><%= t.footer_about %></p>
+      <button data-push-btn class="btn-outline-light" style="margin-top:1rem">🔔 <%= t.enable_notifs %></button>
+    </div>
+    <div class="footer-col">
+      <h4><%= t.footer_quick_links %></h4>
+      <ul>
+        <li><a href="."><%= t.nav_home %></a></li>
+        <li><a href="plans"><%= t.nav_plans %></a></li>
+        <li><a href="features"><%= t.nav_features %></a></li>
+        <li><a href="contact"><%= t.nav_contact %></a></li>
+        <li><a href="account" data-auth-only style="display:none"><%= t.nav_account %></a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4><%= t.footer_contact_us %></h4>
+      <% if (settings.contact_email || contactEmail) { %><p>📧 <a href="mailto:<%= settings.contact_email || contactEmail %>"><%= settings.contact_email || contactEmail %></a></p><% } %>
+      <% if (settings.contact_phone || contactPhone) { %><p>📱 <a href="tel:<%= settings.contact_phone || contactPhone %>"><%= settings.contact_phone || contactPhone %></a></p><% } %>
+      <% if (settings.business_address) { %><p>📍 <%= settings.business_address %></p><% } %>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© <%= new Date().getFullYear() %> <%= settings.business_name || businessName %>. <%= t.footer_rights %></p>
+    <p class="footer-legal"><%= t.footer_legal %></p>
+  </div>
+</footer>
+<script src="public/js/app.js"></script>
+</body>
+</html>
