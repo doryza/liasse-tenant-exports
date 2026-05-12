@@ -1,12 +1,22 @@
-<aside class="admin-sidebar">
+<% var cp = (typeof currentPath !== 'undefined' && currentPath) ? currentPath : ''; %>
+<header class="admin-topbar">
+<button type="button" class="admin-topbar-toggle" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="adminSidebar">
+<span class="admin-topbar-toggle-bar"></span>
+<span class="admin-topbar-toggle-bar"></span>
+<span class="admin-topbar-toggle-bar"></span>
+</button>
+<a class="admin-topbar-brand" href="admin"><span class="logo-actu">Actu</span><span class="logo-oli">oli</span><span class="admin-topbar-brand-tag">Admin</span></a>
+<a class="admin-topbar-action" href="." target="_blank" rel="noopener" aria-label="Voir le site public" title="Voir le site public">↗</a>
+</header>
+<div class="admin-backdrop" data-close-sidebar aria-hidden="true"></div>
+<aside class="admin-sidebar" id="adminSidebar" aria-label="Administration">
 <div class="admin-brand">
 <a href="admin">
 <span class="admin-brand-name"><span class="logo-actu">Actu</span><span class="logo-oli">oli</span></span>
 <span class="admin-brand-tag">Administration</span>
 </a>
 </div>
-<nav class="admin-nav" aria-label="Administration">
-<% var cp = (typeof currentPath !== 'undefined' && currentPath) ? currentPath : ''; %>
+<nav class="admin-nav" aria-label="Sections d'administration">
 <a href="admin" class="admin-nav-link<%= cp === 'admin' ? ' active' : '' %>"><span class="admin-nav-icon" aria-hidden="true">📊</span><span class="admin-nav-label">Tableau de bord</span></a>
 <div class="admin-nav-section">Contenu</div>
 <a href="admin/posts" class="admin-nav-link<%= cp === 'admin/posts' ? ' active' : '' %>"><span class="admin-nav-icon" aria-hidden="true">📝</span><span class="admin-nav-label">Articles</span></a>
@@ -24,3 +34,22 @@
 <a href="admin/logout"><span class="admin-nav-icon" aria-hidden="true">🚪</span><span class="admin-nav-label">Déconnexion</span></a>
 </div>
 </aside>
+<script>
+(function(){
+var body = document.body;
+var btn = document.querySelector('.admin-topbar-toggle');
+var sidebar = document.getElementById('adminSidebar');
+var backdrop = document.querySelector('.admin-backdrop');
+if (!btn || !sidebar) return;
+function setOpen(open){
+body.classList.toggle('admin-drawer-open', open);
+btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+if (backdrop) backdrop.setAttribute('aria-hidden', open ? 'false' : 'true');
+}
+btn.addEventListener('click', function(){ setOpen(!body.classList.contains('admin-drawer-open')); });
+if (backdrop) backdrop.addEventListener('click', function(){ setOpen(false); });
+sidebar.addEventListener('click', function(e){ if (e.target.closest('a')) setOpen(false); });
+document.addEventListener('keydown', function(e){ if (e.key === 'Escape') setOpen(false); });
+window.addEventListener('resize', function(){ if (window.innerWidth > 900) setOpen(false); });
+})();
+</script>
