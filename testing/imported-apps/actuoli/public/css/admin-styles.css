@@ -4,21 +4,25 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;
 img{max-width:100%;display:block}
 a{color:var(--admin-brand);text-decoration:none}
 button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid rgba(239,68,68,0.45);outline-offset:2px}
-.admin-layout{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
-.admin-sidebar{background:#0f172a;color:#cbd5e1;padding:24px 0;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
-.admin-brand{padding:0 20px 20px;border-bottom:1px solid #1e293b}
-.admin-brand a{color:#fff;font-size:1.5rem;font-weight:900;text-decoration:none;display:block}
+.admin-layout{display:grid;grid-template-columns:248px 1fr;min-height:100vh}
+.admin-sidebar{background:#0f172a;color:#cbd5e1;padding:20px 0 16px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;border-right:1px solid #111827}
+.admin-brand{padding:4px 20px 18px;border-bottom:1px solid #1e293b;margin-bottom:8px}
+.admin-brand a{color:#fff;text-decoration:none;display:flex;flex-direction:column;gap:4px;line-height:1.1}
+.admin-brand-name{font-size:1.5rem;font-weight:900;letter-spacing:-0.01em}
+.admin-brand-tag{font-size:0.62rem;color:#94a3b8;font-weight:700;letter-spacing:0.14em;text-transform:uppercase}
 .admin-brand .logo-actu{color:#fff}
 .admin-brand .logo-oli{color:var(--admin-brand)}
-.admin-brand small{font-size:0.65rem;color:#94a3b8;font-weight:600;letter-spacing:0.08em;display:block;margin-top:4px}
-.admin-nav{display:flex;flex-direction:column;padding:20px 0;flex:1}
-.admin-nav-section{padding:0 20px 8px;font-size:0.68rem;text-transform:uppercase;letter-spacing:0.08em;color:#64748b;font-weight:700;margin-top:8px}
-.admin-nav a{padding:11px 20px;color:#cbd5e1;text-decoration:none;font-weight:500;font-size:0.92rem;border-left:3px solid transparent;transition:all 0.15s;display:flex;align-items:center;gap:10px}
-.admin-nav a:hover{background:rgba(239,68,68,0.08);color:#fff;border-left-color:rgba(239,68,68,0.5)}
-.admin-nav a.active{background:rgba(239,68,68,0.15);color:#fff;border-left-color:var(--admin-brand);font-weight:700;background-color:rgba(239,68,68,0.15)}
-.admin-foot{padding:20px;border-top:1px solid #1e293b;display:flex;flex-direction:column;gap:8px}
-.admin-foot a{color:#94a3b8;text-decoration:none;font-size:0.88rem;padding:6px 0}
+.admin-nav{display:flex;flex-direction:column;padding:8px 0;flex:1;gap:1px}
+.admin-nav-section{padding:14px 20px 6px;font-size:0.66rem;text-transform:uppercase;letter-spacing:0.1em;color:#64748b;font-weight:700}
+.admin-nav-link{padding:10px 20px;color:#cbd5e1;text-decoration:none;font-weight:500;font-size:0.92rem;border-left:3px solid transparent;transition:background 0.15s,color 0.15s,border-color 0.15s;display:flex;align-items:center;gap:12px}
+.admin-nav-icon{display:inline-flex;align-items:center;justify-content:center;width:22px;flex-shrink:0;font-size:1.05rem;line-height:1;text-align:center}
+.admin-nav-label{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.admin-nav-link:hover{background:rgba(239,68,68,0.08);color:#fff;border-left-color:rgba(239,68,68,0.5)}
+.admin-nav-link.active{background:rgba(239,68,68,0.16);color:#fff;border-left-color:var(--admin-brand);font-weight:700}
+.admin-foot{padding:14px 20px;border-top:1px solid #1e293b;display:flex;flex-direction:column;gap:2px;margin-top:8px}
+.admin-foot a{color:#94a3b8;text-decoration:none;font-size:0.86rem;padding:8px 0;display:flex;align-items:center;gap:12px;transition:color 0.15s}
 .admin-foot a:hover{color:#fff}
+.admin-foot .admin-nav-icon{color:inherit}
 
 .admin-main{padding:28px 32px;min-width:0}
 .admin-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px;padding-bottom:18px;border-bottom:1px solid var(--admin-border);flex-wrap:wrap;gap:14px}
@@ -131,14 +135,20 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 
 @media (max-width:900px){
 .admin-layout{grid-template-columns:1fr}
-.admin-sidebar{position:static;height:auto;flex-direction:row;flex-wrap:wrap;overflow-x:auto;padding:10px;gap:8px}
-.admin-brand{padding:8px 12px;border-bottom:none;border-right:1px solid #1e293b;flex-shrink:0}
-.admin-brand a{font-size:1.1rem}
-.admin-nav{flex-direction:row;flex-wrap:nowrap;padding:0;flex:1;overflow-x:auto}
+.admin-sidebar{position:sticky;top:0;z-index:50;height:auto;flex-direction:row;align-items:center;overflow-x:auto;overflow-y:hidden;padding:0;gap:0;border-right:none;border-bottom:1px solid #1e293b;background:#0f172a;-webkit-overflow-scrolling:touch}
+.admin-brand{padding:10px 16px;border-bottom:none;border-right:1px solid #1e293b;flex-shrink:0;margin:0}
+.admin-brand a{flex-direction:row;align-items:baseline;gap:8px}
+.admin-brand-name{font-size:1.1rem}
+.admin-brand-tag{font-size:0.55rem;letter-spacing:0.12em}
+.admin-nav{flex-direction:row;flex-wrap:nowrap;padding:0 4px;flex:1;overflow-x:auto;overflow-y:hidden;gap:0;-webkit-overflow-scrolling:touch}
 .admin-nav-section{display:none}
-.admin-nav a{padding:8px 12px;white-space:nowrap;border-left:none;border-bottom:3px solid transparent;font-size:0.85rem}
-.admin-nav a:hover,.admin-nav a.active{border-left:none;border-bottom-color:var(--admin-brand);background:transparent}
-.admin-foot{flex-direction:row;border-top:none;border-left:1px solid #1e293b;padding:8px 12px;flex-shrink:0}
+.admin-nav-link{padding:12px 12px;white-space:nowrap;border-left:none;border-bottom:3px solid transparent;font-size:0.85rem;gap:6px}
+.admin-nav-link .admin-nav-icon{width:auto;font-size:1rem}
+.admin-nav-link:hover,.admin-nav-link.active{border-left:none;border-bottom-color:var(--admin-brand);background:transparent}
+.admin-foot{flex-direction:row;border-top:none;border-left:1px solid #1e293b;padding:8px 12px;flex-shrink:0;margin:0;gap:10px}
+.admin-foot a{padding:6px 4px;font-size:0.8rem}
+.admin-foot .admin-nav-label{display:none}
+.admin-foot .admin-nav-icon{font-size:1.1rem}
 .admin-main{padding:20px 16px}
 .admin-header h1{font-size:1.4rem}
 .stat-value{font-size:1.7rem}

@@ -1,23 +1,26 @@
 <aside class="admin-sidebar">
 <div class="admin-brand">
-<a href="admin"><span class="logo-actu">Actu</span><span class="logo-oli">oli</span><br><small>ADMINISTRATION</small></a>
+<a href="admin">
+<span class="admin-brand-name"><span class="logo-actu">Actu</span><span class="logo-oli">oli</span></span>
+<span class="admin-brand-tag">Administration</span>
+</a>
 </div>
 <nav class="admin-nav" aria-label="Administration">
 <% var cp = (typeof currentPath !== 'undefined' && currentPath) ? currentPath : ''; %>
-<a href="admin" class="<%= cp === 'admin' ? 'active' : '' %>"><span>📊</span><span>Tableau de bord</span></a>
+<a href="admin" class="admin-nav-link<%= cp === 'admin' ? ' active' : '' %>"><span class="admin-nav-icon" aria-hidden="true">📊</span><span class="admin-nav-label">Tableau de bord</span></a>
 <div class="admin-nav-section">Contenu</div>
-<a href="admin/posts" class="<%= cp === 'admin/posts' ? 'active' : '' %>"><span>📝</span><span>Articles</span></a>
-<a href="admin/events" class="<%= cp === 'admin/events' ? 'active' : '' %>"><span>📅</span><span>Événements</span></a>
-<a href="admin/gallery" class="<%= cp === 'admin/gallery' ? 'active' : '' %>"><span>🖼</span><span>Galerie</span></a>
-<a href="admin/podcasts" class="<%= cp === 'admin/podcasts' ? 'active' : '' %>"><span>🎙</span><span>Balados</span></a>
-<a href="admin/athletes" class="<%= cp === 'admin/athletes' ? 'active' : '' %>"><span>⭐</span><span>Athlètes</span></a>
+<a href="admin/posts" class="admin-nav-link<%= cp === 'admin/posts' ? ' active' : '' %>"><span class="admin-nav-icon" aria-hidden="true">📝</span><span class="admin-nav-label">Articles</span></a>
+<a href="admin/events" class="admin-nav-link<%= cp === 'admin/events' ? ' active' : '' %>"><span class="admin-nav-icon" aria-hidden="true">📅</span><span class="admin-nav-label">Événements</span></a>
+<a href="admin/gallery" class="admin-nav-link<%= cp === 'admin/gallery' ? ' active' : '' %>"><span class="admin-nav-icon" aria-hidden="true">🖼️</span><span class="admin-nav-label">Galerie</span></a>
+<a href="admin/podcasts" class="admin-nav-link<%= cp === 'admin/podcasts' ? ' active' : '' %>"><span class="admin-nav-icon" aria-hidden="true">🎙️</span><span class="admin-nav-label">Balados</span></a>
+<a href="admin/athletes" class="admin-nav-link<%= cp === 'admin/athletes' ? ' active' : '' %>"><span class="admin-nav-icon" aria-hidden="true">⭐</span><span class="admin-nav-label">Athlètes</span></a>
 <div class="admin-nav-section">Communauté</div>
-<a href="admin/forum_topics" class="<%= cp === 'admin/forum_topics' ? 'active' : '' %>"><span>💬</span><span>Forum</span></a>
-<a href="admin/subscribers" class="<%= cp === 'admin/subscribers' ? 'active' : '' %>"><span>👥</span><span>Abonnés courriel</span></a>
-<a href="admin/submissions" class="<%= cp === 'admin/submissions' ? 'active' : '' %>"><span>✉</span><span>Messages reçus</span></a>
+<a href="admin/forum_topics" class="admin-nav-link<%= cp === 'admin/forum_topics' ? ' active' : '' %>"><span class="admin-nav-icon" aria-hidden="true">💬</span><span class="admin-nav-label">Forum</span></a>
+<a href="admin/subscribers" class="admin-nav-link<%= cp === 'admin/subscribers' ? ' active' : '' %>"><span class="admin-nav-icon" aria-hidden="true">👥</span><span class="admin-nav-label">Abonnés courriel</span></a>
+<a href="admin/submissions" class="admin-nav-link<%= cp === 'admin/submissions' ? ' active' : '' %>"><span class="admin-nav-icon" aria-hidden="true">✉️</span><span class="admin-nav-label">Messages reçus</span></a>
 </nav>
 <div class="admin-foot">
-<a href="." target="_blank">↗ Voir le site public</a>
-<a href="admin/logout">🚪 Déconnexion</a>
+<a href="." target="_blank" rel="noopener"><span class="admin-nav-icon" aria-hidden="true">↗</span><span class="admin-nav-label">Voir le site public</span></a>
+<a href="admin/logout"><span class="admin-nav-icon" aria-hidden="true">🚪</span><span class="admin-nav-label">Déconnexion</span></a>
 </div>
 </aside>
