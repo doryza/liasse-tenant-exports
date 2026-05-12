@@ -1,0 +1,138 @@
+<%- include('partials/header') %>
+<section class="hero">
+  <img src="<%= (settings && settings._p_hero_image_url) ? settings._p_hero_image_url : 'https://placehold.co/1600x900/0b1024/6366f1/png?text=SmartBoost+AI' %>" alt="Hero" class="hero-img">
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <span class="hero-badge"><%= t.hero_badge %></span>
+    <h1><%= (settings && (lang==='en' ? settings.hero_title_en : settings.hero_title)) || (lang==='en'?'Create professional marketing with AI':'Créez du marketing professionnel avec l\'IA') %></h1>
+    <p class="hero-sub"><%= (settings && (lang==='en' ? settings.hero_subtitle_en : settings.hero_subtitle)) || (lang==='en'?'Ads, captions, slogans, visuals and campaigns generated in seconds.':'Publicités, captions, slogans, visuels générés en quelques secondes.') %></p>
+    <div class="hero-cta">
+      <a href="generator" class="btn-primary" style="background-color:#6366f1;color:#fff"><%= t.hero_cta %></a>
+      <a href="templates" class="btn-secondary"><%= t.hero_cta2 %></a>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <h2 class="section-title"><%= t.features_title %></h2>
+    <p class="section-sub"><%= t.features_subtitle %></p>
+    <% if (typeof features !== 'undefined' && features.length > 0) { %>
+    <div class="grid-3">
+      <% features.forEach(function(f){ %>
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3><%= f.title %></h3>
+        <p><%= f.description %></p>
+      </div>
+      <% }); %>
+    </div>
+    <% } else { %>
+      <p class="empty-msg"><%= lang==='en'?'Features coming soon.':'Fonctionnalités à venir.' %></p>
+    <% } %>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="container">
+    <h2 class="section-title"><%= t.templates_title %></h2>
+    <p class="section-sub"><%= t.templates_subtitle %></p>
+    <% if (typeof templates !== 'undefined' && templates.length > 0) { %>
+    <div class="grid-4">
+      <% templates.forEach(function(tp){ %>
+      <a href="generator?template=<%= tp.id %>" class="template-card">
+        <img src="<%= tp.image_url || 'https://placehold.co/600x450/1e1b4b/a78bfa/png?text=Template' %>" alt="<%= tp.name %>">
+        <div class="template-body">
+          <span class="template-cat"><%= tp.category %></span>
+          <h4><%= tp.name %></h4>
+        </div>
+      </a>
+      <% }); %>
+    </div>
+    <% } else { %>
+      <p class="empty-msg"><%= lang==='en'?'Templates coming soon.':'Modèles à venir.' %></p>
+    <% } %>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <h2 class="section-title"><%= t.pricing_title %></h2>
+    <p class="section-sub"><%= t.pricing_subtitle %></p>
+    <% if (typeof plans !== 'undefined' && plans.length > 0) { %>
+    <div class="grid-3">
+      <% plans.forEach(function(p){ %>
+      <div class="plan-card <%= p.highlighted?'plan-highlighted':'' %>">
+        <% if (p.highlighted) { %><span class="plan-badge"><%= t.pricing_recommended %></span><% } %>
+        <h3><%= p.name %></h3>
+        <div class="plan-price"><span class="plan-currency">$</span><%= formatPrice(p.price) %><span class="plan-period">/<%= p.period || 'mois' %></span></div>
+        <p class="plan-desc"><%= p.description %></p>
+        <ul class="plan-features">
+          <% (p.features||'').split('\n').forEach(function(line){ if(line.trim()) { %><li><%= line %></li><% } }); %>
+        </ul>
+        <a href="pricing" class="btn-primary" style="background-color:#6366f1;color:#fff"><%= p.cta_label || 'Choisir' %></a>
+      </div>
+      <% }); %>
+    </div>
+    <% } else { %>
+      <p class="empty-msg"><%= lang==='en'?'Pricing coming soon.':'Tarifs à venir.' %></p>
+    <% } %>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="container">
+    <h2 class="section-title"><%= t.testimonials_title %></h2>
+    <p class="section-sub"><%= t.testimonials_subtitle %></p>
+    <% if (typeof testimonials !== 'undefined' && testimonials.length > 0) { %>
+    <div class="grid-3">
+      <% testimonials.forEach(function(ts){ %>
+      <div class="testimonial-card">
+        <div class="testimonial-rating"><% for(var i=0;i<(ts.rating||5);i++){ %>★<% } %></div>
+        <p class="testimonial-content">"<%= ts.content %>"</p>
+        <div class="testimonial-author">
+          <img src="<%= ts.image_url || 'https://placehold.co/80x80/6366f1/fff/png?text=A' %>" alt="<%= ts.author %>">
+          <div>
+            <strong><%= ts.author %></strong>
+            <span><%= ts.role %></span>
+          </div>
+        </div>
+      </div>
+      <% }); %>
+    </div>
+    <% } else { %>
+      <p class="empty-msg"><%= lang==='en'?'Testimonials coming soon.':'Témoignages à venir.' %></p>
+    <% } %>
+  </div>
+</section>
+
+<% if (typeof posts !== 'undefined' && posts.length > 0) { %>
+<section class="section">
+  <div class="container">
+    <h2 class="section-title"><%= t.blog_title %></h2>
+    <p class="section-sub"><%= t.blog_subtitle %></p>
+    <div class="grid-3">
+      <% posts.forEach(function(p){ %>
+      <a href="blog/<%= p.id %>" class="post-card">
+        <% if (p.image_url) { %><img src="<%= p.image_url %>" alt="<%= p.title %>"><% } %>
+        <div class="post-body">
+          <span class="post-cat"><%= p.category %></span>
+          <h4><%= p.title %></h4>
+          <p><%= truncate(p.excerpt || p.content, 120) %></p>
+        </div>
+      </a>
+      <% }); %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<section class="cta-final">
+  <div class="container">
+    <h2><%= t.cta_final_title %></h2>
+    <p><%= t.cta_final_sub %></p>
+    <a href="generator" class="btn-primary btn-large" style="background-color:#fff;color:#4f46e5"><%= t.hero_cta %></a>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

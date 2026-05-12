@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#6366f1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="description" content="<%= (settings && settings['hero_subtitle'+(lang==='en'?'_en':'')]) || t.tagline %>">
+<title><%= (settings && settings.business_name) || t.site_name %></title>
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="public/css/styles.css">
+</head>
+<body>
+<nav class="navbar">
+  <div class="nav-container">
+    <a href="." class="nav-brand">
+      <img src="<%= (settings && settings._p_nav_logo_url) ? settings._p_nav_logo_url : (typeof appIconUrl!=='undefined' ? appIconUrl : '') %>" alt="Logo" class="nav-logo" onerror="this.style.display='none'">
+      <span class="nav-title"><%= (settings && settings.business_name) || t.site_name %></span>
+    </a>
+    <div class="nav-links" id="navLinks">
+      <a href="."><%= t.nav_home %></a>
+      <a href="generator"><%= t.nav_generator %></a>
+      <a href="templates"><%= t.nav_templates %></a>
+      <a href="pricing"><%= t.nav_pricing %></a>
+      <a href="blog"><%= t.nav_blog %></a>
+      <a href="about"><%= t.nav_about %></a>
+      <a href="contact"><%= t.nav_contact %></a>
+      <a href="dashboard" data-auth-only style="display:none"><%= t.nav_dashboard %></a>
+      <a href="#" data-login-btn class="nav-cta"><%= t.nav_login %></a>
+      <span class="lang-toggle">
+        <a href="?lang=fr" class="<%= lang==='fr'?'active':'' %>">FR</a> | <a href="?lang=en" class="<%= lang==='en'?'active':'' %>">EN</a>
+      </span>
+    </div>
+    <button class="nav-hamburger" id="navHamburger" aria-label="Menu">☰</button>
+  </div>
+</nav>

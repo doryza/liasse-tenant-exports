@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin — SmartBoost AI</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body class="admin-body">
+<%- include('partials/admin-sidebar') %>
+<main class="admin-main">
+  <header class="admin-header">
+    <div>
+      <span class="admin-eyebrow">Console d'administration</span>
+      <h1>Bonjour 👋</h1>
+      <p class="admin-subtitle">Voici un aperçu de votre plateforme SmartBoost AI.</p>
+    </div>
+    <div class="admin-header-actions">
+      <a href="." target="_blank" class="btn-secondary">↗ Voir le site</a>
+      <a href="admin/posts" class="btn-primary" style="background-color:#6366f1;color:#fff">+ Nouvel article</a>
+    </div>
+  </header>
+
+  <section class="admin-stats">
+    <div class="stat-tile" style="border-top-color:#6366f1"><div class="stat-ico">👥</div><div><div class="stat-num"><%= stats.users %></div><div class="stat-lbl">Utilisateurs inscrits</div></div></div>
+    <div class="stat-tile" style="border-top-color:#a78bfa"><div class="stat-ico">🔔</div><div><div class="stat-num"><%= stats.pushSubs %></div><div class="stat-lbl">Abonnés push</div></div></div>
+    <div class="stat-tile" style="border-top-color:#22d3ee"><div class="stat-ico">📈</div><div><div class="stat-num"><%= stats.totalVisits %></div><div class="stat-lbl">Visites totales</div></div></div>
+    <div class="stat-tile" style="border-top-color:#34d399"><div class="stat-ico">🗓️</div><div><div class="stat-num"><%= stats.recentVisits %></div><div class="stat-lbl">Visites (7j)</div></div></div>
+    <div class="stat-tile" style="border-top-color:#fbbf24"><div class="stat-ico">✨</div><div><div class="stat-num"><%= stats.generations %></div><div class="stat-lbl">Générations IA <small class="stat-trend">+<%= stats.generations7 %> (7j)</small></div></div></div>
+    <div class="stat-tile" style="border-top-color:#f472b6"><div class="stat-ico">💌</div><div><div class="stat-num"><%= stats.submissions %></div><div class="stat-lbl">Messages reçus</div></div></div>
+  </section>
+
+  <h2 class="admin-section-title">Gestion du contenu</h2>
+  <p class="admin-section-sub">Créez, modifiez et publiez tout le contenu visible sur le site.</p>
+  <div class="admin-modules">
+    <a href="admin/posts" class="module-card">
+      <div class="module-icon">📝</div>
+      <div class="module-body"><h3>Articles</h3><p><%= counts.posts %> publié<%= counts.posts>1?'s':'' %> sur le blogue</p></div>
+      <span class="module-arrow">→</span>
+    </a>
+    <a href="admin/features" class="module-card">
+      <div class="module-icon">⭐</div>
+      <div class="module-body"><h3>Fonctionnalités</h3><p><%= counts.features %> fonctionnalité<%= counts.features>1?'s':'' %></p></div>
+      <span class="module-arrow">→</span>
+    </a>
+    <a href="admin/pricing_plans" class="module-card">
+      <div class="module-icon">💲</div>
+      <div class="module-body"><h3>Plans tarifaires</h3><p><%= counts.pricing_plans %> plan<%= counts.pricing_plans>1?'s':'' %> actifs</p></div>
+      <span class="module-arrow">→</span>
+    </a>
+    <a href="admin/testimonials" class="module-card">
+      <div class="module-icon">💬</div>
+      <div class="module-body"><h3>Témoignages</h3><p><%= counts.testimonials %> témoignage<%= counts.testimonials>1?'s':'' %></p></div>
+      <span class="module-arrow">→</span>
+    </a>
+    <a href="admin/templates" class="module-card">
+      <div class="module-icon">📦</div>
+      <div class="module-body"><h3>Modèles IA</h3><p><%= counts.templates %> modèle<%= counts.templates>1?'s':'' %> disponibles</p></div>
+      <span class="module-arrow">→</span>
+    </a>
+  </div>
+
+  <h2 class="admin-section-title">Messages reçus</h2>
+  <p class="admin-section-sub">Les derniers messages envoyés via le formulaire de contact.</p>
+  <div class="items-container">
+  <% if (typeof recentSubs !== 'undefined' && recentSubs.length > 0) { %>
+  <div class="table-wrap">
+  <table class="data-table">
+    <thead><tr><th>Date</th><th>Nom</th><th>Email</th><th>Entreprise</th><th>Aperçu du message</th></tr></thead>
+    <tbody>
+      <% recentSubs.forEach(function(s){ %>
+      <tr>
+        <td><span class="date-pill"><%= new Date(s.created_at).toLocaleDateString('fr-CA') %></span></td>
+        <td><strong><%= s.name %></strong></td>
+        <td><% if (s.email) { %><a href="mailto:<%= s.email %>"><%= s.email %></a><% } else { %><span class="muted">-</span><% } %></td>
+        <td><%= s.company || '—' %></td>
+        <td class="muted"><%= (s.message||'').substring(0,90) %><%= (s.message||'').length>90?'…':'' %></td>
+      </tr>
+      <% }); %>
+    </tbody>
+  </table>
+  </div>
+  <% } else { %>
+    <div class="empty-state">
+      <div class="empty-icon">📭</div>
+      <h3>Aucun message pour le moment</h3>
+      <p>Les messages envoyés via le formulaire de contact apparaîtront ici.</p>
+    </div>
+  <% } %>
+  </div>
+</main>
+</body>
+</html>

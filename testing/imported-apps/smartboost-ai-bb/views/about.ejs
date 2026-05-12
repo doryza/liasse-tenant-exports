@@ -1,0 +1,18 @@
+<%- include('partials/header') %>
+<section class="page-header">
+  <div class="container"><h1><%= t.about_title %></h1><p><%= t.about_subtitle %></p></div>
+</section>
+<section class="section">
+  <div class="container container-narrow">
+    <p class="lead-text"><%= (settings && (lang==='en' ? settings.about_text_en : settings.about_text)) || (lang==='en'?'SmartBoost AI helps small businesses shine online with AI marketing tools.':'SmartBoost AI aide les PME à briller en ligne grâce à l\'IA marketing.') %></p>
+    <div class="about-pillars">
+      <div class="pillar"><h3>⚡ <%= lang==='en'?'Speed':'Vitesse' %></h3><p><%= lang==='en'?'From hours of work to seconds of generation.':'Des heures de travail réduites à quelques secondes.' %></p></div>
+      <div class="pillar"><h3>🧠 <%= lang==='en'?'Intelligence':'Intelligence' %></h3><p><%= lang==='en'?'Powered by Google Gemini for human-quality content.':'Propulsé par Google Gemini pour un contenu de qualité humaine.' %></p></div>
+      <div class="pillar"><h3>💰 <%= lang==='en'?'Affordable':'Abordable' %></h3><p><%= lang==='en'?'A fraction of the cost of a marketing agency.':'Une fraction du coût d\'une agence marketing.' %></p></div>
+    </div>
+    <div class="about-cta">
+      <a href="generator" class="btn-primary btn-large" style="background-color:#6366f1;color:#fff"><%= t.hero_cta %></a>
+    </div>
+  </div>
+</section>
+<%- include('partials/footer') %>

@@ -1,0 +1,26 @@
+<%- include('partials/header') %>
+<section class="page-header">
+  <div class="container"><h1><%= t.blog_title %></h1><p><%= t.blog_subtitle %></p></div>
+</section>
+<section class="section">
+  <div class="container">
+    <% if (typeof posts !== 'undefined' && posts.length > 0) { %>
+    <div class="grid-3">
+      <% posts.forEach(function(p){ %>
+      <a href="blog/<%= p.id %>" class="post-card">
+        <% if (p.image_url) { %><img src="<%= p.image_url %>" alt="<%= p.title %>"><% } else { %><div class="post-placeholder">📰</div><% } %>
+        <div class="post-body">
+          <span class="post-cat"><%= p.category %></span>
+          <h4><%= p.title %></h4>
+          <p><%= truncate(p.excerpt || p.content, 140) %></p>
+          <span class="post-date"><%= formatDate(p.created_at, lang) %></span>
+        </div>
+      </a>
+      <% }); %>
+    </div>
+    <% } else { %>
+      <p class="empty-msg"><%= t.blog_empty %></p>
+    <% } %>
+  </div>
+</section>
+<%- include('partials/footer') %>

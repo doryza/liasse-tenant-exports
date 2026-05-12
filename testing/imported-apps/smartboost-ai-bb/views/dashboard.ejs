@@ -1,0 +1,46 @@
+<%- include('partials/header') %>
+<section class="page-header">
+  <div class="container">
+    <h1><%= t.dashboard_title %></h1>
+    <% if (typeof user !== 'undefined' && user) { %>
+      <p><%= t.dashboard_welcome %>, <%= user.display_name || user.email || user.phone || '' %> 👋</p>
+    <% } %>
+  </div>
+</section>
+<section class="section">
+  <div class="container">
+    <% if (typeof user !== 'undefined' && user) { %>
+    <div class="dash-stats">
+      <div class="stat-card"><div class="stat-num"><%= stats.total %></div><div class="stat-lbl"><%= t.dashboard_stats_gens %></div></div>
+      <div class="stat-card"><div class="stat-num"><%= stats.recent %></div><div class="stat-lbl"><%= t.dashboard_stats_recent %></div></div>
+    </div>
+    <h2 class="section-title-small"><%= t.dashboard_quick %></h2>
+    <div class="dash-actions">
+      <a href="generator" class="btn-primary" style="background-color:#6366f1;color:#fff"><%= t.dashboard_open_gen %></a>
+      <a href="templates" class="btn-secondary"><%= t.dashboard_view_templates %></a>
+      <a href="pricing" class="btn-secondary"><%= t.dashboard_view_pricing %></a>
+      <button data-push-btn class="btn-secondary"><%= t.enable_notif %></button>
+    </div>
+    <h2 class="section-title-small"><%= t.dashboard_history %></h2>
+    <% if (typeof history !== 'undefined' && history.length > 0) { %>
+    <ul class="history-list">
+      <% history.forEach(function(h){ %>
+      <li class="history-item">
+        <div class="history-meta"><span class="history-type"><%= h.type %></span><span class="history-date"><%= formatDate(h.created_at, lang) %></span></div>
+        <div class="history-prompt"><%= truncate(h.prompt, 100) %></div>
+        <details><summary><%= lang==='en'?'View result':'Voir le résultat' %></summary><pre><%= h.result %></pre></details>
+      </li>
+      <% }); %>
+    </ul>
+    <% } else { %>
+      <p class="empty-msg"><%= t.dashboard_no_history %></p>
+    <% } %>
+    <% } else { %>
+    <div class="login-required">
+      <h2><%= lang==='en'?'Please sign in to access your dashboard.':'Connectez-vous pour accéder à votre tableau de bord.' %></h2>
+      <a href="#" data-login-btn class="btn-primary btn-large" style="background-color:#6366f1;color:#fff"><%= t.nav_login %></a>
+    </div>
+    <% } %>
+  </div>
+</section>
+<%- include('partials/footer') %>

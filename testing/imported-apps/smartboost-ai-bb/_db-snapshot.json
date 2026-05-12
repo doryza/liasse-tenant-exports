@@ -1,0 +1,481 @@
+{
+  "exportedAt": "2026-05-12T14:55:06.320Z",
+  "tables": {
+    "features": {
+      "columns": [
+        "id",
+        "title",
+        "description",
+        "icon",
+        "image_url",
+        "sort_order",
+        "featured",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 6,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Générateur de captions IA",
+          "description": "Créez des légendes parfaites pour Instagram, Facebook et TikTok en moins de 5 secondes.",
+          "icon": "sparkles",
+          "image_url": null,
+          "sort_order": 0,
+          "featured": 1,
+          "created_at": "2026-05-12T14:45:56.298Z",
+          "updated_at": "2026-05-12T14:45:56.298Z"
+        },
+        {
+          "id": 2,
+          "title": "Publicités automatisées",
+          "description": "Générez des annonces complètes avec accroche, corps de texte et appel à l'action.",
+          "icon": "megaphone",
+          "image_url": null,
+          "sort_order": 1,
+          "featured": 1,
+          "created_at": "2026-05-12T14:45:56.307Z",
+          "updated_at": "2026-05-12T14:45:56.307Z"
+        },
+        {
+          "id": 3,
+          "title": "Scripts vidéo TikTok",
+          "description": "Des scénarios courts et accrocheurs pour vos Reels et TikToks.",
+          "icon": "video",
+          "image_url": null,
+          "sort_order": 2,
+          "featured": 1,
+          "created_at": "2026-05-12T14:45:56.320Z",
+          "updated_at": "2026-05-12T14:45:56.320Z"
+        },
+        {
+          "id": 4,
+          "title": "Logos et identité visuelle",
+          "description": "Concevez un logo professionnel adapté à votre niche.",
+          "icon": "image",
+          "image_url": null,
+          "sort_order": 3,
+          "featured": 1,
+          "created_at": "2026-05-12T14:45:56.331Z",
+          "updated_at": "2026-05-12T14:45:56.331Z"
+        },
+        {
+          "id": 5,
+          "title": "Campagnes email",
+          "description": "Séquences email complètes prêtes à envoyer.",
+          "icon": "mail",
+          "image_url": null,
+          "sort_order": 4,
+          "featured": 1,
+          "created_at": "2026-05-12T14:45:56.341Z",
+          "updated_at": "2026-05-12T14:45:56.341Z"
+        },
+        {
+          "id": 6,
+          "title": "Analytique de contenu",
+          "description": "Suivez les performances de chaque pièce générée.",
+          "icon": "bar-chart",
+          "image_url": null,
+          "sort_order": 5,
+          "featured": 1,
+          "created_at": "2026-05-12T14:45:56.353Z",
+          "updated_at": "2026-05-12T14:45:56.353Z"
+        }
+      ]
+    },
+    "pricing_plans": {
+      "columns": [
+        "id",
+        "name",
+        "price",
+        "period",
+        "description",
+        "features",
+        "cta_label",
+        "image_url",
+        "highlighted",
+        "sort_order",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 3,
+      "sampleRows": [
+        {
+          "id": 1,
+          "name": "Gratuit",
+          "price": 0,
+          "period": "mois",
+          "description": "Pour découvrir la puissance de l'IA marketing",
+          "features": "5 générations par jour\nCaptions et slogans\nModèles de base\nSupport communautaire",
+          "cta_label": "Commencer gratuitement",
+          "image_url": null,
+          "highlighted": 0,
+          "sort_order": 0,
+          "created_at": "2026-05-12T14:45:56.369Z",
+          "updated_at": "2026-05-12T14:45:56.369Z"
+        },
+        {
+          "id": 2,
+          "name": "Pro",
+          "price": 20,
+          "period": "mois",
+          "description": "Pour les entrepreneurs et PME ambitieuses",
+          "features": "Générations illimitées\nTous les outils IA\nScripts vidéo et campagnes email\nLogos et visuels HD\nAnalytique avancée\nSupport prioritaire",
+          "cta_label": "S'abonner",
+          "image_url": null,
+          "highlighted": 1,
+          "sort_order": 1,
+          "created_at": "2026-05-12T14:45:56.376Z",
+          "updated_at": "2026-05-12T14:45:56.376Z"
+        },
+        {
+          "id": 3,
+          "name": "Agence",
+          "price": 79,
+          "period": "mois",
+          "description": "Pour les agences et équipes marketing",
+          "features": "Tout dans Pro\nMulti-utilisateurs (5 sièges)\nMarque blanche\nAPI et intégrations\nGestionnaire de compte dédié",
+          "cta_label": "Contacter les ventes",
+          "image_url": null,
+          "highlighted": 0,
+          "sort_order": 2,
+          "created_at": "2026-05-12T14:45:56.383Z",
+          "updated_at": "2026-05-12T14:45:56.383Z"
+        }
+      ]
+    },
+    "testimonials": {
+      "columns": [
+        "id",
+        "author",
+        "role",
+        "content",
+        "image_url",
+        "rating",
+        "featured",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 3,
+      "sampleRows": [
+        {
+          "id": 1,
+          "author": "Maria Hernandez",
+          "role": "Propriétaire — Café Solea",
+          "content": "SmartBoost AI a transformé notre présence Instagram. Nos posts ont triplé en engagement et je gagne 10 heures par semaine.",
+          "image_url": "https://placehold.co/800x450/e2e8f0/64748b/png?text=Image+Coming+Soon#%7B%7BIMG_AVATAR1%7D%7D",
+          "rating": 5,
+          "featured": 1,
+          "created_at": "2026-05-12T14:45:56.393Z",
+          "updated_at": "2026-05-12T14:45:56.393Z"
+        },
+        {
+          "id": 2,
+          "author": "Jamal Thompson",
+          "role": "Restaurateur — Burger Fusion",
+          "content": "J'ai lancé une campagne TikTok en 15 minutes. Résultat : +200 commandes en deux semaines. Incroyable.",
+          "image_url": "https://placehold.co/800x450/e2e8f0/64748b/png?text=Image+Coming+Soon#%7B%7BIMG_AVATAR2%7D%7D",
+          "rating": 5,
+          "featured": 1,
+          "created_at": "2026-05-12T14:45:56.403Z",
+          "updated_at": "2026-05-12T14:45:56.403Z"
+        },
+        {
+          "id": 3,
+          "author": "Kim Tanaka",
+          "role": "Boutique en ligne — Noah & Lin",
+          "content": "Les visuels et les captions générés ressemblent à du travail d'agence. Pour 20$/mois, c'est imbattable.",
+          "image_url": "https://placehold.co/800x450/e2e8f0/64748b/png?text=Image+Coming+Soon#%7B%7BIMG_AVATAR3%7D%7D",
+          "rating": 5,
+          "featured": 1,
+          "created_at": "2026-05-12T14:45:56.407Z",
+          "updated_at": "2026-05-12T14:45:56.407Z"
+        }
+      ]
+    },
+    "templates": {
+      "columns": [
+        "id",
+        "name",
+        "description",
+        "category",
+        "prompt_template",
+        "image_url",
+        "is_premium",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "name": "Post Instagram restaurant",
+          "description": "Annoncez un nouveau plat ou menu avec style",
+          "category": "Instagram",
+          "prompt_template": "Crée une publication Instagram captivante pour annoncer [PLAT/MENU] dans mon restaurant [NOM]. Cible : [AUDIENCE]. Inclure caption, hashtags et idée visuelle.",
+          "image_url": "https://placehold.co/800x450/e2e8f0/64748b/png?text=Image+Coming+Soon#%7B%7BIMG_TEMPLATE1%7D%7D",
+          "is_premium": 0,
+          "created_at": "2026-05-12T14:45:56.422Z",
+          "updated_at": "2026-05-12T14:45:56.422Z"
+        },
+        {
+          "id": 2,
+          "name": "Pub TikTok salle de sport",
+          "description": "Script vidéo de 15 secondes",
+          "category": "TikTok",
+          "prompt_template": "Écris un script TikTok de 15 secondes pour une salle de sport ciblant les jeunes adultes. Mettre en avant [OFFRE].",
+          "image_url": "https://placehold.co/800x450/e2e8f0/64748b/png?text=Image+Coming+Soon#%7B%7BIMG_TEMPLATE2%7D%7D",
+          "is_premium": 1,
+          "created_at": "2026-05-12T14:45:56.435Z",
+          "updated_at": "2026-05-12T14:45:56.435Z"
+        },
+        {
+          "id": 3,
+          "name": "Annonce Facebook boutique",
+          "description": "Promotion week-end",
+          "category": "Facebook",
+          "prompt_template": "Crée une annonce Facebook pour une boutique de [PRODUITS] avec une promo week-end. Ton convivial et accrocheur.",
+          "image_url": "https://placehold.co/800x450/e2e8f0/64748b/png?text=Image+Coming+Soon#%7B%7BIMG_TEMPLATE3%7D%7D",
+          "is_premium": 0,
+          "created_at": "2026-05-12T14:45:56.441Z",
+          "updated_at": "2026-05-12T14:45:56.441Z"
+        },
+        {
+          "id": 4,
+          "name": "Campagne email lancement",
+          "description": "Séquence de 3 emails",
+          "category": "Email",
+          "prompt_template": "Rédige une séquence de 3 emails pour le lancement de [PRODUIT/SERVICE]. Audience : [CIBLE]. Inclure objet, corps et CTA.",
+          "image_url": "https://placehold.co/800x450/e2e8f0/64748b/png?text=Image+Coming+Soon#%7B%7BIMG_TEMPLATE4%7D%7D",
+          "is_premium": 1,
+          "created_at": "2026-05-12T14:45:56.447Z",
+          "updated_at": "2026-05-12T14:45:56.447Z"
+        }
+      ]
+    },
+    "generations": {
+      "columns": [
+        "id",
+        "user_id",
+        "prompt",
+        "result",
+        "type",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "form_submissions": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "company",
+        "message",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_users": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "password_hash",
+        "display_name",
+        "role",
+        "active",
+        "activation_token",
+        "invited_by",
+        "invite_token",
+        "invite_expires_at",
+        "last_login_at",
+        "is_active",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "site_visits": {
+      "columns": [
+        "id",
+        "path",
+        "created_at"
+      ],
+      "totalRows": 1,
+      "sampleRows": [
+        {
+          "id": 1,
+          "path": "/",
+          "created_at": "2026-05-12T14:54:57.490Z"
+        }
+      ]
+    },
+    "admin_invites": {
+      "columns": [
+        "id",
+        "email",
+        "token",
+        "role",
+        "status",
+        "invited_by",
+        "expires_at",
+        "accepted_at",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_webauthn_credentials": {
+      "columns": [
+        "id",
+        "admin_user_id",
+        "credential_id",
+        "public_key",
+        "counter",
+        "device_name",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_settings": {
+      "columns": [
+        "key",
+        "value",
+        "updated_at"
+      ],
+      "totalRows": 33,
+      "sampleRows": [
+        {
+          "key": "_p_hero_image_url",
+          "value": "https://placehold.co/800x450/e2e8f0/64748b/png?text=Image+Coming+Soon#%7B%7BIMG_HERO%7D%7D",
+          "updated_at": "2026-05-12T14:45:56.151Z"
+        },
+        {
+          "key": "tagline",
+          "value": "Marketing IA pour propulser votre entreprise",
+          "updated_at": "2026-05-12T14:45:56.158Z"
+        },
+        {
+          "key": "hero_title",
+          "value": "Créez du marketing professionnel avec l'IA",
+          "updated_at": "2026-05-12T14:45:56.165Z"
+        },
+        {
+          "key": "hero_subtitle",
+          "value": "Publicités, captions, slogans, visuels et campagnes générés en quelques secondes par l'intelligence artificielle.",
+          "updated_at": "2026-05-12T14:45:56.172Z"
+        },
+        {
+          "key": "hero_title_en",
+          "value": "Create professional marketing with AI",
+          "updated_at": "2026-05-12T14:45:56.180Z"
+        },
+        {
+          "key": "hero_subtitle_en",
+          "value": "Ads, captions, slogans, visuals and campaigns generated in seconds with artificial intelligence.",
+          "updated_at": "2026-05-12T14:45:56.190Z"
+        },
+        {
+          "key": "about_text",
+          "value": "SmartBoost AI aide les petites entreprises à briller en ligne grâce à une suite complète d'outils d'IA marketing. Notre mission est de démocratiser le marketing professionnel.",
+          "updated_at": "2026-05-12T14:45:56.196Z"
+        },
+        {
+          "key": "about_text_en",
+          "value": "SmartBoost AI helps small businesses shine online with a complete suite of AI marketing tools. Our mission is to democratize professional marketing.",
+          "updated_at": "2026-05-12T14:45:56.202Z"
+        },
+        {
+          "key": "contact_email",
+          "value": "alvarezbadillo.bryan@cra.education",
+          "updated_at": "2026-05-12T14:45:56.208Z"
+        },
+        {
+          "key": "business_name",
+          "value": "SmartBoost AI",
+          "updated_at": "2026-05-12T14:45:56.225Z"
+        }
+      ]
+    },
+    "posts": {
+      "columns": [
+        "id",
+        "title",
+        "content",
+        "excerpt",
+        "image_url",
+        "category",
+        "author",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 5,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "5 façons dont l'IA transforme le marketing PME",
+          "content": "L'intelligence artificielle révolutionne la manière dont les petites entreprises créent leur contenu marketing. Découvrez comment automatiser vos campagnes sans sacrifier la qualité.",
+          "excerpt": "L'IA accessible aux PME : économisez du temps, gagnez en performance.",
+          "image_url": null,
+          "category": "Tendances",
+          "author": "Équipe SmartBoost",
+          "published": 1,
+          "created_at": "2026-05-12T14:45:56.251Z",
+          "updated_at": "2026-05-12T14:45:56.251Z"
+        },
+        {
+          "id": 2,
+          "title": "Le guide ultime des captions Instagram en 2025",
+          "content": "Une bonne caption peut doubler votre engagement. Voici nos meilleures stratégies pour rédiger des légendes qui convertissent, avec ou sans IA.",
+          "excerpt": "Doublez votre engagement avec ces techniques éprouvées.",
+          "image_url": null,
+          "category": "Réseaux sociaux",
+          "author": "Équipe SmartBoost",
+          "published": 1,
+          "created_at": "2026-05-12T14:45:56.258Z",
+          "updated_at": "2026-05-12T14:45:56.258Z"
+        },
+        {
+          "id": 3,
+          "title": "Comment lancer une campagne TikTok virale avec SmartBoost",
+          "content": "Du script vidéo à la publication, suivez notre processus en 7 étapes pour créer du contenu TikTok qui décolle.",
+          "excerpt": "Le processus complet pour créer des TikToks viraux.",
+          "image_url": null,
+          "category": "Tutoriels",
+          "author": "Équipe SmartBoost",
+          "published": 1,
+          "created_at": "2026-05-12T14:45:56.272Z",
+          "updated_at": "2026-05-12T14:45:56.272Z"
+        },
+        {
+          "id": 4,
+          "title": "Étude de cas : +320% de conversions pour un café local",
+          "content": "Découvrez comment Le Petit Grain a transformé sa présence en ligne en 3 mois grâce à SmartBoost AI.",
+          "excerpt": "Une PME montréalaise multiplie ses ventes en ligne.",
+          "image_url": null,
+          "category": "Études de cas",
+          "author": "Équipe SmartBoost",
+          "published": 1,
+          "created_at": "2026-05-12T14:45:56.279Z",
+          "updated_at": "2026-05-12T14:45:56.279Z"
+        },
+        {
+          "id": 5,
+          "title": "L'avenir du marketing : IA générative et automation",
+          "content": "Plongée dans les technologies qui définiront le marketing de demain.",
+          "excerpt": "Ce qui attend les marketeurs en 2025-2026.",
+          "image_url": null,
+          "category": "Tendances",
+          "author": "Équipe SmartBoost",
+          "published": 1,
+          "created_at": "2026-05-12T14:45:56.285Z",
+          "updated_at": "2026-05-12T14:45:56.285Z"
+        }
+      ]
+    }
+  }
+}

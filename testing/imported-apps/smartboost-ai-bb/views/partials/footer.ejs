@@ -1,0 +1,42 @@
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-col">
+      <div class="footer-brand"><%= (settings && settings.business_name) || t.site_name %></div>
+      <p class="footer-tag"><%= (settings && settings.tagline) || t.tagline %></p>
+    </div>
+    <div class="footer-col">
+      <h4><%= t.nav_home %></h4>
+      <a href="generator"><%= t.nav_generator %></a>
+      <a href="templates"><%= t.nav_templates %></a>
+      <a href="pricing"><%= t.nav_pricing %></a>
+      <a href="blog"><%= t.nav_blog %></a>
+    </div>
+    <div class="footer-col">
+      <h4><%= t.footer_about %></h4>
+      <a href="about"><%= t.nav_about %></a>
+      <a href="contact"><%= t.nav_contact %></a>
+      <button data-push-btn class="btn-link"><%= t.enable_notif %></button>
+    </div>
+    <div class="footer-col">
+      <h4><%= t.footer_contact %></h4>
+      <% if (settings && settings.contact_email) { %><p><a href="mailto:<%= settings.contact_email %>"><%= settings.contact_email %></a></p><% } %>
+      <% if (settings && settings.contact_phone) { %><p><%= settings.contact_phone %></p><% } %>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p><%= (settings && settings.footer_text) || ('© ' + ((settings && settings.business_name) || t.site_name) + ' — ' + t.footer_rights) %></p>
+  </div>
+</footer>
+<script src="public/js/app.js"></script>
+<script>
+(function(){
+  var ham = document.getElementById('navHamburger');
+  var links = document.getElementById('navLinks');
+  if (ham && links) ham.addEventListener('click', function(){ links.classList.toggle('open'); });
+})();
+</script>
+<script>
+try { if (window.TenantSDK && TenantSDK.ui) { TenantSDK.ui.showInstallBanner(); setTimeout(function(){ try { TenantSDK.ui.showPushPrompt(); } catch(e){} }, 8000); } } catch(e){}
+</script>
+</body>
+</html>

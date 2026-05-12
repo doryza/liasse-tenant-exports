@@ -1,0 +1,109 @@
+<%- include('partials/header') %>
+<section class="page-header">
+  <div class="container">
+    <h1><%= t.generator_title %></h1>
+    <p><%= t.generator_subtitle %></p>
+  </div>
+</section>
+<section class="section">
+  <div class="container generator-wrap">
+    <% if (typeof user !== 'undefined' && user) { %>
+    <div class="generator-form">
+      <label class="field-label"><%= t.generator_type %></label>
+      <select id="gen-type" class="select-input">
+        <option value="caption"><%= t.type_caption %></option>
+        <option value="ad"><%= t.type_ad %></option>
+        <option value="slogan"><%= t.type_slogan %></option>
+        <option value="email"><%= t.type_email %></option>
+        <option value="video"><%= t.type_video %></option>
+        <option value="hashtags"><%= t.type_hashtags %></option>
+        <option value="idea"><%= t.type_idea %></option>
+      </select>
+      <label class="field-label"><%= t.generator_prompt_label %></label>
+      <textarea id="gen-prompt" rows="5" class="text-input" placeholder="<%= t.generator_prompt_ph %>"></textarea>
+      <% if (typeof templates !== 'undefined' && templates.length > 0) { %>
+      <div class="template-quickpicks">
+        <span class="qp-label"><%= lang==='en'?'Quick picks:':'Suggestions :' %></span>
+        <% templates.slice(0,6).forEach(function(tp){ %>
+        <button type="button" class="qp-chip" data-prompt="<%= (tp.prompt_template||'').replace(/"/g,'&quot;') %>"><%= tp.name %></button>
+        <% }); %>
+      </div>
+      <% } %>
+      <button id="gen-btn" class="btn-primary btn-large" style="background-color:#6366f1;color:#fff"><%= t.generator_generate %></button>
+      <div id="gen-status" class="gen-status"></div>
+      <div id="gen-result" class="gen-result" style="display:none">
+        <h3><%= t.generator_result %></h3>
+        <pre id="gen-result-text"></pre>
+        <button id="gen-copy" class="btn-secondary"><%= t.copy %></button>
+      </div>
+    </div>
+    <div class="generator-history">
+      <h3><%= t.generator_history %></h3>
+      <% if (typeof history !== 'undefined' && history.length > 0) { %>
+      <ul class="history-list">
+        <% history.forEach(function(h){ %>
+        <li class="history-item" data-id="<%= h.id %>">
+          <div class="history-meta"><span class="history-type"><%= h.type %></span><span class="history-date"><%= formatDate(h.created_at, lang) %></span></div>
+          <div class="history-prompt"><%= truncate(h.prompt, 80) %></div>
+          <details><summary><%= lang==='en'?'View result':'Voir le résultat' %></summary><pre><%= h.result %></pre></details>
+          <button class="history-del" data-id="<%= h.id %>"><%= t.delete %></button>
+        </li>
+        <% }); %>
+      </ul>
+      <% } else { %>
+        <p class="empty-msg"><%= t.generator_empty %></p>
+      <% } %>
+    </div>
+    <% } else { %>
+    <div class="login-required">
+      <h2><%= t.generator_login_req %></h2>
+      <p><%= lang==='en'?'Sign in to start creating professional marketing content with AI.':'Connectez-vous pour commencer à créer du contenu marketing avec l\'IA.' %></p>
+      <a href="#" data-login-btn class="btn-primary btn-large" style="background-color:#6366f1;color:#fff"><%= t.nav_login %></a>
+    </div>
+    <% } %>
+  </div>
+</section>
+<script>
+(function(){
+  var btn = document.getElementById('gen-btn');
+  if (!btn) return;
+  var promptEl = document.getElementById('gen-prompt');
+  var typeEl = document.getElementById('gen-type');
+  var statusEl = document.getElementById('gen-status');
+  var resultEl = document.getElementById('gen-result');
+  var resultText = document.getElementById('gen-result-text');
+  var copyBtn = document.getElementById('gen-copy');
+  document.querySelectorAll('.qp-chip').forEach(function(c){
+    c.addEventListener('click', function(){ promptEl.value = c.getAttribute('data-prompt'); promptEl.focus(); });
+  });
+  btn.addEventListener('click', async function(){
+    var prompt = promptEl.value.trim();
+    if (!prompt) { statusEl.textContent = '<%- lang==='en'?'Please enter a prompt.':'Veuillez entrer une description.' %>'; return; }
+    btn.disabled = true;
+    statusEl.textContent = '<%- t.generator_loading %>';
+    resultEl.style.display = 'none';
+    try {
+      var res = await TenantSDK.fetch('api/ai/generate', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ prompt, type: typeEl.value }) });
+      var data = await res.json();
+      if (!res.ok) { statusEl.textContent = data.error || 'Error'; btn.disabled = false; return; }
+      statusEl.textContent = '';
+      resultText.textContent = data.result;
+      resultEl.style.display = 'block';
+      btn.disabled = false;
+      setTimeout(function(){ window.location.reload(); }, 3000);
+    } catch (e) { statusEl.textContent = '<%- t.contact_error %>'; btn.disabled = false; }
+  });
+  if (copyBtn) copyBtn.addEventListener('click', function(){
+    navigator.clipboard.writeText(resultText.textContent).then(function(){ copyBtn.textContent = '<%- t.copied %>'; setTimeout(function(){ copyBtn.textContent = '<%- t.copy %>'; }, 1500); });
+  });
+  document.querySelectorAll('.history-del').forEach(function(b){
+    b.addEventListener('click', async function(){
+      if (!confirm('<%- lang==='en'?'Delete this generation?':'Supprimer cette génération ?' %>')) return;
+      var id = b.getAttribute('data-id');
+      var r = await TenantSDK.fetch('api/generations/'+id, { method:'DELETE' });
+      if (r.ok) { var li = document.querySelector('.history-item[data-id="'+id+'"]'); if (li) li.remove(); }
+    });
+  });
+})();
+</script>
+<%- include('partials/footer') %>

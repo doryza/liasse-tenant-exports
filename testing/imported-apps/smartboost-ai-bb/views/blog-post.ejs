@@ -1,0 +1,13 @@
+<%- include('partials/header') %>
+<article class="section">
+  <div class="container container-narrow">
+    <a href="blog" class="back-link">← <%= t.blog_title %></a>
+    <% if (post.image_url) { %><img src="<%= post.image_url %>" alt="<%= post.title %>" class="post-hero-img"><% } %>
+    <span class="post-cat"><%= post.category %></span>
+    <h1 class="post-title"><%= post.title %></h1>
+    <p class="post-meta"><%= post.author || '' %> · <%= formatDate(post.created_at, lang) %></p>
+    <% if (post.excerpt) { %><p class="post-excerpt"><%= post.excerpt %></p><% } %>
+    <div class="post-content"><%- (post.content||'').replace(/\n/g, '<br>') %></div>
+  </div>
+</article>
+<%- include('partials/footer') %>

@@ -1,0 +1,32 @@
+<%- include('partials/header') %>
+<section class="page-header">
+  <div class="container">
+    <h1><%= t.templates_page_title %></h1>
+    <p><%= t.templates_page_subtitle %></p>
+  </div>
+</section>
+<section class="section">
+  <div class="container">
+    <% if (typeof templates !== 'undefined' && templates.length > 0) { %>
+    <div class="grid-3">
+      <% templates.forEach(function(tp){ %>
+      <div class="template-card-full">
+        <img src="<%= tp.image_url || 'https://placehold.co/600x450/1e1b4b/a78bfa/png?text=Template' %>" alt="<%= tp.name %>">
+        <div class="template-body">
+          <div class="template-meta">
+            <span class="template-cat"><%= tp.category %></span>
+            <% if (tp.is_premium) { %><span class="template-premium"><%= t.templates_premium %></span><% } %>
+          </div>
+          <h3><%= tp.name %></h3>
+          <p><%= tp.description %></p>
+          <a href="generator?template=<%= tp.id %>" class="btn-primary" style="background-color:#6366f1;color:#fff"><%= t.templates_use %></a>
+        </div>
+      </div>
+      <% }); %>
+    </div>
+    <% } else { %>
+      <p class="empty-msg"><%= lang==='en'?'No templates yet. Check back soon.':'Aucun modèle pour le moment. Revenez bientôt.' %></p>
+    <% } %>
+  </div>
+</section>
+<%- include('partials/footer') %>

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title><%= title %> — SmartBoost AI Admin</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body class="admin-body">
+<%- include('admin-sidebar', { active: moduleKey }) %>
+<main class="admin-main">
+  <header class="admin-header">
+    <div>
+      <span class="admin-eyebrow"><%= typeof moduleIcon!=='undefined' ? moduleIcon : '📋' %> Gestion du contenu</span>
+      <h1><%= title %></h1>
+      <p class="admin-subtitle">Créez, modifiez et supprimez vos <%= title.toLowerCase() %> en quelques clics.</p>
+    </div>
+    <div class="admin-header-actions">
+      <a href="admin" class="btn-secondary">← Dashboard</a>
+      <button class="btn-primary admin-add-btn" id="add-btn" style="background-color:#6366f1;color:#fff">+ Ajouter</button>
+    </div>
+  </header>
+
+  <div class="admin-toolbar">
+    <input type="text" id="search-input" class="admin-search" placeholder="🔍 Rechercher dans la liste…">
+    <span class="admin-count" id="item-count">0 élément</span>
+    <button class="btn-secondary" id="refresh-btn" title="Rafraîchir">↻ Rafraîchir</button>
+  </div>
+
+  <div id="items-container" class="items-container"><p class="empty">Chargement…</p></div>
+</main>
+
+<div id="edit-modal" class="modal" style="display:none">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 id="modal-title">Édition</h2>
+      <button id="modal-close" class="modal-close" aria-label="Fermer">×</button>
+    </div>
+    <form id="edit-form">
+      <div id="form-fields"></div>
+    </form>
+    <div class="modal-footer">
+      <div class="muted" id="modal-hint">Les champs marqués * sont obligatoires</div>
+      <div class="modal-actions-right">
+        <button type="button" id="modal-cancel" class="btn-secondary">Annuler</button>
+        <button type="button" id="modal-save" class="btn-primary" style="background-color:#6366f1;color:#fff">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+var moduleKey = '<%- moduleKey %>';
+var moduleLabel = '<%- moduleLabel %>';
+var fields = [];
+var items = [];
+var filteredItems = [];
+var editingId = null;
+var searchTerm = '';
+
+function toast(msg, type) {
+  var t = document.createElement('div');
+  t.className = 'toast ' + (type || 'success');
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(function(){ t.style.opacity='0'; setTimeout(function(){ t.remove(); }, 200); }, 2500);
+}
+
+async function loadModule() {
+  try {
+    var m = await fetch('api/admin/modules').then(function(r){return r.json();});
+    var mod = (m.modules||[]).find(function(x){return x.key===moduleKey;});
+    if (mod) fields = mod.fields || [];
+    await loadItems();
+  } catch(e) { document.getElementById('items-container').innerHTML = '<p class="empty">Erreur de chargement.</p>'; }
+}
+
+async function loadItems() {
+  try {
+    var data = await fetch('api/admin/'+moduleKey).then(function(r){return r.json();});
+    items = data[moduleKey] || [];
+    applyFilter();
+  } catch(e) { document.getElementById('items-container').innerHTML = '<p class="empty">Erreur lors du chargement.</p>'; }
+}
+
+function applyFilter() {
+  if (!searchTerm) { filteredItems = items.slice(); }
+  else {
+    var s = searchTerm.toLowerCase();
+    filteredItems = items.filter(function(it){
+      return Object.keys(it).some(function(k){ var v = it[k]; return v && String(v).toLowerCase().indexOf(s) !== -1; });
+    });
+  }
+  document.getElementById('item-count').textContent = filteredItems.length + ' ' + (filteredItems.length === 1 ? 'élément' : 'éléments');
+  renderTable();
+}
+
+function esc(s) { return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function labelOf(f) { return f.label || f.name; }
+
+function renderTable() {
+  var c = document.getElementById('items-container');
+  if (!items.length) {
+    c.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><h3>Aucun '+moduleLabel.toLowerCase()+' pour le moment</h3><p>Commencez par cliquer sur « + Ajouter » pour créer votre premier élément.</p><button class="btn-primary" onclick="openCreate()" style="background-color:#6366f1;color:#fff">+ Créer le premier '+moduleLabel.toLowerCase()+'</button></div>';
+    return;
+  }
+  if (!filteredItems.length) {
+    c.innerHTML = '<div class="empty-state"><div class="empty-icon">🔍</div><h3>Aucun résultat</h3><p>Aucun élément ne correspond à votre recherche.</p></div>';
+    return;
+  }
+  var cols = fields.filter(function(f){ return f.type !== 'textarea' || fields.indexOf(f) < 2; }).slice(0, 4);
+  if (!cols.length) cols = fields.slice(0, 4);
+  var html = '<div class="table-wrap"><table class="data-table"><thead><tr>';
+  cols.forEach(function(f){ html += '<th>'+esc(labelOf(f))+'</th>'; });
+  html += '<th style="text-align:right">Actions</th></tr></thead><tbody>';
+  filteredItems.forEach(function(it){
+    html += '<tr>';
+    cols.forEach(function(f){
+      var v = it[f.name];
+      var cell;
+      if (f.type === 'image') {
+        cell = v ? '<img src="'+esc(v)+'" class="thumb" alt="">' : '<span class="muted">—</span>';
+      } else if (f.type === 'textarea') {
+        cell = esc(String(v||'').substring(0,80)) + (String(v||'').length>80?'…':'');
+        if (!v) cell = '<span class="muted">—</span>';
+      } else if (f.type === 'boolean') {
+        cell = v ? '<span class="status-pill status-on">✓ Oui</span>' : '<span class="status-pill status-off">Non</span>';
+      } else if (f.type === 'number') {
+        cell = (v != null && v !== '') ? esc(v) : '<span class="muted">—</span>';
+      } else {
+        cell = v ? esc(String(v).substring(0,80)) : '<span class="muted">—</span>';
+      }
+      html += '<td>'+cell+'</td>';
+    });
+    html += '<td class="actions-cell"><button class="btn-mini edit-btn" data-id="'+it.id+'">✎ Modifier</button><button class="btn-mini btn-danger del-btn" data-id="'+it.id+'">🗑 Supprimer</button></td></tr>';
+  });
+  html += '</tbody></table></div>';
+  c.innerHTML = html;
+  c.querySelectorAll('.edit-btn').forEach(function(b){ b.addEventListener('click', function(){ openEdit(parseInt(b.getAttribute('data-id'))); }); });
+  c.querySelectorAll('.del-btn').forEach(function(b){ b.addEventListener('click', function(){ doDelete(parseInt(b.getAttribute('data-id'))); }); });
+}
+
+function openCreate() {
+  editingId = null;
+  document.getElementById('modal-title').textContent = 'Ajouter — '+moduleLabel;
+  renderFormFields({});
+  showModal();
+}
+
+function openEdit(id) {
+  var it = items.find(function(x){return x.id===id;});
+  if (!it) return;
+  editingId = id;
+  document.getElementById('modal-title').textContent = 'Modifier — '+moduleLabel;
+  renderFormFields(it);
+  showModal();
+}
+
+function showModal() {
+  document.getElementById('edit-modal').style.display = 'flex';
+  setTimeout(function(){ var fi = document.querySelector('#form-fields input, #form-fields textarea, #form-fields select'); if (fi) fi.focus(); }, 100);
+}
+
+function renderFormFields(data) {
+  var c = document.getElementById('form-fields');
+  var html = '';
+  fields.forEach(function(f){
+    var v = data[f.name] != null ? data[f.name] : (f.default != null ? f.default : '');
+    var lbl = esc(labelOf(f)) + (f.required?'<span class="req"> *</span>':'');
+    html += '<div class="field" data-field="'+esc(f.name)+'"><label>'+lbl+'</label>';
+    if (f.type === 'textarea') {
+      html += '<textarea name="'+esc(f.name)+'" '+(f.required?'required':'')+' rows="5" '+(f.placeholder?'placeholder="'+esc(f.placeholder)+'"':'')+'>'+esc(v)+'</textarea>';
+    } else if (f.type === 'boolean') {
+      html = html.replace('<label>'+lbl+'</label>','');
+      html += '<label class="chk"><input type="checkbox" name="'+esc(f.name)+'" '+(v?'checked':'')+'> <span>'+esc(labelOf(f))+'</span></label>';
+    } else if (f.type === 'select') {
+      html += '<select name="'+esc(f.name)+'">';
+      html += '<option value="">— Choisir —</option>';
+      (f.options||[]).forEach(function(o){ html += '<option value="'+esc(o)+'" '+(String(o)===String(v)?'selected':'')+'>'+esc(o)+'</option>'; });
+      html += '</select>';
+    } else if (f.type === 'image') {
+      html += '<div class="img-input-row">';
+      html += '<input type="text" name="'+esc(f.name)+'" value="'+esc(v)+'" placeholder="URL de l\'image (ex: https://...)">';
+      html += '<label class="img-upload-btn">📤 Téléverser<input type="file" accept="image/*" style="display:none" onchange="uploadImage(event, \''+esc(f.name)+'\')"></label>';
+      html += '</div>';
+      html += '<div class="img-preview" id="prev-'+esc(f.name)+'">'+(v?'<img src="'+esc(v)+'" alt="">':'')+'</div>';
+    } else if (f.type === 'number') {
+      html += '<input type="number" name="'+esc(f.name)+'" value="'+esc(v)+'" step="'+(f.step||1)+'" '+(f.min!=null?'min="'+f.min+'"':'')+' '+(f.max!=null?'max="'+f.max+'"':'')+(f.placeholder?' placeholder="'+esc(f.placeholder)+'"':'')+'>';
+    } else {
+      html += '<input type="text" name="'+esc(f.name)+'" value="'+esc(v)+'" '+(f.required?'required':'')+(f.placeholder?' placeholder="'+esc(f.placeholder)+'"':'')+(f.maxLength?' maxlength="'+f.maxLength+'"':'')+'>';
+    }
+    if (f.description) html += '<small>'+esc(f.description)+'</small>';
+    html += '</div>';
+  });
+  c.innerHTML = html;
+  c.querySelectorAll('.img-input-row input[type=text]').forEach(function(input){
+    input.addEventListener('input', function(){
+      var name = input.getAttribute('name');
+      var prev = document.getElementById('prev-'+name);
+      if (prev) prev.innerHTML = input.value ? '<img src="'+esc(input.value)+'" alt="">' : '';
+    });
+  });
+}
+
+function uploadImage(ev, fieldName) {
+  var file = ev.target.files[0]; if (!file) return;
+  if (file.size > 5*1024*1024) { toast('Image trop volumineuse (max 5MB)', 'error'); return; }
+  var reader = new FileReader();
+  reader.onload = async function(e){
+    try {
+      var btn = ev.target.parentElement;
+      btn.style.opacity = '0.5';
+      var res = await fetch('api/admin/upload-image', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ image: e.target.result }) });
+      btn.style.opacity = '1';
+      if (!res.ok) { var err = await res.json(); toast(err.error || 'Échec du téléversement', 'error'); return; }
+      var data = await res.json();
+      var input = document.querySelector('input[name="'+fieldName+'"]');
+      if (input) { input.value = data.url; input.dispatchEvent(new Event('input')); }
+      toast('Image téléversée');
+    } catch(er) { toast('Erreur réseau', 'error'); }
+  };
+  reader.readAsDataURL(file);
+}
+
+function closeModal() { document.getElementById('edit-modal').style.display = 'none'; }
+
+async function saveForm() {
+  var form = document.getElementById('edit-form');
+  if (!form.checkValidity()) { form.reportValidity(); return; }
+  var saveBtn = document.getElementById('modal-save');
+  saveBtn.disabled = true; saveBtn.textContent = 'Enregistrement…';
+  var fd = new FormData(form);
+  var body = {};
+  fields.forEach(function(f){
+    if (f.type === 'boolean') body[f.name] = fd.has(f.name) ? 1 : 0;
+    else if (f.type === 'number') { var nv = fd.get(f.name); body[f.name] = nv === '' || nv == null ? null : parseFloat(nv); }
+    else body[f.name] = fd.get(f.name) || '';
+  });
+  var url = 'api/admin/'+moduleKey + (editingId ? '/'+editingId : '');
+  var method = editingId ? 'PUT' : 'POST';
+  try {
+    var res = await fetch(url, { method: method, headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+    if (res.ok) { closeModal(); await loadItems(); toast(editingId ? 'Modifications enregistrées' : 'Élément ajouté'); }
+    else { var err = await res.json(); toast('Erreur : ' + (err.error||'inconnue'), 'error'); }
+  } catch(er) { toast('Erreur réseau', 'error'); }
+  saveBtn.disabled = false; saveBtn.textContent = 'Enregistrer';
+}
+
+async function doDelete(id) {
+  if (!confirm('Supprimer définitivement cet élément ?\nCette action est irréversible.')) return;
+  try {
+    var res = await fetch('api/admin/'+moduleKey+'/'+id, { method:'DELETE' });
+    if (res.ok) { await loadItems(); toast('Élément supprimé'); }
+    else toast('Erreur lors de la suppression', 'error');
+  } catch(e) { toast('Erreur réseau', 'error'); }
+}
+
+document.getElementById('edit-form').addEventListener('submit', function(e){ e.preventDefault(); saveForm(); });
+document.getElementById('modal-save').addEventListener('click', saveForm);
+document.getElementById('add-btn').addEventListener('click', openCreate);
+document.getElementById('modal-close').addEventListener('click', closeModal);
+document.getElementById('modal-cancel').addEventListener('click', closeModal);
+document.getElementById('refresh-btn').addEventListener('click', loadItems);
+document.getElementById('search-input').addEventListener('input', function(e){ searchTerm = e.target.value.trim(); applyFilter(); });
+document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && document.getElementById('edit-modal').style.display === 'flex') closeModal(); });
+document.getElementById('edit-modal').addEventListener('click', function(e){ if (e.target.id === 'edit-modal') closeModal(); });
+
+window.openCreate = openCreate;
+window.uploadImage = uploadImage;
+loadModule();
+</script>
+</body>
+</html>

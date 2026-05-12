@@ -1,0 +1,39 @@
+<%- include('partials/header') %>
+<section class="page-header">
+  <div class="container"><h1><%= t.contact_title %></h1><p><%= t.contact_subtitle %></p></div>
+</section>
+<section class="section">
+  <div class="container container-narrow">
+    <form id="contact-form" class="contact-form">
+      <div class="field"><label><%= t.contact_name %></label><input type="text" name="name" required></div>
+      <div class="field"><label><%= t.contact_email %></label><input type="email" name="email"></div>
+      <div class="field"><label><%= t.contact_company %></label><input type="text" name="company"></div>
+      <div class="field"><label><%= t.contact_message %></label><textarea name="message" rows="6" required></textarea></div>
+      <button type="submit" class="btn-primary btn-large" style="background-color:#6366f1;color:#fff"><%= t.contact_send %></button>
+      <div id="contact-status" class="contact-status"></div>
+    </form>
+    <% if (settings && settings.contact_email) { %>
+    <div class="contact-info">
+      <p>📧 <a href="mailto:<%= settings.contact_email %>"><%= settings.contact_email %></a></p>
+      <% if (settings.contact_phone) { %><p>📞 <%= settings.contact_phone %></p><% } %>
+    </div>
+    <% } %>
+  </div>
+</section>
+<script>
+(function(){
+  var f = document.getElementById('contact-form');
+  var s = document.getElementById('contact-status');
+  f.addEventListener('submit', async function(e){
+    e.preventDefault();
+    var fd = new FormData(f);
+    var body = { name: fd.get('name'), email: fd.get('email'), company: fd.get('company'), message: fd.get('message') };
+    try {
+      var r = await fetch('api/contact', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+      if (r.ok) { s.textContent = '<%- t.contact_success %>'; s.className = 'contact-status success'; f.reset(); }
+      else { s.textContent = '<%- t.contact_error %>'; s.className = 'contact-status error'; }
+    } catch (er) { s.textContent = '<%- t.contact_error %>'; s.className = 'contact-status error'; }
+  });
+})();
+</script>
+<%- include('partials/footer') %>

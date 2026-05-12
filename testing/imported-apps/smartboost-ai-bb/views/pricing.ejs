@@ -1,0 +1,36 @@
+<%- include('partials/header') %>
+<section class="page-header">
+  <div class="container">
+    <h1><%= t.pricing_page_title %></h1>
+    <p><%= t.pricing_page_subtitle %></p>
+  </div>
+</section>
+<section class="section">
+  <div class="container">
+    <% if (typeof plans !== 'undefined' && plans.length > 0) { %>
+    <div class="grid-3">
+      <% plans.forEach(function(p){ %>
+      <div class="plan-card <%= p.highlighted?'plan-highlighted':'' %>">
+        <% if (p.highlighted) { %><span class="plan-badge"><%= t.pricing_recommended %></span><% } %>
+        <h3><%= p.name %></h3>
+        <div class="plan-price"><span class="plan-currency">$</span><%= formatPrice(p.price) %><span class="plan-period">/<%= p.period || 'mois' %></span></div>
+        <p class="plan-desc"><%= p.description %></p>
+        <ul class="plan-features">
+          <% (p.features||'').split('\n').forEach(function(line){ if(line.trim()) { %><li><%= line %></li><% } }); %>
+        </ul>
+        <a href="#" data-login-btn class="btn-primary" style="background-color:#6366f1;color:#fff"><%= p.cta_label || (lang==='en'?'Get started':'Commencer') %></a>
+      </div>
+      <% }); %>
+    </div>
+    <% } else { %>
+      <p class="empty-msg"><%= lang==='en'?'Pricing plans coming soon.':'Plans tarifaires à venir.' %></p>
+    <% } %>
+    <div class="pricing-faq">
+      <h2><%= lang==='en'?'Frequently asked questions':'Questions fréquentes' %></h2>
+      <details><summary><%= lang==='en'?'Can I cancel anytime?':'Puis-je annuler à tout moment ?' %></summary><p><%= lang==='en'?'Yes, no commitment. Cancel from your dashboard in 1 click.':'Oui, sans engagement. Annulez depuis votre tableau de bord en 1 clic.' %></p></details>
+      <details><summary><%= lang==='en'?'Is there a free trial?':'Y a-t-il un essai gratuit ?' %></summary><p><%= lang==='en'?'The Free plan is unlimited in time with 5 daily generations.':'Le plan Gratuit est illimité dans le temps avec 5 générations par jour.' %></p></details>
+      <details><summary><%= lang==='en'?'Which AI do you use?':'Quelle IA utilisez-vous ?' %></summary><p><%= lang==='en'?'We use Google Gemini, a leading AI model for natural language and content creation.':'Nous utilisons Google Gemini, un modèle d\'IA de pointe pour le langage naturel et la création de contenu.' %></p></details>
+    </div>
+  </div>
+</section>
+<%- include('partials/footer') %>

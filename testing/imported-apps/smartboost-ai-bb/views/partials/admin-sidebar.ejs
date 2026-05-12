@@ -1,0 +1,16 @@
+<aside class="admin-sidebar">
+  <div class="admin-brand">⚡ SmartBoost <span>Admin</span></div>
+  <nav class="admin-nav">
+    <div class="admin-nav-section">Vue d'ensemble</div>
+    <a href="admin" class="admin-nav-item <%= (typeof active!=='undefined' && active==='dashboard')?'active':'' %>">📊 Dashboard</a>
+    <div class="admin-nav-section">Contenu</div>
+    <a href="admin/posts" class="admin-nav-item <%= (typeof active!=='undefined' && active==='posts')?'active':'' %>">📝 Articles</a>
+    <a href="admin/features" class="admin-nav-item <%= (typeof active!=='undefined' && active==='features')?'active':'' %>">⭐ Fonctionnalités</a>
+    <a href="admin/pricing_plans" class="admin-nav-item <%= (typeof active!=='undefined' && active==='pricing_plans')?'active':'' %>">💲 Tarifs</a>
+    <a href="admin/testimonials" class="admin-nav-item <%= (typeof active!=='undefined' && active==='testimonials')?'active':'' %>">💬 Témoignages</a>
+    <a href="admin/templates" class="admin-nav-item <%= (typeof active!=='undefined' && active==='templates')?'active':'' %>">📦 Modèles</a>
+    <hr>
+    <a href="." target="_blank" class="admin-nav-item">🌐 Voir le site</a>
+    <a href="admin/logout" class="admin-nav-item">🚪 Déconnexion</a>
+  </nav>
+</aside>

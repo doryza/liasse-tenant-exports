@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS admin_settings (key TEXT PRIMARY KEY, value TEXT, updated_at TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS site_visits (id SERIAL PRIMARY KEY, path TEXT, created_at TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS posts (id SERIAL PRIMARY KEY, title TEXT NOT NULL, content TEXT, excerpt TEXT, image_url TEXT, category TEXT, author TEXT, published INTEGER DEFAULT 1, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS features (id SERIAL PRIMARY KEY, title TEXT NOT NULL, description TEXT, icon TEXT, image_url TEXT, sort_order INTEGER DEFAULT 0, featured INTEGER DEFAULT 1, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS pricing_plans (id SERIAL PRIMARY KEY, name TEXT NOT NULL, price DOUBLE PRECISION DEFAULT 0, period TEXT, description TEXT, features TEXT, cta_label TEXT, image_url TEXT, highlighted INTEGER DEFAULT 0, sort_order INTEGER DEFAULT 0, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS testimonials (id SERIAL PRIMARY KEY, author TEXT NOT NULL, role TEXT, content TEXT, image_url TEXT, rating INTEGER DEFAULT 5, featured INTEGER DEFAULT 1, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS templates (id SERIAL PRIMARY KEY, name TEXT NOT NULL, description TEXT, category TEXT, prompt_template TEXT, image_url TEXT, is_premium INTEGER DEFAULT 0, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS generations (id SERIAL PRIMARY KEY, user_id INTEGER, prompt TEXT, result TEXT, type TEXT, created_at TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS form_submissions (id SERIAL PRIMARY KEY, name TEXT, email TEXT, company TEXT, message TEXT, created_at TIMESTAMPTZ DEFAULT NOW());
