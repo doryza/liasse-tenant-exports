@@ -97,20 +97,20 @@ const container = document.getElementById('itemsContainer');
 container.className = 'admin-list';
 let html = '<table class="data-table"><thead><tr>';
 displayFields.forEach(function(f){html += '<th>' + esc(labelize(f.name)) + '</th>';});
-html += '<th style="text-align:right;width:160px">Actions</th></tr></thead><tbody>';
+html += '<th class="actions-col">Actions</th></tr></thead><tbody>';
 filtered.forEach(function(it){
 html += '<tr>';
 displayFields.forEach(function(f){
 let v = it[f.name];
-if (f.type === 'image') { v = v ? '<img src="' + esc(v) + '" class="thumb" alt="">' : '<div class="thumb" style="background:#f1f5f9"></div>'; }
+if (f.type === 'image') { v = v ? '<img src="' + esc(v) + '" class="thumb" alt="">' : '<div class="thumb thumb-empty"></div>'; }
 else if (f.type === 'boolean') { v = v ? '<span class="tag tag-success">✓ Oui</span>' : '<span class="tag tag-muted">Non</span>'; }
-else if (v == null || v === '') v = '<span style="color:#cbd5e1">—</span>';
+else if (v == null || v === '') v = '<span class="value-empty">—</span>';
 else { v = String(v); if (v.length > 80) v = v.slice(0,80) + '…'; v = esc(v); }
-html += '<td>' + v + '</td>';
+html += '<td data-label="' + esc(labelize(f.name)) + '">' + v + '</td>';
 });
-html += '<td class="actions">';
+html += '<td class="actions" data-label="Actions">';
 html += '<button class="btn btn-sm" data-view="' + it.id + '">' + (READONLY ? '👁 Voir' : '✏ Modifier') + '</button>';
-html += '<button class="btn btn-sm btn-danger" data-del="' + it.id + '">🗑</button>';
+html += '<button class="btn btn-sm btn-danger" data-del="' + it.id + '" aria-label="Supprimer">🗑</button>';
 html += '</td></tr>';
 });
 html += '</tbody></table>';
