@@ -1,0 +1,38 @@
+<%- include('partials/header') %>
+<section class="page-hero">
+<div class="container">
+<h1>Calendrier sportif</h1>
+<p>Tous les événements à venir près de chez vous.</p>
+</div>
+</section>
+<section class="section">
+<div class="container">
+<% if (typeof events !== 'undefined' && events && events.length > 0) { %>
+<% var currentMonth = ''; %>
+<div class="calendar-list">
+<% events.forEach(function(e) { %>
+<% var month = e.event_date ? new Date(e.event_date).toLocaleDateString('fr-CA', { month: 'long', year: 'numeric' }) : 'À déterminer'; %>
+<% if (month !== currentMonth) { currentMonth = month; %>
+<h3 class="calendar-month"><%= month.charAt(0).toUpperCase() + month.slice(1) %></h3>
+<% } %>
+<div class="event-card large">
+<div class="event-date">
+<span class="event-day"><%= e.event_date ? new Date(e.event_date).getDate() : '?' %></span>
+<span class="event-month"><%= e.event_date ? new Date(e.event_date).toLocaleDateString('fr-CA',{weekday:'short'}).replace('.','') : '' %></span>
+</div>
+<div class="event-body">
+<% if (e.sport) { %><span class="badge"><%= e.sport %></span><% } %>
+<h4><%= e.title %></h4>
+<p class="event-meta">📍 <%= e.location || 'Lieu à confirmer' %><% if (e.event_time) { %> · 🕐 <%= e.event_time %><% } %></p>
+<% if (e.description) { %><p><%= e.description %></p><% } %>
+</div>
+<% if (e.image_url) { %><div class="event-thumb"><img src="<%= e.image_url %>" alt="<%= e.title %>"></div><% } %>
+</div>
+<% }); %>
+</div>
+<% } else { %>
+<p class="empty">Aucun événement programmé. Revenez bientôt !</p>
+<% } %>
+</div>
+</section>
+<%- include('partials/footer') %>

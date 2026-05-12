@@ -1,0 +1,17 @@
+<%- include('partials/header') %>
+<section class="section">
+<div class="container">
+<a href="athletes" class="back-link">← Tous les athlètes</a>
+<div class="athlete-profile">
+<div class="athlete-profile-img"><img src="<%= athlete.image_url || 'https://placehold.co/600x600/ef4444/ffffff/png?text=★' %>" alt="<%= athlete.name %>"></div>
+<div class="athlete-profile-info">
+<% if (athlete.sport) { %><span class="badge badge-lg"><%= athlete.sport %></span><% } %>
+<h1><%= athlete.name %></h1>
+<% if (athlete.bio) { %><h3>Biographie</h3><p><%= athlete.bio %></p><% } %>
+<% if (athlete.achievements) { %><h3>Réalisations</h3><p><%= athlete.achievements %></p><% } %>
+<div style="margin-top:32px"><a href="contact" class="btn btn-primary" style="background-color:#ef4444;color:#fff">Proposer une entrevue</a></div>
+</div>
+</div>
+</div>
+</section>
+<%- include('partials/footer') %>

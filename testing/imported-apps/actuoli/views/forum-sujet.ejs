@@ -1,0 +1,62 @@
+<%- include('partials/header') %>
+<section class="section">
+<div class="container">
+<a href="forum" class="back-link">← Retour au forum</a>
+<article class="forum-topic">
+<% if (topic.category) { %><span class="badge badge-lg"><%= topic.category %></span><% } %>
+<h1><%= topic.title %></h1>
+<p class="topic-meta">Par <strong><%= topic.author_name || 'Anonyme' %></strong> · <%= formatRelDate(topic.created_at) %></p>
+<div class="topic-content"><% (topic.content || '').split(/\n\n+/).forEach(function(para) { %><p><%= para %></p><% }); %></div>
+</article>
+
+<h3>Réponses (<%= (typeof messages !== 'undefined' && messages) ? messages.length : 0 %>)</h3>
+<% if (typeof messages !== 'undefined' && messages && messages.length > 0) { %>
+<div class="messages-list">
+<% messages.forEach(function(m) { %>
+<div class="message">
+<div class="message-head">
+<strong><%= m.author_name || 'Anonyme' %></strong>
+<span class="message-time"><%= formatRelDate(m.created_at) %></span>
+</div>
+<p><%= m.content %></p>
+</div>
+<% }); %>
+</div>
+<% } else { %>
+<p class="empty-small">Aucune réponse encore. Soyez le premier à répondre !</p>
+<% } %>
+
+<% if (user) { %>
+<div class="reply-form">
+<h4>Répondre</h4>
+<form id="replyForm">
+<textarea name="content" rows="4" placeholder="Votre réponse..." required></textarea>
+<button type="submit" class="btn btn-primary" style="background-color:#ef4444;color:#fff">Envoyer ma réponse</button>
+</form>
+<div id="replyMsg" class="form-msg"></div>
+</div>
+<% } else { %>
+<div class="info-box">
+<p>Pour répondre, <a href="#" data-login-btn><strong>connectez-vous</strong></a>.</p>
+</div>
+<% } %>
+</div>
+</section>
+<script>
+(function(){
+var f=document.getElementById('replyForm'); if(!f) return;
+f.addEventListener('submit',async function(e){
+e.preventDefault();
+var msg=document.getElementById('replyMsg');
+msg.textContent='Envoi...'; msg.className='form-msg';
+try{
+var data={topic_id:<%- topic.id %>,content:f.content.value};
+var r=await TenantSDK.fetch('api/forum/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+var d=await r.json();
+if(r.ok){location.reload();}
+else{msg.textContent=d.error||'Erreur';msg.className='form-msg form-msg-err';}
+}catch(err){msg.textContent='Erreur de connexion';msg.className='form-msg form-msg-err';}
+});
+})();
+</script>
+<%- include('partials/footer') %>

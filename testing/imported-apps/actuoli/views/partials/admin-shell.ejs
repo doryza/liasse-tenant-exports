@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin · <%= moduleLabel %> · Actuoli</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body>
+<div class="admin-layout">
+<%- include('admin-sidebar', { currentPath: (typeof currentPath !== 'undefined' ? currentPath : ('admin/' + moduleKey)) }) %>
+<main class="admin-main">
+<header class="admin-header">
+<div>
+<h1><%= moduleLabel %></h1>
+<p class="admin-subtitle" id="countLabel">Chargement...</p>
+</div>
+<div class="admin-header-actions">
+<a href="admin" class="btn">← Tableau de bord</a>
+<% if (!readonly) { %><button id="newBtn" class="btn btn-primary" style="background-color:#ef4444;color:#fff">+ Nouveau</button><% } %>
+</div>
+</header>
+<div class="admin-toolbar">
+<input type="search" id="searchInput" placeholder="🔍 Rechercher dans <%= moduleLabel.toLowerCase() %>...">
+<span class="admin-toolbar-count" id="resultCount"></span>
+</div>
+<div id="itemsContainer" class="admin-list"><div class="empty">Chargement...</div></div>
+</main>
+</div>
+<div id="modal" class="modal" style="display:none" role="dialog" aria-modal="true">
+<div class="modal-content">
+<header class="modal-header"><h2 id="modalTitle">Nouveau</h2><button id="closeModal" class="modal-close" aria-label="Fermer">×</button></header>
+<form id="itemForm" class="modal-body" onsubmit="return false"></form>
+<footer class="modal-footer"><button id="cancelBtn" class="btn">Annuler</button><button id="saveBtn" class="btn btn-primary" style="background-color:#ef4444;color:#fff">Enregistrer</button></footer>
+</div>
+</div>
+<div id="toast-container"></div>
+<script>
+const MODULE_KEY = '<%- moduleKey %>';
+const MODULE_LABEL = '<%- moduleLabel %>';
+const READONLY = <%- readonly ? 'true' : 'false' %>;
+let fields = [];
+let items = [];
+let editingId = null;
+
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]);});}
+
+function toast(message, type){
+const c = document.getElementById('toast-container');
+const t = document.createElement('div');
+t.className = 'toast ' + (type === 'err' ? 'toast-err' : (type === 'ok' ? 'toast-ok' : ''));
+t.innerHTML = '<span class="toast-icon">' + (type === 'err' ? '⚠️' : (type === 'ok' ? '✓' : 'ℹ')) + '</span><span>' + esc(message) + '</span>';
+c.appendChild(t);
+setTimeout(function(){ t.style.opacity = '0'; t.style.transform = 'translateX(20px)'; t.style.transition = 'all 0.25s'; setTimeout(function(){ t.remove(); }, 280); }, 3000);
+}
+
+async function loadModule(){
+try{
+const res = await fetch('api/admin/modules');
+const data = await res.json();
+const mod = (data.modules || []).find(function(m){return m.key === MODULE_KEY;});
+if (!mod){ document.getElementById('itemsContainer').innerHTML='<div class="empty">Module introuvable</div>'; return; }
+fields = mod.fields || [];
+await loadItems();
+}catch(e){document.getElementById('itemsContainer').innerHTML='<div class="empty">Erreur de chargement</div>';}
+}
+
+async function loadItems(){
+try{
+const res = await fetch('api/admin/' + MODULE_KEY);
+const data = await res.json();
+items = data[MODULE_KEY] || [];
+document.getElementById('countLabel').textContent = items.length + ' entrée(s) au total';
+renderItems();
+}catch(e){document.getElementById('itemsContainer').innerHTML='<div class="empty">Erreur de chargement des données</div>';}
+}
+
+function renderItems(){
+const q = (document.getElementById('searchInput').value || '').toLowerCase();
+let filtered = items;
+if (q) filtered = items.filter(function(it){return JSON.stringify(it).toLowerCase().indexOf(q) !== -1;});
+document.getElementById('resultCount').textContent = q ? (filtered.length + ' résultat(s) trouvé(s)') : '';
+if (!filtered.length){
+const container = document.getElementById('itemsContainer');
+container.className = '';
+if (q){
+container.innerHTML = '<div class="empty-state"><div class="empty-icon">🔍</div><h3>Aucun résultat</h3><p>Aucune entrée ne correspond à « ' + esc(q) + ' ». Essayez un autre terme.</p></div>';
+} else if (READONLY){
+container.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><h3>Aucune entrée pour le moment</h3><p>Les nouvelles entrées apparaîtront ici automatiquement.</p></div>';
+} else {
+container.innerHTML = '<div class="empty-state"><div class="empty-icon">✨</div><h3>Aucune entrée dans ' + esc(MODULE_LABEL) + '</h3><p>Cliquez sur le bouton ci-dessous pour créer votre première entrée.</p><button class="btn btn-primary" style="background-color:#ef4444;color:#fff" onclick="document.getElementById(\'newBtn\').click()">+ Créer la première entrée</button></div>';
+}
+return;
+}
+const displayFields = fields.filter(function(f){return f.type !== 'readonly' || true;}).slice(0, 4);
+const container = document.getElementById('itemsContainer');
+container.className = 'admin-list';
+let html = '<table class="data-table"><thead><tr>';
+displayFields.forEach(function(f){html += '<th>' + esc(labelize(f.name)) + '</th>';});
+html += '<th style="text-align:right;width:160px">Actions</th></tr></thead><tbody>';
+filtered.forEach(function(it){
+html += '<tr>';
+displayFields.forEach(function(f){
+let v = it[f.name];
+if (f.type === 'image') { v = v ? '<img src="' + esc(v) + '" class="thumb" alt="">' : '<div class="thumb" style="background:#f1f5f9"></div>'; }
+else if (f.type === 'boolean') { v = v ? '<span class="tag tag-success">✓ Oui</span>' : '<span class="tag tag-muted">Non</span>'; }
+else if (v == null || v === '') v = '<span style="color:#cbd5e1">—</span>';
+else { v = String(v); if (v.length > 80) v = v.slice(0,80) + '…'; v = esc(v); }
+html += '<td>' + v + '</td>';
+});
+html += '<td class="actions">';
+html += '<button class="btn btn-sm" data-view="' + it.id + '">' + (READONLY ? '👁 Voir' : '✏ Modifier') + '</button>';
+html += '<button class="btn btn-sm btn-danger" data-del="' + it.id + '">🗑</button>';
+html += '</td></tr>';
+});
+html += '</tbody></table>';
+container.innerHTML = html;
+container.querySelectorAll('[data-view]').forEach(function(b){b.addEventListener('click',function(){editItem(parseInt(b.dataset.view,10));});});
+container.querySelectorAll('[data-del]').forEach(function(b){b.addEventListener('click',function(){deleteItem(parseInt(b.dataset.del,10));});});
+}
+
+function labelize(s){return s.replace(/_/g,' ').replace(/^./,function(c){return c.toUpperCase();});}
+
+function openModal(item){
+editingId = item ? item.id : null;
+document.getElementById('modalTitle').textContent = (item ? (READONLY ? '👁 Détails' : '✏ Modifier — ' + MODULE_LABEL) : '+ Nouveau — ' + MODULE_LABEL);
+const form = document.getElementById('itemForm');
+form.innerHTML = '';
+fields.forEach(function(f){
+if (f.type === 'readonly' && !item) return;
+const wrap = document.createElement('div');
+wrap.className = 'field';
+wrap.dataset.fname = f.name;
+wrap.dataset.ftype = f.type || 'text';
+const val = item ? item[f.name] : (f.default !== undefined ? f.default : '');
+if (f.type !== 'boolean'){
+const label = document.createElement('label');
+label.innerHTML = esc(labelize(f.name)) + (f.required ? ' <span class="req">*</span>' : '');
+wrap.appendChild(label);
+}
+let input;
+if (f.type === 'textarea'){
+input = document.createElement('textarea'); input.rows = 5; input.value = val || '';
+} else if (f.type === 'boolean'){
+const row = document.createElement('label'); row.className = 'checkbox-row';
+const cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = val ? true : false;
+const lbl = document.createElement('span'); lbl.className = 'checkbox-label'; lbl.textContent = labelize(f.name);
+row.appendChild(cb); row.appendChild(lbl);
+input = row;
+} else if (f.type === 'select'){
+input = document.createElement('select');
+let opts = '<option value="">— choisir —</option>';
+(f.options || []).forEach(function(o){ opts += '<option value="' + esc(o) + '"' + (val === o ? ' selected' : '') + '>' + esc(o) + '</option>'; });
+input.innerHTML = opts;
+} else if (f.type === 'image'){
+const container = document.createElement('div');
+container.className = 'image-input';
+const preview = document.createElement('img');
+preview.className = 'image-preview';
+preview.src = val || '';
+preview.style.display = val ? 'block' : 'none';
+const emptyHint = document.createElement('div');
+emptyHint.className = 'image-empty';
+emptyHint.textContent = 'Aperçu de l\'image';
+emptyHint.style.display = val ? 'none' : 'flex';
+const fileRow = document.createElement('div');
+fileRow.className = 'file-row';
+const urlInput = document.createElement('input');
+urlInput.type = 'text'; urlInput.placeholder = "URL de l'image (ou choisissez un fichier)"; urlInput.value = val || '';
+urlInput.style.flex = '1';
+urlInput.addEventListener('input',function(){
+const v = urlInput.value;
+if (v && v.indexOf('Téléversement') === -1){ preview.src = v; preview.style.display = 'block'; emptyHint.style.display = 'none'; }
+else if (!v){ preview.style.display = 'none'; emptyHint.style.display = 'flex'; }
+});
+const fileLabel = document.createElement('label');
+fileLabel.className = 'btn btn-sm';
+fileLabel.style.cursor = 'pointer';
+fileLabel.textContent = '📁 Choisir un fichier';
+const fileInput = document.createElement('input');
+fileInput.type = 'file'; fileInput.accept = 'image/*'; fileInput.style.display = 'none';
+fileInput.addEventListener('change',function(ev){
+const file = ev.target.files[0]; if (!file) return;
+const reader = new FileReader();
+reader.onload = async function(){
+urlInput.value = 'Téléversement en cours...';
+fileLabel.textContent = '⏳ Téléversement...';
+fileLabel.style.pointerEvents = 'none';
+try{
+const r = await fetch('api/admin/upload',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({dataUri:reader.result,folder:MODULE_KEY})});
+const d = await r.json();
+if (d.url){
+urlInput.value = d.url; preview.src = d.url; preview.style.display = 'block'; emptyHint.style.display = 'none';
+toast('Image téléversée avec succès', 'ok');
+} else { urlInput.value = ''; toast('Erreur : ' + (d.error || 'téléversement échoué'), 'err'); }
+}catch(e){ urlInput.value=''; toast('Erreur de téléversement', 'err'); }
+fileLabel.textContent = '📁 Choisir un fichier';
+fileLabel.style.pointerEvents = '';
+};
+reader.readAsDataURL(file);
+});
+fileLabel.appendChild(fileInput);
+fileRow.appendChild(urlInput);
+fileRow.appendChild(fileLabel);
+container.appendChild(preview);
+container.appendChild(emptyHint);
+container.appendChild(fileRow);
+input = container;
+} else if (f.type === 'date'){
+input = document.createElement('input'); input.type = 'date';
+let dv = val || '';
+if (dv && typeof dv === 'string' && dv.indexOf('T') !== -1) dv = dv.split('T')[0];
+else if (dv instanceof Date) dv = dv.toISOString().split('T')[0];
+input.value = dv;
+} else if (f.type === 'readonly'){
+input = document.createElement('div'); input.className = 'readonly-value'; input.textContent = val == null || val === '' ? '—' : String(val);
+} else {
+input = document.createElement('input');
+input.type = f.type === 'number' ? 'number' : (f.type === 'email' ? 'email' : (f.type === 'url' ? 'url' : 'text'));
+input.value = val == null ? '' : val;
+}
+if (f.placeholder && input.placeholder !== undefined) input.placeholder = f.placeholder;
+if (f.required && input.required !== undefined && f.type !== 'image') input.required = true;
+wrap.appendChild(input);
+if (f.description){
+const help = document.createElement('p'); help.className = 'field-help'; help.textContent = f.description;
+wrap.appendChild(help);
+}
+form.appendChild(wrap);
+});
+document.getElementById('modal').style.display = 'flex';
+document.getElementById('saveBtn').style.display = READONLY ? 'none' : '';
+document.body.style.overflow = 'hidden';
+setTimeout(function(){ const first = form.querySelector('input,textarea,select'); if (first && first.focus) first.focus(); }, 50);
+}
+
+function closeModal(){document.getElementById('modal').style.display = 'none'; editingId = null; document.body.style.overflow = '';}
+
+function editItem(id){const item = items.find(function(i){return i.id === id;}); if (item) openModal(item);}
+
+async function deleteItem(id){
+if (!confirm('Supprimer cette entrée ? Cette action est irréversible.')) return;
+try{
+const r = await fetch('api/admin/' + MODULE_KEY + '/' + id,{method:'DELETE'});
+if (!r.ok){ const d = await r.json(); toast('Erreur : ' + (d.error || 'suppression échouée'), 'err'); return; }
+toast('Entrée supprimée', 'ok');
+await loadItems();
+}catch(e){ toast('Erreur de connexion', 'err'); }
+}
+
+async function saveItem(){
+const saveBtn = document.getElementById('saveBtn');
+saveBtn.disabled = true;
+const originalText = saveBtn.textContent;
+saveBtn.textContent = 'Enregistrement...';
+const form = document.getElementById('itemForm');
+const data = {};
+fields.forEach(function(f){
+if (f.type === 'readonly') return;
+const wrap = form.querySelector('[data-fname="' + f.name + '"]');
+if (!wrap) return;
+if (f.type === 'image'){
+const urlInput = wrap.querySelector('input[type="text"]');
+data[f.name] = urlInput ? urlInput.value : '';
+} else if (f.type === 'boolean'){
+data[f.name] = wrap.querySelector('input[type="checkbox"]').checked;
+} else if (f.type === 'textarea'){
+data[f.name] = wrap.querySelector('textarea').value;
+} else if (f.type === 'select'){
+data[f.name] = wrap.querySelector('select').value;
+} else {
+const el = wrap.querySelector('input');
+if (el) data[f.name] = el.value;
+}
+});
+try{
+const url = editingId ? ('api/admin/' + MODULE_KEY + '/' + editingId) : ('api/admin/' + MODULE_KEY);
+const method = editingId ? 'PUT' : 'POST';
+const r = await fetch(url,{method:method,headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+if (!r.ok){ const e = await r.json(); toast('Erreur : ' + (e.error || 'enregistrement échoué'), 'err'); saveBtn.disabled = false; saveBtn.textContent = originalText; return; }
+toast(editingId ? 'Entrée modifiée' : 'Entrée créée', 'ok');
+closeModal();
+await loadItems();
+}catch(e){ toast('Erreur de connexion', 'err'); }
+saveBtn.disabled = false;
+saveBtn.textContent = originalText;
+}
+
+const newBtn = document.getElementById('newBtn');
+if (newBtn) newBtn.addEventListener('click',function(){openModal(null);});
+document.getElementById('closeModal').addEventListener('click',closeModal);
+document.getElementById('cancelBtn').addEventListener('click',closeModal);
+document.getElementById('saveBtn').addEventListener('click',saveItem);
+document.getElementById('searchInput').addEventListener('input',renderItems);
+document.getElementById('modal').addEventListener('click',function(e){if(e.target.id==='modal')closeModal();});
+document.addEventListener('keydown',function(e){ if (e.key === 'Escape' && document.getElementById('modal').style.display === 'flex') closeModal(); });
+loadModule();
+</script>
+</body>
+</html>

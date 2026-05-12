@@ -1,0 +1,37 @@
+<%- include('partials/header') %>
+<section class="page-hero">
+<div class="container">
+<h1><%= (settings && settings.contact_title) ? settings.contact_title : 'Une histoire à raconter ?' %></h1>
+<p><%= (settings && settings.contact_text) ? settings.contact_text : 'Contactez-nous' %></p>
+</div>
+</section>
+<section class="section">
+<div class="container container-narrow">
+<form id="contactForm" class="contact-form">
+<div class="field"><label>Votre nom *</label><input type="text" name="name" required></div>
+<div class="field"><label>Courriel</label><input type="email" name="email" placeholder="pour que nous puissions vous répondre"></div>
+<div class="field"><label>Sujet</label><input type="text" name="subject" placeholder="ex. Suggestion d'article, entrevue, partenariat..."></div>
+<div class="field"><label>Votre message *</label><textarea name="message" rows="6" required></textarea></div>
+<button type="submit" class="btn btn-primary btn-lg" style="background-color:#ef4444;color:#fff">Envoyer le message</button>
+<div id="contactMsg" class="form-msg"></div>
+</form>
+</div>
+</section>
+<script>
+(function(){
+var f=document.getElementById('contactForm');
+f.addEventListener('submit',async function(e){
+e.preventDefault();
+var msg=document.getElementById('contactMsg');
+msg.textContent='Envoi...'; msg.className='form-msg';
+try{
+var data={name:f.name.value,email:f.email.value,subject:f.subject.value,message:f.message.value};
+var r=await fetch('api/contact',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+var d=await r.json();
+if(r.ok){msg.textContent='Merci ! Nous vous répondrons dès que possible.';msg.className='form-msg form-msg-ok';f.reset();}
+else{msg.textContent=d.error||'Erreur';msg.className='form-msg form-msg-err';}
+}catch(err){msg.textContent='Erreur de connexion';msg.className='form-msg form-msg-err';}
+});
+})();
+</script>
+<%- include('partials/footer') %>

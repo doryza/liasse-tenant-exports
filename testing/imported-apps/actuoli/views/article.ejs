@@ -1,0 +1,45 @@
+<%- include('partials/header') %>
+<article class="article-page">
+<header class="article-header">
+<div class="container container-narrow">
+<% if (post.category) { %><span class="badge badge-lg"><%= post.category %></span><% } %>
+<h1 class="article-title"><%= post.title %></h1>
+<p class="article-meta">Par <strong><%= post.author || 'Rédaction Actuoli' %></strong> · <%= formatDate(post.created_at) %></p>
+</div>
+</header>
+<% if (post.image_url) { %>
+<div class="container"><img src="<%= post.image_url %>" alt="<%= post.title %>" class="article-cover"></div>
+<% } %>
+<div class="container container-narrow article-body">
+<% if (post.excerpt) { %><p class="article-lead"><%= post.excerpt %></p><% } %>
+<% if (post.content) { %><% post.content.split(/\n\n+/).forEach(function(para) { %><p><%= para %></p><% }); %><% } %>
+<div class="article-share">
+<h4>Partager cet article</h4>
+<div class="share-row">
+<a href="https://www.facebook.com/sharer/sharer.php?u=<%= encodeURIComponent('https://liasse.tech/pwa/actuoli/article/' + post.id) %>" target="_blank" rel="noopener" class="share-btn">Facebook</a>
+<a href="https://twitter.com/intent/tweet?text=<%= encodeURIComponent(post.title) %>&url=<%= encodeURIComponent('https://liasse.tech/pwa/actuoli/article/' + post.id) %>" target="_blank" rel="noopener" class="share-btn">X / Twitter</a>
+<a href="mailto:?subject=<%= encodeURIComponent(post.title) %>&body=<%= encodeURIComponent('https://liasse.tech/pwa/actuoli/article/' + post.id) %>" class="share-btn">Courriel</a>
+</div>
+</div>
+</div>
+</article>
+<% if (typeof related !== 'undefined' && related && related.length > 0) { %>
+<section class="section section-light">
+<div class="container">
+<h2 class="section-title">À lire aussi</h2>
+<div class="cards-grid" style="margin-top:24px">
+<% related.forEach(function(r) { %>
+<a href="article/<%= r.id %>" class="card">
+<div class="card-img"><img src="<%= r.image_url || 'https://placehold.co/600x400/ef4444/ffffff/png?text=Article' %>" alt="<%= r.title %>"></div>
+<div class="card-body">
+<% if (r.category) { %><span class="badge"><%= r.category %></span><% } %>
+<h3><%= r.title %></h3>
+<p class="card-meta"><%= formatRelDate(r.created_at) %></p>
+</div>
+</a>
+<% }); %>
+</div>
+</div>
+</section>
+<% } %>
+<%- include('partials/footer') %>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ef4444">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title><%= (typeof settings !== 'undefined' && settings.business_name) ? settings.business_name : 'Actuoli' %> — <%= (typeof settings !== 'undefined' && settings.tagline) ? settings.tagline : "L'actualité sportive locale" %></title>
+<meta name="description" content="<%= (typeof settings !== 'undefined' && settings.tagline) ? settings.tagline : "L'actualité sportive locale" %>">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="<%= typeof appIconUrl !== 'undefined' && appIconUrl ? appIconUrl : 'https://placehold.co/192x192/ef4444/ffffff/png?text=A' %>">
+<link rel="apple-touch-icon" href="<%= typeof appIconUrl !== 'undefined' && appIconUrl ? appIconUrl : 'https://placehold.co/192x192/ef4444/ffffff/png?text=A' %>">
+<link rel="stylesheet" href="public/css/styles.css">
+</head>
+<body>
+<header class="site-header">
+<div class="header-inner">
+<a href="." class="logo">
+<img src="<%= (typeof settings !== 'undefined' && settings._p_nav_logo_url) ? settings._p_nav_logo_url : (typeof appIconUrl !== 'undefined' && appIconUrl ? appIconUrl : 'https://placehold.co/64x64/ef4444/ffffff/png?text=A') %>" alt="Logo Actuoli" class="logo-img">
+<span class="logo-text"><span class="logo-actu">Actu</span><span class="logo-oli">oli</span></span>
+</a>
+<nav class="nav-desktop" aria-label="Principal">
+<a href="." class="nav-link">Accueil</a>
+<a href="articles" class="nav-link">Articles</a>
+<a href="calendrier" class="nav-link">Calendrier</a>
+<a href="galerie" class="nav-link">Galerie</a>
+<a href="balados" class="nav-link">Balados</a>
+<a href="athletes" class="nav-link">Athlètes</a>
+<a href="forum" class="nav-link">Forum</a>
+<a href="contact" class="nav-link">Contact</a>
+</nav>
+<div class="header-actions">
+<a href="abonnement" class="btn btn-sm btn-outline-light">S'abonner</a>
+<a href="#" class="btn btn-sm btn-primary" data-login-btn style="background-color:#ef4444;color:#fff">Connexion</a>
+<a href="#" class="btn btn-sm btn-outline-light" data-auth-only style="display:none" onclick="if(window.TenantSDK){TenantSDK.auth.logout();}location.reload();return false;">Déconnexion</a>
+<button class="nav-toggle" id="navToggle" aria-label="Menu" aria-expanded="false">
+<span></span><span></span><span></span>
+</button>
+</div>
+</div>
+<nav class="nav-mobile" id="navMobile" aria-label="Mobile">
+<a href=".">Accueil</a>
+<a href="articles">Articles</a>
+<a href="calendrier">Calendrier</a>
+<a href="galerie">Galerie</a>
+<a href="balados">Balados</a>
+<a href="athletes">Athlètes</a>
+<a href="forum">Forum</a>
+<a href="contact">Contact</a>
+<a href="abonnement">S'abonner à l'infolettre</a>
+<a href="#" data-login-btn>Connexion</a>
+<a href="#" data-auth-only style="display:none" onclick="if(window.TenantSDK){TenantSDK.auth.logout();}location.reload();return false;">Déconnexion</a>
+</nav>
+</header>

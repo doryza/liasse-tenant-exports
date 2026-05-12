@@ -1,0 +1,40 @@
+<%- include('partials/header') %>
+<section class="page-hero">
+<div class="container">
+<h1>🎙 Balados</h1>
+<p>Entrevues, débats et coulisses du sport local — format audio et vidéo.</p>
+</div>
+</section>
+<section class="section">
+<div class="container">
+<% if (typeof podcasts !== 'undefined' && podcasts && podcasts.length > 0) { %>
+<div class="podcast-list">
+<% podcasts.forEach(function(p) { %>
+<article class="podcast-row">
+<div class="podcast-row-img"><img src="<%= p.image_url || 'https://placehold.co/400x400/ef4444/ffffff/png?text=Balado' %>" alt="<%= p.title %>"></div>
+<div class="podcast-row-body">
+<h3><%= p.title %></h3>
+<p class="podcast-meta">🎙 <%= p.host || 'Hôte' %> · ⏱ <%= p.duration || '—' %> · <%= formatRelDate(p.created_at) %></p>
+<p><%= p.description || '' %></p>
+<% if (p.audio_url) { %>
+<audio controls preload="none" style="width:100%;margin-top:14px">
+<source src="<%= p.audio_url %>">
+Votre navigateur ne supporte pas la lecture audio.
+</audio>
+<% } %>
+<% if (p.video_url) { %>
+<p style="margin-top:14px"><a href="<%= p.video_url %>" target="_blank" rel="noopener" class="btn btn-primary" style="background-color:#ef4444;color:#fff">📺 Voir l'épisode vidéo →</a></p>
+<% } %>
+<% if (!p.audio_url && !p.video_url) { %>
+<p style="margin-top:14px;color:#94a3b8;font-style:italic">Disponible bientôt sur nos plateformes.</p>
+<% } %>
+</div>
+</article>
+<% }); %>
+</div>
+<% } else { %>
+<p class="empty">Aucun épisode publié pour le moment. Restez à l'affût !</p>
+<% } %>
+</div>
+</section>
+<%- include('partials/footer') %>

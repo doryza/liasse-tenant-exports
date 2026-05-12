@@ -1,0 +1,28 @@
+<%- include('partials/header') %>
+<section class="page-hero">
+<div class="container">
+<h1>Nos athlètes</h1>
+<p>Les visages du sport local — rencontres, profils et parcours.</p>
+</div>
+</section>
+<section class="section">
+<div class="container">
+<% if (typeof athletes !== 'undefined' && athletes && athletes.length > 0) { %>
+<div class="cards-grid">
+<% athletes.forEach(function(a) { %>
+<a href="athlete/<%= a.id %>" class="athlete-card">
+<div class="athlete-img"><img src="<%= a.image_url || 'https://placehold.co/400x400/ef4444/ffffff/png?text=★' %>" alt="<%= a.name %>"></div>
+<div class="athlete-body">
+<% if (a.sport) { %><span class="badge"><%= a.sport %></span><% } %>
+<h3><%= a.name %></h3>
+<p><%= (a.bio || '').slice(0,130) %><% if ((a.bio||'').length > 130) { %>…<% } %></p>
+</div>
+</a>
+<% }); %>
+</div>
+<% } else { %>
+<p class="empty">Aucun profil d'athlète pour le moment.</p>
+<% } %>
+</div>
+</section>
+<%- include('partials/footer') %>

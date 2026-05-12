@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tableau de bord · Actuoli</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body>
+<div class="admin-layout">
+<%- include('partials/admin-sidebar', { currentPath: (typeof currentPath !== 'undefined' ? currentPath : 'admin') }) %>
+<main class="admin-main">
+<header class="admin-header">
+<div>
+<h1>Tableau de bord</h1>
+<p class="admin-subtitle">Bienvenue. Voici l'activité récente d'Actuoli.</p>
+</div>
+<div class="admin-header-actions">
+<a href="." target="_blank" class="btn">↗ Voir le site public</a>
+<a href="admin/posts" class="btn btn-primary" style="background-color:#ef4444;color:#fff">+ Nouvel article</a>
+</div>
+</header>
+
+<section class="admin-section">
+<div class="admin-section-head">
+<h2>📊 Performance</h2>
+<span class="admin-section-hint">Audience et engagement</span>
+</div>
+<div class="stats-grid">
+<div class="stat-card stat-accent">
+<span class="stat-icon">👀</span>
+<span class="stat-label">Visites totales</span>
+<span class="stat-value"><%= (stats && stats.visitsTotal) || 0 %></span>
+<span class="stat-sub"><%= (stats && stats.visitsRecent) || 0 %> dans les 7 derniers jours</span>
+</div>
+<div class="stat-card">
+<span class="stat-icon">👥</span>
+<span class="stat-label">Utilisateurs</span>
+<span class="stat-value"><%= (stats && stats.userCount) || 0 %></span>
+<span class="stat-sub">comptes inscrits</span>
+</div>
+<div class="stat-card">
+<span class="stat-icon">🔔</span>
+<span class="stat-label">Abonnés push</span>
+<span class="stat-value"><%= (stats && stats.pushCount) || 0 %></span>
+<span class="stat-sub">notifications navigateur</span>
+</div>
+<div class="stat-card">
+<span class="stat-icon">✉</span>
+<span class="stat-label">Abonnés courriel</span>
+<span class="stat-value"><%= (stats && stats.subscriberCount) || 0 %></span>
+<span class="stat-sub">infolettre</span>
+</div>
+<div class="stat-card">
+<span class="stat-icon">💬</span>
+<span class="stat-label">Messages reçus</span>
+<span class="stat-value"><%= (stats && stats.submissionCount) || 0 %></span>
+<a href="admin/submissions" class="stat-link">Consulter →</a>
+</div>
+</div>
+</section>
+
+<section class="admin-section">
+<div class="admin-section-head">
+<h2>🗂 Contenu publié</h2>
+<span class="admin-section-hint">Cliquez une carte pour gérer</span>
+</div>
+<div class="modules-grid">
+<a href="admin/posts" class="module-card">
+<div class="module-icon">📝</div>
+<div class="module-body">
+<h3>Articles</h3>
+<p class="module-count"><%= (stats && stats.postCount) || 0 %> au total</p>
+<p class="module-sub"><%= (stats && stats.publishedCount) || 0 %> publié(s)<% if (stats && stats.draftCount) { %> · <%= stats.draftCount %> brouillon(s)<% } %></p>
+</div>
+<span class="module-arrow">→</span>
+</a>
+<a href="admin/events" class="module-card">
+<div class="module-icon">📅</div>
+<div class="module-body">
+<h3>Événements</h3>
+<p class="module-count"><%= (stats && stats.eventCount) || 0 %> au total</p>
+<p class="module-sub"><%= (stats && stats.upcomingEvents) || 0 %> à venir</p>
+</div>
+<span class="module-arrow">→</span>
+</a>
+<a href="admin/gallery" class="module-card">
+<div class="module-icon">🖼</div>
+<div class="module-body">
+<h3>Galerie photos</h3>
+<p class="module-count"><%= (stats && stats.galleryCount) || 0 %> photo(s)</p>
+<p class="module-sub">souvenirs sportifs</p>
+</div>
+<span class="module-arrow">→</span>
+</a>
+<a href="admin/podcasts" class="module-card">
+<div class="module-icon">🎙</div>
+<div class="module-body">
+<h3>Balados</h3>
+<p class="module-count"><%= (stats && stats.podcastCount) || 0 %> épisode(s)</p>
+<p class="module-sub">audio &amp; vidéo</p>
+</div>
+<span class="module-arrow">→</span>
+</a>
+<a href="admin/athletes" class="module-card">
+<div class="module-icon">⭐</div>
+<div class="module-body">
+<h3>Athlètes</h3>
+<p class="module-count"><%= (stats && stats.athleteCount) || 0 %> profil(s)</p>
+<p class="module-sub">portraits et bios</p>
+</div>
+<span class="module-arrow">→</span>
+</a>
+<a href="admin/forum_topics" class="module-card">
+<div class="module-icon">💬</div>
+<div class="module-body">
+<h3>Forum</h3>
+<p class="module-count"><%= (stats && stats.forumCount) || 0 %> sujet(s)</p>
+<p class="module-sub">discussions de la communauté</p>
+</div>
+<span class="module-arrow">→</span>
+</a>
+</div>
+</section>
+
+<section class="admin-section">
+<div class="admin-section-head">
+<h2>✉ Derniers messages reçus</h2>
+<a href="admin/submissions" class="section-link-admin">Tous les messages →</a>
+</div>
+<% if (typeof recentSubmissions !== 'undefined' && recentSubmissions && recentSubmissions.length > 0) { %>
+<div class="admin-list">
+<table class="data-table">
+<thead><tr><th>Expéditeur</th><th>Sujet</th><th>Aperçu</th><th>Reçu le</th></tr></thead>
+<tbody>
+<% recentSubmissions.forEach(function(s) { %>
+<tr>
+<td><strong><%= s.name %></strong><br><small style="color:#64748b"><%= s.email || '—' %></small></td>
+<td><%= s.subject || '—' %></td>
+<td><span style="color:#475569"><%= (s.message || '').slice(0, 90) %><%= (s.message||'').length > 90 ? '…' : '' %></span></td>
+<td><small style="color:#64748b"><%= formatDate(s.created_at) %></small></td>
+</tr>
+<% }); %>
+</tbody>
+</table>
+</div>
+<% } else { %>
+<div class="empty-state">
+<div class="empty-icon">📭</div>
+<h3>Aucun message pour le moment</h3>
+<p>Les messages envoyés via le formulaire de contact apparaîtront ici.</p>
+</div>
+<% } %>
+</section>
+</main>
+</div>
+</body>
+</html>

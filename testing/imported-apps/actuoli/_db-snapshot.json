@@ -1,0 +1,606 @@
+{
+  "exportedAt": "2026-05-12T03:46:24.529Z",
+  "tables": {
+    "admin_invites": {
+      "columns": [
+        "id",
+        "email",
+        "token",
+        "role",
+        "status",
+        "invited_by",
+        "expires_at",
+        "accepted_at",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_users": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "password_hash",
+        "display_name",
+        "role",
+        "active",
+        "activation_token",
+        "invited_by",
+        "invite_token",
+        "invite_expires_at",
+        "last_login_at",
+        "is_active",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_webauthn_credentials": {
+      "columns": [
+        "id",
+        "admin_user_id",
+        "credential_id",
+        "public_key",
+        "counter",
+        "device_name",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_settings": {
+      "columns": [
+        "key",
+        "value",
+        "updated_at"
+      ],
+      "totalRows": 42,
+      "sampleRows": [
+        {
+          "key": "_p_hero_image_url",
+          "value": "https://res.cloudinary.com/duhp69meg/image/upload/v1778552722/tapavis_tenant_actuoli/build_actuoli_1778552722886.png",
+          "updated_at": "2026-05-12T02:45:37.919Z"
+        },
+        {
+          "key": "tagline",
+          "value": "L'actualité sportive locale qui bouge",
+          "updated_at": "2026-05-12T02:45:37.924Z"
+        },
+        {
+          "key": "hero_title",
+          "value": "Le sport local, vibrant et passionné",
+          "updated_at": "2026-05-12T02:45:37.929Z"
+        },
+        {
+          "key": "hero_subtitle",
+          "value": "Articles, entrevues, calendriers et balados — toute la scène sportive de la région réunie sur une seule plateforme.",
+          "updated_at": "2026-05-12T02:45:37.936Z"
+        },
+        {
+          "key": "hero_cta",
+          "value": "Lire les dernières nouvelles",
+          "updated_at": "2026-05-12T02:45:37.941Z"
+        },
+        {
+          "key": "about_title",
+          "value": "À propos d'Actuoli",
+          "updated_at": "2026-05-12T02:45:37.947Z"
+        },
+        {
+          "key": "about_text",
+          "value": "Actuoli est la voix du sport local. Nous couvrons les équipes, les athlètes et les événements de la région avec passion. Articles, entrevues, photos et balados — restez branchés sur tout ce qui bouge dans le sport amateur et semi-professionnel.",
+          "updated_at": "2026-05-12T02:45:37.954Z"
+        },
+        {
+          "key": "contact_title",
+          "value": "Une histoire à raconter ?",
+          "updated_at": "2026-05-12T02:45:37.957Z"
+        },
+        {
+          "key": "contact_text",
+          "value": "Vous avez un tuyau, une suggestion d'article ou une entrevue à proposer ? Écrivez-nous, nous serons heureux de vous lire.",
+          "updated_at": "2026-05-12T02:45:37.961Z"
+        },
+        {
+          "key": "newsletter_title",
+          "value": "Ne manquez aucune nouvelle",
+          "updated_at": "2026-05-12T02:45:37.969Z"
+        }
+      ]
+    },
+    "site_visits": {
+      "columns": [
+        "id",
+        "path",
+        "created_at"
+      ],
+      "totalRows": 30,
+      "sampleRows": [
+        {
+          "id": 1,
+          "path": "/",
+          "created_at": "2026-05-12T02:59:08.807Z"
+        },
+        {
+          "id": 2,
+          "path": "/articles",
+          "created_at": "2026-05-12T03:00:35.914Z"
+        },
+        {
+          "id": 3,
+          "path": "/articles",
+          "created_at": "2026-05-12T03:00:44.427Z"
+        },
+        {
+          "id": 4,
+          "path": "/article/1",
+          "created_at": "2026-05-12T03:00:47.531Z"
+        },
+        {
+          "id": 5,
+          "path": "/balados",
+          "created_at": "2026-05-12T03:01:08.838Z"
+        },
+        {
+          "id": 6,
+          "path": "/athletes",
+          "created_at": "2026-05-12T03:01:16.645Z"
+        },
+        {
+          "id": 7,
+          "path": "/",
+          "created_at": "2026-05-12T03:01:54.573Z"
+        },
+        {
+          "id": 8,
+          "path": "/",
+          "created_at": "2026-05-12T03:03:55.430Z"
+        },
+        {
+          "id": 9,
+          "path": "/article/3",
+          "created_at": "2026-05-12T03:04:03.395Z"
+        },
+        {
+          "id": 10,
+          "path": "/article/3",
+          "created_at": "2026-05-12T03:04:10.924Z"
+        }
+      ]
+    },
+    "posts": {
+      "columns": [
+        "id",
+        "title",
+        "excerpt",
+        "content",
+        "image_url",
+        "category",
+        "author",
+        "featured",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 6,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Les Lions remportent la finale provinciale junior",
+          "excerpt": "Une victoire historique en prolongation contre les Aigles, devant une foule électrisée à l'aréna municipal.",
+          "content": "C'est dans un aréna comble que les Lions ont arraché la victoire en deuxième période de prolongation contre les Aigles, 4-3. Le capitaine Lucas Bernier a marqué le filet gagnant après une montée éclair en surnombre, déclenchant le délire dans les gradins.\n\n« On y croyait depuis le début de la saison », confiait le coach Laflamme aux journalistes après la rencontre. « Ces joueurs ont travaillé fort, ils méritent cette coupe à 100 %. »\n\nLes Lions terminent la saison avec un impressionnant 28 victoires en 32 parties, un record dans l'histoire récente de l'équipe. La foule en délire a accompagné les joueurs jusqu'aux vestiaires, ponctuant une saison de légende.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778552723/tapavis_tenant_actuoli/build_actuoli_1778552723014.png",
+          "category": "Hockey",
+          "author": "Olivier Maurice",
+          "featured": 1,
+          "published": 1,
+          "created_at": "2026-05-12T02:45:38.009Z",
+          "updated_at": "2026-05-12T02:45:38.009Z"
+        },
+        {
+          "id": 2,
+          "title": "Marie-Ève Tremblay vise les championnats nationaux",
+          "excerpt": "À 19 ans, la sprinteuse régionale enchaîne les records et prépare son grand rendez-vous estival.",
+          "content": "Avec un temps de 11,42 secondes sur 100 mètres aux qualifications régionales, Marie-Ève Tremblay s'impose comme l'une des athlètes les plus prometteuses de sa génération. Entrevue avec une jeune femme qui combine entraînement, études en kinésiologie et une volonté de fer.\n\n« Chaque matin je cours à 5h30 avant les cours. C'est ma routine depuis trois ans. Ça demande de la discipline, mais c'est ça qui me fait avancer. »\n\nElle vise désormais les championnats nationaux U-20 cet été. Son coach, Pierre Lavallée, ne tarit pas d'éloges : « Marie-Ève a tout pour réussir au plus haut niveau. Sa technique, son mental, sa préparation — c'est rare de voir ça à 19 ans. »",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778552726/tapavis_tenant_actuoli/build_actuoli_1778552726101.png",
+          "category": "Entrevue",
+          "author": "Olivier Maurice",
+          "featured": 1,
+          "published": 1,
+          "created_at": "2026-05-12T02:45:38.014Z",
+          "updated_at": "2026-05-12T02:45:38.014Z"
+        },
+        {
+          "id": 3,
+          "title": "Le soccer féminin local en pleine effervescence",
+          "excerpt": "Inscriptions records, équipes compétitives et nouveau complexe sportif — un sport en plein essor.",
+          "content": "Les chiffres ne mentent pas : 1 200 jeunes filles inscrites cette saison, soit 30 % de plus qu'en 2022. La construction du nouveau complexe Soccer Régional, avec ses trois terrains synthétiques, a transformé l'offre locale.\n\nLa présidente Annie Vallée explique les défis et les ambitions du club : « On voulait offrir un environnement où les filles se sentent à leur place, peu importe leur niveau. Le résultat dépasse nos espérances. »\n\nL'équipe U-17 vient d'ailleurs de se qualifier pour les demi-finales provinciales — une première dans l'histoire du club.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778552720/tapavis_tenant_actuoli/build_actuoli_1778552720814.png",
+          "category": "Soccer",
+          "author": "Sophie Lavigne",
+          "featured": 1,
+          "published": 1,
+          "created_at": "2026-05-12T02:45:38.017Z",
+          "updated_at": "2026-05-12T02:45:38.017Z"
+        },
+        {
+          "id": 4,
+          "title": "Camp d'entraînement basketball : les espoirs régionaux",
+          "excerpt": "Une cinquantaine de jeunes talents réunis pour cinq jours intenses au cégep régional.",
+          "content": "Du 12 au 16 août, le camp d'élite basketball a accueilli 52 joueurs et joueuses de 14 à 18 ans. Avec la collaboration d'anciens athlètes universitaires et de coachs U-Sports, le programme misait sur la technique, la lecture du jeu et la préparation physique.\n\nPlusieurs participants ont déjà reçu des invitations pour des essais préparatoires avec des équipes collégiales. « Ce camp est une porte d'entrée incroyable », résume le coach principal.",
+          "image_url": "https://placehold.co/800x500/f97316/ffffff?text=Basketball",
+          "category": "Basketball",
+          "author": "Olivier Maurice",
+          "featured": 0,
+          "published": 1,
+          "created_at": "2026-05-12T02:45:38.020Z",
+          "updated_at": "2026-05-12T02:45:38.020Z"
+        },
+        {
+          "id": 5,
+          "title": "Cyclisme : un nouveau circuit pour les amateurs",
+          "excerpt": "Le club local inaugure 45 km de pistes balisées entre la ville et les collines.",
+          "content": "Inauguré samedi par le maire et le président du club, le nouveau circuit cyclable régional offre un défi de niveau intermédiaire avec un dénivelé total de 320 mètres sur 45 km.\n\nLes cyclistes locaux sont enchantés : « Enfin un parcours sécuritaire pour s'entraîner sans craindre la circulation », témoigne Daniel Roussel, 58 ans, membre du club depuis 12 ans.\n\nLes premières sorties officielles débutent dès le mois prochain.",
+          "image_url": "https://placehold.co/800x500/facc15/ffffff?text=Cyclisme",
+          "category": "Cyclisme",
+          "author": "Sophie Lavigne",
+          "featured": 0,
+          "published": 1,
+          "created_at": "2026-05-12T02:45:38.023Z",
+          "updated_at": "2026-05-12T02:45:38.023Z"
+        },
+        {
+          "id": 6,
+          "title": "Baseball senior : le tournoi des Anciens fait son grand retour",
+          "excerpt": "Après deux années d'absence, le tournoi rassemble huit équipes régionales en fin de semaine.",
+          "content": "L'événement attire chaque année près de 2000 spectateurs au parc municipal. Cette édition met à l'honneur les anciens joueurs de la ligue régionale des années 80 et 90.\n\n« C'est plus qu'un tournoi, c'est une réunion de famille sportive », résume l'organisateur Marc Bélanger. « Plusieurs joueurs reviennent de partout au Québec juste pour cette fin de semaine. »",
+          "image_url": "https://placehold.co/800x500/0f172a/ffffff?text=Baseball",
+          "category": "Baseball",
+          "author": "Olivier Maurice",
+          "featured": 0,
+          "published": 1,
+          "created_at": "2026-05-12T02:45:38.028Z",
+          "updated_at": "2026-05-12T02:45:38.028Z"
+        }
+      ]
+    },
+    "events": {
+      "columns": [
+        "id",
+        "title",
+        "description",
+        "sport",
+        "location",
+        "event_date",
+        "event_time",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 5,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Tournoi régional de hockey midget AAA",
+          "description": "Huit équipes s'affrontent pendant trois jours. Entrée gratuite, ambiance survoltée garantie.",
+          "sport": "Hockey",
+          "location": "Aréna municipal, Trois-Rivières",
+          "event_date": "2025-02-15T00:00:00.000Z",
+          "event_time": "09h00",
+          "image_url": null,
+          "created_at": "2026-05-12T02:45:38.031Z",
+          "updated_at": "2026-05-12T02:45:38.031Z"
+        },
+        {
+          "id": 2,
+          "title": "Match de soccer féminin U-17 — Demi-finale",
+          "description": "Les Étoiles affrontent les Boréales au complexe régional.",
+          "sport": "Soccer",
+          "location": "Complexe Soccer Régional",
+          "event_date": "2025-02-22T00:00:00.000Z",
+          "event_time": "14h00",
+          "image_url": null,
+          "created_at": "2026-05-12T02:45:38.034Z",
+          "updated_at": "2026-05-12T02:45:38.034Z"
+        },
+        {
+          "id": 3,
+          "title": "Course pédestre 10 km — Au cœur de la ville",
+          "description": "Inscriptions ouvertes ! Parcours certifié, médailles pour tous les finissants. Inscription en ligne sur le site du club.",
+          "sport": "Athlétisme",
+          "location": "Centre-ville",
+          "event_date": "2025-03-08T00:00:00.000Z",
+          "event_time": "08h30",
+          "image_url": null,
+          "created_at": "2026-05-12T02:45:38.038Z",
+          "updated_at": "2026-05-12T02:45:38.038Z"
+        },
+        {
+          "id": 4,
+          "title": "Soirée portes ouvertes du club cycliste",
+          "description": "Découvrez le nouveau circuit, essayez les vélos électriques, rencontrez les coachs. Café et viennoiseries offerts.",
+          "sport": "Cyclisme",
+          "location": "Club cycliste régional",
+          "event_date": "2025-04-05T00:00:00.000Z",
+          "event_time": "13h00",
+          "image_url": null,
+          "created_at": "2026-05-12T02:45:38.041Z",
+          "updated_at": "2026-05-12T02:45:38.041Z"
+        },
+        {
+          "id": 5,
+          "title": "Tournoi des Anciens — Baseball",
+          "description": "Le retour très attendu du tournoi qui rassemble les légendes locales pour trois jours de matchs nostalgiques.",
+          "sport": "Baseball",
+          "location": "Parc municipal",
+          "event_date": "2025-05-24T00:00:00.000Z",
+          "event_time": "10h00",
+          "image_url": null,
+          "created_at": "2026-05-12T02:45:38.045Z",
+          "updated_at": "2026-05-12T02:45:38.045Z"
+        }
+      ]
+    },
+    "gallery": {
+      "columns": [
+        "id",
+        "title",
+        "description",
+        "category",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 6,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Finale provinciale 2024",
+          "description": "Les Lions soulèvent la coupe régionale après leur victoire en prolongation.",
+          "category": "Hockey",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778552720/tapavis_tenant_actuoli/build_actuoli_1778552720095.png",
+          "created_at": "2026-05-12T02:45:38.049Z",
+          "updated_at": "2026-05-12T02:45:38.049Z"
+        },
+        {
+          "id": 2,
+          "title": "Course du printemps",
+          "description": "Plus de 800 coureurs au départ du 10 km annuel.",
+          "category": "Athlétisme",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778552717/tapavis_tenant_actuoli/build_actuoli_1778552717718.png",
+          "created_at": "2026-05-12T02:45:38.053Z",
+          "updated_at": "2026-05-12T02:45:38.053Z"
+        },
+        {
+          "id": 3,
+          "title": "Derby de soccer U-15",
+          "description": "Action intense lors du derby régional disputé samedi dernier.",
+          "category": "Soccer",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778552718/tapavis_tenant_actuoli/build_actuoli_1778552718960.png",
+          "created_at": "2026-05-12T02:45:38.057Z",
+          "updated_at": "2026-05-12T02:45:38.057Z"
+        },
+        {
+          "id": 4,
+          "title": "Camp basketball d'été",
+          "description": "Les jeunes talents en plein entraînement au cégep.",
+          "category": "Basketball",
+          "image_url": "https://placehold.co/800x500/f97316/ffffff?text=Basketball",
+          "created_at": "2026-05-12T02:45:38.061Z",
+          "updated_at": "2026-05-12T02:45:38.061Z"
+        },
+        {
+          "id": 5,
+          "title": "Tournoi baseball Anciens",
+          "description": "Les vétérans donnent encore une leçon de jeu.",
+          "category": "Baseball",
+          "image_url": "https://placehold.co/800x500/0f172a/ffffff?text=Baseball",
+          "created_at": "2026-05-12T02:45:38.064Z",
+          "updated_at": "2026-05-12T02:45:38.064Z"
+        },
+        {
+          "id": 6,
+          "title": "Sortie cycliste club",
+          "description": "Premier tour de piste sur le nouveau circuit régional.",
+          "category": "Cyclisme",
+          "image_url": "https://placehold.co/800x500/facc15/ffffff?text=Cyclisme",
+          "created_at": "2026-05-12T02:45:38.068Z",
+          "updated_at": "2026-05-12T02:45:38.068Z"
+        }
+      ]
+    },
+    "podcasts": {
+      "columns": [
+        "id",
+        "title",
+        "description",
+        "host",
+        "duration",
+        "audio_url",
+        "video_url",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 3,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Épisode 12 — La passion du hockey junior",
+          "description": "Entretien avec le coach Laflamme sur la saison des Lions, la formation des jeunes et les défis du sport amateur.",
+          "host": "Olivier Maurice",
+          "duration": "47 min",
+          "audio_url": "",
+          "video_url": null,
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778552728/tapavis_tenant_actuoli/build_actuoli_1778552728940.png",
+          "created_at": "2026-05-12T02:45:38.075Z",
+          "updated_at": "2026-05-12T02:45:38.075Z"
+        },
+        {
+          "id": 2,
+          "title": "Épisode 11 — Marie-Ève Tremblay, sprinteuse étoile",
+          "description": "Rencontre intime avec la jeune athlète qui vise les championnats nationaux. Discipline, ambition et famille.",
+          "host": "Olivier Maurice",
+          "duration": "38 min",
+          "audio_url": "",
+          "video_url": null,
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778552728/tapavis_tenant_actuoli/build_actuoli_1778552728940.png",
+          "created_at": "2026-05-12T02:45:38.079Z",
+          "updated_at": "2026-05-12T02:45:38.079Z"
+        },
+        {
+          "id": 3,
+          "title": "Épisode 10 — Le soccer féminin en plein essor",
+          "description": "Table ronde avec trois figures du soccer féminin régional pour parler du boom des inscriptions et des ambitions du club.",
+          "host": "Sophie Lavigne",
+          "duration": "52 min",
+          "audio_url": "",
+          "video_url": null,
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778552728/tapavis_tenant_actuoli/build_actuoli_1778552728940.png",
+          "created_at": "2026-05-12T02:45:38.083Z",
+          "updated_at": "2026-05-12T02:45:38.083Z"
+        }
+      ]
+    },
+    "athletes": {
+      "columns": [
+        "id",
+        "name",
+        "sport",
+        "bio",
+        "achievements",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "name": "Marie-Ève Tremblay",
+          "sport": "Athlétisme",
+          "bio": "Sprinteuse de 19 ans, étudiante en kinésiologie. Détentrice du record régional sur 100 mètres.",
+          "achievements": "Record régional 100m (11,42s)\nMédaille d'or championnats régionaux 2024\nSélection équipe provinciale U-20",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778552725/tapavis_tenant_actuoli/build_actuoli_1778552725302.png",
+          "created_at": "2026-05-12T02:45:38.088Z",
+          "updated_at": "2026-05-12T02:45:38.088Z"
+        },
+        {
+          "id": 2,
+          "name": "Lucas Bernier",
+          "sport": "Hockey",
+          "bio": "Capitaine des Lions, 17 ans, attaquant prolifique avec 38 buts cette saison.",
+          "achievements": "Meilleur compteur de la ligue 2024\nCapitaine champion provincial\nSélection AAA tournoi national",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778552724/tapavis_tenant_actuoli/build_actuoli_1778552724333.png",
+          "created_at": "2026-05-12T02:45:38.091Z",
+          "updated_at": "2026-05-12T02:45:38.091Z"
+        },
+        {
+          "id": 3,
+          "name": "Annie Vallée",
+          "sport": "Soccer",
+          "bio": "Joueuse-entraîneuse, 28 ans. Présidente du club féminin local, ancienne capitaine senior.",
+          "achievements": "Capitaine senior 2018-2022\nEntraîneuse U-15 championne régionale\nDiplôme entraîneur PNCE niveau 3",
+          "image_url": "https://placehold.co/800x500/f97316/ffffff?text=Annie",
+          "created_at": "2026-05-12T02:45:38.095Z",
+          "updated_at": "2026-05-12T02:45:38.095Z"
+        },
+        {
+          "id": 4,
+          "name": "Daniel Roussel",
+          "sport": "Cyclisme",
+          "bio": "Vétéran du club cycliste, 58 ans. Membre fondateur du nouveau circuit régional.",
+          "achievements": "Champion provincial vétérans 2019\nPlus de 50 000 km parcourus en compétition\nMembre fondateur du nouveau circuit régional",
+          "image_url": "https://placehold.co/800x500/facc15/ffffff?text=Daniel",
+          "created_at": "2026-05-12T02:45:38.101Z",
+          "updated_at": "2026-05-12T02:45:38.101Z"
+        }
+      ]
+    },
+    "forum_topics": {
+      "columns": [
+        "id",
+        "title",
+        "content",
+        "user_id",
+        "author_name",
+        "category",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 3,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Bienvenue sur le forum Actuoli !",
+          "content": "Ce forum est l'endroit idéal pour discuter de tout ce qui touche au sport local. Soyez respectueux, passionnés et constructifs. Bonne discussion à tous !",
+          "user_id": null,
+          "author_name": "Équipe Actuoli",
+          "category": "Général",
+          "image_url": null,
+          "created_at": "2026-05-12T02:45:38.104Z",
+          "updated_at": "2026-05-12T02:45:38.104Z"
+        },
+        {
+          "id": 2,
+          "title": "Pronostics pour la finale junior",
+          "content": "Qui pensez-vous que va l'emporter samedi prochain ? Les Lions ou les Aigles ? Donnez votre score prédictif !",
+          "user_id": null,
+          "author_name": "Olivier",
+          "category": "Hockey",
+          "image_url": null,
+          "created_at": "2026-05-12T02:45:38.108Z",
+          "updated_at": "2026-05-12T02:45:38.108Z"
+        },
+        {
+          "id": 3,
+          "title": "Suggestions pour le tournoi des Anciens",
+          "content": "Avez-vous des suggestions pour améliorer l'organisation du tournoi cette année ? Restauration, horaire, prix ?",
+          "user_id": null,
+          "author_name": "Marc",
+          "category": "Baseball",
+          "image_url": null,
+          "created_at": "2026-05-12T02:45:38.112Z",
+          "updated_at": "2026-05-12T02:45:38.112Z"
+        }
+      ]
+    },
+    "forum_messages": {
+      "columns": [
+        "id",
+        "topic_id",
+        "user_id",
+        "author_name",
+        "content",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "email_subscribers": {
+      "columns": [
+        "id",
+        "email",
+        "name",
+        "subscribed_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "form_submissions": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "subject",
+        "message",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    }
+  }
+}

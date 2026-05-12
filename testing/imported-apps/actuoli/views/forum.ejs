@@ -1,0 +1,63 @@
+<%- include('partials/header') %>
+<section class="page-hero">
+<div class="container">
+<h1>💬 Forum des passionnés</h1>
+<p>Échangez avec la communauté sportive locale.</p>
+</div>
+</section>
+<section class="section">
+<div class="container">
+<% if (user) { %>
+<div class="forum-new">
+<h3>Lancer une nouvelle discussion</h3>
+<form id="newTopicForm">
+<input type="text" name="title" placeholder="Titre du sujet" required maxlength="200">
+<input type="text" name="category" placeholder="Catégorie (ex. Hockey, Soccer, Général...)" value="Général">
+<textarea name="content" rows="4" placeholder="Démarrez la conversation..." required></textarea>
+<button type="submit" class="btn btn-primary" style="background-color:#ef4444;color:#fff">Publier la discussion</button>
+</form>
+<div id="newTopicMsg" class="form-msg"></div>
+</div>
+<% } else { %>
+<div class="info-box">
+<p>👋 Pour participer aux discussions, <a href="#" data-login-btn><strong>connectez-vous</strong></a>. C'est gratuit et ça prend 30 secondes.</p>
+</div>
+<% } %>
+
+<h2 style="margin-top:32px">Toutes les discussions</h2>
+<% if (typeof topics !== 'undefined' && topics && topics.length > 0) { %>
+<div class="forum-list">
+<% topics.forEach(function(t) { %>
+<a href="forum/<%= t.id %>" class="forum-row">
+<div class="forum-row-body">
+<% if (t.category) { %><span class="badge"><%= t.category %></span><% } %>
+<h4><%= t.title %></h4>
+<p class="forum-meta">Par <strong><%= t.author_name || 'Anonyme' %></strong> · <%= formatRelDate(t.created_at) %></p>
+</div>
+<div class="forum-row-count"><%= t.message_count || 0 %><br><small>réponses</small></div>
+</a>
+<% }); %>
+</div>
+<% } else { %>
+<p class="empty">Aucune discussion encore. Soyez le premier à lancer un sujet !</p>
+<% } %>
+</div>
+</section>
+<script>
+(function(){
+var f=document.getElementById('newTopicForm'); if(!f) return;
+f.addEventListener('submit',async function(e){
+e.preventDefault();
+var msg=document.getElementById('newTopicMsg');
+msg.textContent='Publication...'; msg.className='form-msg';
+try{
+var data={title:f.title.value,content:f.content.value,category:f.category.value};
+var r=await TenantSDK.fetch('api/forum/topics',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+var d=await r.json();
+if(r.ok){msg.textContent='Publié !';msg.className='form-msg form-msg-ok';location.href='forum/'+d.id;}
+else{msg.textContent=d.error||'Erreur';msg.className='form-msg form-msg-err';}
+}catch(err){msg.textContent='Erreur de connexion';msg.className='form-msg form-msg-err';}
+});
+})();
+</script>
+<%- include('partials/footer') %>

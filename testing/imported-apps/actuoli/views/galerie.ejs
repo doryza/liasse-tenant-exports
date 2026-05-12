@@ -1,0 +1,52 @@
+<%- include('partials/header') %>
+<section class="page-hero">
+<div class="container">
+<h1>Galerie photos</h1>
+<p>Les meilleurs moments du sport local capturés en images.</p>
+</div>
+</section>
+<section class="section">
+<div class="container">
+<% if (typeof items !== 'undefined' && items && items.length > 0) { %>
+<div class="gallery-grid">
+<% items.forEach(function(g) { %>
+<div class="gallery-tile lightbox-trigger" data-src="<%= g.image_url || '' %>" data-cap="<%= g.title || '' %>" data-desc="<%= g.description || '' %>">
+<img src="<%= g.image_url || 'https://placehold.co/600x600/ef4444/ffffff/png?text=Photo' %>" alt="<%= g.title || 'Photo' %>" loading="lazy">
+<div class="gallery-caption">
+<% if (g.category) { %><span class="badge"><%= g.category %></span><% } %>
+<h4><%= g.title || '' %></h4>
+</div>
+</div>
+<% }); %>
+</div>
+<% } else { %>
+<p class="empty">Aucune photo dans la galerie pour le moment.</p>
+<% } %>
+</div>
+</section>
+<div id="lightbox" class="lightbox" style="display:none">
+<button id="lightboxClose" class="lightbox-close" aria-label="Fermer">×</button>
+<img id="lightboxImg" src="" alt="">
+<div id="lightboxCap" class="lightbox-caption"></div>
+</div>
+<script>
+(function(){
+var lb=document.getElementById('lightbox');
+var img=document.getElementById('lightboxImg');
+var cap=document.getElementById('lightboxCap');
+var close=document.getElementById('lightboxClose');
+document.querySelectorAll('.lightbox-trigger').forEach(function(el){
+el.addEventListener('click',function(){
+img.src=el.dataset.src||'';
+var t=el.dataset.cap||''; var d=el.dataset.desc||'';
+cap.innerHTML=(t?'<strong>'+t+'</strong>':'')+(d?'<br>'+d:'');
+lb.style.display='flex';
+});
+});
+function hide(){lb.style.display='none';img.src='';}
+close.addEventListener('click',hide);
+lb.addEventListener('click',function(e){if(e.target===lb)hide();});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')hide();});
+})();
+</script>
+<%- include('partials/footer') %>

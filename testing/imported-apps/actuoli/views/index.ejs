@@ -1,0 +1,166 @@
+<%- include('partials/header') %>
+<section class="hero">
+<img src="<%= (settings && settings._p_hero_image_url) ? settings._p_hero_image_url : 'https://placehold.co/1600x900/ef4444/ffffff/png?text=Actuoli' %>" alt="L'actualité sportive locale" class="hero-img">
+<div class="hero-overlay">
+<div class="hero-content">
+<span class="hero-eyebrow">🔥 <%= (settings && settings.tagline) ? settings.tagline : "L'actualité sportive locale" %></span>
+<h1 class="hero-title"><%= (settings && settings.hero_title) ? settings.hero_title : 'Le sport local, vibrant et passionné' %></h1>
+<p class="hero-subtitle"><%= (settings && settings.hero_subtitle) ? settings.hero_subtitle : '' %></p>
+<div class="hero-actions">
+<a href="articles" class="btn btn-primary btn-lg" style="background-color:#ef4444;color:#fff"><%= (settings && settings.hero_cta) ? settings.hero_cta : 'Lire les dernières nouvelles' %></a>
+<a href="abonnement" class="btn btn-lg btn-outline-light">S'abonner gratuitement</a>
+</div>
+</div>
+</div>
+</section>
+
+<section class="section section-light">
+<div class="container">
+<div class="section-head">
+<h2 class="section-title">À la une</h2>
+<a href="articles" class="section-link">Tous les articles →</a>
+</div>
+<% if (typeof featured !== 'undefined' && featured && featured.length > 0) { %>
+<div class="featured-grid">
+<% featured.forEach(function(p, i) { %>
+<a href="article/<%= p.id %>" class="featured-card featured-card-<%= i %>">
+<div class="featured-img"><img src="<%= p.image_url || 'https://placehold.co/800x500/ef4444/ffffff/png?text=Article' %>" alt="<%= p.title %>"></div>
+<div class="featured-body">
+<% if (p.category) { %><span class="badge"><%= p.category %></span><% } %>
+<h3><%= p.title %></h3>
+<p><%= p.excerpt || '' %></p>
+<span class="read-more">Lire l'article →</span>
+</div>
+</a>
+<% }); %>
+</div>
+<% } else { %>
+<p class="empty">Aucun article en vedette pour le moment. Revenez bientôt !</p>
+<% } %>
+</div>
+</section>
+
+<section class="section">
+<div class="container">
+<div class="section-head">
+<h2 class="section-title">Récents</h2>
+<a href="articles" class="section-link">Tout voir →</a>
+</div>
+<% if (typeof recent !== 'undefined' && recent && recent.length > 0) { %>
+<div class="cards-grid">
+<% recent.forEach(function(p) { %>
+<a href="article/<%= p.id %>" class="card">
+<div class="card-img"><img src="<%= p.image_url || 'https://placehold.co/600x400/ef4444/ffffff/png?text=Article' %>" alt="<%= p.title %>"></div>
+<div class="card-body">
+<% if (p.category) { %><span class="badge"><%= p.category %></span><% } %>
+<h3><%= p.title %></h3>
+<p class="card-meta"><%= p.author || 'Rédaction Actuoli' %> · <%= formatRelDate(p.created_at) %></p>
+</div>
+</a>
+<% }); %>
+</div>
+<% } else { %>
+<p class="empty">Pas encore d'articles publiés. Revenez bientôt !</p>
+<% } %>
+</div>
+</section>
+
+<section class="section section-dark">
+<div class="container">
+<div class="section-head">
+<h2 class="section-title">Prochains événements</h2>
+<a href="calendrier" class="section-link" style="color:#fca5a5">Voir le calendrier →</a>
+</div>
+<% if (typeof events !== 'undefined' && events && events.length > 0) { %>
+<div class="events-strip">
+<% events.forEach(function(e) { %>
+<div class="event-card">
+<div class="event-date">
+<span class="event-day"><%= e.event_date ? new Date(e.event_date).getDate() : '?' %></span>
+<span class="event-month"><%= e.event_date ? new Date(e.event_date).toLocaleDateString('fr-CA',{month:'short'}).replace('.','') : '' %></span>
+</div>
+<div class="event-body">
+<% if (e.sport) { %><span class="badge"><%= e.sport %></span><% } %>
+<h4><%= e.title %></h4>
+<p>📍 <%= e.location || 'Lieu à confirmer' %><% if (e.event_time) { %> · 🕐 <%= e.event_time %><% } %></p>
+</div>
+</div>
+<% }); %>
+</div>
+<% } else { %>
+<p class="empty" style="color:#cbd5e1">Aucun événement à venir pour l'instant.</p>
+<% } %>
+</div>
+</section>
+
+<% if (typeof galleryItems !== 'undefined' && galleryItems && galleryItems.length > 0) { %>
+<section class="section">
+<div class="container">
+<div class="section-head">
+<h2 class="section-title">En images</h2>
+<a href="galerie" class="section-link">Voir la galerie →</a>
+</div>
+<div class="gallery-grid gallery-preview">
+<% galleryItems.slice(0,6).forEach(function(g) { %>
+<a href="galerie" class="gallery-tile">
+<img src="<%= g.image_url || 'https://placehold.co/600x600/ef4444/ffffff/png?text=Photo' %>" alt="<%= g.title || '' %>">
+<div class="gallery-caption"><h4><%= g.title || '' %></h4></div>
+</a>
+<% }); %>
+</div>
+</div>
+</section>
+<% } %>
+
+<% if (typeof podcasts !== 'undefined' && podcasts && podcasts.length > 0) { %>
+<section class="section section-accent">
+<div class="container">
+<div class="section-head">
+<h2 class="section-title">🎙 Derniers balados</h2>
+<a href="balados" class="section-link">Tous les épisodes →</a>
+</div>
+<div class="cards-grid">
+<% podcasts.forEach(function(p) { %>
+<a href="balados" class="podcast-card">
+<div class="podcast-img"><img src="<%= p.image_url || 'https://placehold.co/400x400/ef4444/ffffff/png?text=Balado' %>" alt="<%= p.title %>"></div>
+<div class="podcast-body">
+<span class="badge">🎙 <%= p.duration || 'Balado' %></span>
+<h4><%= p.title %></h4>
+<p><%= (p.description || '').slice(0,120) %><% if ((p.description||'').length > 120) { %>…<% } %></p>
+</div>
+</a>
+<% }); %>
+</div>
+</div>
+</section>
+<% } %>
+
+<section class="section section-cta">
+<div class="container container-narrow">
+<h2><%= (settings && settings.newsletter_title) ? settings.newsletter_title : 'Ne manquez aucune nouvelle' %></h2>
+<p><%= (settings && settings.newsletter_text) ? settings.newsletter_text : "Inscrivez-vous à notre infolettre." %></p>
+<form class="newsletter-form" id="newsletterForm">
+<input type="email" name="email" required placeholder="votre@courriel.com" aria-label="Courriel">
+<button type="submit" class="btn btn-lg" style="background-color:#0f172a;color:#fff;border-color:#0f172a">S'abonner</button>
+</form>
+<div id="newsletterMsg" class="form-msg"></div>
+</div>
+</section>
+
+<script>
+(function(){
+var f=document.getElementById('newsletterForm'); if(!f) return;
+f.addEventListener('submit',async function(e){
+e.preventDefault();
+var msg=document.getElementById('newsletterMsg');
+msg.textContent='Inscription en cours...';msg.className='form-msg';
+try{
+var r=await fetch('api/subscribe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:f.email.value})});
+var d=await r.json();
+if(r.ok){msg.textContent='Merci ! Vous recevrez bientôt nos nouvelles.';msg.className='form-msg form-msg-ok';f.reset();}
+else{msg.textContent=d.error||'Erreur';msg.className='form-msg form-msg-err';}
+}catch(err){msg.textContent='Erreur de connexion';msg.className='form-msg form-msg-err';}
+});
+})();
+</script>
+<%- include('partials/footer') %>

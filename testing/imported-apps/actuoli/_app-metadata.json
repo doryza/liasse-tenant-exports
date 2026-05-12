@@ -1,0 +1,79 @@
+{
+  "slug": "actuoli",
+  "displayName": "ActuOli",
+  "description": "Projet: Site web d'actualités sportives locales\n\nBut: Publier des articles et des entrevues sur les athlètes de la région.\n\nFonctionnalités clés:\n- Publication d'articles\n- Abonnement par courriel\n- Calendrier des événements\n- Possibilité d'ajouter des pages au besoin\n\nDesign: Coloré, moderne et dynamique; très original et actuel.\n- Galerie de photos.\n\nIntégrations:\n- Réseaux sociaux\n- Forum de discussion\n- Section pour balados (audio/vidéo)\n\nContexte d'affaires: Le client souhaite une solution pour créer et faire évoluer le site sans frais, y compris l'ajout de nouvelles pages.",
+  "status": "active",
+  "generationVersion": 1,
+  "primaryColor": "#ef4444",
+  "iconUrl": "https://res.cloudinary.com/duhp69meg/image/upload/v1778553962/tapavis_tenant_actuoli/icon_actuoli_1778553962668.png",
+  "enabledAuthMethods": [
+    "webauthn",
+    "sms",
+    "email"
+  ],
+  "notificationsEnabled": true,
+  "geolocationEnabled": true,
+  "customConfig": {
+    "language": "fr",
+    "aiSummary": {
+      "en": {
+        "dashboard": "Welcome to your new control center! To manage your website, just go to the 'Admin' section. This is where all the magic happens.\n\nFrom here, you can easily add, edit, or remove all of your content. You’ll see separate areas for:\n- News Articles\n- Upcoming Events for the calendar\n- Photos for your Gallery\n- New Podcasts\n- Profiles for local Athletes\n- Forum discussions\n\nTo add something new, simply find the right section and look for a button like 'Add New Article' or 'Create Event'. You can also manage your community by viewing your list of email subscribers and reading messages sent through your contact form.\n\nThis admin area is also where you can check your website's visitor statistics to see how popular your content is. Think of it as your one-stop shop for keeping 'ActuOli' fresh, engaging, and running smoothly!",
+        "variables": "Great news! Your new app, 'ActuOli', is all set and ready to go. You don't need to worry about any special keys or technical setup. Everything it needs to work is already built right in. You can start adding your sports news and building your community right away. Congratulations on your new site!"
+      },
+      "fr": {
+        "dashboard": "Bienvenue dans votre centre de contrôle! Pour gérer votre site web, rendez-vous simplement dans la section 'Admin'. C'est là que toute la magie opère.\n\nÀ partir d'ici, vous pouvez facilement ajouter, modifier ou supprimer tout votre contenu. Vous verrez des sections bien définies pour :\n- Les articles d'actualité\n- Les événements à venir pour le calendrier\n- Les photos pour votre galerie\n- Les nouveaux balados\n- Les profils des athlètes locaux\n- Les discussions sur le forum\n\nPour ajouter du nouveau contenu, trouvez la bonne section et cherchez un bouton comme « Ajouter un article » ou « Créer un événement ». Vous pouvez aussi gérer votre communauté en consultant votre liste d'abonnés par courriel et en lisant les messages envoyés via le formulaire de contact.\n\nC'est également dans cette section 'Admin' que vous pourrez consulter les statistiques de visite de votre site pour voir la popularité de votre contenu. Considérez-le comme votre guichet unique pour garder 'ActuOli' à jour, intéressant et performant!",
+        "variables": "Excellente nouvelle! Votre nouvelle application, 'ActuOli', est fin prête à être utilisée. Vous n'avez pas besoin de vous soucier de clés spéciales ou de configuration technique. Tout ce dont elle a besoin pour fonctionner est déjà inclus. Vous pouvez commencer à ajouter vos actualités sportives et à bâtir votre communauté dès maintenant. Félicitations pour votre nouveau site!"
+      }
+    },
+    "aiSummaryVersion": 1
+  },
+  "promptHistory": [
+    {
+      "prompt": "Projet: Site web d'actualités sportives locales\n\nBut: Publier des articles et des entrevues sur les athlètes de la région.\n\nFonctionnalités clés:\n- Publication d'articles\n- Abonnement par courriel\n- Calendrier des événements\n- Possibilité d'ajouter des pages au besoin\n\nDesign: Coloré, moderne et dynamique; très original et actuel.\n- Galerie de photos.\n\nIntégrations:\n- Réseaux sociaux\n- Forum de discussion\n- Section pour balados (audio/vidéo)\n\nContexte d'affaires: Le client souhaite une solution pour créer et faire évoluer le site sans frais, y compris l'ajout de nouvelles pages.",
+      "timestamp": "2026-05-12T02:46:11.054Z",
+      "changeNotes": "Admin enrichment: (1) Sidebar now highlights active section via data-module attribute and JS detection. (2) Admin dashboard reorganized with quick-action cards, health indicators, content overview grid, and richer recent-messages preview. (3) admin-shell.ejs upgraded: toast notifications replace alerts, better empty states with CTAs, improved field rendering for textareas/long text, image preview improvements, keyboard ESC closes modal, success feedback. (4) admin-styles.css polished: refined tokens (--admin-brand), better focus rings, refined buttons (primary/danger/ghost), toast styling, badge styling, improved table with sticky header, mobile responsive nav. (5) Front-end CSS: improved focus states and minor polish. (6) SEO metadata generated for French local sports news site (NewsMediaOrganization schema).",
+      "generationId": 1080,
+      "filesModified": [
+        "manifest.json",
+        "public/css/admin-styles.css",
+        "public/css/styles.css",
+        "public/js/app.js",
+        "routes.js",
+        "schema.sql",
+        "seed.js",
+        "views/abonnement.ejs",
+        "views/admin-athletes.ejs",
+        "views/admin-email_subscribers.ejs",
+        "views/admin-events.ejs",
+        "views/admin-form_submissions.ejs",
+        "views/admin-forum_messages.ejs",
+        "views/admin-forum_topics.ejs",
+        "views/admin-gallery.ejs",
+        "views/admin-podcasts.ejs",
+        "views/admin-posts.ejs",
+        "views/admin-submissions.ejs",
+        "views/admin-subscribers.ejs",
+        "views/admin.ejs",
+        "views/article.ejs",
+        "views/articles.ejs",
+        "views/athlete.ejs",
+        "views/athletes.ejs",
+        "views/balados.ejs",
+        "views/calendrier.ejs",
+        "views/contact.ejs",
+        "views/forum-sujet.ejs",
+        "views/forum.ejs",
+        "views/galerie.ejs",
+        "views/index.ejs",
+        "views/partials/admin-shell.ejs",
+        "views/partials/admin-sidebar.ejs",
+        "views/partials/footer.ejs",
+        "views/partials/header.ejs"
+      ]
+    }
+  ],
+  "apiVariables": [],
+  "createdAt": "2026-05-12T02:07:50.978Z",
+  "updatedAt": "2026-05-12T02:46:32.095Z",
+  "exportedAt": "2026-05-12T03:46:24.508Z"
+}

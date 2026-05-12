@@ -1,0 +1,48 @@
+<footer class="site-footer">
+<div class="footer-inner">
+<div class="footer-col">
+<h3 class="footer-logo"><span class="logo-actu">Actu</span><span class="logo-oli">oli</span></h3>
+<p><%= (typeof settings !== 'undefined' && settings.footer_about) ? settings.footer_about : "L'actualité sportive locale" %></p>
+</div>
+<div class="footer-col">
+<h4>Navigation</h4>
+<a href="articles">Articles</a>
+<a href="calendrier">Calendrier</a>
+<a href="galerie">Galerie</a>
+<a href="balados">Balados</a>
+<a href="athletes">Athlètes</a>
+</div>
+<div class="footer-col">
+<h4>Communauté</h4>
+<a href="forum">Forum</a>
+<a href="abonnement">Infolettre</a>
+<a href="contact">Contact</a>
+<a href="#" data-push-btn>🔔 Activer les notifications</a>
+</div>
+<div class="footer-col">
+<h4>Suivez-nous</h4>
+<div class="social-row">
+<% if (typeof settings !== 'undefined' && settings.social_facebook) { %><a href="<%= settings.social_facebook %>" target="_blank" rel="noopener" aria-label="Facebook" class="social-link">f</a><% } %>
+<% if (typeof settings !== 'undefined' && settings.social_instagram) { %><a href="<%= settings.social_instagram %>" target="_blank" rel="noopener" aria-label="Instagram" class="social-link">IG</a><% } %>
+<% if (typeof settings !== 'undefined' && settings.social_twitter) { %><a href="<%= settings.social_twitter %>" target="_blank" rel="noopener" aria-label="X / Twitter" class="social-link">X</a><% } %>
+<% if (typeof settings !== 'undefined' && settings.social_youtube) { %><a href="<%= settings.social_youtube %>" target="_blank" rel="noopener" aria-label="YouTube" class="social-link">YT</a><% } %>
+</div>
+<p class="footer-hint">Tous les épisodes de balado, vidéos et actualités sont aussi partagés sur nos réseaux.</p>
+</div>
+</div>
+<div class="footer-bottom">
+<p>&copy; <%= new Date().getFullYear() %> <%= (typeof settings !== 'undefined' && settings.business_name) ? settings.business_name : 'Actuoli' %> — Tous droits réservés · <a href="contact" style="color:#cbd5e1">Une suggestion ? Écrivez-nous</a></p>
+</div>
+</footer>
+<script>
+(function(){
+var t=document.getElementById('navToggle'),m=document.getElementById('navMobile');
+if(t&&m){t.addEventListener('click',function(e){e.preventDefault();var o=m.classList.toggle('open');t.setAttribute('aria-expanded',o?'true':'false');t.classList.toggle('open',o);});}
+})();
+</script>
+<script>
+try { if (window.TenantSDK) { TenantSDK.ui.showInstallBanner(); setTimeout(function(){ try { TenantSDK.ui.showPushPrompt(); } catch(e){} }, 8000); } } catch(e) {}
+</script>
+<script src="public/js/app.js"></script>
+</body>
+</html>

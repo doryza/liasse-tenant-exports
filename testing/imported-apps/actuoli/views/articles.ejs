@@ -1,0 +1,37 @@
+<%- include('partials/header') %>
+<section class="page-hero">
+<div class="container">
+<h1>Articles &amp; entrevues</h1>
+<p>Toute l'actualité sportive locale, en direct du terrain.</p>
+</div>
+</section>
+<section class="section">
+<div class="container">
+<% if (typeof cats !== 'undefined' && cats && cats.length > 0) { %>
+<div class="category-bar">
+<a href="articles" class="cat-chip <%= !currentCat ? 'active' : '' %>" <% if (!currentCat) { %>style="background-color:#ef4444;color:#fff"<% } %>>Toutes</a>
+<% cats.forEach(function(c) { %>
+<a href="articles?cat=<%= encodeURIComponent(c.category) %>" class="cat-chip <%= currentCat === c.category ? 'active' : '' %>" <% if (currentCat === c.category) { %>style="background-color:#ef4444;color:#fff"<% } %>><%= c.category %></a>
+<% }); %>
+</div>
+<% } %>
+<% if (typeof posts !== 'undefined' && posts && posts.length > 0) { %>
+<div class="cards-grid">
+<% posts.forEach(function(p) { %>
+<a href="article/<%= p.id %>" class="card">
+<div class="card-img"><img src="<%= p.image_url || 'https://placehold.co/600x400/ef4444/ffffff/png?text=Article' %>" alt="<%= p.title %>"></div>
+<div class="card-body">
+<% if (p.category) { %><span class="badge"><%= p.category %></span><% } %>
+<h3><%= p.title %></h3>
+<p><%= (p.excerpt || '').slice(0, 140) %></p>
+<p class="card-meta"><%= p.author || 'Rédaction Actuoli' %> · <%= formatRelDate(p.created_at) %></p>
+</div>
+</a>
+<% }); %>
+</div>
+<% } else { %>
+<p class="empty">Aucun article dans cette catégorie pour le moment.</p>
+<% } %>
+</div>
+</section>
+<%- include('partials/footer') %>

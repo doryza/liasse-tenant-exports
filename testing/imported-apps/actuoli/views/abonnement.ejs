@@ -1,0 +1,39 @@
+<%- include('partials/header') %>
+<section class="page-hero">
+<div class="container">
+<h1><%= (settings && settings.newsletter_title) ? settings.newsletter_title : 'Ne manquez aucune nouvelle' %></h1>
+<p><%= (settings && settings.newsletter_text) ? settings.newsletter_text : "Recevez nos articles directement dans votre boîte courriel." %></p>
+</div>
+</section>
+<section class="section">
+<div class="container container-narrow">
+<form id="subscribeForm" class="subscribe-form">
+<div class="field"><label>Nom (optionnel)</label><input type="text" name="name"></div>
+<div class="field"><label>Courriel *</label><input type="email" name="email" required placeholder="votre@courriel.com"></div>
+<button type="submit" class="btn btn-primary btn-lg" style="background-color:#ef4444;color:#fff">S'abonner gratuitement</button>
+<div id="subMsg" class="form-msg"></div>
+</form>
+<div class="bonus">
+<h3>🔔 Ou activez les notifications</h3>
+<p>Recevez nos articles en temps réel sur votre appareil — sans courriel.</p>
+<button data-push-btn class="btn btn-lg" style="background-color:#0f172a;color:#fff;border-color:#0f172a;margin-top:12px">Activer les notifications push</button>
+</div>
+</div>
+</section>
+<script>
+(function(){
+var f=document.getElementById('subscribeForm');
+f.addEventListener('submit',async function(e){
+e.preventDefault();
+var msg=document.getElementById('subMsg');
+msg.textContent='Inscription...'; msg.className='form-msg';
+try{
+var r=await fetch('api/subscribe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:f.email.value,name:f.name.value})});
+var d=await r.json();
+if(r.ok){msg.textContent='Bienvenue ! Vous êtes maintenant abonné(e).';msg.className='form-msg form-msg-ok';f.reset();}
+else{msg.textContent=d.error||'Erreur';msg.className='form-msg form-msg-err';}
+}catch(err){msg.textContent='Erreur de connexion';msg.className='form-msg form-msg-err';}
+});
+})();
+</script>
+<%- include('partials/footer') %>
