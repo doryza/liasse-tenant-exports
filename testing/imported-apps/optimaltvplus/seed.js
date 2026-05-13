@@ -32,6 +32,52 @@ module.exports = async function(db) {
     await db.run("INSERT INTO plans (name, name_en, description, description_en, price_cents, duration_days, features, features_en, image_url, badge, featured, sort_order, active) VALUES ('Annuel Famille', 'Annual Family', '12 mois au prix de 10 - économisez 50$.', '12 months at the price of 10 - save $50.', 24999, 365, '10 000+ chaînes\nQualité 4K Ultra HD\n3 appareils simultanés\nSupport 24/7\nÉconomie de 50$\nGarantie de remboursement 7 jours', '10,000+ channels\n4K Ultra HD quality\n3 simultaneous devices\n24/7 support\n$50 savings\n7-day money back', 'https://res.cloudinary.com/duhp69meg/image/upload/v1778609727/tapavis_tenant_optimaltvplus/build_optimaltvplus_1778609727042.png', 'MEILLEURE OFFRE', 0, 4, 1)");
   }
 
+  // Firstaru server plans
+  const firstCheck = await db.get("SELECT COUNT(*)::int AS c FROM plans WHERE LOWER(name) LIKE 'firstaru%'");
+  if (!firstCheck || firstCheck.c === 0) {
+    const faruFeats = '10 000+ chaînes\nQualité 4K Ultra HD\nServeur Firstaru Premium\nMulti-appareils\nSupport 24/7\nActivation en moins de 30 min';
+    const faruFeatsEn = '10,000+ channels\n4K Ultra HD quality\nFirstaru Premium Server\nMulti-device\n24/7 Support\nActivation in under 30 min';
+    await db.run(
+      'INSERT INTO plans (name, name_en, description, description_en, price_cents, duration_days, features, features_en, badge, featured, sort_order, active) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)',
+      ['Firstaru 1 Mois', 'Firstaru 1 Month', 'Abonnement Firstaru 1 mois.', 'Firstaru 1-month subscription.', 3000, 30, faruFeats, faruFeatsEn, null, 0, 20, 1]
+    );
+    await db.run(
+      'INSERT INTO plans (name, name_en, description, description_en, price_cents, duration_days, features, features_en, badge, featured, sort_order, active) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)',
+      ['Firstaru 3 Mois', 'Firstaru 3 Months', 'Abonnement Firstaru 3 mois — économisez 15 $.', 'Firstaru 3-month subscription — save $15.', 7500, 90, faruFeats, faruFeatsEn, null, 0, 21, 1]
+    );
+    await db.run(
+      'INSERT INTO plans (name, name_en, description, description_en, price_cents, duration_days, features, features_en, badge, featured, sort_order, active) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)',
+      ['Firstaru 6 Mois', 'Firstaru 6 Months', 'Abonnement Firstaru 6 mois — économisez 40 $.', 'Firstaru 6-month subscription — save $40.', 14000, 180, faruFeats, faruFeatsEn, null, 0, 22, 1]
+    );
+    await db.run(
+      'INSERT INTO plans (name, name_en, description, description_en, price_cents, duration_days, features, features_en, badge, featured, sort_order, active) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)',
+      ['Firstaru 12 Mois', 'Firstaru 12 Months', 'Abonnement Firstaru 12 mois — meilleure offre!', 'Firstaru 12-month subscription — best deal!', 25000, 365, faruFeats, faruFeatsEn, 'MEILLEURE OFFRE', 0, 23, 1]
+    );
+  }
+
+  // Omega server plans
+  const omegaCheck = await db.get("SELECT COUNT(*)::int AS c FROM plans WHERE LOWER(name) LIKE 'omega%'");
+  if (!omegaCheck || omegaCheck.c === 0) {
+    const omegaFeats = '10 000+ chaînes\nQualité 4K Ultra HD\nServeur Omega Premium\nMulti-appareils\nSupport 24/7\nActivation en moins de 30 min';
+    const omegaFeatsEn = '10,000+ channels\n4K Ultra HD quality\nOmega Premium Server\nMulti-device\n24/7 Support\nActivation in under 30 min';
+    await db.run(
+      'INSERT INTO plans (name, name_en, description, description_en, price_cents, duration_days, features, features_en, badge, featured, sort_order, active) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)',
+      ['Omega 1 Mois', 'Omega 1 Month', 'Abonnement Omega 1 mois.', 'Omega 1-month subscription.', 2500, 30, omegaFeats, omegaFeatsEn, null, 0, 30, 1]
+    );
+    await db.run(
+      'INSERT INTO plans (name, name_en, description, description_en, price_cents, duration_days, features, features_en, badge, featured, sort_order, active) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)',
+      ['Omega 3 Mois', 'Omega 3 Months', 'Abonnement Omega 3 mois — économisez 15 $.', 'Omega 3-month subscription — save $15.', 6000, 90, omegaFeats, omegaFeatsEn, null, 0, 31, 1]
+    );
+    await db.run(
+      'INSERT INTO plans (name, name_en, description, description_en, price_cents, duration_days, features, features_en, badge, featured, sort_order, active) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)',
+      ['Omega 6 Mois', 'Omega 6 Months', 'Abonnement Omega 6 mois — économisez 50 $.', 'Omega 6-month subscription — save $50.', 10000, 180, omegaFeats, omegaFeatsEn, null, 0, 32, 1]
+    );
+    await db.run(
+      'INSERT INTO plans (name, name_en, description, description_en, price_cents, duration_days, features, features_en, badge, featured, sort_order, active) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)',
+      ['Omega 12 Mois', 'Omega 12 Months', 'Abonnement Omega 12 mois — meilleure offre!', 'Omega 12-month subscription — best deal!', 20000, 365, omegaFeats, omegaFeatsEn, 'MEILLEURE OFFRE', 0, 33, 1]
+    );
+  }
+
   const testCount = await db.get('SELECT COUNT(*)::int AS c FROM testimonials');
   if (!testCount || testCount.c === 0) {
     await db.run("INSERT INTO testimonials (author, role, content, content_en, rating, published) VALUES ('Mathieu G.', 'Montréal, QC', 'Le meilleur service IPTV que j''ai essayé! Aucune coupure, qualité 4K impeccable et le support client répond en quelques minutes. Je recommande à 100%.', 'The best IPTV service I have tried! No cuts, impeccable 4K quality and customer support responds in minutes. 100% recommended.', 5, 1)");

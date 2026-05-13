@@ -6,6 +6,7 @@ module.exports = function(services) {
     fr: {
       site_title: 'Optimal TV Plus',
       nav_home: 'Accueil', nav_plans: 'Forfaits', nav_features: 'Fonctionnalités', nav_contact: 'Contact', nav_account: 'Mon compte', nav_login: 'Connexion', nav_logout: 'Déconnexion', nav_admin: 'Admin',
+      nav_firstaru: 'Firstaru', nav_omega: 'Omega',
       hero_title: 'Streaming illimité en qualité Ultra HD',
       hero_subtitle: 'Plus de 10 000 chaînes en direct, films et séries à la demande. Disponible sur tous vos appareils.',
       hero_cta_primary: 'Voir les forfaits', hero_cta_secondary: 'Comment ça marche',
@@ -57,6 +58,7 @@ module.exports = function(services) {
     en: {
       site_title: 'Optimal TV Plus',
       nav_home: 'Home', nav_plans: 'Plans', nav_features: 'Features', nav_contact: 'Contact', nav_account: 'My Account', nav_login: 'Sign In', nav_logout: 'Sign Out', nav_admin: 'Admin',
+      nav_firstaru: 'Firstaru', nav_omega: 'Omega',
       hero_title: 'Unlimited streaming in Ultra HD quality',
       hero_subtitle: 'Over 10,000 live channels, movies and series on demand. Available on all your devices.',
       hero_cta_primary: 'View Plans', hero_cta_secondary: 'How it works',
@@ -306,10 +308,12 @@ module.exports = function(services) {
   router.get('/', services.auth.optionalAuth, async (req, res) => {
     try {
       const ctx = await buildContext(req);
-      const plans = await services.db.all("SELECT * FROM plans WHERE active = 1 ORDER BY sort_order, id LIMIT 4");
-      const testimonials = await services.db.all('SELECT * FROM testimonials WHERE published = 1 ORDER BY id DESC LIMIT 6');
-      const channels = await services.db.all('SELECT * FROM channels WHERE featured = 1 ORDER BY id LIMIT 12');
-      const posts = await services.db.all('SELECT * FROM posts WHERE published = 1 ORDER BY created_at DESC LIMIT 3');
+      const [plans, testimonials, channels, posts] = await Promise.all([
+        services.db.all("SELECT * FROM plans WHERE active = 1 AND LOWER(name) NOT LIKE 'firstaru%' AND LOWER(name) NOT LIKE 'omega%' ORDER BY sort_order, id LIMIT 4"),
+        services.db.all('SELECT * FROM testimonials WHERE published = 1 ORDER BY id DESC LIMIT 6'),
+        services.db.all('SELECT * FROM channels WHERE featured = 1 ORDER BY id LIMIT 12'),
+        services.db.all('SELECT * FROM posts WHERE published = 1 ORDER BY created_at DESC LIMIT 3')
+      ]);
       res.render('index', Object.assign(ctx, { plans, testimonials, channels, posts }));
     } catch (e) {
       console.error('Home error:', e.message);
@@ -320,10 +324,32 @@ module.exports = function(services) {
   router.get('/plans', services.auth.optionalAuth, async (req, res) => {
     try {
       const ctx = await buildContext(req);
-      const plans = await services.db.all("SELECT * FROM plans WHERE active = 1 ORDER BY sort_order, id");
+      const plans = await services.db.all("SELECT * FROM plans WHERE active = 1 AND LOWER(name) NOT LIKE 'firstaru%' AND LOWER(name) NOT LIKE 'omega%' ORDER BY sort_order, id");
       res.render('plans', Object.assign(ctx, { plans }));
     } catch (e) {
       console.error('Plans error:', e.message);
+      res.status(500).send('Server error');
+    }
+  });
+
+  router.get('/firstaru', services.auth.optionalAuth, async (req, res) => {
+    try {
+      const ctx = await buildContext(req);
+      const plans = await services.db.all("SELECT * FROM plans WHERE LOWER(name) LIKE 'firstaru%' AND active = 1 ORDER BY price_cents");
+      res.render('firstaru', Object.assign(ctx, { plans }));
+    } catch (e) {
+      console.error('Firstaru page error:', e.message);
+      res.status(500).send('Server error');
+    }
+  });
+
+  router.get('/omega', services.auth.optionalAuth, async (req, res) => {
+    try {
+      const ctx = await buildContext(req);
+      const plans = await services.db.all("SELECT * FROM plans WHERE LOWER(name) LIKE 'omega%' AND active = 1 ORDER BY price_cents");
+      res.render('omega', Object.assign(ctx, { plans }));
+    } catch (e) {
+      console.error('Omega page error:', e.message);
       res.status(500).send('Server error');
     }
   });
@@ -648,6 +674,8 @@ module.exports = function(services) {
       try { tenantLocals = await baseCtx(req); } catch (_) {}
     } else if (typeof buildLocals === 'function') {
       try { tenantLocals = await buildLocals(req); } catch (_) {}
+    } else if (typeof buildContext === 'function') {
+      try { tenantLocals = await buildContext(req); } catch (_) {}
     } else if (typeof getSettings === 'function' && typeof T !== 'undefined') {
       try {
         var __vSettings = await getSettings();
@@ -665,12 +693,18 @@ module.exports = function(services) {
         };
       } catch (_) {}
     }
+    var __cfg = services.config || {};
     var voiceLocals = Object.assign({
       t: {},
       lang: 'fr',
       settings: {},
       currentPage: null,
       user: req.tenantUser || null,
+      contactEmail: __cfg.contactEmail || null,
+      contactPhone: __cfg.contactPhone || null,
+      businessName: __cfg.businessName || __cfg.displayName || 'Optimal TV Plus',
+      displayName: __cfg.displayName || 'Optimal TV Plus',
+      slug: __cfg.slug || null,
       formatDate: function(d) { return d == null ? '' : String(d); },
     }, tenantLocals, {
       business: (services.config && services.config.business) || services.business || {},
