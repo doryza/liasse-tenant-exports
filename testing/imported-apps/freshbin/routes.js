@@ -9,7 +9,7 @@ module.exports = function(services) {
   function truncate(s, n) {
     if (!s) return '';
     s = String(s);
-    return s.length > n ? s.slice(0, n) + '\u2026' : s;
+    return s.length > n ? s.slice(0, n) + '…' : s;
   }
   function escapeHtml(s) {
     if (!s) return '';
@@ -46,7 +46,7 @@ module.exports = function(services) {
 
   router.use(function(req, res, next) {
     if (req.method === 'GET' && !req.path.startsWith('/api/') && !req.path.includes('.')) {
-      db.run('INSERT INTO site_visits (path) VALUES (PLACEHOLDER1)', [req.path]).catch(function(){});
+      db.run('INSERT INTO site_visits (path) VALUES ($1)', [req.path]).catch(function(){});
     }
     next();
   });
@@ -90,9 +90,9 @@ module.exports = function(services) {
   router.get('/article/:id', services.auth.optionalAuth, async function(req, res) {
     const id = parseInt(req.params.id);
     if (!id) return res.redirect('.');
-    const post = await db.get("SELECT * FROM posts WHERE id = PLACEHOLDER1 AND published = 1", [id]);
+    const post = await db.get("SELECT * FROM posts WHERE id = $1 AND published = 1", [id]);
     if (!post) return res.redirect('.');
-    const related = await db.all("SELECT id, title, image_url, category FROM posts WHERE id != PLACEHOLDER1 AND published = 1 ORDER BY created_at DESC LIMIT 3", [id]);
+    const related = await db.all("SELECT id, title, image_url, category FROM posts WHERE id != $1 AND published = 1 ORDER BY created_at DESC LIMIT 3", [id]);
     baseRender(req, res, 'article', { post: post, related: related });
   });
 
@@ -110,7 +110,7 @@ module.exports = function(services) {
       const subject = body.subject;
       const message = body.message;
       if (!name || !message) return res.status(400).json({ error: 'Nom et message requis' });
-      await db.run('INSERT INTO form_submissions (name, email, phone, subject, message) VALUES (PLACEHOLDER1,PLACEHOLDER2,PLACEHOLDER3,PLACEHOLDER4,PLACEHOLDER5)', [name, email||'', phone||'', subject||'Contact', message]);
+      await db.run('INSERT INTO form_submissions (name, email, phone, subject, message) VALUES ($1,$2,$3,$4,$5)', [name, email||'', phone||'', subject||'Contact', message]);
       try {
         if (services.config.contactEmail) {
           await services.email.send({
@@ -138,7 +138,7 @@ module.exports = function(services) {
       const address = body.address;
       const message = body.message;
       if (!customer_name || !phone) return res.status(400).json({ error: 'Nom et telephone requis' });
-      await db.run('INSERT INTO bookings (customer_name, email, phone, service_type, preferred_date, address, message) VALUES (PLACEHOLDER1,PLACEHOLDER2,PLACEHOLDER3,PLACEHOLDER4,PLACEHOLDER5,PLACEHOLDER6,PLACEHOLDER7)', [customer_name, email||'', phone, service_type||'', preferred_date||'', address||'', message||'']);
+      await db.run('INSERT INTO bookings (customer_name, email, phone, service_type, preferred_date, address, message) VALUES ($1,$2,$3,$4,$5,$6,$7)', [customer_name, email||'', phone, service_type||'', preferred_date||'', address||'', message||'']);
       try {
         if (services.config.contactEmail) {
           await services.email.send({
