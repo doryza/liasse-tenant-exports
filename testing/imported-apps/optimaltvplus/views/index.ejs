@@ -66,7 +66,7 @@
     <div class="features-grid">
       <div class="feature-card"><div class="feature-icon">📡</div><h3><%= t.feat1_title %></h3><p><%= t.feat1_desc %></p></div>
       <div class="feature-card"><div class="feature-icon">🎬</div><h3><%= t.feat2_title %></h3><p><%= t.feat2_desc %></p></div>
-      <div class="feature-card"><div class="feature-icon">📱</div><h3><%= t.feat3_title %></h3><p><%= t.feat3_desc %></p></div>
+      <div class="feature-card"><div class="feature-icon">📱</div><h3><%= t.feat3_title %></h3><p><%= t.feat4_desc %></p></div>
       <div class="feature-card"><div class="feature-icon">💬</div><h3><%= t.feat4_title %></h3><p><%= t.feat4_desc %></p></div>
       <div class="feature-card"><div class="feature-icon">🎥</div><h3><%= t.feat5_title %></h3><p><%= t.feat5_desc %></p></div>
       <div class="feature-card"><div class="feature-icon">⚡</div><h3><%= t.feat6_title %></h3><p><%= t.feat6_desc %></p></div>
@@ -164,6 +164,20 @@
   </div>
 </section>
 <% } %>
+
+<!-- voice-module-v1 START -->
+<section class="section" style="background:#0d1117;border-top:1px solid #1a2a1a;border-bottom:1px solid #1a2a1a">
+  <div class="container text-center">
+    <div style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.375rem 1rem;border-radius:9999px;font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:1.25rem;border:1px solid #22c55e44;color:#22c55e;background:#22c55e14">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+      <%= lang === 'en' ? 'AI Voice Assistant' : 'Assistant vocal IA' %>
+    </div>
+    <h2 style="color:#fff;margin-top:0;margin-bottom:0.75rem"><%= lang === 'en' ? 'Talk to us — get your plan in minutes' : 'Parlez-nous — obtenez votre forfait en quelques minutes' %></h2>
+    <p style="color:#9ca3af;margin-bottom:1.75rem;max-width:36rem;margin-left:auto;margin-right:auto"><%= lang === 'en' ? 'Our AI assistant listens, answers your questions, and guides you to the right IPTV plan.' : 'Notre assistant IA vous écoute, répond à vos questions et vous oriente vers le bon forfait IPTV.' %></p>
+    <a href="voice-assistant" class="btn-primary btn-lg" style="background-color:#22c55e;color:#fff;display:inline-block"><%= lang === 'en' ? '🎙 Start voice session →' : '🎙 Démarrer la voix →' %></a>
+  </div>
+</section>
+<!-- voice-module-v1 END -->
 
 <section class="cta-section" style="background-image:url('<%= settings._p_cta_image_url || "" %>')">
   <div class="cta-overlay">

@@ -34,37 +34,107 @@
                 <strong><%= formatDate(subscription.expires_at, lang) %></strong>
               </div>
             </div>
-            <% if (subscription.m3u_url || subscription.credentials_username) { %>
+
+            <%
+              var hasMain = !!(subscription.m3u_url || subscription.credentials_username);
+              var hasFirstaru = !!(subscription.firstaru_m3u_url || subscription.firstaru_credentials_username);
+              var showTabs = hasMain || hasFirstaru;
+            %>
+
+            <% if (showTabs) { %>
               <div class="credentials">
                 <h4><%= t.account_credentials %></h4>
                 <p class="cred-help"><%= t.cred_help %></p>
-                <% if (subscription.m3u_url) { %>
-                  <div class="cred-row">
-                    <label><%= t.cred_url %></label>
-                    <div class="cred-value">
-                      <code><%= subscription.m3u_url %></code>
-                      <button type="button" class="btn-copy" data-copy="<%= subscription.m3u_url %>"><%= t.cred_copy %></button>
-                    </div>
-                  </div>
-                <% } %>
-                <% if (subscription.credentials_username) { %>
-                  <div class="cred-row">
-                    <label><%= t.cred_user %></label>
-                    <div class="cred-value">
-                      <code><%= subscription.credentials_username %></code>
-                      <button type="button" class="btn-copy" data-copy="<%= subscription.credentials_username %>"><%= t.cred_copy %></button>
-                    </div>
-                  </div>
-                <% } %>
-                <% if (subscription.credentials_password) { %>
-                  <div class="cred-row">
-                    <label><%= t.cred_pass %></label>
-                    <div class="cred-value">
-                      <code><%= subscription.credentials_password %></code>
-                      <button type="button" class="btn-copy" data-copy="<%= subscription.credentials_password %>"><%= t.cred_copy %></button>
-                    </div>
-                  </div>
-                <% } %>
+
+                <!-- Server tabs -->
+                <div class="server-tabs" style="display:flex;gap:0;border-bottom:2px solid rgba(255,255,255,.1);margin-bottom:1.25rem">
+                  <button type="button"
+                    class="server-tab-btn active"
+                    data-tab="main"
+                    style="padding:.6rem 1.25rem;background:none;border:none;cursor:pointer;font-weight:700;font-size:.95rem;color:#22c55e;border-bottom:2px solid #22c55e;margin-bottom:-2px;transition:all .15s">
+                    🖥️ <%= t.cred_server_main %>
+                  </button>
+                  <button type="button"
+                    class="server-tab-btn"
+                    data-tab="firstaru"
+                    style="padding:.6rem 1.25rem;background:none;border:none;cursor:pointer;font-weight:700;font-size:.95rem;color:rgba(255,255,255,.5);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .15s">
+                    🌐 <%= t.cred_server_firstaru %>
+                  </button>
+                </div>
+
+                <!-- Main server panel -->
+                <div id="cred-panel-main" class="cred-panel">
+                  <% if (hasMain) { %>
+                    <% if (subscription.m3u_url) { %>
+                      <div class="cred-row">
+                        <label><%= t.cred_url %></label>
+                        <div class="cred-value">
+                          <code><%= subscription.m3u_url %></code>
+                          <button type="button" class="btn-copy" data-copy="<%= subscription.m3u_url %>"><%= t.cred_copy %></button>
+                        </div>
+                      </div>
+                    <% } %>
+                    <% if (subscription.credentials_username) { %>
+                      <div class="cred-row">
+                        <label><%= t.cred_user %></label>
+                        <div class="cred-value">
+                          <code><%= subscription.credentials_username %></code>
+                          <button type="button" class="btn-copy" data-copy="<%= subscription.credentials_username %>"><%= t.cred_copy %></button>
+                        </div>
+                      </div>
+                    <% } %>
+                    <% if (subscription.credentials_password) { %>
+                      <div class="cred-row">
+                        <label><%= t.cred_pass %></label>
+                        <div class="cred-value">
+                          <code><%= subscription.credentials_password %></code>
+                          <button type="button" class="btn-copy" data-copy="<%= subscription.credentials_password %>"><%= t.cred_copy %></button>
+                        </div>
+                      </div>
+                    <% } %>
+                  <% } else { %>
+                    <p class="cred-help" style="color:rgba(255,255,255,.5);font-style:italic">
+                      <%= lang === 'en' ? 'Your credentials will be available here shortly. Check back in a few minutes.' : 'Vos identifiants seront disponibles ici sous peu. Revenez dans quelques minutes.' %>
+                    </p>
+                  <% } %>
+                </div>
+
+                <!-- Firstaru server panel -->
+                <div id="cred-panel-firstaru" class="cred-panel" style="display:none">
+                  <% if (hasFirstaru) { %>
+                    <% if (subscription.firstaru_m3u_url) { %>
+                      <div class="cred-row">
+                        <label><%= t.cred_url %></label>
+                        <div class="cred-value">
+                          <code><%= subscription.firstaru_m3u_url %></code>
+                          <button type="button" class="btn-copy" data-copy="<%= subscription.firstaru_m3u_url %>"><%= t.cred_copy %></button>
+                        </div>
+                      </div>
+                    <% } %>
+                    <% if (subscription.firstaru_credentials_username) { %>
+                      <div class="cred-row">
+                        <label><%= t.cred_user %></label>
+                        <div class="cred-value">
+                          <code><%= subscription.firstaru_credentials_username %></code>
+                          <button type="button" class="btn-copy" data-copy="<%= subscription.firstaru_credentials_username %>"><%= t.cred_copy %></button>
+                        </div>
+                      </div>
+                    <% } %>
+                    <% if (subscription.firstaru_credentials_password) { %>
+                      <div class="cred-row">
+                        <label><%= t.cred_pass %></label>
+                        <div class="cred-value">
+                          <code><%= subscription.firstaru_credentials_password %></code>
+                          <button type="button" class="btn-copy" data-copy="<%= subscription.firstaru_credentials_password %>"><%= t.cred_copy %></button>
+                        </div>
+                      </div>
+                    <% } %>
+                  <% } else { %>
+                    <p class="cred-help" style="color:rgba(255,255,255,.5);font-style:italic">
+                      <%= lang === 'en' ? 'Firstaru server credentials will be available here shortly.' : 'Les identifiants du serveur Firstaru seront disponibles ici sous peu.' %>
+                    </p>
+                  <% } %>
+                </div>
               </div>
             <% } else { %>
               <p class="cred-help"><%= lang === 'en' ? 'Your credentials will be available here shortly. Check back in a few minutes.' : 'Vos identifiants seront disponibles ici sous peu. Revenez dans quelques minutes.' %></p>
@@ -112,6 +182,8 @@
 (function(){
   var COPIED = <%- JSON.stringify(t.cred_copied) %>;
   var COPY = <%- JSON.stringify(t.cred_copy) %>;
+
+  // Copy-to-clipboard
   document.querySelectorAll('[data-copy]').forEach(function(btn){
     btn.addEventListener('click', function(){
       var v = btn.getAttribute('data-copy');
@@ -121,6 +193,37 @@
       setTimeout(function(){ btn.textContent = COPY; }, 1500);
     });
   });
+
+  // Server tabs
+  var tabBtns = document.querySelectorAll('.server-tab-btn');
+  var panels = document.querySelectorAll('.cred-panel');
+  if (tabBtns.length > 0) {
+    tabBtns.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var target = btn.getAttribute('data-tab');
+        // Update button styles
+        tabBtns.forEach(function(b) {
+          if (b.getAttribute('data-tab') === target) {
+            b.classList.add('active');
+            b.style.color = '#22c55e';
+            b.style.borderBottomColor = '#22c55e';
+          } else {
+            b.classList.remove('active');
+            b.style.color = 'rgba(255,255,255,.5)';
+            b.style.borderBottomColor = 'transparent';
+          }
+        });
+        // Show/hide panels
+        panels.forEach(function(p) {
+          if (p.id === 'cred-panel-' + target) {
+            p.style.display = '';
+          } else {
+            p.style.display = 'none';
+          }
+        });
+      });
+    });
+  }
 })();
 </script>
 

@@ -33,6 +33,9 @@ module.exports = function(services) {
       account_browse_plans: 'Voir les forfaits',
       cred_url: 'URL serveur (M3U/Xtream)', cred_user: "Nom d'utilisateur", cred_pass: 'Mot de passe', cred_copy: 'Copier', cred_copied: 'Copié!',
       cred_help: 'Utilisez ces identifiants dans votre application IPTV (IPTV Smarters, TiviMate, Perfect Player, etc.)',
+      cred_server_main: 'Serveur Principal',
+      cred_server_firstaru: 'Serveur Firstaru',
+      cred_no_server: 'Aucun identifiant disponible pour ce serveur.',
       status_pending: 'En attente de paiement', status_paid: 'Payé', status_active: 'Actif', status_expired: 'Expiré', status_cancelled: 'Annulé', status_refunded: 'Remboursé', status_new: 'Nouveau', status_read: 'Lu', status_responded: 'Répondu', status_archived: 'Archivé',
       checkout_heading: 'Finalisation de votre abonnement', checkout_order_summary: 'Récapitulatif de la commande', checkout_plan: 'Forfait', checkout_duration: 'Durée', checkout_total: 'Total à payer', checkout_payment_method: 'Mode de paiement', checkout_etransfer: 'Virement Interac', checkout_confirm: 'Confirmer la commande', checkout_processing: 'Traitement...',
       checkout_intro: 'Vérifiez les détails de votre commande, puis confirmez pour recevoir les instructions de paiement.',
@@ -81,6 +84,9 @@ module.exports = function(services) {
       account_browse_plans: 'View plans',
       cred_url: 'Server URL (M3U/Xtream)', cred_user: 'Username', cred_pass: 'Password', cred_copy: 'Copy', cred_copied: 'Copied!',
       cred_help: 'Use these credentials in your IPTV app (IPTV Smarters, TiviMate, Perfect Player, etc.)',
+      cred_server_main: 'Main Server',
+      cred_server_firstaru: 'Firstaru Server',
+      cred_no_server: 'No credentials available for this server.',
       status_pending: 'Pending payment', status_paid: 'Paid', status_active: 'Active', status_expired: 'Expired', status_cancelled: 'Cancelled', status_refunded: 'Refunded', status_new: 'New', status_read: 'Read', status_responded: 'Responded', status_archived: 'Archived',
       checkout_heading: 'Complete your subscription', checkout_order_summary: 'Order summary', checkout_plan: 'Plan', checkout_duration: 'Duration', checkout_total: 'Total to pay', checkout_payment_method: 'Payment method', checkout_etransfer: 'Interac e-Transfer', checkout_confirm: 'Confirm order', checkout_processing: 'Processing...',
       checkout_intro: 'Review your order details, then confirm to receive payment instructions.',
@@ -144,9 +150,12 @@ module.exports = function(services) {
         { name: 'status', type: 'select', options: ['active', 'expired', 'cancelled'], description: 'Statut de l\'abonnement.' },
         { name: 'starts_at', type: 'datetime', description: "Date et heure de début de l'abonnement." },
         { name: 'expires_at', type: 'datetime', description: "Date et heure d'expiration. L'abonnement passera automatiquement en \"expired\" après cette date." },
-        { name: 'm3u_url', type: 'text', description: "URL du serveur M3U ou Xtream Codes à fournir au client.", placeholder: 'http://serveur.com:8080/get.php?username=...&password=...&type=m3u_plus' },
-        { name: 'credentials_username', type: 'text', description: "Nom d'utilisateur IPTV du client.", placeholder: 'user12345' },
-        { name: 'credentials_password', type: 'text', description: 'Mot de passe IPTV du client.', placeholder: 'pass12345' }
+        { name: 'm3u_url', type: 'text', description: "URL du serveur principal (M3U/Xtream) à fournir au client.", placeholder: 'http://serveur.com:8080/get.php?username=...&password=...&type=m3u_plus' },
+        { name: 'credentials_username', type: 'text', description: "Nom d'utilisateur IPTV du client (serveur principal).", placeholder: 'user12345' },
+        { name: 'credentials_password', type: 'text', description: 'Mot de passe IPTV du client (serveur principal).', placeholder: 'pass12345' },
+        { name: 'firstaru_m3u_url', type: 'text', description: "URL du serveur Firstaru (M3U/Xtream) à fournir au client.", placeholder: 'http://firstaru.net:8080/get.php?username=...&password=...&type=m3u_plus' },
+        { name: 'firstaru_credentials_username', type: 'text', description: "Nom d'utilisateur IPTV du client (serveur Firstaru).", placeholder: 'user12345' },
+        { name: 'firstaru_credentials_password', type: 'text', description: 'Mot de passe IPTV du client (serveur Firstaru).', placeholder: 'pass12345' }
       ]
     },
     posts: {
@@ -628,48 +637,234 @@ module.exports = function(services) {
     });
   });
 
-  router.use((req, res) => {
+  // === voice-module-v1 START ===
+  router.get('/voice-assistant', services.auth.optionalAuth, async function(req, res, next) {
+    var tenantLocals = {};
+    if (typeof prepareRender === 'function') {
+      try { tenantLocals = await prepareRender(req, res, { pageTitle: 'Voice Assistant' }); } catch (_) {}
+    } else if (typeof ctx === 'function') {
+      try { tenantLocals = await ctx(req); } catch (_) {}
+    } else if (typeof baseCtx === 'function') {
+      try { tenantLocals = await baseCtx(req); } catch (_) {}
+    } else if (typeof buildLocals === 'function') {
+      try { tenantLocals = await buildLocals(req); } catch (_) {}
+    } else if (typeof getSettings === 'function' && typeof T !== 'undefined') {
+      try {
+        var __vSettings = await getSettings();
+        var __vLang = (req.lang === 'en' || req.lang === 'fr') ? req.lang : 'fr';
+        var __vT = Object.assign({}, T[__vLang] || T.fr || {});
+        if (typeof applyTextOverrides === 'function') {
+          try { __vT = applyTextOverrides(__vT, __vSettings, __vLang); } catch (_) {}
+        }
+        tenantLocals = {
+          lang: __vLang,
+          t: __vT,
+          settings: __vSettings,
+          user: req.user || null,
+          formatDate: function(d) { try { return new Date(d).toLocaleDateString(__vLang === 'en' ? 'en-CA' : 'fr-CA', { year:'numeric', month:'long', day:'numeric' }); } catch(e) { return ''; } },
+        };
+      } catch (_) {}
+    }
+    var voiceLocals = Object.assign({
+      t: {},
+      lang: 'fr',
+      settings: {},
+      currentPage: null,
+      user: req.tenantUser || null,
+      formatDate: function(d) { return d == null ? '' : String(d); },
+    }, tenantLocals, {
+      business: (services.config && services.config.business) || services.business || {},
+      tenantUser: req.tenantUser || null,
+      page: 'voice-assistant',
+      pageTitle: 'Voice Assistant',
+      active: 'voice-assistant',
+    });
+    res.render('voice-assistant', voiceLocals, function(err, html) {
+      if (!err) return res.send(html);
+      console.error('[voice-assistant render]', err && err.stack || err);
+      var brand = (voiceLocals.business && voiceLocals.business.primaryColor)
+        || (voiceLocals.settings && voiceLocals.settings.primary_color)
+        || '#8b5cf6';
+      var lng = (typeof voiceLocals.lang === 'string' && voiceLocals.lang === 'en') ? 'en' : 'fr';
+      var Tfb = lng === 'en'
+        ? { title: 'Voice Assistant', heading: 'Voice assistant is being set up', sub: 'Our voice assistant is currently being prepared. Please check back shortly.' }
+        : { title: 'Assistant vocal', heading: "L'assistant vocal est en cours de configuration", sub: "Notre assistant vocal est en cours de préparation. Veuillez revenir sous peu." };
+      var fallback = '<!DOCTYPE html><html lang="' + lng + '"><head><meta charset="utf-8">'
+        + '<meta name="viewport" content="width=device-width,initial-scale=1">'
+        + '<title>' + Tfb.title + '</title>'
+        + '<style>body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:#f9fafb;color:#111827;'
+        + 'min-height:100vh;display:flex;align-items:center;justify-content:center}'
+        + '.va-wrap{max-width:32rem;padding:2.5rem 1.5rem;text-align:center}'
+        + '.va-icon{width:4rem;height:4rem;margin:0 auto 1.5rem;border-radius:9999px;display:inline-flex;'
+        + 'align-items:center;justify-content:center;color:#fff;background:' + brand + '}'
+        + 'h1{font-size:1.5rem;letter-spacing:-.02em;margin:0 0 .75rem;color:#111827}'
+        + 'p{color:#6b7280;margin:0;line-height:1.5}</style></head><body>'
+        + '<main class="va-wrap"><div class="va-icon">'
+        + '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
+        + '<path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>'
+        + '</div><h1>' + Tfb.heading + '</h1><p>' + Tfb.sub + '</p></main></body></html>';
+      res.status(200).set('Content-Type', 'text/html; charset=utf-8').send(fallback);
+      try { next(err); } catch (_) {}
+    });
+  });
+
+  router.post('/voice-assistant/start', services.auth.optionalAuth, async function(req, res) {
+    try {
+      var endUserId = req.tenantUser ? req.tenantUser.id : null;
+      var result = await services.voiceTokenMint.mint({ endUserId: endUserId, ip: req.ip });
+      if (!result.ok) return res.status(result.status || 400).json({ error: result.error, reason: result.reason });
+      res.json({
+        token: result.token,
+        model: result.model,
+        expireTime: result.expireTime,
+        sessionId: result.sessionId,
+        maxSeconds: result.maxSeconds,
+      });
+    } catch (err) {
+      res.status(503).json({ error: 'voice_unavailable', detail: err.message });
+    }
+  });
+
+  router.post('/voice-assistant/finalize', services.auth.optionalAuth, async function(req, res) {
+    try {
+      var body = req.body || {};
+      var result = await services.voiceTokenMint.finalize({
+        sessionId: body.sessionId,
+        durationMs: body.durationMs,
+        inputTokens: body.inputTokens,
+        outputTokens: body.outputTokens,
+        abortReason: body.abortReason || null,
+      });
+      res.json(result);
+    } catch (err) {
+      res.status(500).json({ error: 'finalize_failed', detail: err.message });
+    }
+  });
+
+  router.post('/voice-assistant/submit', services.auth.optionalAuth, async function(req, res) {
+    try {
+      var fields = req.body || {};
+      await services.db.run(
+        'INSERT INTO voice_submissions (user_id, fields, language, status, created_at) VALUES ($1, $2, $3, $4, NOW())',
+        [(req.tenantUser && req.tenantUser.id) || null, JSON.stringify(fields), 'both', 'new']
+      );
+
+      function vsEscapeHtml(s) {
+        return String(s == null ? '' : s)
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+      }
+      function vsPrettyLabel(k) {
+        return String(k).replace(/[_-]+/g, ' ').replace(/\b\w/g, function(c) { return c.toUpperCase(); });
+      }
+
+      var rowsHtml = '';
+      for (var fk in fields) {
+        if (Object.prototype.hasOwnProperty.call(fields, fk)) {
+          var fv = fields[fk];
+          if (typeof fv !== 'string' || !fv.trim()) continue;
+          rowsHtml += '<tr>'
+            + '<td style="padding:10px 14px;border-bottom:1px solid #e5e7eb;font-weight:600;color:#374151;font-size:14px;width:35%;vertical-align:top">' + vsEscapeHtml(vsPrettyLabel(fk)) + '</td>'
+            + '<td style="padding:10px 14px;border-bottom:1px solid #e5e7eb;color:#111827;font-size:14px;white-space:pre-wrap">' + vsEscapeHtml(fv.trim()) + '</td>'
+            + '</tr>';
+        }
+      }
+      if (!rowsHtml) {
+        rowsHtml = '<tr><td colspan="2" style="padding:10px 14px;color:#9ca3af;font-size:14px;font-style:italic">(no fields submitted)</td></tr>';
+      }
+
+      var tenantName = (services.config && (services.config.businessName || services.config.displayName)) || 'this app';
+      var brandColor = (services.config && services.config.business && services.config.business.primaryColor) || '#8b5cf6';
+      var brandLogo = (services.config && services.config.business && services.config.business.logoUrl) || null;
+
+      var visitorEmail = null;
+      for (var vk in fields) {
+        if (typeof fields[vk] === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fields[vk].trim())) {
+          visitorEmail = fields[vk].trim();
+          break;
+        }
+      }
+
+      var leadEmail = '';
+      if (leadEmail && services.email && services.email.send) {
+        var leadReplyLine = visitorEmail
+          ? '<p style="margin:0 0 18px 0;color:#374151;font-size:15px;line-height:1.55">A visitor just submitted your AI voice assistant form. Their details are below — reply directly to <a href="mailto:' + vsEscapeHtml(visitorEmail) + '" style="color:#7c3aed;text-decoration:none;font-weight:600">' + vsEscapeHtml(visitorEmail) + '</a> to follow up.</p>'
+          : '<p style="margin:0 0 18px 0;color:#374151;font-size:15px;line-height:1.55">A visitor just submitted your AI voice assistant form. Their details are below.</p>';
+        var leadHtml = ''
+          + '<div style="font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;background:#f3f4f6;padding:24px 12px">'
+          + '<div style="max-width:600px;margin:0 auto;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;box-shadow:0 4px 6px -1px rgba(0,0,0,0.06)">'
+          + '<div style="background:linear-gradient(135deg,#7c3aed,#a855f7);padding:22px 26px;color:#ffffff">'
+          + '<div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;opacity:0.85">Liasse · Voice Assistant</div>'
+          + '<div style="font-size:20px;font-weight:700;margin-top:6px;letter-spacing:-0.01em">' + vsEscapeHtml(tenantName) + ' — new lead</div>'
+          + '</div>'
+          + '<div style="padding:24px 26px">'
+          + leadReplyLine
+          + '<table style="border-collapse:collapse;width:100%;background:#f9fafb;border-radius:8px;overflow:hidden;border:1px solid #e5e7eb">' + rowsHtml + '</table>'
+          + '</div>'
+          + '<div style="padding:14px 26px;border-top:1px solid #e5e7eb;background:#f9fafb;color:#6b7280;font-size:12px;line-height:1.4">Sent by your Liasse Voice Assistant module · <a href="https://liasse.tech" style="color:#7c3aed;text-decoration:none">liasse.tech</a></div>'
+          + '</div>'
+          + '</div>';
+        try {
+          await services.email.send({
+            to: leadEmail,
+            subject: '[' + tenantName + '] New voice submission' + (visitorEmail ? ' from ' + visitorEmail : ''),
+            html: leadHtml,
+          });
+        } catch (_) { /* non-fatal */ }
+      }
+
+      if (visitorEmail && services.email && services.email.send) {
+        var visitorNameVal = null;
+        for (var nk in fields) {
+          if (typeof fields[nk] === 'string' && /^(name|nom|fullname|full[_-]?name|firstname|first[_-]?name|prenom)$/i.test(nk)) {
+            visitorNameVal = fields[nk].trim();
+            break;
+          }
+        }
+        var visitorHeaderInner = brandLogo
+          ? '<img src="' + vsEscapeHtml(brandLogo) + '" alt="' + vsEscapeHtml(tenantName) + '" style="max-height:42px;max-width:180px;display:block;margin-bottom:8px"/>'
+          : '<div style="font-size:20px;font-weight:700;color:#ffffff;margin-bottom:4px;letter-spacing:-0.01em">' + vsEscapeHtml(tenantName) + '</div>';
+        var greeting = visitorNameVal
+          ? 'Hi ' + vsEscapeHtml(visitorNameVal) + ','
+          : 'Hi there,';
+        var visitorHtml = ''
+          + '<div style="font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;background:#f3f4f6;padding:24px 12px">'
+          + '<div style="max-width:600px;margin:0 auto;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;box-shadow:0 4px 6px -1px rgba(0,0,0,0.06)">'
+          + '<div style="background:' + vsEscapeHtml(brandColor) + ';padding:22px 26px;color:#ffffff">'
+          + visitorHeaderInner
+          + '<div style="font-size:13px;opacity:0.92">Thanks — we got your request</div>'
+          + '</div>'
+          + '<div style="padding:24px 26px">'
+          + '<p style="margin:0 0 14px 0;color:#111827;font-size:15px;line-height:1.55">' + greeting + '</p>'
+          + '<p style="margin:0 0 18px 0;color:#374151;font-size:15px;line-height:1.55">Thanks for reaching out to <strong>' + vsEscapeHtml(tenantName) + '</strong>. We have received your request and will reply shortly. Here is a copy of what you sent us, for your records:</p>'
+          + '<table style="border-collapse:collapse;width:100%;background:#f9fafb;border-radius:8px;overflow:hidden;border:1px solid #e5e7eb;margin-bottom:18px">' + rowsHtml + '</table>'
+          + '<p style="margin:0;color:#6b7280;font-size:14px;line-height:1.5">— The ' + vsEscapeHtml(tenantName) + ' team</p>'
+          + '</div>'
+          + '<div style="padding:14px 26px;border-top:1px solid #e5e7eb;background:#f9fafb;color:#9ca3af;font-size:11px;line-height:1.4">This message was sent by ' + vsEscapeHtml(tenantName) + ' via <a href="https://liasse.tech" style="color:#9ca3af;text-decoration:none">Liasse Voice Assistant</a>.</div>'
+          + '</div>'
+          + '</div>';
+        try {
+          await services.email.send({
+            to: visitorEmail,
+            subject: 'Thanks — we received your request' + (tenantName !== 'this app' ? ' (' + tenantName + ')' : ''),
+            html: visitorHtml,
+          });
+        } catch (_) { /* non-fatal */ }
+      }
+
+      res.json({ ok: true, visitorEmail: visitorEmail });
+    } catch (err) {
+      console.error('[voice-assistant submit]', err);
+      res.status(500).json({ ok: false, error: 'submit_failed' });
+    }
+  });
+  // === voice-module-v1 END ===
+
+  router.use((req, res, next) => {
+    if (req.path.startsWith('/admin/')) return next();
     if (req.path.startsWith('/api/')) return res.status(404).json({ error: 'Not found' });
     res.redirect('.');
   });
 
-  
-// Auto-injected admin page routes for orphaned views
-router.get('/admin/plans', async function(req, res) {
-  if (!services.admin.isAdmin(req)) return res.redirect('.');
-  var items = await db.all('SELECT * FROM plans ORDER BY created_at DESC');
-  res.render('admin-plans', { items: items });
-});
-router.get('/admin/posts', async function(req, res) {
-  if (!services.admin.isAdmin(req)) return res.redirect('.');
-  var items = await db.all('SELECT * FROM posts ORDER BY created_at DESC');
-  res.render('admin-posts', { items: items });
-});
-router.get('/admin/orders', async function(req, res) {
-  if (!services.admin.isAdmin(req)) return res.redirect('.');
-  var items = await db.all('SELECT * FROM orders ORDER BY created_at DESC');
-  res.render('admin-orders', { items: items });
-});
-router.get('/admin/channels', async function(req, res) {
-  if (!services.admin.isAdmin(req)) return res.redirect('.');
-  var items = await db.all('SELECT * FROM channels ORDER BY created_at DESC');
-  res.render('admin-channels', { items: items });
-});
-router.get('/admin/submissions', async function(req, res) {
-  if (!services.admin.isAdmin(req)) return res.redirect('.');
-  var items = await db.all('SELECT * FROM submissions ORDER BY created_at DESC');
-  res.render('admin-submissions', { items: items });
-});
-router.get('/admin/testimonials', async function(req, res) {
-  if (!services.admin.isAdmin(req)) return res.redirect('.');
-  var items = await db.all('SELECT * FROM testimonials ORDER BY created_at DESC');
-  res.render('admin-testimonials', { items: items });
-});
-router.get('/admin/subscriptions', async function(req, res) {
-  if (!services.admin.isAdmin(req)) return res.redirect('.');
-  var items = await db.all('SELECT * FROM subscriptions ORDER BY created_at DESC');
-  res.render('admin-subscriptions', { items: items });
-});
-
-return router;
+  return router;
 };
