@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tableau de bord — FreshBin Admin</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body>
+<%- include('partials/admin-sidebar') %>
+<main class="admin-main">
+  <header class="admin-page-header">
+    <div>
+      <h1>🌿 Tableau de bord</h1>
+      <p>Bienvenue dans votre espace d’administration FreshBin.</p>
+    </div>
+    <div class="page-header-actions">
+      <a href="." target="_blank" class="btn-secondary">↗ Voir le site</a>
+      <a href="admin/services" class="btn-primary">+ Nouveau service</a>
+    </div>
+  </header>
+
+  <% if ((stats.newBookingsCount||0) > 0 || (stats.newSubmissionsCount||0) > 0) { %>
+  <div class="alert-banner">
+    <span class="alert-icon">🔔</span>
+    <div class="alert-text">
+      <strong>Vous avez du nouveau!</strong>
+      <% if (stats.newBookingsCount > 0) { %><a href="admin/bookings"><%= stats.newBookingsCount %> nouvelle(s) réservation(s)</a><% } %>
+      <% if (stats.newSubmissionsCount > 0) { %><% if (stats.newBookingsCount > 0) { %> · <% } %><a href="admin/submissions"><%= stats.newSubmissionsCount %> nouveau(x) message(s)</a><% } %>
+    </div>
+  </div>
+  <% } %>
+
+  <section class="stats-grid">
+    <div class="stat-card"><div class="stat-icon">👁</div><div class="stat-num"><%= stats.totalVisits %></div><div class="stat-label">Visites totales</div></div>
+    <div class="stat-card"><div class="stat-icon">📈</div><div class="stat-num"><%= stats.recentVisits %></div><div class="stat-label">Visites (7 jours)</div></div>
+    <div class="stat-card highlight"><div class="stat-icon">📅</div><div class="stat-num"><%= stats.newBookingsCount %></div><div class="stat-label">Nouvelles réservations</div></div>
+    <div class="stat-card"><div class="stat-icon">📦</div><div class="stat-num"><%= stats.servicesCount %></div><div class="stat-label">Services</div></div>
+    <div class="stat-card"><div class="stat-icon">✏️</div><div class="stat-num"><%= stats.postsCount %></div><div class="stat-label">Articles</div></div>
+    <div class="stat-card"><div class="stat-icon">⭐</div><div class="stat-num"><%= stats.testimonialsCount %></div><div class="stat-label">Témoignages</div></div>
+    <div class="stat-card"><div class="stat-icon">✉</div><div class="stat-num"><%= stats.submissionsCount %></div><div class="stat-label">Messages reçus</div></div>
+    <div class="stat-card"><div class="stat-icon">🔔</div><div class="stat-num"><%= stats.pushSubscriberCount %></div><div class="stat-label">Abonnés notifications</div></div>
+  </section>
+
+  <section class="admin-section">
+    <div class="section-head-row">
+      <h2>📅 Réservations récentes</h2>
+      <a href="admin/bookings" class="link-more">Tout voir →</a>
+    </div>
+    <% if (recentBookings && recentBookings.length > 0) { %>
+      <table class="admin-table">
+        <thead><tr><th>Date</th><th>Client</th><th>Téléphone</th><th>Service</th><th>Statut</th></tr></thead>
+        <tbody>
+          <% recentBookings.forEach(function(b) { %>
+            <tr><td><%= formatDate(b.created_at) %></td><td><strong><%= b.customer_name %></strong></td><td><a href="tel:<%= b.phone %>"><%= b.phone %></a></td><td><%= b.service_type %></td><td><span class="badge badge-<%= b.status %>"><%= b.status %></span></td></tr>
+          <% }); %>
+        </tbody>
+      </table>
+    <% } else { %>
+      <div class="empty-inline">
+        <div class="empty-icon">📭</div>
+        <p>Aucune réservation pour le moment. Les demandes apparaîtront ici dès qu’elles seront reçues.</p>
+      </div>
+    <% } %>
+  </section>
+
+  <section class="admin-section">
+    <div class="section-head-row">
+      <h2>✉ Messages récents</h2>
+      <a href="admin/submissions" class="link-more">Tout voir →</a>
+    </div>
+    <% if (recentSubmissions && recentSubmissions.length > 0) { %>
+      <table class="admin-table">
+        <thead><tr><th>Date</th><th>Nom</th><th>Sujet</th><th>Statut</th></tr></thead>
+        <tbody>
+          <% recentSubmissions.forEach(function(s) { %>
+            <tr><td><%= formatDate(s.created_at) %></td><td><strong><%= s.name %></strong></td><td><%= s.subject || '(sans sujet)' %></td><td><span class="badge badge-<%= s.status %>"><%= s.status %></span></td></tr>
+          <% }); %>
+        </tbody>
+      </table>
+    <% } else { %>
+      <div class="empty-inline">
+        <div class="empty-icon">📭</div>
+        <p>Aucun message reçu pour le moment.</p>
+      </div>
+    <% } %>
+  </section>
+
+  <section class="admin-section">
+    <h2>⚡ Actions rapides</h2>
+    <div class="quick-actions">
+      <a href="admin/services" class="quick-action"><span class="qa-icon">📦</span><strong>Gérer les services</strong><span>Prix, descriptions, ordre</span></a>
+      <a href="admin/posts" class="quick-action"><span class="qa-icon">✏️</span><strong>Écrire un article</strong><span>Blog, conseils</span></a>
+      <a href="admin/testimonials" class="quick-action"><span class="qa-icon">⭐</span><strong>Témoignages</strong><span>Ajouter, modifier</span></a>
+      <a href="admin/settings" class="quick-action"><span class="qa-icon">⚙</span><strong>Paramètres</strong><span>Textes, contact</span></a>
+    </div>
+  </section>
+</main>
+</body>
+</html>

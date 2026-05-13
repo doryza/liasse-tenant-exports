@@ -1,0 +1,21 @@
+<%- include('partials/admin-shell', {
+  title: 'Témoignages',
+  moduleKey: 'testimonials',
+  moduleLabel: 'Témoignage',
+  columns: [
+    { key: 'avatar_url', label: 'Photo', type: 'image' },
+    { key: 'author', label: 'Auteur' },
+    { key: 'role', label: 'Rôle' },
+    { key: 'content', label: 'Témoignage', type: 'truncate' },
+    { key: 'rating', label: 'Note' },
+    { key: 'published', label: 'Publié', type: 'bool' }
+  ],
+  fields: [
+    { name: 'author', label: 'Auteur', type: 'text', required: true, description: 'Nom de la personne.' },
+    { name: 'role', label: 'Rôle ou type de client', type: 'text', description: 'ex: Cliente résidentielle.' },
+    { name: 'content', label: 'Témoignage', type: 'textarea', required: true, description: 'Texte du témoignage.' },
+    { name: 'rating', label: 'Note (1-5)', type: 'number', min: 1, max: 5, step: 1, default: 5, description: 'Étoiles affichées.' },
+    { name: 'avatar_url', label: 'Photo de profil', type: 'image', description: 'Photo carrée (optionnelle).' },
+    { name: 'published', label: 'Publié', type: 'boolean', default: 1, description: 'Décochez pour masquer.' }
+  ]
+}) %>

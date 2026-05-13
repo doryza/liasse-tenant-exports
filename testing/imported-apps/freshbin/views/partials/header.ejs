@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#14532d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="description" content="FreshBin - Nettoyage des essentiels pour un quotidien plus sain. Bacs à ordures, esthétique automobile et tonte de pelouse.">
+<title><%= (typeof settings!=='undefined' && settings.business_name) ? settings.business_name : 'FreshBin' %> - <%= (typeof settings!=='undefined' && settings.tagline) ? settings.tagline : 'Nettoyage professionnel' %></title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="stylesheet" href="public/css/styles.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="nav-wrap">
+    <a href="." class="brand">
+      <img class="brand-logo" src="<%= (typeof settings!=='undefined' && settings._p_nav_logo_url) ? settings._p_nav_logo_url : (typeof appIconUrl !== 'undefined' ? appIconUrl : '') %>" alt="FreshBin" onerror="this.style.display='none'">
+      <span class="brand-text"><%= (typeof settings!=='undefined' && settings.business_name) ? settings.business_name : 'FreshBin' %></span>
+    </a>
+    <nav class="nav-desktop">
+      <a href=".">Accueil</a>
+      <a href="services">Services</a>
+      <a href="apropos">À propos</a>
+      <a href="articles">Articles</a>
+      <a href="contact">Contact</a>
+      <a href="reservation" class="btn-nav-cta">Réserver</a>
+      <a href="#" data-login-btn class="nav-login">Connexion</a>
+      <a href="#" data-auth-only style="display:none" class="nav-login">Mon compte</a>
+    </nav>
+    <button class="hamburger" id="hamburger" aria-label="Menu" type="button">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <div class="nav-mobile" id="navMobile">
+    <a href=".">Accueil</a>
+    <a href="services">Services</a>
+    <a href="apropos">À propos</a>
+    <a href="articles">Articles</a>
+    <a href="contact">Contact</a>
+    <a href="reservation" class="btn-nav-cta">Réserver</a>
+    <a href="#" data-login-btn>Connexion</a>
+    <a href="#" data-auth-only style="display:none">Mon compte</a>
+    <button data-push-btn class="btn-push">Activer les notifications</button>
+  </div>
+</header>
+<script>
+(function(){
+  var h = document.getElementById('hamburger');
+  var m = document.getElementById('navMobile');
+  if (h && m) { h.addEventListener('click', function(){ m.classList.toggle('open'); h.classList.toggle('active'); }); }
+})();
+</script>

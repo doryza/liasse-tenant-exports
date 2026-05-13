@@ -1,0 +1,76 @@
+<%- include('partials/header') %>
+<section class="page-hero">
+  <div class="container">
+    <span class="page-hero-eyebrow">À propos</span>
+    <h1>À propos de FreshBin</h1>
+    <p><%= (typeof settings!=='undefined' && settings.about_intro) ? settings.about_intro : '' %></p>
+  </div>
+</section>
+<section class="section">
+  <div class="container">
+    <div class="split">
+      <div class="split-img">
+        <img src="<%= (typeof settings!=='undefined' && settings._p_about_image_url) ? settings._p_about_image_url : 'https://placehold.co/800x600/14532d/ffffff/png?text=FreshBin' %>" alt="FreshBin">
+      </div>
+      <div class="split-text">
+        <span class="eyebrow">Notre mission</span>
+        <h2><%= (typeof settings!=='undefined' && settings.about_title) ? settings.about_title : 'Un investissement important pour l’environnement' %></h2>
+        <p><%= (typeof settings!=='undefined' && settings.about_text) ? settings.about_text : '' %></p>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="section section-alt">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">Écologie</span>
+      <h2><%= (typeof settings!=='undefined' && settings.env_title) ? settings.env_title : 'Notre engagement écologique' %></h2>
+      <p><%= (typeof settings!=='undefined' && settings.env_text) ? settings.env_text : '' %></p>
+    </div>
+    <div class="values-grid">
+      <div class="value-card">
+        <div class="value-icon">💧</div>
+        <h3>Eau responsable</h3>
+        <p>Récupération et filtration de l’eau utilisée pour minimiser le gaspillage.</p>
+      </div>
+      <div class="value-card">
+        <div class="value-icon">🌱</div>
+        <h3>Produits biodégradables</h3>
+        <p>Aucun produit toxique. Tous nos savons et désinfectants respectent la nature.</p>
+      </div>
+      <div class="value-card">
+        <div class="value-icon">♻️</div>
+        <h3>Réduction des déchets</h3>
+        <p>Équipement durable et pratiques zéro-déchet à toutes les étapes.</p>
+      </div>
+      <div class="value-card">
+        <div class="value-icon">🤝</div>
+        <h3>Espace personnel respecté</h3>
+        <p>Nous prenons soin de votre propriété comme si c’était la nôtre.</p>
+      </div>
+    </div>
+  </div>
+</section>
+<% if (typeof testimonials !== 'undefined' && testimonials.length > 0) { %>
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">Témoignages</span>
+      <h2>Témoignages de nos clients</h2>
+    </div>
+    <div class="testi-grid">
+      <% testimonials.forEach(function(t) { %>
+        <div class="testi-card">
+          <div class="stars"><% for (var i=0;i<(t.rating||5);i++) { %>★<% } %></div>
+          <p class="testi-quote">« <%= t.content %> »</p>
+          <div class="testi-author">
+            <% if (t.avatar_url) { %><img src="<%= t.avatar_url %>" alt="<%= t.author %>"><% } else { %><div class="avatar-fallback"><%= (t.author||'?').charAt(0).toUpperCase() %></div><% } %>
+            <div><strong><%= t.author %></strong><% if (t.role) { %><br><span><%= t.role %></span><% } %></div>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+  </div>
+</section>
+<% } %>
+<%- include('partials/footer') %>

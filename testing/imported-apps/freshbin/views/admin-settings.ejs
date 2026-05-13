@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paramètres — FreshBin Admin</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body>
+<%- include('partials/admin-sidebar') %>
+<main class="admin-main">
+  <header class="admin-page-header">
+    <div>
+      <h1>⚙ Paramètres du site</h1>
+      <p>Modifiez les textes et informations affichés sur le site public.</p>
+    </div>
+  </header>
+  <div class="settings-help">
+    💡 Astuce : Les modifications sont enregistrées indépendamment pour chaque champ. Cliquez sur « Enregistrer » à côté du champ modifié.
+  </div>
+  <div class="settings-list" id="settingsList"><div class="muted">Chargement...</div></div>
+</main>
+<script>
+var SETTINGS_GROUPS = [
+  { title: 'Informations de l’entreprise', icon: '🏢', fields: [
+    { key: 'business_name', label: 'Nom de l’entreprise', type: 'text' },
+    { key: 'tagline', label: 'Slogan', type: 'text' },
+    { key: 'contact_phone', label: 'Téléphone affiché', type: 'text' },
+    { key: 'contact_email', label: 'Courriel affiché', type: 'text' },
+    { key: 'business_address', label: 'Zone desservie / Adresse', type: 'text' }
+  ]},
+  { title: 'Page d’accueil', icon: '🏠', fields: [
+    { key: 'hero_title', label: 'Titre principal', type: 'text' },
+    { key: 'hero_subtitle', label: 'Sous-titre', type: 'textarea' },
+    { key: 'hero_cta', label: 'Texte du bouton principal', type: 'text' },
+    { key: 'services_title', label: 'Titre section Services', type: 'text' },
+    { key: 'services_subtitle', label: 'Sous-titre section Services', type: 'text' }
+  ]},
+  { title: 'Page À propos', icon: '📝', fields: [
+    { key: 'about_title', label: 'Titre', type: 'text' },
+    { key: 'about_intro', label: 'Introduction', type: 'textarea' },
+    { key: 'about_text', label: 'Texte principal', type: 'textarea' },
+    { key: 'env_title', label: 'Titre — Engagement écologique', type: 'text' },
+    { key: 'env_text', label: 'Texte — Engagement écologique', type: 'textarea' }
+  ]},
+  { title: 'Pages Contact & Réservation', icon: '✉', fields: [
+    { key: 'contact_title', label: 'Titre page Contact', type: 'text' },
+    { key: 'contact_subtitle', label: 'Sous-titre page Contact', type: 'textarea' },
+    { key: 'reservation_title', label: 'Titre page Réservation', type: 'text' },
+    { key: 'reservation_subtitle', label: 'Sous-titre page Réservation', type: 'text' }
+  ]},
+  { title: 'Bannière CTA & Pied de page', icon: '🎯', fields: [
+    { key: 'cta_banner_title', label: 'Bannière CTA — Titre', type: 'text' },
+    { key: 'cta_banner_text', label: 'Bannière CTA — Texte', type: 'text' },
+    { key: 'footer_text', label: 'Texte du pied de page', type: 'text' }
+  ]}
+];
+var current = {};
+function esc(s){ if(!s)return ''; return String(s).replace(/[&<>"']/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];}); }
+async function load(){
+  try{
+    var res = await fetch('api/admin/settings');
+    var data = await res.json();
+    current = data.settings || {};
+    render();
+  }catch(e){ document.getElementById('settingsList').textContent='Erreur de chargement.'; }
+}
+function render(){
+  document.getElementById('settingsList').innerHTML = SETTINGS_GROUPS.map(function(group){
+    var rows = group.fields.map(function(f){
+      var val = current[f.key] || '';
+      var inp = f.type === 'textarea'
+        ? '<textarea data-key="'+f.key+'" rows="3">'+esc(val)+'</textarea>'
+        : '<input type="text" data-key="'+f.key+'" value="'+esc(val)+'">';
+      return '<div class="setting-row"><label>'+esc(f.label)+'<div class="setting-key">'+f.key+'</div></label><div class="setting-input">'+inp+'<button class="btn-sm btn-primary" onclick="saveOne(\''+f.key+'\')" type="button">Enregistrer</button> <span class="save-status" id="status-'+f.key+'"></span></div></div>';
+    }).join('');
+    return '<section class="settings-group"><h2>'+group.icon+' '+esc(group.title)+'</h2>'+rows+'</section>';
+  }).join('');
+}
+window.saveOne = async function(key){
+  var el = document.querySelector('[data-key="'+key+'"]');
+  if(!el) return;
+  var st = document.getElementById('status-'+key);
+  st.textContent = 'Enregistrement...';
+  try{
+    var res = await fetch('api/admin/settings', { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ key: key, value: el.value }) });
+    if(res.ok){ st.textContent='✓ Enregistré'; setTimeout(function(){ st.textContent=''; }, 2000); current[key]=el.value; }
+    else{ st.textContent='Erreur'; }
+  }catch(e){ st.textContent='Erreur'; }
+};
+load();
+</script>
+</body>
+</html>

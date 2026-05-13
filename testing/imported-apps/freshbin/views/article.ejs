@@ -1,0 +1,40 @@
+<%- include('partials/header') %>
+<article class="article">
+  <div class="container narrow">
+    <a href="articles" class="back-link">← Retour aux articles</a>
+    <% if (typeof post !== 'undefined' && post) { %>
+      <% if (post.category) { %><span class="post-tag"><%= post.category %></span><% } %>
+      <h1><%= post.title %></h1>
+      <p class="article-date"><%= formatDate(post.created_at) %></p>
+      <% if (post.image_url) { %>
+        <img class="article-hero" src="<%= post.image_url %>" alt="<%= post.title %>">
+      <% } %>
+      <div class="article-body">
+        <% (post.content || '').split('\n\n').forEach(function(par) { %>
+          <p><%= par %></p>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <p class="empty-state">Article introuvable.</p>
+    <% } %>
+  </div>
+</article>
+<% if (typeof related !== 'undefined' && related.length > 0) { %>
+<section class="section section-alt">
+  <div class="container">
+    <h2>À lire aussi</h2>
+    <div class="posts-grid">
+      <% related.forEach(function(p) { %>
+        <a href="article/<%= p.id %>" class="post-card">
+          <div class="post-img"><img src="<%= p.image_url || 'https://placehold.co/800x500/14532d/ffffff/png?text=Article' %>" alt="<%= p.title %>"></div>
+          <div class="post-body">
+            <% if (p.category) { %><span class="post-tag"><%= p.category %></span><% } %>
+            <h3><%= p.title %></h3>
+          </div>
+        </a>
+      <% }); %>
+    </div>
+  </div>
+</section>
+<% } %>
+<%- include('partials/footer') %>

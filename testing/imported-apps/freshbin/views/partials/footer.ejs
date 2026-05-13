@@ -1,0 +1,37 @@
+<footer class="site-footer">
+  <div class="footer-grid">
+    <div>
+      <h3 class="footer-title"><%= (typeof settings!=='undefined' && settings.business_name) ? settings.business_name : 'FreshBin' %></h3>
+      <p class="footer-tag"><%= (typeof settings!=='undefined' && settings.tagline) ? settings.tagline : 'Nettoyage des essentiels, pour un quotidien plus sain.' %></p>
+    </div>
+    <div>
+      <h4>Navigation</h4>
+      <ul class="footer-links">
+        <li><a href=".">Accueil</a></li>
+        <li><a href="services">Services</a></li>
+        <li><a href="apropos">À propos</a></li>
+        <li><a href="articles">Articles</a></li>
+        <li><a href="contact">Contact</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Contact</h4>
+      <ul class="footer-links">
+        <% if (typeof settings!=='undefined' && settings.contact_phone) { %>
+          <li><a href="tel:<%= settings.contact_phone %>">📞 <%= settings.contact_phone %></a></li>
+        <% } %>
+        <% if (typeof settings!=='undefined' && settings.contact_email) { %>
+          <li><a href="mailto:<%= settings.contact_email %>">✉ <%= settings.contact_email %></a></li>
+        <% } %>
+        <li><a href="reservation" class="footer-cta">Réserver un service</a></li>
+        <li><button data-push-btn class="btn-push-footer" type="button">🔔 Activer les notifications</button></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p><%= (typeof settings!=='undefined' && settings.footer_text) ? settings.footer_text : '© FreshBin. Nettoyage professionnel et écologique.' %></p>
+  </div>
+</footer>
+<script src="public/js/app.js"></script>
+</body>
+</html>

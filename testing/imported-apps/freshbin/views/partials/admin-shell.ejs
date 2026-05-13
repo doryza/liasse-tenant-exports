@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title><%= title %> — FreshBin Admin</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body>
+<%- include('admin-sidebar') %>
+<main class="admin-main">
+  <header class="admin-page-header">
+    <div>
+      <h1><%= title %></h1>
+      <p>Gérez vos <%= title.toLowerCase() %> : ajoutez, modifiez ou supprimez des éléments.</p>
+    </div>
+    <button class="btn-primary" id="addBtn" type="button">+ Nouveau <%= moduleLabel.toLowerCase() %></button>
+  </header>
+  <div class="admin-toolbar">
+    <input type="text" id="searchInput" placeholder="🔍 Rechercher...">
+  </div>
+  <div id="loadingMsg" class="muted">Chargement...</div>
+  <div id="emptyMsg" style="display:none" class="empty-admin"><div class="empty-icon">📋</div>Aucun élément pour le moment.<br><br><button class="btn-primary" onclick="document.getElementById('addBtn').click()" type="button">+ Créer le premier <%= moduleLabel.toLowerCase() %></button></div>
+  <table class="admin-table" id="itemsTable" style="display:none">
+    <thead id="tableHead"></thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+</main>
+<div class="modal" id="editModal" style="display:none">
+  <div class="modal-content">
+    <div class="modal-head">
+      <h2 id="modalTitle">Modifier</h2>
+      <button class="modal-close" id="modalClose" type="button">✕</button>
+    </div>
+    <form id="editForm" class="modal-form"></form>
+  </div>
+</div>
+<script>
+var MODULE_KEY = '<%- moduleKey %>';
+var MODULE_LABEL = '<%- moduleLabel %>';
+var TABLE_COLUMNS = <%- JSON.stringify(typeof columns !== 'undefined' ? columns : []) %>;
+var FIELDS = <%- JSON.stringify(typeof fields !== 'undefined' ? fields : []) %>;
+var items = [];
+
+function esc(s) { if (s === null || s === undefined) return ''; return String(s).replace(/[&<>"']/g, function(c){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]; }); }
+function fmtDate(d) { if (!d) return ''; try { return new Date(d).toLocaleDateString('fr-CA'); } catch(e){ return d; } }
+
+async function loadItems() {
+  document.getElementById('loadingMsg').style.display = 'block';
+  document.getElementById('itemsTable').style.display = 'none';
+  document.getElementById('emptyMsg').style.display = 'none';
+  try {
+    var res = await fetch('api/admin/' + MODULE_KEY);
+    var data = await res.json();
+    items = data[MODULE_KEY] || [];
+    document.getElementById('loadingMsg').style.display = 'none';
+    render();
+  } catch(err) { document.getElementById('loadingMsg').textContent = 'Erreur de chargement.'; }
+}
+
+function render() {
+  var q = (document.getElementById('searchInput').value || '').toLowerCase();
+  var filtered = q ? items.filter(function(it){ return JSON.stringify(it).toLowerCase().indexOf(q) >= 0; }) : items;
+  if (filtered.length === 0) { document.getElementById('itemsTable').style.display = 'none'; document.getElementById('emptyMsg').style.display = 'block'; return; }
+  document.getElementById('emptyMsg').style.display = 'none';
+  document.getElementById('itemsTable').style.display = 'table';
+  var headHtml = '<tr>' + TABLE_COLUMNS.map(function(c){ return '<th>' + esc(c.label) + '</th>'; }).join('') + '<th>Actions</th></tr>';
+  document.getElementById('tableHead').innerHTML = headHtml;
+  var bodyHtml = filtered.map(function(it){
+    var cells = TABLE_COLUMNS.map(function(c){
+      var v = it[c.key];
+      if (c.type === 'image') return '<td>' + (v ? '<img class="thumb" src="' + esc(v) + '">' : '—') + '</td>';
+      if (c.type === 'date') return '<td>' + fmtDate(v) + '</td>';
+      if (c.type === 'bool') return '<td>' + (v == 1 || v === true ? '<span style="color:#16a34a;font-weight:600">✓</span>' : '<span style="color:#9ca3af">—</span>') + '</td>';
+      if (c.type === 'status') return '<td><span class="badge badge-' + esc(v||'') + '">' + esc(v||'') + '</span></td>';
+      if (c.type === 'truncate') return '<td>' + esc(String(v||'').substring(0,80)) + (v && String(v).length>80 ? '…' : '') + '</td>';
+      return '<td>' + esc(v) + '</td>';
+    }).join('');
+    return '<tr>' + cells + '<td class="row-actions"><button class="btn-sm btn-primary" onclick=\'editItem(' + it.id + ')\'>Modifier</button> <button class="btn-sm btn-danger" onclick=\'deleteItem(' + it.id + ')\'>Supprimer</button></td></tr>';
+  }).join('');
+  document.getElementById('tableBody').innerHTML = bodyHtml;
+}
+
+function openModal(item) {
+  document.getElementById('modalTitle').textContent = item ? ('Modifier ' + MODULE_LABEL.toLowerCase()) : ('Nouveau ' + MODULE_LABEL.toLowerCase());
+  var form = document.getElementById('editForm');
+  var html = '';
+  FIELDS.forEach(function(f){
+    var val = item ? (item[f.name] !== undefined && item[f.name] !== null ? item[f.name] : (f.default !== undefined ? f.default : '')) : (f.default !== undefined ? f.default : '');
+    html += '<div class="field"><label>' + esc(f.label || f.name) + (f.required ? ' *' : '') + '</label>';
+    if (f.type === 'textarea') html += '<textarea name="' + f.name + '" rows="5" placeholder="' + esc(f.placeholder||'') + '">' + esc(val) + '</textarea>';
+    else if (f.type === 'boolean') html += '<input type="checkbox" name="' + f.name + '" ' + (val == 1 || val === true ? 'checked' : '') + '>';
+    else if (f.type === 'select') html += '<select name="' + f.name + '">' + (f.options||[]).map(function(o){ return '<option value="' + esc(o) + '"' + (o == val ? ' selected' : '') + '>' + esc(o) + '</option>'; }).join('') + '</select>';
+    else if (f.type === 'image') {
+      html += '<input type="text" name="' + f.name + '" placeholder="URL de l’image" value="' + esc(val) + '">';
+      html += '<div class="img-tools"><button type="button" class="btn-sm" onclick="openUpload(\'' + f.name + '\')">📤 Téléverser</button> <button type="button" class="btn-sm" onclick="openAIGen(\'' + f.name + '\')">✨ Générer IA</button></div>';
+      if (val) html += '<img class="preview" src="' + esc(val) + '">';
+    }
+    else if (f.type === 'number') html += '<input type="number" name="' + f.name + '"' + (f.min!==undefined?' min="'+f.min+'"':'') + (f.max!==undefined?' max="'+f.max+'"':'') + (f.step!==undefined?' step="'+f.step+'"':'') + ' value="' + esc(val) + '">';
+    else if (f.type === 'email') html += '<input type="email" name="' + f.name + '" value="' + esc(val) + '">';
+    else html += '<input type="text" name="' + f.name + '" placeholder="' + esc(f.placeholder||'') + '" value="' + esc(val) + '"' + (f.required?' required':'') + '>';
+    if (f.description) html += '<div class="help">' + esc(f.description) + '</div>';
+    html += '</div>';
+  });
+  html += '<input type="hidden" name="_id" value="' + (item ? item.id : '') + '">';
+  html += '<div class="modal-actions"><button type="button" class="btn-secondary" onclick="closeModal()">Annuler</button> <button type="submit" class="btn-primary">' + (item ? '💾 Enregistrer' : '+ Créer') + '</button></div>';
+  form.innerHTML = html;
+  document.getElementById('editModal').style.display = 'flex';
+}
+
+function closeModal() { document.getElementById('editModal').style.display = 'none'; }
+
+window.editItem = function(id) { var it = items.find(function(i){ return i.id === id; }); if (it) openModal(it); };
+window.deleteItem = async function(id) {
+  if (!confirm('Êtes-vous sûr de vouloir supprimer cet élément? Cette action est irréversible.')) return;
+  try { await fetch('api/admin/' + MODULE_KEY + '/' + id, { method: 'DELETE' }); loadItems(); }
+  catch(err) { alert('Erreur de suppression'); }
+};
+
+window.openUpload = function(fieldName) {
+  var inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*';
+  inp.onchange = async function() {
+    var file = inp.files[0]; if (!file) return;
+    var reader = new FileReader();
+    reader.onload = async function() {
+      try {
+        var dataUri = reader.result;
+        var r2 = await fetch('api/admin/upload-data-uri', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ dataUri: dataUri }) });
+        var d2 = await r2.json();
+        if (d2.url) {
+          document.querySelector('[name="' + fieldName + '"]').value = d2.url;
+          var existingPreview = document.querySelector('[name="' + fieldName + '"]').parentElement.querySelector('.preview');
+          if (existingPreview) existingPreview.src = d2.url;
+          else {
+            var img = document.createElement('img'); img.className='preview'; img.src=d2.url;
+            document.querySelector('[name="' + fieldName + '"]').parentElement.appendChild(img);
+          }
+        }
+        else alert(d2.error || 'Téléversement échoué');
+      } catch(e) { alert('Téléversement échoué'); }
+    };
+    reader.readAsDataURL(file);
+  };
+  inp.click();
+};
+
+window.openAIGen = async function(fieldName) {
+  var prompt = window.prompt('Décrivez l’image souhaitée:');
+  if (!prompt) return;
+  var ar = window.prompt('Format (16:9, 4:3, 1:1, 9:16, 4:5):', '16:9') || '16:9';
+  try {
+    var res = await fetch('api/admin/generate-image', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ prompt: prompt, aspectRatio: ar }) });
+    var d = await res.json();
+    if (d.imageUrl) {
+      document.querySelector('[name="' + fieldName + '"]').value = d.imageUrl;
+      var existingPreview = document.querySelector('[name="' + fieldName + '"]').parentElement.querySelector('.preview');
+      if (existingPreview) existingPreview.src = d.imageUrl;
+      else {
+        var img = document.createElement('img'); img.className='preview'; img.src=d.imageUrl;
+        document.querySelector('[name="' + fieldName + '"]').parentElement.appendChild(img);
+      }
+    }
+    else alert(d.error || 'Génération échouée');
+  } catch(e) { alert('Erreur de génération'); }
+};
+
+document.getElementById('editForm').addEventListener('submit', async function(e){
+  e.preventDefault();
+  var fd = new FormData(e.target);
+  var data = {};
+  FIELDS.forEach(function(f){
+    if (f.type === 'boolean') data[f.name] = fd.get(f.name) ? 1 : 0;
+    else if (f.type === 'number') { var v = fd.get(f.name); data[f.name] = v === '' || v === null ? null : Number(v); }
+    else data[f.name] = fd.get(f.name) || '';
+  });
+  var id = fd.get('_id');
+  var submitBtn = e.target.querySelector('button[type=submit]');
+  var origText = submitBtn.textContent;
+  submitBtn.disabled = true; submitBtn.textContent = 'Enregistrement...';
+  try {
+    var url = 'api/admin/' + MODULE_KEY + (id ? '/' + id : '');
+    var res = await fetch(url, { method: id ? 'PUT' : 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) });
+    if (res.ok) { closeModal(); loadItems(); }
+    else { var j = await res.json(); alert(j.error || 'Erreur lors de l’enregistrement'); submitBtn.disabled=false; submitBtn.textContent=origText; }
+  } catch(err) { alert('Erreur réseau'); submitBtn.disabled=false; submitBtn.textContent=origText; }
+});
+
+document.getElementById('addBtn').addEventListener('click', function(){ openModal(null); });
+document.getElementById('modalClose').addEventListener('click', closeModal);
+document.getElementById('searchInput').addEventListener('input', render);
+loadItems();
+</script>
+</body>
+</html>

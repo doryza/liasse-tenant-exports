@@ -1,0 +1,166 @@
+<%- include('partials/header') %>
+<section class="hero">
+  <img class="hero-img" src="<%= (typeof settings!=='undefined' && settings._p_hero_image_url) ? settings._p_hero_image_url : 'https://placehold.co/1600x900/14532d/ffffff/png?text=FreshBin' %>" alt="FreshBin">
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <span class="hero-eyebrow">✦ Nettoyage écologique professionnel</span>
+    <h1><%= (typeof settings!=='undefined' && settings.hero_title) ? settings.hero_title : 'Nettoyage des essentiels, pour un quotidien plus sain' %></h1>
+    <p><%= (typeof settings!=='undefined' && settings.hero_subtitle) ? settings.hero_subtitle : 'FreshBin offre des services de nettoyage professionnels avec une approche écologique.' %></p>
+    <div class="hero-ctas">
+      <a href="reservation" class="btn-primary" style="background-color:#22c55e;color:#fff"><%= (typeof settings!=='undefined' && settings.hero_cta) ? settings.hero_cta : 'Réserver un service' %></a>
+      <a href="services" class="btn-secondary">Voir nos services</a>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">Services</span>
+      <h2><%= (typeof settings!=='undefined' && settings.services_title) ? settings.services_title : 'Nos services' %></h2>
+      <p><%= (typeof settings!=='undefined' && settings.services_subtitle) ? settings.services_subtitle : 'Des solutions complètes pour entretenir vos essentiels.' %></p>
+    </div>
+    <% if (typeof featuredServices !== 'undefined' && featuredServices.length > 0) { %>
+      <div class="services-grid">
+        <% featuredServices.forEach(function(s) { %>
+          <article class="service-card">
+            <div class="service-img-wrap">
+              <img src="<%= s.image_url || 'https://placehold.co/800x600/14532d/ffffff/png?text=Service' %>" alt="<%= s.name %>">
+              <% if (s.category) { %><span class="service-tag"><%= s.category %></span><% } %>
+            </div>
+            <div class="service-body">
+              <h3><%= s.name %></h3>
+              <p><%= s.short_description || truncate(s.description, 120) %></p>
+              <div class="service-foot">
+                <span class="service-price"><%= s.price || '' %></span>
+                <a href="reservation?service=<%= encodeURIComponent(s.name) %>" class="btn-link">Réserver →</a>
+              </div>
+            </div>
+          </article>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <p class="empty-state">Nos services seront affichés ici très prochainement.</p>
+    <% } %>
+    <div class="section-foot">
+      <a href="services" class="btn-secondary">Voir tous les services</a>
+    </div>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="container">
+    <div class="split">
+      <div class="split-img">
+        <img src="<%= (typeof settings!=='undefined' && settings._p_about_image_url) ? settings._p_about_image_url : 'https://placehold.co/800x600/14532d/ffffff/png?text=FreshBin' %>" alt="FreshBin équipe">
+      </div>
+      <div class="split-text">
+        <span class="eyebrow">À propos</span>
+        <h2><%= (typeof settings!=='undefined' && settings.about_title) ? settings.about_title : 'Un investissement important pour l’environnement' %></h2>
+        <p><%= (typeof settings!=='undefined' && settings.about_intro) ? settings.about_intro : '' %></p>
+        <p><%= (typeof settings!=='undefined' && settings.about_text) ? settings.about_text : '' %></p>
+        <a href="apropos" class="btn-secondary">En savoir plus</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">Pourquoi FreshBin</span>
+      <h2>Pourquoi choisir FreshBin?</h2>
+      <p>Des valeurs au cœur de chaque service offert.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature">
+        <div class="feature-icon">🌿</div>
+        <h3>Approche écologique</h3>
+        <p>Produits biodégradables et méthodes respectueuses de l’environnement à chaque intervention.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">⭐</div>
+        <h3>Service personnalisé</h3>
+        <p>Chaque client est unique. Nous adaptons nos services à votre espace personnel et à vos besoins.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">💰</div>
+        <h3>Tarifs transparents</h3>
+        <p>Aucun frais caché. Des prix clairs pour des résultats éclatants.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🕒</div>
+        <h3>Ponctualité garantie</h3>
+        <p>Nous respectons vos horaires et nous présentons toujours à l’heure convenue.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<% if (typeof testimonials !== 'undefined' && testimonials.length > 0) { %>
+<section class="section section-dark">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow" style="color:#86efac">Témoignages</span>
+      <h2>Ce que disent nos clients</h2>
+      <p>Des témoignages réels de clients satisfaits.</p>
+    </div>
+    <div class="testi-grid">
+      <% testimonials.forEach(function(t) { %>
+        <div class="testi-card">
+          <div class="stars">
+            <% for (var i=0;i<(t.rating||5);i++) { %>★<% } %>
+          </div>
+          <p class="testi-quote">« <%= t.content %> »</p>
+          <div class="testi-author">
+            <% if (t.avatar_url) { %><img src="<%= t.avatar_url %>" alt="<%= t.author %>"><% } else { %><div class="avatar-fallback"><%= (t.author||'?').charAt(0).toUpperCase() %></div><% } %>
+            <div><strong><%= t.author %></strong><% if (t.role) { %><br><span><%= t.role %></span><% } %></div>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<section class="section cta-banner">
+  <div class="container cta-content">
+    <h2><%= (typeof settings!=='undefined' && settings.cta_banner_title) ? settings.cta_banner_title : 'Prêt à offrir une seconde vie à vos essentiels?' %></h2>
+    <p><%= (typeof settings!=='undefined' && settings.cta_banner_text) ? settings.cta_banner_text : 'Réservez dès maintenant.' %></p>
+    <div class="cta-actions">
+      <a href="reservation" class="btn-primary" style="background-color:#22c55e;color:#fff">Demander une réservation</a>
+      <% if (typeof settings!=='undefined' && settings.contact_phone) { %>
+        <a href="tel:<%= settings.contact_phone %>" class="btn-secondary">📞 <%= settings.contact_phone %></a>
+      <% } %>
+    </div>
+  </div>
+</section>
+
+<% if (typeof recentPosts !== 'undefined' && recentPosts.length > 0) { %>
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">Blog</span>
+      <h2>Derniers articles</h2>
+      <p>Conseils, astuces et nouvelles écologiques.</p>
+    </div>
+    <div class="posts-grid">
+      <% recentPosts.forEach(function(p) { %>
+        <a href="article/<%= p.id %>" class="post-card">
+          <div class="post-img">
+            <img src="<%= p.image_url || 'https://placehold.co/800x500/14532d/ffffff/png?text=Article' %>" alt="<%= p.title %>">
+          </div>
+          <div class="post-body">
+            <% if (p.category) { %><span class="post-tag"><%= p.category %></span><% } %>
+            <h3><%= p.title %></h3>
+            <p><%= truncate(p.content, 140) %></p>
+            <span class="post-date"><%= formatDate(p.created_at) %></span>
+          </div>
+        </a>
+      <% }); %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<%- include('partials/footer') %>

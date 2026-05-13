@@ -1,0 +1,69 @@
+{
+  "slug": "freshbin",
+  "displayName": "FreshBin",
+  "description": "Crée moi un site web bien détailler accueillant pour mon entreprise FreshBin couleur vert élégant les différent service et prix service bac de poubelle 15$ part bac 2ieme service esthétique automobile intérieur extérieur 60$ complet 150$ 3ieme service tondre le gazon contrat de 500$ de avril à septembre numéro de téléphone 263-380-4164 email matheo74747@gmail.com marque que mes service est un investissement important pour l’environnement espace personnelle site web élégant",
+  "status": "active",
+  "generationVersion": 1,
+  "primaryColor": "#22c55e",
+  "iconUrl": "https://res.cloudinary.com/duhp69meg/image/upload/v1778635417/subscriber_pwa_icons/e40onmuxmpljbdxmvh6s.jpg",
+  "enabledAuthMethods": [
+    "webauthn",
+    "sms",
+    "email"
+  ],
+  "notificationsEnabled": true,
+  "geolocationEnabled": true,
+  "customConfig": {
+    "language": "fr",
+    "aiSummary": {
+      "en": {
+        "dashboard": "Welcome to your app's command center! You can get to it by adding `/admin` to the end of your app's web address.\n\nFrom here, you can easily manage your entire website:\n\n- **Manage Your Services**: Need to update the price for bin cleaning or change the details of your lawn care contract? Just go to the 'Services' tab. You can add, edit, or remove any of the services you offer.\n\n- **Check Bookings & Messages**: When a customer books a service or sends a message through your contact form, you'll find their requests in the 'Bookings' and 'Submissions' tabs. It's the perfect place to keep track of all your appointments and inquiries.\n\n- **Add Customer Reviews**: You can add glowing reviews from happy clients in the 'Testimonials' section to show new visitors how great your work is.\n\n- **Write Articles**: Want to share news or environmental tips? Head to the 'Posts' tab to write and publish articles for your community.\n\n- **Update Site Info**: The 'Settings' tab is where you can change your site's general information, like your contact phone number or email address.\n\nIt’s all designed to be simple, so feel free to explore and make the site your own!",
+        "variables": "Great news! Your new FreshBin app is all set up and ready to go. You don't need to hunt for any special codes or keys to make it work. Everything is built-in, so you can start welcoming customers and managing your business right away. We're excited to see your business grow!"
+      },
+      "fr": {
+        "dashboard": "Bienvenue dans le centre de contrôle de votre site web! Pour y accéder, ajoutez simplement `/admin` à la fin de l'adresse de votre site.\n\nÀ partir d'ici, vous pouvez facilement tout gérer:\n\n- **Gérer vos services**: Besoin de mettre à jour le prix du nettoyage de bacs ou de modifier les détails de votre contrat de tonte de gazon? Allez simplement dans l'onglet 'Services'. Vous pouvez y ajouter, modifier ou retirer les services que vous offrez.\n\n- **Voir les réservations et les messages**: Quand un client réserve un service ou vous envoie un message via la page contact, vous trouverez sa demande dans les onglets 'Réservations' (Bookings) et 'Soumissions' (Submissions). C'est l'endroit parfait pour suivre tous vos rendez-vous et demandes d'information.\n\n- **Ajouter des témoignages**: Vous pouvez ajouter les excellents commentaires de vos clients satisfaits dans la section 'Témoignages' (Testimonials) pour bâtir la confiance avec vos nouveaux visiteurs.\n\n- **Écrire des articles**: Vous voulez partager des nouvelles ou des conseils sur l'environnement? L'onglet 'Articles' (Posts) vous permet d'écrire et de publier du contenu pour votre communauté.\n\n- **Mettre à jour vos infos**: L'onglet 'Paramètres' (Settings) est l'endroit où vous pouvez changer les informations générales de votre site, comme votre numéro de téléphone ou votre courriel de contact.\n\nTout a été pensé pour être simple, alors n'hésitez pas à explorer pour vous approprier le site!",
+        "variables": "Excellente nouvelle! Votre nouvelle application FreshBin est entièrement configurée et prête à fonctionner. Vous n'avez pas besoin de chercher des codes spéciaux ou des clés pour que tout marche. Tout est déjà inclus, vous pouvez donc commencer à accueillir vos clients et à gérer votre entreprise sans plus tarder. Nous avons très hâte de voir votre entreprise grandir!"
+      }
+    },
+    "aiSummaryVersion": 1
+  },
+  "promptHistory": [
+    {
+      "prompt": "Crée moi un site web bien détailler accueillant pour mon entreprise FreshBin couleur vert élégant les différent service et prix service bac de poubelle 15$ part bac 2ieme service esthétique automobile intérieur extérieur 60$ complet 150$ 3ieme service tondre le gazon contrat de 500$ de avril à septembre numéro de téléphone 263-380-4164 email matheo74747@gmail.com marque que mes service est un investissement important pour l’environnement espace personnelle site web élégant",
+      "timestamp": "2026-05-13T01:59:32.193Z",
+      "changeNotes": "Created the complete FreshBin PWA from scratch — elegant dark-green French site for Matheo's trash-bin cleaning, auto detailing, and lawn mowing services. Includes home, services, about (with environmental focus), reservation form, contact form, admin dashboard with full CRUD for services, posts, testimonials, bookings, and contact submissions. All prices and contact info seeded as editable admin settings.\n\nEnriched admin UX: added missing /api/admin/upload-data-uri endpoint (referenced by admin-shell.ejs image upload UI), polished admin sidebar with active route highlighting and improved spacing, added subtle dashboard hero with quick-action shortcuts, enriched stat cards with icons, added improved table action buttons and row hover states. Frontend: added smoother hero gradient overlay tightening, improved focus states on form inputs, ensured all CTAs carry inline color fallbacks. Added SEO metadata for the app.",
+      "generationId": 1097,
+      "filesModified": [
+        "manifest.json",
+        "public/css/admin-styles.css",
+        "public/css/styles.css",
+        "public/js/app.js",
+        "routes.js",
+        "schema.sql",
+        "seed.js",
+        "views/admin-bookings.ejs",
+        "views/admin-posts.ejs",
+        "views/admin-services.ejs",
+        "views/admin-settings.ejs",
+        "views/admin-submissions.ejs",
+        "views/admin-testimonials.ejs",
+        "views/admin.ejs",
+        "views/apropos.ejs",
+        "views/article.ejs",
+        "views/articles.ejs",
+        "views/contact.ejs",
+        "views/index.ejs",
+        "views/partials/admin-shell.ejs",
+        "views/partials/admin-sidebar.ejs",
+        "views/partials/footer.ejs",
+        "views/partials/header.ejs",
+        "views/reservation.ejs",
+        "views/services.ejs"
+      ]
+    }
+  ],
+  "apiVariables": [],
+  "createdAt": "2026-05-13T01:25:48.158Z",
+  "updatedAt": "2026-05-13T02:00:00.636Z",
+  "exportedAt": "2026-05-13T02:06:27.168Z"
+}

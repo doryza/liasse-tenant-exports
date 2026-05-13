@@ -1,0 +1,32 @@
+<%- include('partials/header') %>
+<section class="page-hero">
+  <div class="container">
+    <span class="page-hero-eyebrow">Blog</span>
+    <h1>Articles & Conseils</h1>
+    <p>Conseils écologiques, astuces pratiques et nouvelles de FreshBin.</p>
+  </div>
+</section>
+<section class="section">
+  <div class="container">
+    <% if (typeof posts !== 'undefined' && posts.length > 0) { %>
+      <div class="posts-grid">
+        <% posts.forEach(function(p) { %>
+          <a href="article/<%= p.id %>" class="post-card">
+            <div class="post-img">
+              <img src="<%= p.image_url || 'https://placehold.co/800x500/14532d/ffffff/png?text=Article' %>" alt="<%= p.title %>">
+            </div>
+            <div class="post-body">
+              <% if (p.category) { %><span class="post-tag"><%= p.category %></span><% } %>
+              <h3><%= p.title %></h3>
+              <p><%= truncate(p.content, 160) %></p>
+              <span class="post-date"><%= formatDate(p.created_at) %></span>
+            </div>
+          </a>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <p class="empty-state">Aucun article publié pour le moment. Revenez bientôt!</p>
+    <% } %>
+  </div>
+</section>
+<%- include('partials/footer') %>

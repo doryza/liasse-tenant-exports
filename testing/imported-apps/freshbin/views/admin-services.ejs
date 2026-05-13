@@ -1,0 +1,26 @@
+<%- include('partials/admin-shell', {
+  title: 'Services',
+  moduleKey: 'services',
+  moduleLabel: 'Service',
+  columns: [
+    { key: 'image_url', label: 'Image', type: 'image' },
+    { key: 'name', label: 'Nom' },
+    { key: 'category', label: 'Catégorie' },
+    { key: 'price', label: 'Prix' },
+    { key: 'featured', label: 'En vedette', type: 'bool' },
+    { key: 'published', label: 'Publié', type: 'bool' },
+    { key: 'sort_order', label: 'Ordre' }
+  ],
+  fields: [
+    { name: 'name', label: 'Nom', type: 'text', required: true, placeholder: 'ex: Nettoyage de bacs', description: 'Nom affiché aux clients.' },
+    { name: 'short_description', label: 'Description courte', type: 'text', placeholder: 'Phrase d’accroche', description: 'Affichée sur les cartes de service.' },
+    { name: 'description', label: 'Description complète', type: 'textarea', description: 'Affichée sur la page Services.' },
+    { name: 'price', label: 'Prix', type: 'text', placeholder: 'ex: 15$ par bac', description: 'Texte libre.' },
+    { name: 'category', label: 'Catégorie', type: 'text', placeholder: 'ex: Nettoyage', description: 'Catégorie pour regrouper.' },
+    { name: 'image_url', label: 'Image', type: 'image', description: 'Photo du service (1200×900).' },
+    { name: 'icon', label: 'Icône', type: 'select', options: ['trash','car','leaf','sparkles','tools','default'], description: 'Si pas d’image.' },
+    { name: 'featured', label: 'En vedette (accueil)', type: 'boolean', default: 1, description: 'Cochez pour afficher sur l’accueil.' },
+    { name: 'published', label: 'Publié', type: 'boolean', default: 1, description: 'Décochez pour cacher.' },
+    { name: 'sort_order', label: 'Ordre d’affichage', type: 'number', min: 0, step: 1, description: 'Plus petit = premier.' }
+  ]
+}) %>

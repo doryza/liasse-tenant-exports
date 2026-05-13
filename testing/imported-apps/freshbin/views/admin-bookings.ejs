@@ -1,0 +1,23 @@
+<%- include('partials/admin-shell', {
+  title: 'Réservations',
+  moduleKey: 'bookings',
+  moduleLabel: 'Réservation',
+  columns: [
+    { key: 'created_at', label: 'Reçu le', type: 'date' },
+    { key: 'customer_name', label: 'Client' },
+    { key: 'phone', label: 'Téléphone' },
+    { key: 'service_type', label: 'Service' },
+    { key: 'preferred_date', label: 'Date souhaitée' },
+    { key: 'status', label: 'Statut', type: 'status' }
+  ],
+  fields: [
+    { name: 'customer_name', label: 'Nom du client', type: 'text', required: true, description: 'Nom complet.' },
+    { name: 'email', label: 'Courriel', type: 'email', description: 'Courriel du client.' },
+    { name: 'phone', label: 'Téléphone', type: 'text', required: true, description: 'Numéro à rappeler.' },
+    { name: 'service_type', label: 'Service', type: 'text', description: 'Service demandé.' },
+    { name: 'preferred_date', label: 'Date souhaitée', type: 'text', description: 'Date souhaitée par le client.' },
+    { name: 'address', label: 'Adresse', type: 'text', description: 'Adresse de service.' },
+    { name: 'message', label: 'Message', type: 'textarea', description: 'Détails additionnels.' },
+    { name: 'status', label: 'Statut', type: 'select', options: ['nouveau','confirmé','complété','annulé'], default: 'nouveau', description: 'Suivi du traitement.' }
+  ]
+}) %>

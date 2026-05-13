@@ -1,0 +1,75 @@
+<%- include('partials/header') %>
+<section class="page-hero">
+  <div class="container">
+    <span class="page-hero-eyebrow">Contact</span>
+    <h1><%= (typeof settings!=='undefined' && settings.contact_title) ? settings.contact_title : 'Contactez-nous' %></h1>
+    <p><%= (typeof settings!=='undefined' && settings.contact_subtitle) ? settings.contact_subtitle : 'Une question, une demande de soumission ou simplement envie d’en savoir plus? Écrivez-nous.' %></p>
+  </div>
+</section>
+<section class="section">
+  <div class="container contact-grid">
+    <div class="contact-info">
+      <h2>Coordonnées</h2>
+      <% if (typeof settings!=='undefined' && settings.contact_phone) { %>
+        <div class="contact-item">
+          <div class="ci-icon">📞</div>
+          <div><strong>Téléphone</strong><br><a href="tel:<%= settings.contact_phone %>"><%= settings.contact_phone %></a></div>
+        </div>
+      <% } %>
+      <% if (typeof settings!=='undefined' && settings.contact_email) { %>
+        <div class="contact-item">
+          <div class="ci-icon">✉</div>
+          <div><strong>Courriel</strong><br><a href="mailto:<%= settings.contact_email %>"><%= settings.contact_email %></a></div>
+        </div>
+      <% } %>
+      <% if (typeof settings!=='undefined' && settings.business_address) { %>
+        <div class="contact-item">
+          <div class="ci-icon">📍</div>
+          <div><strong>Zone desservie</strong><br><%= settings.business_address %></div>
+        </div>
+      <% } %>
+      <div class="contact-cta-box">
+        <h3>Demander une réservation</h3>
+        <p>Vous savez déjà ce dont vous avez besoin? Allez directement au formulaire de réservation.</p>
+        <a href="reservation" class="btn-primary" style="background-color:#22c55e;color:#fff">Réserver maintenant</a>
+      </div>
+    </div>
+    <div class="contact-form-wrap">
+      <h2>Envoyez-nous un message</h2>
+      <% if (typeof submitted !== 'undefined' && submitted) { %>
+        <div class="alert-success">✓ Merci! Votre message a été envoyé. Nous vous répondrons sous peu.</div>
+      <% } %>
+      <form id="contactForm" class="form">
+        <label>Nom complet *<input type="text" name="name" required></label>
+        <label>Courriel<input type="email" name="email"></label>
+        <label>Téléphone<input type="tel" name="phone"></label>
+        <label>Sujet<input type="text" name="subject" placeholder="ex: Soumission pour nettoyage de bacs"></label>
+        <label>Message *<textarea name="message" rows="6" required></textarea></label>
+        <button type="submit" class="btn-primary" style="background-color:#22c55e;color:#fff">Envoyer le message</button>
+        <div id="contactStatus" class="form-status"></div>
+      </form>
+    </div>
+  </div>
+</section>
+<script>
+(function(){
+  var f = document.getElementById('contactForm');
+  if (!f) return;
+  f.addEventListener('submit', async function(e){
+    e.preventDefault();
+    var status = document.getElementById('contactStatus');
+    var btn = f.querySelector('button[type=submit]');
+    btn.disabled = true; btn.textContent = 'Envoi en cours...';
+    status.textContent = '';
+    var fd = new FormData(f);
+    var data = {}; fd.forEach(function(v,k){ data[k]=v; });
+    try {
+      var res = await fetch('api/contact', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) });
+      var j = await res.json();
+      if (res.ok && j.success) { window.location.href = 'contact?submitted=1'; }
+      else { status.textContent = j.error || 'Erreur lors de l’envoi.'; status.className = 'form-status error'; btn.disabled = false; btn.textContent = 'Envoyer le message'; }
+    } catch(err) { status.textContent = 'Erreur de connexion. Réessayez.'; status.className = 'form-status error'; btn.disabled = false; btn.textContent = 'Envoyer le message'; }
+  });
+})();
+</script>
+<%- include('partials/footer') %>

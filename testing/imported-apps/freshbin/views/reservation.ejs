@@ -1,0 +1,67 @@
+<%- include('partials/header') %>
+<section class="page-hero">
+  <div class="container">
+    <span class="page-hero-eyebrow">Réservation</span>
+    <h1><%= (typeof settings!=='undefined' && settings.reservation_title) ? settings.reservation_title : 'Demande de réservation' %></h1>
+    <p><%= (typeof settings!=='undefined' && settings.reservation_subtitle) ? settings.reservation_subtitle : 'Remplissez le formulaire et nous vous contacterons.' %></p>
+  </div>
+</section>
+<section class="section">
+  <div class="container narrow">
+    <% if (typeof submitted !== 'undefined' && submitted) { %>
+      <div class="alert-success big">
+        <h2>✓ Demande reçue!</h2>
+        <p>Merci pour votre demande de réservation. Nous vous contacterons dans les plus brefs délais pour confirmer votre rendez-vous.</p>
+        <a href="." class="btn-secondary">Retour à l’accueil</a>
+      </div>
+    <% } else { %>
+      <form id="resForm" class="form card-form">
+        <h2>Vos informations</h2>
+        <div class="form-row">
+          <label>Nom complet *<input type="text" name="customer_name" required></label>
+          <label>Téléphone *<input type="tel" name="phone" required placeholder="514-555-1234"></label>
+        </div>
+        <label>Courriel<input type="email" name="email"></label>
+        <h2>Service demandé</h2>
+        <label>Service *
+          <select name="service_type" required>
+            <option value="">-- Choisissez un service --</option>
+            <% if (typeof allServices !== 'undefined' && allServices.length > 0) { %>
+              <% allServices.forEach(function(s) { %>
+                <option value="<%= s.name %>" <%= (typeof preselected !== 'undefined' && preselected === s.name) ? 'selected' : '' %>><%= s.name %><% if (s.price) { %> — <%= s.price %><% } %></option>
+              <% }); %>
+            <% } %>
+            <option value="Autre / Personnalisé">Autre / Personnalisé</option>
+          </select>
+        </label>
+        <label>Date souhaitée<input type="text" name="preferred_date" placeholder="ex: Semaine du 15 juin"></label>
+        <label>Adresse du service<input type="text" name="address" placeholder="Adresse complète"></label>
+        <label>Message ou détails additionnels<textarea name="message" rows="4" placeholder="Nombre de bacs, type de véhicule, particularités, etc."></textarea></label>
+        <p class="note">* Champs obligatoires. Vous recevrez une confirmation par téléphone ou courriel.</p>
+        <button type="submit" class="btn-primary big" style="background-color:#22c55e;color:#fff">Envoyer ma demande</button>
+        <div id="resStatus" class="form-status"></div>
+      </form>
+    <% } %>
+  </div>
+</section>
+<script>
+(function(){
+  var f = document.getElementById('resForm');
+  if (!f) return;
+  f.addEventListener('submit', async function(e){
+    e.preventDefault();
+    var status = document.getElementById('resStatus');
+    var btn = f.querySelector('button[type=submit]');
+    btn.disabled = true; btn.textContent = 'Envoi en cours...';
+    var fd = new FormData(f);
+    var data = {}; fd.forEach(function(v,k){ data[k]=v; });
+    try {
+      var res = await fetch('api/reservation', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) });
+      var j = await res.json();
+      if (res.ok && j.success) { window.location.href = 'reservation?submitted=1'; }
+      else { status.textContent = j.error || 'Erreur.'; status.className = 'form-status error'; btn.disabled=false; btn.textContent='Envoyer ma demande'; }
+    } catch(err) { status.textContent = 'Erreur de connexion. Réessayez.'; status.className = 'form-status error'; btn.disabled=false; btn.textContent='Envoyer ma demande'; }
+  });
+})();
+</script>
+<%- include('partials/footer') %>

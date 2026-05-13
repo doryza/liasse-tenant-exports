@@ -1,0 +1,46 @@
+<%- include('partials/header') %>
+<section class="page-hero">
+  <div class="container">
+    <span class="page-hero-eyebrow">Services</span>
+    <h1>Nos services</h1>
+    <p>Découvrez nos solutions de nettoyage professionnel et écologique.</p>
+  </div>
+</section>
+<section class="section">
+  <div class="container">
+    <% if (typeof allServices !== 'undefined' && allServices.length > 0) { %>
+      <div class="services-list">
+        <% allServices.forEach(function(s, idx) { %>
+          <article class="service-row <%= idx % 2 === 1 ? 'reverse' : '' %>">
+            <div class="service-row-img">
+              <img src="<%= s.image_url || 'https://placehold.co/800x600/14532d/ffffff/png?text=Service' %>" alt="<%= s.name %>">
+            </div>
+            <div class="service-row-body">
+              <% if (s.category) { %><span class="eyebrow"><%= s.category %></span><% } %>
+              <h2><%= s.name %></h2>
+              <p class="lead"><%= s.short_description || '' %></p>
+              <% if (s.description) { %><p><%= s.description %></p><% } %>
+              <div class="service-row-foot">
+                <span class="big-price"><%= s.price || '' %></span>
+                <a href="reservation?service=<%= encodeURIComponent(s.name) %>" class="btn-primary" style="background-color:#22c55e;color:#fff">Réserver ce service</a>
+              </div>
+            </div>
+          </article>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <p class="empty-state">Les services seront ajoutés bientôt. Revenez sous peu!</p>
+    <% } %>
+  </div>
+</section>
+<section class="section section-dark">
+  <div class="container center">
+    <h2>Besoin d’un service personnalisé?</h2>
+    <p>Contactez-nous pour discuter de vos besoins spécifiques.</p>
+    <div class="cta-actions">
+      <a href="contact" class="btn-primary" style="background-color:#22c55e;color:#fff">Nous contacter</a>
+      <a href="reservation" class="btn-secondary">Faire une réservation</a>
+    </div>
+  </div>
+</section>
+<%- include('partials/footer') %>

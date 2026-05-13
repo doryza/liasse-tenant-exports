@@ -1,0 +1,348 @@
+{
+  "exportedAt": "2026-05-13T02:06:27.178Z",
+  "tables": {
+    "admin_invites": {
+      "columns": [
+        "id",
+        "email",
+        "token",
+        "role",
+        "status",
+        "invited_by",
+        "expires_at",
+        "accepted_at",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_webauthn_credentials": {
+      "columns": [
+        "id",
+        "admin_user_id",
+        "credential_id",
+        "public_key",
+        "counter",
+        "device_name",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_users": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "password_hash",
+        "display_name",
+        "role",
+        "active",
+        "activation_token",
+        "invited_by",
+        "invite_token",
+        "invite_expires_at",
+        "last_login_at",
+        "is_active",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_settings": {
+      "columns": [
+        "key",
+        "value",
+        "updated_at"
+      ],
+      "totalRows": 49,
+      "sampleRows": [
+        {
+          "key": "_p_hero_image_url",
+          "value": "https://res.cloudinary.com/duhp69meg/image/upload/v1778636418/tapavis_tenant_freshbin/build_freshbin_1778636418777.png",
+          "updated_at": "2026-05-13T01:59:31.274Z"
+        },
+        {
+          "key": "_p_about_image_url",
+          "value": "https://res.cloudinary.com/duhp69meg/image/upload/v1778636432/tapavis_tenant_freshbin/build_freshbin_1778636432276.png",
+          "updated_at": "2026-05-13T01:59:31.278Z"
+        },
+        {
+          "key": "_p_env_image_url",
+          "value": "https://res.cloudinary.com/duhp69meg/image/upload/v1778636426/tapavis_tenant_freshbin/build_freshbin_1778636426837.png",
+          "updated_at": "2026-05-13T01:59:31.281Z"
+        },
+        {
+          "key": "hero_title",
+          "value": "Nettoyage des essentiels, pour un quotidien plus sain",
+          "updated_at": "2026-05-13T01:59:31.285Z"
+        },
+        {
+          "key": "hero_subtitle",
+          "value": "FreshBin offre des services de nettoyage professionnels avec une approche écologique. Investissez dans votre confort et dans la planète.",
+          "updated_at": "2026-05-13T01:59:31.288Z"
+        },
+        {
+          "key": "hero_cta",
+          "value": "Réserver un service",
+          "updated_at": "2026-05-13T01:59:31.292Z"
+        },
+        {
+          "key": "tagline",
+          "value": "Un service propre. Une planète plus saine.",
+          "updated_at": "2026-05-13T01:59:31.295Z"
+        },
+        {
+          "key": "about_title",
+          "value": "Un investissement important pour l’environnement",
+          "updated_at": "2026-05-13T01:59:31.300Z"
+        },
+        {
+          "key": "about_intro",
+          "value": "FreshBin n’est pas seulement une entreprise de nettoyage. C’est un engagement envers votre espace personnel et envers notre planète.",
+          "updated_at": "2026-05-13T01:59:31.303Z"
+        },
+        {
+          "key": "about_text",
+          "value": "Chaque bac de poubelle nettoyé, chaque véhicule détaillé et chaque pelouse entretenue représente un pas vers un environnement plus sain. Nous utilisons des produits respectueux de l’environnement et des méthodes éco-responsables. Choisir FreshBin, c’est choisir un service de qualité tout en investissant dans la durabilité de notre milieu de vie.",
+          "updated_at": "2026-05-13T01:59:31.306Z"
+        }
+      ]
+    },
+    "site_visits": {
+      "columns": [
+        "id",
+        "path",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "posts": {
+      "columns": [
+        "id",
+        "title",
+        "content",
+        "image_url",
+        "category",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Pourquoi nettoyer ses bacs à ordures?",
+          "content": "Les bacs à ordures accumulent bactéries, moisissures et insectes. Un nettoyage professionnel régulier prévient les odeurs, élimine les pathogènes et prolonge la durée de vie de vos bacs. C’est un geste simple pour la santé de votre famille et de votre environnement immédiat.",
+          "image_url": null,
+          "category": "Conseils",
+          "published": 1,
+          "created_at": "2026-05-13T01:59:31.416Z",
+          "updated_at": "2026-05-13T01:59:31.416Z"
+        },
+        {
+          "id": 2,
+          "title": "Notre approche écologique chez FreshBin",
+          "content": "Chez FreshBin, nous croyons qu’offrir un service de qualité ne doit pas se faire au détriment de l’environnement. C’est pourquoi nous utilisons exclusivement des produits biodégradables, récupérons l’eau lorsque c’est possible et privilégions des méthodes à faible consommation énergétique.",
+          "image_url": null,
+          "category": "Écologie",
+          "published": 1,
+          "created_at": "2026-05-13T01:59:31.420Z",
+          "updated_at": "2026-05-13T01:59:31.420Z"
+        },
+        {
+          "id": 3,
+          "title": "Comment préparer son véhicule pour un détaillage?",
+          "content": "Avant votre rendez-vous, retirez vos effets personnels et videz le coffre. Un véhicule dégagé permet à notre équipe de travailler efficacement et d’offrir le meilleur résultat possible. Voici quelques conseils pratiques.",
+          "image_url": null,
+          "category": "Conseils",
+          "published": 1,
+          "created_at": "2026-05-13T01:59:31.423Z",
+          "updated_at": "2026-05-13T01:59:31.423Z"
+        },
+        {
+          "id": 4,
+          "title": "Saison de tonte : nos astuces pour une pelouse en santé",
+          "content": "Une pelouse en santé commence par une bonne fréquence de tonte. Trop courte, elle s’assèche; trop longue, elle s’étouffe. Voici nos meilleures pratiques pour maintenir un gazon vert et résistant tout l’été.",
+          "image_url": null,
+          "category": "Pelouse",
+          "published": 1,
+          "created_at": "2026-05-13T01:59:31.427Z",
+          "updated_at": "2026-05-13T01:59:31.427Z"
+        }
+      ]
+    },
+    "services": {
+      "columns": [
+        "id",
+        "name",
+        "short_description",
+        "description",
+        "price",
+        "category",
+        "image_url",
+        "icon",
+        "featured",
+        "published",
+        "sort_order",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "name": "Nettoyage de bacs de poubelle",
+          "short_description": "Désinfection complète et désodorisation de vos bacs résidentiels.",
+          "description": "Nous nettoyons et désinfectons en profondeur vos bacs à ordures et de recyclage avec de l’eau à haute pression et des produits biodégradables. Élimine les bactéries, les odeurs et les résidus. Le service inclut le rinçage, la désinfection complète, le séchage et l’application d’un agent désodorisant naturel.",
+          "price": "15$ par bac",
+          "category": "Nettoyage",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778636448/tapavis_tenant_freshbin/build_freshbin_1778636448817.png",
+          "icon": "trash",
+          "featured": 1,
+          "published": 1,
+          "sort_order": 1,
+          "created_at": "2026-05-13T01:59:31.367Z",
+          "updated_at": "2026-05-13T01:59:31.367Z"
+        },
+        {
+          "id": 2,
+          "name": "Esthétique automobile - Intérieur ou Extérieur",
+          "short_description": "Détaillage professionnel de votre véhicule, intérieur ou extérieur.",
+          "description": "Service de détaillage complet au choix : nettoyage intérieur (aspirateur, tissus, plastiques, vitres) ou extérieur (lavage à la main, cire, jantes, pneus). Un choix idéal pour redonner de l’éclat à votre voiture.",
+          "price": "60$",
+          "category": "Automobile",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778636434/tapavis_tenant_freshbin/build_freshbin_1778636434162.png",
+          "icon": "car",
+          "featured": 1,
+          "published": 1,
+          "sort_order": 2,
+          "created_at": "2026-05-13T01:59:31.370Z",
+          "updated_at": "2026-05-13T01:59:31.370Z"
+        },
+        {
+          "id": 3,
+          "name": "Esthétique automobile - Forfait Complet",
+          "short_description": "Détaillage complet intérieur ET extérieur de votre véhicule.",
+          "description": "Le grand luxe pour votre véhicule. Nous combinons le détaillage intérieur et extérieur pour un résultat impeccable. Inclut shampooing des tapis et sièges, traitement des plastiques, lavage et cire de carrosserie, nettoyage des jantes et finition complète.",
+          "price": "150$ complet",
+          "category": "Automobile",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778636434/tapavis_tenant_freshbin/build_freshbin_1778636434162.png",
+          "icon": "car",
+          "featured": 1,
+          "published": 1,
+          "sort_order": 3,
+          "created_at": "2026-05-13T01:59:31.375Z",
+          "updated_at": "2026-05-13T01:59:31.375Z"
+        },
+        {
+          "id": 4,
+          "name": "Tonte de gazon - Contrat saisonnier",
+          "short_description": "Contrat saisonnier d’entretien de pelouse, d’avril à septembre.",
+          "description": "Contrat saisonnier pour l’entretien complet de votre pelouse pendant toute la saison estivale. Tonte régulière, finition aux endroits difficiles d’accès et ramassage si désiré. Une pelouse impeccable du printemps à l’automne sans soucis.",
+          "price": "500$ (avril à septembre)",
+          "category": "Pelouse",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778636433/tapavis_tenant_freshbin/build_freshbin_1778636433270.png",
+          "icon": "leaf",
+          "featured": 1,
+          "published": 1,
+          "sort_order": 4,
+          "created_at": "2026-05-13T01:59:31.379Z",
+          "updated_at": "2026-05-13T01:59:31.379Z"
+        }
+      ]
+    },
+    "testimonials": {
+      "columns": [
+        "id",
+        "author",
+        "role",
+        "content",
+        "rating",
+        "avatar_url",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "author": "Sophie Bergeron",
+          "role": "Cliente résidentielle",
+          "content": "Mes bacs étaient devenus impossibles à approcher tellement les odeurs étaient fortes. Après le passage de FreshBin, c’est comme s’ils étaient neufs! Service impeccable.",
+          "rating": 5,
+          "avatar_url": null,
+          "published": 1,
+          "created_at": "2026-05-13T01:59:31.392Z",
+          "updated_at": "2026-05-13T01:59:31.392Z"
+        },
+        {
+          "id": 2,
+          "author": "Marc Tremblay",
+          "role": "Propriétaire",
+          "content": "J’ai pris le forfait complet pour ma voiture et le résultat dépasse mes attentes. Travail soigné, ponctuel et abordable. Je recommande sans hésiter.",
+          "rating": 5,
+          "avatar_url": null,
+          "published": 1,
+          "created_at": "2026-05-13T01:59:31.397Z",
+          "updated_at": "2026-05-13T01:59:31.397Z"
+        },
+        {
+          "id": 3,
+          "author": "Julie Lavoie",
+          "role": "Cliente saisonnière",
+          "content": "Le contrat de tonte de gazon m’a sauvé l’été! Plus jamais à m’en occuper, ma pelouse est toujours impeccable. Un vrai investissement de tranquillité.",
+          "rating": 5,
+          "avatar_url": null,
+          "published": 1,
+          "created_at": "2026-05-13T01:59:31.405Z",
+          "updated_at": "2026-05-13T01:59:31.405Z"
+        },
+        {
+          "id": 4,
+          "author": "François Dubé",
+          "role": "Client fidèle",
+          "content": "J’apprécie particulièrement l’approche écologique de FreshBin. Savoir que les produits utilisés sont biodégradables fait toute la différence pour ma famille.",
+          "rating": 5,
+          "avatar_url": null,
+          "published": 1,
+          "created_at": "2026-05-13T01:59:31.410Z",
+          "updated_at": "2026-05-13T01:59:31.410Z"
+        }
+      ]
+    },
+    "bookings": {
+      "columns": [
+        "id",
+        "customer_name",
+        "email",
+        "phone",
+        "service_type",
+        "preferred_date",
+        "address",
+        "message",
+        "status",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "form_submissions": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "phone",
+        "subject",
+        "message",
+        "status",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    }
+  }
+}

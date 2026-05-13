@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Messages — FreshBin Admin</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body>
+<%- include('partials/admin-sidebar') %>
+<main class="admin-main">
+  <header class="admin-page-header">
+    <div>
+      <h1>✉ Messages de contact</h1>
+      <p>Tous les messages reçus via le formulaire de contact.</p>
+    </div>
+  </header>
+  <div class="admin-toolbar">
+    <input type="text" id="searchInput" placeholder="🔍 Rechercher un message...">
+  </div>
+  <div id="loadingMsg" class="muted">Chargement...</div>
+  <div id="emptyMsg" style="display:none" class="empty-admin"><div class="empty-icon">📭</div>Aucun message reçu pour le moment.</div>
+  <table class="admin-table" id="itemsTable" style="display:none">
+    <thead><tr><th>Date</th><th>Nom</th><th>Courriel</th><th>Téléphone</th><th>Sujet</th><th>Statut</th><th>Actions</th></tr></thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+</main>
+<div class="modal" id="viewModal" style="display:none">
+  <div class="modal-content">
+    <div class="modal-head"><h2 id="vmTitle">Message</h2><button class="modal-close" onclick="closeView()" type="button">✕</button></div>
+    <div id="vmBody" class="modal-body"></div>
+    <div class="modal-actions">
+      <select id="vmStatus" class="input"><option value="nouveau">nouveau</option><option value="lu">lu</option><option value="traité">traité</option><option value="archivé">archivé</option></select>
+      <button class="btn-primary" onclick="updateStatus()" type="button">Mettre à jour</button>
+    </div>
+  </div>
+</div>
+<script>
+var items = []; var currentId = null;
+function esc(s){ if(!s)return ''; return String(s).replace(/[&<>"']/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];}); }
+function fmtDate(d){ try{ return new Date(d).toLocaleString('fr-CA'); }catch(e){return d;} }
+async function load(){
+  document.getElementById('loadingMsg').style.display='block';
+  try{
+    var res = await fetch('api/admin/submissions');
+    var data = await res.json();
+    items = data.submissions || [];
+    document.getElementById('loadingMsg').style.display='none';
+    render();
+  }catch(e){ document.getElementById('loadingMsg').textContent='Erreur.'; }
+}
+function render(){
+  var q = (document.getElementById('searchInput').value||'').toLowerCase();
+  var f = q ? items.filter(function(i){ return JSON.stringify(i).toLowerCase().indexOf(q)>=0; }) : items;
+  if(f.length===0){ document.getElementById('itemsTable').style.display='none'; document.getElementById('emptyMsg').style.display='block'; return; }
+  document.getElementById('emptyMsg').style.display='none';
+  document.getElementById('itemsTable').style.display='table';
+  document.getElementById('tableBody').innerHTML = f.map(function(it){
+    return '<tr><td>'+fmtDate(it.created_at)+'</td><td><strong>'+esc(it.name)+'</strong></td><td>'+esc(it.email||'')+'</td><td>'+esc(it.phone||'')+'</td><td>'+esc(it.subject||'')+'</td><td><span class="badge badge-'+esc(it.status)+'">'+esc(it.status)+'</span></td><td class="row-actions"><button class="btn-sm btn-primary" onclick="viewMsg('+it.id+')">Voir</button> <button class="btn-sm btn-danger" onclick="delMsg('+it.id+')">Supprimer</button></td></tr>';
+  }).join('');
+}
+window.viewMsg = function(id){
+  var it = items.find(function(i){return i.id===id;}); if(!it) return;
+  currentId = id;
+  document.getElementById('vmTitle').textContent = 'Message de ' + it.name;
+  document.getElementById('vmBody').innerHTML = '<p><strong>Date:</strong> '+fmtDate(it.created_at)+'</p><p><strong>Courriel:</strong> '+esc(it.email||'')+'</p><p><strong>Téléphone:</strong> '+esc(it.phone||'')+'</p><p><strong>Sujet:</strong> '+esc(it.subject||'')+'</p><p><strong>Message:</strong></p><div class="msg-content">'+esc(it.message||'').replace(/\n/g,'<br>')+'</div>';
+  document.getElementById('vmStatus').value = it.status || 'nouveau';
+  document.getElementById('viewModal').style.display='flex';
+};
+window.closeView = function(){ document.getElementById('viewModal').style.display='none'; currentId=null; };
+window.updateStatus = async function(){
+  if(!currentId) return;
+  var st = document.getElementById('vmStatus').value;
+  try{ await fetch('api/admin/submissions/'+currentId, {method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:st})}); closeView(); load(); }
+  catch(e){ alert('Erreur'); }
+};
+window.delMsg = async function(id){ if(!confirm('Supprimer ce message?')) return; try{ await fetch('api/admin/submissions/'+id,{method:'DELETE'}); load(); }catch(e){ alert('Erreur'); } };
+document.getElementById('searchInput').addEventListener('input', render);
+load();
+</script>
+</body>
+</html>

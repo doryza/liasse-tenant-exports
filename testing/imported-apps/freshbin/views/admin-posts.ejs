@@ -1,0 +1,19 @@
+<%- include('partials/admin-shell', {
+  title: 'Articles',
+  moduleKey: 'posts',
+  moduleLabel: 'Article',
+  columns: [
+    { key: 'image_url', label: 'Image', type: 'image' },
+    { key: 'title', label: 'Titre' },
+    { key: 'category', label: 'Catégorie' },
+    { key: 'published', label: 'Publié', type: 'bool' },
+    { key: 'created_at', label: 'Créé le', type: 'date' }
+  ],
+  fields: [
+    { name: 'title', label: 'Titre', type: 'text', required: true, placeholder: 'Titre de l’article', description: 'Affiché en haut de l’article.' },
+    { name: 'content', label: 'Contenu', type: 'textarea', description: 'Texte complet de l’article.' },
+    { name: 'image_url', label: 'Image principale', type: 'image', description: 'Image en vedette (1200×630).' },
+    { name: 'category', label: 'Catégorie', type: 'text', placeholder: 'ex: Conseils, Écologie', description: 'Catégorie de l’article.' },
+    { name: 'published', label: 'Publié', type: 'boolean', default: 1, description: 'Décochez pour brouillon.' }
+  ]
+}) %>
