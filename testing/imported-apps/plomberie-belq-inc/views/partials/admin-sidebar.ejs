@@ -7,8 +7,9 @@
     <a href="admin" class="<%= (typeof currentNav !== 'undefined' && currentNav === 'dashboard') ? 'active' : '' %>"><span>📊 Tableau de bord</span></a>
     <a href="admin/services" class="<%= (typeof currentNav !== 'undefined' && currentNav === 'services') ? 'active' : '' %>"><span>🔧 Services</span></a>
     <a href="admin/posts" class="<%= (typeof currentNav !== 'undefined' && currentNav === 'posts') ? 'active' : '' %>"><span>📝 Articles</span></a>
-    <a href="admin/callbacks" class="<%= (typeof currentNav !== 'undefined' && currentNav === 'callbacks') ? 'active' : '' %>"><span>📞 Rappels SMS</span><% if (typeof pendingCounts !== 'undefined' && pendingCounts.callbacks > 0) { %><span class="nav-badge"><%= pendingCounts.callbacks %></span><% } %></a>
+    <a href="admin/callbacks" class="<%= (typeof currentNav !== 'undefined' && currentNav === 'callbacks') ? 'active' : '' %>"><span>📞 Demandes de rappel SMS</span><% if (typeof pendingCounts !== 'undefined' && pendingCounts.callbacks > 0) { %><span class="nav-badge"><%= pendingCounts.callbacks %></span><% } %></a>
     <a href="admin/contacts" class="<%= (typeof currentNav !== 'undefined' && currentNav === 'contacts') ? 'active' : '' %>"><span>✉️ Messages</span><% if (typeof pendingCounts !== 'undefined' && pendingCounts.contacts > 0) { %><span class="nav-badge"><%= pendingCounts.contacts %></span><% } %></a>
+    <a href="admin/settings" class="<%= (typeof currentNav !== 'undefined' && currentNav === 'settings') ? 'active' : '' %>"><span>⚙️ Réglages</span></a>
     <div class="admin-nav-divider"></div>
     <a href="." target="_blank"><span>🌐 Voir le site</span></a>
     <a href="admin/logout"><span>🚪 Déconnexion</span></a>

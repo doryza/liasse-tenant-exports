@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Réglages · Admin</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body class="admin-body">
+<%- include('partials/admin-sidebar') %>
+<main class="admin-main">
+  <header class="admin-header">
+    <button class="admin-mobile-toggle" id="adminToggle" aria-label="Menu" type="button">☰</button>
+    <h1>Réglages</h1>
+    <span class="admin-user"><span class="admin-user-avatar"><%= (adminUser.name || 'A').charAt(0).toUpperCase() %></span><span class="admin-user-name"><%= adminUser.name %></span></span>
+  </header>
+  <div class="admin-content">
+    <p class="text-muted" style="margin-bottom:18px">Les modifications sont enregistrées séparément par champ. Le numéro de rappel par SMS reçoit automatiquement un texto à chaque nouvelle demande soumise par un visiteur.</p>
+
+    <section class="dash-card" style="max-width:720px">
+      <div class="dash-card-head"><h2>📞 Notifications de rappel par SMS</h2></div>
+      <form id="form_sms_callback_phone" class="settings-form" data-key="sms_callback_phone">
+        <div class="form-row">
+          <label for="f_sms_callback_phone">Numéro qui reçoit les demandes par texto</label>
+          <input id="f_sms_callback_phone" name="value" type="tel" inputmode="tel" placeholder="+15145550123" autocomplete="off">
+          <p class="text-muted" style="margin-top:6px">Format conseillé&nbsp;: <code>+15145550123</code>. Ce numéro recevra un SMS dès qu'un visiteur soumet le formulaire « Demande de rappel par SMS ». Si vide, c'est le téléphone Click-to-call ci-dessous qui sera utilisé.</p>
+        </div>
+        <div class="form-actions"><button type="submit" class="btn btn-primary" style="background-color:#1b1d83;color:#fff">Enregistrer</button><span class="settings-status" aria-live="polite"></span></div>
+      </form>
+    </section>
+
+    <section class="dash-card" style="max-width:720px;margin-top:22px">
+      <div class="dash-card-head"><h2>☎️ Click-to-call &amp; coordonnées</h2></div>
+      <form id="form_contact_phone" class="settings-form" data-key="contact_phone">
+        <div class="form-row">
+          <label for="f_contact_phone">Téléphone affiché sur le site</label>
+          <input id="f_contact_phone" name="value" type="tel" placeholder="514-555-0123" autocomplete="off">
+          <p class="text-muted" style="margin-top:6px">Affiché dans l'entête, le pied de page et utilisé par le bouton flottant Click-to-call.</p>
+        </div>
+        <div class="form-actions"><button type="submit" class="btn btn-primary" style="background-color:#1b1d83;color:#fff">Enregistrer</button><span class="settings-status" aria-live="polite"></span></div>
+      </form>
+
+      <form id="form_contact_email" class="settings-form" data-key="contact_email" style="margin-top:18px">
+        <div class="form-row">
+          <label for="f_contact_email">Courriel de notification</label>
+          <input id="f_contact_email" name="value" type="email" placeholder="admin@exemple.com" autocomplete="off">
+          <p class="text-muted" style="margin-top:6px">Reçoit une copie des demandes de rappel et des messages du formulaire de contact.</p>
+        </div>
+        <div class="form-actions"><button type="submit" class="btn btn-primary" style="background-color:#1b1d83;color:#fff">Enregistrer</button><span class="settings-status" aria-live="polite"></span></div>
+      </form>
+
+      <form id="form_business_address" class="settings-form" data-key="business_address" style="margin-top:18px">
+        <div class="form-row">
+          <label for="f_business_address">Adresse</label>
+          <input id="f_business_address" name="value" type="text" placeholder="123 rue Example, Ville, QC" autocomplete="off">
+        </div>
+        <div class="form-actions"><button type="submit" class="btn btn-primary" style="background-color:#1b1d83;color:#fff">Enregistrer</button><span class="settings-status" aria-live="polite"></span></div>
+      </form>
+    </section>
+
+    <section class="dash-card" style="max-width:720px;margin-top:22px">
+      <div class="dash-card-head"><h2>🏢 Identité de l'entreprise</h2></div>
+      <form id="form_business_name" class="settings-form" data-key="business_name">
+        <div class="form-row">
+          <label for="f_business_name">Nom de l'entreprise</label>
+          <input id="f_business_name" name="value" type="text" placeholder="Plomberie Belq Inc" autocomplete="off">
+        </div>
+        <div class="form-actions"><button type="submit" class="btn btn-primary" style="background-color:#1b1d83;color:#fff">Enregistrer</button><span class="settings-status" aria-live="polite"></span></div>
+      </form>
+    </section>
+  </div>
+</main>
+<script>
+(function(){
+  var forms = document.querySelectorAll('.settings-form');
+  function loadAll(){
+    fetch('api/admin/settings').then(function(r){ return r.json(); }).then(function(json){
+      var s = (json && json.settings) || {};
+      forms.forEach(function(f){
+        var k = f.getAttribute('data-key');
+        var input = f.querySelector('input');
+        if (input && s[k] != null) input.value = s[k];
+      });
+    }).catch(function(){});
+  }
+  forms.forEach(function(f){
+    f.addEventListener('submit', async function(e){
+      e.preventDefault();
+      var k = f.getAttribute('data-key');
+      var input = f.querySelector('input');
+      var status = f.querySelector('.settings-status');
+      var btn = f.querySelector('button[type="submit"]');
+      var orig = btn.textContent;
+      btn.disabled = true; btn.textContent = '…';
+      status.textContent = '';
+      try {
+        var res = await fetch('api/admin/settings', { method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ key: k, value: input.value || '' }) });
+        var json = await res.json();
+        if (!res.ok) throw new Error(json.error || 'Erreur');
+        status.textContent = '✓ Enregistré';
+        status.style.color = '#065f46';
+      } catch (err) {
+        status.textContent = '✗ ' + (err.message || 'Erreur');
+        status.style.color = '#991b1b';
+      } finally {
+        btn.disabled = false; btn.textContent = orig;
+        setTimeout(function(){ status.textContent = ''; }, 3500);
+      }
+    });
+  });
+  loadAll();
+  var t = document.getElementById('adminToggle');
+  var sb = document.getElementById('adminSidebar');
+  if (t && sb) t.addEventListener('click', function(){ sb.classList.toggle('open'); });
+})();
+</script>
+<style>
+.settings-form{padding-bottom:6px}
+.settings-form + .settings-form{border-top:1px solid var(--border);padding-top:18px}
+.form-row label{display:block;font-weight:600;margin-bottom:6px;color:var(--text);font-size:.92rem}
+.form-row input{width:100%;padding:10px 12px;border:1px solid var(--border-strong);border-radius:8px;font-size:.95rem;font-family:inherit;background:var(--white);color:var(--text)}
+.form-row input:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(27,29,131,.18)}
+.form-actions{display:flex;align-items:center;gap:12px;margin-top:10px}
+.settings-status{font-size:.9rem;font-weight:600}
+code{background:#f4f5fa;padding:1px 6px;border-radius:4px;font-size:.85em}
+</style>
+</body>
+</html>

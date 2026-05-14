@@ -8,10 +8,10 @@ module.exports = function(services) {
 
   const T = {
     fr: {
-      nav_home: 'Accueil', nav_services: 'Services', nav_callback: 'Rappel SMS', nav_contact: 'Contact', nav_login: 'Connexion', nav_account: 'Mon compte',
+      nav_home: 'Accueil', nav_services: 'Services', nav_callback: 'Demande de rappel par SMS', nav_contact: 'Contact', nav_login: 'Connexion', nav_account: 'Mon compte',
       call_now: 'Appeler maintenant', hero_cta_callback: 'Demander un rappel', hero_cta_services: 'Voir nos services',
       services_title: 'Nos services', services_subtitle: 'Plomberie résidentielle et commerciale',
-      callback_title: 'Demande de rappel par SMS', callback_subtitle: 'Laissez-nous votre numéro et nous vous rappellerons rapidement par texto.',
+      callback_title: 'Demande de rappel par SMS', callback_subtitle: 'Remplir le formulaire et nous recevrons votre demande par texto immédiatement. Nous communiquerons avec vous dès la prochaine opportunité.',
       field_name: 'Nom complet', field_phone: 'Numéro de téléphone', field_email: 'Courriel', field_message: 'Votre message',
       field_preferred_time: 'Moment préféré pour le rappel', field_issue: 'Description du problème',
       btn_submit: 'Envoyer', btn_send_callback: 'Demander un rappel', btn_send_message: 'Envoyer le message',
@@ -29,14 +29,14 @@ module.exports = function(services) {
       cta_title: 'Besoin d\'un plombier?', cta_subtitle: 'Appelez-nous directement ou demandez un rappel par texto.',
       blog_title: 'Conseils et nouvelles', posts_read_more: 'Lire la suite',
       enable_notifications: 'Activer les notifications',
-      callback_thanks_title: 'Demande reçue!', callback_thanks_msg: 'Notre équipe vous rappellera dans les plus brefs délais.',
+      callback_thanks_title: 'Demande reçue!', callback_thanks_msg: 'Nous avons reçu votre demande par texto et communiquerons avec vous dès la prochaine opportunité.',
       contact_thanks_title: 'Message envoyé!', contact_thanks_msg: 'Nous vous répondrons sous peu.'
     },
     en: {
-      nav_home: 'Home', nav_services: 'Services', nav_callback: 'SMS Callback', nav_contact: 'Contact', nav_login: 'Sign In', nav_account: 'My Account',
+      nav_home: 'Home', nav_services: 'Services', nav_callback: 'SMS Callback Request', nav_contact: 'Contact', nav_login: 'Sign In', nav_account: 'My Account',
       call_now: 'Call Now', hero_cta_callback: 'Request a Callback', hero_cta_services: 'See Our Services',
       services_title: 'Our Services', services_subtitle: 'Residential and commercial plumbing',
-      callback_title: 'SMS Callback Request', callback_subtitle: 'Leave us your number and we will text you back quickly.',
+      callback_title: 'SMS Callback Request', callback_subtitle: 'Fill out the form and we will receive your request by text immediately. We will get back to you at the next opportunity.',
       field_name: 'Full Name', field_phone: 'Phone Number', field_email: 'Email', field_message: 'Your Message',
       field_preferred_time: 'Preferred Callback Time', field_issue: 'Describe the Issue',
       btn_submit: 'Submit', btn_send_callback: 'Request Callback', btn_send_message: 'Send Message',
@@ -54,7 +54,7 @@ module.exports = function(services) {
       cta_title: 'Need a plumber?', cta_subtitle: 'Call us directly or request a callback by text.',
       blog_title: 'Tips & News', posts_read_more: 'Read more',
       enable_notifications: 'Enable notifications',
-      callback_thanks_title: 'Request received!', callback_thanks_msg: 'Our team will call you back shortly.',
+      callback_thanks_title: 'Request received!', callback_thanks_msg: 'We received your request by text and will get back to you at the next opportunity.',
       contact_thanks_title: 'Message sent!', contact_thanks_msg: 'We will reply shortly.'
     }
   };
@@ -159,6 +159,7 @@ module.exports = function(services) {
       const issue = (b.issue || '').toString().trim();
       if (!name || !phone) return res.status(400).json({ error: 'Nom et téléphone requis.' });
       await db.run('INSERT INTO callback_requests (name, phone, preferred_time, issue, status) VALUES ($1,$2,$3,$4,$5)', [name, phone, preferred_time, issue, 'new']);
+      const settings = await getSettings();
       try {
         if (services.config.contactEmail) {
           const html = '<h3>Nouvelle demande de rappel</h3>' +
@@ -170,8 +171,12 @@ module.exports = function(services) {
         }
       } catch (e) { console.error('Email failed:', e.message); }
       try {
-        if (services.config.contactPhone) {
-          await services.sms.send(services.config.contactPhone, 'Nouvelle demande de rappel: ' + name + ' - ' + phone + (preferred_time ? ' (' + preferred_time + ')' : ''));
+        const smsTo = (settings.sms_callback_phone || services.config.contactPhone || '').toString().trim();
+        if (smsTo) {
+          const parts = ['Nouvelle demande de rappel', 'Nom: ' + name, 'Tel: ' + phone];
+          if (preferred_time) parts.push('Moment: ' + preferred_time);
+          if (issue) parts.push('Probleme: ' + issue);
+          await services.sms.send(smsTo, parts.join('\n'));
         }
       } catch (e) { console.error('SMS failed:', e.message); }
       res.json({ success: true });
@@ -263,6 +268,12 @@ module.exports = function(services) {
     res.render('admin-contacts', await renderCtx(req, { currentNav: 'contacts', items: items, pendingCounts: pendingCounts, adminUser: { name: services.config.ownerName || 'Admin' } }));
   });
 
+  router.get('/admin/settings', async function(req, res) {
+    if (!services.admin.isAdmin(req)) return res.redirect('admin/login');
+    const pendingCounts = await getPendingCounts();
+    res.render('admin-settings', await renderCtx(req, { currentNav: 'settings', pendingCounts: pendingCounts, adminUser: { name: services.config.ownerName || 'Admin' } }));
+  });
+
   router.get('/api/admin/stats', requireAdminApi, async function(req, res) {
     try {
       async function c(sql) { const r = await db.get(sql); return (r && (r.c !== undefined ? r.c : r.count)) || 0; }
@@ -323,7 +334,12 @@ module.exports = function(services) {
           { name: 'notes', type: 'textarea', required: false, description: 'Notes internes.' }
         ]}
       ],
-      settingsFields: []
+      settingsFields: [
+        { name: 'sms_callback_phone', type: 'tel', label: 'Numéro de rappel par SMS', description: 'Numéro de téléphone qui reçoit un texto à chaque nouvelle demande de rappel soumise par un visiteur. Format conseillé: +15145550123.', placeholder: '+15145550123' },
+        { name: 'contact_phone', type: 'tel', label: 'Téléphone affiché (Click-to-call)', description: 'Numéro affiché sur le site et utilisé par le bouton flottant Click-to-call. Si vide, le bouton est masqué.', placeholder: '514-555-0123' },
+        { name: 'contact_email', type: 'email', label: 'Courriel de notification', description: 'Courriel qui reçoit une copie des demandes de rappel et des messages de contact.', placeholder: 'admin@exemple.com' },
+        { name: 'business_address', type: 'text', label: 'Adresse', description: 'Adresse affichée dans le pied de page et la page Contact.', placeholder: '123 rue Example, Ville, QC' }
+      ]
     });
   });
 
