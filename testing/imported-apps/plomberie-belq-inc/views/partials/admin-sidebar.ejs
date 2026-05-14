@@ -1,0 +1,16 @@
+<aside class="admin-sidebar" id="adminSidebar">
+  <div class="admin-brand">
+    <strong><%= config.businessName %></strong>
+    <span>Console admin</span>
+  </div>
+  <nav class="admin-nav">
+    <a href="admin" class="<%= (typeof currentNav !== 'undefined' && currentNav === 'dashboard') ? 'active' : '' %>"><span>📊 Tableau de bord</span></a>
+    <a href="admin/services" class="<%= (typeof currentNav !== 'undefined' && currentNav === 'services') ? 'active' : '' %>"><span>🔧 Services</span></a>
+    <a href="admin/posts" class="<%= (typeof currentNav !== 'undefined' && currentNav === 'posts') ? 'active' : '' %>"><span>📝 Articles</span></a>
+    <a href="admin/callbacks" class="<%= (typeof currentNav !== 'undefined' && currentNav === 'callbacks') ? 'active' : '' %>"><span>📞 Rappels SMS</span><% if (typeof pendingCounts !== 'undefined' && pendingCounts.callbacks > 0) { %><span class="nav-badge"><%= pendingCounts.callbacks %></span><% } %></a>
+    <a href="admin/contacts" class="<%= (typeof currentNav !== 'undefined' && currentNav === 'contacts') ? 'active' : '' %>"><span>✉️ Messages</span><% if (typeof pendingCounts !== 'undefined' && pendingCounts.contacts > 0) { %><span class="nav-badge"><%= pendingCounts.contacts %></span><% } %></a>
+    <div class="admin-nav-divider"></div>
+    <a href="." target="_blank"><span>🌐 Voir le site</span></a>
+    <a href="admin/logout"><span>🚪 Déconnexion</span></a>
+  </nav>
+</aside>

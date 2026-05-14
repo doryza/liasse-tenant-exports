@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tableau de bord · <%= config.businessName %></title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body class="admin-body">
+<%- include('partials/admin-sidebar') %>
+<main class="admin-main">
+  <header class="admin-header">
+    <button class="admin-mobile-toggle" id="adminToggle" aria-label="Menu" type="button">☰</button>
+    <h1>Tableau de bord</h1>
+    <span class="admin-user" title="Connecté en tant que <%= adminUser.name %>"><span class="admin-user-avatar"><%= (adminUser.name || 'A').charAt(0).toUpperCase() %></span><span class="admin-user-name"><%= adminUser.name %></span></span>
+  </header>
+  <div class="admin-content">
+    <% var hasAlerts = (stats.callbacks_new > 0 || stats.contacts_new > 0); %>
+    <% if (hasAlerts) { %>
+    <div class="alert-bar">
+      <div class="alert-bar-icon">🔔</div>
+      <div class="alert-bar-text">
+        <strong>Action requise :</strong>
+        <% if (stats.callbacks_new > 0) { %><a href="admin/callbacks"><%= stats.callbacks_new %> demande<%= stats.callbacks_new > 1 ? 's' : '' %> de rappel</a><% } %>
+        <% if (stats.callbacks_new > 0 && stats.contacts_new > 0) { %> · <% } %>
+        <% if (stats.contacts_new > 0) { %><a href="admin/contacts"><%= stats.contacts_new %> message<%= stats.contacts_new > 1 ? 's' : '' %> non lu<%= stats.contacts_new > 1 ? 's' : '' %></a><% } %>
+      </div>
+    </div>
+    <% } %>
+
+    <section class="quick-actions">
+      <a href="admin/services" class="qa-card" style="background-color:#1b1d83;color:#fff">
+        <div class="qa-icon">🔧</div>
+        <div class="qa-label">Gérer les services</div>
+        <div class="qa-sub"><%= stats.services %> en ligne</div>
+      </a>
+      <a href="admin/posts" class="qa-card qa-card-light">
+        <div class="qa-icon">📝</div>
+        <div class="qa-label">Articles / Blog</div>
+        <div class="qa-sub"><%= stats.posts %> articles</div>
+      </a>
+      <a href="admin/callbacks" class="qa-card qa-card-light">
+        <div class="qa-icon">📞</div>
+        <div class="qa-label">Rappels SMS</div>
+        <div class="qa-sub"><% if (stats.callbacks_new > 0) { %><span class="qa-badge"><%= stats.callbacks_new %> nouveau<%= stats.callbacks_new > 1 ? 'x' : '' %></span><% } else { %>À jour<% } %></div>
+      </a>
+      <a href="admin/contacts" class="qa-card qa-card-light">
+        <div class="qa-icon">✉️</div>
+        <div class="qa-label">Messages</div>
+        <div class="qa-sub"><% if (stats.contacts_new > 0) { %><span class="qa-badge"><%= stats.contacts_new %> nouveau<%= stats.contacts_new > 1 ? 'x' : '' %></span><% } else { %>À jour<% } %></div>
+      </a>
+    </section>
+
+    <h2 class="section-h">Aperçu</h2>
+    <div class="stats-grid">
+      <div class="stat-card <%= stats.callbacks_new > 0 ? 'stat-highlight' : '' %>"><div class="stat-value"><%= stats.callbacks_new %></div><div class="stat-label">Rappels en attente</div></div>
+      <div class="stat-card <%= stats.contacts_new > 0 ? 'stat-highlight' : '' %>"><div class="stat-value"><%= stats.contacts_new %></div><div class="stat-label">Messages non lus</div></div>
+      <div class="stat-card"><div class="stat-value"><%= stats.callbacks_total %></div><div class="stat-label">Total rappels</div></div>
+      <div class="stat-card"><div class="stat-value"><%= stats.contacts_total %></div><div class="stat-label">Total messages</div></div>
+      <div class="stat-card"><div class="stat-value"><%= stats.users %></div><div class="stat-label">Utilisateurs</div></div>
+      <div class="stat-card"><div class="stat-value"><%= stats.push %></div><div class="stat-label">Abonnés push</div></div>
+      <div class="stat-card"><div class="stat-value"><%= stats.visits_7d %></div><div class="stat-label">Visites (7 j)</div></div>
+      <div class="stat-card"><div class="stat-value"><%= stats.visits_total %></div><div class="stat-label">Visites totales</div></div>
+    </div>
+
+    <div class="dash-grid">
+      <section class="dash-card">
+        <div class="dash-card-head">
+          <h2>Demandes de rappel récentes</h2>
+          <a href="admin/callbacks" class="link-more">Tout voir →</a>
+        </div>
+        <% if (typeof recentCallbacks !== 'undefined' && recentCallbacks && recentCallbacks.length > 0) { %>
+          <div class="table-scroll">
+          <table class="admin-table">
+            <thead><tr><th>Nom</th><th>Téléphone</th><th>Statut</th><th>Date</th></tr></thead>
+            <tbody>
+              <% recentCallbacks.forEach(function(r){ %>
+                <tr>
+                  <td><strong><%= r.name %></strong></td>
+                  <td><a href="tel:<%= r.phone %>"><%= r.phone %></a></td>
+                  <td><span class="badge badge-<%= r.status || 'new' %>"><%= r.status || 'new' %></span></td>
+                  <td><span class="text-muted"><%= formatDateTime(r.created_at, lang) %></span></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+          </div>
+        <% } else { %>
+          <div class="empty-state">
+            <div class="empty-state-icon">📞</div>
+            <p>Aucune demande de rappel pour le moment.</p>
+            <p class="empty-state-sub">Les nouvelles demandes apparaîtront ici en temps réel.</p>
+          </div>
+        <% } %>
+      </section>
+      <section class="dash-card">
+        <div class="dash-card-head">
+          <h2>Messages de contact récents</h2>
+          <a href="admin/contacts" class="link-more">Tout voir →</a>
+        </div>
+        <% if (typeof recentContacts !== 'undefined' && recentContacts && recentContacts.length > 0) { %>
+          <div class="table-scroll">
+          <table class="admin-table">
+            <thead><tr><th>Nom</th><th>Courriel</th><th>Statut</th><th>Date</th></tr></thead>
+            <tbody>
+              <% recentContacts.forEach(function(r){ %>
+                <tr>
+                  <td><strong><%= r.name %></strong></td>
+                  <td><%= r.email || '—' %></td>
+                  <td><span class="badge badge-<%= r.status || 'new' %>"><%= r.status || 'new' %></span></td>
+                  <td><span class="text-muted"><%= formatDateTime(r.created_at, lang) %></span></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+          </div>
+        <% } else { %>
+          <div class="empty-state">
+            <div class="empty-state-icon">✉️</div>
+            <p>Aucun message pour le moment.</p>
+            <p class="empty-state-sub">Les messages du formulaire de contact apparaîtront ici.</p>
+          </div>
+        <% } %>
+      </section>
+    </div>
+  </div>
+</main>
+<script>
+(function(){
+  var t = document.getElementById('adminToggle');
+  var s = document.getElementById('adminSidebar');
+  if (t && s) t.addEventListener('click', function(){ s.classList.toggle('open'); });
+})();
+</script>
+</body>
+</html>

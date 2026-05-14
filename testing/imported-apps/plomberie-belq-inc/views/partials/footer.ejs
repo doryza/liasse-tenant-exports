@@ -1,0 +1,34 @@
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div>
+      <h3 class="footer-brand"><%= config.businessName %></h3>
+      <p class="footer-tag"><%= settings['tagline_' + lang] || (lang === 'fr' ? 'Plomberie résidentielle et commerciale, 24/7' : 'Residential and commercial plumbing, 24/7') %></p>
+    </div>
+    <div>
+      <h4><%= t.footer_quick_links %></h4>
+      <a href="."><%= t.nav_home %></a>
+      <a href="services"><%= t.nav_services %></a>
+      <a href="rappel"><%= t.nav_callback %></a>
+      <a href="contact"><%= t.nav_contact %></a>
+    </div>
+    <div>
+      <h4><%= t.footer_contact %></h4>
+      <% if (config.phone) { %><p><strong><%= t.phone_label %>:</strong> <a href="tel:<%= config.phone %>"><%= config.phone %></a></p><% } %>
+      <% if (config.email) { %><p><strong><%= t.email_label %>:</strong> <a href="mailto:<%= config.email %>"><%= config.email %></a></p><% } %>
+      <% if (config.address) { %><p><strong><%= t.address_label %>:</strong> <%= config.address %></p><% } %>
+      <button class="btn-push" data-push-btn type="button" style="background-color:#1b1d83;color:#fff">🔔 <%= t.enable_notifications %></button>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; <%= new Date().getFullYear() %> <%= config.businessName %>. <%= t.footer_rights %></p>
+  </div>
+</footer>
+<% if (config.phone) { %>
+<a href="tel:<%= config.phone %>" class="floating-call" aria-label="<%= t.call_now %>" style="background-color:#1b1d83;color:#fff">
+  <span class="floating-call-icon">📞</span>
+  <span class="floating-call-text"><%= t.call_now %></span>
+</a>
+<% } %>
+<script src="public/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Services · Admin</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body class="admin-body">
+<%- include('partials/admin-sidebar') %>
+<main class="admin-main">
+  <header class="admin-header">
+    <button class="admin-mobile-toggle" id="adminToggle" aria-label="Menu" type="button">☰</button>
+    <h1>Services</h1>
+    <button class="btn btn-primary" onclick="openModal()" type="button" style="background-color:#1b1d83;color:#fff">+ Ajouter un service</button>
+  </header>
+  <div class="admin-content">
+    <div class="toolbar">
+      <input id="search" class="toolbar-search" type="search" placeholder="Rechercher un service...">
+      <div class="toolbar-filters">
+        <button class="chip chip-active" data-filter="all" type="button">Tous</button>
+        <button class="chip" data-filter="featured" type="button">⭐ Vedettes</button>
+        <button class="chip" data-filter="normal" type="button">Standard</button>
+      </div>
+    </div>
+    <div class="table-card">
+      <div class="table-scroll">
+      <table class="admin-table" id="tbl">
+        <thead><tr><th>#</th><th>Nom (FR)</th><th>Nom (EN)</th><th>Icône</th><th>Prix</th><th>Vedette</th><th>Ordre</th><th class="col-actions">Actions</th></tr></thead>
+        <tbody>
+          <% if (typeof items !== 'undefined' && items && items.length > 0) { %>
+            <% items.forEach(function(s){ %>
+              <tr data-status="<%= s.featured ? 'featured' : 'normal' %>" data-search="<%= ((s.name_fr || '') + ' ' + (s.name_en || '') + ' ' + (s.description_fr || '')).toLowerCase() %>">
+                <td><%= s.id %></td>
+                <td><strong><%= s.name_fr || '' %></strong></td>
+                <td><%= s.name_en || '' %></td>
+                <td style="font-size:1.4rem"><%= s.icon || '' %></td>
+                <td><%= s.price_range || '—' %></td>
+                <td><%= s.featured ? '⭐' : '' %></td>
+                <td><%= s.sort_order || 0 %></td>
+                <td class="col-actions">
+                  <button class="btn btn-sm" onclick='editItem(<%= JSON.stringify(s) %>)' type="button">✏️ Modifier</button>
+                  <button class="btn btn-sm btn-danger" onclick="deleteItem(<%= s.id %>)" type="button">🗑</button>
+                </td>
+              </tr>
+            <% }) %>
+          <% } else { %>
+            <tr><td colspan="8"><div class="empty-state"><div class="empty-state-icon">🔧</div><p>Aucun service.</p><p class="empty-state-sub">Ajoutez votre premier service pour qu'il apparaisse sur le site.</p><button class="btn btn-primary" onclick="openModal()" type="button" style="background-color:#1b1d83;color:#fff;margin-top:14px">+ Ajouter un service</button></div></td></tr>
+          <% } %>
+        </tbody>
+      </table>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div id="modal" class="modal" style="display:none">
+  <div class="modal-backdrop" onclick="closeModal()"></div>
+  <div class="modal-card">
+    <h2 id="modalTitle">Ajouter un service</h2>
+    <form id="form">
+      <input type="hidden" id="f_id">
+      <div class="form-row"><label>Nom (FR) *</label><input id="f_name_fr" required placeholder="ex. Plomberie d'urgence"></div>
+      <div class="form-row"><label>Nom (EN)</label><input id="f_name_en" placeholder="e.g. Emergency Plumbing"></div>
+      <div class="form-row"><label>Description (FR)</label><textarea id="f_description_fr" rows="3" placeholder="Décrivez ce service en 1-2 phrases..."></textarea></div>
+      <div class="form-row"><label>Description (EN)</label><textarea id="f_description_en" rows="3"></textarea></div>
+      <div class="form-grid-2">
+        <div class="form-row"><label>Icône (emoji)</label><input id="f_icon" placeholder="🔧" maxlength="10"></div>
+        <div class="form-row"><label>Ordre d'affichage</label><input id="f_sort_order" type="number" value="0" min="0"></div>
+      </div>
+      <div class="form-row"><label>Fourchette de prix</label><input id="f_price_range" placeholder="À partir de 150$"><small class="form-hint">Affiché sous la description. Laissez vide pour masquer.</small></div>
+      <div class="form-row"><label>URL d'image (optionnel)</label><input id="f_image_url" type="url" placeholder="https://..."><small class="form-hint">Si vide, l'icône emoji est utilisée à la place.</small></div>
+      <div class="form-row form-row-check"><label><input id="f_featured" type="checkbox"> <span>⭐ Service vedette (affiché en premier sur la page d'accueil)</span></label></div>
+      <div id="formError" class="alert alert-error" style="display:none"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn" onclick="closeModal()">Annuler</button>
+        <button type="submit" class="btn btn-primary" style="background-color:#1b1d83;color:#fff">Enregistrer</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+var modal = document.getElementById('modal');
+var form = document.getElementById('form');
+var formError = document.getElementById('formError');
+function openModal(){
+  document.getElementById('modalTitle').textContent = 'Ajouter un service';
+  form.reset();
+  document.getElementById('f_id').value = '';
+  document.getElementById('f_sort_order').value = '0';
+  formError.style.display = 'none';
+  modal.style.display = 'flex';
+}
+function closeModal(){ modal.style.display = 'none'; }
+function editItem(s){
+  document.getElementById('modalTitle').textContent = 'Modifier le service';
+  document.getElementById('f_id').value = s.id;
+  document.getElementById('f_name_fr').value = s.name_fr || '';
+  document.getElementById('f_name_en').value = s.name_en || '';
+  document.getElementById('f_description_fr').value = s.description_fr || '';
+  document.getElementById('f_description_en').value = s.description_en || '';
+  document.getElementById('f_icon').value = s.icon || '';
+  document.getElementById('f_price_range').value = s.price_range || '';
+  document.getElementById('f_image_url').value = s.image_url || '';
+  document.getElementById('f_featured').checked = !!s.featured;
+  document.getElementById('f_sort_order').value = s.sort_order || 0;
+  formError.style.display = 'none';
+  modal.style.display = 'flex';
+}
+form.addEventListener('submit', async function(e){
+  e.preventDefault();
+  formError.style.display = 'none';
+  var id = document.getElementById('f_id').value;
+  var data = {
+    name_fr: document.getElementById('f_name_fr').value,
+    name_en: document.getElementById('f_name_en').value,
+    description_fr: document.getElementById('f_description_fr').value,
+    description_en: document.getElementById('f_description_en').value,
+    icon: document.getElementById('f_icon').value,
+    price_range: document.getElementById('f_price_range').value,
+    image_url: document.getElementById('f_image_url').value,
+    featured: document.getElementById('f_featured').checked,
+    sort_order: parseInt(document.getElementById('f_sort_order').value) || 0
+  };
+  try {
+    var url = id ? ('api/admin/services/' + id) : 'api/admin/services';
+    var method = id ? 'PUT' : 'POST';
+    var res = await fetch(url, { method: method, headers: {'Content-Type':'application/json'}, body: JSON.stringify(data) });
+    var json = await res.json();
+    if (!res.ok) throw new Error(json.error || 'Erreur');
+    location.reload();
+  } catch (err) { formError.textContent = err.message || 'Erreur'; formError.style.display = 'block'; }
+});
+async function deleteItem(id){
+  if (!confirm('Supprimer ce service? Cette action est irréversible.')) return;
+  await fetch('api/admin/services/' + id, { method: 'DELETE' });
+  location.reload();
+}
+(function(){
+  var search = document.getElementById('search');
+  var chips = document.querySelectorAll('.chip');
+  var currentFilter = 'all';
+  function apply(){
+    var q = (search.value || '').toLowerCase().trim();
+    document.querySelectorAll('#tbl tbody tr[data-search]').forEach(function(tr){
+      var matchSearch = !q || (tr.getAttribute('data-search') || '').indexOf(q) >= 0;
+      var matchFilter = currentFilter === 'all' || tr.getAttribute('data-status') === currentFilter;
+      tr.style.display = (matchSearch && matchFilter) ? '' : 'none';
+    });
+  }
+  if (search) search.addEventListener('input', apply);
+  chips.forEach(function(c){ c.addEventListener('click', function(){
+    chips.forEach(function(x){ x.classList.remove('chip-active'); });
+    c.classList.add('chip-active');
+    currentFilter = c.getAttribute('data-filter');
+    apply();
+  }); });
+})();
+var t = document.getElementById('adminToggle');
+var sb = document.getElementById('adminSidebar');
+if (t && sb) t.addEventListener('click', function(){ sb.classList.toggle('open'); });
+</script>
+</body>
+</html>

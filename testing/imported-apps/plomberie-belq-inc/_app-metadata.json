@@ -1,0 +1,63 @@
+{
+  "slug": "plomberie-belq-inc",
+  "displayName": "Plomberie Belq Inc.",
+  "description": "Type de projet: Premier site web pour une entreprise de plomberie existante.\n\nFonctionnalités clés:\n- Formulaire pour demandes de rappel par texto (SMS)\n- Liste des services\n- Formulaire de contact\n- Bouton d'appel direct fixe (Click-to-call)\n\nDesign & image de marque: Très moderne. Aucun besoin spécifique pour la palette de couleurs.\n\nIntégrations & extras: Aucune intégration spécifique pour le moment.",
+  "status": "active",
+  "generationVersion": 1,
+  "primaryColor": "#1b1d83",
+  "iconUrl": "https://res.cloudinary.com/duhp69meg/image/upload/v1778785230/tapavis_tenant_plomberie-belq-inc/icon_plomberie-belq-inc_1778785230675.png",
+  "enabledAuthMethods": [
+    "webauthn",
+    "sms",
+    "email"
+  ],
+  "notificationsEnabled": true,
+  "geolocationEnabled": true,
+  "customConfig": {
+    "language": "both",
+    "aiSummary": {
+      "en": {
+        "dashboard": "Welcome to your website’s control center! This is where you'll manage everything behind the scenes. You can get here by clicking the 'Admin' link on your site.\n\nInside, you'll find a few key areas:\n\n- **Managing Your Content**: You can easily update the plumbing services you offer. Just go to the 'Services' section to add a new service, change the details of an existing one, or remove one you no longer offer. You also have a 'Posts' section, perfect for sharing company news or helpful plumbing tips with your visitors.\n\n- **Viewing Customer Messages**: When a potential customer fills out your 'Contact' form or the 'Request a Callback' form, their message will appear right here in your dashboard. You'll find them neatly organized under 'Contact Messages' and 'Callback Requests'. This way, you'll never miss an opportunity to connect with a new client.\n\n- **Site Settings**: In the 'Settings' area, you can update basic information for your website, like your main phone number or business name.\n\n- **Checking Your Stats**: Curious about how many people are visiting your site? The dashboard gives you a simple overview of your visitor traffic. It's a great way to see your online presence grow!",
+        "variables": "Great news! Your new website for Plomberie Belq Inc. is all set up and ready to go. There are no extra steps or technical pieces you need to add. Everything it needs to work is already built-in, so you can start using it right away. Congratulations on your beautiful new online presence!"
+      },
+      "fr": {
+        "dashboard": "Bienvenue dans le panneau de contrôle de votre site web! C'est ici que vous allez tout gérer en arrière-plan. Vous pouvez y accéder en cliquant sur le lien 'Admin' sur votre site.\n\nÀ l'intérieur, vous trouverez quelques sections importantes :\n\n- **Gérer votre contenu**: Vous pouvez facilement mettre à jour la liste de vos services de plomberie. Rendez-vous dans la section 'Services' pour ajouter un nouveau service, modifier les détails d'un service existant ou en retirer un. Vous avez aussi une section 'Publications', idéale pour partager des nouvelles de l'entreprise ou des conseils de plomberie avec vos visiteurs.\n\n- **Voir les messages des clients**: Quand un client potentiel remplit votre formulaire de 'Contact' ou de 'Demande de rappel', son message apparaîtra directement ici. Vous les trouverez bien organisés sous 'Messages de contact' et 'Demandes de rappel'. De cette façon, vous ne manquerez jamais une occasion de connecter avec un nouveau client.\n\n- **Réglages du site**: Dans la section 'Réglages', vous pouvez mettre à jour les informations de base de votre site, comme votre numéro de téléphone principal ou le nom de votre entreprise.\n\n- **Consulter vos statistiques**: Curieux de savoir combien de personnes visitent votre site? Le tableau de bord vous offre un aperçu simple du trafic de visiteurs. C'est une excellente façon de voir votre présence en ligne grandir!",
+        "variables": "Bonne nouvelle! Votre nouveau site web pour Plomberie Belq Inc. est fin prêt à être utilisé. Il n'y a aucune étape de configuration supplémentaire ou de clé à ajouter. Tout ce dont il a besoin pour fonctionner est déjà inclus. Vous pouvez donc commencer à l'utiliser dès maintenant. Félicitations pour votre superbe nouvelle présence en ligne!"
+      }
+    },
+    "aiSummaryVersion": 1
+  },
+  "promptHistory": [
+    {
+      "prompt": "Type de projet: Premier site web pour une entreprise de plomberie existante.\n\nFonctionnalités clés:\n- Formulaire pour demandes de rappel par texto (SMS)\n- Liste des services\n- Formulaire de contact\n- Bouton d'appel direct fixe (Click-to-call)\n\nDesign & image de marque: Très moderne. Aucun besoin spécifique pour la palette de couleurs.\n\nIntégrations & extras: Aucune intégration spécifique pour le moment.",
+      "timestamp": "2026-05-14T19:00:39.524Z",
+      "changeNotes": "Initial build of a modern bilingual (FR primary, EN secondary) PWA for Plomberie Belq Inc. Includes a home page with hero/services/why-us/blog/CTA, a full services page, an SMS callback request form, a contact form, a fixed click-to-call floating button (mobile-friendly), server-side language switching via cookie, full admin dashboard with CRUD for services and posts plus inbox views for callback requests and contact submissions, push notification opt-in (timed prompt + footer button), PWA install banner, login modal wiring via data-login-btn, and visit tracking. Form submissions are always persisted to the database first, then email/SMS notifications are attempted as best-effort.\n\nAdmin UX enrichment: (1) Polished admin dashboard with quick-action buttons, badge counts for pending items in the sidebar, and a 'recent activity' two-column layout with hoverable rows. (2) Added status filters and live search on admin-callbacks, admin-contacts, admin-posts, and admin-services tables. (3) Added missing /admin/login redirect handling note via existing flow. (4) Strengthened admin CSS: better focus rings, accessible button sizes (≥44px tap targets on mobile), high-contrast badges, refined detail-row styling, and consistent shadows. (5) Improved frontend hero contrast (stronger gradient overlay), and ensured every CTA button has inline color fallback (background-color:#1b1d83;color:#fff). (6) Added empty-state CTAs that link to create-new actions. (7) Improved admin-sidebar with a 'pending' badge that surfaces actionable counts (passed in via routes). (8) Routes.js: enriched dashboard stats (pending counts already exposed) and added pendingCounts to sidebar context. (9) Made admin tables horizontally scrollable on mobile with sticky action column hint. (10) Preserved every existing API, schema, seed image placeholder ({{IMG_HERO}}, {{IMG_SERVICE1..4}}, {{IMG_POST1..2}}) byte-for-byte. No functional regressions.",
+      "generationId": 1123,
+      "filesModified": [
+        "manifest.json",
+        "public/css/admin-styles.css",
+        "public/css/styles.css",
+        "public/js/app.js",
+        "routes.js",
+        "schema.sql",
+        "seed.js",
+        "views/admin-callbacks.ejs",
+        "views/admin-contacts.ejs",
+        "views/admin-posts.ejs",
+        "views/admin-services.ejs",
+        "views/admin.ejs",
+        "views/contact.ejs",
+        "views/index.ejs",
+        "views/partials/admin-sidebar.ejs",
+        "views/partials/footer.ejs",
+        "views/partials/header.ejs",
+        "views/rappel.ejs",
+        "views/services.ejs"
+      ]
+    }
+  ],
+  "apiVariables": [],
+  "createdAt": "2026-05-14T18:28:58.569Z",
+  "updatedAt": "2026-05-14T19:01:28.975Z",
+  "exportedAt": "2026-05-14T19:07:34.016Z"
+}

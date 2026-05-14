@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1b1d83">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="description" content="<%= settings['tagline_' + lang] || (lang === 'fr' ? 'Plomberie résidentielle et commerciale — service rapide 24/7' : 'Residential and commercial plumbing — fast 24/7 service') %>">
+<title><%= typeof pageTitle !== 'undefined' ? pageTitle : config.businessName %></title>
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="public/css/styles.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="container nav-row">
+    <a href="." class="brand">
+      <% var logoUrl = (settings && settings._p_nav_logo_url) || (typeof appIconUrl !== 'undefined' ? appIconUrl : ''); %>
+      <% if (logoUrl) { %><img src="<%= logoUrl %>" alt="" onerror="this.style.display='none'"><% } %>
+      <span><%= config.businessName %></span>
+    </a>
+    <nav class="nav-desktop">
+      <a href="." class="nav-link"><%= t.nav_home %></a>
+      <a href="services" class="nav-link"><%= t.nav_services %></a>
+      <a href="rappel" class="nav-link"><%= t.nav_callback %></a>
+      <a href="contact" class="nav-link"><%= t.nav_contact %></a>
+      <% if (config.phone) { %><a href="tel:<%= config.phone %>" class="nav-call" style="background-color:#1b1d83;color:#fff">📞 <%= config.phone %></a><% } %>
+      <a href="#" class="nav-link login-btn" data-login-btn><%= t.nav_login %></a>
+      <a href="profile" class="nav-link" data-auth-only style="display:none"><%= t.nav_account %></a>
+      <span class="lang-toggle">
+        <a href="?lang=fr" class="<%= lang === 'fr' ? 'active' : '' %>">FR</a>|<a href="?lang=en" class="<%= lang === 'en' ? 'active' : '' %>">EN</a>
+      </span>
+    </nav>
+    <button class="hamburger" id="hamburger" aria-label="Menu" type="button">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="."><%= t.nav_home %></a>
+    <a href="services"><%= t.nav_services %></a>
+    <a href="rappel"><%= t.nav_callback %></a>
+    <a href="contact"><%= t.nav_contact %></a>
+    <% if (config.phone) { %><a href="tel:<%= config.phone %>" class="mobile-call">📞 <%= t.call_now %></a><% } %>
+    <a href="#" data-login-btn><%= t.nav_login %></a>
+    <a href="profile" data-auth-only style="display:none"><%= t.nav_account %></a>
+    <div class="mobile-lang">
+      <a href="?lang=fr" class="<%= lang === 'fr' ? 'active' : '' %>">Français</a>
+      <a href="?lang=en" class="<%= lang === 'en' ? 'active' : '' %>">English</a>
+    </div>
+  </div>
+</header>
+<script>
+(function(){
+  var h = document.getElementById('hamburger');
+  var m = document.getElementById('mobileMenu');
+  if (h && m) {
+    h.addEventListener('click', function(){
+      m.classList.toggle('open');
+      h.classList.toggle('open');
+    });
+  }
+})();
+</script>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Messages · Admin</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body class="admin-body">
+<%- include('partials/admin-sidebar') %>
+<main class="admin-main">
+  <header class="admin-header">
+    <button class="admin-mobile-toggle" id="adminToggle" aria-label="Menu" type="button">☰</button>
+    <h1>Messages de contact</h1>
+    <span class="admin-user"><span class="admin-user-avatar"><%= (adminUser.name || 'A').charAt(0).toUpperCase() %></span><span class="admin-user-name"><%= adminUser.name %></span></span>
+  </header>
+  <div class="admin-content">
+    <div class="toolbar">
+      <input id="search" class="toolbar-search" type="search" placeholder="Rechercher par nom, courriel...">
+      <div class="toolbar-filters">
+        <button class="chip chip-active" data-filter="all" type="button">Tous</button>
+        <button class="chip" data-filter="new" type="button">Nouveaux</button>
+        <button class="chip" data-filter="replied" type="button">Répondus</button>
+        <button class="chip" data-filter="archived" type="button">Archivés</button>
+      </div>
+    </div>
+    <div class="table-card">
+      <div class="table-scroll">
+      <table class="admin-table" id="tbl">
+        <thead><tr><th>Date</th><th>Nom</th><th>Courriel</th><th>Téléphone</th><th>Statut</th><th class="col-actions">Actions</th></tr></thead>
+        <tbody>
+          <% if (typeof items !== 'undefined' && items && items.length > 0) { %>
+            <% items.forEach(function(r){ %>
+              <tr data-status="<%= r.status || 'new' %>" data-search="<%= ((r.name || '') + ' ' + (r.email || '') + ' ' + (r.phone || '') + ' ' + (r.message || '')).toLowerCase() %>">
+                <td><span class="text-muted"><%= formatDateTime(r.created_at, lang) %></span></td>
+                <td><strong><%= r.name %></strong></td>
+                <td><% if (r.email) { %><a href="mailto:<%= r.email %>"><%= r.email %></a><% } else { %><span class="text-muted">—</span><% } %></td>
+                <td><% if (r.phone) { %><a href="tel:<%= r.phone %>"><%= r.phone %></a><% } else { %><span class="text-muted">—</span><% } %></td>
+                <td><span class="badge badge-<%= r.status || 'new' %>"><%= r.status || 'new' %></span></td>
+                <td class="col-actions">
+                  <button class="btn btn-sm" onclick='openDetail(<%= JSON.stringify(r) %>)' type="button">👁 Voir</button>
+                  <button class="btn btn-sm btn-danger" onclick="deleteItem(<%= r.id %>)" type="button">🗑</button>
+                </td>
+              </tr>
+            <% }) %>
+          <% } else { %>
+            <tr><td colspan="6"><div class="empty-state"><div class="empty-state-icon">✉️</div><p>Aucun message pour le moment.</p><p class="empty-state-sub">Les messages soumis via le formulaire de contact apparaîtront ici.</p></div></td></tr>
+          <% } %>
+        </tbody>
+      </table>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div id="modal" class="modal" style="display:none">
+  <div class="modal-backdrop" onclick="closeModal()"></div>
+  <div class="modal-card">
+    <h2>Détails du message</h2>
+    <div id="details"></div>
+    <form id="form">
+      <input type="hidden" id="f_id">
+      <div class="form-row">
+        <label>Statut</label>
+        <select id="f_status">
+          <option value="new">Nouveau</option>
+          <option value="replied">Répondu</option>
+          <option value="archived">Archivé</option>
+        </select>
+      </div>
+      <div class="form-row"><label>Notes internes</label><textarea id="f_notes" rows="3" placeholder="Notes privées sur cette demande..."></textarea></div>
+      <div id="formError" class="alert alert-error" style="display:none"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn" onclick="closeModal()">Fermer</button>
+        <button type="submit" class="btn btn-primary" style="background-color:#1b1d83;color:#fff">Enregistrer</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+var modal = document.getElementById('modal');
+var form = document.getElementById('form');
+var formError = document.getElementById('formError');
+function escapeHtml(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function openDetail(r){
+  document.getElementById('f_id').value = r.id;
+  document.getElementById('f_status').value = r.status || 'new';
+  document.getElementById('f_notes').value = r.notes || '';
+  document.getElementById('details').innerHTML =
+    '<div class="detail-row"><strong>Nom</strong><p>' + escapeHtml(r.name) + '</p></div>' +
+    '<div class="detail-row"><strong>Courriel</strong><p>' + (r.email ? '<a href="mailto:' + escapeHtml(r.email) + '">' + escapeHtml(r.email) + '</a>' : '—') + '</p></div>' +
+    '<div class="detail-row"><strong>Téléphone</strong><p>' + (r.phone ? '<a href="tel:' + escapeHtml(r.phone) + '">' + escapeHtml(r.phone) + '</a>' : '—') + '</p></div>' +
+    '<div class="detail-row"><strong>Message</strong><p style="white-space:pre-line">' + escapeHtml(r.message || '') + '</p></div>' +
+    '<div class="detail-row"><strong>Reçu le</strong><p>' + escapeHtml(new Date(r.created_at).toLocaleString('fr-CA')) + '</p></div>';
+  formError.style.display = 'none';
+  modal.style.display = 'flex';
+}
+function closeModal(){ modal.style.display = 'none'; }
+form.addEventListener('submit', async function(e){
+  e.preventDefault();
+  formError.style.display = 'none';
+  var id = document.getElementById('f_id').value;
+  var data = { status: document.getElementById('f_status').value, notes: document.getElementById('f_notes').value };
+  try {
+    var res = await fetch('api/admin/contact_submissions/' + id, { method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data) });
+    var json = await res.json();
+    if (!res.ok) throw new Error(json.error || 'Erreur');
+    location.reload();
+  } catch (err) { formError.textContent = err.message; formError.style.display = 'block'; }
+});
+async function deleteItem(id){
+  if (!confirm('Supprimer ce message? Cette action est irréversible.')) return;
+  await fetch('api/admin/contact_submissions/' + id, { method: 'DELETE' });
+  location.reload();
+}
+(function(){
+  var search = document.getElementById('search');
+  var chips = document.querySelectorAll('.chip');
+  var currentFilter = 'all';
+  function apply(){
+    var q = (search.value || '').toLowerCase().trim();
+    document.querySelectorAll('#tbl tbody tr[data-search]').forEach(function(tr){
+      var matchSearch = !q || (tr.getAttribute('data-search') || '').indexOf(q) >= 0;
+      var matchFilter = currentFilter === 'all' || tr.getAttribute('data-status') === currentFilter;
+      tr.style.display = (matchSearch && matchFilter) ? '' : 'none';
+    });
+  }
+  if (search) search.addEventListener('input', apply);
+  chips.forEach(function(c){ c.addEventListener('click', function(){
+    chips.forEach(function(x){ x.classList.remove('chip-active'); });
+    c.classList.add('chip-active');
+    currentFilter = c.getAttribute('data-filter');
+    apply();
+  }); });
+})();
+var t = document.getElementById('adminToggle');
+var sb = document.getElementById('adminSidebar');
+if (t && sb) t.addEventListener('click', function(){ sb.classList.toggle('open'); });
+</script>
+</body>
+</html>

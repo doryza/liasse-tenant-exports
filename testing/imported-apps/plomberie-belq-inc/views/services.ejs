@@ -1,0 +1,40 @@
+<%- include('partials/header') %>
+<section class="page-header" style="background-color:#1b1d83;color:#fff">
+  <div class="container">
+    <h1 style="color:#fff"><%= t.services_title %></h1>
+    <p style="color:#fff;opacity:0.92"><%= t.services_subtitle %></p>
+  </div>
+</section>
+<section class="section">
+  <div class="container">
+    <% if (typeof services !== 'undefined' && services && services.length > 0) { %>
+      <div class="services-grid">
+        <% services.forEach(function(s){ %>
+          <article class="service-card service-card-full">
+            <% if (s.image_url) { %><img src="<%= s.image_url %>" alt="" class="service-img"><% } else if (s.icon) { %><div class="service-icon"><%= s.icon %></div><% } %>
+            <h3><%= (lang === 'fr' ? s.name_fr : (s.name_en || s.name_fr)) || '' %></h3>
+            <p><%= (lang === 'fr' ? s.description_fr : (s.description_en || s.description_fr)) || '' %></p>
+            <% if (s.price_range) { %><p class="price-range"><%= s.price_range %></p><% } %>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">
+              <a href="rappel" class="btn btn-primary btn-small" style="background-color:#1b1d83;color:#fff"><%= t.hero_cta_callback %></a>
+              <% if (config.phone) { %><a href="tel:<%= config.phone %>" class="btn btn-outline btn-small">📞 <%= t.call_now %></a><% } %>
+            </div>
+          </article>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <p class="empty"><%= t.empty_services %></p>
+    <% } %>
+  </div>
+</section>
+<section class="cta-band" style="background-color:#1b1d83;color:#fff">
+  <div class="container cta-inner">
+    <h2><%= t.cta_title %></h2>
+    <p><%= t.cta_subtitle %></p>
+    <div class="hero-ctas">
+      <% if (config.phone) { %><a href="tel:<%= config.phone %>" class="btn btn-white" style="background-color:#fff;color:#1b1d83">📞 <%= config.phone %></a><% } %>
+      <a href="rappel" class="btn btn-outline-white"><%= t.hero_cta_callback %></a>
+    </div>
+  </div>
+</section>
+<%- include('partials/footer') %>

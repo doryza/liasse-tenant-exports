@@ -1,0 +1,84 @@
+<%- include('partials/header') %>
+<section class="hero">
+  <img src="<%= (settings && settings._p_hero_image_url) ? settings._p_hero_image_url : 'https://res.cloudinary.com/duhp69meg/image/upload/v1778784343/tapavis_tenant_plomberie-belq-inc/build_plomberie-belq-inc_1778784343452.png' %>" alt="" class="hero-bg">
+  <div class="hero-overlay"></div>
+  <div class="container hero-content">
+    <h1><%= settings['hero_title_' + lang] || (lang === 'fr' ? 'Plomberie de confiance, 24/7' : 'Plumbing You Can Trust, 24/7') %></h1>
+    <p><%= settings['hero_subtitle_' + lang] || (lang === 'fr' ? 'Service rapide, travail garanti, prix transparents.' : 'Fast service, guaranteed work, transparent pricing.') %></p>
+    <div class="hero-ctas">
+      <a href="rappel" class="btn btn-primary" style="background-color:#1b1d83;color:#fff"><%= t.hero_cta_callback %></a>
+      <a href="services" class="btn btn-outline-white"><%= t.hero_cta_services %></a>
+    </div>
+    <% if (config.phone) { %>
+      <p class="hero-call"><a href="tel:<%= config.phone %>" style="color:#fff">📞 <%= config.phone %></a></p>
+    <% } %>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <h2 class="section-title"><%= t.services_title %></h2>
+    <p class="section-sub"><%= t.services_subtitle %></p>
+    <% if (typeof services !== 'undefined' && services && services.length > 0) { %>
+      <div class="services-grid">
+        <% services.forEach(function(s){ %>
+          <article class="service-card">
+            <% if (s.image_url) { %><img src="<%= s.image_url %>" alt="" class="service-img"><% } else if (s.icon) { %><div class="service-icon"><%= s.icon %></div><% } %>
+            <h3><%= (lang === 'fr' ? s.name_fr : (s.name_en || s.name_fr)) || '' %></h3>
+            <p><%= (lang === 'fr' ? s.description_fr : (s.description_en || s.description_fr)) || '' %></p>
+            <% if (s.price_range) { %><p class="price-range"><%= s.price_range %></p><% } %>
+          </article>
+        <% }) %>
+      </div>
+      <div class="center mt-2"><a href="services" class="btn btn-outline"><%= t.hero_cta_services %></a></div>
+    <% } else { %>
+      <p class="empty"><%= t.empty_services %></p>
+    <% } %>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="container">
+    <h2 class="section-title"><%= t.why_us_title %></h2>
+    <div class="features-grid">
+      <div class="feature"><div class="feature-icon">⚡</div><h3><%= t.why_1_title %></h3><p><%= t.why_1_desc %></p></div>
+      <div class="feature"><div class="feature-icon">✅</div><h3><%= t.why_2_title %></h3><p><%= t.why_2_desc %></p></div>
+      <div class="feature"><div class="feature-icon">💲</div><h3><%= t.why_3_title %></h3><p><%= t.why_3_desc %></p></div>
+      <div class="feature"><div class="feature-icon">🎓</div><h3><%= t.why_4_title %></h3><p><%= t.why_4_desc %></p></div>
+    </div>
+  </div>
+</section>
+
+<% if (typeof posts !== 'undefined' && posts && posts.length > 0) { %>
+<section class="section">
+  <div class="container">
+    <h2 class="section-title"><%= t.blog_title %></h2>
+    <div class="posts-grid">
+      <% posts.forEach(function(p){ %>
+        <article class="post-card">
+          <% if (p.image_url) { %><img src="<%= p.image_url %>" alt=""><% } %>
+          <div class="post-body">
+            <% if (p.category) { %><span class="badge"><%= p.category %></span><% } %>
+            <h3><%= (lang === 'fr' ? p.title_fr : (p.title_en || p.title_fr)) || '' %></h3>
+            <p class="post-meta"><%= formatDate(p.created_at, lang) %></p>
+            <p class="post-excerpt"><%= (((lang === 'fr' ? p.content_fr : (p.content_en || p.content_fr)) || '').substring(0, 160)) %><%= ((lang === 'fr' ? p.content_fr : (p.content_en || p.content_fr)) || '').length > 160 ? '…' : '' %></p>
+          </div>
+        </article>
+      <% }) %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<section class="cta-band" style="background-color:#1b1d83;color:#fff">
+  <div class="container cta-inner">
+    <h2><%= t.cta_title %></h2>
+    <p><%= t.cta_subtitle %></p>
+    <div class="hero-ctas">
+      <% if (config.phone) { %><a href="tel:<%= config.phone %>" class="btn btn-white" style="background-color:#fff;color:#1b1d83">📞 <%= config.phone %></a><% } %>
+      <a href="rappel" class="btn btn-outline-white"><%= t.hero_cta_callback %></a>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,341 @@
+{
+  "exportedAt": "2026-05-14T19:07:34.029Z",
+  "tables": {
+    "admin_invites": {
+      "columns": [
+        "id",
+        "email",
+        "token",
+        "role",
+        "status",
+        "invited_by",
+        "expires_at",
+        "accepted_at",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_webauthn_credentials": {
+      "columns": [
+        "id",
+        "admin_user_id",
+        "credential_id",
+        "public_key",
+        "counter",
+        "device_name",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_users": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "password_hash",
+        "display_name",
+        "role",
+        "active",
+        "activation_token",
+        "invited_by",
+        "invite_token",
+        "invite_expires_at",
+        "last_login_at",
+        "is_active",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_settings": {
+      "columns": [
+        "key",
+        "value",
+        "updated_at"
+      ],
+      "totalRows": 42,
+      "sampleRows": [
+        {
+          "key": "business_name",
+          "value": "Plomberie Belq Inc",
+          "updated_at": "2026-05-14T19:00:03.910Z"
+        },
+        {
+          "key": "tagline_fr",
+          "value": "Plomberie résidentielle et commerciale — service rapide 24/7",
+          "updated_at": "2026-05-14T19:00:03.920Z"
+        },
+        {
+          "key": "tagline_en",
+          "value": "Residential and commercial plumbing — fast 24/7 service",
+          "updated_at": "2026-05-14T19:00:03.932Z"
+        },
+        {
+          "key": "hero_title_fr",
+          "value": "Plomberie de confiance, 24/7",
+          "updated_at": "2026-05-14T19:00:03.942Z"
+        },
+        {
+          "key": "hero_title_en",
+          "value": "Plumbing You Can Trust, 24/7",
+          "updated_at": "2026-05-14T19:00:03.951Z"
+        },
+        {
+          "key": "hero_subtitle_fr",
+          "value": "Service rapide, travail garanti, prix transparents.",
+          "updated_at": "2026-05-14T19:00:03.963Z"
+        },
+        {
+          "key": "hero_subtitle_en",
+          "value": "Fast service, guaranteed work, transparent pricing.",
+          "updated_at": "2026-05-14T19:00:03.974Z"
+        },
+        {
+          "key": "about_text_fr",
+          "value": "Plomberie Belq Inc dessert la région depuis des années. Notre équipe de plombiers certifiés intervient pour les urgences, l'entretien et les rénovations, autant en résidentiel qu'en commercial.",
+          "updated_at": "2026-05-14T19:00:03.983Z"
+        },
+        {
+          "key": "about_text_en",
+          "value": "Plomberie Belq Inc has served the region for years. Our certified plumbers handle emergencies, maintenance, and renovations for residential and commercial customers alike.",
+          "updated_at": "2026-05-14T19:00:03.995Z"
+        },
+        {
+          "key": "hours_fr",
+          "value": "Lundi au vendredi : 7h00 — 18h00\nSamedi : 8h00 — 16h00\nDimanche : urgences seulement\nUrgences 24/7 disponibles",
+          "updated_at": "2026-05-14T19:00:04.012Z"
+        }
+      ]
+    },
+    "site_visits": {
+      "columns": [
+        "id",
+        "path",
+        "created_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "path": "/",
+          "created_at": "2026-05-14T19:04:27.189Z"
+        },
+        {
+          "id": 2,
+          "path": "/services",
+          "created_at": "2026-05-14T19:04:38.967Z"
+        },
+        {
+          "id": 3,
+          "path": "/rappel",
+          "created_at": "2026-05-14T19:04:45.594Z"
+        },
+        {
+          "id": 4,
+          "path": "/",
+          "created_at": "2026-05-14T19:06:55.098Z"
+        }
+      ]
+    },
+    "posts": {
+      "columns": [
+        "id",
+        "title_fr",
+        "title_en",
+        "content_fr",
+        "content_en",
+        "image_url",
+        "category",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title_fr": "5 signes que vos drains demandent de l'attention",
+          "title_en": "5 Signs Your Drains Need Attention",
+          "content_fr": "Un évier qui se vide lentement, des odeurs persistantes, des bruits de glouglou dans les tuyaux — votre plomberie essaie de vous parler. Voici cinq signes à ne jamais ignorer.\n\nUn drain qui ralentit est souvent le premier indice d'un bouchon en formation. N'attendez pas qu'il soit complètement bloqué pour agir, car un débouchage préventif coûte beaucoup moins cher qu'un dégât d'eau.\n\nLes odeurs qui remontent indiquent souvent une accumulation organique dans la tuyauterie ou un siphon asséché. Quant aux bruits de glouglou, ils signalent un problème de ventilation dans le réseau de plomberie.",
+          "content_en": "A slow-draining sink, persistent smells, gurgling sounds in pipes — your plumbing is trying to tell you something. Here are five signs you should never ignore.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778784316/tapavis_tenant_plomberie-belq-inc/build_plomberie-belq-inc_1778784316631.png",
+          "category": "Conseils",
+          "published": 1,
+          "created_at": "2026-05-14T19:00:04.173Z",
+          "updated_at": "2026-05-14T19:00:04.173Z"
+        },
+        {
+          "id": 2,
+          "title_fr": "Comment éviter les dégâts d'eau cet hiver",
+          "title_en": "How to Prevent Water Damage This Winter",
+          "content_fr": "L'hiver québécois met vos tuyaux à rude épreuve. Voici nos meilleurs conseils pour éviter le gel des canalisations et les dégâts d'eau coûteux qui s'ensuivent.\n\nIsolez tous les tuyaux exposés dans le sous-sol, le grenier et les murs extérieurs. Lors des vagues de froid extrême, laissez couler un mince filet d'eau froide et chaude pour empêcher le gel. Fermez l'arrivée d'eau extérieure et purgez les boyaux d'arrosage avant le premier gel.",
+          "content_en": "Quebec winters put your pipes to the test. Here are our best tips to prevent frozen pipes and the costly water damage that follows.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778784324/tapavis_tenant_plomberie-belq-inc/build_plomberie-belq-inc_1778784324598.png",
+          "category": "Conseils",
+          "published": 1,
+          "created_at": "2026-05-14T19:00:04.183Z",
+          "updated_at": "2026-05-14T19:00:04.183Z"
+        },
+        {
+          "id": 3,
+          "title_fr": "Quand faut-il remplacer son chauffe-eau?",
+          "title_en": "When Should You Replace Your Water Heater?",
+          "content_fr": "La plupart des chauffe-eau résidentiels durent entre 8 et 12 ans. Si le vôtre approche cet âge ou présente des symptômes inquiétants (eau rouille, claquements, fuites à la base), il est temps d'envisager le remplacement avant la catastrophe.\n\nUn chauffe-eau qui fuit peut causer en quelques heures des milliers de dollars de dégâts d'eau. Mieux vaut prévenir que guérir.",
+          "content_en": "Most residential water heaters last between 8 and 12 years. If yours is approaching that age or showing warning signs, it's time to consider replacement.",
+          "image_url": "",
+          "category": "Nouvelles",
+          "published": 1,
+          "created_at": "2026-05-14T19:00:04.196Z",
+          "updated_at": "2026-05-14T19:00:04.196Z"
+        },
+        {
+          "id": 4,
+          "title_fr": "Pourquoi choisir un plombier certifié",
+          "title_en": "Why Choose a Certified Plumber",
+          "content_fr": "Faire affaire avec un plombier certifié, c'est l'assurance d'un travail conforme au Code de construction, couvert par une garantie écrite, et exécuté par un professionnel formé. Voici pourquoi la certification fait toute la différence pour vos travaux de plomberie.",
+          "content_en": "Hiring a certified plumber means guaranteed code-compliant work, written warranty coverage, and a trained professional on the job. Here's why certification makes all the difference.",
+          "image_url": "",
+          "category": "Conseils",
+          "published": 1,
+          "created_at": "2026-05-14T19:00:04.208Z",
+          "updated_at": "2026-05-14T19:00:04.208Z"
+        }
+      ]
+    },
+    "services": {
+      "columns": [
+        "id",
+        "name_fr",
+        "name_en",
+        "description_fr",
+        "description_en",
+        "icon",
+        "price_range",
+        "image_url",
+        "featured",
+        "sort_order",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 6,
+      "sampleRows": [
+        {
+          "id": 1,
+          "name_fr": "Plomberie d'urgence 24/7",
+          "name_en": "24/7 Emergency Plumbing",
+          "description_fr": "Fuites, dégâts d'eau, bouchons soudains — intervention rapide jour et nuit, partout dans votre secteur.",
+          "description_en": "Leaks, water damage, sudden clogs — fast intervention day and night, anywhere in your area.",
+          "icon": "🚨",
+          "price_range": "À partir de 150$",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778784320/tapavis_tenant_plomberie-belq-inc/build_plomberie-belq-inc_1778784320136.png",
+          "featured": 1,
+          "sort_order": 1,
+          "created_at": "2026-05-14T19:00:04.076Z",
+          "updated_at": "2026-05-14T19:00:04.076Z"
+        },
+        {
+          "id": 2,
+          "name_fr": "Débouchage de drains",
+          "name_en": "Drain Cleaning",
+          "description_fr": "Débouchage des éviers, toilettes, baignoires et drains principaux avec équipement professionnel et caméra.",
+          "description_en": "Unclogging sinks, toilets, bathtubs and main drains with professional equipment and camera inspection.",
+          "icon": "🌀",
+          "price_range": "À partir de 125$",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778784346/tapavis_tenant_plomberie-belq-inc/build_plomberie-belq-inc_1778784345913.png",
+          "featured": 1,
+          "sort_order": 2,
+          "created_at": "2026-05-14T19:00:04.093Z",
+          "updated_at": "2026-05-14T19:00:04.093Z"
+        },
+        {
+          "id": 3,
+          "name_fr": "Chauffe-eau",
+          "name_en": "Water Heaters",
+          "description_fr": "Installation, réparation et remplacement de chauffe-eau électriques et au gaz, toutes marques.",
+          "description_en": "Installation, repair, and replacement of electric and gas water heaters, all brands.",
+          "icon": "🔥",
+          "price_range": "Devis gratuit",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778784332/tapavis_tenant_plomberie-belq-inc/build_plomberie-belq-inc_1778784332282.png",
+          "featured": 1,
+          "sort_order": 3,
+          "created_at": "2026-05-14T19:00:04.104Z",
+          "updated_at": "2026-05-14T19:00:04.104Z"
+        },
+        {
+          "id": 4,
+          "name_fr": "Rénovation salle de bain",
+          "name_en": "Bathroom Renovation",
+          "description_fr": "Rénovation complète : plomberie, robinetterie, baignoires, douches et toilettes neuves.",
+          "description_en": "Complete bathroom renovations: plumbing, fixtures, bathtubs, showers and new toilets.",
+          "icon": "🚿",
+          "price_range": "Devis gratuit",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778784339/tapavis_tenant_plomberie-belq-inc/build_plomberie-belq-inc_1778784339705.png",
+          "featured": 1,
+          "sort_order": 4,
+          "created_at": "2026-05-14T19:00:04.115Z",
+          "updated_at": "2026-05-14T19:00:04.115Z"
+        },
+        {
+          "id": 5,
+          "name_fr": "Inspection caméra",
+          "name_en": "Camera Inspection",
+          "description_fr": "Inspection caméra des canalisations pour détecter racines, fissures et obstructions avant qu'elles n'empirent.",
+          "description_en": "Camera inspection of pipes to detect roots, cracks and obstructions before they get worse.",
+          "icon": "📹",
+          "price_range": "À partir de 200$",
+          "image_url": "",
+          "featured": 0,
+          "sort_order": 5,
+          "created_at": "2026-05-14T19:00:04.142Z",
+          "updated_at": "2026-05-14T19:00:04.142Z"
+        },
+        {
+          "id": 6,
+          "name_fr": "Détection de fuites",
+          "name_en": "Leak Detection",
+          "description_fr": "Localisation précise des fuites cachées dans les murs, planchers et conduites principales — sans démolition.",
+          "description_en": "Precise location of hidden leaks in walls, floors and main lines — without demolition.",
+          "icon": "💧",
+          "price_range": "À partir de 175$",
+          "image_url": "",
+          "featured": 0,
+          "sort_order": 6,
+          "created_at": "2026-05-14T19:00:04.156Z",
+          "updated_at": "2026-05-14T19:00:04.156Z"
+        }
+      ]
+    },
+    "callback_requests": {
+      "columns": [
+        "id",
+        "name",
+        "phone",
+        "preferred_time",
+        "issue",
+        "status",
+        "notes",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "contact_submissions": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "phone",
+        "message",
+        "status",
+        "notes",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    }
+  }
+}

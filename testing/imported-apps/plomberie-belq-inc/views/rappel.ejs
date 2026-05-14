@@ -1,0 +1,73 @@
+<%- include('partials/header') %>
+<section class="page-header" style="background-color:#1b1d83;color:#fff">
+  <div class="container">
+    <h1 style="color:#fff"><%= t.callback_title %></h1>
+    <p style="color:#fff;opacity:0.92"><%= t.callback_subtitle %></p>
+  </div>
+</section>
+<section class="section">
+  <div class="narrow">
+    <div id="callbackSuccess" class="alert alert-success" style="display:none">
+      <h3><%= t.callback_thanks_title %></h3>
+      <p><%= t.callback_thanks_msg %></p>
+      <% if (config.phone) { %><p style="margin-top:10px"><%= lang === 'fr' ? 'Urgence?' : 'Emergency?' %> <a href="tel:<%= config.phone %>" style="font-weight:700"><%= config.phone %></a></p><% } %>
+    </div>
+    <form id="callbackForm" class="form-card">
+      <div class="form-row">
+        <label for="cb_name"><%= t.field_name %> *</label>
+        <input id="cb_name" name="name" type="text" required autocomplete="name">
+      </div>
+      <div class="form-row">
+        <label for="cb_phone"><%= t.field_phone %> *</label>
+        <input id="cb_phone" name="phone" type="tel" required autocomplete="tel" placeholder="514-555-0123">
+      </div>
+      <div class="form-row">
+        <label for="cb_time"><%= t.field_preferred_time %></label>
+        <input id="cb_time" name="preferred_time" type="text" placeholder="<%= lang === 'fr' ? 'ex. Demain matin, dès que possible' : 'e.g. Tomorrow morning, ASAP' %>">
+      </div>
+      <div class="form-row">
+        <label for="cb_issue"><%= t.field_issue %></label>
+        <textarea id="cb_issue" name="issue" rows="4" placeholder="<%= lang === 'fr' ? 'Décrivez brièvement votre problème...' : 'Briefly describe your issue...' %>"></textarea>
+      </div>
+      <div id="callbackError" class="alert alert-error" style="display:none"></div>
+      <button type="submit" class="btn btn-primary btn-block" style="background-color:#1b1d83;color:#fff"><%= t.btn_send_callback %></button>
+    </form>
+    <% if (config.phone) { %>
+    <p class="form-aside center">
+      <%= lang === 'fr' ? 'Ou appelez-nous directement :' : 'Or call us directly:' %>
+      <a href="tel:<%= config.phone %>"><strong><%= config.phone %></strong></a>
+    </p>
+    <% } %>
+  </div>
+</section>
+<script>
+(function(){
+  var f = document.getElementById('callbackForm');
+  var s = document.getElementById('callbackSuccess');
+  var e = document.getElementById('callbackError');
+  if (!f) return;
+  f.addEventListener('submit', async function(ev){
+    ev.preventDefault();
+    e.style.display = 'none';
+    var fd = new FormData(f);
+    var data = {};
+    fd.forEach(function(v,k){ data[k] = v; });
+    var btn = f.querySelector('button[type="submit"]');
+    var orig = btn.textContent;
+    btn.disabled = true; btn.textContent = '…';
+    try {
+      var res = await fetch('api/callback', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data) });
+      var json = await res.json();
+      if (!res.ok) throw new Error(json.error || 'Error');
+      f.style.display = 'none';
+      s.style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (err) {
+      e.textContent = '<%- t.error_generic %>';
+      e.style.display = 'block';
+      btn.disabled = false; btn.textContent = orig;
+    }
+  });
+})();
+</script>
+<%- include('partials/footer') %>

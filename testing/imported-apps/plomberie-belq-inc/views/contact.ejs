@@ -1,0 +1,75 @@
+<%- include('partials/header') %>
+<section class="page-header" style="background-color:#1b1d83;color:#fff">
+  <div class="container">
+    <h1 style="color:#fff"><%= t.contact_title %></h1>
+    <p style="color:#fff;opacity:0.92"><%= t.contact_subtitle %></p>
+  </div>
+</section>
+<section class="section">
+  <div class="container">
+    <div class="contact-grid">
+      <div>
+        <h2 style="margin-bottom:20px;color:#1b1d83"><%= t.contact_info %></h2>
+        <% if (config.phone) { %>
+          <div class="contact-block"><strong>📞 <%= t.phone_label %></strong><p><a href="tel:<%= config.phone %>"><%= config.phone %></a></p></div>
+        <% } %>
+        <% if (config.email) { %>
+          <div class="contact-block"><strong>✉️ <%= t.email_label %></strong><p><a href="mailto:<%= config.email %>"><%= config.email %></a></p></div>
+        <% } %>
+        <% if (config.address) { %>
+          <div class="contact-block"><strong>📍 <%= t.address_label %></strong><p><%= config.address %></p></div>
+        <% } %>
+        <% if (settings['hours_' + lang]) { %>
+          <div class="contact-block"><strong>🕒 <%= t.hours_label %></strong><p style="white-space:pre-line"><%= settings['hours_' + lang] %></p></div>
+        <% } %>
+        <% if (!config.phone && !config.email && !config.address) { %>
+          <p class="empty"><%= lang === 'fr' ? 'Coordonnées à venir.' : 'Contact info coming soon.' %></p>
+        <% } %>
+      </div>
+      <div>
+        <div id="contactSuccess" class="alert alert-success" style="display:none">
+          <h3><%= t.contact_thanks_title %></h3>
+          <p><%= t.contact_thanks_msg %></p>
+        </div>
+        <form id="contactForm" class="form-card">
+          <div class="form-row"><label for="c_name"><%= t.field_name %> *</label><input id="c_name" name="name" type="text" required autocomplete="name"></div>
+          <div class="form-row"><label for="c_email"><%= t.field_email %></label><input id="c_email" name="email" type="email" autocomplete="email"></div>
+          <div class="form-row"><label for="c_phone"><%= t.field_phone %></label><input id="c_phone" name="phone" type="tel" autocomplete="tel"></div>
+          <div class="form-row"><label for="c_msg"><%= t.field_message %> *</label><textarea id="c_msg" name="message" rows="5" required></textarea></div>
+          <div id="contactError" class="alert alert-error" style="display:none"></div>
+          <button type="submit" class="btn btn-primary btn-block" style="background-color:#1b1d83;color:#fff"><%= t.btn_send_message %></button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+<script>
+(function(){
+  var f = document.getElementById('contactForm');
+  var s = document.getElementById('contactSuccess');
+  var e = document.getElementById('contactError');
+  if (!f) return;
+  f.addEventListener('submit', async function(ev){
+    ev.preventDefault();
+    e.style.display = 'none';
+    var fd = new FormData(f); var data = {};
+    fd.forEach(function(v,k){ data[k] = v; });
+    var btn = f.querySelector('button[type="submit"]');
+    var orig = btn.textContent;
+    btn.disabled = true; btn.textContent = '…';
+    try {
+      var res = await fetch('api/contact', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) });
+      var json = await res.json();
+      if (!res.ok) throw new Error(json.error || 'Error');
+      f.style.display = 'none';
+      s.style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (err) {
+      e.textContent = '<%- t.error_generic %>';
+      e.style.display = 'block';
+      btn.disabled = false; btn.textContent = orig;
+    }
+  });
+})();
+</script>
+<%- include('partials/footer') %>
