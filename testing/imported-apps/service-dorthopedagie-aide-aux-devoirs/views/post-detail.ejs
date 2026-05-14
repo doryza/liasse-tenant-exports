@@ -1,0 +1,38 @@
+<%- include('partials/header') %>
+<% if (typeof post !== 'undefined' && post) { %>
+<article class="post-detail">
+  <% if (post.image_url) { %><img src="<%= post.image_url %>" alt="<%= post.title %>" class="post-hero-img"><% } %>
+  <div class="container post-detail-body">
+    <% if (post.category) { %><span class="post-cat"><%= post.category %></span><% } %>
+    <h1><%= post.title %></h1>
+    <p class="post-date"><%= new Date(post.created_at).toLocaleDateString('fr-CA', { day: 'numeric', month: 'long', year: 'numeric' }) %></p>
+    <% if (post.excerpt) { %><p class="post-excerpt"><%= post.excerpt %></p><% } %>
+    <div class="post-content" style="white-space:pre-line"><%= post.content %></div>
+    <div style="margin-top:2rem;text-align:center">
+      <a href="articles" class="btn btn-outline">← Tous les articles</a>
+    </div>
+  </div>
+</article>
+<% if (typeof relatedPosts !== 'undefined' && relatedPosts && relatedPosts.length > 0) { %>
+<section class="section section-blog">
+  <div class="container">
+    <h2 style="text-align:center">Articles similaires</h2>
+    <div class="posts-grid">
+      <% relatedPosts.forEach(function(p) { %>
+        <a href="articles/<%= p.id %>" class="post-card">
+          <% if (p.image_url) { %><img src="<%= p.image_url %>" alt="<%= p.title %>"><% } %>
+          <div class="post-body">
+            <% if (p.category) { %><span class="post-cat"><%= p.category %></span><% } %>
+            <h3><%= p.title %></h3>
+            <% if (p.excerpt) { %><p><%= p.excerpt %></p><% } %>
+          </div>
+        </a>
+      <% }); %>
+    </div>
+  </div>
+</section>
+<% } %>
+<% } else { %>
+<section class="section"><div class="container"><p class="empty-state">Article introuvable. <a href="articles">Voir tous les articles</a></p></div></section>
+<% } %>
+<%- include('partials/footer') %>

@@ -1,0 +1,50 @@
+<%- include('partials/header') %>
+<% if (typeof service !== 'undefined' && service) { %>
+<section class="service-hero">
+  <% if (service.image_url) { %><img src="<%= service.image_url %>" alt="<%= service.name %>" class="service-hero-img"><% } %>
+  <div class="service-hero-overlay">
+    <div class="container">
+      <div class="service-hero-icon"><%= service.icon || '✨' %></div>
+      <h1><%= service.name %></h1>
+      <p><%= service.description %></p>
+    </div>
+  </div>
+</section>
+<section class="section">
+  <div class="container service-detail-grid">
+    <div class="service-detail-main">
+      <h2>À propos de ce service</h2>
+      <% if (service.details) { %><p style="white-space:pre-line"><%= service.details %></p><% } else { %><p><%= service.description %></p><% } %>
+    </div>
+    <aside class="service-detail-side">
+      <h3>Informations</h3>
+      <% if (service.duration) { %><div class="info-row"><strong>Durée:</strong> <%= service.duration %></div><% } %>
+      <% if (service.price) { %><div class="info-row"><strong>Tarif:</strong> <%= service.price %></div><% } %>
+      <a href="rendez-vous?service=<%= service.id %>" class="btn btn-primary" style="background-color:#ec4899;color:#fff;width:100%;margin-top:1rem">Réserver ce service</a>
+      <a href="contact" class="btn btn-outline" style="width:100%;margin-top:0.5rem">Poser une question</a>
+    </aside>
+  </div>
+</section>
+<% if (typeof otherServices !== 'undefined' && otherServices && otherServices.length > 0) { %>
+<section class="section section-services">
+  <div class="container">
+    <h2 style="text-align:center">Autres services</h2>
+    <div class="services-grid">
+      <% otherServices.forEach(function(s) { %>
+        <a href="services/<%= s.id %>" class="service-card">
+          <% if (s.image_url) { %><img src="<%= s.image_url %>" alt="<%= s.name %>"><% } %>
+          <div class="service-body">
+            <div class="service-icon"><%= s.icon || '✨' %></div>
+            <h3><%= s.name %></h3>
+            <p><%= s.description %></p>
+          </div>
+        </a>
+      <% }); %>
+    </div>
+  </div>
+</section>
+<% } %>
+<% } else { %>
+<section class="section"><div class="container"><p class="empty-state">Service introuvable. <a href="services">Voir tous les services</a></p></div></section>
+<% } %>
+<%- include('partials/footer') %>

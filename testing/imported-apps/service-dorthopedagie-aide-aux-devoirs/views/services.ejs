@@ -1,0 +1,33 @@
+<%- include('partials/header') %>
+<section class="page-hero">
+  <div class="container">
+    <h1>Mes services</h1>
+    <p><%= (typeof settings!=='undefined' && settings.services_subtitle) ? settings.services_subtitle : 'Des solutions adaptées pour chaque enfant' %></p>
+  </div>
+</section>
+<section class="section">
+  <div class="container">
+    <% if (typeof services !== 'undefined' && services && services.length > 0) { %>
+      <div class="services-grid">
+        <% services.forEach(function(s) { %>
+          <a href="services/<%= s.id %>" class="service-card">
+            <% if (s.image_url) { %><img src="<%= s.image_url %>" alt="<%= s.name %>"><% } %>
+            <div class="service-body">
+              <div class="service-icon"><%= s.icon || '✨' %></div>
+              <h3><%= s.name %></h3>
+              <p><%= s.description %></p>
+              <div class="service-meta">
+                <% if (s.duration) { %><span>⏱ <%= s.duration %></span><% } %>
+                <% if (s.price) { %><span>💰 <%= s.price %></span><% } %>
+              </div>
+              <span class="link-arrow">En savoir plus →</span>
+            </div>
+          </a>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <p class="empty-state">Les services seront bientôt disponibles. Revenez sous peu!</p>
+    <% } %>
+  </div>
+</section>
+<%- include('partials/footer') %>

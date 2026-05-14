@@ -1,0 +1,44 @@
+<footer class="site-footer">
+  <div class="footer-container">
+    <div class="footer-col">
+      <h4><%= (typeof settings!=='undefined' && settings.business_name) ? settings.business_name : 'Orthopédagogie' %></h4>
+      <p><%= (typeof settings!=='undefined' && settings.footer_text) ? settings.footer_text : '' %></p>
+    </div>
+    <div class="footer-col">
+      <h4>Navigation</h4>
+      <ul>
+        <li><a href=".">Accueil</a></li>
+        <li><a href="services">Services</a></li>
+        <li><a href="a-propos">À propos</a></li>
+        <li><a href="articles">Articles</a></li>
+        <li><a href="contact">Contact</a></li>
+        <li><a href="rendez-vous">Rendez-vous</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <% if (typeof settings!=='undefined' && settings.contact_email) { %><p>📧 <a href="mailto:<%= settings.contact_email %>"><%= settings.contact_email %></a></p><% } %>
+      <% if (typeof settings!=='undefined' && settings.contact_phone) { %><p>📞 <%= settings.contact_phone %></p><% } %>
+      <% if (typeof settings!=='undefined' && settings.business_address) { %><p>📍 <%= settings.business_address %></p><% } %>
+      <button data-push-btn class="btn-push">🔔 Activer les notifications</button>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© <%= new Date().getFullYear() %> <%= (typeof settings!=='undefined' && settings.business_name) ? settings.business_name : 'Orthopédagogie' %>. Tous droits réservés.</p>
+  </div>
+</footer>
+<script>
+(function(){
+  var toggle = document.getElementById('navToggle');
+  var links = document.getElementById('navLinks');
+  if (toggle && links) {
+    toggle.addEventListener('click', function(){ links.classList.toggle('open'); toggle.classList.toggle('open'); });
+  }
+})();
+</script>
+<script>
+setTimeout(function(){ try { if (window.TenantSDK) TenantSDK.ui.showInstallBanner(); } catch(e){} }, 2000);
+setTimeout(function(){ try { if (window.TenantSDK) TenantSDK.ui.showPushPrompt(); } catch(e){} }, 9000);
+</script>
+</body>
+</html>

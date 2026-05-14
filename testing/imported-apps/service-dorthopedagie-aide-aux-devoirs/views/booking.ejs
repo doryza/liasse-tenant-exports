@@ -1,0 +1,136 @@
+<%- include('partials/header') %>
+<section class="page-hero">
+  <div class="container">
+    <h1>Prendre rendez-vous</h1>
+    <p>Réservez une consultation pour votre enfant. Première rencontre gratuite!</p>
+  </div>
+</section>
+<section class="section">
+  <div class="container booking-grid">
+    <div class="booking-info">
+      <div class="booking-mascot">
+        <div class="mascot mascot-small" aria-hidden="true">
+          <div class="mascot-bulb">💡</div>
+          <div class="mascot-body">
+            <div class="mascot-hair"></div>
+            <div class="mascot-pony"></div>
+            <div class="mascot-face">
+              <div class="eye eye-left"></div>
+              <div class="eye eye-right"></div>
+              <div class="mouth"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <h2>Comment ça marche?</h2>
+      <ol class="booking-steps">
+        <li><strong>Remplissez le formulaire</strong> avec les informations de votre enfant.</li>
+        <li><strong>Je vous contacte</strong> dans les 24 à 48h pour confirmer.</li>
+        <li><strong>Première rencontre gratuite</strong> de 45 minutes pour évaluer les besoins.</li>
+        <li><strong>Plan d'intervention</strong> personnalisé proposé selon les besoins.</li>
+      </ol>
+      <div class="booking-note">
+        <strong>💝 La première consultation est gratuite</strong><br>
+        Pour discuter sans engagement des besoins de votre enfant.
+      </div>
+    </div>
+    <div class="booking-form-wrap">
+      <form id="bookingForm" class="booking-form">
+        <h3>Vos informations</h3>
+        <div class="form-row">
+          <label>Votre nom *</label>
+          <input type="text" name="parent_name" required placeholder="Marie Tremblay">
+        </div>
+        <div class="form-grid-2">
+          <div class="form-row">
+            <label>Courriel *</label>
+            <input type="email" name="parent_email" required placeholder="marie@exemple.com">
+          </div>
+          <div class="form-row">
+            <label>Téléphone</label>
+            <input type="tel" name="parent_phone" placeholder="514-555-1234">
+          </div>
+        </div>
+        <h3 style="margin-top:1.5rem">À propos de votre enfant</h3>
+        <div class="form-grid-2">
+          <div class="form-row">
+            <label>Prénom</label>
+            <input type="text" name="child_name" placeholder="Léo">
+          </div>
+          <div class="form-row">
+            <label>Âge</label>
+            <input type="text" name="child_age" placeholder="9 ans">
+          </div>
+        </div>
+        <div class="form-row">
+          <label>Niveau scolaire</label>
+          <input type="text" name="child_grade" placeholder="4e année">
+        </div>
+        <h3 style="margin-top:1.5rem">Votre demande</h3>
+        <div class="form-row">
+          <label>Service souhaité</label>
+          <select name="service_id">
+            <option value="">— Choisir un service —</option>
+            <% if (typeof services !== 'undefined' && services && services.length > 0) { %>
+              <% services.forEach(function(s) { %>
+                <option value="<%= s.id %>" <%= (typeof preselectedService !== 'undefined' && String(preselectedService) === String(s.id)) ? 'selected' : '' %>><%= s.name %></option>
+              <% }); %>
+            <% } %>
+          </select>
+        </div>
+        <div class="form-grid-2">
+          <div class="form-row">
+            <label>Date souhaitée</label>
+            <input type="text" name="preferred_date" placeholder="Cette semaine, 15 septembre...">
+          </div>
+          <div class="form-row">
+            <label>Plage horaire</label>
+            <select name="preferred_time">
+              <option value="">— À préciser —</option>
+              <option value="matin">Matin</option>
+              <option value="après-midi">Après-midi</option>
+              <option value="soir">Soir</option>
+              <option value="fin de semaine">Fin de semaine</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <label>Message ou informations supplémentaires</label>
+          <textarea name="message" rows="4" placeholder="Décrivez brièvement les difficultés observées, vos préoccupations..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary" style="background-color:#ec4899;color:#fff;width:100%;padding:1rem">Envoyer la demande</button>
+        <div id="bookingMsg" class="form-msg"></div>
+      </form>
+    </div>
+  </div>
+</section>
+<script>
+document.getElementById('bookingForm').addEventListener('submit', async function(e){
+  e.preventDefault();
+  var form = e.target;
+  var msg = document.getElementById('bookingMsg');
+  var btn = form.querySelector('button[type=submit]');
+  btn.disabled = true; btn.textContent = 'Envoi...';
+  msg.textContent = '';
+  var data = {};
+  for (var el of form.elements) { if (el.name) data[el.name] = el.value; }
+  try {
+    var res = await fetch('api/appointments', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) });
+    var json = await res.json();
+    if (res.ok && json.success) {
+      form.style.display = 'none';
+      msg.className = 'form-msg success';
+      msg.innerHTML = '<div style="text-align:center;padding:2rem"><div style="font-size:4rem">🎉</div><h3>Demande envoyée!</h3><p>Merci! Je vous contacterai dans les 24 à 48h pour confirmer le rendez-vous.</p><a href="." class="btn btn-outline">Retour à l\'accueil</a></div>';
+    } else {
+      msg.className = 'form-msg error';
+      msg.textContent = json.error || 'Une erreur est survenue.';
+      btn.disabled = false; btn.textContent = 'Envoyer la demande';
+    }
+  } catch(err) {
+    msg.className = 'form-msg error';
+    msg.textContent = 'Erreur de connexion. Veuillez réessayer.';
+    btn.disabled = false; btn.textContent = 'Envoyer la demande';
+  }
+});
+</script>
+<%- include('partials/footer') %>

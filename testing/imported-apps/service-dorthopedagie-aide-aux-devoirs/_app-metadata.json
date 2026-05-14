@@ -1,0 +1,69 @@
+{
+  "slug": "service-dorthopedagie-aide-aux-devoirs",
+  "displayName": "Service d'orthopédagie ( aide aux devoirs)",
+  "description": "Type de projet : Site web pour Johanne Archambault, spécialisée en orthopédagogie\n\nBut : Présenter ses services d'orthopédagogie pour les enfants en difficulté d'apprentissage.\n\nFonctionnalités :\n- Système de prise de rendez-vous\n\nDesign :\n- Coloré et dynamique\n- Mascotte personnalisée (animation ponctuelle) : petit personnage animé avec cheveux noirs et couette sur le côté, souriant avec une ampoule qui s'allume au-dessus de sa tête pour symboliser la réussite.\n\nContact :\n- johannearch8@ gmail.com",
+  "status": "active",
+  "generationVersion": 1,
+  "primaryColor": "#ec4899",
+  "iconUrl": "https://res.cloudinary.com/duhp69meg/image/upload/v1778770174/tapavis_tenant_service-dorthopedagie-aide-aux-devoirs/icon_service-dorthopedagie-aide-aux-devoirs_1778770174090.png",
+  "enabledAuthMethods": [
+    "webauthn",
+    "sms",
+    "email"
+  ],
+  "notificationsEnabled": true,
+  "geolocationEnabled": true,
+  "customConfig": {
+    "language": "fr",
+    "aiSummary": {
+      "en": {
+        "dashboard": "Welcome to your website's control panel! This is your friendly command center for keeping everything up to date.\n\nFrom the 'Admin' tab, you can easily manage all your content. Want to add a new service you're offering? Just head to the 'Services' section and click to add a new one. The same simple process works for posting new 'Blog Articles', sharing 'Testimonials' from happy families, or updating your 'FAQs'.\n\nYou'll also find dedicated sections to view all appointment requests and messages sent through your contact form. This makes it easy to keep track of new inquiries and stay organized.\n\nCurious about how many visitors your site is getting? Your dashboard includes a simple overview of your site's activity.\n\nThink of it as the easy-to-use backstage area for your wonderful new website. Enjoy exploring!",
+        "variables": "Great news! Your new website is all set up and ready to go. You don't need to worry about any extra technical steps or special keys. Everything is built-in and will work perfectly right from the start. You can dive right in and start managing your content!"
+      },
+      "fr": {
+        "dashboard": "Bienvenue dans le tableau de bord de votre site! C'est votre centre de commande personnel, conçu pour que vous puissiez tout gérer en toute simplicité.\n\nDepuis l'onglet 'Admin', vous pouvez facilement gérer tout votre contenu. Vous voulez ajouter un nouveau service que vous offrez? Allez simplement dans la section 'Services' et cliquez pour en créer un nouveau. Le même principe s'applique pour publier des 'Articles de blog', partager des 'Témoignages' de parents satisfaits ou mettre à jour votre section 'FAQ'.\n\nVous y trouverez aussi des sections dédiées pour consulter toutes les demandes de rendez-vous et les messages reçus via votre formulaire de contact. C'est parfait pour suivre les nouvelles demandes et rester bien organisée.\n\nCurieuse de savoir combien de personnes visitent votre site? Votre tableau de bord vous offre un aperçu simple des statistiques de visites.\n\nC'est un peu comme les coulisses de votre magnifique site web. Amusez-vous bien à l'explorer!",
+        "variables": "Bonne nouvelle! Votre nouveau site web est fin prêt à être lancé. Vous n'avez besoin d'aucune configuration technique supplémentaire ni de clés spéciales. Tout est déjà intégré et fonctionnel. Vous pouvez commencer à gérer votre contenu dès maintenant!"
+      }
+    },
+    "aiSummaryVersion": 1
+  },
+  "promptHistory": [
+    {
+      "prompt": "Type de projet : Site web pour Johanne Archambault, spécialisée en orthopédagogie\n\nBut : Présenter ses services d'orthopédagogie pour les enfants en difficulté d'apprentissage.\n\nFonctionnalités :\n- Système de prise de rendez-vous\n\nDesign :\n- Coloré et dynamique\n- Mascotte personnalisée (animation ponctuelle) : petit personnage animé avec cheveux noirs et couette sur le côté, souriant avec une ampoule qui s'allume au-dessus de sa tête pour symboliser la réussite.\n\nContact :\n- johannearch8@ gmail.com",
+      "timestamp": "2026-05-14T14:49:43.369Z",
+      "changeNotes": "Création initiale du site PWA pour Johanne Archambault, orthopédagogue. Inclut un système complet de prise de rendez-vous, page d'accueil avec mascotte animée (Lumi avec ampoule), pages services, à propos, articles de blog, contact, et tableau de bord admin complet pour gérer rendez-vous, services, articles et témoignages.\n\nAdmin enrichment pass: (1) Rewrote admin-styles.css with modern card design, gradients, hover states, focus rings, toast notifications, responsive sidebar, badge system. (2) Enhanced dashboard (admin.ejs) with welcome header, alert banner for pending items, icon-driven stat cards with meta, quick-actions panel, two improved data tables with status badges. (3) Rewrote admin-shell.ejs with search bar, count pill, toolbar, toast feedback, sticky modal header, modal overlay click-to-close, ESC-to-close, image preview, checkbox styling, proper HTML escaping for all dynamic content (fixes injection/quote breakage in onclick handlers — now uses ID-based lookup instead of inline JSON), required-field markers, better empty states. (4) Added newMessages stat tracking to /admin route. (5) Improved sidebar with iconified labels, active-state border accent, mobile horizontal layout. (6) Added inline color fallbacks to all brand CTAs (nav-cta, btn-add, btn-primary, filter chips) so they stay visible if CSS fails. (7) Added focus-ring box-shadow to form inputs (public + admin). (8) Preserved all {{IMG_*}} tokens, all routes, all data flows, all CRUD functionality.",
+      "generationId": 1118,
+      "filesModified": [
+        "manifest.json",
+        "public/css/admin-styles.css",
+        "public/css/styles.css",
+        "routes.js",
+        "schema.sql",
+        "seed.js",
+        "views/about.ejs",
+        "views/admin-appointments.ejs",
+        "views/admin-faqs.ejs",
+        "views/admin-posts.ejs",
+        "views/admin-services.ejs",
+        "views/admin-submissions.ejs",
+        "views/admin-testimonials.ejs",
+        "views/admin.ejs",
+        "views/blog.ejs",
+        "views/booking.ejs",
+        "views/contact.ejs",
+        "views/index.ejs",
+        "views/partials/admin-shell.ejs",
+        "views/partials/admin-sidebar.ejs",
+        "views/partials/footer.ejs",
+        "views/partials/header.ejs",
+        "views/post-detail.ejs",
+        "views/service-detail.ejs",
+        "views/services.ejs"
+      ]
+    }
+  ],
+  "apiVariables": [],
+  "createdAt": "2026-05-14T14:17:36.997Z",
+  "updatedAt": "2026-05-14T14:50:12.810Z",
+  "exportedAt": "2026-05-14T16:08:26.634Z"
+}

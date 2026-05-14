@@ -1,0 +1,19 @@
+<aside class="admin-sidebar">
+  <div class="sidebar-brand">
+    <h2>✨ Admin</h2>
+    <p><%= (typeof settings!=='undefined' && settings.business_name) ? settings.business_name : 'Orthopédagogie' %></p>
+  </div>
+  <nav class="sidebar-nav">
+    <a href="admin" class="<%= activeNav === 'dashboard' ? 'active' : '' %>"><span>📊</span> Tableau de bord</a>
+    <a href="admin/appointments" class="<%= activeNav === 'appointments' ? 'active' : '' %>"><span>📅</span> Rendez-vous</a>
+    <a href="admin/services" class="<%= activeNav === 'services' ? 'active' : '' %>"><span>🛠️</span> Services</a>
+    <a href="admin/posts" class="<%= activeNav === 'posts' ? 'active' : '' %>"><span>📝</span> Articles</a>
+    <a href="admin/testimonials" class="<%= activeNav === 'testimonials' ? 'active' : '' %>"><span>⭐</span> Témoignages</a>
+    <a href="admin/faqs" class="<%= activeNav === 'faqs' ? 'active' : '' %>"><span>❓</span> FAQ</a>
+    <a href="admin/submissions" class="<%= activeNav === 'submissions' ? 'active' : '' %>"><span>✉️</span> Messages</a>
+  </nav>
+  <div class="sidebar-footer">
+    <a href="." target="_blank">↗ Voir le site</a>
+    <a href="admin/logout">Déconnexion</a>
+  </div>
+</aside>

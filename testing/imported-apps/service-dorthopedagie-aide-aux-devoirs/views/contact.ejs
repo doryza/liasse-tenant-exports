@@ -1,0 +1,98 @@
+<%- include('partials/header') %>
+<section class="page-hero">
+  <div class="container">
+    <h1><%= (typeof settings!=='undefined' && settings.contact_title) ? settings.contact_title : 'Contactez-moi' %></h1>
+    <p><%= (typeof settings!=='undefined' && settings.contact_subtitle) ? settings.contact_subtitle : '' %></p>
+  </div>
+</section>
+<section class="section">
+  <div class="container contact-grid">
+    <div class="contact-info">
+      <h2>Restons en contact</h2>
+      <p>N'hésitez pas à me contacter pour toute question ou pour discuter des besoins de votre enfant.</p>
+      <% if (typeof settings!=='undefined' && settings.contact_email) { %>
+      <div class="contact-item">
+        <div class="contact-icon">📧</div>
+        <div><strong>Courriel</strong><br><a href="mailto:<%= settings.contact_email %>"><%= settings.contact_email %></a></div>
+      </div>
+      <% } %>
+      <% if (typeof settings!=='undefined' && settings.contact_phone) { %>
+      <div class="contact-item">
+        <div class="contact-icon">📞</div>
+        <div><strong>Téléphone</strong><br><%= settings.contact_phone %></div>
+      </div>
+      <% } %>
+      <% if (typeof settings!=='undefined' && settings.business_address) { %>
+      <div class="contact-item">
+        <div class="contact-icon">📍</div>
+        <div><strong>Adresse</strong><br><%= settings.business_address %></div>
+      </div>
+      <% } %>
+      <div style="margin-top:2rem;padding:1.5rem;background:#fff5fa;border-radius:12px">
+        <h3 style="margin-top:0">💡 Saviez-vous?</h3>
+        <p style="margin-bottom:0">La première consultation est <strong>gratuite</strong>! Profitez-en pour discuter des besoins de votre enfant sans engagement.</p>
+      </div>
+    </div>
+    <div class="contact-form-wrap">
+      <form id="contactForm" class="contact-form">
+        <h2>Envoyez-moi un message</h2>
+        <div class="form-row">
+          <label>Votre nom *</label>
+          <input type="text" name="name" required placeholder="Marie Tremblay">
+        </div>
+        <div class="form-row">
+          <label>Courriel</label>
+          <input type="email" name="email" placeholder="marie@exemple.com">
+        </div>
+        <div class="form-row">
+          <label>Téléphone</label>
+          <input type="tel" name="phone" placeholder="514-555-1234">
+        </div>
+        <div class="form-row">
+          <label>Sujet</label>
+          <input type="text" name="subject" placeholder="Question, demande d'information...">
+        </div>
+        <div class="form-row">
+          <label>Message *</label>
+          <textarea name="message" required rows="6" placeholder="Votre message..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary" style="background-color:#ec4899;color:#fff">Envoyer</button>
+        <div id="contactMsg" class="form-msg"></div>
+      </form>
+    </div>
+  </div>
+</section>
+<script>
+document.getElementById('contactForm').addEventListener('submit', async function(e){
+  e.preventDefault();
+  var form = e.target;
+  var msg = document.getElementById('contactMsg');
+  var btn = form.querySelector('button[type=submit]');
+  btn.disabled = true; btn.textContent = 'Envoi...';
+  msg.textContent = '';
+  var data = {
+    name: form.name.value,
+    email: form.email.value,
+    phone: form.phone.value,
+    subject: form.subject.value,
+    message: form.message.value
+  };
+  try {
+    var res = await fetch('api/contact', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) });
+    var json = await res.json();
+    if (res.ok && json.success) {
+      msg.className = 'form-msg success';
+      msg.textContent = '✓ Message envoyé! Je vous répondrai bientôt.';
+      form.reset();
+    } else {
+      msg.className = 'form-msg error';
+      msg.textContent = json.error || 'Une erreur est survenue.';
+    }
+  } catch(err) {
+    msg.className = 'form-msg error';
+    msg.textContent = 'Erreur de connexion. Veuillez réessayer.';
+  }
+  btn.disabled = false; btn.textContent = 'Envoyer';
+});
+</script>
+<%- include('partials/footer') %>

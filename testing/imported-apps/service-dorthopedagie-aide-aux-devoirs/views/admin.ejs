@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tableau de bord — Admin</title>
+<base href="<%= typeof tenantBase !== 'undefined' ? tenantBase : '/' %>">
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body>
+<div class="admin-layout">
+<%- include('partials/admin-sidebar') %>
+<main class="admin-main">
+  <header class="admin-header">
+    <div>
+      <h1>👋 Bienvenue</h1>
+      <p class="admin-subtitle">Voici un aperçu de l'activité récente de votre site</p>
+    </div>
+    <div class="header-actions">
+      <a href="." target="_blank" class="btn-ghost">↗ Voir le site</a>
+      <a href="admin/services" class="btn-add" style="background-color:#ec4899;color:#fff">+ Nouveau service</a>
+    </div>
+  </header>
+
+  <% if (stats.pendingAppts > 0 || stats.newMessages > 0) { %>
+  <div class="alert-banner">
+    <span style="font-size:1.5rem">🔔</span>
+    <div>
+      <strong>Vous avez de l'activité en attente</strong>
+      <p>
+        <% if (stats.pendingAppts > 0) { %><a href="admin/appointments"><%= stats.pendingAppts %> rendez-vous à confirmer</a><% } %>
+        <% if (stats.pendingAppts > 0 && stats.newMessages > 0) { %> · <% } %>
+        <% if (stats.newMessages > 0) { %><a href="admin/submissions"><%= stats.newMessages %> nouveaux messages</a><% } %>
+      </p>
+    </div>
+  </div>
+  <% } %>
+
+  <section class="stats-grid">
+    <div class="stat-card stat-accent">
+      <div class="stat-icon">📅</div>
+      <div class="stat-content">
+        <div class="stat-label">Rendez-vous total</div>
+        <div class="stat-value"><%= stats.appointments %></div>
+        <% if (stats.pendingAppts > 0) { %><div class="stat-meta"><%= stats.pendingAppts %> en attente</div><% } %>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">👀</div>
+      <div class="stat-content">
+        <div class="stat-label">Visites totales</div>
+        <div class="stat-value"><%= stats.totalVisits %></div>
+        <div class="stat-meta"><%= stats.recentVisits %> cette semaine</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">✉️</div>
+      <div class="stat-content">
+        <div class="stat-label">Messages</div>
+        <div class="stat-value"><%= stats.newMessages %></div>
+        <div class="stat-meta">nouveaux à lire</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🛠️</div>
+      <div class="stat-content">
+        <div class="stat-label">Services actifs</div>
+        <div class="stat-value"><%= stats.services %></div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">📝</div>
+      <div class="stat-content">
+        <div class="stat-label">Articles publiés</div>
+        <div class="stat-value"><%= stats.posts %></div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">⭐</div>
+      <div class="stat-content">
+        <div class="stat-label">Témoignages</div>
+        <div class="stat-value"><%= stats.testimonials %></div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">👥</div>
+      <div class="stat-content">
+        <div class="stat-label">Utilisateurs</div>
+        <div class="stat-value"><%= stats.userCount %></div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🔔</div>
+      <div class="stat-content">
+        <div class="stat-label">Notifications</div>
+        <div class="stat-value"><%= stats.pushCount %></div>
+        <div class="stat-meta">abonnés push</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="quick-actions">
+    <h2>Actions rapides</h2>
+    <div class="quick-actions-grid">
+      <a href="admin/appointments" class="quick-action">📅 Gérer les RDV</a>
+      <a href="admin/services" class="quick-action">🛠️ Modifier les services</a>
+      <a href="admin/posts" class="quick-action">✍️ Nouvel article</a>
+      <a href="admin/testimonials" class="quick-action">⭐ Ajouter un témoignage</a>
+      <a href="admin/faqs" class="quick-action">❓ Gérer la FAQ</a>
+      <a href="admin/submissions" class="quick-action">📨 Voir les messages</a>
+    </div>
+  </div>
+
+  <section class="dash-section">
+    <div class="dash-section-head">
+      <h2>📅 Rendez-vous récents</h2>
+      <a href="admin/appointments" class="btn-link">Tout voir →</a>
+    </div>
+    <% if (recentAppointments && recentAppointments.length > 0) { %>
+      <div class="table-wrap">
+      <table class="admin-table">
+        <thead><tr><th>Date</th><th>Parent</th><th>Enfant</th><th>Service</th><th>Statut</th></tr></thead>
+        <tbody>
+          <% recentAppointments.forEach(function(a) { %>
+            <tr>
+              <td><%= new Date(a.created_at).toLocaleDateString('fr-CA') %></td>
+              <td><strong><%= a.parent_name %></strong><br><small><%= a.parent_email %></small></td>
+              <td><%= a.child_name || '-' %><% if (a.child_age) { %> <small>(<%= a.child_age %>)</small><% } %></td>
+              <td><%= a.service_name || '-' %></td>
+              <td><span class="badge badge-<%= a.status %>"><%= a.status %></span></td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+      </div>
+    <% } else { %>
+      <div class="empty-state-card">
+        <div style="font-size:3rem">📭</div>
+        <p>Aucun rendez-vous pour le moment.</p>
+        <p class="empty-hint">Les nouvelles demandes apparaîtront ici dès qu'un parent remplira le formulaire.</p>
+      </div>
+    <% } %>
+  </section>
+
+  <section class="dash-section">
+    <div class="dash-section-head">
+      <h2>✉️ Messages récents</h2>
+      <a href="admin/submissions" class="btn-link">Tout voir →</a>
+    </div>
+    <% if (recentSubmissions && recentSubmissions.length > 0) { %>
+      <div class="table-wrap">
+      <table class="admin-table">
+        <thead><tr><th>Date</th><th>Nom</th><th>Sujet</th><th>Aperçu</th><th>Statut</th></tr></thead>
+        <tbody>
+          <% recentSubmissions.forEach(function(s) { %>
+            <tr>
+              <td><%= new Date(s.created_at).toLocaleDateString('fr-CA') %></td>
+              <td><strong><%= s.name %></strong><% if (s.email) { %><br><small><%= s.email %></small><% } %></td>
+              <td><%= s.subject || '-' %></td>
+              <td><%= (s.message || '').substring(0, 60) %><%= (s.message || '').length > 60 ? '…' : '' %></td>
+              <td><span class="badge badge-<%= s.status || 'new' %>"><%= s.status || 'new' %></span></td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+      </div>
+    <% } else { %>
+      <div class="empty-state-card">
+        <div style="font-size:3rem">💌</div>
+        <p>Aucun message pour le moment.</p>
+      </div>
+    <% } %>
+  </section>
+</main>
+</div>
+</body>
+</html>

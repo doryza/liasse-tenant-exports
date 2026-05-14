@@ -1,0 +1,513 @@
+{
+  "exportedAt": "2026-05-14T16:08:26.649Z",
+  "tables": {
+    "admin_invites": {
+      "columns": [
+        "id",
+        "email",
+        "token",
+        "role",
+        "status",
+        "invited_by",
+        "expires_at",
+        "accepted_at",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_webauthn_credentials": {
+      "columns": [
+        "id",
+        "admin_user_id",
+        "credential_id",
+        "public_key",
+        "counter",
+        "device_name",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_users": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "password_hash",
+        "display_name",
+        "role",
+        "active",
+        "activation_token",
+        "invited_by",
+        "invite_token",
+        "invite_expires_at",
+        "last_login_at",
+        "is_active",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_settings": {
+      "columns": [
+        "key",
+        "value",
+        "updated_at"
+      ],
+      "totalRows": 48,
+      "sampleRows": [
+        {
+          "key": "business_name",
+          "value": "Johanne Archambault - Orthopédagogie",
+          "updated_at": "2026-05-14T14:49:02.960Z"
+        },
+        {
+          "key": "tagline",
+          "value": "Accompagner chaque enfant vers sa réussite",
+          "updated_at": "2026-05-14T14:49:02.973Z"
+        },
+        {
+          "key": "hero_title",
+          "value": "L'apprentissage, une étincelle à allumer",
+          "updated_at": "2026-05-14T14:49:02.993Z"
+        },
+        {
+          "key": "hero_subtitle",
+          "value": "Service d'orthopédagogie et aide aux devoirs pour les enfants en difficulté d'apprentissage. Une approche bienveillante, personnalisée et créative.",
+          "updated_at": "2026-05-14T14:49:03.008Z"
+        },
+        {
+          "key": "hero_cta",
+          "value": "Prendre rendez-vous",
+          "updated_at": "2026-05-14T14:49:03.024Z"
+        },
+        {
+          "key": "about_title",
+          "value": "À propos de Johanne",
+          "updated_at": "2026-05-14T14:49:03.040Z"
+        },
+        {
+          "key": "about_text",
+          "value": "Passionnée par l'éducation depuis plus de 20 ans, je suis Johanne Archambault, orthopédagogue spécialisée auprès des enfants présentant des difficultés d'apprentissage. Mon approche est unique: je crois fermement que chaque enfant possède en lui une étincelle qui ne demande qu'à s'allumer. Mon rôle est de l'aider à découvrir ses forces, à surmonter ses défis et à reprendre confiance en lui à travers des stratégies adaptées, ludiques et efficaces.",
+          "updated_at": "2026-05-14T14:49:03.049Z"
+        },
+        {
+          "key": "about_mission",
+          "value": "Ma mission est d'offrir un accompagnement personnalisé qui respecte le rythme de chaque enfant, tout en collaborant étroitement avec les parents et les enseignants pour assurer une cohérence dans les apprentissages.",
+          "updated_at": "2026-05-14T14:49:03.063Z"
+        },
+        {
+          "key": "services_title",
+          "value": "Mes services",
+          "updated_at": "2026-05-14T14:49:03.074Z"
+        },
+        {
+          "key": "services_subtitle",
+          "value": "Des solutions adaptées pour aider votre enfant à s'épanouir",
+          "updated_at": "2026-05-14T14:49:03.085Z"
+        }
+      ]
+    },
+    "site_visits": {
+      "columns": [
+        "id",
+        "path",
+        "created_at"
+      ],
+      "totalRows": 15,
+      "sampleRows": [
+        {
+          "id": 1,
+          "path": "/",
+          "created_at": "2026-05-14T14:54:19.853Z"
+        },
+        {
+          "id": 2,
+          "path": "/services",
+          "created_at": "2026-05-14T14:54:38.952Z"
+        },
+        {
+          "id": 3,
+          "path": "/rendez-vous",
+          "created_at": "2026-05-14T14:54:44.221Z"
+        },
+        {
+          "id": 4,
+          "path": "/",
+          "created_at": "2026-05-14T14:54:48.419Z"
+        },
+        {
+          "id": 5,
+          "path": "/",
+          "created_at": "2026-05-14T15:31:47.706Z"
+        },
+        {
+          "id": 6,
+          "path": "/",
+          "created_at": "2026-05-14T15:58:01.030Z"
+        },
+        {
+          "id": 7,
+          "path": "/",
+          "created_at": "2026-05-14T16:07:20.871Z"
+        },
+        {
+          "id": 8,
+          "path": "/admin",
+          "created_at": "2026-05-14T16:08:00.981Z"
+        },
+        {
+          "id": 9,
+          "path": "/admin",
+          "created_at": "2026-05-14T16:08:02.770Z"
+        },
+        {
+          "id": 10,
+          "path": "/admin",
+          "created_at": "2026-05-14T16:08:04.362Z"
+        }
+      ]
+    },
+    "posts": {
+      "columns": [
+        "id",
+        "title",
+        "content",
+        "excerpt",
+        "image_url",
+        "category",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 5,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "5 astuces pour aider votre enfant dyslexique à la maison",
+          "content": "La dyslexie ne définit pas votre enfant. Avec les bonnes stratégies, vous pouvez l'aider à surmonter ses défis quotidiens. Voici 5 astuces concrètes: 1) Utilisez des supports visuels colorés pour faciliter la mémorisation. 2) Lisez à voix haute ensemble pour modéliser la fluidité. 3) Découpez les tâches longues en petites étapes. 4) Célébrez chaque petit progrès. 5) Maintenez une routine stable et prévisible.",
+          "excerpt": "Découvrez 5 stratégies pratiques pour soutenir votre enfant dyslexique au quotidien.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778769041/tapavis_tenant_service-dorthopedagie-aide-aux-devoirs/build_service-dorthopedagie-aide-aux-devoirs_1778769041211.png",
+          "category": "Stratégies",
+          "published": 1,
+          "created_at": "2026-05-14T14:49:03.440Z",
+          "updated_at": "2026-05-14T14:49:03.440Z"
+        },
+        {
+          "id": 2,
+          "title": "Comment reconnaître les signes d'un trouble d'apprentissage",
+          "content": "Certains signes peuvent indiquer qu'un enfant fait face à un trouble d'apprentissage: difficultés persistantes en lecture ou en écriture, fatigue importante après les devoirs, refus d'aller à l'école, baisse d'estime de soi. Si vous observez plusieurs de ces signes, n'hésitez pas à consulter un professionnel. Une intervention précoce fait toute la différence.",
+          "excerpt": "Identifier rapidement les signes d'un trouble d'apprentissage permet d'agir tôt.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778769060/tapavis_tenant_service-dorthopedagie-aide-aux-devoirs/build_service-dorthopedagie-aide-aux-devoirs_1778769060603.png",
+          "category": "Conseils",
+          "published": 1,
+          "created_at": "2026-05-14T14:49:03.450Z",
+          "updated_at": "2026-05-14T14:49:03.450Z"
+        },
+        {
+          "id": 3,
+          "title": "L'importance du jeu dans l'apprentissage",
+          "content": "Le jeu est un outil pédagogique puissant. Il permet aux enfants d'apprendre sans pression, de développer leur créativité et de consolider leurs acquis. Que ce soit à travers des jeux de société, des manipulations ou des activités sensorielles, le jeu rend l'apprentissage joyeux et durable.",
+          "excerpt": "Apprendre en jouant: une approche efficace et motivante pour les enfants.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778769043/tapavis_tenant_service-dorthopedagie-aide-aux-devoirs/build_service-dorthopedagie-aide-aux-devoirs_1778769043740.png",
+          "category": "Pédagogie",
+          "published": 1,
+          "created_at": "2026-05-14T14:49:03.462Z",
+          "updated_at": "2026-05-14T14:49:03.462Z"
+        },
+        {
+          "id": 4,
+          "title": "Bien préparer la rentrée scolaire avec un enfant TDAH",
+          "content": "La rentrée peut être source d'anxiété pour les enfants TDAH. Préparez-la en douceur: visitez l'école avant, établissez une routine claire, organisez un coin devoirs calme, communiquez avec l'enseignant. Une bonne préparation favorise une transition harmonieuse et une année réussie.",
+          "excerpt": "Conseils pratiques pour une rentrée sereine avec un enfant TDAH.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778769042/tapavis_tenant_service-dorthopedagie-aide-aux-devoirs/build_service-dorthopedagie-aide-aux-devoirs_1778769042499.png",
+          "category": "Conseils",
+          "published": 1,
+          "created_at": "2026-05-14T14:49:03.481Z",
+          "updated_at": "2026-05-14T14:49:03.481Z"
+        },
+        {
+          "id": 5,
+          "title": "Renforcer l'estime de soi de votre enfant",
+          "content": "Un enfant en difficulté scolaire peut rapidement perdre confiance en lui. Pour renforcer son estime: valorisez ses efforts plus que les résultats, célébrez ses talents en dehors de l'école, écoutez ses émotions sans jugement, fixez-lui des défis atteignables. Une bonne estime de soi est la base de tous les apprentissages.",
+          "excerpt": "Des clés concrètes pour aider votre enfant à croire en lui.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778769050/tapavis_tenant_service-dorthopedagie-aide-aux-devoirs/build_service-dorthopedagie-aide-aux-devoirs_1778769050576.png",
+          "category": "Bien-être",
+          "published": 1,
+          "created_at": "2026-05-14T14:49:03.491Z",
+          "updated_at": "2026-05-14T14:49:03.491Z"
+        }
+      ]
+    },
+    "services": {
+      "columns": [
+        "id",
+        "name",
+        "description",
+        "details",
+        "image_url",
+        "icon",
+        "price",
+        "duration",
+        "featured",
+        "display_order",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 6,
+      "sampleRows": [
+        {
+          "id": 1,
+          "name": "Évaluation orthopédagogique",
+          "description": "Évaluation complète des besoins et difficultés de votre enfant.",
+          "details": "Une évaluation approfondie permet d'identifier les forces et les défis de votre enfant. À partir de cette analyse, je conçois un plan d'intervention personnalisé qui répond précisément à ses besoins. L'évaluation comprend des entretiens, des observations et des tâches spécifiques.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778769060/tapavis_tenant_service-dorthopedagie-aide-aux-devoirs/build_service-dorthopedagie-aide-aux-devoirs_1778769060603.png",
+          "icon": "🔍",
+          "price": "Sur consultation",
+          "duration": "90 minutes",
+          "featured": 1,
+          "display_order": 1,
+          "created_at": "2026-05-14T14:49:03.278Z",
+          "updated_at": "2026-05-14T14:49:03.278Z"
+        },
+        {
+          "id": 2,
+          "name": "Rééducation des troubles d'apprentissage",
+          "description": "Soutien spécialisé pour la dyslexie, dysorthographie et autres.",
+          "details": "J'accompagne les enfants présentant un trouble d'apprentissage (dyslexie, dysorthographie, dysgraphie) à travers des stratégies adaptées et des outils concrets. Chaque séance combine apprentissage structuré et activités ludiques.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778769041/tapavis_tenant_service-dorthopedagie-aide-aux-devoirs/build_service-dorthopedagie-aide-aux-devoirs_1778769041211.png",
+          "icon": "📚",
+          "price": "Sur consultation",
+          "duration": "60 minutes",
+          "featured": 1,
+          "display_order": 2,
+          "created_at": "2026-05-14T14:49:03.289Z",
+          "updated_at": "2026-05-14T14:49:03.289Z"
+        },
+        {
+          "id": 3,
+          "name": "Soutien en mathématiques",
+          "description": "Aide spécialisée pour la dyscalculie et difficultés en maths.",
+          "details": "Pour les enfants qui éprouvent des difficultés avec les mathématiques, j'utilise une approche multisensorielle qui rend les concepts abstraits concrets et compréhensibles. Manipulation, jeux et résolution de problèmes au programme.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778769043/tapavis_tenant_service-dorthopedagie-aide-aux-devoirs/build_service-dorthopedagie-aide-aux-devoirs_1778769043740.png",
+          "icon": "🔢",
+          "price": "Sur consultation",
+          "duration": "60 minutes",
+          "featured": 1,
+          "display_order": 3,
+          "created_at": "2026-05-14T14:49:03.298Z",
+          "updated_at": "2026-05-14T14:49:03.298Z"
+        },
+        {
+          "id": 4,
+          "name": "Aide aux devoirs",
+          "description": "Encadrement et soutien quotidien pour les devoirs scolaires.",
+          "details": "Un service flexible pour soutenir votre enfant dans ses devoirs et leçons. Au-delà de la simple aide, je transmets des stratégies d'étude et d'organisation qui rendront votre enfant plus autonome.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778769042/tapavis_tenant_service-dorthopedagie-aide-aux-devoirs/build_service-dorthopedagie-aide-aux-devoirs_1778769042499.png",
+          "icon": "✏️",
+          "price": "Sur consultation",
+          "duration": "60 minutes",
+          "featured": 0,
+          "display_order": 4,
+          "created_at": "2026-05-14T14:49:03.311Z",
+          "updated_at": "2026-05-14T14:49:03.311Z"
+        },
+        {
+          "id": 5,
+          "name": "Stratégies d'attention et concentration",
+          "description": "Outils pratiques pour les enfants ayant un TDAH ou des difficultés d'attention.",
+          "details": "Je propose des techniques concrètes pour aider votre enfant à mieux gérer son attention, son organisation et sa motivation. Approche positive et axée sur les forces.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778769042/tapavis_tenant_service-dorthopedagie-aide-aux-devoirs/build_service-dorthopedagie-aide-aux-devoirs_1778769042499.png",
+          "icon": "🎯",
+          "price": "Sur consultation",
+          "duration": "60 minutes",
+          "featured": 0,
+          "display_order": 5,
+          "created_at": "2026-05-14T14:49:03.330Z",
+          "updated_at": "2026-05-14T14:49:03.330Z"
+        },
+        {
+          "id": 6,
+          "name": "Consultation parents",
+          "description": "Soutien et conseils pour accompagner votre enfant à la maison.",
+          "details": "Une rencontre dédiée aux parents pour discuter des stratégies à mettre en place à la maison, des inquiétudes et des questions concernant le parcours scolaire de votre enfant.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778769060/tapavis_tenant_service-dorthopedagie-aide-aux-devoirs/build_service-dorthopedagie-aide-aux-devoirs_1778769060603.png",
+          "icon": "👨‍👩‍👧",
+          "price": "Gratuite (première fois)",
+          "duration": "45 minutes",
+          "featured": 0,
+          "display_order": 6,
+          "created_at": "2026-05-14T14:49:03.346Z",
+          "updated_at": "2026-05-14T14:49:03.346Z"
+        }
+      ]
+    },
+    "testimonials": {
+      "columns": [
+        "id",
+        "author",
+        "role",
+        "content",
+        "rating",
+        "image_url",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "author": "Marie L.",
+          "role": "Maman de Léa, 9 ans",
+          "content": "Johanne a transformé la relation de ma fille avec l'école. En quelques mois, sa confiance en elle est revenue et ses notes se sont améliorées. Je la recommande sans hésitation!",
+          "rating": 5,
+          "image_url": null,
+          "published": 1,
+          "created_at": "2026-05-14T14:49:03.363Z",
+          "updated_at": "2026-05-14T14:49:03.363Z"
+        },
+        {
+          "id": 2,
+          "author": "Stéphane B.",
+          "role": "Papa de Thomas, 11 ans",
+          "content": "Mon fils est dyslexique et nous étions désemparés. Johanne nous a donné des outils concrets et son approche bienveillante a fait toute la différence. Merci infiniment!",
+          "rating": 5,
+          "image_url": null,
+          "published": 1,
+          "created_at": "2026-05-14T14:49:03.390Z",
+          "updated_at": "2026-05-14T14:49:03.390Z"
+        },
+        {
+          "id": 3,
+          "author": "Caroline T.",
+          "role": "Maman de Maxime, 8 ans",
+          "content": "Une professionnelle exceptionnelle qui sait s'adapter à chaque enfant. Maxime adore ses séances et progresse à grands pas.",
+          "rating": 5,
+          "image_url": null,
+          "published": 1,
+          "created_at": "2026-05-14T14:49:03.412Z",
+          "updated_at": "2026-05-14T14:49:03.412Z"
+        },
+        {
+          "id": 4,
+          "author": "Julie M.",
+          "role": "Maman de Sophie, 10 ans",
+          "content": "Sophie avait perdu toute motivation pour les maths. Avec Johanne, elle a redécouvert le plaisir d'apprendre. Une vraie magicienne!",
+          "rating": 5,
+          "image_url": null,
+          "published": 1,
+          "created_at": "2026-05-14T14:49:03.430Z",
+          "updated_at": "2026-05-14T14:49:03.430Z"
+        }
+      ]
+    },
+    "appointments": {
+      "columns": [
+        "id",
+        "parent_name",
+        "parent_email",
+        "parent_phone",
+        "child_name",
+        "child_age",
+        "child_grade",
+        "service_id",
+        "service_name",
+        "preferred_date",
+        "preferred_time",
+        "message",
+        "status",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "form_submissions": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "phone",
+        "subject",
+        "message",
+        "image_url",
+        "status",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "faqs": {
+      "columns": [
+        "id",
+        "question",
+        "answer",
+        "display_order",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 6,
+      "sampleRows": [
+        {
+          "id": 1,
+          "question": "Qu'est-ce qu'une orthopédagogue?",
+          "answer": "Une orthopédagogue est une spécialiste de l'apprentissage qui aide les enfants présentant des difficultés ou des troubles d'apprentissage. Elle évalue, intervient et conseille pour favoriser la réussite scolaire.",
+          "display_order": 1,
+          "image_url": null,
+          "created_at": "2026-05-14T14:49:03.505Z",
+          "updated_at": "2026-05-14T14:49:03.505Z"
+        },
+        {
+          "id": 2,
+          "question": "À quel âge consulter une orthopédagogue?",
+          "answer": "Il est possible de consulter dès l'âge préscolaire jusqu'à l'adolescence. Plus l'intervention est précoce, meilleurs sont les résultats. Si vous avez des inquiétudes, n'hésitez pas.",
+          "display_order": 2,
+          "image_url": null,
+          "created_at": "2026-05-14T14:49:03.521Z",
+          "updated_at": "2026-05-14T14:49:03.521Z"
+        },
+        {
+          "id": 3,
+          "question": "Combien de temps dure un suivi?",
+          "answer": "La durée varie selon les besoins de chaque enfant. En général, un suivi s'étend sur quelques mois à une année scolaire. Les séances hebdomadaires sont les plus efficaces.",
+          "display_order": 3,
+          "image_url": null,
+          "created_at": "2026-05-14T14:49:03.535Z",
+          "updated_at": "2026-05-14T14:49:03.535Z"
+        },
+        {
+          "id": 4,
+          "question": "Faut-il une référence du médecin?",
+          "answer": "Non, aucune référence médicale n'est nécessaire pour consulter une orthopédagogue. Vous pouvez prendre rendez-vous directement.",
+          "display_order": 4,
+          "image_url": null,
+          "created_at": "2026-05-14T14:49:03.550Z",
+          "updated_at": "2026-05-14T14:49:03.550Z"
+        },
+        {
+          "id": 5,
+          "question": "Les services sont-ils couverts par les assurances?",
+          "answer": "Plusieurs assurances privées remboursent partiellement ou totalement les services orthopédagogiques. Renseignez-vous auprès de votre assureur.",
+          "display_order": 5,
+          "image_url": null,
+          "created_at": "2026-05-14T14:49:03.564Z",
+          "updated_at": "2026-05-14T14:49:03.564Z"
+        },
+        {
+          "id": 6,
+          "question": "Comment se déroule la première rencontre?",
+          "answer": "La première rencontre est une consultation gratuite de 45 minutes. Nous discutons des besoins de votre enfant, je réponds à vos questions et nous établissons un plan d'action ensemble.",
+          "display_order": 6,
+          "image_url": null,
+          "created_at": "2026-05-14T14:49:03.582Z",
+          "updated_at": "2026-05-14T14:49:03.582Z"
+        }
+      ]
+    }
+  }
+}

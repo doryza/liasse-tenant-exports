@@ -1,0 +1,156 @@
+<%- include('partials/header') %>
+<section class="hero">
+  <img src="<%= (typeof settings!=='undefined' && settings._p_hero_image_url) ? settings._p_hero_image_url : 'https://placehold.co/1600x900/fce7f3/ec4899/png?text=Orthop%C3%A9dagogie' %>" alt="Accueil" class="hero-img">
+  <div class="hero-overlay">
+    <div class="hero-content">
+      <div class="mascot" id="mascot" aria-hidden="true">
+        <div class="mascot-bulb">💡</div>
+        <div class="mascot-body">
+          <div class="mascot-hair"></div>
+          <div class="mascot-pony"></div>
+          <div class="mascot-face">
+            <div class="eye eye-left"></div>
+            <div class="eye eye-right"></div>
+            <div class="mouth"></div>
+          </div>
+        </div>
+      </div>
+      <h1><%= settings.hero_title || 'L\'apprentissage, une étincelle à allumer' %></h1>
+      <p class="hero-sub"><%= settings.hero_subtitle || '' %></p>
+      <div class="hero-cta">
+        <a href="rendez-vous" class="btn btn-primary" style="background-color:#ec4899;color:#fff"><%= settings.hero_cta || 'Prendre rendez-vous' %></a>
+        <a href="services" class="btn btn-secondary">Découvrir les services</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-features">
+  <div class="container">
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">💝</div>
+        <h3>Approche bienveillante</h3>
+        <p>Un accompagnement chaleureux et respectueux du rythme de chaque enfant.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎯</div>
+        <h3>Plan personnalisé</h3>
+        <p>Des interventions sur mesure adaptées aux besoins spécifiques de votre enfant.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🌟</div>
+        <h3>Résultats concrets</h3>
+        <p>Des stratégies efficaces qui redonnent confiance et plaisir d'apprendre.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">👨‍👩‍👧</div>
+        <h3>Collaboration famille</h3>
+        <p>Un partenariat étroit avec les parents pour soutenir le cheminement.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-services">
+  <div class="container">
+    <div class="section-header">
+      <h2><%= settings.services_title || 'Mes services' %></h2>
+      <p><%= settings.services_subtitle || '' %></p>
+    </div>
+    <% if (typeof featuredServices !== 'undefined' && featuredServices && featuredServices.length > 0) { %>
+      <div class="services-grid">
+        <% featuredServices.forEach(function(s) { %>
+          <a href="services/<%= s.id %>" class="service-card">
+            <% if (s.image_url) { %><img src="<%= s.image_url %>" alt="<%= s.name %>"><% } %>
+            <div class="service-body">
+              <div class="service-icon"><%= s.icon || '✨' %></div>
+              <h3><%= s.name %></h3>
+              <p><%= s.description %></p>
+              <span class="link-arrow">En savoir plus →</span>
+            </div>
+          </a>
+        <% }); %>
+      </div>
+      <div style="text-align:center;margin-top:2rem">
+        <a href="services" class="btn btn-outline">Voir tous les services</a>
+      </div>
+    <% } else { %>
+      <p class="empty-state">Les services seront bientôt disponibles.</p>
+    <% } %>
+  </div>
+</section>
+
+<section class="section section-about-preview">
+  <div class="container two-col">
+    <div class="col-img">
+      <img src="<%= (typeof settings!=='undefined' && settings._p_about_image_url) ? settings._p_about_image_url : 'https://placehold.co/800x600/fce7f3/ec4899/png?text=Johanne' %>" alt="Johanne Archambault">
+    </div>
+    <div class="col-text">
+      <h2><%= settings.about_title || 'À propos' %></h2>
+      <p><%= (settings.about_text || '').substring(0, 350) %><%= (settings.about_text || '').length > 350 ? '...' : '' %></p>
+      <a href="a-propos" class="btn btn-primary" style="background-color:#ec4899;color:#fff">En savoir plus sur moi</a>
+    </div>
+  </div>
+</section>
+
+<% if (typeof testimonials !== 'undefined' && testimonials && testimonials.length > 0) { %>
+<section class="section section-testimonials">
+  <div class="container">
+    <div class="section-header">
+      <h2><%= settings.testimonials_title || 'Ce que disent les parents' %></h2>
+    </div>
+    <div class="testimonials-grid">
+      <% testimonials.forEach(function(t) { %>
+        <div class="testimonial-card">
+          <div class="stars"><% for (var i = 0; i < (t.rating || 5); i++) { %>⭐<% } %></div>
+          <p class="testimonial-content">« <%= t.content %> »</p>
+          <div class="testimonial-author">
+            <strong><%= t.author %></strong>
+            <% if (t.role) { %><span><%= t.role %></span><% } %>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<% if (typeof recentPosts !== 'undefined' && recentPosts && recentPosts.length > 0) { %>
+<section class="section section-blog">
+  <div class="container">
+    <div class="section-header">
+      <h2><%= settings.blog_title || 'Conseils et articles' %></h2>
+      <p><%= settings.blog_subtitle || '' %></p>
+    </div>
+    <div class="posts-grid">
+      <% recentPosts.forEach(function(p) { %>
+        <a href="articles/<%= p.id %>" class="post-card">
+          <% if (p.image_url) { %><img src="<%= p.image_url %>" alt="<%= p.title %>"><% } %>
+          <div class="post-body">
+            <% if (p.category) { %><span class="post-cat"><%= p.category %></span><% } %>
+            <h3><%= p.title %></h3>
+            <% if (p.excerpt) { %><p><%= p.excerpt %></p><% } %>
+            <span class="link-arrow">Lire →</span>
+          </div>
+        </a>
+      <% }); %>
+    </div>
+    <div style="text-align:center;margin-top:2rem">
+      <a href="articles" class="btn btn-outline">Voir tous les articles</a>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<section class="section section-cta">
+  <img src="<%= (typeof settings!=='undefined' && settings._p_cta_image_url) ? settings._p_cta_image_url : 'https://placehold.co/1600x600/ec4899/fff/png?text=Allumer+l%27%C3%A9tincelle' %>" alt="Réussite" class="cta-bg">
+  <div class="cta-overlay">
+    <div class="cta-content">
+      <h2><%= settings.cta_title || 'Prêt à allumer l\'étincelle?' %></h2>
+      <p><%= settings.cta_subtitle || '' %></p>
+      <a href="rendez-vous" class="btn btn-white" style="background-color:#fff;color:#ec4899">Réserver maintenant</a>
+    </div>
+  </div>
+</section>
+<%- include('partials/footer') %>

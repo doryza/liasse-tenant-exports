@@ -1,0 +1,62 @@
+<%- include('partials/header') %>
+<section class="page-hero">
+  <div class="container">
+    <h1><%= (typeof settings!=='undefined' && settings.about_title) ? settings.about_title : 'À propos de Johanne' %></h1>
+    <p>Orthopédagogue passionnée par la réussite des enfants</p>
+  </div>
+</section>
+<section class="section">
+  <div class="container two-col">
+    <div class="col-img">
+      <img src="<%= (typeof settings!=='undefined' && settings._p_about_image_url) ? settings._p_about_image_url : 'https://placehold.co/800x600/fce7f3/ec4899/png?text=Johanne' %>" alt="Johanne Archambault">
+    </div>
+    <div class="col-text">
+      <h2>Mon parcours</h2>
+      <p style="white-space:pre-line"><%= (typeof settings!=='undefined' && settings.about_text) ? settings.about_text : '' %></p>
+      <h3 style="margin-top:2rem">Ma mission</h3>
+      <p><%= (typeof settings!=='undefined' && settings.about_mission) ? settings.about_mission : '' %></p>
+    </div>
+  </div>
+</section>
+<section class="section section-features">
+  <div class="container">
+    <div class="section-header">
+      <h2>Mes valeurs</h2>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card"><div class="feature-icon">🤝</div><h3>Respect</h3><p>Chaque enfant est unique et mérite une approche qui respecte son rythme et sa personnalité.</p></div>
+      <div class="feature-card"><div class="feature-icon">🎨</div><h3>Créativité</h3><p>L'apprentissage doit être stimulant. J'utilise des méthodes ludiques et innovantes.</p></div>
+      <div class="feature-card"><div class="feature-icon">💪</div><h3>Persévérance</h3><p>Je crois fermement que chaque difficulté peut être surmontée avec les bonnes stratégies.</p></div>
+      <div class="feature-card"><div class="feature-icon">💖</div><h3>Bienveillance</h3><p>Un environnement chaleureux et sécurisant est la clé d'un apprentissage réussi.</p></div>
+    </div>
+  </div>
+</section>
+<% if (typeof testimonials !== 'undefined' && testimonials && testimonials.length > 0) { %>
+<section class="section section-testimonials">
+  <div class="container">
+    <div class="section-header">
+      <h2>Témoignages</h2>
+    </div>
+    <div class="testimonials-grid">
+      <% testimonials.forEach(function(t) { %>
+        <div class="testimonial-card">
+          <div class="stars"><% for (var i = 0; i < (t.rating || 5); i++) { %>⭐<% } %></div>
+          <p class="testimonial-content">« <%= t.content %> »</p>
+          <div class="testimonial-author">
+            <strong><%= t.author %></strong>
+            <% if (t.role) { %><span><%= t.role %></span><% } %>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+  </div>
+</section>
+<% } %>
+<section class="section section-cta">
+  <div class="container" style="text-align:center;color:#fff">
+    <h2>Discutons des besoins de votre enfant</h2>
+    <p>Première consultation gratuite de 45 minutes</p>
+    <a href="rendez-vous" class="btn btn-white" style="background-color:#fff;color:#ec4899">Prendre rendez-vous</a>
+  </div>
+</section>
+<%- include('partials/footer') %>

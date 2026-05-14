@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#ec4899">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="description" content="<%= (typeof settings!=='undefined' && settings.tagline) ? settings.tagline : 'Service d\'orthopédagogie' %>">
+<title><%= typeof pageTitle !== 'undefined' ? pageTitle : ((typeof settings!=='undefined' && settings.business_name) ? settings.business_name : 'Orthopédagogie') %></title>
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="public/css/styles.css">
+</head>
+<body>
+<nav class="main-nav">
+  <div class="nav-container">
+    <a href="." class="nav-brand">
+      <img src="<%= (typeof settings!=='undefined' && settings._p_nav_logo_url) ? settings._p_nav_logo_url : (typeof appIconUrl!=='undefined' ? appIconUrl : '') %>" alt="Logo" onerror="this.style.display='none'">
+      <span class="brand-text"><%= (typeof settings!=='undefined' && settings.business_name) ? settings.business_name : 'Orthopédagogie' %></span>
+    </a>
+    <button class="nav-toggle" id="navToggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="nav-links" id="navLinks">
+      <a href=".">Accueil</a>
+      <a href="services">Services</a>
+      <a href="a-propos">À propos</a>
+      <a href="articles">Articles</a>
+      <a href="contact">Contact</a>
+      <a href="rendez-vous" class="nav-cta" style="background-color:#ec4899;color:#fff">Prendre rendez-vous</a>
+      <a href="#" data-login-btn class="nav-login">Connexion</a>
+    </div>
+  </div>
+</nav>

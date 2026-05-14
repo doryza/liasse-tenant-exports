@@ -1,0 +1,37 @@
+<%- include('partials/header') %>
+<section class="page-hero">
+  <div class="container">
+    <h1><%= (typeof settings!=='undefined' && settings.blog_title) ? settings.blog_title : 'Articles' %></h1>
+    <p><%= (typeof settings!=='undefined' && settings.blog_subtitle) ? settings.blog_subtitle : '' %></p>
+  </div>
+</section>
+<section class="section">
+  <div class="container">
+    <% if (typeof categories !== 'undefined' && categories && categories.length > 0) { %>
+    <div class="filter-bar">
+      <a href="articles" class="filter-chip <%= !activeCat ? 'active' : '' %>" style="<%= !activeCat ? 'background-color:#ec4899;color:#fff;border-color:#ec4899' : '' %>">Tous</a>
+      <% categories.forEach(function(c) { %>
+        <a href="?cat=<%= encodeURIComponent(c) %>" class="filter-chip <%= activeCat === c ? 'active' : '' %>" style="<%= activeCat === c ? 'background-color:#ec4899;color:#fff;border-color:#ec4899' : '' %>"><%= c %></a>
+      <% }); %>
+    </div>
+    <% } %>
+    <% if (typeof posts !== 'undefined' && posts && posts.length > 0) { %>
+      <div class="posts-grid">
+        <% posts.forEach(function(p) { %>
+          <a href="articles/<%= p.id %>" class="post-card">
+            <% if (p.image_url) { %><img src="<%= p.image_url %>" alt="<%= p.title %>"><% } %>
+            <div class="post-body">
+              <% if (p.category) { %><span class="post-cat"><%= p.category %></span><% } %>
+              <h3><%= p.title %></h3>
+              <% if (p.excerpt) { %><p><%= p.excerpt %></p><% } %>
+              <span class="link-arrow">Lire →</span>
+            </div>
+          </a>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <p class="empty-state">Aucun article disponible pour le moment.</p>
+    <% } %>
+  </div>
+</section>
+<%- include('partials/footer') %>
