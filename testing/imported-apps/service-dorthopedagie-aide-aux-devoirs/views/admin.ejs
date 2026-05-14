@@ -1,177 +1,31 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tableau de bord — Admin</title>
-<base href="<%= typeof tenantBase !== 'undefined' ? tenantBase : '/' %>">
-<link rel="stylesheet" href="public/css/admin-styles.css">
-</head>
-<body>
-<div class="admin-layout">
-<%- include('partials/admin-sidebar') %>
-<main class="admin-main">
-  <header class="admin-header">
-    <div>
-      <h1>👋 Bienvenue</h1>
-      <p class="admin-subtitle">Voici un aperçu de l'activité récente de votre site</p>
-    </div>
-    <div class="header-actions">
-      <a href="." target="_blank" class="btn-ghost">↗ Voir le site</a>
-      <a href="admin/services" class="btn-add" style="background-color:#ec4899;color:#fff">+ Nouveau service</a>
-    </div>
-  </header>
-
-  <% if (stats.pendingAppts > 0 || stats.newMessages > 0) { %>
-  <div class="alert-banner">
-    <span style="font-size:1.5rem">🔔</span>
-    <div>
-      <strong>Vous avez de l'activité en attente</strong>
-      <p>
-        <% if (stats.pendingAppts > 0) { %><a href="admin/appointments"><%= stats.pendingAppts %> rendez-vous à confirmer</a><% } %>
-        <% if (stats.pendingAppts > 0 && stats.newMessages > 0) { %> · <% } %>
-        <% if (stats.newMessages > 0) { %><a href="admin/submissions"><%= stats.newMessages %> nouveaux messages</a><% } %>
-      </p>
-    </div>
-  </div>
-  <% } %>
-
-  <section class="stats-grid">
-    <div class="stat-card stat-accent">
-      <div class="stat-icon">📅</div>
-      <div class="stat-content">
-        <div class="stat-label">Rendez-vous total</div>
-        <div class="stat-value"><%= stats.appointments %></div>
-        <% if (stats.pendingAppts > 0) { %><div class="stat-meta"><%= stats.pendingAppts %> en attente</div><% } %>
-      </div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon">👀</div>
-      <div class="stat-content">
-        <div class="stat-label">Visites totales</div>
-        <div class="stat-value"><%= stats.totalVisits %></div>
-        <div class="stat-meta"><%= stats.recentVisits %> cette semaine</div>
-      </div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon">✉️</div>
-      <div class="stat-content">
-        <div class="stat-label">Messages</div>
-        <div class="stat-value"><%= stats.newMessages %></div>
-        <div class="stat-meta">nouveaux à lire</div>
-      </div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon">🛠️</div>
-      <div class="stat-content">
-        <div class="stat-label">Services actifs</div>
-        <div class="stat-value"><%= stats.services %></div>
-      </div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon">📝</div>
-      <div class="stat-content">
-        <div class="stat-label">Articles publiés</div>
-        <div class="stat-value"><%= stats.posts %></div>
-      </div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon">⭐</div>
-      <div class="stat-content">
-        <div class="stat-label">Témoignages</div>
-        <div class="stat-value"><%= stats.testimonials %></div>
-      </div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon">👥</div>
-      <div class="stat-content">
-        <div class="stat-label">Utilisateurs</div>
-        <div class="stat-value"><%= stats.userCount %></div>
-      </div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon">🔔</div>
-      <div class="stat-content">
-        <div class="stat-label">Notifications</div>
-        <div class="stat-value"><%= stats.pushCount %></div>
-        <div class="stat-meta">abonnés push</div>
-      </div>
-    </div>
-  </section>
-
-  <div class="quick-actions">
-    <h2>Actions rapides</h2>
-    <div class="quick-actions-grid">
-      <a href="admin/appointments" class="quick-action">📅 Gérer les RDV</a>
-      <a href="admin/services" class="quick-action">🛠️ Modifier les services</a>
-      <a href="admin/posts" class="quick-action">✍️ Nouvel article</a>
-      <a href="admin/testimonials" class="quick-action">⭐ Ajouter un témoignage</a>
-      <a href="admin/faqs" class="quick-action">❓ Gérer la FAQ</a>
-      <a href="admin/submissions" class="quick-action">📨 Voir les messages</a>
-    </div>
-  </div>
-
-  <section class="dash-section">
-    <div class="dash-section-head">
-      <h2>📅 Rendez-vous récents</h2>
-      <a href="admin/appointments" class="btn-link">Tout voir →</a>
-    </div>
-    <% if (recentAppointments && recentAppointments.length > 0) { %>
-      <div class="table-wrap">
-      <table class="admin-table">
-        <thead><tr><th>Date</th><th>Parent</th><th>Enfant</th><th>Service</th><th>Statut</th></tr></thead>
-        <tbody>
-          <% recentAppointments.forEach(function(a) { %>
-            <tr>
-              <td><%= new Date(a.created_at).toLocaleDateString('fr-CA') %></td>
-              <td><strong><%= a.parent_name %></strong><br><small><%= a.parent_email %></small></td>
-              <td><%= a.child_name || '-' %><% if (a.child_age) { %> <small>(<%= a.child_age %>)</small><% } %></td>
-              <td><%= a.service_name || '-' %></td>
-              <td><span class="badge badge-<%= a.status %>"><%= a.status %></span></td>
-            </tr>
-          <% }); %>
-        </tbody>
-      </table>
-      </div>
-    <% } else { %>
-      <div class="empty-state-card">
-        <div style="font-size:3rem">📭</div>
-        <p>Aucun rendez-vous pour le moment.</p>
-        <p class="empty-hint">Les nouvelles demandes apparaîtront ici dès qu'un parent remplira le formulaire.</p>
-      </div>
-    <% } %>
-  </section>
-
-  <section class="dash-section">
-    <div class="dash-section-head">
-      <h2>✉️ Messages récents</h2>
-      <a href="admin/submissions" class="btn-link">Tout voir →</a>
-    </div>
-    <% if (recentSubmissions && recentSubmissions.length > 0) { %>
-      <div class="table-wrap">
-      <table class="admin-table">
-        <thead><tr><th>Date</th><th>Nom</th><th>Sujet</th><th>Aperçu</th><th>Statut</th></tr></thead>
-        <tbody>
-          <% recentSubmissions.forEach(function(s) { %>
-            <tr>
-              <td><%= new Date(s.created_at).toLocaleDateString('fr-CA') %></td>
-              <td><strong><%= s.name %></strong><% if (s.email) { %><br><small><%= s.email %></small><% } %></td>
-              <td><%= s.subject || '-' %></td>
-              <td><%= (s.message || '').substring(0, 60) %><%= (s.message || '').length > 60 ? '…' : '' %></td>
-              <td><span class="badge badge-<%= s.status || 'new' %>"><%= s.status || 'new' %></span></td>
-            </tr>
-          <% }); %>
-        </tbody>
-      </table>
-      </div>
-    <% } else { %>
-      <div class="empty-state-card">
-        <div style="font-size:3rem">💌</div>
-        <p>Aucun message pour le moment.</p>
-      </div>
-    <% } %>
-  </section>
-</main>
-</div>
-</body>
-</html>
+PCFET0NUWVBFIGh0bWw+CjxodG1sIGxhbmc9ImZyIj4KPGhlYWQ+CjxtZXRhIGNo
+YXJzZXQ9IlVURi04Ij4KPG1ldGEgbmFtZT0idmlld3BvcnQiIGNvbnRlbnQ9
+IndpZHRoPWRldmljZS13aWR0aCwgaW5pdGlhbC1zY2FsZT0xLjAiPgo8dGl0
+bGU+VGFibGVhdSBkZSBib3JkIOKAlCBBZG1pbjwvdGl0bGU+CjxsaW5rIHJl
+bD0ic3R5bGVzaGVldCIgaHJlZj0icHVibGljL2Nzcy9hZG1pbi1zdHlsZXMu
+Y3NzIj4KPC9oZWFkPgo8Ym9keT4KPGRpdiBjbGFzcz0iYWRtaW4tbGF5b3V0
+Ij4KPCUtIGluY2x1ZGUoJ3BhcnRpYWxzL2FkbWluLXNpZGViYXInKSAlPgo8
+bWFpbiBjbGFzcz0iYWRtaW4tbWFpbiI+CiAgPGhlYWRlciBjbGFzcz0iYWRt
+aW4taGVhZGVyIj4KICAgIDxkaXY+CiAgICAgIDxoMT7wn5GLIEJpZW52ZW51
+ZTwvaDE+CiAgICAgIDxwIGNsYXNzPSJhZG1pbi1zdWJ0aXRsZSI+Vm9pY2kg
+dW4gYXBlcsOndSBkZSBsJ2FjdGl2aXTDqSByw6ljZW50ZSBkZSB2b3RyZSBz
+aXRlPC9wPgogICAgPC9kaXY+CiAgICA8ZGl2IGNsYXNzPSJoZWFkZXItYWN0
+aW9ucyI+CiAgICAgIDxhIGhyZWY9Ii4iIHRhcmdldD0iX2JsYW5rIiBjbGFz
+cz0iYnRuLWdob3N0Ij7ihpcgVm9pciBsZSBzaXRlPC9hPgogICAgICA8YSBo
+cmVmPSJhZG1pbi9zZXJ2aWNlcyIgY2xhc3M9ImJ0bi1hZGQiIHN0eWxlPSJi
+YWNrZ3JvdW5kLWNvbG9yOiNlYzQ4OTk7Y29sb3I6I2ZmZiI+KyBOb3V2ZWF1
+IHNlcnZpY2U8L2E+CiAgICA8L2Rpdj4KICA8L2hlYWRlcj4KCiAgPCUgaWYg
+KHN0YXRzLnBlbmRpbmdBcHB0cyA+IDAgfHwgc3RhdHMubmV3TWVzc2FnZXMg
+PiAwKSB7ICU+CiAgPGRpdiBjbGFzcz0iYWxlcnQtYmFubmVyIj4KICAgIDxz
+cGFuIHN0eWxlPSJmb250LXNpemU6MS41cmVtIj7wn5SUPC9zcGFuPgogICAg
+PGRpdj4KICAgICAgPHN0cm9uZz5Wb3VzIGF2ZXogZGUgbCdhY3Rpdml0w6kg
+ZW4gYXR0ZW50ZTwvc3Ryb25nPgogICAgICA8cD4KICAgICAgICA8JSBpZiAo
+c3RhdHMucGVuZGluZ0FwcHRzID4gMCkgeyAlPjxhIGhyZWY9ImFkbWluL2Fw
+cG9pbnRtZW50cyI+PCU9IHN0YXRzLnBlbmRpbmdBcHB0cyAlPiByZW5kZXot
+dm91cyDDoCBjb25maXJtZXI8L2E+PCUgfSAlPgogICAgICAgIDwlIGlmIChz
+dGF0cy5wZW5kaW5nQXBwdHMgPiAwICYmIHN0YXRzLm5ld01lc3NhZ2VzID4g
+MCkgeyAlPiDCtyA8JSB9ICU+CiAgICAgICAgPCUgaWYgKHN0YXRzLm5ld01l
+c3NhZ2VzID4gMCkgeyAlPjxhIGhyZWY9ImFkbWluL3N1Ym1pc3Npb25zIj48
+JT0gc3RhdHMubmV3TWVzc2FnZXMgJT4gbm91dmVhdXggbWVzc2FnZXM8L2E+
+PCUgfSAlPgogICAgICA8L3A+CiAgICA8L2Rpdj4KICA8L2Rpdj4KICA8JSB9
+ICU+CgogIDxz
