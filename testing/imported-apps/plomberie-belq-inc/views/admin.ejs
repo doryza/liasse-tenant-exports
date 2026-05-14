@@ -41,13 +41,18 @@
       </a>
       <a href="admin/callbacks" class="qa-card qa-card-light">
         <div class="qa-icon">📞</div>
-        <div class="qa-label">Rappels SMS</div>
+        <div class="qa-label">Demandes de rappel SMS</div>
         <div class="qa-sub"><% if (stats.callbacks_new > 0) { %><span class="qa-badge"><%= stats.callbacks_new %> nouveau<%= stats.callbacks_new > 1 ? 'x' : '' %></span><% } else { %>À jour<% } %></div>
       </a>
       <a href="admin/contacts" class="qa-card qa-card-light">
         <div class="qa-icon">✉️</div>
         <div class="qa-label">Messages</div>
         <div class="qa-sub"><% if (stats.contacts_new > 0) { %><span class="qa-badge"><%= stats.contacts_new %> nouveau<%= stats.contacts_new > 1 ? 'x' : '' %></span><% } else { %>À jour<% } %></div>
+      </a>
+      <a href="admin/settings" class="qa-card qa-card-light">
+        <div class="qa-icon">⚙️</div>
+        <div class="qa-label">Réglages</div>
+        <div class="qa-sub">Numéro SMS, click-to-call</div>
       </a>
     </section>
 
@@ -66,7 +71,7 @@
     <div class="dash-grid">
       <section class="dash-card">
         <div class="dash-card-head">
-          <h2>Demandes de rappel récentes</h2>
+          <h2>Demandes de rappel SMS récentes</h2>
           <a href="admin/callbacks" class="link-more">Tout voir →</a>
         </div>
         <% if (typeof recentCallbacks !== 'undefined' && recentCallbacks && recentCallbacks.length > 0) { %>
