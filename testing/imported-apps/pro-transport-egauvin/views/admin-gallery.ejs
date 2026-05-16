@@ -47,7 +47,7 @@ async function loadItems() {
   var grid = document.getElementById('galleryGrid');
   if (!d.gallery || d.gallery.length === 0) { grid.innerHTML = '<div class="empty-soft" style="grid-column:1/-1">📷 Aucune photo. Cliquez sur <strong>+ Ajouter une photo</strong> pour commencer.</div>'; return; }
   grid.innerHTML = d.gallery.map(function(g){
-    return '<div class="admin-gallery-card"><img src="'+esc(g.image_url)+'" alt="" loading="lazy"><div class="agc-body"><strong>'+esc(g.title||'(sans titre)')+'</strong><div class="agc-meta">'+(g.category?'<span class="chip">'+esc(g.category)+'</span>':'—')+' · ordre '+g.sort_order+'</div><div class="agc-actions"><button class="btn-edit" onclick=\'editItem('+JSON.stringify(g).replace(/"/g,'&quot;')+')\'>✏ Modifier</button><button class="btn-del" onclick="delItem('+g.id+')">🗑</button></div></div></div>';
+    return '<div class="admin-gallery-card"><img src="'+esc(g.image_url)+'" alt="" loading="lazy"><div class="agc-body"><strong>'+esc(g.title||'(sans titre)')+'</strong><div class="agc-meta">'+(g.category?'<span class="chip">'+esc(g.category)+'</span>':'—')+' · ordre '+g.sort_order+'</div><div class="agc-actions"><button class="btn-edit" onclick=\'editItem('+JSON.stringify(g).replace(/"/g,'&quot;').replace(/'/g,'&#39;')+')\'>✏ Modifier</button><button class="btn-del" onclick="delItem('+g.id+')">🗑</button></div></div></div>';
   }).join('');
 }
 function esc(s){ return String(s||'').replace(/[&<>"']/g, function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }

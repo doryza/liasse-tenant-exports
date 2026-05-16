@@ -53,7 +53,7 @@ async function loadItems() {
   if (!d.services || d.services.length === 0) { tbody.innerHTML = '<tr><td colspan="6" class="empty-cell">📦 Aucun service. Cliquez sur <strong>+ Nouveau service</strong> pour commencer.</td></tr>'; return; }
   tbody.innerHTML = d.services.map(function(s){
     var img = s.image_url ? '<img src="'+esc(s.image_url)+'" class="thumb" alt="">' : '<div class="thumb thumb-empty">—</div>';
-    return '<tr><td>'+img+'</td><td><strong>'+esc(s.name)+'</strong></td><td>'+esc(s.price_info||'—')+'</td><td>'+(s.featured?'<span class="badge badge-done">⭐ Oui</span>':'—')+'</td><td>'+s.sort_order+'</td><td class="actions-cell"><button class="btn-edit" onclick=\'editItem('+JSON.stringify(s).replace(/"/g,'&quot;')+')\'>✏ Modifier</button> <button class="btn-del" onclick="delItem('+s.id+',\''+esc(s.name).replace(/\x27/g,"\\\x27")+'\')">🗑</button></td></tr>';
+    return '<tr><td>'+img+'</td><td><strong>'+esc(s.name)+'</strong></td><td>'+esc(s.price_info||'—')+'</td><td>'+(s.featured?'<span class="badge badge-done">⭐ Oui</span>':'—')+'</td><td>'+s.sort_order+'</td><td class="actions-cell"><button class="btn-edit" onclick=\'editItem('+JSON.stringify(s).replace(/"/g,'&quot;').replace(/'/g,'&#39;')+')\'>✏ Modifier</button> <button class="btn-del" onclick="delItem('+s.id+',\''+esc(s.name).replace(/\x27/g,"\\\x27")+'\')">🗑</button></td></tr>';
   }).join('');
 }
 function esc(s){ return String(s||'').replace(/[&<>"']/g, function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
