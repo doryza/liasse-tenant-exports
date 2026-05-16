@@ -1,0 +1,58 @@
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div>
+      <h4><%= (typeof settings!=='undefined' && settings.brand_name) ? settings.brand_name : 'Joe' %></h4>
+      <p class="muted"><%= (typeof settings!=='undefined' && settings.footer_tagline) ? settings.footer_tagline : 'Helping Montrealers sell their home with confidence.' %></p>
+    </div>
+    <div>
+      <h4>Contact</h4>
+      <% if (typeof settings!=='undefined' && settings.contact_phone) { %><p><a href="tel:<%= settings.contact_phone %>"><%= settings.contact_phone %></a></p><% } %>
+      <% if (typeof settings!=='undefined' && settings.contact_email) { %><p><a href="mailto:<%= settings.contact_email %>"><%= settings.contact_email %></a></p><% } %>
+      <% if (typeof settings!=='undefined' && settings.business_address) { %><p class="muted"><%= settings.business_address %></p><% } %>
+    </div>
+    <div>
+      <h4>Follow</h4>
+      <div class="socials">
+        <% if (typeof settings!=='undefined' && settings.social_facebook) { %><a href="<%= settings.social_facebook %>" target="_blank" rel="noopener" aria-label="Facebook">FB</a><% } %>
+        <% if (typeof settings!=='undefined' && settings.social_instagram) { %><a href="<%= settings.social_instagram %>" target="_blank" rel="noopener" aria-label="Instagram">IG</a><% } %>
+        <% if (typeof settings!=='undefined' && settings.social_linkedin) { %><a href="<%= settings.social_linkedin %>" target="_blank" rel="noopener" aria-label="LinkedIn">IN</a><% } %>
+        <% if (typeof settings!=='undefined' && settings.social_youtube) { %><a href="<%= settings.social_youtube %>" target="_blank" rel="noopener" aria-label="YouTube">YT</a><% } %>
+      </div>
+      <button data-push-btn class="btn btn-outline btn-sm push-toggle">🔔 Get Notified</button>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="container">
+      <span>© <%= new Date().getFullYear() %> <%= (typeof settings!=='undefined' && settings.brand_name) ? settings.brand_name : 'Joe' %> — Remax.</span>
+      <a href="admin" class="admin-link">Admin</a>
+    </div>
+  </div>
+</footer>
+<script>
+(function(){
+  var btn = document.getElementById('hamburgerBtn');
+  var menu = document.getElementById('mobileMenu');
+  if (btn && menu) {
+    btn.addEventListener('click', function(){ menu.classList.toggle('open'); btn.classList.toggle('open'); });
+    menu.querySelectorAll('a').forEach(function(a){ a.addEventListener('click', function(){ menu.classList.remove('open'); btn.classList.remove('open'); }); });
+  }
+  document.querySelectorAll('a[href^="#"]').forEach(function(a){
+    a.addEventListener('click', function(e){
+      var id = a.getAttribute('href');
+      if (id.length > 1) {
+        var el = document.querySelector(id);
+        if (el) { e.preventDefault(); el.scrollIntoView({ behavior:'smooth', block:'start' }); }
+      }
+    });
+  });
+})();
+</script>
+<script>
+(function(){
+  try { if (window.TenantSDK && TenantSDK.ui && TenantSDK.ui.showInstallBanner) TenantSDK.ui.showInstallBanner(); } catch(e) {}
+  setTimeout(function(){ try { if (window.TenantSDK && TenantSDK.ui && TenantSDK.ui.showPushPrompt) TenantSDK.ui.showPushPrompt(); } catch(e) {} }, 9000);
+})();
+</script>
+<script src="public/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — Joe Admin</title>
+<base href="<%= typeof tenantBase !== 'undefined' ? tenantBase : '/' %>">
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body class="admin-body">
+<%- include('partials/admin-sidebar') %>
+<main class="admin-main">
+  <header class="admin-header">
+    <div>
+      <h1>Dashboard</h1>
+      <p class="muted">Welcome back. Here's what's happening on your site.</p>
+    </div>
+    <div class="header-actions">
+      <a href="." target="_blank" class="btn btn-ghost">↗ View live site</a>
+      <a href="admin/leads" class="btn btn-primary" style="background-color:#6366f1;color:#fff">View Leads →</a>
+    </div>
+  </header>
+  <% if (typeof error !== 'undefined' && error) { %><div class="admin-alert error"><%= error %></div><% } %>
+  <section class="stats-grid">
+    <div class="stat-card primary" style="background:linear-gradient(135deg,#6366f1 0%,#4f46e5 100%);color:#fff"><span class="stat-label">New Leads</span><span class="stat-value"><%= (stats.newLeadCount || 0) %></span><span class="stat-foot">of <%= (stats.leadCount || 0) %> total</span></div>
+    <div class="stat-card"><span class="stat-label">Visits (7d)</span><span class="stat-value"><%= (stats.recentVisits || 0) %></span><span class="stat-foot"><%= (stats.totalVisits || 0) %> all-time</span></div>
+    <div class="stat-card"><span class="stat-label">Push Subscribers</span><span class="stat-value"><%= (stats.pushCount || 0) %></span><span class="stat-foot">Browser notifications</span></div>
+    <div class="stat-card"><span class="stat-label">Registered Users</span><span class="stat-value"><%= (stats.userCount || 0) %></span><span class="stat-foot">Total signups</span></div>
+  </section>
+  <h2 class="section-title">Manage Content</h2>
+  <section class="modules-grid">
+    <a class="module-card" href="admin/leads"><span class="module-icon">👥</span><strong>Leads</strong><span><%= (stats.leadCount || 0) %> total · <%= (stats.newLeadCount || 0) %> new</span></a>
+    <a class="module-card" href="admin/properties"><span class="module-icon">🏠</span><strong>Recently Sold</strong><span><%= (stats.propertyCount || 0) %> properties</span></a>
+    <a class="module-card" href="admin/testimonials"><span class="module-icon">⭐</span><strong>Testimonials</strong><span><%= (stats.testimonialCount || 0) %> reviews</span></a>
+    <a class="module-card" href="admin/skills"><span class="module-icon">🎯</span><strong>Skills</strong><span><%= (stats.skillCount || 0) %> entries</span></a>
+    <a class="module-card" href="admin/posts"><span class="module-icon">📝</span><strong>Posts</strong><span><%= (stats.postCount || 0) %> posts</span></a>
+  </section>
+  <section class="admin-panel">
+    <div class="panel-head">
+      <h2>Recent Leads</h2>
+      <a href="admin/leads" class="btn btn-link">View all →</a>
+    </div>
+    <% if (recentLeads && recentLeads.length > 0) { %>
+      <div class="table-wrap">
+        <table class="admin-table">
+          <thead><tr><th>Name</th><th>Contact</th><th>Interest</th><th>Status</th><th>Received</th></tr></thead>
+          <tbody>
+            <% recentLeads.forEach(function(l){ %>
+              <tr>
+                <td><strong><%= l.name %></strong></td>
+                <td>
+                  <% if (l.email) { %><a href="mailto:<%= l.email %>"><%= l.email %></a><br><% } %>
+                  <% if (l.phone) { %><a href="tel:<%= l.phone %>" class="muted"><%= l.phone %></a><% } %>
+                  <% if (!l.email && !l.phone) { %>-<% } %>
+                </td>
+                <td><%= l.interest || '-' %></td>
+                <td><span class="badge badge-<%= l.status %>"><%= l.status %></span></td>
+                <td class="muted"><%= formatDate(l.created_at) %></td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    <% } else { %>
+      <div class="empty-block">
+        <div class="empty-icon">📭</div>
+        <h3>No leads yet</h3>
+        <p class="muted">When visitors fill out your contact form, they'll show up here. Share your site to start collecting leads.</p>
+        <a href="." target="_blank" class="btn btn-primary" style="background-color:#6366f1;color:#fff">Preview your site</a>
+      </div>
+    <% } %>
+  </section>
+</main>
+<script src="public/js/admin.js"></script>
+</body>
+</html>

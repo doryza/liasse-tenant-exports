@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Testimonials — Joe Admin</title>
+<base href="<%= typeof tenantBase !== 'undefined' ? tenantBase : '/' %>">
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body class="admin-body">
+<%- include('partials/admin-sidebar') %>
+<main class="admin-main">
+  <header class="admin-header">
+    <div><h1>Testimonials</h1><p class="muted">Client reviews shown on the homepage.</p></div>
+    <div class="header-actions"><button class="btn btn-primary" style="background-color:#6366f1;color:#fff" onclick="openModal()">+ Add Testimonial</button></div>
+  </header>
+  <div class="admin-toolbar"><input type="text" id="searchInput" placeholder="🔍 Search..." class="admin-input"></div>
+  <div class="admin-panel">
+    <div class="table-wrap">
+      <table class="admin-table">
+        <thead><tr><th>Name</th><th>Role</th><th>Content</th><th>Rating</th><th>Featured</th><th>Actions</th></tr></thead>
+        <tbody id="tBody"><tr><td colspan="6" class="muted">Loading...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</main>
+<div class="modal" id="editModal">
+  <div class="modal-card">
+    <header class="modal-head"><h2 id="modalTitle">Testimonial</h2><button onclick="closeModal()" class="modal-close" aria-label="Close">×</button></header>
+    <form id="editForm" class="modal-form">
+      <input type="hidden" id="f-id">
+      <div class="field"><label>Name *</label><input type="text" id="f-name" required placeholder="Marie & Philippe Tremblay"></div>
+      <div class="field"><label>Role / Context</label><input type="text" id="f-role" placeholder="Sold a duplex in Rosemont"></div>
+      <div class="field"><label>Content *</label><textarea id="f-content" rows="5" required placeholder="Joe was incredible from start to finish..."></textarea></div>
+      <div class="field"><label>Avatar URL</label><input type="url" id="f-avatar_url"><img id="f-image-preview" style="display:none;margin-top:.5rem;width:60px;height:60px;border-radius:50%;object-fit:cover"></div>
+      <div class="field-row">
+        <div class="field"><label>Rating (1-5)</label><input type="number" id="f-rating" min="1" max="5" value="5"></div>
+        <div class="field"><label class="check-inline"><input type="checkbox" id="f-featured" checked> Featured on homepage</label></div>
+      </div>
+      <div class="modal-actions"><button type="button" class="btn btn-ghost" onclick="closeModal()">Cancel</button><button type="submit" class="btn btn-primary" style="background-color:#6366f1;color:#fff">Save</button></div>
+    </form>
+  </div>
+</div>
+<script>
+var all = [];
+async function load(){ try { var r = await fetch('api/admin/testimonials'); var d = await r.json(); all = d.testimonials || []; render(); } catch(e){ document.getElementById('tBody').innerHTML='<tr><td colspan="6" class="muted">Failed to load.</td></tr>'; } }
+function render(){
+  var q = (document.getElementById('searchInput').value||'').toLowerCase();
+  var rows = all.filter(function(t){ return !q || (t.name||'').toLowerCase().indexOf(q)>=0 || (t.content||'').toLowerCase().indexOf(q)>=0; });
+  var body = document.getElementById('tBody');
+  if (rows.length === 0) {
+    if (all.length === 0) body.innerHTML = '<tr><td colspan="6"><div class="empty-block"><div class="empty-icon">⭐</div><h3>No testimonials yet</h3><p class="muted">Add reviews from happy clients to build trust.</p><button class="btn btn-primary" style="background-color:#6366f1;color:#fff;margin-top:1rem" onclick="openModal()">Add first testimonial</button></div></td></tr>';
+    else body.innerHTML = '<tr><td colspan="6" class="muted" style="text-align:center;padding:2rem">No matches.</td></tr>';
+    return;
+  }
+  body.innerHTML = rows.map(function(t){
+    var snip = (t.content||'').substring(0,100) + (t.content && t.content.length>100?'…':'');
+    var stars = ''; for (var i=0;i<(t.rating||5);i++) stars += '★';
+    return '<tr><td><strong>'+esc(t.name)+'</strong></td><td class="muted">'+esc(t.role||'-')+'</td><td>'+esc(snip)+'</td><td style="color:#f59e0b;letter-spacing:1px">'+stars+'</td><td>'+(t.featured?'<span class="badge badge-new">✓ Live</span>':'<span class="badge badge-archived">Hidden</span>')+'</td><td><div class="row-actions"><button class="btn btn-sm" onclick=\'edit('+JSON.stringify(t)+')\'>Edit</button> <button class="btn btn-sm btn-danger" onclick="del('+t.id+')">Delete</button></div></td></tr>';
+  }).join('');
+}
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c];}); }
+function openModal(){ document.getElementById('editForm').reset(); document.getElementById('f-id').value=''; document.getElementById('f-rating').value=5; document.getElementById('f-featured').checked=true; document.getElementById('f-image-preview').style.display='none'; document.getElementById('modalTitle').textContent='New Testimonial'; document.getElementById('editModal').classList.add('open'); setTimeout(function(){document.getElementById('f-name').focus();},50); }
+function edit(t){ document.getElementById('f-id').value=t.id; document.getElementById('f-name').value=t.name||''; document.getElementById('f-role').value=t.role||''; document.getElementById('f-content').value=t.content||''; document.getElementById('f-avatar_url').value=t.avatar_url||''; document.getElementById('f-rating').value=t.rating||5; document.getElementById('f-featured').checked=!!t.featured; var prev = document.getElementById('f-image-preview'); if (t.avatar_url) { prev.src = t.avatar_url; prev.style.display='block'; } else prev.style.display='none'; document.getElementById('modalTitle').textContent='Edit Testimonial'; document.getElementById('editModal').classList.add('open'); }
+function closeModal(){ document.getElementById('editModal').classList.remove('open'); }
+async function del(id){ if (!confirm('Delete this testimonial?')) return; var r = await fetch('api/admin/testimonials/'+id,{method:'DELETE'}); if (r.ok) { window.showToast && showToast('Testimonial deleted'); load(); } }
+document.getElementById('f-avatar_url').addEventListener('input', function(){ var prev = document.getElementById('f-image-preview'); if (this.value) { prev.src = this.value; prev.style.display='block'; } else prev.style.display='none'; });
+document.getElementById('editForm').addEventListener('submit', async function(e){
+  e.preventDefault();
+  var id = document.getElementById('f-id').value;
+  var body = { name: document.getElementById('f-name').value, role: document.getElementById('f-role').value, content: document.getElementById('f-content').value, avatar_url: document.getElementById('f-avatar_url').value, rating: parseInt(document.getElementById('f-rating').value)||5, featured: document.getElementById('f-featured').checked?1:0 };
+  var r = await fetch(id ? 'api/admin/testimonials/'+id : 'api/admin/testimonials', { method: id?'PUT':'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+  if (r.ok) { closeModal(); window.showToast && showToast(id?'Testimonial updated':'Testimonial added'); load(); } else alert('Save failed');
+});
+document.getElementById('searchInput').addEventListener('input', render);
+document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeModal(); });
+load();
+</script>
+<script src="public/js/admin.js"></script>
+</body>
+</html>

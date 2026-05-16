@@ -1,0 +1,62 @@
+{
+  "slug": "remax-3",
+  "displayName": "Remax",
+  "description": "Project: Person-focused squeeze page for Montreal property seller Joe, with Remax. Purpose: Capture seller leads instantly. Design: Blue and red, friendly/casual. Features: Contact form, 'recently sold' section (image, link, price, neighborhood), professional photo, testimonials, skills, social media links. Explicitly rejected: calendar/booking integration, external software, blog, general gallery. Final draft.",
+  "status": "active",
+  "generationVersion": 1,
+  "primaryColor": "#6366f1",
+  "iconUrl": "https://res.cloudinary.com/duhp69meg/image/upload/v1778947436/tapavis_tenant_remax-3/icon_remax-3_1778947436157.png",
+  "enabledAuthMethods": [
+    "webauthn",
+    "sms",
+    "email"
+  ],
+  "notificationsEnabled": true,
+  "geolocationEnabled": true,
+  "customConfig": {
+    "language": "en",
+    "aiSummary": {
+      "en": {
+        "dashboard": "Welcome to your new control panel! This is your private 'backstage' area where you can manage everything on your Remax website. It’s designed to be simple and straightforward.\n\nFrom your Admin page, you can easily update the special sections that showcase your work: 'Recently Sold Properties', 'Testimonials' from happy clients, and your professional 'Skills'. To add something new, just find the matching section and click the 'Add' button. You can also edit or remove any item you've added at any time.\n\nWhen a potential seller fills out your contact form, their information will appear neatly organized in the 'Leads' section. This keeps all your new contacts in one place, ready for you to follow up.\n\nYou can also adjust your site's general settings, like updating your contact information or social media links. And if you're curious about how many people are visiting your page, you can check your site's visitor stats right from the dashboard. It’s all here to help you succeed!",
+        "variables": "Great news! Your new Remax web app is all set up and ready to go. You don't need to worry about any complicated setup or technical keys. Everything it needs to work is already built-in, so you can jump right into adding your content and start connecting with sellers in Montreal. We're so excited for you to see it in action!"
+      },
+      "fr": {
+        "dashboard": "Bienvenue dans votre tableau de bord! C'est votre section privée, un peu comme les coulisses de votre site web, où vous pouvez tout gérer. Tout a été conçu pour être simple et facile à utiliser.\n\nÀ partir de votre page d'administration, vous pouvez facilement mettre à jour les sections qui mettent en valeur votre travail : 'Propriétés Récemment Vendues', 'Témoignages' de clients satisfaits, et vos 'Compétences' professionnelles. Pour ajouter un nouvel élément, trouvez la section correspondante et cliquez sur le bouton 'Ajouter'. Vous pouvez aussi modifier ou supprimer n'importe quel élément à tout moment.\n\nQuand un vendeur potentiel remplit le formulaire, ses informations apparaîtront bien organisées dans la section 'Clients Potentiels' (Leads). Ça vous permet de garder tous vos nouveaux contacts au même endroit, prêts pour vos suivis.\n\nVous pouvez aussi ajuster certains réglages généraux de votre site, comme mettre à jour vos coordonnées ou vos liens de réseaux sociaux. Et si vous êtes curieux de savoir combien de personnes visitent votre page, vous pouvez consulter les statistiques directement dans votre tableau de bord. Tout est là pour vous aider à réussir!",
+        "variables": "Bonne nouvelle! Votre nouvelle application web Remax est prête à être utilisée. Pas besoin de vous soucier de configurations compliquées ou de clés techniques. Tout ce dont elle a besoin pour fonctionner est déjà inclus. Vous pouvez commencer dès maintenant à ajouter votre contenu et à connecter avec des vendeurs à Montréal. On a bien hâte que vous la voyiez en action!"
+      }
+    },
+    "aiSummaryVersion": 1
+  },
+  "promptHistory": [
+    {
+      "prompt": "Project: Person-focused squeeze page for Montreal property seller Joe, with Remax. Purpose: Capture seller leads instantly. Design: Blue and red, friendly/casual. Features: Contact form, 'recently sold' section (image, link, price, neighborhood), professional photo, testimonials, skills, social media links. Explicitly rejected: calendar/booking integration, external software, blog, general gallery. Final draft.",
+      "timestamp": "2026-05-16T16:04:04.991Z",
+      "changeNotes": "Built a complete person-focused squeeze page PWA for Joe — Montreal Remax broker. Blue (#1e40af) and red (#dc2626) friendly/casual design. Includes: hero with stats, professional photo + about, recently sold grid (6 seeded properties), skills (6 items), testimonials (6 reviews), contact form with full lead capture, and a tips/posts section. No calendar, no booking, no external integrations. Full admin backend with dashboard, leads pipeline (new/contacted/qualified/closed/archived), and CRUD for properties, testimonials, skills, and posts. All content is admin-editable via admin_settings and content tables.\n\nAdmin enrichment pass: (1) Fixed seed.js syntax bug — unescaped apostrophe in post title 'What's Really Happening...' was breaking JS parser; converted to double-quoted string. (2) Admin dashboard upgraded with header action buttons, panel head with View-all link, richer recent-leads table (combined contact column with mailto:/tel: links), polished empty state with icon + CTA. (3) All admin module pages got: prominent header action bar with primary CTA, search input with icon, image preview thumbnails in property/post/testimonial modals, richer empty states with icons and inline CTAs, row-action wrappers, status badges (published/draft, live/hidden, featured), keyboard Escape-to-close on modals, and auto-focus on first input when opening modal. (4) Added a global toast helper (showToast) for create/update/delete feedback, wired into every CRUD action. (5) Admin CSS rewritten: variable-driven brand color enforcement with inline-style fallbacks on every primary button, modal animation, focus-visible outlines for accessibility, hover lift on stat cards, sticky sidebar shadow, active-nav glow, table-wrap for horizontal scroll on mobile, full mobile responsiveness including stacked header. (6) Frontend polish: added focus-visible accent, hero h1 text-shadow for legibility, sold-card flex column for aligned footers, contact form input focus rings, sold-meta flex-wrap. (7) Routes.js: dashboard query now also fetches interest column. All {{IMG_*}} placeholders preserved verbatim. CRUD functionality preserved end-to-end on every module page.",
+      "generationId": 1137,
+      "filesModified": [
+        "manifest.json",
+        "public/css/admin-styles.css",
+        "public/css/styles.css",
+        "public/js/admin.js",
+        "public/js/app.js",
+        "routes.js",
+        "schema.sql",
+        "seed.js",
+        "views/admin-leads.ejs",
+        "views/admin-posts.ejs",
+        "views/admin-properties.ejs",
+        "views/admin-skills.ejs",
+        "views/admin-testimonials.ejs",
+        "views/admin.ejs",
+        "views/index.ejs",
+        "views/partials/admin-sidebar.ejs",
+        "views/partials/footer.ejs",
+        "views/partials/header.ejs"
+      ]
+    }
+  ],
+  "apiVariables": [],
+  "createdAt": "2026-05-16T15:34:12.134Z",
+  "updatedAt": "2026-05-16T16:04:31.655Z",
+  "exportedAt": "2026-05-16T16:06:52.554Z"
+}

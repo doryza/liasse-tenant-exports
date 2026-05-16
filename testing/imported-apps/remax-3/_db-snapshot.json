@@ -1,0 +1,456 @@
+{
+  "exportedAt": "2026-05-16T16:06:52.667Z",
+  "tables": {
+    "admin_users": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "password_hash",
+        "display_name",
+        "role",
+        "active",
+        "activation_token",
+        "invited_by",
+        "invite_token",
+        "invite_expires_at",
+        "last_login_at",
+        "is_active",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_invites": {
+      "columns": [
+        "id",
+        "email",
+        "token",
+        "role",
+        "status",
+        "invited_by",
+        "expires_at",
+        "accepted_at",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_webauthn_credentials": {
+      "columns": [
+        "id",
+        "admin_user_id",
+        "credential_id",
+        "public_key",
+        "counter",
+        "device_name",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_settings": {
+      "columns": [
+        "key",
+        "value",
+        "updated_at"
+      ],
+      "totalRows": 46,
+      "sampleRows": [
+        {
+          "key": "site_title",
+          "value": "Joe — Montreal Real Estate Broker | Remax",
+          "updated_at": "2026-05-16T16:03:26.565Z"
+        },
+        {
+          "key": "meta_description",
+          "value": "Sell your Montreal property with Joe — Remax. Get a free, no-pressure home valuation from a friendly local broker.",
+          "updated_at": "2026-05-16T16:03:26.570Z"
+        },
+        {
+          "key": "brand_name",
+          "value": "Joe",
+          "updated_at": "2026-05-16T16:03:26.575Z"
+        },
+        {
+          "key": "brand_subtitle",
+          "value": "Montreal Real Estate",
+          "updated_at": "2026-05-16T16:03:26.580Z"
+        },
+        {
+          "key": "hero_title",
+          "value": "Thinking of selling your Montreal home?",
+          "updated_at": "2026-05-16T16:03:26.585Z"
+        },
+        {
+          "key": "hero_subtitle",
+          "value": "Hi, I'm Joe. I'll give you a free, honest valuation and a friendly chat — no pressure, no pushy sales talk. Just real numbers and a real plan.",
+          "updated_at": "2026-05-16T16:03:26.590Z"
+        },
+        {
+          "key": "hero_cta",
+          "value": "Get My Free Valuation →",
+          "updated_at": "2026-05-16T16:03:26.595Z"
+        },
+        {
+          "key": "about_title",
+          "value": "Hey, I'm Joe — your friendly Montreal realtor.",
+          "updated_at": "2026-05-16T16:03:26.601Z"
+        },
+        {
+          "key": "about_text",
+          "value": "I've been helping families in Montreal sell their homes for over 15 years. From the Plateau to Verdun, from Rosemont to NDG, I know the neighborhoods, the buyers, and exactly what your home is worth in today's market.\n\nWhat makes me different? I'm here for the relationship, not just the transaction. I'll never push you to list before you're ready. And when we do sell, I'll fight for every dollar like it's coming out of my own pocket.",
+          "updated_at": "2026-05-16T16:03:26.605Z"
+        },
+        {
+          "key": "sold_title",
+          "value": "Recently Sold Properties",
+          "updated_at": "2026-05-16T16:03:26.612Z"
+        }
+      ]
+    },
+    "site_visits": {
+      "columns": [
+        "id",
+        "path",
+        "created_at"
+      ],
+      "totalRows": 1,
+      "sampleRows": [
+        {
+          "id": 1,
+          "path": "/",
+          "created_at": "2026-05-16T16:04:44.560Z"
+        }
+      ]
+    },
+    "posts": {
+      "columns": [
+        "id",
+        "title",
+        "content",
+        "image_url",
+        "category",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 3,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "3 Tips to Sell Your Montreal Home This Fall",
+          "content": "Fall is one of the best selling seasons in Montreal — buyers are serious and inventory tightens. Here are three things I tell every seller before we list: 1) Get a pre-listing inspection. It catches surprises before buyers do. 2) Stage the entryway. First impressions matter more than people realize. 3) Price honestly. Overpricing kills momentum in the first two weeks.",
+          "image_url": null,
+          "category": "Tips",
+          "published": 1,
+          "created_at": "2026-05-16T16:03:26.754Z",
+          "updated_at": "2026-05-16T16:03:26.754Z"
+        },
+        {
+          "id": 2,
+          "title": "Plateau vs. Rosemont: Where Should You Buy?",
+          "content": "Two of Montreal's most beloved neighborhoods, two very different vibes. The Plateau is dense, lively, and walkable — perfect if you want cafés on every corner. Rosemont is greener, quieter, and more family-friendly. Prices reflect that: Plateau condos run higher per square foot, but Rosemont offers more space for the dollar.",
+          "image_url": null,
+          "category": "Tips",
+          "published": 1,
+          "created_at": "2026-05-16T16:03:26.762Z",
+          "updated_at": "2026-05-16T16:03:26.762Z"
+        },
+        {
+          "id": 3,
+          "title": "What's Really Happening in the Montreal Market",
+          "content": "After two years of buyer fatigue, we're seeing a clear shift. Quality properties priced right are getting multiple offers again. The lesson? Don't chase the market down. Price it right, prepare it well, and let buyers do the work.",
+          "image_url": null,
+          "category": "Market Update",
+          "published": 1,
+          "created_at": "2026-05-16T16:03:26.766Z",
+          "updated_at": "2026-05-16T16:03:26.766Z"
+        }
+      ]
+    },
+    "sold_properties": {
+      "columns": [
+        "id",
+        "title",
+        "neighborhood",
+        "price",
+        "image_url",
+        "link_url",
+        "sold_date",
+        "bedrooms",
+        "bathrooms",
+        "featured",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 6,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Charming Plateau Condo",
+          "neighborhood": "Plateau-Mont-Royal",
+          "price": "$685,000",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778946324/tapavis_tenant_remax-3/build_remax-3_1778946323984.png",
+          "link_url": null,
+          "sold_date": "2024-09-15T00:00:00.000Z",
+          "bedrooms": 2,
+          "bathrooms": 1,
+          "featured": 1,
+          "created_at": "2026-05-16T16:03:26.675Z",
+          "updated_at": "2026-05-16T16:03:26.675Z"
+        },
+        {
+          "id": 2,
+          "title": "Elegant Outremont Townhouse",
+          "neighborhood": "Outremont",
+          "price": "$1,485,000",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778946323/tapavis_tenant_remax-3/build_remax-3_1778946323500.png",
+          "link_url": null,
+          "sold_date": "2024-08-22T00:00:00.000Z",
+          "bedrooms": 4,
+          "bathrooms": 3,
+          "featured": 1,
+          "created_at": "2026-05-16T16:03:26.679Z",
+          "updated_at": "2026-05-16T16:03:26.679Z"
+        },
+        {
+          "id": 3,
+          "title": "Sun-Filled Rosemont Duplex",
+          "neighborhood": "Rosemont-La Petite-Patrie",
+          "price": "$925,000",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778946339/tapavis_tenant_remax-3/build_remax-3_1778946339003.png",
+          "link_url": null,
+          "sold_date": "2024-07-30T00:00:00.000Z",
+          "bedrooms": 5,
+          "bathrooms": 2,
+          "featured": 0,
+          "created_at": "2026-05-16T16:03:26.684Z",
+          "updated_at": "2026-05-16T16:03:26.684Z"
+        },
+        {
+          "id": 4,
+          "title": "Modern Verdun Family Home",
+          "neighborhood": "Verdun",
+          "price": "$745,000",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778946323/tapavis_tenant_remax-3/build_remax-3_1778946323131.png",
+          "link_url": null,
+          "sold_date": "2024-06-18T00:00:00.000Z",
+          "bedrooms": 3,
+          "bathrooms": 2,
+          "featured": 0,
+          "created_at": "2026-05-16T16:03:26.688Z",
+          "updated_at": "2026-05-16T16:03:26.688Z"
+        },
+        {
+          "id": 5,
+          "title": "Bright NDG Bungalow",
+          "neighborhood": "Notre-Dame-de-Grâce",
+          "price": "$815,000",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778946324/tapavis_tenant_remax-3/build_remax-3_1778946323984.png",
+          "link_url": null,
+          "sold_date": "2024-05-12T00:00:00.000Z",
+          "bedrooms": 3,
+          "bathrooms": 2,
+          "featured": 0,
+          "created_at": "2026-05-16T16:03:26.692Z",
+          "updated_at": "2026-05-16T16:03:26.692Z"
+        },
+        {
+          "id": 6,
+          "title": "Mile End Loft with Terrace",
+          "neighborhood": "Mile End",
+          "price": "$795,000",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778946323/tapavis_tenant_remax-3/build_remax-3_1778946323500.png",
+          "link_url": null,
+          "sold_date": "2024-04-08T00:00:00.000Z",
+          "bedrooms": 2,
+          "bathrooms": 2,
+          "featured": 0,
+          "created_at": "2026-05-16T16:03:26.695Z",
+          "updated_at": "2026-05-16T16:03:26.695Z"
+        }
+      ]
+    },
+    "testimonials": {
+      "columns": [
+        "id",
+        "name",
+        "role",
+        "content",
+        "avatar_url",
+        "image_url",
+        "rating",
+        "featured",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 6,
+      "sampleRows": [
+        {
+          "id": 1,
+          "name": "Marie & Philippe Tremblay",
+          "role": "Sold in Plateau-Mont-Royal",
+          "content": "Joe is the real deal. He came over, listened to our concerns about timing, and gave us a price range that turned out to be spot-on. We accepted an offer 4 days after listing — above asking. No drama, no pressure. Just results.",
+          "avatar_url": null,
+          "image_url": null,
+          "rating": 5,
+          "featured": 1,
+          "created_at": "2026-05-16T16:03:26.702Z",
+          "updated_at": "2026-05-16T16:03:26.702Z"
+        },
+        {
+          "id": 2,
+          "name": "Alex Bertrand",
+          "role": "Sold a duplex in Rosemont",
+          "content": "I had two other agents tell me what they thought I wanted to hear. Joe told me the truth, and that's exactly why we worked with him. Sold quickly and for more than I expected. Already recommended him to my brother.",
+          "avatar_url": null,
+          "image_url": null,
+          "rating": 5,
+          "featured": 1,
+          "created_at": "2026-05-16T16:03:26.706Z",
+          "updated_at": "2026-05-16T16:03:26.706Z"
+        },
+        {
+          "id": 3,
+          "name": "Sophie Lavoie",
+          "role": "Sold in NDG",
+          "content": "Selling my mom's home was emotional. Joe handled every detail with patience and respect. He explained everything in plain language and made sure we never felt rushed. A genuinely kind professional.",
+          "avatar_url": null,
+          "image_url": null,
+          "rating": 5,
+          "featured": 1,
+          "created_at": "2026-05-16T16:03:26.710Z",
+          "updated_at": "2026-05-16T16:03:26.710Z"
+        },
+        {
+          "id": 4,
+          "name": "Daniel Cohen",
+          "role": "Sold in Outremont",
+          "content": "Five stars isn't enough. Joe negotiated $40k over our list price thanks to multiple offers he generated through his network. He knows Montreal inside out.",
+          "avatar_url": null,
+          "image_url": null,
+          "rating": 5,
+          "featured": 1,
+          "created_at": "2026-05-16T16:03:26.714Z",
+          "updated_at": "2026-05-16T16:03:26.714Z"
+        },
+        {
+          "id": 5,
+          "name": "Catherine Roy & David Lin",
+          "role": "Sold in Verdun",
+          "content": "Joe felt like a friend from day one — warm, casual, but seriously sharp on numbers. We trusted him completely and the result speaks for itself.",
+          "avatar_url": null,
+          "image_url": null,
+          "rating": 5,
+          "featured": 1,
+          "created_at": "2026-05-16T16:03:26.718Z",
+          "updated_at": "2026-05-16T16:03:26.718Z"
+        },
+        {
+          "id": 6,
+          "name": "Jean-François Martel",
+          "role": "Sold in Mile End",
+          "content": "Joe got our condo sold in 9 days. His photos, staging tips, and marketing were on point. Highly recommend if you want zero stress.",
+          "avatar_url": null,
+          "image_url": null,
+          "rating": 5,
+          "featured": 1,
+          "created_at": "2026-05-16T16:03:26.721Z",
+          "updated_at": "2026-05-16T16:03:26.721Z"
+        }
+      ]
+    },
+    "skills": {
+      "columns": [
+        "id",
+        "name",
+        "description",
+        "icon",
+        "image_url",
+        "order_index",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 6,
+      "sampleRows": [
+        {
+          "id": 1,
+          "name": "Local Market Expertise",
+          "description": "I live and work in Montreal. I know what's selling on your street, what isn't, and exactly why.",
+          "icon": "🗺️",
+          "image_url": null,
+          "order_index": 1,
+          "created_at": "2026-05-16T16:03:26.727Z",
+          "updated_at": "2026-05-16T16:03:26.727Z"
+        },
+        {
+          "id": 2,
+          "name": "Honest Pricing",
+          "description": "No inflated promises to win your listing. Just real numbers based on real comps.",
+          "icon": "💯",
+          "image_url": null,
+          "order_index": 2,
+          "created_at": "2026-05-16T16:03:26.733Z",
+          "updated_at": "2026-05-16T16:03:26.733Z"
+        },
+        {
+          "id": 3,
+          "name": "Smart Negotiation",
+          "description": "15 years of negotiating means I keep the deal warm while pushing for top dollar.",
+          "icon": "🤝",
+          "image_url": null,
+          "order_index": 3,
+          "created_at": "2026-05-16T16:03:26.737Z",
+          "updated_at": "2026-05-16T16:03:26.737Z"
+        },
+        {
+          "id": 4,
+          "name": "Marketing That Works",
+          "description": "Professional photos, drone footage, social campaigns, and an active buyer network.",
+          "icon": "📸",
+          "image_url": null,
+          "order_index": 4,
+          "created_at": "2026-05-16T16:03:26.741Z",
+          "updated_at": "2026-05-16T16:03:26.741Z"
+        },
+        {
+          "id": 5,
+          "name": "Always Available",
+          "description": "You call, I answer. No assistants, no voicemail tag. Real responsiveness.",
+          "icon": "📞",
+          "image_url": null,
+          "order_index": 5,
+          "created_at": "2026-05-16T16:03:26.744Z",
+          "updated_at": "2026-05-16T16:03:26.744Z"
+        },
+        {
+          "id": 6,
+          "name": "Bilingual Service",
+          "description": "En français ou en anglais — whichever you're more comfortable with.",
+          "icon": "🇨🇦",
+          "image_url": null,
+          "order_index": 6,
+          "created_at": "2026-05-16T16:03:26.748Z",
+          "updated_at": "2026-05-16T16:03:26.748Z"
+        }
+      ]
+    },
+    "leads": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "phone",
+        "message",
+        "interest",
+        "status",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    }
+  }
+}

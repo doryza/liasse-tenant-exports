@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1e40af">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title><%= (typeof settings!=='undefined' && settings.site_title) ? settings.site_title : 'Joe — Montreal Real Estate' %></title>
+<meta name="description" content="<%= (typeof settings!=='undefined' && settings.meta_description) ? settings.meta_description : 'Sell your Montreal property with Joe — Remax. Get a free valuation and a friendly, no-pressure consultation.' %>">
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="public/css/styles.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="container nav-wrap">
+    <a href="." class="brand">
+      <img src="<%= (typeof settings!=='undefined' && settings._p_nav_logo_url) ? settings._p_nav_logo_url : (typeof appIconUrl!=='undefined' ? appIconUrl : '') %>" alt="Joe Remax" class="brand-logo" onerror="this.style.display='none'">
+      <span class="brand-text"><strong><%= (typeof settings!=='undefined' && settings.brand_name) ? settings.brand_name : 'Joe' %></strong><em><%= (typeof settings!=='undefined' && settings.brand_subtitle) ? settings.brand_subtitle : 'Montreal Real Estate' %></em></span>
+    </a>
+    <nav class="nav-desktop">
+      <a href="#about">About</a>
+      <a href="#sold">Sold</a>
+      <a href="#testimonials">Reviews</a>
+      <a href="#skills">Skills</a>
+      <a href="#contact" class="btn btn-primary nav-cta">Free Valuation</a>
+      <a href="#" data-login-btn class="nav-link">Sign In</a>
+    </nav>
+    <button class="hamburger" id="hamburgerBtn" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <div class="nav-mobile" id="mobileMenu">
+    <a href="#about">About</a>
+    <a href="#sold">Recently Sold</a>
+    <a href="#testimonials">Reviews</a>
+    <a href="#skills">Skills</a>
+    <a href="#contact" class="btn btn-primary">Free Valuation</a>
+    <a href="#" data-login-btn>Sign In</a>
+  </div>
+</header>

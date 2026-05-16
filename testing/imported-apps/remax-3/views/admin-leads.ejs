@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leads — Joe Admin</title>
+<base href="<%= typeof tenantBase !== 'undefined' ? tenantBase : '/' %>">
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body class="admin-body">
+<%- include('partials/admin-sidebar') %>
+<main class="admin-main">
+  <header class="admin-header">
+    <div><h1>Leads</h1><p class="muted">Manage seller inquiries from your contact form. <span id="leadCount"></span></p></div>
+    <div class="header-actions"><button class="btn btn-primary" style="background-color:#6366f1;color:#fff" onclick="openModal()">+ Add Lead</button></div>
+  </header>
+  <div class="admin-toolbar">
+    <input type="text" id="searchInput" placeholder="🔍 Search name, email, phone..." class="admin-input">
+    <select id="statusFilter" class="admin-input">
+      <option value="">All statuses</option>
+      <option value="new">New</option>
+      <option value="contacted">Contacted</option>
+      <option value="qualified">Qualified</option>
+      <option value="closed">Closed</option>
+      <option value="archived">Archived</option>
+    </select>
+  </div>
+  <div class="admin-panel">
+    <div class="table-wrap">
+      <table class="admin-table" id="leadsTable">
+        <thead><tr><th>Name</th><th>Contact</th><th>Interest</th><th>Status</th><th>Received</th><th>Actions</th></tr></thead>
+        <tbody id="leadsBody"><tr><td colspan="6" class="muted">Loading...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<div class="modal" id="editModal">
+  <div class="modal-card">
+    <header class="modal-head"><h2 id="modalTitle">Lead</h2><button onclick="closeModal()" class="modal-close" aria-label="Close">×</button></header>
+    <form id="editForm" class="modal-form">
+      <input type="hidden" id="f-id" name="id">
+      <div class="field"><label>Name *</label><input type="text" id="f-name" name="name" required></div>
+      <div class="field-row">
+        <div class="field"><label>Email</label><input type="email" id="f-email" name="email"></div>
+        <div class="field"><label>Phone</label><input type="text" id="f-phone" name="phone"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Interest</label><select id="f-interest" name="interest"><option value="general">General</option><option value="selling">Selling</option><option value="buying">Buying</option><option value="valuation">Valuation</option></select></div>
+        <div class="field"><label>Status</label><select id="f-status" name="status"><option value="new">New</option><option value="contacted">Contacted</option><option value="qualified">Qualified</option><option value="closed">Closed</option><option value="archived">Archived</option></select></div>
+      </div>
+      <div class="field"><label>Message</label><textarea id="f-message" name="message" rows="4"></textarea></div>
+      <div class="modal-actions"><button type="button" class="btn btn-ghost" onclick="closeModal()">Cancel</button><button type="submit" class="btn btn-primary" style="background-color:#6366f1;color:#fff">Save</button></div>
+    </form>
+  </div>
+</div>
+
+<script>
+var allLeads = [];
+async function load() {
+  try { var r = await fetch('api/admin/leads'); var d = await r.json(); allLeads = d.leads || []; render(); }
+  catch(e) { document.getElementById('leadsBody').innerHTML = '<tr><td colspan="6" class="muted">Failed to load.</td></tr>'; }
+}
+function render() {
+  var q = (document.getElementById('searchInput').value || '').toLowerCase();
+  var status = document.getElementById('statusFilter').value;
+  var rows = allLeads.filter(function(l){
+    if (status && l.status !== status) return false;
+    if (!q) return true;
+    return (l.name||'').toLowerCase().indexOf(q)>=0 || (l.email||'').toLowerCase().indexOf(q)>=0 || (l.phone||'').toLowerCase().indexOf(q)>=0;
+  });
+  document.getElementById('leadCount').textContent = allLeads.length ? '(' + rows.length + ' of ' + allLeads.length + ')' : '';
+  var body = document.getElementById('leadsBody');
+  if (rows.length === 0) {
+    if (allLeads.length === 0) {
+      body.innerHTML = '<tr><td colspan="6"><div class="empty-block"><div class="empty-icon">📭</div><h3>No leads yet</h3><p class="muted">When visitors fill out your form, they will show up here.</p></div></td></tr>';
+    } else {
+      body.innerHTML = '<tr><td colspan="6" class="muted" style="text-align:center;padding:2rem">No leads match your filters.</td></tr>';
+    }
+    return;
+  }
+  body.innerHTML = rows.map(function(l){
+    var d = new Date(l.created_at).toLocaleDateString('en-CA');
+    var contact = '';
+    if (l.email) contact += '<a href="mailto:' + esc(l.email) + '">' + esc(l.email) + '</a>';
+    if (l.phone) contact += (contact?'<br>':'') + '<a href="tel:' + esc(l.phone) + '" class="muted">' + esc(l.phone) + '</a>';
+    if (!contact) contact = '<span class="muted">—</span>';
+    return '<tr>' +
+      '<td><strong>' + esc(l.name) + '</strong>' + (l.message ? '<br><small class="muted">' + esc((l.message||'').substring(0,80)) + (l.message.length>80?'…':'') + '</small>' : '') + '</td>' +
+      '<td>' + contact + '</td>' +
+      '<td>' + esc(l.interest||'-') + '</td>' +
+      '<td><span class="badge badge-' + esc(l.status||'new') + '">' + esc(l.status||'new') + '</span></td>' +
+      '<td class="muted">' + d + '</td>' +
+      '<td><div class="row-actions"><button class="btn btn-sm" onclick=\'editLead(' + JSON.stringify(l) + ')\'>Edit</button> <button class="btn btn-sm btn-danger" onclick="delLead(' + l.id + ')">Delete</button></div></td>' +
+      '</tr>';
+  }).join('');
+}
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c];}); }
+function openModal(){ document.getElementById('editForm').reset(); document.getElementById('f-id').value=''; document.getElementById('modalTitle').textContent='New Lead'; document.getElementById('editModal').classList.add('open'); setTimeout(function(){document.getElementById('f-name').focus();},50); }
+function editLead(l) { document.getElementById('f-id').value=l.id; document.getElementById('f-name').value=l.name||''; document.getElementById('f-email').value=l.email||''; document.getElementById('f-phone').value=l.phone||''; document.getElementById('f-interest').value=l.interest||'general'; document.getElementById('f-status').value=l.status||'new'; document.getElementById('f-message').value=l.message||''; document.getElementById('modalTitle').textContent='Edit Lead'; document.getElementById('editModal').classList.add('open'); }
+function closeModal(){ document.getElementById('editModal').classList.remove('open'); }
+async function delLead(id){ if (!confirm('Delete this lead permanently?')) return; var r = await fetch('api/admin/leads/'+id,{method:'DELETE'}); if (r.ok) { window.showToast && showToast('Lead deleted'); load(); } else { alert('Delete failed'); } }
+document.getElementById('editForm').addEventListener('submit', async function(e){
+  e.preventDefault();
+  var id = document.getElementById('f-id').value;
+  var body = { name: document.getElementById('f-name').value, email: document.getElementById('f-email').value, phone: document.getElementById('f-phone').value, interest: document.getElementById('f-interest').value, status: document.getElementById('f-status').value, message: document.getElementById('f-message').value };
+  var url = id ? 'api/admin/leads/' + id : 'api/admin/leads';
+  var method = id ? 'PUT' : 'POST';
+  var r = await fetch(url, { method: method, headers: {'Content-Type':'application/json'}, body: JSON.stringify(body) });
+  if (r.ok) { closeModal(); window.showToast && showToast(id ? 'Lead updated' : 'Lead created'); load(); } else { alert('Save failed'); }
+});
+document.getElementById('searchInput').addEventListener('input', render);
+document.getElementById('statusFilter').addEventListener('change', render);
+document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeModal(); });
+load();
+</script>
+<script src="public/js/admin.js"></script>
+</body>
+</html>

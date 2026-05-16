@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skills — Joe Admin</title>
+<base href="<%= typeof tenantBase !== 'undefined' ? tenantBase : '/' %>">
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body class="admin-body">
+<%- include('partials/admin-sidebar') %>
+<main class="admin-main">
+  <header class="admin-header">
+    <div><h1>Skills & Specialties</h1><p class="muted">What you do best — shown on the homepage.</p></div>
+    <div class="header-actions"><button class="btn btn-primary" style="background-color:#6366f1;color:#fff" onclick="openModal()">+ Add Skill</button></div>
+  </header>
+  <div class="admin-toolbar"><input type="text" id="searchInput" placeholder="🔍 Search skills..." class="admin-input"></div>
+  <div class="admin-panel">
+    <div class="table-wrap">
+      <table class="admin-table">
+        <thead><tr><th>Order</th><th>Icon</th><th>Name</th><th>Description</th><th>Actions</th></tr></thead>
+        <tbody id="sBody"><tr><td colspan="5" class="muted">Loading...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</main>
+<div class="modal" id="editModal">
+  <div class="modal-card">
+    <header class="modal-head"><h2 id="modalTitle">Skill</h2><button onclick="closeModal()" class="modal-close" aria-label="Close">×</button></header>
+    <form id="editForm" class="modal-form">
+      <input type="hidden" id="f-id">
+      <div class="field-row">
+        <div class="field"><label>Icon (emoji)</label><input type="text" id="f-icon" placeholder="🏆" maxlength="4"></div>
+        <div class="field"><label>Order (lower = first)</label><input type="number" id="f-order_index" value="0"></div>
+      </div>
+      <div class="field"><label>Name *</label><input type="text" id="f-name" required placeholder="Negotiation"></div>
+      <div class="field"><label>Description</label><textarea id="f-description" rows="3" placeholder="Why this matters to sellers..."></textarea></div>
+      <div class="modal-actions"><button type="button" class="btn btn-ghost" onclick="closeModal()">Cancel</button><button type="submit" class="btn btn-primary" style="background-color:#6366f1;color:#fff">Save</button></div>
+    </form>
+  </div>
+</div>
+<script>
+var all = [];
+async function load(){ try { var r = await fetch('api/admin/skills'); var d = await r.json(); all = (d.skills || []).sort(function(a,b){ return (a.order_index||0)-(b.order_index||0); }); render(); } catch(e){ document.getElementById('sBody').innerHTML='<tr><td colspan="5" class="muted">Failed to load.</td></tr>'; } }
+function render(){
+  var q = (document.getElementById('searchInput').value||'').toLowerCase();
+  var rows = all.filter(function(s){ return !q || (s.name||'').toLowerCase().indexOf(q)>=0; });
+  var body = document.getElementById('sBody');
+  if (rows.length === 0) {
+    if (all.length === 0) body.innerHTML = '<tr><td colspan="5"><div class="empty-block"><div class="empty-icon">🎯</div><h3>No skills yet</h3><p class="muted">Add the strengths that win listings.</p><button class="btn btn-primary" style="background-color:#6366f1;color:#fff;margin-top:1rem" onclick="openModal()">Add first skill</button></div></td></tr>';
+    else body.innerHTML = '<tr><td colspan="5" class="muted" style="text-align:center;padding:2rem">No matches.</td></tr>';
+    return;
+  }
+  body.innerHTML = rows.map(function(s){
+    return '<tr><td>'+(s.order_index||0)+'</td><td style="font-size:1.5rem">'+esc(s.icon||'⭐')+'</td><td><strong>'+esc(s.name)+'</strong></td><td class="muted">'+esc((s.description||'').substring(0,100))+((s.description||'').length>100?'…':'')+'</td><td><div class="row-actions"><button class="btn btn-sm" onclick=\'edit('+JSON.stringify(s)+')\'>Edit</button> <button class="btn btn-sm btn-danger" onclick="del('+s.id+')">Delete</button></div></td></tr>';
+  }).join('');
+}
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c];}); }
+function openModal(){ document.getElementById('editForm').reset(); document.getElementById('f-id').value=''; document.getElementById('f-order_index').value=0; document.getElementById('modalTitle').textContent='New Skill'; document.getElementById('editModal').classList.add('open'); setTimeout(function(){document.getElementById('f-name').focus();},50); }
+function edit(s){ document.getElementById('f-id').value=s.id; document.getElementById('f-icon').value=s.icon||''; document.getElementById('f-order_index').value=s.order_index||0; document.getElementById('f-name').value=s.name||''; document.getElementById('f-description').value=s.description||''; document.getElementById('modalTitle').textContent='Edit Skill'; document.getElementById('editModal').classList.add('open'); }
+function closeModal(){ document.getElementById('editModal').classList.remove('open'); }
+async function del(id){ if (!confirm('Delete this skill?')) return; var r = await fetch('api/admin/skills/'+id,{method:'DELETE'}); if (r.ok) { window.showToast && showToast('Skill deleted'); load(); } }
+document.getElementById('editForm').addEventListener('submit', async function(e){
+  e.preventDefault();
+  var id = document.getElementById('f-id').value;
+  var body = { name: document.getElementById('f-name').value, description: document.getElementById('f-description').value, icon: document.getElementById('f-icon').value, order_index: parseInt(document.getElementById('f-order_index').value)||0 };
+  var r = await fetch(id ? 'api/admin/skills/'+id : 'api/admin/skills', { method: id?'PUT':'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+  if (r.ok) { closeModal(); window.showToast && showToast(id?'Skill updated':'Skill added'); load(); } else alert('Save failed');
+});
+document.getElementById('searchInput').addEventListener('input', render);
+document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeModal(); });
+load();
+</script>
+<script src="public/js/admin.js"></script>
+</body>
+</html>

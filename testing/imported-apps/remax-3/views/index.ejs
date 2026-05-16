@@ -1,0 +1,200 @@
+<%- include('partials/header') %>
+
+<section class="hero" id="top">
+  <img src="<%= (typeof settings!=='undefined' && settings._p_hero_image_url) ? settings._p_hero_image_url : 'https://placehold.co/1600x900/1e40af/ffffff/png?text=Montreal' %>" alt="Montreal skyline" class="hero-img">
+  <div class="hero-overlay"></div>
+  <div class="container hero-content">
+    <span class="badge badge-red">REMAX • MONTREAL</span>
+    <h1><%= (typeof settings!=='undefined' && settings.hero_title) ? settings.hero_title : "Thinking of selling your Montreal home?" %></h1>
+    <p class="hero-sub"><%= (typeof settings!=='undefined' && settings.hero_subtitle) ? settings.hero_subtitle : "Hi, I'm Joe. I'll give you a free, honest valuation and a friendly chat — no pressure, no pushy sales talk. Just real numbers and a real plan." %></p>
+    <div class="hero-cta">
+      <a href="#contact" class="btn btn-primary btn-lg" style="background-color:#dc2626;color:#fff"><%= (typeof settings!=='undefined' && settings.hero_cta) ? settings.hero_cta : 'Get My Free Valuation →' %></a>
+      <a href="#sold" class="btn btn-ghost btn-lg">See Recently Sold</a>
+    </div>
+    <div class="hero-trust">
+      <div><strong>120+</strong><span>Homes Sold</span></div>
+      <div><strong>4.9★</strong><span>Client Rating</span></div>
+      <div><strong>15 yrs</strong><span>In Montreal</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="section about" id="about">
+  <div class="container about-grid">
+    <div class="about-photo">
+      <img src="<%= (typeof settings!=='undefined' && settings._p_joe_photo_url) ? settings._p_joe_photo_url : 'https://placehold.co/600x800/1e40af/ffffff/png?text=Joe' %>" alt="Joe — Montreal real estate broker">
+      <span class="photo-badge">REMAX Broker</span>
+    </div>
+    <div class="about-text">
+      <span class="eyebrow">MEET YOUR BROKER</span>
+      <h2><%= (typeof settings!=='undefined' && settings.about_title) ? settings.about_title : "Hey, I'm Joe — your friendly Montreal realtor." %></h2>
+      <div class="about-body"><%- (typeof settings!=='undefined' && settings.about_text) ? settings.about_text.replace(/\n/g,'<br>') : "I've been helping families in Montreal sell their homes for over 15 years." %></div>
+      <div class="about-cta">
+        <a href="#contact" class="btn btn-primary" style="background-color:#dc2626;color:#fff">Talk to Joe</a>
+        <% if (typeof settings!=='undefined' && settings.contact_phone) { %><a href="tel:<%= settings.contact_phone %>" class="btn btn-outline">📞 <%= settings.contact_phone %></a><% } %>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section sold" id="sold">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow red">SOLD BY JOE</span>
+      <h2><%= (typeof settings!=='undefined' && settings.sold_title) ? settings.sold_title : 'Recently Sold Properties' %></h2>
+      <p class="section-sub"><%= (typeof settings!=='undefined' && settings.sold_subtitle) ? settings.sold_subtitle : 'Real results from real Montreal neighborhoods.' %></p>
+    </div>
+    <% if (properties && properties.length > 0) { %>
+      <div class="sold-grid">
+        <% properties.forEach(function(p) { %>
+          <article class="sold-card">
+            <div class="sold-img">
+              <img src="<%= p.image_url || 'https://placehold.co/800x600/e5e7eb/6b7280/png?text=Sold' %>" alt="<%= p.title %>" loading="lazy">
+              <span class="sold-tag">SOLD</span>
+            </div>
+            <div class="sold-body">
+              <h3><%= p.title %></h3>
+              <p class="sold-hood">📍 <%= p.neighborhood || 'Montreal' %></p>
+              <div class="sold-meta">
+                <% if (p.bedrooms) { %><span><%= p.bedrooms %> bd</span><% } %>
+                <% if (p.bathrooms) { %><span><%= p.bathrooms %> ba</span><% } %>
+                <% if (p.sold_date) { %><span><%= formatDate(p.sold_date) %></span><% } %>
+              </div>
+              <div class="sold-footer">
+                <strong class="sold-price"><%= p.price || '—' %></strong>
+                <% if (p.link_url) { %><a href="<%= p.link_url %>" target="_blank" rel="noopener" class="sold-link">View →</a><% } %>
+              </div>
+            </div>
+          </article>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <div class="empty-state"><p>Recent sales coming soon. Get in touch to learn about Joe's track record.</p></div>
+    <% } %>
+  </div>
+</section>
+
+<section class="section skills" id="skills">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">WHAT JOE DOES BEST</span>
+      <h2><%= (typeof settings!=='undefined' && settings.skills_title) ? settings.skills_title : 'Skills that get your home sold' %></h2>
+    </div>
+    <% if (skills && skills.length > 0) { %>
+      <div class="skills-grid">
+        <% skills.forEach(function(s) { %>
+          <div class="skill-card">
+            <div class="skill-icon"><%= s.icon || '⭐' %></div>
+            <h3><%= s.name %></h3>
+            <% if (s.description) { %><p><%= s.description %></p><% } %>
+          </div>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <div class="empty-state"><p>Skills coming soon.</p></div>
+    <% } %>
+  </div>
+</section>
+
+<section class="section testimonials" id="testimonials">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow red">CLIENT STORIES</span>
+      <h2><%= (typeof settings!=='undefined' && settings.testimonials_title) ? settings.testimonials_title : 'What sellers say about Joe' %></h2>
+    </div>
+    <% if (testimonials && testimonials.length > 0) { %>
+      <div class="test-grid">
+        <% testimonials.forEach(function(t) { %>
+          <figure class="test-card">
+            <div class="stars"><% for (var i=0;i<(t.rating||5);i++) { %>★<% } %></div>
+            <blockquote>"<%= t.content %>"</blockquote>
+            <figcaption>
+              <% if (t.avatar_url) { %><img src="<%= t.avatar_url %>" alt="<%= t.name %>" class="test-avatar"><% } else { %><div class="test-avatar test-avatar-fallback"><%= (t.name||'?').charAt(0) %></div><% } %>
+              <div><strong><%= t.name %></strong><% if (t.role) { %><span><%= t.role %></span><% } %></div>
+            </figcaption>
+          </figure>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <div class="empty-state"><p>Testimonials coming soon.</p></div>
+    <% } %>
+  </div>
+</section>
+
+<section class="section contact" id="contact">
+  <div class="container contact-grid">
+    <div class="contact-info">
+      <span class="eyebrow">LET'S TALK</span>
+      <h2><%= (typeof settings!=='undefined' && settings.contact_title) ? settings.contact_title : "Ready to sell? Let's chat — coffee on me." %></h2>
+      <p><%= (typeof settings!=='undefined' && settings.contact_subtitle) ? settings.contact_subtitle : "Fill out the form and I'll personally reach out within a few hours." %></p>
+      <ul class="contact-points">
+        <li>✓ Free, honest home valuation</li>
+        <li>✓ No-pressure consultation</li>
+        <li>✓ Real Montreal market data</li>
+        <li>✓ Same-day response</li>
+      </ul>
+      <div class="contact-direct">
+        <% if (typeof settings!=='undefined' && settings.contact_phone) { %><a href="tel:<%= settings.contact_phone %>" class="btn btn-outline">📞 <%= settings.contact_phone %></a><% } %>
+        <% if (typeof settings!=='undefined' && settings.contact_email) { %><a href="mailto:<%= settings.contact_email %>" class="btn btn-outline">✉ Email Joe</a><% } %>
+      </div>
+    </div>
+    <form class="contact-form" id="contactForm">
+      <h3>Get your free valuation</h3>
+      <div class="field">
+        <label for="f-name">Your name *</label>
+        <input type="text" id="f-name" name="name" required placeholder="Marie Tremblay">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="f-email">Email</label>
+          <input type="email" id="f-email" name="email" placeholder="you@example.com">
+        </div>
+        <div class="field">
+          <label for="f-phone">Phone</label>
+          <input type="tel" id="f-phone" name="phone" placeholder="514-555-1234">
+        </div>
+      </div>
+      <div class="field">
+        <label for="f-interest">I'm interested in...</label>
+        <select id="f-interest" name="interest">
+          <option value="selling">Selling my home</option>
+          <option value="valuation">A free home valuation</option>
+          <option value="buying">Buying a home</option>
+          <option value="general">General question</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="f-message">Tell Joe about your property</label>
+        <textarea id="f-message" name="message" rows="4" placeholder="Address, neighborhood, type of property, timeline..."></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary btn-lg btn-block" style="background-color:#dc2626;color:#fff">Send to Joe →</button>
+      <p class="form-note">Your info stays between us. No spam, ever.</p>
+      <div id="formStatus" class="form-status"></div>
+    </form>
+  </div>
+</section>
+
+<% if (posts && posts.length > 0) { %>
+<section class="section posts" id="posts">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">FROM JOE'S DESK</span>
+      <h2>Tips & Updates</h2>
+    </div>
+    <div class="posts-grid">
+      <% posts.forEach(function(p) { %>
+        <article class="post-card">
+          <% if (p.image_url) { %><img src="<%= p.image_url %>" alt="<%= p.title %>" loading="lazy"><% } %>
+          <div class="post-body">
+            <% if (p.category) { %><span class="post-cat"><%= p.category %></span><% } %>
+            <h3><%= p.title %></h3>
+            <% if (p.content) { %><p><%= p.content.length > 140 ? p.content.substring(0,140) + '…' : p.content %></p><% } %>
+          </div>
+        </article>
+      <% }); %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<%- include('partials/footer') %>

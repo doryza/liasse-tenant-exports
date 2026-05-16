@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recently Sold — Joe Admin</title>
+<base href="<%= typeof tenantBase !== 'undefined' ? tenantBase : '/' %>">
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body class="admin-body">
+<%- include('partials/admin-sidebar') %>
+<main class="admin-main">
+  <header class="admin-header">
+    <div><h1>Recently Sold</h1><p class="muted">Show off your latest closings. These appear on the homepage.</p></div>
+    <div class="header-actions"><button class="btn btn-primary" style="background-color:#6366f1;color:#fff" onclick="openModal()">+ Add Property</button></div>
+  </header>
+  <div class="admin-toolbar"><input type="text" id="searchInput" placeholder="🔍 Search title or neighborhood..." class="admin-input"></div>
+  <div class="admin-panel">
+    <div class="table-wrap">
+      <table class="admin-table" id="propTable">
+        <thead><tr><th></th><th>Title</th><th>Neighborhood</th><th>Price</th><th>Sold</th><th>Featured</th><th>Actions</th></tr></thead>
+        <tbody id="propBody"><tr><td colspan="7" class="muted">Loading...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<div class="modal" id="editModal">
+  <div class="modal-card">
+    <header class="modal-head"><h2 id="modalTitle">Property</h2><button onclick="closeModal()" class="modal-close" aria-label="Close">×</button></header>
+    <form id="editForm" class="modal-form">
+      <input type="hidden" id="f-id">
+      <div class="field"><label>Title *</label><input type="text" id="f-title" required placeholder="e.g. Charming Plateau Condo"></div>
+      <div class="field-row">
+        <div class="field"><label>Neighborhood</label><input type="text" id="f-neighborhood" placeholder="Plateau-Mont-Royal"></div>
+        <div class="field"><label>Price</label><input type="text" id="f-price" placeholder="$645,000"></div>
+      </div>
+      <div class="field"><label>Image URL</label><input type="url" id="f-image_url" placeholder="https://..."><img id="f-image-preview" style="display:none;margin-top:.5rem;max-height:140px;border-radius:6px"></div>
+      <div class="field"><label>Listing link (optional)</label><input type="url" id="f-link_url" placeholder="https://centris.ca/..."></div>
+      <div class="field-row triple">
+        <div class="field"><label>Sold date</label><input type="date" id="f-sold_date"></div>
+        <div class="field"><label>Bedrooms</label><input type="number" id="f-bedrooms" min="0"></div>
+        <div class="field"><label>Bathrooms</label><input type="number" id="f-bathrooms" min="0"></div>
+      </div>
+      <div class="field"><label class="check-inline"><input type="checkbox" id="f-featured"> ⭐ Featured (appears first)</label></div>
+      <div class="modal-actions"><button type="button" class="btn btn-ghost" onclick="closeModal()">Cancel</button><button type="submit" class="btn btn-primary" style="background-color:#6366f1;color:#fff">Save</button></div>
+    </form>
+  </div>
+</div>
+
+<script>
+var all = [];
+async function load(){ try { var r = await fetch('api/admin/sold_properties'); var d = await r.json(); all = d.sold_properties || []; render(); } catch(e){ document.getElementById('propBody').innerHTML='<tr><td colspan="7" class="muted">Failed to load.</td></tr>'; } }
+function render(){
+  var q = (document.getElementById('searchInput').value||'').toLowerCase();
+  var rows = all.filter(function(p){ return !q || (p.title||'').toLowerCase().indexOf(q)>=0 || (p.neighborhood||'').toLowerCase().indexOf(q)>=0; });
+  var body = document.getElementById('propBody');
+  if (rows.length === 0) {
+    if (all.length === 0) body.innerHTML = '<tr><td colspan="7"><div class="empty-block"><div class="empty-icon">🏠</div><h3>No properties yet</h3><p class="muted">Add your first sold listing to start building social proof.</p><button class="btn btn-primary" style="background-color:#6366f1;color:#fff;margin-top:1rem" onclick="openModal()">Add first property</button></div></td></tr>';
+    else body.innerHTML = '<tr><td colspan="7" class="muted" style="text-align:center;padding:2rem">No properties match.</td></tr>';
+    return;
+  }
+  body.innerHTML = rows.map(function(p){
+    var img = p.image_url ? '<img src="'+esc(p.image_url)+'" style="width:64px;height:48px;object-fit:cover;border-radius:6px">' : '<div class="img-ph"></div>';
+    return '<tr><td>'+img+'</td><td><strong>'+esc(p.title)+'</strong></td><td>'+esc(p.neighborhood||'-')+'</td><td><strong style="color:#1e40af">'+esc(p.price||'-')+'</strong></td><td class="muted">'+(p.sold_date ? new Date(p.sold_date).toLocaleDateString('en-CA') : '-')+'</td><td>'+(p.featured?'<span class="badge badge-qualified">⭐ Featured</span>':'')+'</td><td><div class="row-actions"><button class="btn btn-sm" onclick=\'edit('+JSON.stringify(p)+')\'>Edit</button> <button class="btn btn-sm btn-danger" onclick="del('+p.id+')">Delete</button></div></td></tr>';
+  }).join('');
+}
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c];}); }
+function openModal(){ document.getElementById('editForm').reset(); document.getElementById('f-id').value=''; document.getElementById('f-image-preview').style.display='none'; document.getElementById('modalTitle').textContent='New Property'; document.getElementById('editModal').classList.add('open'); setTimeout(function(){document.getElementById('f-title').focus();},50); }
+function edit(p){ document.getElementById('f-id').value=p.id; document.getElementById('f-title').value=p.title||''; document.getElementById('f-neighborhood').value=p.neighborhood||''; document.getElementById('f-price').value=p.price||''; document.getElementById('f-image_url').value=p.image_url||''; document.getElementById('f-link_url').value=p.link_url||''; document.getElementById('f-sold_date').value=p.sold_date ? p.sold_date.substring(0,10) : ''; document.getElementById('f-bedrooms').value=p.bedrooms||''; document.getElementById('f-bathrooms').value=p.bathrooms||''; document.getElementById('f-featured').checked = !!p.featured; var prev = document.getElementById('f-image-preview'); if (p.image_url) { prev.src = p.image_url; prev.style.display='block'; } else prev.style.display='none'; document.getElementById('modalTitle').textContent='Edit Property'; document.getElementById('editModal').classList.add('open'); }
+function closeModal(){ document.getElementById('editModal').classList.remove('open'); }
+async function del(id){ if (!confirm('Delete this property?')) return; var r = await fetch('api/admin/sold_properties/'+id,{method:'DELETE'}); if (r.ok) { window.showToast && showToast('Property deleted'); load(); } }
+document.getElementById('f-image_url').addEventListener('input', function(){ var prev = document.getElementById('f-image-preview'); if (this.value) { prev.src = this.value; prev.style.display='block'; } else prev.style.display='none'; });
+document.getElementById('editForm').addEventListener('submit', async function(e){
+  e.preventDefault();
+  var id = document.getElementById('f-id').value;
+  var body = { title: document.getElementById('f-title').value, neighborhood: document.getElementById('f-neighborhood').value, price: document.getElementById('f-price').value, image_url: document.getElementById('f-image_url').value, link_url: document.getElementById('f-link_url').value, sold_date: document.getElementById('f-sold_date').value || null, bedrooms: parseInt(document.getElementById('f-bedrooms').value)||null, bathrooms: parseInt(document.getElementById('f-bathrooms').value)||null, featured: document.getElementById('f-featured').checked ? 1 : 0 };
+  var url = id ? 'api/admin/sold_properties/'+id : 'api/admin/sold_properties';
+  var r = await fetch(url, { method: id?'PUT':'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+  if (r.ok) { closeModal(); window.showToast && showToast(id?'Property updated':'Property added'); load(); } else { var d = await r.json(); alert(d.error || 'Save failed'); }
+});
+document.getElementById('searchInput').addEventListener('input', render);
+document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeModal(); });
+load();
+</script>
+<script src="public/js/admin.js"></script>
+</body>
+</html>

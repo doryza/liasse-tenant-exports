@@ -1,0 +1,16 @@
+<aside class="admin-sidebar" id="adminSidebar">
+  <div class="admin-brand"><strong>Joe</strong> Admin</div>
+  <nav class="admin-nav">
+    <a href="admin" class="<%= (typeof adminPage!=='undefined' && adminPage==='dashboard') ? 'active' : '' %>"><span>📊</span> Dashboard</a>
+    <a href="admin/leads" class="<%= (typeof adminPage!=='undefined' && adminPage==='leads') ? 'active' : '' %>"><span>👥</span> Leads</a>
+    <a href="admin/properties" class="<%= (typeof adminPage!=='undefined' && adminPage==='properties') ? 'active' : '' %>"><span>🏠</span> Recently Sold</a>
+    <a href="admin/testimonials" class="<%= (typeof adminPage!=='undefined' && adminPage==='testimonials') ? 'active' : '' %>"><span>⭐</span> Testimonials</a>
+    <a href="admin/skills" class="<%= (typeof adminPage!=='undefined' && adminPage==='skills') ? 'active' : '' %>"><span>🎯</span> Skills</a>
+    <a href="admin/posts" class="<%= (typeof adminPage!=='undefined' && adminPage==='posts') ? 'active' : '' %>"><span>📝</span> Posts</a>
+  </nav>
+  <div class="admin-foot">
+    <a href="." target="_blank">↗ View site</a>
+    <a href="admin/logout">⏻ Log out</a>
+  </div>
+</aside>
+<button class="admin-menu-toggle" id="adminMenuToggle" aria-label="Menu">☰</button>
