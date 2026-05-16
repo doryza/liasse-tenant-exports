@@ -47,7 +47,7 @@ async function loadItems() {
   if (!d.posts || d.posts.length === 0) { tbody.innerHTML = '<tr><td colspan="5" class="empty-cell">📭 Aucun article. Cliquez sur <strong>+ Nouvel article</strong> pour créer le premier.</td></tr>'; return; }
   tbody.innerHTML = d.posts.map(function(p){
     var statusBadge = p.published ? '<span class="badge badge-done">Publié</span>' : '<span class="badge badge-draft">Brouillon</span>';
-    return '<tr><td><strong>'+esc(p.title)+'</strong></td><td>'+(p.category?'<span class="chip">'+esc(p.category)+'</span>':'—')+'</td><td>'+statusBadge+'</td><td>'+new Date(p.created_at).toLocaleDateString('fr-CA')+'</td><td class="actions-cell"><button class="btn-edit" onclick=\'editItem('+JSON.stringify(p).replace(/"/g,'&quot;')+')\'>✏ Modifier</button> <button class="btn-del" onclick="delItem('+p.id+',\''+esc(p.title).replace(/\x27/g,"\\\x27")+'\')">🗑</button></td></tr>';
+    return '<tr><td><strong>'+esc(p.title)+'</strong></td><td>'+(p.category?'<span class="chip">'+esc(p.category)+'</span>':'—')+'</td><td>'+statusBadge+'</td><td>'+new Date(p.created_at).toLocaleDateString('fr-CA')+'</td><td class="actions-cell"><button class="btn-edit" onclick=\'editItem('+JSON.stringify(p).replace(/"/g,'&quot;').replace(/'/g,'&#39;')+')\'>✏ Modifier</button> <button class="btn-del" onclick="delItem('+p.id+',\''+esc(p.title).replace(/\x27/g,"\\\x27")+'\')">🗑</button></td></tr>';
   }).join('');
 }
 function esc(s){ return String(s||'').replace(/[&<>"']/g, function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }

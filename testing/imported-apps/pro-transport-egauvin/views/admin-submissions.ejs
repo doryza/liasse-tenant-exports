@@ -42,7 +42,7 @@ function render() {
     var contact = (s.email ? '<a href="mailto:'+esc(s.email)+'">'+esc(s.email)+'</a>' : '') + (s.phone ? '<br><a href="tel:'+esc(s.phone)+'">'+esc(s.phone)+'</a>' : '');
     var preview = esc((s.message||'').slice(0,80))+(s.message&&s.message.length>80?'…':'');
     var statusBadge = '<span class="badge badge-'+(s.status==='nouveau'?'new':'done')+'">'+esc(s.status)+'</span>';
-    return '<tr class="'+(s.status==='nouveau'?'row-new':'')+'"><td>'+new Date(s.created_at).toLocaleDateString('fr-CA')+'</td><td><strong>'+esc(s.name)+'</strong></td><td>'+(contact||'—')+'</td><td>'+esc(s.subject||'—')+'</td><td class="col-msg">'+preview+'</td><td>'+statusBadge+'</td><td class="actions-cell"><button class="btn-edit" onclick=\'viewItem('+JSON.stringify(s).replace(/"/g,'&quot;')+')\'>👁 Voir</button> <button class="btn-del" onclick="delItem('+s.id+')">🗑</button></td></tr>';
+    return '<tr class="'+(s.status==='nouveau'?'row-new':'')+'"><td>'+new Date(s.created_at).toLocaleDateString('fr-CA')+'</td><td><strong>'+esc(s.name)+'</strong></td><td>'+(contact||'—')+'</td><td>'+esc(s.subject||'—')+'</td><td class="col-msg">'+preview+'</td><td>'+statusBadge+'</td><td class="actions-cell"><button class="btn-edit" onclick=\'viewItem('+JSON.stringify(s).replace(/"/g,'&quot;').replace(/'/g,'&#39;')+')\'>👁 Voir</button> <button class="btn-del" onclick="delItem('+s.id+')">🗑</button></td></tr>';
   }).join('');
 }
 function esc(s){ return String(s||'').replace(/[&<>"']/g, function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
