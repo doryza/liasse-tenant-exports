@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Services — Admin</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body class="admin-body">
+<% var activeNav = 'services'; %>
+<%- include('partials/admin-sidebar') %>
+<main class="admin-main">
+  <header class="admin-header">
+    <div>
+      <h1>📦 Services</h1>
+      <p>Gérez les matériaux et services proposés (terre, sable, gravier, asphalte, etc.).</p>
+    </div>
+    <button class="btn-add" onclick="openModal()" style="background-color:#dc2626;color:#fff">+ Nouveau service</button>
+  </header>
+  <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Image</th><th>Nom</th><th>Tarif</th><th>Vedette</th><th>Ordre</th><th style="text-align:right">Actions</th></tr></thead><tbody id="itemsBody"><tr><td colspan="6" class="loading-cell">Chargement…</td></tr></tbody></table></div>
+</main>
+<div id="modal" class="modal" onclick="if(event.target===this) closeModal()">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()" aria-label="Fermer">×</button>
+    <h2 id="modalTitle">Nouveau service</h2>
+    <p class="modal-help">Décrivez le matériau, sa tarification et son ordre d'affichage.</p>
+    <form id="itemForm" onsubmit="return saveItem(event)">
+      <input type="hidden" id="f_id">
+      <label>Nom *<input type="text" id="f_name" required maxlength="100" placeholder="ex. Gravier"></label>
+      <label>Description *<textarea id="f_description" rows="6" required placeholder="Décrivez le matériau et ses utilisations…"></textarea></label>
+      <label>URL image
+        <input type="url" id="f_image_url" placeholder="https://..." oninput="previewImg('f_image_url','imgPreview')">
+        <small class="help-text">Photo du matériau. Recommandé : 800×600px.</small>
+        <img id="imgPreview" class="img-preview" style="display:none" alt="Aperçu">
+      </label>
+      <label>Information de tarification
+        <input type="text" id="f_price_info" maxlength="100" placeholder="ex. Sur devis selon volume / À partir de 50$/verge">
+        <small class="help-text">Affiché sur les fiches service. Laissez vide pour ne rien afficher.</small>
+      </label>
+      <div class="form-row">
+        <label class="check"><input type="checkbox" id="f_featured" checked> <span>En vedette sur l'accueil</span></label>
+        <label>Ordre d'affichage<input type="number" id="f_sort_order" min="0" value="0"></label>
+      </div>
+      <div class="modal-actions"><button type="button" onclick="closeModal()" class="btn-cancel">Annuler</button><button type="submit" class="btn-save" style="background-color:#dc2626;color:#fff">💾 Enregistrer</button></div>
+    </form>
+  </div>
+</div>
+<script>
+function previewImg(inputId, imgId){ var v=document.getElementById(inputId).value; var im=document.getElementById(imgId); if(v){ im.src=v; im.style.display='block'; } else { im.style.display='none'; } }
+async function loadItems() {
+  var r = await fetch('api/admin/services'); var d = await r.json();
+  var tbody = document.getElementById('itemsBody');
+  if (!d.services || d.services.length === 0) { tbody.innerHTML = '<tr><td colspan="6" class="empty-cell">📦 Aucun service. Cliquez sur <strong>+ Nouveau service</strong> pour commencer.</td></tr>'; return; }
+  tbody.innerHTML = d.services.map(function(s){
+    var img = s.image_url ? '<img src="'+esc(s.image_url)+'" class="thumb" alt="">' : '<div class="thumb thumb-empty">—</div>';
+    return '<tr><td>'+img+'</td><td><strong>'+esc(s.name)+'</strong></td><td>'+esc(s.price_info||'—')+'</td><td>'+(s.featured?'<span class="badge badge-done">⭐ Oui</span>':'—')+'</td><td>'+s.sort_order+'</td><td class="actions-cell"><button class="btn-edit" onclick=\'editItem('+JSON.stringify(s).replace(/"/g,'&quot;')+')\'>✏ Modifier</button> <button class="btn-del" onclick="delItem('+s.id+',\''+esc(s.name).replace(/\x27/g,"\\\x27")+'\')">🗑</button></td></tr>';
+  }).join('');
+}
+function esc(s){ return String(s||'').replace(/[&<>"']/g, function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+function openModal() { document.getElementById('itemForm').reset(); document.getElementById('f_id').value=''; document.getElementById('f_featured').checked=true; document.getElementById('f_sort_order').value=0; document.getElementById('imgPreview').style.display='none'; document.getElementById('modalTitle').textContent='Nouveau service'; document.getElementById('modal').classList.add('open'); }
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+function editItem(s) {
+  f_id.value=s.id; f_name.value=s.name||''; f_description.value=s.description||''; f_image_url.value=s.image_url||''; f_price_info.value=s.price_info||''; f_featured.checked=!!s.featured; f_sort_order.value=s.sort_order||0;
+  previewImg('f_image_url','imgPreview');
+  document.getElementById('modalTitle').textContent='Modifier le service';
+  document.getElementById('modal').classList.add('open');
+}
+async function saveItem(e) {
+  e.preventDefault();
+  var btn=e.target.querySelector('button[type=submit]'); btn.disabled=true; btn.textContent='Enregistrement…';
+  var id = f_id.value;
+  var data = { name: f_name.value, description: f_description.value, image_url: f_image_url.value, price_info: f_price_info.value, featured: f_featured.checked ? 1 : 0, sort_order: parseInt(f_sort_order.value)||0 };
+  var url = id ? 'api/admin/services/'+id : 'api/admin/services';
+  try {
+    var r = await fetch(url, { method: id?'PUT':'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) });
+    if (r.ok) { closeModal(); loadItems(); toast(id?'Service mis à jour':'Service créé','success'); } else { var d = await r.json(); toast(d.error||'Erreur','error'); }
+  } catch(e) { toast('Erreur de connexion','error'); }
+  btn.disabled=false; btn.textContent='💾 Enregistrer';
+  return false;
+}
+async function delItem(id, name) { if (!confirm('Supprimer le service « '+name+' » ?')) return; await fetch('api/admin/services/'+id, { method:'DELETE' }); toast('Service supprimé','success'); loadItems(); }
+function toast(msg, type){ var t=document.createElement('div'); t.className='toast toast-'+type; t.textContent=msg; document.body.appendChild(t); setTimeout(function(){t.classList.add('show');},10); setTimeout(function(){t.classList.remove('show'); setTimeout(function(){t.remove();},300);},2800); }
+loadItems();
+</script>
+</body>
+</html>

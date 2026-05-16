@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paramètres — Admin</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body class="admin-body">
+<% var activeNav = 'settings'; %>
+<%- include('partials/admin-sidebar') %>
+<main class="admin-main">
+  <header class="admin-header">
+    <div><h1>⚙️ Paramètres du site</h1><p>Modifiez les coordonnées et textes affichés sur votre site public.</p></div>
+  </header>
+  <div id="settingsMsg" class="form-msg" style="display:none"></div>
+  <div class="settings-grid">
+    <section class="settings-card">
+      <h2>🏢 Identité de l'entreprise</h2>
+      <label>Nom de l'entreprise<input type="text" data-k="business_name" value="<%= settings.business_name || '' %>"></label>
+      <label>Slogan / Tagline<input type="text" data-k="tagline" value="<%= settings.tagline || '' %>"></label>
+      <label>Texte du pied de page<textarea data-k="footer_text" rows="2"><%= settings.footer_text || '' %></textarea></label>
+    </section>
+    <section class="settings-card">
+      <h2>📞 Coordonnées</h2>
+      <label>Téléphone<input type="tel" data-k="contact_phone" value="<%= settings.contact_phone || '' %>" placeholder="(000) 000-0000"></label>
+      <label>Courriel<input type="email" data-k="contact_email" value="<%= settings.contact_email || '' %>"></label>
+      <label>Adresse<input type="text" data-k="business_address" value="<%= settings.business_address || '' %>"></label>
+      <label>Zone desservie<input type="text" data-k="service_area" value="<%= settings.service_area || '' %>" placeholder="ex. Sherbrooke et environs"></label>
+    </section>
+    <section class="settings-card">
+      <h2>🎯 Section d'accueil (Hero)</h2>
+      <label>Titre principal<input type="text" data-k="hero_title" value="<%= settings.hero_title || '' %>"></label>
+      <label>Sous-titre<textarea data-k="hero_subtitle" rows="3"><%= settings.hero_subtitle || '' %></textarea></label>
+      <label>Texte du bouton<input type="text" data-k="hero_cta" value="<%= settings.hero_cta || '' %>"></label>
+    </section>
+    <section class="settings-card">
+      <h2>📖 À propos</h2>
+      <label>Titre<input type="text" data-k="about_title" value="<%= settings.about_title || '' %>"></label>
+      <label>Texte<textarea data-k="about_text" rows="6"><%= settings.about_text || '' %></textarea></label>
+    </section>
+    <section class="settings-card">
+      <h2>⏰ Horaires</h2>
+      <label>Titre<input type="text" data-k="hours_title" value="<%= settings.hours_title || '' %>"></label>
+      <label>Description<textarea data-k="hours_text" rows="4"><%= settings.hours_text || '' %></textarea></label>
+    </section>
+  </div>
+  <div class="settings-save-bar">
+    <button onclick="saveAll()" class="btn-save" style="background-color:#dc2626;color:#fff" id="saveBtn">💾 Enregistrer tous les changements</button>
+  </div>
+</main>
+<script>
+async function saveAll() {
+  var btn = document.getElementById('saveBtn'); btn.disabled=true; btn.textContent='Enregistrement…';
+  var inputs = document.querySelectorAll('[data-k]');
+  var errors = 0;
+  for (var i=0;i<inputs.length;i++) {
+    var el = inputs[i];
+    try {
+      var r = await fetch('api/admin/settings', { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ key: el.getAttribute('data-k'), value: el.value }) });
+      if (!r.ok) errors++;
+    } catch(e) { errors++; }
+  }
+  var msg = document.getElementById('settingsMsg');
+  msg.style.display='block';
+  if (errors===0) { msg.className='form-msg form-msg-success'; msg.textContent='✓ Tous les paramètres ont été enregistrés.'; }
+  else { msg.className='form-msg form-msg-error'; msg.textContent='⚠ '+errors+' paramètre(s) n\'ont pas pu être enregistrés.'; }
+  window.scrollTo({top:0, behavior:'smooth'});
+  btn.disabled=false; btn.textContent='💾 Enregistrer tous les changements';
+  setTimeout(function(){ msg.style.display='none'; }, 4000);
+}
+</script>
+</body>
+</html>

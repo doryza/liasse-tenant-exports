@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#dc2626">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="description" content="<%= (typeof settings!=='undefined' && settings.tagline) ? settings.tagline : 'Camionnage 12 roues — Service 24/7' %>">
+<title><%= (typeof pageTitle !== 'undefined' ? pageTitle + ' — ' : '') + ((typeof settings!=='undefined' && settings.business_name) ? settings.business_name : 'Pro Transport E. Gauvin') %></title>
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="public/css/styles.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="container nav-wrap">
+    <a href="." class="brand">
+      <img src="<%= (typeof settings!=='undefined' && settings._p_nav_logo_url) ? settings._p_nav_logo_url : (typeof appIconUrl!=='undefined' ? appIconUrl : '') %>" alt="Logo" class="brand-logo" onerror="this.style.display='none'">
+      <span class="brand-text"><%= (typeof settings!=='undefined' && settings.business_name) ? settings.business_name : 'Pro Transport E. Gauvin' %></span>
+    </a>
+    <button class="hamburger" id="hamburgerBtn" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    <nav class="nav-desktop">
+      <a href="." class="<%= (typeof page!=='undefined' && page==='home') ? 'active' : '' %>">Accueil</a>
+      <a href="services" class="<%= (typeof page!=='undefined' && page==='services') ? 'active' : '' %>">Services</a>
+      <a href="galerie" class="<%= (typeof page!=='undefined' && page==='galerie') ? 'active' : '' %>">Galerie</a>
+      <a href="horaires" class="<%= (typeof page!=='undefined' && page==='horaires') ? 'active' : '' %>">Horaires</a>
+      <a href="contact" class="<%= (typeof page!=='undefined' && page==='contact') ? 'active' : '' %>">Contact</a>
+      <a href="#" data-login-btn class="nav-cta-secondary">Connexion</a>
+      <a href="contact" class="nav-cta" style="background-color:#dc2626;color:#fff">Demander un devis</a>
+    </nav>
+  </div>
+  <nav class="nav-mobile" id="navMobile">
+    <a href=".">Accueil</a>
+    <a href="services">Services</a>
+    <a href="galerie">Galerie</a>
+    <a href="horaires">Horaires</a>
+    <a href="contact">Contact</a>
+    <a href="#" data-login-btn>Connexion</a>
+    <a href="contact" class="mobile-cta" style="background-color:#dc2626;color:#fff">Demander un devis</a>
+  </nav>
+</header>
+<script>
+(function(){
+  var btn = document.getElementById('hamburgerBtn');
+  var menu = document.getElementById('navMobile');
+  if (btn && menu) {
+    btn.addEventListener('click', function(){
+      var open = menu.classList.toggle('open');
+      btn.classList.toggle('active', open);
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+  }
+})();
+</script>

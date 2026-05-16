@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tableau de bord — <%= (typeof settings!=='undefined' && settings.business_name) ? settings.business_name : 'Pro Transport' %></title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body class="admin-body">
+<% var activeNav = 'dashboard'; %>
+<%- include('partials/admin-sidebar') %>
+<main class="admin-main">
+  <header class="admin-header">
+    <div>
+      <h1>Tableau de bord</h1>
+      <p>Bienvenue dans votre espace de gestion — pilotage complet de votre site.</p>
+    </div>
+    <div class="header-actions">
+      <a href="." target="_blank" class="btn-ghost-light">↗ Voir le site public</a>
+      <a href="admin/submissions" class="btn-add" style="background-color:#dc2626;color:#fff">📥 Demandes (<%= stats.newSubmissions %> nouv.)</a>
+    </div>
+  </header>
+
+  <section>
+    <h2 class="section-heading">📈 Vue d'ensemble</h2>
+    <div class="stats-grid">
+      <div class="stat-box"><div class="stat-icon">👁</div><div class="stat-label">Visites totales</div><div class="stat-value"><%= stats.totalVisits %></div></div>
+      <div class="stat-box"><div class="stat-icon">📅</div><div class="stat-label">7 derniers jours</div><div class="stat-value"><%= stats.recentVisits %></div></div>
+      <div class="stat-box"><div class="stat-icon">👥</div><div class="stat-label">Utilisateurs</div><div class="stat-value"><%= stats.userCount %></div></div>
+      <div class="stat-box"><div class="stat-icon">🔔</div><div class="stat-label">Abonnés push</div><div class="stat-value"><%= stats.pushCount %></div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="section-heading">🗂 Gestion du contenu</h2>
+    <div class="modules-grid">
+      <a href="admin/posts" class="module-card">
+        <div class="module-icon">📝</div>
+        <div class="module-info"><h3>Actualités</h3><p><strong><%= stats.postCount %></strong> article<%= stats.postCount>1?'s':'' %></p><span class="module-cta">Gérer →</span></div>
+      </a>
+      <a href="admin/services" class="module-card">
+        <div class="module-icon">📦</div>
+        <div class="module-info"><h3>Services</h3><p><strong><%= stats.serviceCount %></strong> service<%= stats.serviceCount>1?'s':'' %></p><span class="module-cta">Gérer →</span></div>
+      </a>
+      <a href="admin/gallery" class="module-card">
+        <div class="module-icon">🖼</div>
+        <div class="module-info"><h3>Galerie</h3><p><strong><%= stats.galleryCount %></strong> photo<%= stats.galleryCount>1?'s':'' %></p><span class="module-cta">Gérer →</span></div>
+      </a>
+      <a href="admin/submissions" class="module-card <%= stats.newSubmissions>0?'module-alert':'' %>">
+        <div class="module-icon">✉</div>
+        <div class="module-info"><h3>Demandes</h3><p><strong><%= stats.submissionCount %></strong> total · <span class="badge-inline"><%= stats.newSubmissions %> nouv.</span></p><span class="module-cta">Gérer →</span></div>
+      </a>
+      <a href="admin/settings" class="module-card">
+        <div class="module-icon">⚙️</div>
+        <div class="module-info"><h3>Paramètres</h3><p>Coordonnées, textes du site</p><span class="module-cta">Configurer →</span></div>
+      </a>
+    </div>
+  </section>
+
+  <% if (typeof recentSubs !== 'undefined' && recentSubs.length > 0) { %>
+    <section class="admin-section">
+      <div class="section-head-row">
+        <h2>Dernières demandes reçues</h2>
+        <a href="admin/submissions" class="link-action">Tout voir →</a>
+      </div>
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead><tr><th>Date</th><th>Nom</th><th>Sujet</th><th>Statut</th><th></th></tr></thead>
+          <tbody>
+            <% recentSubs.forEach(function(s){ %>
+              <tr>
+                <td><%= new Date(s.created_at).toLocaleDateString('fr-CA') %></td>
+                <td><strong><%= s.name %></strong></td>
+                <td><%= s.subject || '—' %></td>
+                <td><span class="badge badge-<%= s.status === 'nouveau' ? 'new' : 'done' %>"><%= s.status %></span></td>
+                <td><a href="admin/submissions" class="link-action">Voir →</a></td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  <% } else { %>
+    <section class="admin-section empty-soft">
+      <p>📭 Aucune demande reçue pour le moment. Les nouvelles demandes du formulaire de contact apparaîtront ici.</p>
+    </section>
+  <% } %>
+
+  <section class="admin-section info-card">
+    <h2>💡 Conseils rapides</h2>
+    <ul class="tips-list">
+      <li><strong>Photos:</strong> ajoutez régulièrement des photos de chantier dans la <a href="admin/gallery">Galerie</a> pour montrer votre travail.</li>
+      <li><strong>Services:</strong> mettez à jour les tarifs et descriptions dans <a href="admin/services">Services</a> selon la saison.</li>
+      <li><strong>Actualités:</strong> publiez des <a href="admin/posts">articles</a> pour informer vos clients (nouveau service, conseils, etc.).</li>
+    </ul>
+  </section>
+</main>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<%- include('partials/header') %>
+<section class="page-hero" style="background-color:#dc2626">
+  <div class="container"><h1>Galerie</h1><p>Nos opérations et notre flotte en action</p></div>
+</section>
+<section class="section">
+  <div class="container">
+    <% if (typeof categories!=='undefined' && categories.length > 0) { %>
+      <div class="filter-bar">
+        <a href="galerie" class="filter-chip <%= !currentCat ? 'active' : '' %>" style="<%= !currentCat ? 'background-color:#dc2626;color:#fff;border-color:#dc2626' : '' %>">Toutes</a>
+        <% categories.forEach(function(c) { %>
+          <a href="galerie?cat=<%= encodeURIComponent(c.category) %>" class="filter-chip <%= currentCat===c.category ? 'active' : '' %>" style="<%= currentCat===c.category ? 'background-color:#dc2626;color:#fff;border-color:#dc2626' : '' %>"><%= c.category %></a>
+        <% }); %>
+      </div>
+    <% } %>
+    <% if (typeof gallery!=='undefined' && gallery.length > 0) { %>
+      <div class="gallery-grid-full">
+        <% gallery.forEach(function(g) { %>
+          <div class="gallery-item-full" onclick="openLightbox('<%= g.image_url %>', '<%= (g.title || '').replace(/'/g, "\\\'") %>', '<%= (g.description || '').replace(/'/g, "\\\'") %>')">
+            <img src="<%= g.image_url %>" alt="<%= g.title || 'Photo galerie' %>" loading="lazy">
+            <% if (g.title || g.category) { %>
+              <div class="gallery-overlay">
+                <% if (g.category) { %><div class="gallery-cat"><%= g.category %></div><% } %>
+                <% if (g.title) { %><div class="gallery-title"><%= g.title %></div><% } %>
+              </div>
+            <% } %>
+          </div>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <p class="empty-state">Aucune photo dans cette catégorie pour le moment.</p>
+    <% } %>
+  </div>
+</section>
+<div id="lightbox" class="lightbox" onclick="closeLightbox()">
+  <div class="lightbox-content" onclick="event.stopPropagation()">
+    <button class="lightbox-close" onclick="closeLightbox()" aria-label="Fermer">×</button>
+    <img id="lightboxImg" src="" alt="">
+    <div id="lightboxCaption" class="lightbox-caption"></div>
+  </div>
+</div>
+<script>
+function openLightbox(src, title, desc) {
+  document.getElementById('lightboxImg').src = src;
+  document.getElementById('lightboxCaption').innerHTML = (title ? '<strong>'+title+'</strong>' : '') + (desc ? '<br>'+desc : '');
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeLightbox(); });
+</script>
+<%- include('partials/footer') %>

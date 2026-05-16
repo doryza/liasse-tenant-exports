@@ -1,0 +1,33 @@
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div>
+      <h3 class="footer-title"><%= (typeof settings!=='undefined' && settings.business_name) ? settings.business_name : 'Pro Transport E. Gauvin' %></h3>
+      <p><%= (typeof settings!=='undefined' && settings.footer_text) ? settings.footer_text : 'Camionnage professionnel — Terre, sable, gravier, asphalte. Service 24/7.' %></p>
+      <div class="badge-247">⏱ Disponible 24h/7j</div>
+    </div>
+    <div>
+      <h4 class="footer-subtitle">Navigation</h4>
+      <ul class="footer-links">
+        <li><a href=".">Accueil</a></li>
+        <li><a href="services">Services</a></li>
+        <li><a href="galerie">Galerie</a></li>
+        <li><a href="horaires">Horaires</a></li>
+        <li><a href="contact">Contact</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4 class="footer-subtitle">Contact</h4>
+      <ul class="footer-links">
+        <% if (typeof settings!=='undefined' && settings.contact_phone) { %><li>📞 <a href="tel:<%= settings.contact_phone %>"><%= settings.contact_phone %></a></li><% } %>
+        <% if (typeof settings!=='undefined' && settings.contact_email) { %><li>✉ <a href="mailto:<%= settings.contact_email %>"><%= settings.contact_email %></a></li><% } %>
+        <% if (typeof settings!=='undefined' && settings.business_address) { %><li>📍 <%= settings.business_address %></li><% } %>
+        <% if (typeof settings!=='undefined' && settings.service_area) { %><li>🗺 <%= settings.service_area %></li><% } %>
+      </ul>
+      <button data-push-btn class="btn-ghost" style="margin-top:1rem">🔔 Activer les notifications</button>
+    </div>
+  </div>
+  <div class="footer-bottom"><div class="container">© <%= new Date().getFullYear() %> <%= (typeof settings!=='undefined' && settings.business_name) ? settings.business_name : 'Pro Transport E. Gauvin' %>. Tous droits réservés.</div></div>
+</footer>
+<script src="public/js/app.js"></script>
+</body>
+</html>

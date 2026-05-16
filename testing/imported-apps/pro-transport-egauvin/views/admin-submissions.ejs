@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demandes — Admin</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body class="admin-body">
+<% var activeNav = 'submissions'; %>
+<%- include('partials/admin-sidebar') %>
+<main class="admin-main">
+  <header class="admin-header">
+    <div>
+      <h1>✉ Demandes de devis</h1>
+      <p>Toutes les demandes envoyées via le formulaire de contact apparaissent ici.</p>
+    </div>
+    <div class="filter-row">
+      <button class="filter-btn active" data-filter="all" onclick="setFilter('all',this)">Toutes</button>
+      <button class="filter-btn" data-filter="nouveau" onclick="setFilter('nouveau',this)">Nouvelles</button>
+      <button class="filter-btn" data-filter="traité" onclick="setFilter('traité',this)">Traitées</button>
+    </div>
+  </header>
+  <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Date</th><th>Nom</th><th>Contact</th><th>Sujet</th><th>Message</th><th>Statut</th><th style="text-align:right">Actions</th></tr></thead><tbody id="itemsBody"><tr><td colspan="7" class="loading-cell">Chargement…</td></tr></tbody></table></div>
+</main>
+<div id="modal" class="modal" onclick="if(event.target===this) closeModal()">
+  <div class="modal-box"><button class="modal-close" onclick="closeModal()" aria-label="Fermer">×</button><div id="modalContent"></div></div>
+</div>
+<script>
+var allItems = []; var currentFilter = 'all';
+function setFilter(f, btn) { currentFilter=f; document.querySelectorAll('.filter-btn').forEach(function(b){b.classList.remove('active');}); btn.classList.add('active'); render(); }
+async function loadItems() {
+  var r = await fetch('api/admin/submissions'); var d = await r.json();
+  allItems = d.submissions || [];
+  render();
+}
+function render() {
+  var items = currentFilter==='all' ? allItems : allItems.filter(function(s){return s.status===currentFilter;});
+  var tbody = document.getElementById('itemsBody');
+  if (items.length === 0) { tbody.innerHTML = '<tr><td colspan="7" class="empty-cell">📭 Aucune demande dans cette catégorie.</td></tr>'; return; }
+  tbody.innerHTML = items.map(function(s){
+    var contact = (s.email ? '<a href="mailto:'+esc(s.email)+'">'+esc(s.email)+'</a>' : '') + (s.phone ? '<br><a href="tel:'+esc(s.phone)+'">'+esc(s.phone)+'</a>' : '');
+    var preview = esc((s.message||'').slice(0,80))+(s.message&&s.message.length>80?'…':'');
+    var statusBadge = '<span class="badge badge-'+(s.status==='nouveau'?'new':'done')+'">'+esc(s.status)+'</span>';
+    return '<tr class="'+(s.status==='nouveau'?'row-new':'')+'"><td>'+new Date(s.created_at).toLocaleDateString('fr-CA')+'</td><td><strong>'+esc(s.name)+'</strong></td><td>'+(contact||'—')+'</td><td>'+esc(s.subject||'—')+'</td><td class="col-msg">'+preview+'</td><td>'+statusBadge+'</td><td class="actions-cell"><button class="btn-edit" onclick=\'viewItem('+JSON.stringify(s).replace(/"/g,'&quot;')+')\'>👁 Voir</button> <button class="btn-del" onclick="delItem('+s.id+')">🗑</button></td></tr>';
+  }).join('');
+}
+function esc(s){ return String(s||'').replace(/[&<>"']/g, function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+function viewItem(s) {
+  var c = document.getElementById('modalContent');
+  c.innerHTML = '<h2>Demande de '+esc(s.name)+'</h2>' +
+    '<div class="sub-meta">' +
+      '<div><strong>Date :</strong> '+new Date(s.created_at).toLocaleString('fr-CA')+'</div>' +
+      '<div><strong>Statut :</strong> <span class="badge badge-'+(s.status==='nouveau'?'new':'done')+'">'+esc(s.status)+'</span></div>' +
+    '</div>' +
+    '<div class="sub-contact">' +
+      '<div><strong>📧 Courriel :</strong> '+(s.email?'<a href="mailto:'+esc(s.email)+'">'+esc(s.email)+'</a>':'—')+'</div>' +
+      '<div><strong>📞 Téléphone :</strong> '+(s.phone?'<a href="tel:'+esc(s.phone)+'">'+esc(s.phone)+'</a>':'—')+'</div>' +
+      '<div><strong>📋 Sujet :</strong> '+esc(s.subject||'—')+'</div>' +
+    '</div>' +
+    '<h3 style="margin-top:1.25rem">Message</h3><div class="sub-message">'+esc(s.message||'')+'</div>' +
+    '<div class="modal-actions"><button onclick="closeModal()" class="btn-cancel">Fermer</button>' +
+    (s.status==='nouveau'?'<button class="btn-save" style="background-color:#10b981;color:#fff" onclick="markDone('+s.id+')">✓ Marquer traité</button>':'<button class="btn-save" onclick="markNew('+s.id+')">↺ Marquer nouveau</button>')+'</div>';
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+async function markDone(id) { await fetch('api/admin/submissions/'+id, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ status:'traité' }) }); closeModal(); toast('Marqué comme traité','success'); loadItems(); }
+async function markNew(id) { await fetch('api/admin/submissions/'+id, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ status:'nouveau' }) }); closeModal(); toast('Marqué comme nouveau','success'); loadItems(); }
+async function delItem(id) { if (!confirm('Supprimer cette demande ?')) return; await fetch('api/admin/submissions/'+id, { method:'DELETE' }); toast('Demande supprimée','success'); loadItems(); }
+function toast(msg, type){ var t=document.createElement('div'); t.className='toast toast-'+type; t.textContent=msg; document.body.appendChild(t); setTimeout(function(){t.classList.add('show');},10); setTimeout(function(){t.classList.remove('show'); setTimeout(function(){t.remove();},300);},2800); }
+loadItems();
+</script>
+</body>
+</html>

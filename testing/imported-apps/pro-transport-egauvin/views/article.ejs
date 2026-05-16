@@ -1,0 +1,28 @@
+<%- include('partials/header') %>
+<section class="section">
+  <div class="container article-wrap">
+    <a href="." class="back-link">← Retour</a>
+    <article>
+      <% if (post.category) { %><div class="post-cat"><%= post.category %></div><% } %>
+      <h1><%= post.title %></h1>
+      <div class="article-meta"><%= new Date(post.created_at).toLocaleDateString('fr-CA', { year:'numeric', month:'long', day:'numeric' }) %></div>
+      <% if (post.image_url) { %><img src="<%= post.image_url %>" alt="<%= post.title %>" class="article-img"><% } %>
+      <div class="article-content" style="white-space:pre-line"><%= post.content || '' %></div>
+    </article>
+    <% if (typeof related!=='undefined' && related.length > 0) { %>
+      <h3 style="margin-top:3rem">Articles similaires</h3>
+      <div class="posts-grid">
+        <% related.forEach(function(p){ %>
+          <a href="articles/<%= p.id %>" class="post-card">
+            <% if (p.image_url) { %><div class="post-img"><img src="<%= p.image_url %>" alt="<%= p.title %>"></div><% } %>
+            <div class="post-body">
+              <% if (p.category) { %><div class="post-cat"><%= p.category %></div><% } %>
+              <h3><%= p.title %></h3>
+            </div>
+          </a>
+        <% }); %>
+      </div>
+    <% } %>
+  </div>
+</section>
+<%- include('partials/footer') %>

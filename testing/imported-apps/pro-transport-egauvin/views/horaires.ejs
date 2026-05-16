@@ -1,0 +1,36 @@
+<%- include('partials/header') %>
+<section class="page-hero" style="background-color:#dc2626">
+  <div class="container"><h1><%= settings.hours_title || 'Disponible 24/7' %></h1><p>Nous sommes là quand vous en avez besoin</p></div>
+</section>
+<section class="section">
+  <div class="container">
+    <div class="hours-mega">
+      <div class="hours-clock" style="background-color:#dc2626;color:#fff">
+        <div class="hours-247">24/7</div>
+        <div class="hours-sub">24 heures sur 24<br>7 jours sur 7</div>
+      </div>
+      <div class="hours-text">
+        <h2>Service continu</h2>
+        <p style="white-space:pre-line"><%= settings.hours_text || 'Nos camions sont disponibles à toute heure du jour ou de la nuit.' %></p>
+        <div class="hours-list">
+          <% ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'].forEach(function(d){ %>
+            <div class="hours-row"><span><%= d %></span><span class="hours-open">Ouvert 24h</span></div>
+          <% }); %>
+        </div>
+      </div>
+    </div>
+    <div class="emergency-card">
+      <div class="emergency-icon">🚨</div>
+      <div>
+        <h3>Urgence chantier?</h3>
+        <p>Appelez-nous à toute heure pour les besoins urgents en matériaux.</p>
+        <% if (settings.contact_phone) { %>
+          <a href="tel:<%= settings.contact_phone %>" class="btn-primary" style="background-color:#dc2626;color:#fff">📞 <%= settings.contact_phone %></a>
+        <% } else { %>
+          <a href="contact" class="btn-primary" style="background-color:#dc2626;color:#fff">Nous joindre</a>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</section>
+<%- include('partials/footer') %>

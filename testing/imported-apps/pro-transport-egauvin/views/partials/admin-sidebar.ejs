@@ -1,0 +1,19 @@
+<aside class="admin-sidebar" id="adminSidebar">
+  <div class="admin-brand">
+    <strong><%= (typeof settings!=='undefined' && settings.business_name) ? settings.business_name : 'Pro Transport' %></strong>
+    <small>Tableau de bord administrateur</small>
+  </div>
+  <nav class="admin-nav">
+    <a href="admin" class="<%= (typeof activeNav!=='undefined' && activeNav==='dashboard') ? 'active' : '' %>">📊 Tableau de bord</a>
+    <a href="admin/posts" class="<%= (typeof activeNav!=='undefined' && activeNav==='posts') ? 'active' : '' %>">📝 Actualités</a>
+    <a href="admin/services" class="<%= (typeof activeNav!=='undefined' && activeNav==='services') ? 'active' : '' %>">📦 Services</a>
+    <a href="admin/gallery" class="<%= (typeof activeNav!=='undefined' && activeNav==='gallery') ? 'active' : '' %>">🖼 Galerie</a>
+    <a href="admin/submissions" class="<%= (typeof activeNav!=='undefined' && activeNav==='submissions') ? 'active' : '' %>">✉ Demandes</a>
+    <a href="admin/settings" class="<%= (typeof activeNav!=='undefined' && activeNav==='settings') ? 'active' : '' %>">⚙️ Paramètres</a>
+  </nav>
+  <div class="admin-foot">
+    <a href="." target="_blank">↗ Voir le site public</a>
+    <a href="admin/logout">⎋ Déconnexion</a>
+  </div>
+</aside>
+<button class="admin-mobile-toggle" onclick="document.getElementById('adminSidebar').classList.toggle('open')" aria-label="Menu">☰</button>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Galerie — Admin</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body class="admin-body">
+<% var activeNav = 'gallery'; %>
+<%- include('partials/admin-sidebar') %>
+<main class="admin-main">
+  <header class="admin-header">
+    <div>
+      <h1>🖼 Galerie</h1>
+      <p>Photos de vos chantiers et de votre flotte affichées sur le site public.</p>
+    </div>
+    <button class="btn-add" onclick="openModal()" style="background-color:#dc2626;color:#fff">+ Ajouter une photo</button>
+  </header>
+  <div id="galleryGrid" class="admin-gallery-grid"><p class="loading-cell">Chargement…</p></div>
+</main>
+<div id="modal" class="modal" onclick="if(event.target===this) closeModal()">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()" aria-label="Fermer">×</button>
+    <h2 id="modalTitle">Nouvelle photo</h2>
+    <p class="modal-help">Ajoutez une URL d'image. Recommandé : format paysage 1200×900px.</p>
+    <form id="itemForm" onsubmit="return saveItem(event)">
+      <input type="hidden" id="f_id">
+      <label>URL de l'image *
+        <input type="url" id="f_image_url" required placeholder="https://..." oninput="previewImg('f_image_url','imgPreview')">
+        <img id="imgPreview" class="img-preview" style="display:none" alt="Aperçu">
+      </label>
+      <label>Titre<input type="text" id="f_title" maxlength="100" placeholder="ex. Livraison chantier Sherbrooke"></label>
+      <label>Description<textarea id="f_description" rows="3" placeholder="Détails du projet…"></textarea></label>
+      <div class="form-row">
+        <label>Catégorie<input type="text" id="f_category" maxlength="50" placeholder="ex. Chantier, Flotte"></label>
+        <label>Ordre<input type="number" id="f_sort_order" min="0" value="0"></label>
+      </div>
+      <div class="modal-actions"><button type="button" onclick="closeModal()" class="btn-cancel">Annuler</button><button type="submit" class="btn-save" style="background-color:#dc2626;color:#fff">💾 Enregistrer</button></div>
+    </form>
+  </div>
+</div>
+<script>
+function previewImg(inputId, imgId){ var v=document.getElementById(inputId).value; var im=document.getElementById(imgId); if(v){ im.src=v; im.style.display='block'; } else { im.style.display='none'; } }
+async function loadItems() {
+  var r = await fetch('api/admin/gallery'); var d = await r.json();
+  var grid = document.getElementById('galleryGrid');
+  if (!d.gallery || d.gallery.length === 0) { grid.innerHTML = '<div class="empty-soft" style="grid-column:1/-1">📷 Aucune photo. Cliquez sur <strong>+ Ajouter une photo</strong> pour commencer.</div>'; return; }
+  grid.innerHTML = d.gallery.map(function(g){
+    return '<div class="admin-gallery-card"><img src="'+esc(g.image_url)+'" alt="" loading="lazy"><div class="agc-body"><strong>'+esc(g.title||'(sans titre)')+'</strong><div class="agc-meta">'+(g.category?'<span class="chip">'+esc(g.category)+'</span>':'—')+' · ordre '+g.sort_order+'</div><div class="agc-actions"><button class="btn-edit" onclick=\'editItem('+JSON.stringify(g).replace(/"/g,'&quot;')+')\'>✏ Modifier</button><button class="btn-del" onclick="delItem('+g.id+')">🗑</button></div></div></div>';
+  }).join('');
+}
+function esc(s){ return String(s||'').replace(/[&<>"']/g, function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+function openModal() { document.getElementById('itemForm').reset(); f_id.value=''; f_sort_order.value=0; document.getElementById('imgPreview').style.display='none'; document.getElementById('modalTitle').textContent='Nouvelle photo'; document.getElementById('modal').classList.add('open'); }
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+function editItem(g) {
+  f_id.value=g.id; f_image_url.value=g.image_url||''; f_title.value=g.title||''; f_description.value=g.description||''; f_category.value=g.category||''; f_sort_order.value=g.sort_order||0;
+  previewImg('f_image_url','imgPreview');
+  document.getElementById('modalTitle').textContent='Modifier la photo';
+  document.getElementById('modal').classList.add('open');
+}
+async function saveItem(e) {
+  e.preventDefault();
+  var btn=e.target.querySelector('button[type=submit]'); btn.disabled=true; btn.textContent='Enregistrement…';
+  var id = f_id.value;
+  var data = { image_url: f_image_url.value, title: f_title.value, description: f_description.value, category: f_category.value, sort_order: parseInt(f_sort_order.value)||0 };
+  try {
+    var r = await fetch(id ? 'api/admin/gallery/'+id : 'api/admin/gallery', { method: id?'PUT':'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) });
+    if (r.ok) { closeModal(); loadItems(); toast(id?'Photo mise à jour':'Photo ajoutée','success'); } else { var d = await r.json(); toast(d.error||'Erreur','error'); }
+  } catch(e) { toast('Erreur de connexion','error'); }
+  btn.disabled=false; btn.textContent='💾 Enregistrer';
+  return false;
+}
+async function delItem(id) { if (!confirm('Supprimer cette photo ?')) return; await fetch('api/admin/gallery/'+id, { method:'DELETE' }); toast('Photo supprimée','success'); loadItems(); }
+function toast(msg, type){ var t=document.createElement('div'); t.className='toast toast-'+type; t.textContent=msg; document.body.appendChild(t); setTimeout(function(){t.classList.add('show');},10); setTimeout(function(){t.classList.remove('show'); setTimeout(function(){t.remove();},300);},2800); }
+loadItems();
+</script>
+</body>
+</html>

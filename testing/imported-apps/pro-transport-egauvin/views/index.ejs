@@ -1,0 +1,114 @@
+<%- include('partials/header') %>
+<section class="hero">
+  <img src="<%= (typeof settings!=='undefined' && settings._p_hero_image_url) ? settings._p_hero_image_url : 'https://placehold.co/1600x900/dc2626/ffffff/png?text=Pro+Transport' %>" alt="Camion 12 roues" class="hero-img">
+  <div class="hero-overlay">
+    <div class="container hero-content">
+      <div class="hero-badge">⏱ Service 24/7</div>
+      <h1><%= settings.hero_title || 'Transport de matériaux en vrac' %></h1>
+      <p><%= settings.hero_subtitle || 'Terre, sable, gravier et asphalte livrés rapidement.' %></p>
+      <div class="hero-actions">
+        <a href="contact" class="btn-primary" style="background-color:#dc2626;color:#fff"><%= settings.hero_cta || 'Demander un devis' %></a>
+        <a href="services" class="btn-outline">Voir nos services</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-features">
+  <div class="container">
+    <div class="features-grid">
+      <div class="feature-card"><div class="feature-icon">🚚</div><h3>Flotte 12 roues</h3><p>Camions puissants pour gros volumes et livraisons efficaces.</p></div>
+      <div class="feature-card"><div class="feature-icon">⏰</div><h3>Service 24/7</h3><p>Disponibles à toute heure, 7 jours sur 7. Urgences acceptées.</p></div>
+      <div class="feature-card"><div class="feature-icon">💪</div><h3>Expérience</h3><p>Chauffeurs expérimentés, professionnels et fiables.</p></div>
+      <div class="feature-card"><div class="feature-icon">📍</div><h3>Livraison rapide</h3><p>Toute la région desservie avec ponctualité.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <h2>Nos services</h2>
+      <p>Tous les matériaux en vrac pour vos chantiers</p>
+    </div>
+    <% if (typeof services!=='undefined' && services.length > 0) { %>
+      <div class="services-grid">
+        <% services.forEach(function(s) { %>
+          <a href="services" class="service-card">
+            <% if (s.image_url) { %><div class="service-img-wrap"><img src="<%= s.image_url %>" alt="<%= s.name %>"></div><% } %>
+            <div class="service-body">
+              <h3><%= s.name %></h3>
+              <p><%= (s.description || '').slice(0, 120) %><%= (s.description || '').length > 120 ? '...' : '' %></p>
+              <% if (s.price_info) { %><div class="service-price"><%= s.price_info %></div><% } %>
+            </div>
+          </a>
+        <% }); %>
+      </div>
+      <div class="section-cta"><a href="services" class="btn-outline-dark">Tous les services →</a></div>
+    <% } else { %>
+      <p class="empty-state">Les services seront bientôt disponibles.</p>
+    <% } %>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="container two-col">
+    <div>
+      <h2><%= settings.about_title || 'Une expertise qui roule depuis des années' %></h2>
+      <p style="white-space:pre-line"><%= settings.about_text || '' %></p>
+      <a href="contact" class="btn-primary" style="background-color:#dc2626;color:#fff;margin-top:1rem;display:inline-block">Nous contacter</a>
+    </div>
+    <div class="about-stats">
+      <div class="stat-card"><div class="stat-num">24/7</div><div>Disponibilité</div></div>
+      <div class="stat-card"><div class="stat-num">12</div><div>Roues / capacité</div></div>
+      <div class="stat-card"><div class="stat-num">4+</div><div>Types de matériaux</div></div>
+      <div class="stat-card"><div class="stat-num">100%</div><div>Engagement client</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-head"><h2>Galerie</h2><p>Découvrez nos opérations en image</p></div>
+    <% if (typeof gallery!=='undefined' && gallery.length > 0) { %>
+      <div class="gallery-grid">
+        <% gallery.forEach(function(g) { %>
+          <a href="galerie" class="gallery-item"><img src="<%= g.image_url %>" alt="<%= g.title || 'Photo' %>"><% if (g.title) { %><div class="gallery-cap"><%= g.title %></div><% } %></a>
+        <% }); %>
+      </div>
+      <div class="section-cta"><a href="galerie" class="btn-outline-dark">Voir toute la galerie →</a></div>
+    <% } else { %>
+      <p class="empty-state">La galerie sera bientôt mise à jour.</p>
+    <% } %>
+  </div>
+</section>
+
+<section class="section section-cta-banner" style="background-color:#dc2626">
+  <div class="container">
+    <h2>Besoin d'un transport rapide?</h2>
+    <p>Disponibles 24h/24, 7j/7. Contactez-nous dès maintenant pour un devis sans engagement.</p>
+    <a href="contact" class="btn-white">Demander un devis</a>
+  </div>
+</section>
+
+<% if (typeof posts!=='undefined' && posts.length > 0) { %>
+<section class="section">
+  <div class="container">
+    <div class="section-head"><h2>Actualités</h2><p>Conseils et nouvelles</p></div>
+    <div class="posts-grid">
+      <% posts.forEach(function(p) { %>
+        <a href="articles/<%= p.id %>" class="post-card">
+          <% if (p.image_url) { %><div class="post-img"><img src="<%= p.image_url %>" alt="<%= p.title %>"></div><% } %>
+          <div class="post-body">
+            <% if (p.category) { %><div class="post-cat"><%= p.category %></div><% } %>
+            <h3><%= p.title %></h3>
+            <p><%= (p.content || '').slice(0, 140) %>...</p>
+          </div>
+        </a>
+      <% }); %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,82 @@
+<%- include('partials/header') %>
+<section class="page-hero" style="background-color:#dc2626">
+  <div class="container"><h1>Contact</h1><p>Demandez votre devis sans engagement</p></div>
+</section>
+<section class="section">
+  <div class="container contact-grid">
+    <div>
+      <h2>Demander un devis</h2>
+      <p>Remplissez le formulaire ci-dessous et nous vous contacterons rapidement.</p>
+      <div id="formMsg" class="form-msg" style="display:none"></div>
+      <form id="contactForm" class="contact-form">
+        <div class="form-row">
+          <label>Nom complet *<input type="text" name="name" required></label>
+          <label>Téléphone<input type="tel" name="phone" placeholder="(000) 000-0000"></label>
+        </div>
+        <label>Courriel<input type="email" name="email" placeholder="votre@courriel.com"></label>
+        <label>Sujet
+          <select name="subject">
+            <option value="Devis - Terre">Devis — Terre</option>
+            <option value="Devis - Sable">Devis — Sable</option>
+            <option value="Devis - Gravier">Devis — Gravier</option>
+            <option value="Devis - Asphalte">Devis — Asphalte</option>
+            <option value="Question générale">Question générale</option>
+            <option value="Autre">Autre</option>
+          </select>
+        </label>
+        <label>Détails de votre demande *<textarea name="message" rows="6" required placeholder="Décrivez votre besoin: type de matériau, quantité approximative, lieu et date de livraison souhaitée..."></textarea></label>
+        <button type="submit" class="btn-primary" style="background-color:#dc2626;color:#fff">Envoyer ma demande</button>
+      </form>
+    </div>
+    <div class="contact-info">
+      <h3>Nous joindre</h3>
+      <div class="contact-card">
+        <% if (settings.contact_phone) { %>
+          <div class="contact-row"><span class="contact-icon">📞</span><div><strong>Téléphone</strong><br><a href="tel:<%= settings.contact_phone %>"><%= settings.contact_phone %></a></div></div>
+        <% } %>
+        <% if (settings.contact_email) { %>
+          <div class="contact-row"><span class="contact-icon">✉</span><div><strong>Courriel</strong><br><a href="mailto:<%= settings.contact_email %>"><%= settings.contact_email %></a></div></div>
+        <% } %>
+        <% if (settings.business_address) { %>
+          <div class="contact-row"><span class="contact-icon">📍</span><div><strong>Adresse</strong><br><%= settings.business_address %></div></div>
+        <% } %>
+        <div class="contact-row"><span class="contact-icon">⏰</span><div><strong>Heures</strong><br>24 heures / 7 jours</div></div>
+        <% if (settings.service_area) { %>
+          <div class="contact-row"><span class="contact-icon">🗺</span><div><strong>Zone desservie</strong><br><%= settings.service_area %></div></div>
+        <% } %>
+      </div>
+      <div class="emergency-card" style="margin-top:1.5rem">
+        <div class="emergency-icon">🚨</div>
+        <div><h3>Urgence?</h3><p>Service 24/7 disponible. N'hésitez pas à nous appeler à toute heure.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+<script>
+document.getElementById('contactForm').addEventListener('submit', async function(e){
+  e.preventDefault();
+  var msg = document.getElementById('formMsg');
+  var btn = e.target.querySelector('button[type=submit]');
+  var data = {};
+  new FormData(e.target).forEach(function(v,k){ data[k]=v; });
+  btn.disabled = true; btn.textContent = 'Envoi en cours...';
+  try {
+    var r = await fetch('api/contact', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) });
+    var d = await r.json();
+    if (r.ok && d.success) {
+      msg.className = 'form-msg form-msg-success'; msg.style.display='block';
+      msg.textContent = '✓ Merci! Votre demande a été envoyée. Nous vous contacterons rapidement.';
+      e.target.reset();
+      window.scrollTo({top: msg.offsetTop - 100, behavior:'smooth'});
+    } else {
+      msg.className = 'form-msg form-msg-error'; msg.style.display='block';
+      msg.textContent = d.error || 'Erreur lors de l\'envoi.';
+    }
+  } catch(err) {
+    msg.className = 'form-msg form-msg-error'; msg.style.display='block';
+    msg.textContent = 'Erreur de connexion. Veuillez réessayer.';
+  }
+  btn.disabled = false; btn.textContent = 'Envoyer ma demande';
+});
+</script>
+<%- include('partials/footer') %>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Actualités — Admin</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body class="admin-body">
+<% var activeNav = 'posts'; %>
+<%- include('partials/admin-sidebar') %>
+<main class="admin-main">
+  <header class="admin-header">
+    <div>
+      <h1>📝 Actualités</h1>
+      <p>Publiez des articles, conseils et nouvelles pour vos clients.</p>
+    </div>
+    <button class="btn-add" onclick="openModal()" style="background-color:#dc2626;color:#fff">+ Nouvel article</button>
+  </header>
+  <div class="admin-table-wrap"><table class="admin-table" id="itemsTable"><thead><tr><th>Titre</th><th>Catégorie</th><th>Statut</th><th>Date</th><th style="text-align:right">Actions</th></tr></thead><tbody id="itemsBody"><tr><td colspan="5" class="loading-cell">Chargement…</td></tr></tbody></table></div>
+</main>
+<div id="modal" class="modal" onclick="if(event.target===this) closeModal()">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()" aria-label="Fermer">×</button>
+    <h2 id="modalTitle">Nouvel article</h2>
+    <p class="modal-help">Les champs marqués * sont obligatoires.</p>
+    <form id="itemForm" onsubmit="return saveItem(event)">
+      <input type="hidden" name="id" id="f_id">
+      <label>Titre *<input type="text" name="title" id="f_title" required maxlength="200" placeholder="ex. Service 24/7 désormais disponible"></label>
+      <label>Contenu *<textarea name="content" id="f_content" rows="8" required placeholder="Rédigez votre article ici…"></textarea></label>
+      <label>URL de l'image
+        <input type="url" name="image_url" id="f_image_url" placeholder="https://..." oninput="previewImg('f_image_url','imgPreview')">
+        <small class="help-text">Image vedette en haut de l'article. Recommandé : 1200×630px.</small>
+        <img id="imgPreview" class="img-preview" style="display:none" alt="Aperçu">
+      </label>
+      <label>Catégorie<input type="text" name="category" id="f_category" maxlength="50" placeholder="ex. Annonce, Conseils"></label>
+      <label class="check"><input type="checkbox" name="published" id="f_published" checked> <span>Publier l'article (visible sur le site public)</span></label>
+      <div class="modal-actions"><button type="button" onclick="closeModal()" class="btn-cancel">Annuler</button><button type="submit" class="btn-save" style="background-color:#dc2626;color:#fff">💾 Enregistrer</button></div>
+    </form>
+  </div>
+</div>
+<script>
+function previewImg(inputId, imgId){ var v=document.getElementById(inputId).value; var im=document.getElementById(imgId); if(v){ im.src=v; im.style.display='block'; } else { im.style.display='none'; } }
+async function loadItems() {
+  var r = await fetch('api/admin/posts'); var d = await r.json();
+  var tbody = document.getElementById('itemsBody');
+  if (!d.posts || d.posts.length === 0) { tbody.innerHTML = '<tr><td colspan="5" class="empty-cell">📭 Aucun article. Cliquez sur <strong>+ Nouvel article</strong> pour créer le premier.</td></tr>'; return; }
+  tbody.innerHTML = d.posts.map(function(p){
+    var statusBadge = p.published ? '<span class="badge badge-done">Publié</span>' : '<span class="badge badge-draft">Brouillon</span>';
+    return '<tr><td><strong>'+esc(p.title)+'</strong></td><td>'+(p.category?'<span class="chip">'+esc(p.category)+'</span>':'—')+'</td><td>'+statusBadge+'</td><td>'+new Date(p.created_at).toLocaleDateString('fr-CA')+'</td><td class="actions-cell"><button class="btn-edit" onclick=\'editItem('+JSON.stringify(p).replace(/"/g,'&quot;')+')\'>✏ Modifier</button> <button class="btn-del" onclick="delItem('+p.id+',\''+esc(p.title).replace(/\x27/g,"\\\x27")+'\')">🗑</button></td></tr>';
+  }).join('');
+}
+function esc(s){ return String(s||'').replace(/[&<>"']/g, function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+function openModal() { document.getElementById('itemForm').reset(); document.getElementById('f_id').value=''; document.getElementById('modalTitle').textContent='Nouvel article'; document.getElementById('f_published').checked=true; document.getElementById('imgPreview').style.display='none'; document.getElementById('modal').classList.add('open'); }
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+function editItem(p) {
+  document.getElementById('f_id').value=p.id;
+  document.getElementById('f_title').value=p.title||'';
+  document.getElementById('f_content').value=p.content||'';
+  document.getElementById('f_image_url').value=p.image_url||'';
+  document.getElementById('f_category').value=p.category||'';
+  document.getElementById('f_published').checked=!!p.published;
+  previewImg('f_image_url','imgPreview');
+  document.getElementById('modalTitle').textContent='Modifier l\'article';
+  document.getElementById('modal').classList.add('open');
+}
+async function saveItem(e) {
+  e.preventDefault();
+  var btn = e.target.querySelector('button[type=submit]');
+  btn.disabled=true; btn.textContent='Enregistrement…';
+  var id = document.getElementById('f_id').value;
+  var data = { title: f_title.value, content: f_content.value, image_url: f_image_url.value, category: f_category.value, published: f_published.checked ? 1 : 0 };
+  var url = id ? 'api/admin/posts/'+id : 'api/admin/posts';
+  var method = id ? 'PUT' : 'POST';
+  try {
+    var r = await fetch(url, { method:method, headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) });
+    if (r.ok) { closeModal(); loadItems(); toast(id?'Article mis à jour':'Article créé','success'); } else { var d = await r.json(); toast(d.error || 'Erreur','error'); }
+  } catch(err) { toast('Erreur de connexion','error'); }
+  btn.disabled=false; btn.textContent='💾 Enregistrer';
+  return false;
+}
+async function delItem(id, title) {
+  if (!confirm('Supprimer définitivement « '+title+' » ?\n\nCette action est irréversible.')) return;
+  await fetch('api/admin/posts/'+id, { method:'DELETE' });
+  toast('Article supprimé','success');
+  loadItems();
+}
+function toast(msg, type){ var t=document.createElement('div'); t.className='toast toast-'+type; t.textContent=msg; document.body.appendChild(t); setTimeout(function(){t.classList.add('show');},10); setTimeout(function(){t.classList.remove('show'); setTimeout(function(){t.remove();},300);},2800); }
+loadItems();
+</script>
+</body>
+</html>

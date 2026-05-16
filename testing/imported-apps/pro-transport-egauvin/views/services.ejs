@@ -1,0 +1,33 @@
+<%- include('partials/header') %>
+<section class="page-hero" style="background-color:#dc2626">
+  <div class="container"><h1>Nos services</h1><p>Tous les matériaux en vrac pour vos chantiers résidentiels, commerciaux et industriels</p></div>
+</section>
+<section class="section">
+  <div class="container">
+    <% if (typeof services!=='undefined' && services.length > 0) { %>
+      <div class="services-grid-large">
+        <% services.forEach(function(s, i) { %>
+          <div class="service-card-large <%= i % 2 ? 'reverse' : '' %>">
+            <% if (s.image_url) { %><div class="service-img-large"><img src="<%= s.image_url %>" alt="<%= s.name %>"></div><% } %>
+            <div class="service-body-large">
+              <h2><%= s.name %></h2>
+              <p style="white-space:pre-line"><%= s.description || '' %></p>
+              <% if (s.price_info) { %><div class="service-price-large">💰 <%= s.price_info %></div><% } %>
+              <a href="contact" class="btn-primary" style="background-color:#dc2626;color:#fff;margin-top:1rem;display:inline-block">Demander pour <%= s.name.toLowerCase() %></a>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <p class="empty-state">Aucun service disponible pour le moment.</p>
+    <% } %>
+  </div>
+</section>
+<section class="section section-cta-banner" style="background-color:#1a1a1a">
+  <div class="container">
+    <h2>Un projet en tête?</h2>
+    <p>Contactez-nous pour discuter de vos besoins en transport et obtenir un devis personnalisé.</p>
+    <a href="contact" class="btn-white">Nous contacter</a>
+  </div>
+</section>
+<%- include('partials/footer') %>

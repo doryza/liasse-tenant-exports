@@ -1,0 +1,66 @@
+{
+  "slug": "pro-transport-egauvin",
+  "displayName": "Québec Pro, transport.",
+  "description": "Type de projet: Site web\nObjectif: Présenter une entreprise de services de camions 12 roues terre, sable, gravier, asphalte\nPublic cible: Clients potentiels\nFonctionnalités clés:\n- Galerie de photos\n- Affichage des heures d'ouverture (24/7)\n\nDesign et marque: Épuré, professionnel. Couleurs principales: Blanc et Rouge.\n\nIntégrations: Google Photos",
+  "status": "active",
+  "generationVersion": 1,
+  "primaryColor": "#6366f1",
+  "iconUrl": "https://res.cloudinary.com/duhp69meg/image/upload/v1778952572/tapavis_tenant_pro-transport-egauvin/icon_pro-transport-egauvin_1778952572775.png",
+  "enabledAuthMethods": [
+    "webauthn",
+    "sms",
+    "email"
+  ],
+  "notificationsEnabled": true,
+  "geolocationEnabled": true,
+  "customConfig": {
+    "language": "fr",
+    "aiSummary": {
+      "en": {
+        "dashboard": "Welcome to your control panel! Think of this as the remote control for your website. You can find it by logging into the 'Admin' section.\n\nHere’s what you can do:\n\n- **Manage Your Content:** Easily add, edit, or delete your company's services. You can also upload new photos to your gallery to showcase your trucks and projects. Have some news to share? You can write and publish articles right from the dashboard.\n\n- **View Customer Messages:** When a potential client fills out your contact form, their message will appear in the 'Submissions' section. You'll never miss an inquiry!\n\n- **Adjust Site Settings:** Need to update your phone number or other business details? Head over to the 'Settings' area to make quick changes.\n\n- **See Your Visitors:** The dashboard gives you a simple overview of how many people are visiting your site, so you can see your audience grow.\n\nTo get started, just go to the 'Admin' section and explore. It’s all designed to be straightforward and easy to use.",
+        "variables": "Great news! Your new website for 'Pro, transport. E.gauvin' is all set up and ready to go. There’s no need for any extra technical steps or special keys. We've handled all the connections behind the scenes, so you can dive right in and start adding your content. Your photo gallery is connected and waiting for your best pictures. It's that simple!"
+      },
+      "fr": {
+        "dashboard": "Bienvenue dans votre tableau de bord! Considérez-le comme la télécommande de votre site web. Vous le trouverez facilement en vous connectant à la section « Administration ».\n\nVoici ce que vous pouvez y faire :\n\n- **Gérer votre contenu :** Ajoutez, modifiez ou supprimez facilement les services de votre entreprise. Vous pouvez aussi téléverser de nouvelles photos dans votre galerie pour mettre en valeur vos camions et vos projets. Une nouvelle à partager? Rédigez et publiez des articles directement depuis le tableau de bord.\n\n- **Voir les messages des clients :** Quand un client potentiel remplit le formulaire sur votre page contact, son message apparaîtra dans la section « Soumissions ». Vous ne manquerez plus jamais une demande!\n\n- **Ajuster les paramètres du site :** Besoin de mettre à jour votre numéro de téléphone ou d'autres informations sur votre entreprise? Rendez-vous dans la section « Paramètres » pour faire des changements rapides.\n\n- **Suivre vos visiteurs :** Le tableau de bord vous offre un aperçu simple du nombre de personnes qui visitent votre site, vous permettant de voir votre clientèle grandir.\n\nPour commencer, allez dans la section « Administration » et explorez. Tout a été pensé pour être simple et intuitif.",
+        "variables": "Bonne nouvelle! Votre nouveau site web pour « Pro, transport. E.gauvin » est fin prêt et entièrement fonctionnel. Vous n'avez aucune configuration compliquée à faire ni aucune clé spéciale à ajouter. On s'est occupé de tous les branchements en arrière-plan pour vous. Vous pouvez donc commencer à ajouter votre contenu dès maintenant. Votre galerie de photos est déjà connectée et n'attend que vos plus belles images. C'est aussi simple que ça!"
+      }
+    },
+    "aiSummaryVersion": 1
+  },
+  "promptHistory": [
+    {
+      "prompt": "Type de projet: Site web\nObjectif: Présenter une entreprise de services de camions 12 roues terre, sable, gravier, asphalte\nPublic cible: Clients potentiels\nFonctionnalités clés:\n- Galerie de photos\n- Affichage des heures d'ouverture (24/7)\n\nDesign et marque: Épuré, professionnel. Couleurs principales: Blanc et Rouge.\n\nIntégrations: Google Photos",
+      "timestamp": "2026-05-16T17:29:39.220Z",
+      "changeNotes": "Site initial pour Pro Transport E. Gauvin — entreprise de camionnage 12 roues. Pages: accueil, services, galerie, horaires, contact. Couleurs blanc et rouge selon la demande. Galerie et services gérables depuis le tableau de bord admin. Formulaire de devis avec stockage en base et envoi courriel.\n\nAdmin enrichment pass: (1) Added admin settings page (admin-settings.ejs) with grouped CRUD for site-wide content like coordonnées, hero, à propos, hours. (2) Polished admin dashboard with iconified stat boxes, organized module grid with alert state for new submissions, recent submissions table preview, and tips card. (3) Upgraded all admin module pages (posts, services, gallery, submissions) with: image previews in modals, help text, friendlier empty states, status badges, image thumbnails in service table, status filter buttons on submissions, toast notifications, loading/empty cells, friendly confirmation dialogs. (4) Major admin CSS upgrade: focus-visible outlines, better contrast, hover transitions, sticky save bar in settings, modal blur backdrop, refined typography, toast notifications. (5) Improved frontend CSS: added btn-outline-dark for inline CTAs (better contrast than white-on-light), focus-visible outlines, hero text shadows for better legibility, smoother service card hover image scale, refined ink-soft text color for readability, filter chip inline-style fallbacks. (6) Hero overlay slightly darker for stronger text contrast. (7) Settings UI lets admin edit all functional site content (business name, contact info, hero, about, hours text) — these affect rendering. Services pricing/featured/sort_order already manageable. (8) Added SEO metadata block with French-only SEO content (LocalBusiness schema, 24/7 hours).",
+      "generationId": 1139,
+      "filesModified": [
+        "manifest.json",
+        "public/css/admin-styles.css",
+        "public/css/styles.css",
+        "public/js/app.js",
+        "routes.js",
+        "schema.sql",
+        "seed.js",
+        "views/admin-gallery.ejs",
+        "views/admin-posts.ejs",
+        "views/admin-services.ejs",
+        "views/admin-settings.ejs",
+        "views/admin-submissions.ejs",
+        "views/admin.ejs",
+        "views/article.ejs",
+        "views/contact.ejs",
+        "views/galerie.ejs",
+        "views/horaires.ejs",
+        "views/index.ejs",
+        "views/partials/admin-sidebar.ejs",
+        "views/partials/footer.ejs",
+        "views/partials/header.ejs",
+        "views/services.ejs"
+      ]
+    }
+  ],
+  "apiVariables": [],
+  "createdAt": "2026-05-16T16:52:10.564Z",
+  "updatedAt": "2026-05-16T17:51:45.139Z",
+  "exportedAt": "2026-05-16T17:52:30.411Z"
+}

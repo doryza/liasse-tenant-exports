@@ -1,0 +1,306 @@
+{
+  "exportedAt": "2026-05-16T17:52:30.435Z",
+  "tables": {
+    "admin_invites": {
+      "columns": [
+        "id",
+        "email",
+        "token",
+        "role",
+        "status",
+        "invited_by",
+        "expires_at",
+        "accepted_at",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_webauthn_credentials": {
+      "columns": [
+        "id",
+        "admin_user_id",
+        "credential_id",
+        "public_key",
+        "counter",
+        "device_name",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_users": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "password_hash",
+        "display_name",
+        "role",
+        "active",
+        "activation_token",
+        "invited_by",
+        "invite_token",
+        "invite_expires_at",
+        "last_login_at",
+        "is_active",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_settings": {
+      "columns": [
+        "key",
+        "value",
+        "updated_at"
+      ],
+      "totalRows": 41,
+      "sampleRows": [
+        {
+          "key": "_p_hero_image_url",
+          "value": "https://res.cloudinary.com/duhp69meg/image/upload/v1778951421/tapavis_tenant_pro-transport-egauvin/build_pro-transport-egauvin_1778951421318.png",
+          "updated_at": "2026-05-16T17:29:15.260Z"
+        },
+        {
+          "key": "business_name",
+          "value": "Pro Transport E. Gauvin",
+          "updated_at": "2026-05-16T17:29:15.271Z"
+        },
+        {
+          "key": "tagline",
+          "value": "Camionnage 12 roues — Service 24/7",
+          "updated_at": "2026-05-16T17:29:15.281Z"
+        },
+        {
+          "key": "hero_title",
+          "value": "Transport de matériaux en vrac",
+          "updated_at": "2026-05-16T17:29:15.290Z"
+        },
+        {
+          "key": "hero_subtitle",
+          "value": "Terre, sable, gravier et asphalte livrés rapidement. Service professionnel 24 heures sur 24, 7 jours sur 7 à travers la région.",
+          "updated_at": "2026-05-16T17:29:15.300Z"
+        },
+        {
+          "key": "hero_cta",
+          "value": "Demander un devis",
+          "updated_at": "2026-05-16T17:29:15.310Z"
+        },
+        {
+          "key": "about_title",
+          "value": "Une expertise qui roule depuis des années",
+          "updated_at": "2026-05-16T17:29:15.319Z"
+        },
+        {
+          "key": "about_text",
+          "value": "Pro Transport E. Gauvin est votre partenaire de confiance pour tous vos besoins en transport de matériaux en vrac. Notre flotte de camions 12 roues bien entretenus, opérés par des chauffeurs expérimentés, garantit des livraisons ponctuelles, sécuritaires et professionnelles pour vos chantiers résidentiels, commerciaux et industriels.",
+          "updated_at": "2026-05-16T17:29:15.331Z"
+        },
+        {
+          "key": "hours_title",
+          "value": "Disponible 24/7",
+          "updated_at": "2026-05-16T17:29:15.343Z"
+        },
+        {
+          "key": "hours_text",
+          "value": "Nos camions sont disponibles 24 heures sur 24, 7 jours sur 7. Que ce soit pour une urgence de chantier ou une livraison planifiée, nous sommes prêts à répondre à votre appel à toute heure.",
+          "updated_at": "2026-05-16T17:29:15.352Z"
+        }
+      ]
+    },
+    "site_visits": {
+      "columns": [
+        "id",
+        "path",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "posts": {
+      "columns": [
+        "id",
+        "title",
+        "content",
+        "image_url",
+        "category",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Service de livraison 24/7 désormais disponible",
+          "content": "Nous sommes fiers d'annoncer que Pro Transport E. Gauvin offre désormais un service de camionnage 24 heures sur 24, 7 jours sur 7. Que ce soit pour une urgence sur votre chantier ou pour des livraisons planifiées en dehors des heures normales, nous sommes là pour vous. Contactez-nous pour planifier votre prochaine livraison.",
+          "image_url": null,
+          "category": "Annonce",
+          "published": 1,
+          "created_at": "2026-05-16T17:29:15.496Z",
+          "updated_at": "2026-05-16T17:29:15.496Z"
+        },
+        {
+          "id": 2,
+          "title": "Conseils pour bien estimer le volume de matériaux",
+          "content": "Avant de commander vos matériaux, il est important de bien calculer le volume nécessaire. Une verge cube équivaut à environ 0,76 mètre cube. Pour une entrée d'auto standard de 3 mètres par 6 mètres avec 10 cm de gravier, comptez environ 1,8 mètre cube. N'hésitez pas à nous contacter pour une estimation précise.",
+          "image_url": null,
+          "category": "Conseils",
+          "published": 1,
+          "created_at": "2026-05-16T17:29:15.505Z",
+          "updated_at": "2026-05-16T17:29:15.505Z"
+        },
+        {
+          "id": 3,
+          "title": "Différents types de gravier expliqués",
+          "content": "Le 0-3/4 est idéal pour les bases compactées d'entrée. Le 3/4 net est parfait pour les drains français car il laisse passer l'eau. Le concassé est utilisé pour les fondations. Chaque type a son usage spécifique selon votre projet.",
+          "image_url": null,
+          "category": "Conseils",
+          "published": 1,
+          "created_at": "2026-05-16T17:29:15.515Z",
+          "updated_at": "2026-05-16T17:29:15.515Z"
+        },
+        {
+          "id": 4,
+          "title": "Préparer votre chantier pour la livraison",
+          "content": "Pour une livraison efficace et sécuritaire, assurez-vous que l'accès à votre site est dégagé. Indiquez clairement l'endroit où vous souhaitez le matériau. Vérifiez la hauteur des fils électriques et la stabilité du sol pour supporter le poids du camion.",
+          "image_url": null,
+          "category": "Conseils",
+          "published": 1,
+          "created_at": "2026-05-16T17:29:15.527Z",
+          "updated_at": "2026-05-16T17:29:15.527Z"
+        }
+      ]
+    },
+    "services": {
+      "columns": [
+        "id",
+        "name",
+        "description",
+        "image_url",
+        "price_info",
+        "featured",
+        "sort_order",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "name": "Terre",
+          "description": "Terre noire de qualité, terre de remblai et terre tamisée. Idéale pour aménagement paysager, nivellement de terrain et préparation de jardin. Livraison directement sur votre site selon vos besoins.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778951421/tapavis_tenant_pro-transport-egauvin/build_pro-transport-egauvin_1778951421782.png",
+          "price_info": "Sur devis selon volume",
+          "featured": 1,
+          "sort_order": 1,
+          "created_at": "2026-05-16T17:29:15.417Z",
+          "updated_at": "2026-05-16T17:29:15.417Z"
+        },
+        {
+          "id": 2,
+          "name": "Sable",
+          "description": "Sable de construction, sable à béton, sable de remplissage. Matériau essentiel pour vos travaux de maçonnerie, drainage et fondations. Disponible en différentes granulométries.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778951428/tapavis_tenant_pro-transport-egauvin/build_pro-transport-egauvin_1778951428131.png",
+          "price_info": "Sur devis selon volume",
+          "featured": 1,
+          "sort_order": 2,
+          "created_at": "2026-05-16T17:29:15.427Z",
+          "updated_at": "2026-05-16T17:29:15.427Z"
+        },
+        {
+          "id": 3,
+          "name": "Gravier",
+          "description": "Gravier concassé, gravier de drainage, pierre nette de différentes tailles (0-3/4, 3/4 net, 1\"-2\"). Parfait pour entrées, fondations, drains français et finition de chantier.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778951424/tapavis_tenant_pro-transport-egauvin/build_pro-transport-egauvin_1778951424203.png",
+          "price_info": "Sur devis selon volume",
+          "featured": 1,
+          "sort_order": 3,
+          "created_at": "2026-05-16T17:29:15.437Z",
+          "updated_at": "2026-05-16T17:29:15.437Z"
+        },
+        {
+          "id": 4,
+          "name": "Asphalte",
+          "description": "Transport d'asphalte chaud et asphalte recyclé pour vos projets de pavage, réparation de routes et entrées commerciales. Livraisons coordonnées avec votre équipe de pavage.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778951435/tapavis_tenant_pro-transport-egauvin/build_pro-transport-egauvin_1778951435000.png",
+          "price_info": "Sur devis selon volume",
+          "featured": 1,
+          "sort_order": 4,
+          "created_at": "2026-05-16T17:29:15.448Z",
+          "updated_at": "2026-05-16T17:29:15.448Z"
+        }
+      ]
+    },
+    "gallery": {
+      "columns": [
+        "id",
+        "title",
+        "description",
+        "image_url",
+        "category",
+        "sort_order",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Livraison de gravier",
+          "description": "Camion 12 roues sur chantier de construction",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778951424/tapavis_tenant_pro-transport-egauvin/build_pro-transport-egauvin_1778951424229.png",
+          "category": "Chantier",
+          "sort_order": 1,
+          "created_at": "2026-05-16T17:29:15.457Z",
+          "updated_at": "2026-05-16T17:29:15.457Z"
+        },
+        {
+          "id": 2,
+          "title": "Déchargement",
+          "description": "Déchargement de gravier sur site",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778951423/tapavis_tenant_pro-transport-egauvin/build_pro-transport-egauvin_1778951423536.png",
+          "category": "Opération",
+          "sort_order": 2,
+          "created_at": "2026-05-16T17:29:15.467Z",
+          "updated_at": "2026-05-16T17:29:15.467Z"
+        },
+        {
+          "id": 3,
+          "title": "Flotte en action",
+          "description": "Vue aérienne d'un chantier desservi par notre flotte",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778951421/tapavis_tenant_pro-transport-egauvin/build_pro-transport-egauvin_1778951420965.png",
+          "category": "Chantier",
+          "sort_order": 3,
+          "created_at": "2026-05-16T17:29:15.477Z",
+          "updated_at": "2026-05-16T17:29:15.477Z"
+        },
+        {
+          "id": 4,
+          "title": "Notre flotte",
+          "description": "Camion 12 roues de notre flotte professionnelle",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778951421/tapavis_tenant_pro-transport-egauvin/build_pro-transport-egauvin_1778951421603.png",
+          "category": "Flotte",
+          "sort_order": 4,
+          "created_at": "2026-05-16T17:29:15.487Z",
+          "updated_at": "2026-05-16T17:29:15.487Z"
+        }
+      ]
+    },
+    "form_submissions": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "phone",
+        "subject",
+        "message",
+        "status",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    }
+  }
+}
