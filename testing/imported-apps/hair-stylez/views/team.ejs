@@ -1,0 +1,33 @@
+<%- include('partials/header') %>
+<section class="page-head">
+  <div class="container">
+    <h1><%= lang==='en' ? (settings.team_title_en||'Our team') : (settings.team_title||'Notre équipe') %></h1>
+    <p class="lead"><%= lang==='en' ? 'Meet our talented stylists.' : 'Rencontrez nos coiffeurs talentueux.' %></p>
+  </div>
+</section>
+<section class="section">
+  <div class="container">
+    <% if (stylists && stylists.length > 0) { %>
+      <div class="grid-3">
+        <% stylists.forEach(function(s) { %>
+          <div class="stylist-card">
+            <img src="<%= s.image_url || 'https://placehold.co/600x600/e7e5e4/78716c/png?text=Stylist' %>" alt="<%= s.name %>">
+            <div class="stylist-info">
+              <h3><%= s.name %></h3>
+              <p class="meta"><%= localized(s,'title',lang) %></p>
+              <p><%= (localized(s,'bio',lang)||'').substring(0,140) %><%= (localized(s,'bio',lang)||'').length>140?'...':'' %></p>
+              <% if (s.instagram) { %><p class="meta">📷 <%= s.instagram %></p><% } %>
+              <div class="stylist-actions">
+                <a href="equipe/<%= s.id %>" class="btn btn-outline"><%= lang==='en' ? 'View profile' : 'Voir le profil' %></a>
+                <a href="reservation?stylist=<%= s.id %>" class="btn btn-primary" style="background-color:#6366f1;color:#fff"><%= t.btn_book %></a>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <p class="empty"><%= t.empty_stylists %></p>
+    <% } %>
+  </div>
+</section>
+<%- include('partials/footer') %>

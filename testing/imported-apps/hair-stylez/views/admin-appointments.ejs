@@ -1,0 +1,12 @@
+<%- include('partials/admin-shell', { title: 'Rendez-vous', active: 'appointments', moduleKey: 'appointments', moduleLabel: 'rendez-vous', singular: 'le rendez-vous', columns: ['client_name','service_name','stylist_name','appointment_date','appointment_time','status'], fields: [
+  { name: 'client_name', label: 'Nom du client', type: 'text', required: true, description: 'Nom complet du client', placeholder: 'Marie Dupont' },
+  { name: 'client_email', label: 'Courriel', type: 'text', description: 'Courriel de contact', placeholder: 'client@exemple.com' },
+  { name: 'client_phone', label: 'Téléphone', type: 'text', description: 'Numéro de téléphone', placeholder: '514 555 1234' },
+  { name: 'service_id', label: 'Service', type: 'lookup', lookup: 'services', description: 'Service réservé' },
+  { name: 'stylist_id', label: 'Coiffeur', type: 'lookup', lookup: 'stylists', description: 'Coiffeur assigné au rendez-vous' },
+  { name: 'appointment_date', label: 'Date', type: 'date', required: true, description: 'Date du rendez-vous' },
+  { name: 'appointment_time', label: 'Heure', type: 'text', required: true, description: 'Format HH:MM (24h)', placeholder: '14:30' },
+  { name: 'duration_minutes', label: 'Durée (min)', type: 'number', description: 'Durée prévue en minutes', placeholder: '60', min: 15, step: 15 },
+  { name: 'status', label: 'État', type: 'select', options: ['pending','confirmed','completed','cancelled','no_show'], description: 'État actuel du rendez-vous' },
+  { name: 'notes', label: 'Notes', type: 'textarea', description: 'Notes internes ou demandes spéciales' }
+]}) %>

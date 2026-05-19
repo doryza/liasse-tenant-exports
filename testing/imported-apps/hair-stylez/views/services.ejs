@@ -1,0 +1,36 @@
+<%- include('partials/header') %>
+<section class="page-head">
+  <div class="container">
+    <h1><%= lang==='en' ? (settings.services_title_en||'Our services') : (settings.services_title||'Nos services') %></h1>
+    <p class="lead"><%= lang==='en' ? 'Discover our full range of professional services.' : 'Découvrez notre gamme complète de services professionnels.' %></p>
+  </div>
+</section>
+<section class="section">
+  <div class="container">
+    <% if (services && services.length > 0) { %>
+      <div class="grid-3">
+        <% services.forEach(function(s) { %>
+          <div class="card">
+            <% if (s.image_url) { %><img src="<%= s.image_url %>" alt="<%= localized(s,'name',lang) %>"><% } %>
+            <div class="card-body">
+              <% if (s.category) { %><span class="tag"><%= s.category %></span><% } %>
+              <h3><%= localized(s,'name',lang) %></h3>
+              <p><%= localized(s,'description',lang) %></p>
+              <div class="card-foot">
+                <span><%= s.duration_minutes %> <%= t.minutes %></span>
+                <% if (s.price) { %><strong><%= formatPrice(s.price) %></strong><% } %>
+              </div>
+              <a href="reservation?service=<%= s.id %>" class="btn btn-primary btn-block" style="background-color:#6366f1;color:#fff"><%= t.btn_book %></a>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <p class="empty"><%= t.empty_services %></p>
+    <% } %>
+    <div class="info-box">
+      <p><strong><%= lang==='en' ? 'Payment:' : 'Paiement:' %></strong> <%= lang==='en' ? (settings.payment_note_en||'On-site at appointment') : (settings.payment_note||'Sur place au rendez-vous') %></p>
+    </div>
+  </div>
+</section>
+<%- include('partials/footer') %>

@@ -1,0 +1,13 @@
+<%- include('partials/admin-shell', { title: 'Coiffeurs', active: 'stylists', moduleKey: 'stylists', moduleLabel: 'coiffeur', singular: 'le coiffeur', columns: ['image_url','name','title','active'], fields: [
+  { name: 'name', label: 'Nom complet', type: 'text', required: true, description: 'Nom affiché publiquement', placeholder: 'Camille Laurent' },
+  { name: 'title', label: 'Titre / Spécialité (FR)', type: 'text', description: 'Sous-titre affiché sur la fiche', placeholder: 'Coiffeuse senior • Coloration' },
+  { name: 'title_en', label: 'Titre / Spécialité (EN)', type: 'text', description: 'Sous-titre en anglais (optionnel)' },
+  { name: 'bio', label: 'Biographie (FR)', type: 'textarea', description: 'Courte biographie affichée sur le profil' },
+  { name: 'bio_en', label: 'Biographie (EN)', type: 'textarea', description: 'Biographie en anglais (optionnel)' },
+  { name: 'image_url', label: 'Photo de profil', type: 'image', description: 'Recommandé: format carré 800×800px' },
+  { name: 'instagram', label: 'Instagram', type: 'text', description: 'Handle Instagram avec @', placeholder: '@camille.hair' },
+  { name: 'email', label: 'Courriel (privé)', type: 'text', description: 'Non affiché publiquement' },
+  { name: 'phone', label: 'Téléphone (privé)', type: 'text', description: 'Non affiché publiquement' },
+  { name: 'active', label: 'Actif', type: 'boolean', description: 'Visible sur le site et disponible à la réservation' },
+  { name: 'sort_order', label: 'Ordre d\'affichage', type: 'number', description: 'Plus bas = affiché en premier' }
+]}) %>

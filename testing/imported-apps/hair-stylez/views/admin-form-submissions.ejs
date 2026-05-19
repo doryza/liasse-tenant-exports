@@ -1,0 +1,8 @@
+<%- include('partials/admin-shell', { title: 'Messages reçus', active: 'form_submissions', moduleKey: 'form_submissions', moduleLabel: 'message', singular: 'le message', columns: ['name','email','message','status','created_at'], fields: [
+  { name: 'form_type', label: 'Type', type: 'readonly', description: 'Source du formulaire' },
+  { name: 'name', label: 'Nom', type: 'readonly', description: 'Nom du visiteur' },
+  { name: 'email', label: 'Courriel', type: 'readonly', description: 'Courriel du visiteur' },
+  { name: 'phone', label: 'Téléphone', type: 'readonly', description: 'Téléphone du visiteur' },
+  { name: 'message', label: 'Message', type: 'textarea', description: 'Contenu du message reçu' },
+  { name: 'status', label: 'État', type: 'select', options: ['new','read','replied','archived'], description: 'Statut de traitement' }
+]}) %>

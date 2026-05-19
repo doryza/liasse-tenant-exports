@@ -1,0 +1,41 @@
+<footer class="footer">
+  <div class="footer-container">
+    <div class="footer-col">
+      <h3><%= settings.business_name || 'Hair Stylez' %></h3>
+      <p><%= lang==='en' ? (settings.footer_text_en||'Professional hair salon') : (settings.footer_text||'Salon de coiffure professionnel') %></p>
+    </div>
+    <div class="footer-col">
+      <h3><%= t.footer_hours %></h3>
+      <p><%= lang==='en' ? (settings.opening_hours_en||'') : (settings.opening_hours||'') %></p>
+    </div>
+    <div class="footer-col">
+      <h3><%= t.footer_contact %></h3>
+      <% if (settings.business_address) { %><p><%= settings.business_address %></p><% } %>
+      <% if (settings.contact_email) { %><p><a href="mailto:<%= settings.contact_email %>"><%= settings.contact_email %></a></p><% } %>
+      <% if (settings.contact_phone) { %><p><a href="tel:<%= settings.contact_phone %>"><%= settings.contact_phone %></a></p><% } %>
+      <% if (settings.business_address) { %>
+      <p><a href="https://maps.google.com/?q=<%= encodeURIComponent(settings.business_address) %>&dirflg=d" target="_blank" rel="noopener" style="color:#a8a29e"><%= lang==='en' ? '🗺️ Get directions' : '🗺️ Itinéraire' %></a></p>
+      <% } %>
+    </div>
+    <div class="footer-col">
+      <h3><%= t.footer_follow %></h3>
+      <% if (settings.instagram_handle) { %>
+        <p><a href="<%= settings.instagram_url || 'https://instagram.com/' %>" target="_blank" rel="noopener">Instagram <%= settings.instagram_handle %></a></p>
+      <% } %>
+      <button data-push-btn class="footer-btn"><%= lang==='en' ? 'Enable notifications' : 'Activer les notifications' %></button>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© <%= new Date().getFullYear() %> <%= settings.business_name || 'Hair Stylez' %></p>
+  </div>
+</footer>
+<script>
+setTimeout(function(){
+  try { if (window.TenantSDK && TenantSDK.ui) TenantSDK.ui.showInstallBanner(); } catch(e){}
+}, 3000);
+setTimeout(function(){
+  try { if (window.TenantSDK && TenantSDK.ui) TenantSDK.ui.showPushPrompt(); } catch(e){}
+}, 10000);
+</script>
+</body>
+</html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Paramètres — Admin Hair Stylez</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body>
+<div class="admin-layout">
+  <%- include('partials/admin-sidebar', { active: 'settings' }) %>
+  <main class="admin-main">
+    <header class="admin-header">
+      <div>
+        <h1>Paramètres du salon</h1>
+        <p class="muted">Coordonnées, horaires, réseaux sociaux et intégration Google</p>
+      </div>
+      <div class="admin-header-actions">
+        <a href="." target="_blank" class="btn-secondary">↗ Voir le site</a>
+      </div>
+    </header>
+
+    <div id="toastContainer"></div>
+
+    <!-- Business Info -->
+    <div class="admin-section">
+      <h2>Informations du salon</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem">
+        <div class="form-field">
+          <label for="s_business_name">Nom du salon</label>
+          <input type="text" id="s_business_name" data-key="business_name" value="<%= settingsMap.business_name||'' %>" placeholder="Hair Stylez">
+        </div>
+        <div class="form-field">
+          <label for="s_tagline">Slogan (français)</label>
+          <input type="text" id="s_tagline" data-key="tagline" value="<%= settingsMap.tagline||'' %>" placeholder="L'art de la coiffure, redéfini">
+        </div>
+        <div class="form-field">
+          <label for="s_tagline_en">Slogan (anglais)</label>
+          <input type="text" id="s_tagline_en" data-key="tagline_en" value="<%= settingsMap.tagline_en||'' %>" placeholder="The art of hair styling, redefined">
+        </div>
+        <div class="form-field">
+          <label for="s_business_address">Adresse complète</label>
+          <input type="text" id="s_business_address" data-key="business_address" value="<%= settingsMap.business_address||'' %>" placeholder="123 Rue Exemple, Montréal, QC H1A 1A1">
+          <small class="field-desc">Utilisée pour la carte Google Maps sur la page Contact.</small>
+        </div>
+        <div class="form-field">
+          <label for="s_contact_phone">Téléphone</label>
+          <input type="tel" id="s_contact_phone" data-key="contact_phone" value="<%= settingsMap.contact_phone||'' %>" placeholder="514 555 1234">
+        </div>
+        <div class="form-field">
+          <label for="s_contact_email">Courriel de contact</label>
+          <input type="email" id="s_contact_email" data-key="contact_email" value="<%= settingsMap.contact_email||'' %>" placeholder="bonjour@hairstylez.com">
+        </div>
+      </div>
+    </div>
+
+    <!-- Hours -->
+    <div class="admin-section">
+      <h2>Heures d'ouverture</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem">
+        <div class="form-field">
+          <label for="s_opening_hours">Heures (français)</label>
+          <input type="text" id="s_opening_hours" data-key="opening_hours" value="<%= settingsMap.opening_hours||'' %>" placeholder="Lun-Ven: 9h-19h • Sam: 9h-17h • Dim: Fermé">
+          <small class="field-desc">Séparez les tranches par • (point milieu)</small>
+        </div>
+        <div class="form-field">
+          <label for="s_opening_hours_en">Heures (anglais)</label>
+          <input type="text" id="s_opening_hours_en" data-key="opening_hours_en" value="<%= settingsMap.opening_hours_en||'' %>" placeholder="Mon-Fri: 9am-7pm • Sat: 9am-5pm • Sun: Closed">
+        </div>
+      </div>
+    </div>
+
+    <!-- Social Media -->
+    <div class="admin-section">
+      <h2>Réseaux sociaux</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem">
+        <div class="form-field">
+          <label for="s_instagram_handle">Instagram (handle)</label>
+          <input type="text" id="s_instagram_handle" data-key="instagram_handle" value="<%= settingsMap.instagram_handle||'' %>" placeholder="@hairstylez">
+        </div>
+        <div class="form-field">
+          <label for="s_instagram_url">Instagram (URL)</label>
+          <input type="url" id="s_instagram_url" data-key="instagram_url" value="<%= settingsMap.instagram_url||'' %>" placeholder="https://instagram.com/hairstylez">
+        </div>
+      </div>
+    </div>
+
+    <!-- Google Integration -->
+    <div class="admin-section">
+      <h2>🗺️ Intégration Google</h2>
+      <div class="alert-banner" style="margin-bottom:1.5rem">
+        <strong>Comment obtenir votre Google Place ID?</strong><br>
+        1. Rendez-vous sur <a href="https://developers.google.com/maps/documentation/javascript/examples/places-placeid-finder" target="_blank" rel="noopener">Place ID Finder</a><br>
+        2. Tapez le nom de votre salon dans la barre de recherche<br>
+        3. Cliquez sur votre établissement et copiez l'ID affiché (ex: <code>ChIJN1t_tDeuEmsRUsoyG83frY4</code>)
+      </div>
+      <div style="display:grid;grid-template-columns:1fr;gap:1.2rem;max-width:600px">
+        <div class="form-field">
+          <label for="s_google_place_id">Google Place ID</label>
+          <input type="text" id="s_google_place_id" data-key="google_place_id" value="<%= settingsMap.google_place_id||'' %>" placeholder="ChIJN1t_tDeuEmsRUsoyG83frY4">
+          <small class="field-desc">Requis pour afficher les avis Google sur la page Contact. Laissez vide pour désactiver.</small>
+        </div>
+      </div>
+      <% if (settingsMap.google_place_id) { %>
+      <div style="margin-top:1rem;padding:0.9rem 1.2rem;background:#d1fae5;border-radius:8px;color:#065f46;font-size:0.9rem">
+        ✓ Google Place ID configuré. Les avis s'affichent sur la page Contact.
+        <a href="contact" target="_blank" style="color:#065f46;font-weight:600;margin-left:0.5rem">→ Voir la page Contact</a>
+      </div>
+      <% } %>
+    </div>
+
+    <!-- Payment note -->
+    <div class="admin-section">
+      <h2>Note de paiement</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem">
+        <div class="form-field">
+          <label for="s_payment_note">Note de paiement (français)</label>
+          <textarea id="s_payment_note" data-key="payment_note" rows="2" placeholder="Paiement sur place au moment du rendez-vous."><%= settingsMap.payment_note||'' %></textarea>
+        </div>
+        <div class="form-field">
+          <label for="s_payment_note_en">Note de paiement (anglais)</label>
+          <textarea id="s_payment_note_en" data-key="payment_note_en" rows="2" placeholder="Payment on-site at the time of your appointment."><%= settingsMap.payment_note_en||'' %></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;justify-content:flex-end;gap:0.8rem;margin-top:0.5rem;padding-bottom:2rem">
+      <a href="admin" class="btn-secondary">Annuler</a>
+      <button type="button" class="btn-primary" id="saveAllBtn" style="background-color:#6366f1;color:#fff">💾 Enregistrer tous les paramètres</button>
+    </div>
+  </main>
+</div>
+
+<script>
+function toast(msg, type){
+  var c = document.getElementById('toastContainer');
+  var t = document.createElement('div');
+  t.className = 'toast' + (type ? ' toast-' + type : '');
+  t.textContent = msg;
+  c.appendChild(t);
+  setTimeout(function(){ t.style.opacity='0'; t.style.transition='opacity 0.3s'; setTimeout(function(){ t.remove(); }, 300); }, 3000);
+}
+
+function saveSetting(key, value) {
+  return fetch('api/admin/admin_settings/' + encodeURIComponent(key), {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ value: value })
+  }).then(function(r){ return r.json(); });
+}
+
+document.getElementById('saveAllBtn').addEventListener('click', function() {
+  var btn = this;
+  btn.disabled = true;
+  var origText = btn.textContent;
+  btn.textContent = 'Enregistrement…';
+
+  var inputs = document.querySelectorAll('[data-key]');
+  var promises = [];
+  inputs.forEach(function(el) {
+    var key = el.getAttribute('data-key');
+    var value = el.type === 'checkbox' ? (el.checked ? '1' : '0') : el.value;
+    promises.push(saveSetting(key, value));
+  });
+
+  Promise.all(promises)
+    .then(function(results) {
+      var hasError = results.some(function(r){ return r.error; });
+      if (hasError) {
+        toast('Certains paramètres n\'ont pas pu être enregistrés.', 'error');
+      } else {
+        toast('Paramètres enregistrés avec succès!', 'success');
+      }
+      btn.disabled = false;
+      btn.textContent = origText;
+    })
+    .catch(function() {
+      toast('Erreur réseau. Veuillez réessayer.', 'error');
+      btn.disabled = false;
+      btn.textContent = origText;
+    });
+});
+
+// Allow individual field save on change
+document.querySelectorAll('[data-key]').forEach(function(el) {
+  el.addEventListener('change', function() {
+    var key = el.getAttribute('data-key');
+    var value = el.type === 'checkbox' ? (el.checked ? '1' : '0') : el.value;
+    saveSetting(key, value).catch(function(){});
+  });
+});
+</script>
+</body>
+</html>

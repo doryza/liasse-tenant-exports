@@ -1,0 +1,293 @@
+<%- include('partials/header') %>
+<section class="page-head">
+  <div class="container">
+    <h1><%= lang==='en' ? (settings.contact_title_en||'Contact') : (settings.contact_title||'Contact') %></h1>
+    <p class="lead"><%= t.contact_intro %></p>
+  </div>
+</section>
+
+<!-- Boutique Info + Contact Form -->
+<section class="section">
+  <div class="container two-col" style="align-items:flex-start;gap:3rem">
+    <!-- LEFT: Boutique info -->
+    <div>
+      <h2 style="font-size:1.4rem;margin-bottom:1.5rem"><%= lang==='en' ? t.boutique_info : 'Nous visiter' %></h2>
+
+      <!-- Address & Directions -->
+      <% if (settings.business_address) { %>
+      <div style="display:flex;gap:0.9rem;margin-bottom:1.5rem;align-items:flex-start">
+        <span style="font-size:1.4rem;line-height:1.2">📍</span>
+        <div>
+          <p style="font-weight:600;color:var(--neutral-900);margin-bottom:0.25rem"><%= lang==='en' ? t.boutique_address : 'Adresse' %></p>
+          <p style="color:var(--neutral-700)"><%= settings.business_address %></p>
+          <% var mapsQuery = encodeURIComponent(settings.business_address + (settings.business_name ? ' ' + settings.business_name : '')); %>
+          <div style="display:flex;gap:0.6rem;margin-top:0.7rem;flex-wrap:wrap">
+            <a href="https://maps.google.com/?q=<%= mapsQuery %>&dirflg=d" target="_blank" rel="noopener"
+               class="btn btn-primary" style="background-color:#6366f1;color:#fff;font-size:0.9rem;padding:0.55rem 1rem">
+              🗺️ <%= t.get_directions %>
+            </a>
+            <a href="https://maps.google.com/?q=<%= mapsQuery %>" target="_blank" rel="noopener"
+               class="btn btn-outline" style="font-size:0.9rem;padding:0.55rem 1rem">
+              <%= t.directions_google %>
+            </a>
+          </div>
+        </div>
+      </div>
+      <% } %>
+
+      <!-- Opening Hours -->
+      <% var hoursStr = lang==='en' ? (settings.opening_hours_en||settings.opening_hours||'') : (settings.opening_hours||''); %>
+      <% if (hoursStr) { %>
+      <div style="display:flex;gap:0.9rem;margin-bottom:1.5rem;align-items:flex-start">
+        <span style="font-size:1.4rem;line-height:1.2">🕐</span>
+        <div>
+          <p style="font-weight:600;color:var(--neutral-900);margin-bottom:0.5rem"><%= lang==='en' ? t.boutique_hours : 'Heures d\'ouverture' %></p>
+          <div style="display:flex;flex-direction:column;gap:0.3rem">
+            <% hoursStr.split('•').forEach(function(part){ var p=part.trim(); if(p){ %>
+              <p style="color:var(--neutral-700);font-size:0.95rem"><%= p %></p>
+            <% }}) %>
+          </div>
+        </div>
+      </div>
+      <% } %>
+
+      <!-- Phone -->
+      <% if (settings.contact_phone) { %>
+      <div style="display:flex;gap:0.9rem;margin-bottom:1.2rem;align-items:flex-start">
+        <span style="font-size:1.4rem;line-height:1.2">📞</span>
+        <div>
+          <p style="font-weight:600;color:var(--neutral-900);margin-bottom:0.2rem"><%= lang==='en' ? 'Phone' : 'Téléphone' %></p>
+          <a href="tel:<%= settings.contact_phone %>" style="color:var(--brand);font-size:0.95rem"><%= settings.contact_phone %></a>
+        </div>
+      </div>
+      <% } %>
+
+      <!-- Email -->
+      <% if (settings.contact_email) { %>
+      <div style="display:flex;gap:0.9rem;margin-bottom:1.2rem;align-items:flex-start">
+        <span style="font-size:1.4rem;line-height:1.2">✉️</span>
+        <div>
+          <p style="font-weight:600;color:var(--neutral-900);margin-bottom:0.2rem"><%= lang==='en' ? 'Email' : 'Courriel' %></p>
+          <a href="mailto:<%= settings.contact_email %>" style="color:var(--brand);font-size:0.95rem"><%= settings.contact_email %></a>
+        </div>
+      </div>
+      <% } %>
+
+      <!-- Instagram -->
+      <% if (settings.instagram_handle) { %>
+      <div style="display:flex;gap:0.9rem;margin-bottom:1.2rem;align-items:flex-start">
+        <span style="font-size:1.4rem;line-height:1.2">📷</span>
+        <div>
+          <p style="font-weight:600;color:var(--neutral-900);margin-bottom:0.2rem">Instagram</p>
+          <a href="<%= settings.instagram_url || 'https://instagram.com/' %>" target="_blank" rel="noopener" style="color:var(--brand);font-size:0.95rem"><%= settings.instagram_handle %></a>
+        </div>
+      </div>
+      <% } %>
+
+      <!-- Book CTA -->
+      <div style="margin-top:2rem;padding:1.5rem;background:var(--brand-light);border-radius:10px;text-align:center">
+        <p style="font-weight:600;color:var(--neutral-900);margin-bottom:0.5rem"><%= lang==='en' ? 'Ready for a new look?' : 'Prêt pour un nouveau look?' %></p>
+        <a href="reservation" class="btn btn-primary" style="background-color:#6366f1;color:#fff"><%= t.btn_book %></a>
+      </div>
+    </div>
+
+    <!-- RIGHT: Contact form -->
+    <div>
+      <h2 style="font-size:1.4rem;margin-bottom:1.5rem"><%= lang==='en' ? 'Send us a message' : 'Envoyez-nous un message' %></h2>
+      <form id="contactForm">
+        <div class="form-row">
+          <label><%= t.label_name %> *</label>
+          <input type="text" name="name" required>
+        </div>
+        <div class="form-row">
+          <label><%= t.label_email %></label>
+          <input type="email" name="email">
+        </div>
+        <div class="form-row">
+          <label><%= t.label_phone %></label>
+          <input type="tel" name="phone">
+        </div>
+        <div class="form-row">
+          <label><%= t.label_message %> *</label>
+          <textarea name="message" rows="5" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary" style="background-color:#6366f1;color:#fff"><%= t.btn_send %></button>
+        <div id="contactStatus"></div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- Google Maps Section -->
+<% if (mapsApiKey) { %>
+<section style="padding:0;margin:0">
+  <div style="width:100%;height:420px;position:relative;background:#e7e5e4">
+    <div id="map" style="width:100%;height:100%"></div>
+    <% if (settings.business_address) { %>
+    <div style="position:absolute;bottom:1.5rem;right:1.5rem;z-index:10">
+      <a href="https://maps.google.com/?q=<%= encodeURIComponent(settings.business_address) %>&dirflg=d" target="_blank" rel="noopener"
+         style="display:inline-flex;align-items:center;gap:0.5rem;background:#fff;color:#1c1917;padding:0.65rem 1.2rem;border-radius:6px;font-weight:600;font-size:0.9rem;box-shadow:0 4px 16px rgba(0,0,0,0.15);text-decoration:none;font-family:-apple-system,sans-serif">
+        🗺️ <%= t.get_directions %>
+      </a>
+    </div>
+    <% } %>
+  </div>
+</section>
+<% } else if (settings.business_address) { %>
+<!-- Fallback map embed (no API key) -->
+<section style="padding:0;margin:0">
+  <div style="width:100%;height:420px;position:relative">
+    <iframe
+      width="100%" height="100%"
+      frameborder="0" style="border:0"
+      src="https://maps.google.com/maps?q=<%= encodeURIComponent(settings.business_address) %>&output=embed"
+      allowfullscreen>
+    </iframe>
+    <div style="position:absolute;bottom:1.5rem;right:1.5rem;z-index:10">
+      <a href="https://maps.google.com/?q=<%= encodeURIComponent(settings.business_address) %>&dirflg=d" target="_blank" rel="noopener"
+         style="display:inline-flex;align-items:center;gap:0.5rem;background:#fff;color:#1c1917;padding:0.65rem 1.2rem;border-radius:6px;font-weight:600;font-size:0.9rem;box-shadow:0 4px 16px rgba(0,0,0,0.15);text-decoration:none;font-family:-apple-system,sans-serif">
+        🗺️ <%= t.get_directions %>
+      </a>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<!-- Google Reviews Section -->
+<% if (reviewsData && (reviewsData.reviews.length > 0 || reviewsData.rating)) { %>
+<section class="section section-alt">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <h2 class="section-title"><%= t.reviews_title %></h2>
+        <% if (reviewsData.rating) { %>
+        <p class="meta" style="display:flex;align-items:center;gap:0.5rem;font-size:1rem;margin-top:0.5rem">
+          <span style="color:#f59e0b;font-size:1.2rem">
+            <% for(var i=0;i<5;i++){ %><span><%= i < Math.round(reviewsData.rating) ? '★' : '☆' %></span><% } %>
+          </span>
+          <strong style="color:var(--neutral-900);font-size:1.1rem"><%= reviewsData.rating.toFixed(1) %></strong>
+          <% if (reviewsData.totalRatings) { %>
+          <span style="color:var(--muted)"><%= t.reviews_based_on %> <%= reviewsData.totalRatings.toLocaleString() %> <%= t.reviews_total %></span>
+          <% } %>
+        </p>
+        <% } %>
+      </div>
+      <% if (googlePlaceId) { %>
+      <a href="https://search.google.com/local/reviews?placeid=<%= googlePlaceId %>" target="_blank" rel="noopener" class="btn btn-outline" style="font-size:0.9rem;padding:0.55rem 1rem">
+        <%= lang==='en' ? 'Write a review' : 'Laisser un avis' %>
+      </a>
+      <% } %>
+    </div>
+
+    <% if (reviewsData.reviews.length > 0) { %>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.5rem">
+      <% reviewsData.reviews.forEach(function(review){ %>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem;display:flex;flex-direction:column;gap:0.8rem">
+        <!-- Reviewer info -->
+        <div style="display:flex;align-items:center;gap:0.75rem">
+          <% if (review.authorAttribution && review.authorAttribution.photoUri) { %>
+            <img src="<%= review.authorAttribution.photoUri %>" alt="" style="width:40px;height:40px;border-radius:50%;object-fit:cover">
+          <% } else { %>
+            <div style="width:40px;height:40px;border-radius:50%;background:var(--brand-light);display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:600;color:var(--brand);font-family:-apple-system,sans-serif">
+              <%= review.authorAttribution && review.authorAttribution.displayName ? review.authorAttribution.displayName.charAt(0).toUpperCase() : '?' %>
+            </div>
+          <% } %>
+          <div>
+            <p style="font-weight:600;color:var(--neutral-900);font-size:0.95rem;font-family:-apple-system,sans-serif">
+              <%= review.authorAttribution && review.authorAttribution.displayName ? review.authorAttribution.displayName : (lang==='en' ? 'Anonymous' : 'Anonyme') %>
+            </p>
+            <% if (review.relativePublishTimeDescription) { %>
+            <p style="color:var(--muted);font-size:0.8rem"><%= review.relativePublishTimeDescription %></p>
+            <% } %>
+          </div>
+        </div>
+        <!-- Stars -->
+        <% if (review.rating) { %>
+        <div style="color:#f59e0b;font-size:1rem">
+          <% for(var s=0;s<5;s++){ %><span><%= s < review.rating ? '★' : '☆' %></span><% } %>
+        </div>
+        <% } %>
+        <!-- Review text -->
+        <% var reviewText = (review.text && review.text.text) ? review.text.text : ''; %>
+        <% if (reviewText) { %>
+        <p style="color:var(--neutral-700);font-size:0.92rem;line-height:1.6"><%= reviewText.length > 240 ? reviewText.substring(0,240)+'…' : reviewText %></p>
+        <% } %>
+      </div>
+      <% }) %>
+    </div>
+    <% } %>
+  </div>
+</section>
+<% } else if (!googlePlaceId) { %>
+<!-- Reviews placeholder — guides owner to configure Google Place ID -->
+<section class="section section-alt">
+  <div class="container">
+    <h2 class="section-title"><%= t.reviews_title %></h2>
+    <div class="empty" style="background:var(--brand-light);border:1px solid var(--border)">
+      <p style="font-size:1.05rem;margin-bottom:0.5rem"><%= lang==='en' ? '⭐ Show your Google Reviews here!' : '⭐ Affichez vos avis Google ici!' %></p>
+      <p class="meta"><%= lang==='en' ? 'Add your Google Place ID in Admin → Settings to automatically display your reviews.' : 'Ajoutez votre Google Place ID dans Admin → Paramètres pour afficher automatiquement vos avis.' %></p>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<script>
+document.getElementById('contactForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  var f = e.target; var s = document.getElementById('contactStatus');
+  var data = { name: f.name.value, email: f.email.value, phone: f.phone.value, message: f.message.value };
+  s.textContent = '...';
+  fetch('api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (d.success) { s.innerHTML = '<div class="success-msg">'+<%- JSON.stringify(t.success_message) %>+'</div>'; f.reset(); }
+      else { s.innerHTML = '<div class="error-msg">'+<%- JSON.stringify(t.error_generic) %>+'</div>'; }
+    })
+    .catch(function(){ s.innerHTML = '<div class="error-msg">'+<%- JSON.stringify(t.error_generic) %>+'</div>'; });
+});
+</script>
+
+<% if (mapsApiKey && settings.business_address) { %>
+<script>
+var MAPS_ADDRESS = <%- JSON.stringify(settings.business_address || '') %>;
+var MAPS_BUSINESS_NAME = <%- JSON.stringify(settings.business_name || 'Hair Stylez') %>;
+
+function initMap() {
+  var geocoder = new google.maps.Geocoder();
+  var mapOptions = {
+    zoom: 15,
+    mapTypeControl: false,
+    streetViewControl: false,
+    fullscreenControl: true,
+    styles: [
+      { featureType: 'poi', elementType: 'labels', stylers: [{ visibility: 'off' }] }
+    ]
+  };
+  var map = new google.maps.Map(document.getElementById('map'), mapOptions);
+  geocoder.geocode({ address: MAPS_ADDRESS }, function(results, status) {
+    if (status === 'OK' && results[0]) {
+      var location = results[0].geometry.location;
+      map.setCenter(location);
+      var marker = new google.maps.Marker({
+        map: map,
+        position: location,
+        title: MAPS_BUSINESS_NAME,
+        animation: google.maps.Animation.DROP
+      });
+      var infoWindow = new google.maps.InfoWindow({
+        content: '<div style="padding:0.5rem;font-family:-apple-system,sans-serif"><strong style="color:#1c1917">' + MAPS_BUSINESS_NAME + '</strong><br><small style="color:#78716c">' + MAPS_ADDRESS + '</small></div>'
+      });
+      marker.addListener('click', function() { infoWindow.open(map, marker); });
+      infoWindow.open(map, marker);
+    } else {
+      // Geocoding failed or REQUEST_DENIED — show iframe fallback
+      var mapEl = document.getElementById('map');
+      mapEl.innerHTML = '<iframe width="100%" height="100%" frameborder="0" style="border:0" src="https://maps.google.com/maps?q=' + encodeURIComponent(MAPS_ADDRESS) + '&output=embed" allowfullscreen></iframe>';
+    }
+  });
+}
+</script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=<%= mapsApiKey %>&callback=initMap&language=<%= lang %>"></script>
+<% } %>
+
+<%- include('partials/footer') %>

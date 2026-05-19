@@ -1,0 +1,189 @@
+<%- include('partials/header') %>
+<section class="page-head">
+  <div class="container">
+    <h1><%= lang==='en' ? (settings.booking_title_en||'Booking') : (settings.booking_title||'Réservation') %></h1>
+    <p class="lead"><%= lang==='en' ? (settings.booking_intro_en||'') : (settings.booking_intro||'') %></p>
+    <p class="meta"><%= t.no_account_needed %></p>
+  </div>
+</section>
+<section class="section">
+  <div class="container narrow">
+    <div id="bookingForm" class="booking-wizard">
+      <div class="step" id="step1">
+        <h2><span class="step-num">1</span> <%= t.step_service %></h2>
+        <% if (services && services.length > 0) { %>
+          <div class="option-grid">
+            <% services.forEach(function(s) { %>
+              <label class="option-card">
+                <input type="radio" name="service" value="<%= s.id %>" data-duration="<%= s.duration_minutes %>" data-name="<%= localized(s,'name',lang) %>" data-price="<%= s.price %>" <%= (preselectedService==String(s.id))?'checked':'' %>>
+                <div class="option-content">
+                  <strong><%= localized(s,'name',lang) %></strong>
+                  <span class="meta"><%= s.duration_minutes %> <%= t.minutes %> • <%= formatPrice(s.price) %></span>
+                </div>
+              </label>
+            <% }) %>
+          </div>
+        <% } else { %>
+          <p class="empty"><%= t.empty_services %></p>
+        <% } %>
+      </div>
+
+      <div class="step" id="step2">
+        <h2><span class="step-num">2</span> <%= t.step_stylist %></h2>
+        <div class="option-grid">
+          <label class="option-card">
+            <input type="radio" name="stylist" value="any" checked>
+            <div class="option-content">
+              <strong><%= t.any_stylist %></strong>
+              <span class="meta"><%= lang==='en' ? 'First available' : 'Premier disponible' %></span>
+            </div>
+          </label>
+          <% if (stylists && stylists.length > 0) { %>
+            <% stylists.forEach(function(s) { %>
+              <label class="option-card">
+                <input type="radio" name="stylist" value="<%= s.id %>" <%= (preselectedStylist==String(s.id))?'checked':'' %>>
+                <div class="option-content option-with-img">
+                  <img src="<%= s.image_url || 'https://placehold.co/100x100/e7e5e4/78716c/png?text=S' %>" alt="">
+                  <div>
+                    <strong><%= s.name %></strong>
+                    <span class="meta"><%= localized(s,'title',lang) %></span>
+                  </div>
+                </div>
+              </label>
+            <% }) %>
+          <% } %>
+        </div>
+      </div>
+
+      <div class="step" id="step3">
+        <h2><span class="step-num">3</span> <%= t.step_datetime %></h2>
+        <div class="form-row">
+          <label><%= t.label_date %></label>
+          <input type="date" id="appointmentDate" min="<%= new Date().toISOString().split('T')[0] %>">
+        </div>
+        <div id="slotsContainer">
+          <p class="meta"><%= t.select_date_first %></p>
+        </div>
+      </div>
+
+      <div class="step" id="step4">
+        <h2><span class="step-num">4</span> <%= t.step_info %></h2>
+        <div class="form-row">
+          <label><%= t.label_name %> *</label>
+          <input type="text" id="clientName" required value="<%= user ? (user.display_name||'') : '' %>">
+        </div>
+        <div class="form-row">
+          <label><%= t.label_email %></label>
+          <input type="email" id="clientEmail" value="<%= user ? (user.email||'') : '' %>">
+        </div>
+        <div class="form-row">
+          <label><%= t.label_phone %></label>
+          <input type="tel" id="clientPhone" value="<%= user ? (user.phone||'') : '' %>">
+        </div>
+        <div class="form-row">
+          <label><%= t.label_notes %></label>
+          <textarea id="clientNotes" rows="3"></textarea>
+        </div>
+        <div id="summary" class="summary-box"></div>
+        <button type="button" id="submitBooking" class="btn btn-primary btn-block" style="background-color:#6366f1;color:#fff"><%= t.btn_confirm %></button>
+        <p class="meta"><%= lang==='en' ? (settings.payment_note_en||'') : (settings.payment_note||'') %></p>
+      </div>
+    </div>
+    <div id="bookingSuccess" style="display:none" class="success-box">
+      <h2>✓ <%= lang==='en' ? 'Booking received' : 'Réservation reçue' %></h2>
+      <p><%= t.success_booking %></p>
+      <a href="." class="btn btn-outline"><%= lang==='en' ? 'Back to home' : 'Retour à l\'accueil' %></a>
+    </div>
+  </div>
+</section>
+<script>
+(function(){
+  var dateInput = document.getElementById('appointmentDate');
+  var slotsContainer = document.getElementById('slotsContainer');
+  var selectedTime = null;
+  var T_EMPTY = <%- JSON.stringify(t.empty_slots) %>;
+  var T_SELECT_FIRST = <%- JSON.stringify(t.select_date_first) %>;
+  var T_ERROR = <%- JSON.stringify(t.error_generic) %>;
+
+  function getSelected(name){ var el = document.querySelector('input[name="'+name+'"]:checked'); return el ? el.value : null; }
+
+  function loadSlots(){
+    var date = dateInput.value;
+    var service = getSelected('service');
+    var stylist = getSelected('stylist');
+    if (!date) { slotsContainer.innerHTML = '<p class="meta">'+T_SELECT_FIRST+'</p>'; return; }
+    slotsContainer.innerHTML = '<p class="meta">…</p>';
+    fetch('api/availability?date='+encodeURIComponent(date)+'&service='+encodeURIComponent(service||'')+'&stylist='+encodeURIComponent(stylist||'any'))
+      .then(function(r){return r.json();})
+      .then(function(data){
+        if (!data.slots || data.slots.length === 0) { slotsContainer.innerHTML = '<p class="empty">'+T_EMPTY+'</p>'; return; }
+        var html = '<div class="slot-grid">';
+        data.slots.forEach(function(s){ html += '<button type="button" class="slot-btn" data-time="'+s.time+'">'+s.time+'</button>'; });
+        html += '</div>';
+        slotsContainer.innerHTML = html;
+        slotsContainer.querySelectorAll('.slot-btn').forEach(function(b){
+          b.addEventListener('click', function(){
+            slotsContainer.querySelectorAll('.slot-btn').forEach(function(x){ x.classList.remove('selected'); x.style.backgroundColor=''; x.style.color=''; });
+            b.classList.add('selected'); b.style.backgroundColor='#6366f1'; b.style.color='#fff';
+            selectedTime = b.getAttribute('data-time');
+            updateSummary();
+          });
+        });
+      })
+      .catch(function(){ slotsContainer.innerHTML = '<p class="empty">'+T_ERROR+'</p>'; });
+  }
+
+  function updateSummary(){
+    var sEl = document.querySelector('input[name="service"]:checked');
+    var stEl = document.querySelector('input[name="stylist"]:checked');
+    var stLabel = stEl ? stEl.closest('.option-card').querySelector('strong').textContent : '';
+    var sLabel = sEl ? sEl.getAttribute('data-name') : '';
+    var sPrice = sEl ? sEl.getAttribute('data-price') : '';
+    var sDur = sEl ? sEl.getAttribute('data-duration') : '';
+    var html = '';
+    if (sLabel) html += '<div><span>'+<%- JSON.stringify(t.label_service) %>+':</span><strong>'+sLabel+'</strong></div>';
+    if (stLabel) html += '<div><span>'+<%- JSON.stringify(t.label_stylist) %>+':</span><strong>'+stLabel+'</strong></div>';
+    if (dateInput.value) html += '<div><span>'+<%- JSON.stringify(t.label_date) %>+':</span><strong>'+dateInput.value+'</strong></div>';
+    if (selectedTime) html += '<div><span>'+<%- JSON.stringify(t.label_time) %>+':</span><strong>'+selectedTime+'</strong></div>';
+    if (sDur) html += '<div><span>'+<%- JSON.stringify(t.label_duration) %>+':</span><strong>'+sDur+' min</strong></div>';
+    if (sPrice && sPrice !== '0') html += '<div><span>'+<%- JSON.stringify(t.label_price) %>+':</span><strong>'+Number(sPrice).toFixed(0)+' $</strong></div>';
+    document.getElementById('summary').innerHTML = html;
+  }
+
+  document.querySelectorAll('input[name="service"]').forEach(function(r){ r.addEventListener('change', function(){ loadSlots(); updateSummary(); }); });
+  document.querySelectorAll('input[name="stylist"]').forEach(function(r){ r.addEventListener('change', function(){ loadSlots(); updateSummary(); }); });
+  dateInput.addEventListener('change', function(){ selectedTime = null; loadSlots(); updateSummary(); });
+
+  document.getElementById('submitBooking').addEventListener('click', function(){
+    var btn = this;
+    var service = getSelected('service');
+    var stylist = getSelected('stylist');
+    var date = dateInput.value;
+    var name = document.getElementById('clientName').value.trim();
+    var email = document.getElementById('clientEmail').value.trim();
+    var phone = document.getElementById('clientPhone').value.trim();
+    var notes = document.getElementById('clientNotes').value.trim();
+    if (!service) { alert(<%- JSON.stringify(t.step_service) %>); return; }
+    if (!date || !selectedTime) { alert(<%- JSON.stringify(t.step_datetime) %>); return; }
+    if (!name) { alert(<%- JSON.stringify(t.label_name) %>); return; }
+    btn.disabled = true; btn.textContent = '…';
+    var fetchFn = (window.TenantSDK && TenantSDK.fetch) ? TenantSDK.fetch : fetch;
+    fetchFn('api/book', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ service_id: service, stylist_id: stylist, appointment_date: date, appointment_time: selectedTime, client_name: name, client_email: email, client_phone: phone, notes: notes }) })
+      .then(function(r){ return r.json().then(function(d){ return { ok: r.ok, data: d }; }); })
+      .then(function(res){
+        if (res.ok && res.data.success) {
+          document.getElementById('bookingForm').style.display = 'none';
+          document.getElementById('bookingSuccess').style.display = 'block';
+          window.scrollTo(0,0);
+        } else {
+          alert((res.data && res.data.error) || T_ERROR);
+          btn.disabled = false; btn.textContent = <%- JSON.stringify(t.btn_confirm) %>;
+        }
+      })
+      .catch(function(){ alert(T_ERROR); btn.disabled = false; btn.textContent = <%- JSON.stringify(t.btn_confirm) %>; });
+  });
+
+  if (document.querySelector('input[name="service"]:checked')) updateSummary();
+})();
+</script>
+<%- include('partials/footer') %>

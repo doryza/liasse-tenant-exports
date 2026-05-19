@@ -1,0 +1,13 @@
+<%- include('partials/admin-shell', { title: 'Services', active: 'services', moduleKey: 'services', moduleLabel: 'service', singular: 'le service', columns: ['name','category','duration_minutes','price','active'], fields: [
+  { name: 'name', label: 'Nom (FR)', type: 'text', required: true, description: 'Nom du service en français', placeholder: 'Coupe Femme' },
+  { name: 'name_en', label: 'Nom (EN)', type: 'text', description: 'Nom du service en anglais (optionnel)' },
+  { name: 'description', label: 'Description (FR)', type: 'textarea', description: 'Description courte affichée sur la fiche service' },
+  { name: 'description_en', label: 'Description (EN)', type: 'textarea', description: 'Description en anglais (optionnel)' },
+  { name: 'duration_minutes', label: 'Durée (minutes)', type: 'number', required: true, description: 'Durée standard d\'un rendez-vous pour ce service. Utilisée pour le calendrier de réservation.', placeholder: '60', min: 15, step: 15 },
+  { name: 'price', label: 'Prix ($)', type: 'number', description: 'Prix affiché au client en dollars', placeholder: '75', min: 0, step: 1 },
+  { name: 'category', label: 'Catégorie', type: 'text', description: 'ex. Coupe, Coloration, Soin, Coiffage', placeholder: 'Coupe' },
+  { name: 'image_url', label: 'Photo', type: 'image', description: 'Image illustrant le service. Recommandé: 800×600px paysage.' },
+  { name: 'featured', label: 'En vedette', type: 'boolean', description: 'Mettre en avant sur la page d\'accueil' },
+  { name: 'active', label: 'Actif', type: 'boolean', description: 'Visible sur le site et disponible à la réservation' },
+  { name: 'sort_order', label: 'Ordre d\'affichage', type: 'number', description: 'Plus le nombre est bas, plus le service apparaît tôt dans la liste', placeholder: '0' }
+]}) %>

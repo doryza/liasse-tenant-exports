@@ -1,0 +1,112 @@
+<%- include('partials/header') %>
+<section class="hero">
+  <img src="<%= (settings._p_hero_image_url) ? settings._p_hero_image_url : 'https://placehold.co/1600x800/e7e5e4/78716c/png?text=Hair+Stylez' %>" alt="Hero" class="hero-img">
+  <div class="hero-overlay">
+    <div class="hero-content">
+      <span class="hero-badge"><%= t.hero_badge %></span>
+      <h1><%= lang==='en' ? (settings.hero_title_en||'Reveal your best self') : (settings.hero_title||'Révélez votre meilleure version') %></h1>
+      <p><%= lang==='en' ? (settings.hero_subtitle_en||'') : (settings.hero_subtitle||'') %></p>
+      <a href="reservation" class="btn btn-primary" style="background-color:#6366f1;color:#fff"><%= lang==='en' ? (settings.hero_cta_en||'Book now') : (settings.hero_cta||'Réserver maintenant') %></a>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container two-col">
+    <div>
+      <h2 class="section-title"><%= lang==='en' ? (settings.about_title_en||'Our philosophy') : (settings.about_title||'Notre philosophie') %></h2>
+      <p class="lead"><%= lang==='en' ? (settings.about_text_en||'') : (settings.about_text||'') %></p>
+      <% if (settings.opening_hours) { %>
+        <p class="meta"><strong><%= t.footer_hours %>:</strong> <%= lang==='en' ? (settings.opening_hours_en||settings.opening_hours) : settings.opening_hours %></p>
+      <% } %>
+    </div>
+    <div>
+      <img src="<%= settings._p_about_image_url || 'https://placehold.co/800x600/e7e5e4/78716c/png?text=About' %>" alt="About" class="rounded-img">
+    </div>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="container">
+    <div class="section-head">
+      <h2 class="section-title"><%= lang==='en' ? (settings.services_title_en||'Our services') : (settings.services_title||'Nos services') %></h2>
+      <a href="services" class="link-arrow"><%= t.btn_view_all %> →</a>
+    </div>
+    <% if (services && services.length > 0) { %>
+      <div class="grid-3">
+        <% services.forEach(function(s) { %>
+          <a href="reservation?service=<%= s.id %>" class="card">
+            <% if (s.image_url) { %><img src="<%= s.image_url %>" alt="<%= localized(s,'name',lang) %>"><% } %>
+            <div class="card-body">
+              <% if (s.category) { %><span class="tag"><%= s.category %></span><% } %>
+              <h3><%= localized(s,'name',lang) %></h3>
+              <p><%= (localized(s,'description',lang)||'').substring(0,120) %><%= (localized(s,'description',lang)||'').length>120?'...':'' %></p>
+              <div class="card-foot">
+                <span><%= s.duration_minutes %> <%= t.minutes %></span>
+                <% if (s.price) { %><strong><%= formatPrice(s.price) %></strong><% } %>
+              </div>
+            </div>
+          </a>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <p class="empty"><%= t.empty_services %></p>
+    <% } %>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <h2 class="section-title"><%= lang==='en' ? (settings.team_title_en||'Our team') : (settings.team_title||'Notre équipe') %></h2>
+      <a href="equipe" class="link-arrow"><%= t.btn_view_all %> →</a>
+    </div>
+    <% if (stylists && stylists.length > 0) { %>
+      <div class="grid-3">
+        <% stylists.forEach(function(s) { %>
+          <a href="equipe/<%= s.id %>" class="stylist-card">
+            <img src="<%= s.image_url || 'https://placehold.co/600x600/e7e5e4/78716c/png?text=Stylist' %>" alt="<%= s.name %>">
+            <div class="stylist-info">
+              <h3><%= s.name %></h3>
+              <p><%= localized(s,'title',lang) %></p>
+            </div>
+          </a>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <p class="empty"><%= t.empty_stylists %></p>
+    <% } %>
+  </div>
+</section>
+
+<section class="section cta-band" style="background-color:#6366f1">
+  <div class="container cta-content">
+    <h2 style="color:#fff"><%= lang==='en' ? 'Ready for a new look?' : 'Prêt pour un nouveau look?' %></h2>
+    <p style="color:#e0e7ff"><%= lang==='en' ? (settings.booking_intro_en||'Book your appointment online in minutes.') : (settings.booking_intro||'Réservez votre rendez-vous en ligne en quelques minutes.') %></p>
+    <a href="reservation" class="btn btn-light" style="background-color:#fff;color:#6366f1"><%= t.btn_book %></a>
+  </div>
+</section>
+
+<% if (posts && posts.length > 0) { %>
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <h2 class="section-title"><%= t.nav_blog %></h2>
+      <a href="magazine" class="link-arrow"><%= t.btn_view_all %> →</a>
+    </div>
+    <div class="grid-3">
+      <% posts.forEach(function(p) { %>
+        <a href="magazine/<%= p.id %>" class="card">
+          <% if (p.image_url) { %><img src="<%= p.image_url %>" alt="<%= localized(p,'title',lang) %>"><% } %>
+          <div class="card-body">
+            <% if (p.category) { %><span class="tag"><%= p.category %></span><% } %>
+            <h3><%= localized(p,'title',lang) %></h3>
+            <p class="meta"><%= formatDate(p.created_at, lang) %></p>
+          </div>
+        </a>
+      <% }) %>
+    </div>
+  </div>
+</section>
+<% } %>
+<%- include('partials/footer') %>

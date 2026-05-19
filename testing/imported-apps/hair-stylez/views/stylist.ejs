@@ -1,0 +1,26 @@
+<%- include('partials/header') %>
+<section class="section">
+  <div class="container two-col">
+    <div>
+      <img src="<%= stylist.image_url || 'https://placehold.co/800x800/e7e5e4/78716c/png?text=Stylist' %>" alt="<%= stylist.name %>" class="rounded-img">
+    </div>
+    <div>
+      <a href="equipe" class="link-arrow">← <%= t.btn_back %></a>
+      <h1><%= stylist.name %></h1>
+      <p class="lead"><%= localized(stylist,'title',lang) %></p>
+      <p><%= localized(stylist,'bio',lang) %></p>
+      <% if (stylist.instagram) { %><p class="meta">Instagram: <strong><%= stylist.instagram %></strong></p><% } %>
+      <% if (availability && availability.length > 0) { %>
+        <h3><%= lang==='en' ? 'Availability' : 'Disponibilités' %></h3>
+        <ul class="availability-list">
+          <% var days = lang==='en' ? ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'] : ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi']; %>
+          <% availability.forEach(function(a) { %>
+            <li><strong><%= days[a.day_of_week] %>:</strong> <%= a.start_time %> – <%= a.end_time %></li>
+          <% }) %>
+        </ul>
+      <% } %>
+      <a href="reservation?stylist=<%= stylist.id %>" class="btn btn-primary" style="background-color:#6366f1;color:#fff"><%= t.btn_book_with %> <%= stylist.name.split(' ')[0] %></a>
+    </div>
+  </div>
+</section>
+<%- include('partials/footer') %>

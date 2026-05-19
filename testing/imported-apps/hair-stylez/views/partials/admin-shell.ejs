@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title><%= title %> — Admin Hair Stylez</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body>
+<div class="admin-layout">
+  <%- include('admin-sidebar', { active: active }) %>
+  <main class="admin-main">
+    <header class="admin-header">
+      <div>
+        <h1><%= title %></h1>
+        <p class="muted" id="itemCount">Chargement…</p>
+      </div>
+      <div class="admin-header-actions">
+        <button class="btn-secondary" onclick="loadItems()" type="button">↻ Rafraîchir</button>
+        <button class="btn-primary" onclick="openCreateModal()" type="button" style="background-color:#6366f1;color:#fff">+ Nouveau</button>
+      </div>
+    </header>
+
+    <div class="admin-section">
+      <div class="filter-bar">
+        <input type="search" id="searchInput" placeholder="Rechercher…" oninput="renderItems()">
+        <% if (typeof moduleKey !== 'undefined' && (moduleKey === 'appointments' || moduleKey === 'form_submissions')) { %>
+          <select id="statusFilter" onchange="renderItems()">
+            <option value="">Tous les états</option>
+            <% if (moduleKey === 'appointments') { %>
+              <option value="pending">En attente</option>
+              <option value="confirmed">Confirmé</option>
+              <option value="completed">Terminé</option>
+              <option value="cancelled">Annulé</option>
+              <option value="no_show">Absent</option>
+            <% } else { %>
+              <option value="new">Nouveau</option>
+              <option value="read">Lu</option>
+              <option value="replied">Répondu</option>
+              <option value="archived">Archivé</option>
+            <% } %>
+          </select>
+        <% } %>
+      </div>
+      <div id="itemsContainer"><p class="muted">Chargement…</p></div>
+    </div>
+
+    <div id="editModal" class="modal" style="display:none">
+      <div class="modal-content">
+        <div class="modal-head"><h2 id="modalTitle"></h2><button onclick="closeModal()" class="btn-close" type="button" aria-label="Fermer">×</button></div>
+        <form id="editForm" class="modal-form"></form>
+      </div>
+    </div>
+    <div id="toastContainer"></div>
+  </main>
+</div>
+<script>
+var MODULE_KEY = <%- JSON.stringify(moduleKey) %>;
+var MODULE_LABEL = <%- JSON.stringify(moduleLabel) %>;
+var SINGULAR = <%- JSON.stringify(typeof singular !== 'undefined' ? singular : moduleLabel) %>;
+var FIELDS = <%- JSON.stringify(fields) %>;
+var COLUMNS = <%- JSON.stringify(typeof columns !== 'undefined' ? columns : null) %>;
+var items = [];
+var editingId = null;
+var lookupCache = {};
+
+function esc(s){ if(s===null||s===undefined) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function humanize(s){ return String(s).replace(/_/g,' ').replace(/\b\w/g, function(c){ return c.toUpperCase(); }); }
+function findField(name){ for (var i=0;i<FIELDS.length;i++){ if (FIELDS[i].name===name) return FIELDS[i]; } return null; }
+function fieldLabel(f){ return f.label || humanize(f.name); }
+
+function toast(msg, type){
+  var c = document.getElementById('toastContainer');
+  var t = document.createElement('div');
+  t.className = 'toast' + (type ? ' toast-' + type : '');
+  t.textContent = msg;
+  c.appendChild(t);
+  setTimeout(function(){ t.style.opacity='0'; t.style.transition='opacity 0.3s'; setTimeout(function(){ t.remove(); }, 300); }, 2800);
+}
+
+function loadLookups(){
+  var needed = [];
+  FIELDS.forEach(function(f){ if (f.type === 'lookup' && f.lookup && !lookupCache[f.lookup]) needed.push(f.lookup); });
+  if (needed.length === 0) return Promise.resolve();
+  return Promise.all(needed.map(function(name){
+    return fetch('api/admin/lookups/'+name).then(function(r){return r.json();}).then(function(d){ lookupCache[name] = d.items || []; });
+  }));
+}
+
+function lookupName(table, id){
+  var arr = lookupCache[table] || [];
+  var it = arr.find(function(x){ return String(x.id) === String(id); });
+  return it ? it.name : id;
+}
+
+function loadItems(){
+  document.getElementById('itemCount').textContent = 'Chargement…';
+  loadLookups().then(function(){
+    return fetch('api/admin/'+MODULE_KEY).then(function(r){return r.json();}).then(function(d){
+      items = d[MODULE_KEY] || [];
+      renderItems();
+    });
+  }).catch(function(){
+    document.getElementById('itemsContainer').innerHTML = '<div class="empty-state"><div class="empty-icon">⚠️</div><p>Erreur de chargement.</p></div>';
+    document.getElementById('itemCount').textContent = '';
+  });
+}
+
+function filterItems(){
+  var q = (document.getElementById('searchInput')||{value:''}).value.toLowerCase().trim();
+  var statusEl = document.getElementById('statusFilter');
+  var st = statusEl ? statusEl.value : '';
+  return items.filter(function(it){
+    if (st && String(it.status||'') !== st) return false;
+    if (!q) return true;
+    return Object.keys(it).some(function(k){ var v = it[k]; return v && String(v).toLowerCase().indexOf(q) !== -1; });
+  });
+}
+
+function renderCellValue(field, item){
+  var v = item[field.name];
+  if (field.type === 'image') {
+    if (!v) return '<span class="muted">—</span>';
+    return '<img src="'+esc(v)+'" class="thumb">';
+  }
+  if (field.type === 'boolean') {
+    return (v==1||v===true) ? '<span class="badge badge-yes">Oui</span>' : '<span class="badge badge-no">Non</span>';
+  }
+  if (field.type === 'textarea') {
+    return esc(String(v||'').substring(0,80)) + (String(v||'').length>80?'…':'');
+  }
+  if (field.type === 'lookup' && field.lookup) {
+    return v ? esc(lookupName(field.lookup, v)) : '<span class="muted">—</span>';
+  }
+  if (field.type === 'select' && v) {
+    return '<span class="badge badge-'+esc(v)+'">'+esc(v)+'</span>';
+  }
+  if (field.type === 'date' && v) {
+    try { return esc(new Date(v).toLocaleDateString('fr-CA')); } catch(e){ return esc(v); }
+  }
+  if (field.type === 'number' && field.name === 'price' && v) {
+    return esc(Number(v).toFixed(0)) + ' $';
+  }
+  return esc(v);
+}
+
+function renderItems(){
+  var c = document.getElementById('itemsContainer');
+  var filtered = filterItems();
+  document.getElementById('itemCount').textContent = items.length + (items.length>1?' entrées':' entrée') + (filtered.length !== items.length ? ' ('+filtered.length+' affichée'+(filtered.length>1?'s':'')+')' : '');
+  if (items.length === 0) {
+    c.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><p>Aucune entrée.</p><p class="muted">Cliquez sur <strong>+ Nouveau</strong> pour créer votre première entrée.</p></div>';
+    return;
+  }
+  if (filtered.length === 0) {
+    c.innerHTML = '<div class="empty-state"><div class="empty-icon">🔍</div><p>Aucun résultat.</p><p class="muted">Essayez d\'autres critères de recherche.</p></div>';
+    return;
+  }
+
+  var displayFieldNames;
+  if (COLUMNS && COLUMNS.length > 0) {
+    displayFieldNames = COLUMNS;
+  } else {
+    displayFieldNames = FIELDS.slice(0, 5).map(function(f){ return f.name; });
+  }
+
+  var html = '<div class="table-wrap"><table class="admin-table"><thead><tr>';
+  displayFieldNames.forEach(function(fname){
+    var f = findField(fname);
+    var label;
+    if (f) label = fieldLabel(f);
+    else if (fname === 'service_name') label = 'Service';
+    else if (fname === 'stylist_name') label = 'Coiffeur';
+    else if (fname === 'created_at') label = 'Créé le';
+    else label = humanize(fname);
+    html += '<th>'+esc(label)+'</th>';
+  });
+  html += '<th style="text-align:right">Actions</th></tr></thead><tbody>';
+
+  filtered.forEach(function(it){
+    html += '<tr>';
+    displayFieldNames.forEach(function(fname){
+      var f = findField(fname);
+      if (f) {
+        html += '<td>'+renderCellValue(f, it)+'</td>';
+      } else if (fname === 'created_at' && it[fname]) {
+        try { html += '<td>'+esc(new Date(it[fname]).toLocaleDateString('fr-CA'))+'</td>'; } catch(e){ html += '<td>'+esc(it[fname])+'</td>'; }
+      } else {
+        html += '<td>'+esc(it[fname]||'')+'</td>';
+      }
+    });
+    html += '<td><div class="row-actions" style="justify-content:flex-end"><button onclick="editItem('+it.id+')" class="btn-sm" type="button">Éditer</button><button onclick="deleteItem('+it.id+')" class="btn-sm btn-danger" type="button" title="Supprimer">×</button></div></td>';
+    html += '</tr>';
+  });
+  html += '</tbody></table></div>';
+  c.innerHTML = html;
+}
+
+function openCreateModal(){
+  editingId = null;
+  document.getElementById('modalTitle').textContent = 'Nouveau — ' + MODULE_LABEL;
+  var defaults = {};
+  FIELDS.forEach(function(f){ if (f.name === 'active' || f.name === 'published') defaults[f.name] = 1; });
+  buildForm(defaults);
+  document.getElementById('editModal').style.display = 'flex';
+}
+
+function editItem(id){
+  var it = items.find(function(x){return x.id===id;});
+  if (!it) return;
+  editingId = id;
+  document.getElementById('modalTitle').textContent = 'Modifier — ' + MODULE_LABEL + ' #' + id;
+  buildForm(it);
+  document.getElementById('editModal').style.display = 'flex';
+}
+
+function buildForm(data){
+  var f = document.getElementById('editForm');
+  var html = '';
+  FIELDS.forEach(function(field){
+    var val = data[field.name];
+    var label = fieldLabel(field);
+    var reqMark = field.required ? '<span class="required-mark">*</span>' : '';
+    var desc = field.description ? '<small class="field-desc">'+esc(field.description)+'</small>' : '';
+    var ph = field.placeholder ? ' placeholder="'+esc(field.placeholder)+'"' : '';
+    if (field.type === 'boolean') {
+      html += '<div class="form-field"><div class="checkbox-row"><input type="checkbox" id="f_'+field.name+'" name="'+field.name+'" '+(val==1||val===true?'checked':'')+'><label for="f_'+field.name+'">'+esc(label)+'</label></div>'+desc+'</div>';
+      return;
+    }
+    html += '<div class="form-field"><label for="f_'+field.name+'">'+esc(label)+reqMark+'</label>';
+    if (field.type === 'textarea') html += '<textarea id="f_'+field.name+'" name="'+field.name+'" rows="4"'+ph+'>'+esc(val||'')+'</textarea>';
+    else if (field.type === 'select') { html += '<select id="f_'+field.name+'" name="'+field.name+'">'; (field.options||[]).forEach(function(o){ html += '<option value="'+esc(o)+'"'+(String(val)===String(o)?' selected':'')+'>'+esc(o)+'</option>'; }); html += '</select>'; }
+    else if (field.type === 'lookup' && field.lookup) {
+      html += '<select id="f_'+field.name+'" name="'+field.name+'"><option value="">— Aucun —</option>';
+      (lookupCache[field.lookup]||[]).forEach(function(o){ html += '<option value="'+esc(o.id)+'"'+(String(val)===String(o.id)?' selected':'')+'>'+esc(o.name)+' (#'+o.id+')</option>'; });
+      html += '</select>';
+    }
+    else if (field.type === 'image') html += '<input type="url" id="f_'+field.name+'" name="'+field.name+'" value="'+esc(val||'')+'" placeholder="https://…">'+(val?'<img src="'+esc(val)+'" class="image-preview">':'');
+    else if (field.type === 'date') html += '<input type="date" id="f_'+field.name+'" name="'+field.name+'" value="'+esc((val||'').toString().substring(0,10))+'">';
+    else if (field.type === 'number') html += '<input type="number" id="f_'+field.name+'" name="'+field.name+'" value="'+esc(val||'')+'"'+(field.min!==undefined?' min="'+field.min+'"':'')+(field.step?' step="'+field.step+'"':'')+ph+'>';
+    else if (field.type === 'readonly') html += '<input type="text" value="'+esc(val||'')+'" readonly style="background:#fafaf9;color:#78716c">';
+    else if (field.type === 'email') html += '<input type="email" id="f_'+field.name+'" name="'+field.name+'" value="'+esc(val||'')+'"'+ph+(field.required?' required':'')+'>';
+    else html += '<input type="text" id="f_'+field.name+'" name="'+field.name+'" value="'+esc(val||'')+'"'+ph+(field.required?' required':'')+'>';
+    html += desc+'</div>';
+  });
+  html += '<div class="form-actions"><button type="button" onclick="closeModal()" class="btn-secondary">Annuler</button><button type="submit" class="btn-primary" style="background-color:#6366f1;color:#fff">'+(editingId?'Enregistrer':'Créer')+'</button></div>';
+  f.innerHTML = html;
+  f.onsubmit = function(e){ e.preventDefault(); saveItem(); };
+}
+
+function saveItem(){
+  var f = document.getElementById('editForm');
+  var saveBtn = f.querySelector('button[type=submit]');
+  var data = {};
+  FIELDS.forEach(function(field){
+    if (field.type === 'readonly') return;
+    var el = f.elements[field.name];
+    if (!el) return;
+    if (field.type === 'boolean') data[field.name] = el.checked ? 1 : 0;
+    else if (field.type === 'number') data[field.name] = el.value === '' ? null : Number(el.value);
+    else if (field.type === 'lookup') data[field.name] = el.value === '' ? null : Number(el.value);
+    else data[field.name] = el.value;
+  });
+  var url = 'api/admin/'+MODULE_KEY + (editingId ? '/'+editingId : '');
+  var method = editingId ? 'PUT' : 'POST';
+  saveBtn.disabled = true;
+  var origText = saveBtn.textContent;
+  saveBtn.textContent = 'Enregistrement…';
+  fetch(url, { method: method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
+    .then(function(r){ return r.json().then(function(d){ return {ok:r.ok, data:d}; }); })
+    .then(function(res){
+      if (!res.ok || res.data.error) { toast('Erreur: '+(res.data.error||'inconnue'), 'error'); saveBtn.disabled=false; saveBtn.textContent=origText; return; }
+      closeModal();
+      toast(editingId ? 'Modifications enregistrées' : 'Créé avec succès', 'success');
+      loadItems();
+    })
+    .catch(function(){ toast('Erreur réseau', 'error'); saveBtn.disabled=false; saveBtn.textContent=origText; });
+}
+
+function deleteItem(id){
+  if (!confirm('Supprimer cette entrée? Cette action est irréversible.')) return;
+  fetch('api/admin/'+MODULE_KEY+'/'+id, { method: 'DELETE' })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (d.error) { toast('Erreur: '+d.error, 'error'); return; }
+      toast('Supprimé', 'success');
+      loadItems();
+    })
+    .catch(function(){ toast('Erreur réseau', 'error'); });
+}
+
+function closeModal(){ document.getElementById('editModal').style.display = 'none'; }
+
+document.getElementById('editModal').addEventListener('click', function(e){ if (e.target === this) closeModal(); });
+document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeModal(); });
+
+loadItems();
+</script>
+</body>
+</html>

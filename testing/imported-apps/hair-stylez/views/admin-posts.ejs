@@ -1,0 +1,9 @@
+<%- include('partials/admin-shell', { title: 'Magazine', active: 'posts', moduleKey: 'posts', moduleLabel: 'article', singular: 'l\'article', columns: ['title','category','published','created_at'], fields: [
+  { name: 'title', label: 'Titre (FR)', type: 'text', required: true, description: 'Titre en français', placeholder: 'Les tendances de la saison' },
+  { name: 'title_en', label: 'Titre (EN)', type: 'text', description: 'Titre en anglais (optionnel)' },
+  { name: 'content', label: 'Contenu (FR)', type: 'textarea', description: 'Contenu en français. Séparez les paragraphes par une ligne vide.' },
+  { name: 'content_en', label: 'Contenu (EN)', type: 'textarea', description: 'Contenu en anglais (optionnel)' },
+  { name: 'image_url', label: 'Image principale', type: 'image', description: 'URL d\'image. Recommandé: 1200×630px' },
+  { name: 'category', label: 'Catégorie', type: 'text', description: 'ex. Tendances, Conseils, Soins', placeholder: 'Tendances' },
+  { name: 'published', label: 'Publié', type: 'boolean', description: 'Décochez pour sauvegarder comme brouillon (non visible sur le site)' }
+]}) %>

@@ -1,0 +1,588 @@
+{
+  "exportedAt": "2026-05-19T06:10:56.855Z",
+  "tables": {
+    "admin_users": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "password_hash",
+        "display_name",
+        "role",
+        "active",
+        "activation_token",
+        "invited_by",
+        "invite_token",
+        "invite_expires_at",
+        "last_login_at",
+        "is_active",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_invites": {
+      "columns": [
+        "id",
+        "email",
+        "token",
+        "role",
+        "status",
+        "invited_by",
+        "expires_at",
+        "accepted_at",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_webauthn_credentials": {
+      "columns": [
+        "id",
+        "admin_user_id",
+        "credential_id",
+        "public_key",
+        "counter",
+        "device_name",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_settings": {
+      "columns": [
+        "key",
+        "value",
+        "updated_at"
+      ],
+      "totalRows": 68,
+      "sampleRows": [
+        {
+          "key": "hero_title",
+          "value": "Révélez votre meilleure version",
+          "updated_at": "2026-05-19T05:24:45.257Z"
+        },
+        {
+          "key": "hero_title_en",
+          "value": "Reveal your best self",
+          "updated_at": "2026-05-19T05:24:45.270Z"
+        },
+        {
+          "key": "hero_subtitle",
+          "value": "Un salon où l'expertise rencontre l'élégance. Prenez rendez-vous avec nos coiffeurs experts.",
+          "updated_at": "2026-05-19T05:24:45.280Z"
+        },
+        {
+          "key": "hero_subtitle_en",
+          "value": "A salon where expertise meets elegance. Book an appointment with our expert stylists.",
+          "updated_at": "2026-05-19T05:24:45.292Z"
+        },
+        {
+          "key": "hero_cta",
+          "value": "Réserver maintenant",
+          "updated_at": "2026-05-19T05:24:45.301Z"
+        },
+        {
+          "key": "hero_cta_en",
+          "value": "Book now",
+          "updated_at": "2026-05-19T05:24:45.318Z"
+        },
+        {
+          "key": "about_title",
+          "value": "Notre philosophie",
+          "updated_at": "2026-05-19T05:24:45.329Z"
+        },
+        {
+          "key": "about_title_en",
+          "value": "Our philosophy",
+          "updated_at": "2026-05-19T05:24:45.340Z"
+        },
+        {
+          "key": "about_text",
+          "value": "Chez Hair Stylez, nous croyons que chaque chevelure raconte une histoire unique. Notre équipe de professionnels passionnés combine technique, créativité et soin du détail pour sublimer votre style. Dans un cadre épuré et raffiné, nous vous offrons une expérience sur mesure, du conseil initial à la touche finale.",
+          "updated_at": "2026-05-19T05:24:45.355Z"
+        },
+        {
+          "key": "about_text_en",
+          "value": "At Hair Stylez, we believe every head of hair tells a unique story. Our team of passionate professionals combines technique, creativity, and attention to detail to elevate your style. In a refined and minimal setting, we offer a tailored experience, from initial consultation to the final touch.",
+          "updated_at": "2026-05-19T05:24:45.367Z"
+        }
+      ]
+    },
+    "site_visits": {
+      "columns": [
+        "id",
+        "path",
+        "created_at"
+      ],
+      "totalRows": 18,
+      "sampleRows": [
+        {
+          "id": 1,
+          "path": "/",
+          "created_at": "2026-05-19T05:27:24.733Z"
+        },
+        {
+          "id": 2,
+          "path": "/reservation",
+          "created_at": "2026-05-19T05:29:03.542Z"
+        },
+        {
+          "id": 3,
+          "path": "/equipe",
+          "created_at": "2026-05-19T05:29:32.579Z"
+        },
+        {
+          "id": 4,
+          "path": "/equipe",
+          "created_at": "2026-05-19T05:29:35.467Z"
+        },
+        {
+          "id": 5,
+          "path": "/services",
+          "created_at": "2026-05-19T05:29:37.275Z"
+        },
+        {
+          "id": 6,
+          "path": "/",
+          "created_at": "2026-05-19T05:29:40.761Z"
+        },
+        {
+          "id": 7,
+          "path": "/services",
+          "created_at": "2026-05-19T05:30:00.956Z"
+        },
+        {
+          "id": 8,
+          "path": "/",
+          "created_at": "2026-05-19T05:30:05.050Z"
+        },
+        {
+          "id": 9,
+          "path": "/",
+          "created_at": "2026-05-19T06:05:44.015Z"
+        },
+        {
+          "id": 10,
+          "path": "/",
+          "created_at": "2026-05-19T06:05:45.498Z"
+        }
+      ]
+    },
+    "posts": {
+      "columns": [
+        "id",
+        "title",
+        "title_en",
+        "content",
+        "content_en",
+        "image_url",
+        "category",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Les tendances coiffure de la saison",
+          "title_en": "This Season's Hair Trends",
+          "content": "Cette saison célèbre la naturalité et la texture. Du balayage caramel aux coupes effilées, découvrez les looks qui dominent.",
+          "content_en": "This season celebrates naturalness and texture. From caramel balayage to layered cuts, discover the looks dominating the scene.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1779167119/tapavis_tenant_hair-stylez/build_hair-stylez_1779167119106.png",
+          "category": "Tendances",
+          "published": 1,
+          "created_at": "2026-05-19T05:24:45.910Z",
+          "updated_at": "2026-05-19T05:24:45.910Z"
+        },
+        {
+          "id": 2,
+          "title": "Comment préserver votre coloration",
+          "title_en": "How to Preserve Your Color",
+          "content": "Quelques conseils essentiels pour prolonger l'éclat de votre couleur entre vos rendez-vous au salon.",
+          "content_en": "Essential tips to extend the brilliance of your color between salon visits.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1779167123/tapavis_tenant_hair-stylez/build_hair-stylez_1779167123861.png",
+          "category": "Conseils",
+          "published": 1,
+          "created_at": "2026-05-19T05:24:45.920Z",
+          "updated_at": "2026-05-19T05:24:45.920Z"
+        },
+        {
+          "id": 3,
+          "title": "Le rituel cheveux de l'automne",
+          "title_en": "The Fall Hair Ritual",
+          "content": "L'automne demande une attention particulière. Voici notre routine recommandée pour des cheveux sains et brillants.",
+          "content_en": "Fall requires special attention. Here is our recommended routine for healthy, shiny hair.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1779167115/tapavis_tenant_hair-stylez/build_hair-stylez_1779167115523.png",
+          "category": "Soins",
+          "published": 1,
+          "created_at": "2026-05-19T05:24:45.929Z",
+          "updated_at": "2026-05-19T05:24:45.929Z"
+        },
+        {
+          "id": 4,
+          "title": "Préparer son rendez-vous: nos conseils",
+          "title_en": "Preparing for Your Appointment",
+          "content": "Quelques bonnes pratiques avant votre visite pour optimiser le résultat de votre coupe ou coloration.",
+          "content_en": "Best practices before your visit to optimize the result of your cut or color.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1779167121/tapavis_tenant_hair-stylez/build_hair-stylez_1779167121921.png",
+          "category": "Conseils",
+          "published": 1,
+          "created_at": "2026-05-19T05:24:45.939Z",
+          "updated_at": "2026-05-19T05:24:45.939Z"
+        }
+      ]
+    },
+    "services": {
+      "columns": [
+        "id",
+        "name",
+        "name_en",
+        "description",
+        "description_en",
+        "duration_minutes",
+        "price",
+        "image_url",
+        "category",
+        "featured",
+        "active",
+        "sort_order",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 6,
+      "sampleRows": [
+        {
+          "id": 1,
+          "name": "Coupe Femme",
+          "name_en": "Women's Cut",
+          "description": "Coupe personnalisée incluant shampooing, coupe technique et coiffage. Notre coiffeur prend le temps de comprendre votre style de vie et vos préférences.",
+          "description_en": "Personalized cut including shampoo, technical cut, and styling. Our stylist takes the time to understand your lifestyle and preferences.",
+          "duration_minutes": 60,
+          "price": 75,
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1779167118/tapavis_tenant_hair-stylez/build_hair-stylez_1779167118067.png",
+          "category": "Coupe",
+          "featured": 1,
+          "active": 1,
+          "sort_order": 0,
+          "created_at": "2026-05-19T05:24:45.593Z",
+          "updated_at": "2026-05-19T05:24:45.593Z"
+        },
+        {
+          "id": 2,
+          "name": "Coupe Homme",
+          "name_en": "Men's Cut",
+          "description": "Coupe précise et soignée incluant shampooing et finition. Style classique ou contemporain selon vos envies.",
+          "description_en": "Precise and polished cut including shampoo and finishing. Classic or contemporary style based on your preferences.",
+          "duration_minutes": 45,
+          "price": 45,
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1779167118/tapavis_tenant_hair-stylez/build_hair-stylez_1779167118067.png",
+          "category": "Coupe",
+          "featured": 1,
+          "active": 1,
+          "sort_order": 1,
+          "created_at": "2026-05-19T05:24:45.604Z",
+          "updated_at": "2026-05-19T05:24:45.604Z"
+        },
+        {
+          "id": 3,
+          "name": "Coloration complète",
+          "name_en": "Full Color",
+          "description": "Coloration uniforme sur toute la chevelure avec produits de qualité professionnelle. Conseil personnalisé sur la nuance idéale.",
+          "description_en": "Uniform color throughout the hair with professional-grade products. Personalized advice on the ideal shade.",
+          "duration_minutes": 120,
+          "price": 140,
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1779167123/tapavis_tenant_hair-stylez/build_hair-stylez_1779167123861.png",
+          "category": "Coloration",
+          "featured": 1,
+          "active": 1,
+          "sort_order": 2,
+          "created_at": "2026-05-19T05:24:45.613Z",
+          "updated_at": "2026-05-19T05:24:45.613Z"
+        },
+        {
+          "id": 4,
+          "name": "Balayage",
+          "name_en": "Balayage",
+          "description": "Technique d'éclaircissement à main levée pour un effet naturel et lumineux. Idéal pour un look sophistiqué.",
+          "description_en": "Freehand lightening technique for a natural, luminous effect. Ideal for a sophisticated look.",
+          "duration_minutes": 150,
+          "price": 180,
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1779167123/tapavis_tenant_hair-stylez/build_hair-stylez_1779167123861.png",
+          "category": "Coloration",
+          "featured": 1,
+          "active": 1,
+          "sort_order": 3,
+          "created_at": "2026-05-19T05:24:45.621Z",
+          "updated_at": "2026-05-19T05:24:45.621Z"
+        },
+        {
+          "id": 5,
+          "name": "Brushing & Coiffage",
+          "name_en": "Blowout & Styling",
+          "description": "Mise en forme professionnelle pour une chevelure brillante et structurée. Parfait avant un événement.",
+          "description_en": "Professional styling for shiny, structured hair. Perfect before an event.",
+          "duration_minutes": 45,
+          "price": 55,
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1779167114/tapavis_tenant_hair-stylez/build_hair-stylez_1779167114754.png",
+          "category": "Coiffage",
+          "featured": 0,
+          "active": 1,
+          "sort_order": 4,
+          "created_at": "2026-05-19T05:24:45.631Z",
+          "updated_at": "2026-05-19T05:24:45.631Z"
+        },
+        {
+          "id": 6,
+          "name": "Soin profond",
+          "name_en": "Deep Conditioning",
+          "description": "Traitement nourrissant adapté à votre type de cheveux pour restaurer brillance et vitalité.",
+          "description_en": "Nourishing treatment tailored to your hair type to restore shine and vitality.",
+          "duration_minutes": 45,
+          "price": 65,
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1779167115/tapavis_tenant_hair-stylez/build_hair-stylez_1779167115523.png",
+          "category": "Soin",
+          "featured": 0,
+          "active": 1,
+          "sort_order": 5,
+          "created_at": "2026-05-19T05:24:45.641Z",
+          "updated_at": "2026-05-19T05:24:45.641Z"
+        }
+      ]
+    },
+    "stylists": {
+      "columns": [
+        "id",
+        "name",
+        "title",
+        "title_en",
+        "bio",
+        "bio_en",
+        "image_url",
+        "instagram",
+        "email",
+        "phone",
+        "active",
+        "sort_order",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 3,
+      "sampleRows": [
+        {
+          "id": 1,
+          "name": "Camille Laurent",
+          "title": "Coiffeuse senior • Spécialiste coloration",
+          "title_en": "Senior Stylist • Color Specialist",
+          "bio": "Avec plus de 12 ans d'expérience, Camille est une experte de la coloration et du balayage. Elle a travaillé pour des maisons de mode à Paris et Montréal.",
+          "bio_en": "With over 12 years of experience, Camille is an expert in color and balayage. She has worked for fashion houses in Paris and Montreal.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1779167127/tapavis_tenant_hair-stylez/build_hair-stylez_1779167127346.png",
+          "instagram": "@camille.hair",
+          "email": null,
+          "phone": null,
+          "active": 1,
+          "sort_order": 0,
+          "created_at": "2026-05-19T05:24:45.661Z",
+          "updated_at": "2026-05-19T05:24:45.661Z"
+        },
+        {
+          "id": 2,
+          "name": "Julien Tremblay",
+          "title": "Coiffeur senior • Coupe homme & femme",
+          "title_en": "Senior Stylist • Men's & Women's Cuts",
+          "bio": "Julien excelle dans les coupes précises et les transformations. Sa technique allie tradition et modernité pour des résultats impeccables.",
+          "bio_en": "Julien excels at precision cuts and transformations. His technique blends tradition and modernity for impeccable results.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1779167116/tapavis_tenant_hair-stylez/build_hair-stylez_1779167116604.png",
+          "instagram": "@julien.cuts",
+          "email": null,
+          "phone": null,
+          "active": 1,
+          "sort_order": 1,
+          "created_at": "2026-05-19T05:24:45.737Z",
+          "updated_at": "2026-05-19T05:24:45.737Z"
+        },
+        {
+          "id": 3,
+          "name": "Sophie Mercier",
+          "title": "Coloriste créative",
+          "title_en": "Creative Colorist",
+          "bio": "Spécialiste des techniques de coloration avancées, Sophie crée des nuances uniques inspirées par l'art et la mode contemporaine.",
+          "bio_en": "Specializing in advanced color techniques, Sophie creates unique shades inspired by art and contemporary fashion.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1779167117/tapavis_tenant_hair-stylez/build_hair-stylez_1779167117016.png",
+          "instagram": "@sophie.color",
+          "email": null,
+          "phone": null,
+          "active": 1,
+          "sort_order": 2,
+          "created_at": "2026-05-19T05:24:45.818Z",
+          "updated_at": "2026-05-19T05:24:45.818Z"
+        }
+      ]
+    },
+    "stylist_availability": {
+      "columns": [
+        "id",
+        "stylist_id",
+        "day_of_week",
+        "start_time",
+        "end_time",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 18,
+      "sampleRows": [
+        {
+          "id": 1,
+          "stylist_id": 1,
+          "day_of_week": 1,
+          "start_time": "09:00",
+          "end_time": "19:00",
+          "image_url": null,
+          "created_at": "2026-05-19T05:24:45.672Z",
+          "updated_at": "2026-05-19T05:24:45.672Z"
+        },
+        {
+          "id": 2,
+          "stylist_id": 1,
+          "day_of_week": 2,
+          "start_time": "09:00",
+          "end_time": "19:00",
+          "image_url": null,
+          "created_at": "2026-05-19T05:24:45.682Z",
+          "updated_at": "2026-05-19T05:24:45.682Z"
+        },
+        {
+          "id": 3,
+          "stylist_id": 1,
+          "day_of_week": 3,
+          "start_time": "09:00",
+          "end_time": "19:00",
+          "image_url": null,
+          "created_at": "2026-05-19T05:24:45.692Z",
+          "updated_at": "2026-05-19T05:24:45.692Z"
+        },
+        {
+          "id": 4,
+          "stylist_id": 1,
+          "day_of_week": 4,
+          "start_time": "09:00",
+          "end_time": "19:00",
+          "image_url": null,
+          "created_at": "2026-05-19T05:24:45.701Z",
+          "updated_at": "2026-05-19T05:24:45.701Z"
+        },
+        {
+          "id": 5,
+          "stylist_id": 1,
+          "day_of_week": 5,
+          "start_time": "09:00",
+          "end_time": "19:00",
+          "image_url": null,
+          "created_at": "2026-05-19T05:24:45.713Z",
+          "updated_at": "2026-05-19T05:24:45.713Z"
+        },
+        {
+          "id": 6,
+          "stylist_id": 1,
+          "day_of_week": 6,
+          "start_time": "09:00",
+          "end_time": "17:00",
+          "image_url": null,
+          "created_at": "2026-05-19T05:24:45.723Z",
+          "updated_at": "2026-05-19T05:24:45.723Z"
+        },
+        {
+          "id": 7,
+          "stylist_id": 2,
+          "day_of_week": 1,
+          "start_time": "09:00",
+          "end_time": "19:00",
+          "image_url": null,
+          "created_at": "2026-05-19T05:24:45.746Z",
+          "updated_at": "2026-05-19T05:24:45.746Z"
+        },
+        {
+          "id": 8,
+          "stylist_id": 2,
+          "day_of_week": 2,
+          "start_time": "09:00",
+          "end_time": "19:00",
+          "image_url": null,
+          "created_at": "2026-05-19T05:24:45.754Z",
+          "updated_at": "2026-05-19T05:24:45.754Z"
+        },
+        {
+          "id": 9,
+          "stylist_id": 2,
+          "day_of_week": 3,
+          "start_time": "09:00",
+          "end_time": "19:00",
+          "image_url": null,
+          "created_at": "2026-05-19T05:24:45.766Z",
+          "updated_at": "2026-05-19T05:24:45.766Z"
+        },
+        {
+          "id": 10,
+          "stylist_id": 2,
+          "day_of_week": 4,
+          "start_time": "09:00",
+          "end_time": "19:00",
+          "image_url": null,
+          "created_at": "2026-05-19T05:24:45.778Z",
+          "updated_at": "2026-05-19T05:24:45.778Z"
+        }
+      ]
+    },
+    "form_submissions": {
+      "columns": [
+        "id",
+        "form_type",
+        "name",
+        "email",
+        "phone",
+        "message",
+        "image_url",
+        "status",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "stylist_time_off": {
+      "columns": [
+        "id",
+        "stylist_id",
+        "off_date",
+        "reason",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "appointments": {
+      "columns": [
+        "id",
+        "user_id",
+        "stylist_id",
+        "service_id",
+        "client_name",
+        "client_email",
+        "client_phone",
+        "appointment_date",
+        "appointment_time",
+        "duration_minutes",
+        "notes",
+        "status",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    }
+  }
+}

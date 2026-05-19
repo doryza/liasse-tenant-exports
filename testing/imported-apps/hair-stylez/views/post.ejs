@@ -1,0 +1,14 @@
+<%- include('partials/header') %>
+<article class="section">
+  <div class="container narrow">
+    <a href="magazine" class="link-arrow">← <%= t.nav_blog %></a>
+    <% if (post.category) { %><span class="tag"><%= post.category %></span><% } %>
+    <h1><%= localized(post,'title',lang) %></h1>
+    <p class="meta"><%= t.published_on %> <%= formatDate(post.created_at, lang) %></p>
+    <% if (post.image_url) { %><img src="<%= post.image_url %>" alt="" class="rounded-img"><% } %>
+    <div class="prose">
+      <% (localized(post,'content',lang)||'').split('\n\n').forEach(function(p){ %><p><%= p %></p><% }) %>
+    </div>
+  </div>
+</article>
+<%- include('partials/footer') %>

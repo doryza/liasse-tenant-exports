@@ -1,0 +1,5 @@
+<%- include('partials/admin-shell', { title: 'Congés des coiffeurs', active: 'time_off', moduleKey: 'stylist_time_off', moduleLabel: 'congé', singular: 'le congé', columns: ['stylist_name','off_date','reason'], fields: [
+  { name: 'stylist_id', label: 'Coiffeur', type: 'lookup', lookup: 'stylists', required: true, description: 'Coiffeur en congé' },
+  { name: 'off_date', label: 'Date du congé', type: 'date', required: true, description: 'Jour où le coiffeur n\'est pas disponible' },
+  { name: 'reason', label: 'Raison (interne)', type: 'text', description: 'Raison du congé (non affichée publiquement)', placeholder: 'Vacances' }
+]}) %>

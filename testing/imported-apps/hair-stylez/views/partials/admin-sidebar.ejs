@@ -1,0 +1,18 @@
+<aside class="admin-sidebar">
+  <div class="sidebar-brand"><strong>Hair Stylez</strong><span>Administration</span></div>
+  <nav class="sidebar-nav">
+    <a href="admin" class="<%= (typeof active!=='undefined' && active==='dashboard')?'active':'' %>">📊 Tableau de bord</a>
+    <a href="admin/appointments" class="<%= (typeof active!=='undefined' && active==='appointments')?'active':'' %>">📅 Rendez-vous</a>
+    <a href="admin/services" class="<%= (typeof active!=='undefined' && active==='services')?'active':'' %>">✂️ Services</a>
+    <a href="admin/stylists" class="<%= (typeof active!=='undefined' && active==='stylists')?'active':'' %>">👥 Coiffeurs</a>
+    <a href="admin/stylist_availability" class="<%= (typeof active!=='undefined' && active==='availability')?'active':'' %>">🕐 Horaires</a>
+    <a href="admin/stylist_time_off" class="<%= (typeof active!=='undefined' && active==='time_off')?'active':'' %>">🏖️ Congés</a>
+    <a href="admin/posts" class="<%= (typeof active!=='undefined' && active==='posts')?'active':'' %>">📝 Magazine</a>
+    <a href="admin/form_submissions" class="<%= (typeof active!=='undefined' && active==='form_submissions')?'active':'' %>">📨 Messages</a>
+    <a href="admin/settings" class="<%= (typeof active!=='undefined' && active==='settings')?'active':'' %>">⚙️ Paramètres</a>
+  </nav>
+  <div class="sidebar-foot">
+    <a href="." target="_blank">↗ Voir le site</a>
+    <a href="admin/logout">Déconnexion</a>
+  </div>
+</aside>

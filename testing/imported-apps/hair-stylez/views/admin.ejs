@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin — Hair Stylez</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body>
+<div class="admin-layout">
+  <%- include('partials/admin-sidebar', { active: 'dashboard' }) %>
+  <main class="admin-main">
+    <header class="admin-header">
+      <div>
+        <h1>Tableau de bord</h1>
+        <p class="muted">Vue d'ensemble de votre salon</p>
+      </div>
+      <div class="admin-header-actions">
+        <a href="admin/appointments" class="btn-primary" style="background-color:#6366f1;color:#fff;text-decoration:none">📅 Gérer les rendez-vous</a>
+      </div>
+    </header>
+
+    <% if (stats.pendingAppts > 0 || stats.newMessages > 0) { %>
+    <div class="alert-banner">
+      <strong>⚡ Action requise:</strong>
+      <% if (stats.pendingAppts > 0) { %><a href="admin/appointments"><%= stats.pendingAppts %> rendez-vous en attente</a><% } %>
+      <% if (stats.pendingAppts > 0 && stats.newMessages > 0) { %> · <% } %>
+      <% if (stats.newMessages > 0) { %><a href="admin/form_submissions"><%= stats.newMessages %> nouveau(x) message(s)</a><% } %>
+    </div>
+    <% } %>
+
+    <div class="stats-grid">
+      <div class="stat-card stat-highlight">
+        <div class="stat-label">Rendez-vous à venir</div>
+        <div class="stat-value"><%= stats.upcomingAppts %></div>
+        <div class="stat-sub"><%= stats.pendingAppts %> en attente de confirmation</div>
+      </div>
+      <div class="stat-card"><div class="stat-label">Total RDV</div><div class="stat-value"><%= stats.apptCount %></div><div class="stat-sub">depuis l'ouverture</div></div>
+      <div class="stat-card"><div class="stat-label">Services</div><div class="stat-value"><%= stats.servicesCount %></div><div class="stat-sub">offerts</div></div>
+      <div class="stat-card"><div class="stat-label">Coiffeurs</div><div class="stat-value"><%= stats.stylistsCount %></div><div class="stat-sub">dans l'équipe</div></div>
+      <div class="stat-card"><div class="stat-label">Articles magazine</div><div class="stat-value"><%= stats.postsCount %></div></div>
+      <div class="stat-card"><div class="stat-label">Utilisateurs</div><div class="stat-value"><%= stats.userCount %></div></div>
+      <div class="stat-card"><div class="stat-label">Abonnés push</div><div class="stat-value"><%= stats.pushCount %></div></div>
+      <div class="stat-card"><div class="stat-label">Visites (7 jours)</div><div class="stat-value"><%= stats.recentVisits %></div><div class="stat-sub"><%= stats.totalVisits %> au total</div></div>
+    </div>
+
+    <section class="admin-section">
+      <div class="section-head-bar">
+        <h2>Derniers rendez-vous</h2>
+        <a href="admin/appointments" class="link-arrow">Voir tous →</a>
+      </div>
+      <% if (recentAppts && recentAppts.length > 0) { %>
+        <div class="table-wrap">
+        <table class="admin-table">
+          <thead><tr><th>Client</th><th>Service</th><th>Coiffeur</th><th>Date</th><th>Heure</th><th>État</th></tr></thead>
+          <tbody>
+            <% recentAppts.forEach(function(a){ %>
+              <tr>
+                <td><strong><%= a.client_name %></strong><% if (a.client_phone) { %><br><small class="muted"><%= a.client_phone %></small><% } %></td>
+                <td><%= a.service_name || '—' %></td>
+                <td><%= a.stylist_name || '—' %></td>
+                <td><%= formatDate(a.appointment_date) %></td>
+                <td><%= a.appointment_time %></td>
+                <td><span class="badge badge-<%= a.status %>"><%= a.status %></span></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+        </div>
+      <% } else { %>
+        <div class="empty-state">
+          <div class="empty-icon">📅</div>
+          <p>Aucun rendez-vous pour le moment.</p>
+          <p class="muted">Les nouvelles réservations apparaîtront ici.</p>
+        </div>
+      <% } %>
+    </section>
+
+    <section class="admin-section">
+      <h2>Gestion rapide</h2>
+      <div class="quick-grid">
+        <a href="admin/appointments" class="quick-card"><span class="quick-icon">📅</span><strong>Rendez-vous</strong><span class="muted">Confirmer, modifier, annuler</span></a>
+        <a href="admin/services" class="quick-card"><span class="quick-icon">✂️</span><strong>Services</strong><span class="muted">Prix et durées</span></a>
+        <a href="admin/stylists" class="quick-card"><span class="quick-icon">👥</span><strong>Coiffeurs</strong><span class="muted">Profils et bios</span></a>
+        <a href="admin/stylist_availability" class="quick-card"><span class="quick-icon">🕐</span><strong>Horaires</strong><span class="muted">Disponibilités hebdo</span></a>
+        <a href="admin/stylist_time_off" class="quick-card"><span class="quick-icon">🏖️</span><strong>Congés</strong><span class="muted">Jours non disponibles</span></a>
+        <a href="admin/posts" class="quick-card"><span class="quick-icon">📝</span><strong>Magazine</strong><span class="muted">Articles & conseils</span></a>
+        <a href="admin/form_submissions" class="quick-card"><span class="quick-icon">📨</span><strong>Messages</strong><span class="muted">Demandes de contact</span></a>
+        <a href="admin/settings" class="quick-card"><span class="quick-icon">⚙️</span><strong>Paramètres</strong><span class="muted">Adresse, horaires, Google Maps & avis</span></a>
+      </div>
+    </section>
+  </main>
+</div>
+</body>
+</html>

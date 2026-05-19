@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#6366f1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title><%= (settings.business_name||'Hair Stylez') %> — <%= lang==='en' ? (settings.tagline_en||'Professional hair salon') : (settings.tagline||'Salon de coiffure') %></title>
+<meta name="description" content="<%= lang==='en' ? (settings.tagline_en||'Professional hair salon') : (settings.tagline||'Salon de coiffure professionnel') %>">
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="public/css/styles.css">
+</head>
+<body>
+<nav class="navbar">
+  <div class="nav-container">
+    <a href="." class="nav-brand">
+      <% if (typeof appIconUrl !== 'undefined' && appIconUrl) { %>
+        <img src="<%= (settings._p_nav_logo_url) ? settings._p_nav_logo_url : appIconUrl %>" alt="Logo" class="nav-logo">
+      <% } %>
+      <span class="nav-title"><%= settings.business_name || 'Hair Stylez' %></span>
+    </a>
+    <div class="nav-links" id="navLinks">
+      <a href="." class="<%= page==='home'?'active':'' %>"><%= t.nav_home %></a>
+      <a href="services" class="<%= page==='services'?'active':'' %>"><%= t.nav_services %></a>
+      <a href="equipe" class="<%= page==='team'?'active':'' %>"><%= t.nav_team %></a>
+      <a href="magazine" class="<%= page==='blog'?'active':'' %>"><%= t.nav_blog %></a>
+      <a href="contact" class="<%= page==='contact'?'active':'' %>"><%= t.nav_contact %></a>
+      <a href="reservation" class="nav-cta"><%= t.nav_book %></a>
+      <a href="#" data-login-btn class="nav-login"><%= t.btn_login %></a>
+      <span class="lang-switch">
+        <a href="?lang=fr" class="<%= lang==='fr'?'active':'' %>">FR</a>
+        <span>|</span>
+        <a href="?lang=en" class="<%= lang==='en'?'active':'' %>">EN</a>
+      </span>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<script>
+(function(){
+  var h = document.getElementById('hamburger');
+  var n = document.getElementById('navLinks');
+  if (h && n) { h.addEventListener('click', function(){ n.classList.toggle('open'); h.classList.toggle('open'); }); }
+})();
+</script>

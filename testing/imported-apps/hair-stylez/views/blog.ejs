@@ -1,0 +1,29 @@
+<%- include('partials/header') %>
+<section class="page-head">
+  <div class="container">
+    <h1><%= t.nav_blog %></h1>
+    <p class="lead"><%= lang==='en' ? 'Inspiration, tips, and trends from our team.' : 'Inspiration, conseils et tendances de notre équipe.' %></p>
+  </div>
+</section>
+<section class="section">
+  <div class="container">
+    <% if (posts && posts.length > 0) { %>
+      <div class="grid-3">
+        <% posts.forEach(function(p) { %>
+          <a href="magazine/<%= p.id %>" class="card">
+            <% if (p.image_url) { %><img src="<%= p.image_url %>" alt="<%= localized(p,'title',lang) %>"><% } %>
+            <div class="card-body">
+              <% if (p.category) { %><span class="tag"><%= p.category %></span><% } %>
+              <h3><%= localized(p,'title',lang) %></h3>
+              <p class="meta"><%= formatDate(p.created_at, lang) %></p>
+              <p><%= (localized(p,'content',lang)||'').substring(0,120) %>...</p>
+            </div>
+          </a>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <p class="empty"><%= t.empty_posts %></p>
+    <% } %>
+  </div>
+</section>
+<%- include('partials/footer') %>
