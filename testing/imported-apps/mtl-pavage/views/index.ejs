@@ -105,15 +105,17 @@
     <%
       var areaLabel = (settings && settings['service_area_label_'+lang]) ? settings['service_area_label_'+lang] : (lang==='en' ? 'Greater Montreal and South Shore' : 'Grand Montréal et Rive-Sud');
       var areaRadius = (settings && settings.service_area_radius_km) ? settings.service_area_radius_km : '40';
+      var areaLat = (settings && settings.service_area_lat) ? settings.service_area_lat : '45.5017';
+      var areaLng = (settings && settings.service_area_lng) ? settings.service_area_lng : '-73.5673';
       var contactPhone = (settings && settings.contact_phone) ? settings.contact_phone : '';
     %>
-    <div id="service-map" class="service-map" style="position:relative">
-      <%# Static fallback — always rendered server-side, hidden by JS only when real map loads successfully %>
-      <div id="map-static-fallback" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.25rem;background:linear-gradient(135deg,#1a1a1a 0%,#262626 100%);border-radius:var(--radius);z-index:1;">
+    <div id="service-map" class="service-map" style="position:relative;min-height:420px;border-radius:var(--radius);overflow:hidden">
+      <%# Static fallback — always rendered server-side, hidden by JS only when Leaflet loads successfully %>
+      <div id="map-static-fallback" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.25rem;background:linear-gradient(135deg,#1a1a1a 0%,#262626 100%);z-index:1;">
         <div style="font-size:3.5rem;line-height:1">📍</div>
         <div style="text-align:center;display:flex;flex-direction:column;gap:.5rem;align-items:center;">
           <strong style="color:#fff;font-size:1.35rem;font-weight:800;"><%= areaLabel %></strong>
-          <span style="color:#a1a1aa;font-size:.95rem;"><%= lang==='en' ? 'Service radius: '+areaRadius+' km around Montréal' : 'Rayon de service\u00a0: '+areaRadius+'\u00a0km autour de Montréal' %></span>
+          <span style="color:#a1a1aa;font-size:.95rem;"><%= lang==='en' ? 'Service radius: '+areaRadius+' km around Montréal' : 'Rayon de service : '+areaRadius+' km autour de Montréal' %></span>
           <div style="display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin-top:.25rem;">
             <% var cities = ['Montréal','Laval','Longueuil','Brossard','Verdun','Outremont','Pointe-Claire','Saint-Lambert']; %>
             <% cities.forEach(function(city){ %>
@@ -125,6 +127,7 @@
         <a href="tel:<%= contactPhone %>" class="btn btn-yellow btn-sm" style="background-color:#FCD34D;color:#0a0a0a;margin-top:.25rem">📞 <%= contactPhone %></a>
         <% } %>
       </div>
+      <div id="service-map-canvas" style="position:absolute;inset:0;z-index:2;display:none"></div>
     </div>
   </div>
 </section>
@@ -167,52 +170,34 @@
   </div>
 </section>
 
-<% if (typeof googleApiKey!=='undefined' && googleApiKey) { %>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer crossorigin=""></script>
 <script>
-// When Google Maps auth fails (invalid key, billing issue, API not enabled):
-// hide all Google-injected children and bring the static fallback to the front.
-window.gm_authFailure = function() {
+window.addEventListener('load', function() {
+  // If Leaflet failed to load (CDN blocked, offline, etc.), keep the static fallback.
+  if (!window.L) return;
+  var canvas = document.getElementById('service-map-canvas');
   var fb = document.getElementById('map-static-fallback');
-  var mapEl = document.getElementById('service-map');
-  if (fb) {
-    fb.style.display = 'flex';
-    fb.style.zIndex = '9999';
-  }
-  if (mapEl) {
-    // Hide every sibling of the fallback that Google injected
-    Array.prototype.forEach.call(mapEl.children, function(child) {
-      if (child.id !== 'map-static-fallback') {
-        child.style.visibility = 'hidden';
-        child.style.zIndex = '0';
-      }
-    });
-  }
-};
-
-window.initServiceMap = function() {
+  if (!canvas) return;
+  var lat = parseFloat('<%= areaLat %>') || 45.5017;
+  var lng = parseFloat('<%= areaLng %>') || -73.5673;
+  var radius = (parseFloat('<%= areaRadius %>') || 40) * 1000;
+  var label = <%- JSON.stringify(areaLabel) %>;
   try {
-    var lat = parseFloat('<%- (settings && settings.service_area_lat) || 45.5017 %>') || 45.5017;
-    var lng = parseFloat('<%- (settings && settings.service_area_lng) || -73.5673 %>') || -73.5673;
-    var radius = (parseFloat('<%- (settings && settings.service_area_radius_km) || 40 %>') || 40) * 1000;
-    var el = document.getElementById('service-map');
-    if (!el || !window.google || !window.google.maps) return;
-    // Real map loaded successfully — hide the static fallback
-    var fb = document.getElementById('map-static-fallback');
+    canvas.style.display = 'block';
+    var map = L.map(canvas, { zoomControl: true, scrollWheelZoom: false, attributionControl: true })
+      .setView([lat, lng], 9);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      maxZoom: 18
+    }).addTo(map);
+    L.circle([lat, lng], { radius: radius, color: '#FCD34D', weight: 2, fillColor: '#FCD34D', fillOpacity: 0.15 }).addTo(map);
+    L.marker([lat, lng]).addTo(map).bindPopup('<strong>' + label + '</strong>');
     if (fb) fb.style.display = 'none';
-    var map = new google.maps.Map(el, {
-      center: {lat:lat,lng:lng}, zoom: 9,
-      styles: [{"elementType":"geometry","stylers":[{"color":"#212121"}]},{"elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"elementType":"labels.text.fill","stylers":[{"color":"#757575"}]},{"elementType":"labels.text.stroke","stylers":[{"color":"#212121"}]},{"featureType":"road","elementType":"geometry.fill","stylers":[{"color":"#2c2c2c"}]},{"featureType":"road.highway","elementType":"geometry","stylers":[{"color":"#373737"}]},{"featureType":"water","elementType":"geometry","stylers":[{"color":"#000000"}]}],
-      disableDefaultUI: true, zoomControl: true, gestureHandling: 'cooperative'
-    });
-    new google.maps.Circle({ map: map, center: {lat:lat,lng:lng}, radius: radius, strokeColor:'#FCD34D', strokeWeight:2, fillColor:'#FCD34D', fillOpacity:0.15 });
-    new google.maps.Marker({ position:{lat:lat,lng:lng}, map: map, title:'MTL Pavage' });
-  } catch(e) {
-    // Map init threw — keep static fallback visible
-    var fb = document.getElementById('map-static-fallback');
-    if (fb) { fb.style.display = 'flex'; fb.style.zIndex = '9999'; }
+  } catch (e) {
+    canvas.style.display = 'none';
+    if (fb) fb.style.display = 'flex';
   }
-};
+});
 </script>
-<script src="https://maps.googleapis.com/maps/api/js?key=<%= googleApiKey %>&callback=initServiceMap" async defer></script>
-<% } %>
 <%- include('partials/footer') %>

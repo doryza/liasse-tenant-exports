@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zone de service — MTL Pavage Admin</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body class="admin-body">
+<%- include('partials/admin-sidebar') %>
+<main class="admin-main">
+  <header class="admin-header">
+    <div>
+      <h1>Zone de service</h1>
+      <p class="admin-subtitle">Centre, rayon et étiquettes affichés sur la carte de la page d'accueil.</p>
+    </div>
+    <div class="admin-header-actions">
+      <a href="admin" class="btn-admin-secondary" style="margin-top:0">← Tableau de bord</a>
+      <a href=".#zone" target="_blank" class="btn-admin-secondary" style="margin-top:0">👁 Voir la carte</a>
+    </div>
+  </header>
+  <div class="admin-content">
+    <section class="admin-panel" style="max-width:760px">
+      <div class="panel-head">
+        <h2>Paramètres « Notre zone de service »</h2>
+      </div>
+      <form id="zone-form" onsubmit="event.preventDefault();save();" style="display:flex;flex-direction:column;gap:1rem;padding:1rem 0 0">
+        <div class="field">
+          <label for="service_area_label_fr">Étiquette (français)</label>
+          <input type="text" id="service_area_label_fr" name="service_area_label_fr" placeholder="ex. Grand Montréal et Rive-Sud">
+          <small class="field-help">Texte affiché sur la carte (titre de la zone) en français.</small>
+        </div>
+        <div class="field">
+          <label for="service_area_label_en">Étiquette (anglais)</label>
+          <input type="text" id="service_area_label_en" name="service_area_label_en" placeholder="e.g. Greater Montreal and South Shore">
+          <small class="field-help">Texte affiché sur la carte en anglais.</small>
+        </div>
+        <div class="field">
+          <label for="service_area_radius_km">Rayon de service (km)</label>
+          <input type="number" id="service_area_radius_km" name="service_area_radius_km" min="1" step="1" placeholder="40">
+          <small class="field-help">Rayon du cercle jaune dessiné autour du point central.</small>
+        </div>
+        <div class="field">
+          <label for="service_area_lat">Latitude du centre</label>
+          <input type="number" id="service_area_lat" name="service_area_lat" step="0.0001" placeholder="45.5017">
+          <small class="field-help">Latitude WGS84 (Montréal ≈ 45.5017).</small>
+        </div>
+        <div class="field">
+          <label for="service_area_lng">Longitude du centre</label>
+          <input type="number" id="service_area_lng" name="service_area_lng" step="0.0001" placeholder="-73.5673">
+          <small class="field-help">Longitude WGS84 (Montréal ≈ -73.5673).</small>
+        </div>
+        <div class="field">
+          <label for="contact_phone">Téléphone affiché sur la carte</label>
+          <input type="text" id="contact_phone" name="contact_phone" placeholder="ex. 514-555-1234">
+          <small class="field-help">Numéro affiché en bas de la carte de zone (et utilisé ailleurs sur le site).</small>
+        </div>
+        <div style="display:flex;gap:.75rem;align-items:center;margin-top:.5rem">
+          <button type="submit" class="btn-admin-primary" id="save-btn" style="background-color:#FCD34D;color:#0a0a0a">Enregistrer</button>
+          <span id="form-msg" style="color:#a1a1aa;font-size:.9rem"></span>
+        </div>
+      </form>
+    </section>
+  </div>
+</main>
+<div id="toast" class="toast" style="display:none"></div>
+<script>
+var KEYS = ['service_area_label_fr','service_area_label_en','service_area_radius_km','service_area_lat','service_area_lng','contact_phone'];
+var initial = {};
+
+function toast(msg, type) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + (type || '');
+  t.style.display = 'block';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(function(){ t.style.display = 'none'; }, 3200);
+}
+
+async function load() {
+  try {
+    var res = await fetch('api/admin/settings');
+    var data = await res.json();
+    var s = data.settings || {};
+    KEYS.forEach(function(k){
+      initial[k] = s[k] != null ? String(s[k]) : '';
+      var el = document.getElementById(k);
+      if (el) el.value = initial[k];
+    });
+  } catch(e) {
+    toast('Impossible de charger les paramètres', 'error');
+  }
+}
+
+async function save() {
+  var btn = document.getElementById('save-btn');
+  var prev = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Enregistrement…';
+  var changed = [];
+  KEYS.forEach(function(k){
+    var el = document.getElementById(k);
+    var v = el ? el.value : '';
+    if (v !== initial[k]) changed.push({ key: k, value: v });
+  });
+  if (!changed.length) {
+    toast('Aucun changement à enregistrer');
+    btn.disabled = false;
+    btn.textContent = prev;
+    return;
+  }
+  try {
+    for (var i = 0; i < changed.length; i++) {
+      var res = await fetch('api/admin/settings', {
+        method: 'PUT',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(changed[i])
+      });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      initial[changed[i].key] = changed[i].value;
+    }
+    toast('Paramètres enregistrés', 'success');
+  } catch(e) {
+    toast('Erreur : ' + e.message, 'error');
+  }
+  btn.disabled = false;
+  btn.textContent = prev;
+}
+
+load();
+</script>
+</body>
+</html>
