@@ -1,0 +1,37 @@
+<% var pageTitle = post.title; %>
+<%- include('partials/header') %>
+<section class="page-hero">
+  <div class="container">
+    <a href="blog" class="back-link">← <%= t.blog_back %></a>
+    <h1><%= post.title %></h1>
+    <div class="post-meta-hero">
+      <% if (post.author) { %><span><%= t.blog_by %> <%= post.author %></span><% } %>
+      <% if (post.category) { %><span>· <%= t.blog_in %> <%= post.category %></span><% } %>
+      <% if (post.created_at) { %><span>· <%= formatDate(post.created_at, lang) %></span><% } %>
+    </div>
+  </div>
+</section>
+<section class="section section-light">
+  <div class="container article-wrap">
+    <% if (post.image_url) { %><div class="article-img"><img src="<%= post.image_url %>" alt="<%= post.title %>"></div><% } %>
+    <div class="article-content">
+      <% (post.content || '').split(/\n\n+/).forEach(function(para){ %><p><%= para %></p><% }); %>
+    </div>
+    <% if (typeof related!=='undefined' && related.length > 0) { %>
+    <div class="related">
+      <h3><%= lang==='en' ? 'Related articles' : 'Articles connexes' %></h3>
+      <div class="grid grid-3">
+        <% related.forEach(function(r){ %>
+        <a href="blog/<%= r.id %>" class="post-card">
+          <div class="post-img"><img src="<%= r.image_url || 'https://placehold.co/600x400/0a0a0a/FCD34D/png?text=Article' %>" alt="<%= r.title %>" loading="lazy"></div>
+          <div class="post-body">
+            <h4><%= r.title %></h4>
+          </div>
+        </a>
+        <% }); %>
+      </div>
+    </div>
+    <% } %>
+  </div>
+</section>
+<%- include('partials/footer') %>

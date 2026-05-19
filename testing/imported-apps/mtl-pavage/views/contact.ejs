@@ -1,0 +1,123 @@
+<% var pageTitle = t.nav_contact; %>
+<%- include('partials/header') %>
+<section class="page-hero">
+  <div class="container">
+    <h1><%= t.contact_title %></h1>
+    <p><%= t.contact_subtitle %></p>
+  </div>
+</section>
+<section class="section section-light">
+  <div class="container contact-grid">
+    <div class="contact-info">
+      <h2><%= t.contact_info_title %></h2>
+      <% if (typeof settings!=='undefined' && settings.contact_phone) { %>
+      <div class="info-block">
+        <strong><%= t.contact_phone_label %></strong>
+        <a href="tel:<%= settings.contact_phone %>"><%= settings.contact_phone %></a>
+      </div>
+      <% } %>
+      <% if (typeof settings!=='undefined' && settings.contact_email) { %>
+      <div class="info-block">
+        <strong><%= t.contact_email_label %></strong>
+        <a href="mailto:<%= settings.contact_email %>"><%= settings.contact_email %></a>
+      </div>
+      <% } %>
+      <% if (typeof settings!=='undefined' && settings.business_address) { %>
+      <div class="info-block">
+        <strong><%= t.contact_address_label %></strong>
+        <span><%= settings.business_address %></span>
+      </div>
+      <% } %>
+      <div class="info-block">
+        <strong><%= t.contact_hours_label %></strong>
+        <span style="white-space:pre-line"><%= t.contact_hours_value %></span>
+      </div>
+    </div>
+    <form id="quote-form" class="form contact-form">
+      <div id="quote-status" class="form-status"></div>
+      <div class="form-row">
+        <div class="form-group">
+          <label><%= t.form_name %> <span class="req">*</span></label>
+          <input type="text" name="name" required value="<%= user ? (user.display_name || '') : '' %>">
+        </div>
+      </div>
+      <div class="form-row form-row-2">
+        <div class="form-group">
+          <label><%= t.form_email %></label>
+          <input type="email" name="email" value="<%= user ? (user.email || '') : '' %>">
+        </div>
+        <div class="form-group">
+          <label><%= t.form_phone %></label>
+          <input type="tel" name="phone" value="<%= user ? (user.phone || '') : '' %>">
+        </div>
+      </div>
+      <div class="form-row form-row-2">
+        <div class="form-group">
+          <label><%= t.form_service %></label>
+          <select name="service_type">
+            <option value=""><%= t.form_service_select %></option>
+            <% if (typeof servicesList!=='undefined') { servicesList.forEach(function(s){ %><option value="<%= s.name %>"><%= s.name %></option><% }); } %>
+          </select>
+        </div>
+        <div class="form-group">
+          <label><%= t.form_size %></label>
+          <select name="project_size">
+            <option value="">--</option>
+            <option value="small"><%= t.form_size_small %></option>
+            <option value="medium"><%= t.form_size_medium %></option>
+            <option value="large"><%= t.form_size_large %></option>
+            <option value="xlarge"><%= t.form_size_xlarge %></option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label><%= t.form_address %></label>
+          <input type="text" name="address">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label><%= t.form_message %></label>
+          <textarea name="message" rows="5"></textarea>
+        </div>
+      </div>
+      <p class="form-required">* <%= t.form_required %></p>
+      <button type="submit" class="btn btn-yellow btn-lg" style="background-color:#FCD34D;color:#0a0a0a"><%= t.form_submit_quote %></button>
+    </form>
+  </div>
+</section>
+<script>
+(function(){
+  var form = document.getElementById('quote-form');
+  var status = document.getElementById('quote-status');
+  if (!form) return;
+  form.addEventListener('submit', async function(e){
+    e.preventDefault();
+    var btn = form.querySelector('button[type=submit]');
+    btn.disabled = true;
+    var data = {};
+    new FormData(form).forEach(function(v,k){ data[k]=v; });
+    status.className = 'form-status';
+    status.textContent = '';
+    try {
+      var fn = (window.TenantSDK && TenantSDK.fetch) ? TenantSDK.fetch : window.fetch;
+      var res = await fn('api/quote', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) });
+      var json = await res.json();
+      if (res.ok && json.success) {
+        status.className = 'form-status success';
+        status.textContent = '<%- t.form_success_quote %>';
+        form.reset();
+      } else {
+        status.className = 'form-status error';
+        status.textContent = json.error || '<%- t.form_error %>';
+      }
+    } catch (err) {
+      status.className = 'form-status error';
+      status.textContent = '<%- t.form_error %>';
+    }
+    btn.disabled = false;
+  });
+})();
+</script>
+<%- include('partials/footer') %>

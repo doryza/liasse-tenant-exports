@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title><%= pageTitle %> — MTL Pavage Admin</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body class="admin-body">
+<%- include('admin-sidebar') %>
+<main class="admin-main">
+  <header class="admin-header">
+    <div>
+      <h1><%= pageTitle %></h1>
+      <p class="admin-subtitle">Créer, modifier et supprimer les éléments de ce module.</p>
+    </div>
+    <div class="admin-header-actions">
+      <a href="admin" class="btn-admin-secondary" style="margin-top:0">← Tableau de bord</a>
+      <button id="add-btn" class="btn-admin-primary" style="background-color:#FCD34D;color:#0a0a0a">+ Ajouter</button>
+    </div>
+  </header>
+  <div class="admin-content">
+    <div class="toolbar" id="toolbar" style="display:none">
+      <input type="search" id="search-input" placeholder="Rechercher…" aria-label="Rechercher">
+      <select id="status-filter" style="display:none" aria-label="Filtrer par statut"><option value="">Tous les statuts</option></select>
+      <select id="sort-select" aria-label="Trier">
+        <option value="newest">Plus récents</option>
+        <option value="oldest">Plus anciens</option>
+      </select>
+      <span class="count-pill" id="count-pill">0 élément</span>
+    </div>
+    <div id="loading" class="loading">Chargement</div>
+    <div id="empty" class="empty-state" style="display:none">
+      <p>Aucun élément pour l'instant.</p>
+      <button class="btn-admin-primary" onclick="openAdd()" style="margin-top:1rem;background-color:#FCD34D;color:#0a0a0a">+ Créer le premier</button>
+    </div>
+    <div id="table-wrap" class="admin-table-wrap" style="display:none">
+      <table class="admin-table">
+        <thead id="thead"></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<div id="modal" class="modal" style="display:none" role="dialog" aria-modal="true">
+  <div class="modal-backdrop" onclick="closeModal()"></div>
+  <div class="modal-card">
+    <header class="modal-head">
+      <h2 id="modal-title">Ajouter</h2>
+      <button onclick="closeModal()" aria-label="Fermer">✕</button>
+    </header>
+    <form id="item-form" class="modal-body" onsubmit="event.preventDefault();save();"></form>
+    <footer class="modal-foot">
+      <button type="button" class="btn-admin-secondary" onclick="closeModal()" style="margin-top:0">Annuler</button>
+      <button type="button" class="btn-admin-primary" id="save-btn" onclick="save()" style="background-color:#FCD34D;color:#0a0a0a">Enregistrer</button>
+    </footer>
+  </div>
+</div>
+
+<div id="toast" class="toast" style="display:none"></div>
+
+<script>
+var MODULE_KEY = '<%- moduleKey %>';
+var MODULE_LABEL = '<%- moduleLabel %>';
+var ROUTE_PATH = MODULE_KEY.replace(/_/g, '-');
+var moduleConfig = null;
+var allItems = [];
+var filteredItems = [];
+var editingId = null;
+
+function toast(msg, type) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + (type || '');
+  t.style.display = 'block';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(function(){ t.style.display = 'none'; }, 3200);
+}
+
+async function loadModuleConfig() {
+  var res = await fetch('api/admin/modules');
+  var data = await res.json();
+  moduleConfig = (data.modules || []).find(function(m){ return m.key === MODULE_KEY; });
+}
+
+async function loadItems() {
+  document.getElementById('loading').style.display = 'block';
+  document.getElementById('empty').style.display = 'none';
+  document.getElementById('table-wrap').style.display = 'none';
+  try {
+    var res = await fetch('api/admin/' + ROUTE_PATH);
+    var data = await res.json();
+    allItems = data[MODULE_KEY] || [];
+  } catch(e) { allItems = []; }
+  setupToolbar();
+  applyFilters();
+}
+
+function setupToolbar() {
+  document.getElementById('toolbar').style.display = 'flex';
+  var statusField = moduleConfig.fields.find(function(f){ return f.name === 'status'; });
+  var sel = document.getElementById('status-filter');
+  if (statusField && statusField.options) {
+    sel.style.display = 'inline-block';
+    sel.innerHTML = '<option value="">Tous les statuts</option>' + statusField.options.filter(function(o){ return o; }).map(function(o){ return '<option value="'+o+'">'+o+'</option>'; }).join('');
+  } else {
+    sel.style.display = 'none';
+  }
+}
+
+function applyFilters() {
+  var q = (document.getElementById('search-input').value || '').toLowerCase().trim();
+  var status = document.getElementById('status-filter').value;
+  var sort = document.getElementById('sort-select').value;
+  filteredItems = allItems.filter(function(it){
+    if (status && String(it.status||'') !== status) return false;
+    if (q) {
+      var hay = Object.values(it).filter(function(v){ return v != null; }).join(' ').toLowerCase();
+      if (hay.indexOf(q) === -1) return false;
+    }
+    return true;
+  });
+  filteredItems.sort(function(a,b){
+    var aT = new Date(a.created_at || 0).getTime();
+    var bT = new Date(b.created_at || 0).getTime();
+    return sort === 'oldest' ? aT - bT : bT - aT;
+  });
+  render();
+}
+
+function shortValue(v, max) {
+  if (v == null || v === '') return '—';
+  if (typeof v === 'boolean') return v ? '<span class="bool-check">✓</span>' : '<span class="bool-x">✗</span>';
+  var s = String(v);
+  if (max && s.length > max) return escapeHtml(s.slice(0, max).trim()) + '…';
+  return escapeHtml(s);
+}
+
+function render() {
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('count-pill').textContent = filteredItems.length + (filteredItems.length === 1 ? ' élément' : ' éléments');
+  if (!filteredItems.length) {
+    document.getElementById('empty').style.display = 'block';
+    document.getElementById('table-wrap').style.display = 'none';
+    if (!allItems.length) {
+      document.getElementById('empty').innerHTML = '<p>Aucun élément pour l\'instant.</p><button class="btn-admin-primary" onclick="openAdd()" style="margin-top:1rem;background-color:#FCD34D;color:#0a0a0a">+ Créer le premier</button>';
+    } else {
+      document.getElementById('empty').innerHTML = '<p>Aucun résultat pour ces filtres.</p>';
+    }
+    return;
+  }
+  document.getElementById('empty').style.display = 'none';
+  document.getElementById('table-wrap').style.display = 'block';
+  var displayFields = moduleConfig.fields.filter(function(f){ return f.type !== 'textarea' && f.name !== 'content' && f.name !== 'description' && f.name !== 'notes' && f.name !== 'message' && f.name !== 'address'; }).slice(0, 5);
+  var headerHtml = '<tr><th>#</th>' + displayFields.map(function(f){ return '<th>' + escapeHtml(f.name.replace(/_/g,' ')) + '</th>'; }).join('') + '<th style="text-align:right">Actions</th></tr>';
+  document.getElementById('thead').innerHTML = headerHtml;
+  var tbody = document.getElementById('tbody');
+  tbody.innerHTML = filteredItems.map(function(it){
+    var cells = displayFields.map(function(f){
+      var v = it[f.name];
+      if (f.type === 'image') return '<td>' + (v ? '<img src="'+escapeAttr(v)+'" class="thumb" alt="">' : '<span style="color:#a1a1aa">—</span>') + '</td>';
+      if (f.type === 'boolean') return '<td>' + (v ? '<span class="bool-check">✓</span>' : '<span class="bool-x">✗</span>') + '</td>';
+      if (f.type === 'date' && v) { try { return '<td>' + new Date(v).toLocaleDateString('fr-CA') + '</td>'; } catch(e) { return '<td>'+escapeHtml(String(v))+'</td>'; } }
+      if (f.name === 'status' && v) return '<td><span class="badge-status status-'+escapeAttr(v)+'">'+escapeHtml(v)+'</span></td>';
+      if (f.name === 'rating' && v) { var n = parseInt(v)||0; var stars=''; for(var i=0;i<n;i++)stars+='★'; for(var i=n;i<5;i++)stars+='☆'; return '<td style="color:#F59E0B">'+stars+'</td>'; }
+      return '<td>' + shortValue(v, 35) + '</td>';
+    }).join('');
+    return '<tr><td style="color:#a1a1aa;font-weight:600">#'+it.id+'</td>' + cells + '<td class="actions"><button class="btn-edit" data-id="'+it.id+'">Modifier</button> <button class="btn-del" data-id="'+it.id+'">Supprimer</button></td></tr>';
+  }).join('');
+  Array.prototype.forEach.call(document.querySelectorAll('.btn-edit'), function(b){ b.addEventListener('click', function(){ openEdit(parseInt(b.dataset.id)); }); });
+  Array.prototype.forEach.call(document.querySelectorAll('.btn-del'), function(b){ b.addEventListener('click', function(){ confirmDelete(parseInt(b.dataset.id)); }); });
+}
+
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];});}
+function escapeAttr(s){return escapeHtml(s);}
+
+window.openAdd = function() {
+  editingId = null;
+  document.getElementById('modal-title').textContent = 'Ajouter ' + MODULE_LABEL;
+  buildForm({});
+  document.getElementById('modal').style.display = 'flex';
+  setTimeout(function(){ var f = document.querySelector('#item-form input,#item-form textarea,#item-form select'); if (f) f.focus(); }, 100);
+};
+
+function openEdit(id) {
+  var it = allItems.find(function(x){ return x.id === id; });
+  if (!it) return;
+  editingId = id;
+  document.getElementById('modal-title').textContent = 'Modifier ' + MODULE_LABEL + ' #' + id;
+  buildForm(it);
+  document.getElementById('modal').style.display = 'flex';
+}
+
+window.closeModal = function() { document.getElementById('modal').style.display = 'none'; };
+
+function labelize(name) {
+  return name.replace(/_/g, ' ').replace(/\b\w/g, function(c){ return c.toUpperCase(); });
+}
+
+function buildForm(data) {
+  var form = document.getElementById('item-form');
+  form.innerHTML = '';
+  moduleConfig.fields.forEach(function(f){
+    var val = data[f.name] != null ? data[f.name] : (f.default != null ? f.default : '');
+    var grp = document.createElement('div');
+    grp.className = 'field';
+    var label = document.createElement('label');
+    label.textContent = labelize(f.name) + (f.required ? ' *' : '');
+    var input;
+    if (f.type === 'textarea') {
+      input = document.createElement('textarea');
+      input.rows = 4;
+      input.value = val || '';
+    } else if (f.type === 'select') {
+      input = document.createElement('select');
+      (f.options || []).forEach(function(opt){
+        var o = document.createElement('option');
+        o.value = opt;
+        o.textContent = opt || '—';
+        if (String(val) === String(opt)) o.selected = true;
+        input.appendChild(o);
+      });
+    } else if (f.type === 'boolean') {
+      input = document.createElement('input');
+      input.type = 'checkbox';
+      input.checked = val === true || val === 1 || val === '1' || val === 't';
+      grp.classList.add('field-check');
+    } else if (f.type === 'image') {
+      var wrap = document.createElement('div');
+      wrap.className = 'image-field';
+      var preview = document.createElement('img');
+      preview.className = 'img-preview';
+      var empty = document.createElement('div');
+      empty.className = 'img-preview-empty';
+      empty.textContent = 'Aucune image';
+      if (val) { preview.src = val; empty.style.display = 'none'; } else { preview.style.display = 'none'; }
+      var hidden = document.createElement('input');
+      hidden.type = 'hidden';
+      hidden.name = f.name;
+      hidden.value = val || '';
+      var file = document.createElement('input');
+      file.type = 'file';
+      file.accept = 'image/*';
+      file.addEventListener('change', async function(){
+        var fl = file.files[0];
+        if (!fl) return;
+        var rd = new FileReader();
+        rd.onload = async function(e){
+          preview.src = e.target.result; preview.style.display = 'block'; empty.style.display = 'none';
+          try {
+            var resp = await fetch('api/admin/upload', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ dataUri: e.target.result }) });
+            var j = await resp.json();
+            if (j.url) { hidden.value = j.url; preview.src = j.url; toast('Image téléversée', 'success'); }
+            else { toast('Échec du téléversement', 'error'); }
+          } catch(err) { toast('Erreur de téléversement', 'error'); }
+        };
+        rd.readAsDataURL(fl);
+      });
+      wrap.appendChild(empty);
+      wrap.appendChild(preview);
+      wrap.appendChild(file);
+      wrap.appendChild(hidden);
+      input = wrap;
+      input._hidden = hidden;
+    } else if (f.type === 'number') {
+      input = document.createElement('input');
+      input.type = 'number';
+      if (f.min != null) input.min = f.min;
+      if (f.max != null) input.max = f.max;
+      if (f.step != null) input.step = f.step;
+      input.value = val !== '' && val != null ? val : '';
+    } else if (f.type === 'date') {
+      input = document.createElement('input');
+      input.type = 'date';
+      input.value = val ? String(val).slice(0,10) : '';
+    } else if (f.type === 'email') {
+      input = document.createElement('input');
+      input.type = 'email';
+      input.value = val || '';
+    } else {
+      input = document.createElement('input');
+      input.type = 'text';
+      input.value = val || '';
+    }
+    if (f.type !== 'image') input.name = f.name;
+    if (f.placeholder && input.placeholder !== undefined) input.placeholder = f.placeholder;
+    if (f.required && input.required !== undefined) input.required = true;
+    grp.appendChild(label);
+    grp.appendChild(input);
+    if (f.description) {
+      var help = document.createElement('small');
+      help.className = 'field-help';
+      help.textContent = f.description;
+      grp.appendChild(help);
+    }
+    form.appendChild(grp);
+  });
+}
+
+window.save = async function() {
+  var form = document.getElementById('item-form');
+  var data = {};
+  var valid = true;
+  moduleConfig.fields.forEach(function(f){
+    var el = form.querySelector('[name="' + f.name + '"]');
+    if (!el && f.type !== 'image') return;
+    if (f.type === 'image') {
+      var h = form.querySelector('input[type=hidden][name="' + f.name + '"]');
+      data[f.name] = h ? h.value : '';
+    } else if (f.type === 'boolean') {
+      data[f.name] = el.checked ? 1 : 0;
+    } else if (f.type === 'number') {
+      data[f.name] = el.value === '' ? '' : Number(el.value);
+    } else {
+      data[f.name] = el.value;
+      if (f.required && !el.value) valid = false;
+    }
+  });
+  if (!valid) { toast('Veuillez remplir les champs obligatoires', 'error'); return; }
+  var btn = document.getElementById('save-btn');
+  btn.disabled = true;
+  btn.textContent = 'Enregistrement…';
+  try {
+    var url = 'api/admin/' + ROUTE_PATH + (editingId ? '/' + editingId : '');
+    var res = await fetch(url, { method: editingId ? 'PUT' : 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) });
+    var j = await res.json();
+    if (res.ok) {
+      closeModal();
+      toast(editingId ? 'Modifié avec succès' : 'Ajouté avec succès', 'success');
+      await loadItems();
+    } else {
+      toast('Erreur : ' + (j.error || 'inconnue'), 'error');
+    }
+  } catch (err) {
+    toast('Erreur : ' + err.message, 'error');
+  }
+  btn.disabled = false;
+  btn.textContent = 'Enregistrer';
+};
+
+async function confirmDelete(id) {
+  if (!confirm('Supprimer définitivement cet élément ?')) return;
+  try {
+    var res = await fetch('api/admin/' + ROUTE_PATH + '/' + id, { method: 'DELETE' });
+    if (res.ok) { toast('Supprimé', 'success'); await loadItems(); }
+    else toast('Erreur de suppression', 'error');
+  } catch(e) { toast('Erreur réseau', 'error'); }
+}
+
+document.getElementById('add-btn').addEventListener('click', openAdd);
+document.getElementById('search-input').addEventListener('input', applyFilters);
+document.getElementById('status-filter').addEventListener('change', applyFilters);
+document.getElementById('sort-select').addEventListener('change', applyFilters);
+document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeModal(); });
+
+(async function(){
+  await loadModuleConfig();
+  if (!moduleConfig) { document.getElementById('loading').textContent = 'Module introuvable'; return; }
+  await loadItems();
+})();
+</script>
+</body>
+</html>

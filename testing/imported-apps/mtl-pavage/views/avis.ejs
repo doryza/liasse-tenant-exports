@@ -1,0 +1,36 @@
+<% var pageTitle = t.nav_reviews; %>
+<%- include('partials/header') %>
+<section class="page-hero">
+  <div class="container">
+    <h1><%= t.reviews_title %></h1>
+    <p><%= t.reviews_subtitle %></p>
+    <% if (typeof avgRating!=='undefined' && totalReviews > 0) { %>
+    <div class="rating-summary">
+      <span class="big-rating"><%= avgRating %></span>
+      <div class="big-stars">★★★★★</div>
+      <span class="rating-count"><%= totalReviews %> <%= lang==='en' ? 'reviews' : 'avis' %></span>
+    </div>
+    <% } %>
+  </div>
+</section>
+<section class="section section-light">
+  <div class="container">
+    <% if (typeof items!=='undefined' && items.length > 0) { %>
+    <div class="grid grid-3">
+      <% items.forEach(function(r){ %>
+      <article class="review-card">
+        <div class="stars"><% for (var i=0;i<(r.rating||5);i++){ %>★<% } %></div>
+        <p class="review-content">"<%= r.content %>"</p>
+        <div class="review-author">
+          <strong><%= r.author %></strong>
+          <% if (r.location) { %><span>· <%= r.location %></span><% } %>
+        </div>
+        <% if (r.service_type) { %><div class="review-service"><%= r.service_type %></div><% } %>
+        <% if (r.created_at) { %><div class="review-date"><%= formatDate(r.created_at, lang) %></div><% } %>
+      </article>
+      <% }); %>
+    </div>
+    <% } else { %><p class="empty"><%= t.empty_no_reviews %></p><% } %>
+  </div>
+</section>
+<%- include('partials/footer') %>

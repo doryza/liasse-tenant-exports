@@ -1,0 +1,35 @@
+<% var pageTitle = t.nav_services; %>
+<%- include('partials/header') %>
+<section class="page-hero">
+  <div class="container">
+    <h1><%= t.services_title %></h1>
+    <p><%= t.services_subtitle %></p>
+  </div>
+</section>
+<section class="section section-light">
+  <div class="container">
+    <% if (typeof items!=='undefined' && items.length > 0) { %>
+    <div class="grid grid-2 services-grid">
+      <% items.forEach(function(s){ %>
+      <article class="service-detail-card">
+        <% if (s.image_url) { %><div class="sd-img"><img src="<%= s.image_url %>" alt="<%= s.name %>" loading="lazy"></div><% } %>
+        <div class="sd-body">
+          <div class="sd-icon"><%= ({home:'🏠',briefcase:'💼',shield:'🛡',tool:'🔧',truck:'🚚',edit:'✏'})[s.icon] || '⬛' %></div>
+          <h2><%= s.name %></h2>
+          <p><%= s.description %></p>
+          <div class="sd-meta">
+            <% if (s.price_from) { %><div><strong><%= formatPrice(s.price_from) %></strong><span><%= t.services_per_sqft %></span></div><% } %>
+            <% if (s.duration) { %><div><strong><%= s.duration %></strong><span><%= t.services_duration %></span></div><% } %>
+          </div>
+          <div class="sd-actions">
+            <a href="contact" class="btn btn-yellow" style="background-color:#FCD34D;color:#0a0a0a"><%= t.hero_cta_quote %></a>
+            <a href="rendez-vous" class="btn btn-dark"><%= t.hero_cta_booking %></a>
+          </div>
+        </div>
+      </article>
+      <% }); %>
+    </div>
+    <% } else { %><p class="empty"><%= t.empty_no_services %></p><% } %>
+  </div>
+</section>
+<%- include('partials/footer') %>

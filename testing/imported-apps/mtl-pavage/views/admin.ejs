@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tableau de bord — MTL Pavage Admin</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body class="admin-body">
+<%- include('partials/admin-sidebar') %>
+<main class="admin-main">
+  <header class="admin-header">
+    <div>
+      <h1>Tableau de bord</h1>
+      <p class="admin-subtitle">Vue d'ensemble de votre activité</p>
+    </div>
+    <div class="admin-header-actions">
+      <a href="." target="_blank" class="btn-admin-secondary" style="margin-top:0">👁 Voir le site</a>
+      <a href="admin/quote-requests" class="btn-admin-primary">+ Soumissions</a>
+    </div>
+  </header>
+  <div class="admin-content">
+    <% if (stats.newQuotes > 0 || stats.pendingAppts > 0) { %>
+    <div class="admin-alerts">
+      <% if (stats.newQuotes > 0) { %>
+      <a href="admin/quote-requests" class="alert-card alert-yellow">
+        <strong>📧 <%= stats.newQuotes %> nouvelle<%= stats.newQuotes>1?'s':'' %> soumission<%= stats.newQuotes>1?'s':'' %></strong>
+        <span>Cliquez pour répondre</span>
+      </a>
+      <% } %>
+      <% if (stats.pendingAppts > 0) { %>
+      <a href="admin/appointments" class="alert-card alert-blue">
+        <strong>📅 <%= stats.pendingAppts %> rendez-vous en attente</strong>
+        <span>À confirmer</span>
+      </a>
+      <% } %>
+    </div>
+    <% } %>
+
+    <div class="stat-grid">
+      <div class="stat-card"><span class="stat-icon">📝</span><span class="stat-num"><%= stats.posts %></span><span class="stat-lab">Articles</span></div>
+      <div class="stat-card"><span class="stat-icon">🛠</span><span class="stat-num"><%= stats.services %></span><span class="stat-lab">Services</span></div>
+      <div class="stat-card"><span class="stat-icon">🖼</span><span class="stat-num"><%= stats.projects %></span><span class="stat-lab">Projets</span></div>
+      <div class="stat-card"><span class="stat-icon">⭐</span><span class="stat-num"><%= stats.reviews %></span><span class="stat-lab">Avis</span></div>
+      <div class="stat-card yellow"><span class="stat-icon">📅</span><span class="stat-num"><%= stats.appointments %></span><span class="stat-lab">Rendez-vous</span></div>
+      <div class="stat-card yellow"><span class="stat-icon">📧</span><span class="stat-num"><%= stats.quotes %></span><span class="stat-lab">Soumissions</span></div>
+      <div class="stat-card dark"><span class="stat-icon">📊</span><span class="stat-num"><%= stats.visits_7d %></span><span class="stat-lab">Visites (7j)</span></div>
+      <div class="stat-card dark"><span class="stat-icon">👥</span><span class="stat-num"><%= stats.users %></span><span class="stat-lab">Utilisateurs</span></div>
+    </div>
+
+    <div class="admin-grid-2">
+      <section class="admin-panel">
+        <div class="panel-head">
+          <h2>Soumissions récentes</h2>
+          <a href="admin/quote-requests" class="panel-link">Voir tout →</a>
+        </div>
+        <% if (recentQuotes && recentQuotes.length) { %>
+        <ul class="recent-list">
+          <% recentQuotes.forEach(function(q){ %>
+          <li>
+            <a href="admin/quote-requests">
+              <span class="recent-avatar"><%= (q.name||'?').charAt(0).toUpperCase() %></span>
+              <div class="recent-main">
+                <strong><%= q.name %></strong>
+                <span><%= q.service_type || '—' %></span>
+              </div>
+              <span class="badge-status status-<%= q.status || 'new' %>"><%= q.status || 'new' %></span>
+              <em><%= formatDate(q.created_at, 'fr') %></em>
+            </a>
+          </li>
+          <% }); %>
+        </ul>
+        <% } else { %><p class="empty-state">Aucune soumission pour le moment.</p><% } %>
+      </section>
+
+      <section class="admin-panel">
+        <div class="panel-head">
+          <h2>Rendez-vous récents</h2>
+          <a href="admin/appointments" class="panel-link">Voir tout →</a>
+        </div>
+        <% if (recentAppts && recentAppts.length) { %>
+        <ul class="recent-list">
+          <% recentAppts.forEach(function(a){ %>
+          <li>
+            <a href="admin/appointments">
+              <span class="recent-avatar"><%= (a.name||'?').charAt(0).toUpperCase() %></span>
+              <div class="recent-main">
+                <strong><%= a.name %></strong>
+                <span><%= a.service_type || '—' %></span>
+              </div>
+              <span class="badge-status status-<%= a.status || 'pending' %>"><%= a.status || 'pending' %></span>
+              <em><%= a.preferred_date ? formatDate(a.preferred_date, 'fr') : formatDate(a.created_at, 'fr') %></em>
+            </a>
+          </li>
+          <% }); %>
+        </ul>
+        <% } else { %><p class="empty-state">Aucun rendez-vous pour le moment.</p><% } %>
+      </section>
+    </div>
+
+    <section class="admin-panel">
+      <div class="panel-head">
+        <h2>Gestion du contenu</h2>
+        <span class="panel-hint">Cliquez pour gérer chaque module</span>
+      </div>
+      <div class="module-grid">
+        <a href="admin/posts" class="module-tile"><span class="module-emoji">📝</span><strong>Articles</strong><em><%= stats.posts %> élément<%= stats.posts!==1?'s':'' %></em></a>
+        <a href="admin/services" class="module-tile"><span class="module-emoji">🛠</span><strong>Services</strong><em><%= stats.services %> élément<%= stats.services!==1?'s':'' %></em></a>
+        <a href="admin/projects" class="module-tile"><span class="module-emoji">🖼</span><strong>Projets</strong><em><%= stats.projects %> élément<%= stats.projects!==1?'s':'' %></em></a>
+        <a href="admin/reviews" class="module-tile"><span class="module-emoji">⭐</span><strong>Avis</strong><em><%= stats.reviews %> élément<%= stats.reviews!==1?'s':'' %></em></a>
+        <a href="admin/appointments" class="module-tile"><span class="module-emoji">📅</span><strong>Rendez-vous</strong><em><%= stats.appointments %> élément<%= stats.appointments!==1?'s':'' %></em></a>
+        <a href="admin/quote-requests" class="module-tile"><span class="module-emoji">📧</span><strong>Soumissions</strong><em><%= stats.quotes %> élément<%= stats.quotes!==1?'s':'' %></em></a>
+      </div>
+    </section>
+  </div>
+</main>
+</body>
+</html>

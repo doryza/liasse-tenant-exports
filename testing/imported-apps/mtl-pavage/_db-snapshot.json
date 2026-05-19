@@ -1,0 +1,552 @@
+{
+  "exportedAt": "2026-05-19T05:17:46.760Z",
+  "tables": {
+    "admin_users": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "password_hash",
+        "display_name",
+        "role",
+        "active",
+        "activation_token",
+        "invited_by",
+        "invite_token",
+        "invite_expires_at",
+        "last_login_at",
+        "is_active",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_invites": {
+      "columns": [
+        "id",
+        "email",
+        "token",
+        "role",
+        "status",
+        "invited_by",
+        "expires_at",
+        "accepted_at",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_webauthn_credentials": {
+      "columns": [
+        "id",
+        "admin_user_id",
+        "credential_id",
+        "public_key",
+        "counter",
+        "device_name",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "posts": {
+      "columns": [
+        "id",
+        "title",
+        "content",
+        "excerpt",
+        "image_url",
+        "category",
+        "author",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 3,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Quand faut-il sceller son asphalte?",
+          "content": "Le scellement d'asphalte est une étape souvent négligée, mais essentielle pour prolonger la durée de vie de votre pavage. Idéalement, un nouveau pavage devrait être scellé environ 6 à 12 mois après son installation, puis tous les 2 à 3 ans par la suite. Les signes qu'il est temps de sceller incluent une couleur grisâtre, l'apparition de petites fissures, et une surface qui devient poreuse au toucher. Au Québec, le meilleur moment pour sceller est entre la fin du printemps et le début de l'automne, lorsque la température se maintient au-dessus de 15°C pendant au moins 48 heures.",
+          "excerpt": "Tout savoir sur le moment idéal pour protéger votre pavage et prolonger sa durée de vie.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1779051621/tapavis_tenant_mtl-pavage/build_mtl-pavage_1779051621056.png",
+          "category": "Entretien",
+          "author": "Équipe MTL Pavage",
+          "published": 1,
+          "created_at": "2026-05-17T21:13:43.920Z",
+          "updated_at": "2026-05-17T21:13:43.920Z"
+        },
+        {
+          "id": 2,
+          "title": "Comment choisir la bonne entreprise de pavage",
+          "content": "Choisir un entrepreneur de pavage peut sembler complexe, mais quelques critères clés vous aideront à faire le bon choix. Vérifiez toujours que l'entreprise possède une licence RBQ valide et une assurance responsabilité. Demandez à voir des projets récents similaires au vôtre et consultez les avis en ligne. Une bonne entreprise vous fournira une soumission détaillée par écrit, incluant les matériaux utilisés, l'épaisseur de la couche d'asphalte, et les délais d'exécution. Méfiez-vous des prix trop bas qui cachent souvent une qualité inférieure.",
+          "excerpt": "Les critères essentiels pour sélectionner un entrepreneur fiable et professionnel.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1779051622/tapavis_tenant_mtl-pavage/build_mtl-pavage_1779051622178.png",
+          "category": "Conseils",
+          "author": "Équipe MTL Pavage",
+          "published": 1,
+          "created_at": "2026-05-17T21:13:43.924Z",
+          "updated_at": "2026-05-17T21:13:43.924Z"
+        },
+        {
+          "id": 3,
+          "title": "La meilleure saison pour paver au Québec",
+          "content": "La saison de pavage au Québec s'étend généralement de la mi-mai à la mi-octobre, lorsque les températures sont propices au compactage optimal de l'asphalte. Les mois de juin, juillet et août offrent les meilleures conditions, avec des températures stables et peu de précipitations. Au printemps, le sol doit être complètement dégelé pour assurer une fondation solide. À l'automne, il est crucial de terminer les travaux avant les premières gelées. Planifier vos travaux tôt dans la saison vous permet d'éviter les longs délais d'attente.",
+          "excerpt": "Planifiez vos travaux au bon moment pour des résultats optimaux et durables.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1779051622/tapavis_tenant_mtl-pavage/build_mtl-pavage_1779051622178.png",
+          "category": "Saisonnier",
+          "author": "Équipe MTL Pavage",
+          "published": 1,
+          "created_at": "2026-05-17T21:13:43.927Z",
+          "updated_at": "2026-05-17T21:13:43.927Z"
+        }
+      ]
+    },
+    "admin_settings": {
+      "columns": [
+        "key",
+        "value",
+        "updated_at"
+      ],
+      "totalRows": 50,
+      "sampleRows": [
+        {
+          "key": "_p_hero_image_url",
+          "value": "https://res.cloudinary.com/duhp69meg/image/upload/v1779051627/tapavis_tenant_mtl-pavage/build_mtl-pavage_1779051627279.png",
+          "updated_at": "2026-05-17T21:13:43.762Z"
+        },
+        {
+          "key": "hero_title_fr",
+          "value": "Pavage professionnel à Montréal",
+          "updated_at": "2026-05-17T21:13:43.766Z"
+        },
+        {
+          "key": "hero_title_en",
+          "value": "Professional paving in Montreal",
+          "updated_at": "2026-05-17T21:13:43.770Z"
+        },
+        {
+          "key": "hero_subtitle_fr",
+          "value": "Allées, stationnements et scellement — un fini durable et impeccable, garanti.",
+          "updated_at": "2026-05-17T21:13:43.773Z"
+        },
+        {
+          "key": "hero_subtitle_en",
+          "value": "Driveways, parking lots and sealcoating — durable, flawless finish, guaranteed.",
+          "updated_at": "2026-05-17T21:13:43.777Z"
+        },
+        {
+          "key": "tagline_fr",
+          "value": "Une équipe locale qui livre la qualité depuis plus de 20 ans.",
+          "updated_at": "2026-05-17T21:13:43.780Z"
+        },
+        {
+          "key": "tagline_en",
+          "value": "A local team delivering quality for over 20 years.",
+          "updated_at": "2026-05-17T21:13:43.784Z"
+        },
+        {
+          "key": "about_text_fr",
+          "value": "MTL Pavage est une entreprise familiale spécialisée dans le pavage résidentiel et commercial au Grand Montréal. Notre équipe certifiée utilise des matériaux de première qualité et un équipement à la fine pointe pour des résultats qui durent.",
+          "updated_at": "2026-05-17T21:13:43.788Z"
+        },
+        {
+          "key": "about_text_en",
+          "value": "MTL Pavage is a family-owned business specializing in residential and commercial paving across Greater Montreal. Our certified team uses top-quality materials and state-of-the-art equipment for results that last.",
+          "updated_at": "2026-05-17T21:13:43.791Z"
+        },
+        {
+          "key": "business_name",
+          "value": "MTL Pavage",
+          "updated_at": "2026-05-17T21:13:43.795Z"
+        }
+      ]
+    },
+    "site_visits": {
+      "columns": [
+        "id",
+        "path",
+        "visited_at"
+      ],
+      "totalRows": 48,
+      "sampleRows": [
+        {
+          "id": 1,
+          "path": "/",
+          "visited_at": "2026-05-17T21:14:36.768Z"
+        },
+        {
+          "id": 2,
+          "path": "/",
+          "visited_at": "2026-05-17T21:14:38.113Z"
+        },
+        {
+          "id": 3,
+          "path": "/",
+          "visited_at": "2026-05-17T21:14:38.280Z"
+        },
+        {
+          "id": 4,
+          "path": "/",
+          "visited_at": "2026-05-17T21:14:38.308Z"
+        },
+        {
+          "id": 5,
+          "path": "/",
+          "visited_at": "2026-05-17T21:15:13.509Z"
+        },
+        {
+          "id": 6,
+          "path": "/",
+          "visited_at": "2026-05-17T21:16:47.412Z"
+        },
+        {
+          "id": 7,
+          "path": "/",
+          "visited_at": "2026-05-17T22:15:08.124Z"
+        },
+        {
+          "id": 8,
+          "path": "/services",
+          "visited_at": "2026-05-17T22:15:35.397Z"
+        },
+        {
+          "id": 9,
+          "path": "/contact",
+          "visited_at": "2026-05-17T22:15:40.600Z"
+        },
+        {
+          "id": 10,
+          "path": "/",
+          "visited_at": "2026-05-17T22:16:15.986Z"
+        }
+      ]
+    },
+    "services": {
+      "columns": [
+        "id",
+        "name",
+        "description",
+        "image_url",
+        "icon",
+        "price_from",
+        "duration",
+        "featured",
+        "display_order",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 6,
+      "sampleRows": [
+        {
+          "id": 1,
+          "name": "Pavage d'allées résidentielles",
+          "description": "Installation complète d'allées asphaltées avec préparation du sol, couche de fondation et finition lisse. Durabilité maximale, esthétique impeccable.",
+          "image_url": null,
+          "icon": "home",
+          "price_from": 8.5,
+          "duration": "1-2 jours",
+          "featured": 1,
+          "display_order": 1,
+          "published": 1,
+          "created_at": "2026-05-17T21:13:43.838Z",
+          "updated_at": "2026-05-17T21:13:43.838Z"
+        },
+        {
+          "id": 2,
+          "name": "Pavage de stationnements commerciaux",
+          "description": "Solutions de pavage pour stationnements, entrepôts et centres commerciaux. Marquage de lignes inclus.",
+          "image_url": null,
+          "icon": "briefcase",
+          "price_from": 7,
+          "duration": "2-5 jours",
+          "featured": 1,
+          "display_order": 2,
+          "published": 1,
+          "created_at": "2026-05-17T21:13:43.842Z",
+          "updated_at": "2026-05-17T21:13:43.842Z"
+        },
+        {
+          "id": 3,
+          "name": "Scellement d'asphalte",
+          "description": "Protection contre les UV, l'eau et les produits chimiques. Prolonge la vie de votre pavage de 5 à 10 ans.",
+          "image_url": null,
+          "icon": "shield",
+          "price_from": 0.45,
+          "duration": "4-6 heures",
+          "featured": 1,
+          "display_order": 3,
+          "published": 1,
+          "created_at": "2026-05-17T21:13:43.845Z",
+          "updated_at": "2026-05-17T21:13:43.845Z"
+        },
+        {
+          "id": 4,
+          "name": "Réparation de fissures",
+          "description": "Réparation professionnelle des fissures avec scellant à chaud. Empêche l'infiltration d'eau et la détérioration.",
+          "image_url": null,
+          "icon": "tool",
+          "price_from": 4,
+          "duration": "1 jour",
+          "featured": 0,
+          "display_order": 4,
+          "published": 1,
+          "created_at": "2026-05-17T21:13:43.849Z",
+          "updated_at": "2026-05-17T21:13:43.849Z"
+        },
+        {
+          "id": 5,
+          "name": "Asphaltage de routes privées",
+          "description": "Pavage de routes privées et chemins d'accès. Solutions adaptées aux propriétés rurales et industrielles.",
+          "image_url": null,
+          "icon": "truck",
+          "price_from": 9,
+          "duration": "3-7 jours",
+          "featured": 0,
+          "display_order": 5,
+          "published": 1,
+          "created_at": "2026-05-17T21:13:43.853Z",
+          "updated_at": "2026-05-17T21:13:43.853Z"
+        },
+        {
+          "id": 6,
+          "name": "Marquage de lignes",
+          "description": "Marquage professionnel de stationnements, lignes de circulation et numérotation.",
+          "image_url": null,
+          "icon": "edit",
+          "price_from": 1.25,
+          "duration": "1 jour",
+          "featured": 0,
+          "display_order": 6,
+          "published": 1,
+          "created_at": "2026-05-17T21:13:43.857Z",
+          "updated_at": "2026-05-17T21:13:43.857Z"
+        }
+      ]
+    },
+    "projects": {
+      "columns": [
+        "id",
+        "title",
+        "description",
+        "image_url",
+        "location",
+        "category",
+        "completed_date",
+        "featured",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 6,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Allée résidentielle - Outremont",
+          "description": "Rénovation complète d'une allée de 180 m² avec nouvelle fondation et finition asphalte premium.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1779051620/tapavis_tenant_mtl-pavage/build_mtl-pavage_1779051620167.png",
+          "location": "Outremont, Montréal",
+          "category": "Résidentiel",
+          "completed_date": "2024-07-15T00:00:00.000Z",
+          "featured": 1,
+          "published": 1,
+          "created_at": "2026-05-17T21:13:43.863Z",
+          "updated_at": "2026-05-17T21:13:43.863Z"
+        },
+        {
+          "id": 2,
+          "title": "Stationnement commercial - Laval",
+          "description": "Pavage de 2400 m² incluant lignes de stationnement et zones piétonnes.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1779051632/tapavis_tenant_mtl-pavage/build_mtl-pavage_1779051632647.png",
+          "location": "Laval, QC",
+          "category": "Commercial",
+          "completed_date": "2024-06-22T00:00:00.000Z",
+          "featured": 1,
+          "published": 1,
+          "created_at": "2026-05-17T21:13:43.866Z",
+          "updated_at": "2026-05-17T21:13:43.866Z"
+        },
+        {
+          "id": 3,
+          "title": "Scellement - Pointe-Claire",
+          "description": "Application de scellant sur une allée double de 250 m². Couleur restaurée en une journée.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1779051632/tapavis_tenant_mtl-pavage/build_mtl-pavage_1779051632134.png",
+          "location": "Pointe-Claire, QC",
+          "category": "Scellement",
+          "completed_date": "2024-08-10T00:00:00.000Z",
+          "featured": 1,
+          "published": 1,
+          "created_at": "2026-05-17T21:13:43.870Z",
+          "updated_at": "2026-05-17T21:13:43.870Z"
+        },
+        {
+          "id": 4,
+          "title": "Réparation de fissures - Verdun",
+          "description": "Traitement de 35 mètres linéaires de fissures sur une cour commerciale.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1779051626/tapavis_tenant_mtl-pavage/build_mtl-pavage_1779051626317.png",
+          "location": "Verdun, Montréal",
+          "category": "Réparation",
+          "completed_date": "2024-09-05T00:00:00.000Z",
+          "featured": 0,
+          "published": 1,
+          "created_at": "2026-05-17T21:13:43.874Z",
+          "updated_at": "2026-05-17T21:13:43.874Z"
+        },
+        {
+          "id": 5,
+          "title": "Aménagement commercial - Brossard",
+          "description": "Installation complète d'une entrée et d'un trottoir d'accès pour un nouveau commerce.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1779051623/tapavis_tenant_mtl-pavage/build_mtl-pavage_1779051623523.png",
+          "location": "Brossard, QC",
+          "category": "Commercial",
+          "completed_date": "2024-08-28T00:00:00.000Z",
+          "featured": 1,
+          "published": 1,
+          "created_at": "2026-05-17T21:13:43.878Z",
+          "updated_at": "2026-05-17T21:13:43.878Z"
+        },
+        {
+          "id": 6,
+          "title": "Allée familiale - Saint-Lambert",
+          "description": "Pavage neuf de 120 m² avec bordures de béton intégrées.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1779051620/tapavis_tenant_mtl-pavage/build_mtl-pavage_1779051620167.png",
+          "location": "Saint-Lambert, QC",
+          "category": "Résidentiel",
+          "completed_date": "2024-09-18T00:00:00.000Z",
+          "featured": 0,
+          "published": 1,
+          "created_at": "2026-05-17T21:13:43.881Z",
+          "updated_at": "2026-05-17T21:13:43.881Z"
+        }
+      ]
+    },
+    "reviews": {
+      "columns": [
+        "id",
+        "author",
+        "location",
+        "rating",
+        "content",
+        "image_url",
+        "service_type",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 6,
+      "sampleRows": [
+        {
+          "id": 1,
+          "author": "Marie L.",
+          "location": "Outremont",
+          "rating": 5,
+          "content": "Travail impeccable et équipe très professionnelle. Notre allée a l'air comme neuve et le résultat dépasse nos attentes. Délais respectés!",
+          "image_url": null,
+          "service_type": "Pavage d'allée",
+          "published": 1,
+          "created_at": "2026-05-17T21:13:43.888Z",
+          "updated_at": "2026-05-17T21:13:43.888Z"
+        },
+        {
+          "id": 2,
+          "author": "Jean-François B.",
+          "location": "Laval",
+          "rating": 5,
+          "content": "MTL Pavage a refait le stationnement de notre commerce. Service rapide, prix juste, et la qualité est au rendez-vous. Je recommande sans hésitation.",
+          "image_url": null,
+          "service_type": "Stationnement commercial",
+          "published": 1,
+          "created_at": "2026-05-17T21:13:43.892Z",
+          "updated_at": "2026-05-17T21:13:43.892Z"
+        },
+        {
+          "id": 3,
+          "author": "Sophie T.",
+          "location": "Pointe-Claire",
+          "rating": 5,
+          "content": "Excellente communication du début à la fin. Soumission claire, travail soigné et nettoyage parfait après les travaux. Bravo à toute l'équipe!",
+          "image_url": null,
+          "service_type": "Scellement",
+          "published": 1,
+          "created_at": "2026-05-17T21:13:43.897Z",
+          "updated_at": "2026-05-17T21:13:43.897Z"
+        },
+        {
+          "id": 4,
+          "author": "Pierre M.",
+          "location": "Verdun",
+          "rating": 4,
+          "content": "Bon travail de réparation des fissures. L'équipe est arrivée à l'heure et a terminé en une journée comme promis.",
+          "image_url": null,
+          "service_type": "Réparation",
+          "published": 1,
+          "created_at": "2026-05-17T21:13:43.905Z",
+          "updated_at": "2026-05-17T21:13:43.905Z"
+        },
+        {
+          "id": 5,
+          "author": "Caroline D.",
+          "location": "Brossard",
+          "rating": 5,
+          "content": "Très satisfaite du résultat. Notre nouvelle allée transforme complètement l'apparence de notre maison. Merci pour le professionnalisme.",
+          "image_url": null,
+          "service_type": "Pavage d'allée",
+          "published": 1,
+          "created_at": "2026-05-17T21:13:43.909Z",
+          "updated_at": "2026-05-17T21:13:43.909Z"
+        },
+        {
+          "id": 6,
+          "author": "Marc-André P.",
+          "location": "Saint-Lambert",
+          "rating": 5,
+          "content": "Service exceptionnel. Ils ont pris le temps de bien expliquer le processus et ont livré exactement ce qu'ils avaient promis.",
+          "image_url": null,
+          "service_type": "Pavage d'allée",
+          "published": 1,
+          "created_at": "2026-05-17T21:13:43.913Z",
+          "updated_at": "2026-05-17T21:13:43.913Z"
+        }
+      ]
+    },
+    "appointments": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "phone",
+        "service_type",
+        "preferred_date",
+        "preferred_time",
+        "address",
+        "notes",
+        "status",
+        "image_url",
+        "user_id",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "quote_requests": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "phone",
+        "service_type",
+        "project_size",
+        "address",
+        "message",
+        "status",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    }
+  }
+}

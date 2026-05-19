@@ -1,0 +1,27 @@
+<aside class="admin-sidebar" id="admin-sidebar">
+  <div class="admin-brand">
+    <strong>MTL Pavage</strong>
+    <span>Administration</span>
+  </div>
+  <nav class="admin-nav">
+    <a href="admin" class="<%= currentPath==='/admin' ? 'active' : '' %>">📊 Tableau de bord</a>
+    <a href="admin/posts" class="<%= currentPath==='/admin/posts' ? 'active' : '' %>">📝 Articles</a>
+    <a href="admin/services" class="<%= currentPath==='/admin/services' ? 'active' : '' %>">🛠 Services</a>
+    <a href="admin/projects" class="<%= currentPath==='/admin/projects' ? 'active' : '' %>">🖼 Projets</a>
+    <a href="admin/reviews" class="<%= currentPath==='/admin/reviews' ? 'active' : '' %>">⭐ Avis</a>
+    <a href="admin/appointments" class="<%= currentPath==='/admin/appointments' ? 'active' : '' %>">📅 Rendez-vous</a>
+    <a href="admin/quote-requests" class="<%= currentPath==='/admin/quote-requests' ? 'active' : '' %>">📧 Soumissions</a>
+  </nav>
+  <div class="admin-foot">
+    <a href="." target="_blank">👁 Voir le site</a>
+    <a href="admin/logout">🚪 Déconnexion</a>
+  </div>
+</aside>
+<button id="admin-toggle" class="admin-toggle" aria-label="Menu">☰</button>
+<script>
+(function(){
+  var btn=document.getElementById('admin-toggle');
+  var sb=document.getElementById('admin-sidebar');
+  if(btn&&sb){btn.addEventListener('click',function(){sb.classList.toggle('open');});}
+})();
+</script>

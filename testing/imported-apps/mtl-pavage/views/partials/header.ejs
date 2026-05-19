@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="<%= typeof lang!=='undefined' ? lang : 'fr' %>">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#FCD34D">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="public/css/styles.css">
+<title><%= (typeof pageTitle!=='undefined' && pageTitle) ? pageTitle + ' — ' : '' %><%= (typeof settings!=='undefined' && settings.business_name) ? settings.business_name : 'MTL Pavage' %></title>
+</head>
+<body>
+<header class="site-header">
+  <div class="container nav-wrap">
+    <a href="." class="logo">
+      <% var _logoUrl = (typeof settings!=='undefined' && settings._p_nav_logo_url) ? settings._p_nav_logo_url : (typeof appIconUrl!=='undefined' && appIconUrl ? appIconUrl : ''); %>
+      <% if (_logoUrl) { %><img src="<%= _logoUrl %>" alt="Logo"><% } %>
+      <span><%= (typeof settings!=='undefined' && settings.business_name) ? settings.business_name : 'MTL Pavage' %></span>
+    </a>
+    <nav class="nav-desktop">
+      <a href="." class="nav-link"><%= t.nav_home %></a>
+      <a href="services" class="nav-link"><%= t.nav_services %></a>
+      <a href="galerie" class="nav-link"><%= t.nav_gallery %></a>
+      <a href="avis" class="nav-link"><%= t.nav_reviews %></a>
+      <a href="blog" class="nav-link"><%= t.nav_blog %></a>
+      <a href="rendez-vous" class="nav-link"><%= t.nav_booking %></a>
+      <a href="contact" class="btn btn-yellow nav-cta" style="background-color:#FCD34D;color:#0a0a0a"><%= t.nav_contact %></a>
+      <div class="lang-switch">
+        <a href="?lang=fr" class="<%= lang==='fr' ? 'active' : '' %>">FR</a>
+        <span>|</span>
+        <a href="?lang=en" class="<%= lang==='en' ? 'active' : '' %>">EN</a>
+      </div>
+      <a href="#" data-login-btn class="nav-link nav-login"><%= t.nav_login %></a>
+    </nav>
+    <button id="mobile-menu-btn" class="mobile-toggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <nav id="mobile-menu" class="nav-mobile">
+    <a href="." class="nav-link"><%= t.nav_home %></a>
+    <a href="services" class="nav-link"><%= t.nav_services %></a>
+    <a href="galerie" class="nav-link"><%= t.nav_gallery %></a>
+    <a href="avis" class="nav-link"><%= t.nav_reviews %></a>
+    <a href="blog" class="nav-link"><%= t.nav_blog %></a>
+    <a href="rendez-vous" class="nav-link"><%= t.nav_booking %></a>
+    <a href="contact" class="nav-link"><%= t.nav_contact %></a>
+    <a href="#" data-login-btn class="nav-link"><%= t.nav_login %></a>
+    <div class="lang-switch lang-mobile">
+      <a href="?lang=fr" class="<%= lang==='fr' ? 'active' : '' %>">FR</a>
+      <span>|</span>
+      <a href="?lang=en" class="<%= lang==='en' ? 'active' : '' %>">EN</a>
+    </div>
+  </nav>
+</header>
+<script>
+(function(){
+  var btn=document.getElementById('mobile-menu-btn');
+  var menu=document.getElementById('mobile-menu');
+  if(btn&&menu){btn.addEventListener('click',function(){menu.classList.toggle('open');btn.classList.toggle('open');});}
+})();
+</script>

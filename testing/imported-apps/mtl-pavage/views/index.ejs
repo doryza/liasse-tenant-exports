@@ -1,0 +1,218 @@
+<%- include('partials/header') %>
+<section class="hero">
+  <img class="hero-bg" src="<%= (typeof settings!=='undefined' && settings._p_hero_image_url) ? settings._p_hero_image_url : 'https://placehold.co/1920x1080/0a0a0a/FCD34D/png?text=MTL+Pavage' %>" alt="Pavage">
+  <div class="hero-overlay"></div>
+  <div class="container hero-content">
+    <span class="hero-eyebrow"><%= (typeof settings!=='undefined' && settings['tagline_'+lang]) ? settings['tagline_'+lang] : t.brand_tagline %></span>
+    <h1 class="hero-title"><%= (typeof settings!=='undefined' && settings['hero_title_'+lang]) ? settings['hero_title_'+lang] : t.brand_tagline %></h1>
+    <p class="hero-sub"><%= (typeof settings!=='undefined' && settings['hero_subtitle_'+lang]) ? settings['hero_subtitle_'+lang] : '' %></p>
+    <div class="hero-cta">
+      <a href="contact" class="btn btn-yellow btn-lg" style="background-color:#FCD34D;color:#0a0a0a"><%= t.hero_cta_quote %></a>
+      <a href="rendez-vous" class="btn btn-outline-white btn-lg"><%= t.hero_cta_booking %></a>
+    </div>
+    <div class="hero-features">
+      <div><strong>20+</strong> <span><%= lang==='en' ? 'years experience' : 'ans d\'expérience' %></span></div>
+      <div><strong>1500+</strong> <span><%= lang==='en' ? 'happy clients' : 'clients satisfaits' %></span></div>
+      <div><strong>5 ★</strong> <span><%= lang==='en' ? 'average rating' : 'note moyenne' %></span></div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-light">
+  <div class="container">
+    <div class="section-head">
+      <span class="section-eyebrow"><%= t.nav_services %></span>
+      <h2><%= t.services_title %></h2>
+      <p><%= t.services_subtitle %></p>
+    </div>
+    <% if (typeof services!=='undefined' && services.length > 0) { %>
+    <div class="grid grid-3">
+      <% services.forEach(function(s){ %>
+      <a href="contact" class="service-card">
+        <div class="service-icon">
+          <%= ({home:'🏠',briefcase:'💼',shield:'🛡',tool:'🔧',truck:'🚚',edit:'✏'})[s.icon] || '⬛' %>
+        </div>
+        <h3><%= s.name %></h3>
+        <p><%= truncate(s.description, 140) %></p>
+        <% if (s.price_from) { %><div class="service-price"><%= t.services_from %> <strong><%= formatPrice(s.price_from) %></strong><span><%= t.services_per_sqft %></span></div><% } %>
+      </a>
+      <% }); %>
+    </div>
+    <div class="text-center mt-8"><a href="services" class="btn btn-dark"><%= t.services_view_all %></a></div>
+    <% } else { %><p class="empty"><%= t.empty_no_services %></p><% } %>
+  </div>
+</section>
+
+<section class="section section-dark">
+  <div class="container">
+    <div class="section-head light">
+      <span class="section-eyebrow"><%= t.nav_gallery %></span>
+      <h2><%= t.gallery_title %></h2>
+      <p><%= t.gallery_subtitle %></p>
+    </div>
+    <% if (typeof projects!=='undefined' && projects.length > 0) { %>
+    <div class="grid grid-3 gallery-grid">
+      <% projects.forEach(function(p){ %>
+      <article class="project-card">
+        <div class="project-img"><img src="<%= p.image_url || 'https://placehold.co/600x450/0a0a0a/FCD34D/png?text=Projet' %>" alt="<%= p.title %>" loading="lazy"></div>
+        <div class="project-body">
+          <% if (p.category) { %><span class="badge badge-yellow"><%= p.category %></span><% } %>
+          <h3><%= p.title %></h3>
+          <% if (p.location) { %><p class="meta">📍 <%= p.location %></p><% } %>
+        </div>
+      </article>
+      <% }); %>
+    </div>
+    <div class="text-center mt-8"><a href="galerie" class="btn btn-yellow" style="background-color:#FCD34D;color:#0a0a0a"><%= t.gallery_view_all %></a></div>
+    <% } else { %><p class="empty"><%= t.empty_no_projects %></p><% } %>
+  </div>
+</section>
+
+<section class="section section-light">
+  <div class="container">
+    <div class="section-head">
+      <span class="section-eyebrow">★★★★★</span>
+      <h2><%= t.reviews_title %></h2>
+      <p><%= t.reviews_subtitle %></p>
+    </div>
+    <% if (typeof reviews!=='undefined' && reviews.length > 0) { %>
+    <div class="grid grid-3">
+      <% reviews.slice(0,3).forEach(function(r){ %>
+      <article class="review-card">
+        <div class="stars"><% for (var i=0;i<(r.rating||5);i++){ %>★<% } %></div>
+        <p class="review-content">"<%= r.content %>"</p>
+        <div class="review-author">
+          <strong><%= r.author %></strong>
+          <% if (r.location) { %><span>· <%= r.location %></span><% } %>
+        </div>
+        <% if (r.service_type) { %><div class="review-service"><%= r.service_type %></div><% } %>
+      </article>
+      <% }); %>
+    </div>
+    <div class="text-center mt-8"><a href="avis" class="btn btn-dark"><%= t.reviews_view_all %></a></div>
+    <% } else { %><p class="empty"><%= t.empty_no_reviews %></p><% } %>
+  </div>
+</section>
+
+<section class="section section-asphalt" id="zone">
+  <div class="container">
+    <div class="section-head light">
+      <span class="section-eyebrow">📍</span>
+      <h2><%= t.map_title %></h2>
+      <p><%= t.map_subtitle %></p>
+      <% if (typeof settings!=='undefined' && settings['service_area_label_'+lang]) { %><p class="area-label"><strong><%= settings['service_area_label_'+lang] %></strong></p><% } %>
+    </div>
+    <%
+      var areaLabel = (settings && settings['service_area_label_'+lang]) ? settings['service_area_label_'+lang] : (lang==='en' ? 'Greater Montreal and South Shore' : 'Grand Montréal et Rive-Sud');
+      var areaRadius = (settings && settings.service_area_radius_km) ? settings.service_area_radius_km : '40';
+      var contactPhone = (settings && settings.contact_phone) ? settings.contact_phone : '';
+    %>
+    <div id="service-map" class="service-map" style="position:relative">
+      <%# Static fallback — always rendered server-side, hidden by JS only when real map loads successfully %>
+      <div id="map-static-fallback" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.25rem;background:linear-gradient(135deg,#1a1a1a 0%,#262626 100%);border-radius:var(--radius);z-index:1;">
+        <div style="font-size:3.5rem;line-height:1">📍</div>
+        <div style="text-align:center;display:flex;flex-direction:column;gap:.5rem;align-items:center;">
+          <strong style="color:#fff;font-size:1.35rem;font-weight:800;"><%= areaLabel %></strong>
+          <span style="color:#a1a1aa;font-size:.95rem;"><%= lang==='en' ? 'Service radius: '+areaRadius+' km around Montréal' : 'Rayon de service\u00a0: '+areaRadius+'\u00a0km autour de Montréal' %></span>
+          <div style="display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin-top:.25rem;">
+            <% var cities = ['Montréal','Laval','Longueuil','Brossard','Verdun','Outremont','Pointe-Claire','Saint-Lambert']; %>
+            <% cities.forEach(function(city){ %>
+            <span style="background:rgba(252,211,77,.15);color:#FCD34D;font-size:.78rem;padding:.25rem .6rem;border-radius:20px;font-weight:600;border:1px solid rgba(252,211,77,.3);"><%= city %></span>
+            <% }); %>
+          </div>
+        </div>
+        <% if (contactPhone) { %>
+        <a href="tel:<%= contactPhone %>" class="btn btn-yellow btn-sm" style="background-color:#FCD34D;color:#0a0a0a;margin-top:.25rem">📞 <%= contactPhone %></a>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-banner">
+  <div class="container cta-content">
+    <div>
+      <h2><%= t.cta_title %></h2>
+      <p><%= t.cta_subtitle %></p>
+    </div>
+    <div class="cta-buttons">
+      <a href="contact" class="btn btn-dark btn-lg"><%= t.cta_button_quote %></a>
+      <% if (typeof settings!=='undefined' && settings.contact_phone) { %><a href="tel:<%= settings.contact_phone %>" class="btn btn-outline-dark btn-lg">📞 <%= settings.contact_phone %></a><% } %>
+    </div>
+  </div>
+</section>
+
+<section class="section section-light">
+  <div class="container">
+    <div class="section-head">
+      <span class="section-eyebrow"><%= t.nav_blog %></span>
+      <h2><%= t.blog_title %></h2>
+      <p><%= t.blog_subtitle %></p>
+    </div>
+    <% if (typeof posts!=='undefined' && posts.length > 0) { %>
+    <div class="grid grid-3">
+      <% posts.forEach(function(p){ %>
+      <a href="blog/<%= p.id %>" class="post-card">
+        <div class="post-img"><img src="<%= p.image_url || 'https://placehold.co/600x400/0a0a0a/FCD34D/png?text=Article' %>" alt="<%= p.title %>" loading="lazy"></div>
+        <div class="post-body">
+          <% if (p.category) { %><span class="badge badge-dark"><%= p.category %></span><% } %>
+          <h3><%= p.title %></h3>
+          <p><%= truncate(p.excerpt || p.content, 120) %></p>
+          <span class="link-yellow"><%= t.blog_read_more %> →</span>
+        </div>
+      </a>
+      <% }); %>
+    </div>
+    <% } else { %><p class="empty"><%= t.empty_no_posts %></p><% } %>
+  </div>
+</section>
+
+<% if (typeof googleApiKey!=='undefined' && googleApiKey) { %>
+<script>
+// When Google Maps auth fails (invalid key, billing issue, API not enabled):
+// hide all Google-injected children and bring the static fallback to the front.
+window.gm_authFailure = function() {
+  var fb = document.getElementById('map-static-fallback');
+  var mapEl = document.getElementById('service-map');
+  if (fb) {
+    fb.style.display = 'flex';
+    fb.style.zIndex = '9999';
+  }
+  if (mapEl) {
+    // Hide every sibling of the fallback that Google injected
+    Array.prototype.forEach.call(mapEl.children, function(child) {
+      if (child.id !== 'map-static-fallback') {
+        child.style.visibility = 'hidden';
+        child.style.zIndex = '0';
+      }
+    });
+  }
+};
+
+window.initServiceMap = function() {
+  try {
+    var lat = parseFloat('<%- (settings && settings.service_area_lat) || 45.5017 %>') || 45.5017;
+    var lng = parseFloat('<%- (settings && settings.service_area_lng) || -73.5673 %>') || -73.5673;
+    var radius = (parseFloat('<%- (settings && settings.service_area_radius_km) || 40 %>') || 40) * 1000;
+    var el = document.getElementById('service-map');
+    if (!el || !window.google || !window.google.maps) return;
+    // Real map loaded successfully — hide the static fallback
+    var fb = document.getElementById('map-static-fallback');
+    if (fb) fb.style.display = 'none';
+    var map = new google.maps.Map(el, {
+      center: {lat:lat,lng:lng}, zoom: 9,
+      styles: [{"elementType":"geometry","stylers":[{"color":"#212121"}]},{"elementType":"labels.icon","stylers":[{"visibility":"off"}]},{"elementType":"labels.text.fill","stylers":[{"color":"#757575"}]},{"elementType":"labels.text.stroke","stylers":[{"color":"#212121"}]},{"featureType":"road","elementType":"geometry.fill","stylers":[{"color":"#2c2c2c"}]},{"featureType":"road.highway","elementType":"geometry","stylers":[{"color":"#373737"}]},{"featureType":"water","elementType":"geometry","stylers":[{"color":"#000000"}]}],
+      disableDefaultUI: true, zoomControl: true, gestureHandling: 'cooperative'
+    });
+    new google.maps.Circle({ map: map, center: {lat:lat,lng:lng}, radius: radius, strokeColor:'#FCD34D', strokeWeight:2, fillColor:'#FCD34D', fillOpacity:0.15 });
+    new google.maps.Marker({ position:{lat:lat,lng:lng}, map: map, title:'MTL Pavage' });
+  } catch(e) {
+    // Map init threw — keep static fallback visible
+    var fb = document.getElementById('map-static-fallback');
+    if (fb) { fb.style.display = 'flex'; fb.style.zIndex = '9999'; }
+  }
+};
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=<%= googleApiKey %>&callback=initServiceMap" async defer></script>
+<% } %>
+<%- include('partials/footer') %>

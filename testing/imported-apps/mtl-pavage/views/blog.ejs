@@ -1,0 +1,32 @@
+<% var pageTitle = t.nav_blog; %>
+<%- include('partials/header') %>
+<section class="page-hero">
+  <div class="container">
+    <h1><%= t.blog_title %></h1>
+    <p><%= t.blog_subtitle %></p>
+  </div>
+</section>
+<section class="section section-light">
+  <div class="container">
+    <% if (typeof items!=='undefined' && items.length > 0) { %>
+    <div class="grid grid-3">
+      <% items.forEach(function(p){ %>
+      <a href="blog/<%= p.id %>" class="post-card">
+        <div class="post-img"><img src="<%= p.image_url || 'https://placehold.co/600x400/0a0a0a/FCD34D/png?text=Article' %>" alt="<%= p.title %>" loading="lazy"></div>
+        <div class="post-body">
+          <% if (p.category) { %><span class="badge badge-dark"><%= p.category %></span><% } %>
+          <h3><%= p.title %></h3>
+          <p><%= truncate(p.excerpt || p.content, 140) %></p>
+          <div class="post-meta">
+            <% if (p.author) { %><span><%= t.blog_by %> <%= p.author %></span><% } %>
+            <% if (p.created_at) { %><span>· <%= formatDate(p.created_at, lang) %></span><% } %>
+          </div>
+          <span class="link-yellow"><%= t.blog_read_more %> →</span>
+        </div>
+      </a>
+      <% }); %>
+    </div>
+    <% } else { %><p class="empty"><%= t.empty_no_posts %></p><% } %>
+  </div>
+</section>
+<%- include('partials/footer') %>

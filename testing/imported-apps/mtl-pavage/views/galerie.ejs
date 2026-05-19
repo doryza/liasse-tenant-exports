@@ -1,0 +1,39 @@
+<% var pageTitle = t.nav_gallery; %>
+<%- include('partials/header') %>
+<section class="page-hero">
+  <div class="container">
+    <h1><%= t.gallery_title %></h1>
+    <p><%= t.gallery_subtitle %></p>
+  </div>
+</section>
+<section class="section section-light">
+  <div class="container">
+    <% if (typeof cats!=='undefined' && cats.length > 0) { %>
+    <div class="filter-bar">
+      <a href="galerie" class="filter-chip <%= !activeCat ? 'active' : '' %>"><%= lang==='en' ? 'All' : 'Tout' %></a>
+      <% cats.forEach(function(c){ %>
+      <a href="galerie?cat=<%= encodeURIComponent(c) %>" class="filter-chip <%= activeCat===c ? 'active' : '' %>"><%= c %></a>
+      <% }); %>
+    </div>
+    <% } %>
+    <% if (typeof items!=='undefined' && items.length > 0) { %>
+    <div class="grid grid-3 gallery-grid">
+      <% items.forEach(function(p){ %>
+      <article class="project-card">
+        <div class="project-img"><img src="<%= p.image_url || 'https://placehold.co/600x450/0a0a0a/FCD34D/png?text=Projet' %>" alt="<%= p.title %>" loading="lazy"></div>
+        <div class="project-body">
+          <% if (p.category) { %><span class="badge badge-yellow"><%= p.category %></span><% } %>
+          <h3><%= p.title %></h3>
+          <% if (p.description) { %><p><%= truncate(p.description, 140) %></p><% } %>
+          <div class="project-meta">
+            <% if (p.location) { %><span>📍 <%= p.location %></span><% } %>
+            <% if (p.completed_date) { %><span><%= t.gallery_completed %> <%= formatDate(p.completed_date, lang) %></span><% } %>
+          </div>
+        </div>
+      </article>
+      <% }); %>
+    </div>
+    <% } else { %><p class="empty"><%= t.empty_no_projects %></p><% } %>
+  </div>
+</section>
+<%- include('partials/footer') %>

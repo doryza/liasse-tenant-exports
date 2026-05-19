@@ -1,0 +1,32 @@
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div class="footer-col">
+      <h4><%= (typeof settings!=='undefined' && settings.business_name) ? settings.business_name : 'MTL Pavage' %></h4>
+      <p><%= (typeof settings!=='undefined' && settings['footer_about_'+lang]) ? settings['footer_about_'+lang] : (lang==='en' ? 'Residential and commercial paving specialists.' : 'Spécialistes du pavage résidentiel et commercial.') %></p>
+    </div>
+    <div class="footer-col">
+      <h4><%= t.footer_quick_links %></h4>
+      <a href="services"><%= t.nav_services %></a>
+      <a href="galerie"><%= t.nav_gallery %></a>
+      <a href="avis"><%= t.nav_reviews %></a>
+      <a href="blog"><%= t.nav_blog %></a>
+      <a href="rendez-vous"><%= t.nav_booking %></a>
+    </div>
+    <div class="footer-col">
+      <h4><%= t.footer_contact %></h4>
+      <% if (typeof settings!=='undefined' && settings.contact_phone) { %><p>📞 <a href="tel:<%= settings.contact_phone %>"><%= settings.contact_phone %></a></p><% } %>
+      <% if (typeof settings!=='undefined' && settings.contact_email) { %><p>✉ <a href="mailto:<%= settings.contact_email %>"><%= settings.contact_email %></a></p><% } %>
+      <% if (typeof settings!=='undefined' && settings.business_address) { %><p>📍 <%= settings.business_address %></p><% } %>
+      <button data-push-btn class="btn btn-outline-yellow btn-sm"><%= t.enable_notif %></button>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© <%= new Date().getFullYear() %> <%= (typeof settings!=='undefined' && settings.business_name) ? settings.business_name : 'MTL Pavage' %>. <%= t.footer_copyright %>.</p>
+  </div>
+</footer>
+<script src="public/js/app.js"></script>
+<script>
+try { if (window.TenantSDK && TenantSDK.ui) { TenantSDK.ui.showInstallBanner(); setTimeout(function(){ try{TenantSDK.ui.showPushPrompt();}catch(e){} }, 9000); } } catch(e) {}
+</script>
+</body>
+</html>

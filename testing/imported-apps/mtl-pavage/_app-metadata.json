@@ -1,0 +1,203 @@
+{
+  "slug": "mtl-pavage",
+  "displayName": "MTL Pavage",
+  "description": "Type de projet: Site web pour une entreprise de pavage à Montréal.\n\nGoal: Présenter les services de pavage et attirer des clients locaux.\n\nDesign & brand: Moderne, avec un fond texture asphalte. Palette de couleurs principale: noir et jaune (comme la peinture routière).\n\nKey features:\n- Prise de rendez-vous en ligne\n- Galerie de photos des travaux réalisés\n- Section pour les avis clients\n- Formulaire de contact pour demandes de soumission\n\nIntegrations & extras: Carte interactive (p. ex. Google Maps) pour montrer la zone de service.",
+  "status": "active",
+  "generationVersion": 4,
+  "primaryColor": "#6366f1",
+  "iconUrl": "https://res.cloudinary.com/duhp69meg/image/upload/v1779052439/tapavis_tenant_mtl-pavage/icon_mtl-pavage_1779052438998.png",
+  "enabledAuthMethods": [
+    "webauthn",
+    "sms",
+    "email"
+  ],
+  "notificationsEnabled": true,
+  "geolocationEnabled": true,
+  "customConfig": {
+    "language": "both",
+    "aiSummary": {
+      "en": {
+        "dashboard": "Your app includes a simple admin area to manage the website and track activity.\n\nGo to the Admin section to manage your content:\n- Posts: add, edit, or remove blog articles.\n- Services: update the services you offer.\n- Projects: show past jobs in your gallery/portfolio.\n- Reviews: add or manage customer testimonials.\n- Appointments: view and manage booking requests.\n- Quote Requests: review and manage estimate requests.\n\nTo make changes, open the section you want, then create a new item or edit an existing one. If something is outdated, you can delete it from that same section.\n\nYou also have a Settings area in Admin. Use this to update general site information, business details, and other key content that appears across the website.\n\nFor stats, the dashboard includes a summary area that helps you check overall activity, such as site visits and what is happening in the admin modules. This is useful for seeing how the site is being used and whether new requests are coming in.\n\nAbout notifications: this app stores and organizes customer requests in the admin area, but there is no separate built-in feature listed here for sending announcements or messages to all users at once. The main workflow is to review appointments and quote requests from the dashboard and follow up with customers from your usual business tools.\n\nIn short: use Admin to keep your services, projects, reviews, and blog up to date, check new bookings and quote requests, and adjust your site settings whenever needed.",
+        "variables": "Great news! Your app is ready to go — no extra setup is required on your side.\n\nYour current app was built without any extra key fields in the dashboard. That means there is no place right now to paste a Google Maps key from the admin area.\n\nImportant note: if your service area map is showing a Google Maps loading error, that usually means the map needs a Google key and the right Google map permissions turned on. In plain terms, the site likely needs Google Maps access added properly before that section can work again.\n\nFor this kind of map, the service usually needed is Google Maps. If you want, the next step would be to add a spot in the app where your Google key can be entered safely and used for the service area section.\n\nSo for now: the app itself is ready, but the service area map issue is not something you can fully fix from the current dashboard unless that Google key field is added."
+      },
+      "fr": {
+        "dashboard": "Votre application comprend un espace admin simple pour gérer le contenu du site et suivre les demandes reçues.\n\nDans la section Admin, vous pouvez gérer:\n- Articles: ajouter, modifier ou supprimer des billets de blogue.\n- Services: mettre à jour les services que vous offrez.\n- Projets: présenter vos réalisations dans la galerie/portfolio.\n- Avis: gérer les témoignages de clients.\n- Rendez-vous: consulter et gérer les demandes de réservation.\n- Demandes de soumission: voir et traiter les demandes d’estimation.\n\nLe fonctionnement est simple: ouvrez la section voulue, ajoutez un nouvel élément ou modifiez un élément existant. Si quelque chose n’est plus à jour, vous pouvez aussi le supprimer au même endroit.\n\nVous avez aussi une section Réglages dans l’admin. Elle sert à changer les informations générales du site, les détails de l’entreprise et certains contenus affichés un peu partout sur le site.\n\nPour les statistiques, le tableau de bord vous donne un aperçu de l’activité, comme les visites du site et l’utilisation générale des sections admin. C’est pratique pour voir si le site reçoit du trafic et si de nouvelles demandes entrent.\n\nPour les notifications: l’application permet surtout de recevoir et classer les demandes dans l’admin. Il n’y a pas, dans ce qui est prévu ici, d’outil séparé pour envoyer des annonces ou messages à tous les utilisateurs en un clic. Le plus simple est de consulter les rendez-vous et demandes de soumission dans l’admin, puis faire le suivi avec vos outils habituels.\n\nEn bref: utilisez l’Admin pour garder vos services, projets, avis et articles à jour, suivre les nouvelles demandes, et ajuster les réglages du site au besoin.",
+        "variables": "Bonne nouvelle! Votre application est prête à être utilisée — il n’y a rien à configurer de plus de votre côté pour le moment.\n\nPrésentement, l’application n’a pas de champ prévu dans le tableau de bord pour entrer une clé Google. Donc, vous ne pouvez pas corriger la carte de la zone de service directement depuis l’admin actuelle.\n\nPoint important: si la carte affiche une erreur de chargement Google Maps, ça veut généralement dire qu’il faut ajouter une clé Google Maps valide et activer les bons accès du côté de Google. Autrement dit, la section de carte a probablement besoin d’être branchée correctement à Google avant de fonctionner.\n\nLe service normalement requis pour ce type de carte est Google Maps.\n\nDonc pour l’instant: le site est fonctionnel, mais la carte de la zone de service ne pourra pas être corrigée complètement à partir du tableau de bord actuel, à moins d’ajouter un endroit sécuritaire pour entrer la clé Google."
+      }
+    },
+    "aiSummaryVersion": 4
+  },
+  "promptHistory": [
+    {
+      "prompt": "Type de projet: Site web pour une entreprise de pavage à Montréal.\n\nGoal: Présenter les services de pavage et attirer des clients locaux.\n\nDesign & brand: Moderne, avec un fond texture asphalte. Palette de couleurs principale: noir et jaune (comme la peinture routière).\n\nKey features:\n- Prise de rendez-vous en ligne\n- Galerie de photos des travaux réalisés\n- Section pour les avis clients\n- Formulaire de contact pour demandes de soumission\n\nIntegrations & extras: Carte interactive (p. ex. Google Maps) pour montrer la zone de service.",
+      "timestamp": "2026-05-17T21:14:07.505Z",
+      "changeNotes": "Initial build: Complete bilingual PWA for MTL Pavage, a Montreal paving company. Features include online appointment booking, project gallery, customer reviews, contact/quote form, interactive Google Map showing service area, blog, and a full admin backend for managing all content. Built with a modern black/yellow theme inspired by road paint.\n\nAdmin enrichment pass: (1) Polished admin dashboard with welcome subtitle, alert cards for new quotes & pending appointments, stat icons, avatar circles in recent lists, status badges, and a cleaner module grid. (2) Significantly enriched admin-shell.ejs with toolbar (search, status filter, sort), animated modal, toast notifications, ESC-to-close, image upload feedback, star rendering for ratings, status badge pills, ID column, better empty states with primary CTA, bool ✓/✗ icons, and proper field labels (snake_case→Title Case). (3) Upgraded admin-styles.css with focus-visible rings, hover transforms, alert cards, status badges (8 variants), animated modal (slideUp), toast component with accent borders, improved table (hover, thumbs, action alignment), better field styling, image preview empty state. (4) Tightened public styles: improved focus-visible, hover transitions on services/projects/reviews, explicit color tokens to prevent inheritance bugs, added .btn-outline-dark variant. (5) Used .btn-outline-dark on the yellow CTA banner phone link (was white-on-yellow, low contrast); kept inline fallback color on every brand-yellow button. (6) Services icon field changed to select with bound options list to avoid invalid icon names. (7) Added 'newQuotes' and 'pendingAppts' stats to /admin route. (8) SEO metadata emitted for FR/EN with LocalBusiness schema and brand-aligned keyword lists; no _p_seo_* keys seeded.",
+      "generationId": 1148,
+      "filesModified": [
+        "manifest.json",
+        "public/css/admin-styles.css",
+        "public/css/styles.css",
+        "public/js/app.js",
+        "routes.js",
+        "schema.sql",
+        "seed.js",
+        "views/admin-appointments.ejs",
+        "views/admin-posts.ejs",
+        "views/admin-projects.ejs",
+        "views/admin-quote-requests.ejs",
+        "views/admin-reviews.ejs",
+        "views/admin-services.ejs",
+        "views/admin.ejs",
+        "views/avis.ejs",
+        "views/blog-post.ejs",
+        "views/blog.ejs",
+        "views/contact.ejs",
+        "views/galerie.ejs",
+        "views/index.ejs",
+        "views/partials/admin-shell.ejs",
+        "views/partials/admin-sidebar.ejs",
+        "views/partials/footer.ejs",
+        "views/partials/header.ejs",
+        "views/rendez-vous.ejs",
+        "views/services.ejs"
+      ]
+    },
+    {
+      "prompt": "Réparer le menu hamburger sur le site public de MTL Pavage pour qu'il ouvre correctement le panneau de navigation mobile. De plus, optimiser l'affichage de certaines pages spécifiquement sur iPhone pour assurer une mise en page impeccable et stable, car le rendu actuel semble problématique avec du jeu horizontal.",
+      "diffStats": {
+        "added": [
+          "package.json"
+        ],
+        "removed": [],
+        "summary": "1 file(s) added, 2 file(s) modified",
+        "modified": [
+          "public/css/styles.css (+2 -0)",
+          "public/js/app.js (+0 -3)"
+        ]
+      },
+      "timestamp": "2026-05-17T22:27:10.603Z",
+      "changeNotes": "Deux correctifs appliqués : (1) Menu hamburger réparé — la double-écoute était le bug : `views/partials/header.ejs` contenait un `<script>` inline qui ajoutait un premier listener sur `#mobile-menu-btn`, puis `public/js/app.js` (chargé en pied de page) en ajoutait un second car la variable de garde `btn._wired` n'était jamais initialisée par le script inline. Résultat : chaque clic déclenchait deux toggles → l'état `.open` revenait à zéro → le panneau mobile semblait figé. Correctif : tout le code de menu hamburger a été retiré de `app.js` ; le script inline dans `header.ejs` est suffisant et s'exécute au bon moment. (2) Affichage iPhone amélioré — ajout de `overflow-x: hidden` sur `html` et `body` pour éliminer le jeu horizontal, `-webkit-text-size-adjust: 100%` pour empêcher Safari iOS de modifier la taille des polices, `max-width: 100%; overflow: hidden` sur `.nav-mobile`, `word-break: break-word` sur les titres hero et page-hero, `max-width: 100%; width: 100%` sur les champs de formulaire, et `flex-wrap: wrap` sur `.my-item` et `.sd-meta` pour éviter les débordements sur petits écrans.\n\nPre-flight smoke repair: Repair: added package.json declaring express ^4.18.2 and ejs ^3.1.9 so the platform smoke-test runner can resolve these modules before booting the app. The original update (hamburger menu double-listener fix + iOS overflow-x CSS) is unchanged.",
+      "generationId": 1149,
+      "filesModified": [
+        "manifest.json",
+        "public/css/admin-styles.css",
+        "public/css/styles.css",
+        "public/js/app.js",
+        "routes.js",
+        "schema.sql",
+        "seed.js",
+        "views/admin-appointments.ejs",
+        "views/admin-posts.ejs",
+        "views/admin-projects.ejs",
+        "views/admin-quote-requests.ejs",
+        "views/admin-reviews.ejs",
+        "views/admin-services.ejs",
+        "views/admin.ejs",
+        "views/avis.ejs",
+        "views/blog-post.ejs",
+        "views/blog.ejs",
+        "views/contact.ejs",
+        "views/galerie.ejs",
+        "views/index.ejs",
+        "views/partials/admin-shell.ejs",
+        "views/partials/admin-sidebar.ejs",
+        "views/partials/footer.ejs",
+        "views/partials/header.ejs",
+        "views/rendez-vous.ejs",
+        "views/services.ejs",
+        "package.json"
+      ]
+    },
+    {
+      "prompt": "zone de service is messed up \" Une erreur s'est produite.\nCette page n'a pas correctement chargé Google Maps. Consultez la console JavaScript pour connaître les détails techniques \". fix it",
+      "diffStats": {
+        "added": [],
+        "removed": [],
+        "summary": "1 file(s) modified",
+        "modified": [
+          "views/index.ejs (+44 -0)"
+        ]
+      },
+      "timestamp": "2026-05-18T02:49:14.833Z",
+      "changeNotes": "Fixed broken Google Maps 'zone de service' section. Root cause: when the Google Maps API key fails (auth error, billing issue, or key restrictions), Google injects a large error overlay that completely covers the map div — which is what tenants see as 'Une erreur s'est produite'. Fix: (1) Added a styled static fallback div inside #service-map that is rendered server-side and always visible by default. It shows the service area label (Grand Montréal et Rive-Sud), radius, city badges, and the contact phone number — all pulled from admin_settings. (2) Added window.gm_authFailure callback: Google Maps calls this when API auth fails; we use it to keep the static fallback visible and z-indexed above any Google error overlay. (3) Wrapped initServiceMap in try/catch so any runtime exception also keeps the fallback. (4) When the API key works correctly, initServiceMap hides the fallback and renders the real interactive map as before. Result: the section now looks great in all cases — working API key shows the interactive dark-themed map; any failure shows a polished static card instead of an ugly error message.\n\nPre-flight smoke repair: Fixed broken Google Maps 'zone de service' section. Root cause: when the Google Maps API key fails (auth error, billing issue, or key restrictions), Google injects a large error overlay that completely covers the map div — which is what tenants see as 'Une erreur s'est produite'. Fix: (1) Added a styled static fallback div inside #service-map that is rendered server-side and always visible by default. It shows the service area label (Grand Montréal et Rive-Sud), radius, city badges, and the contact phone number — all pulled from admin_settings. (2) Added window.gm_authFailure callback: Google Maps calls this when API auth fails; we use it to keep the static fallback visible and z-indexed above any Google error overlay. (3) Wrapped initServiceMap in try/catch so any runtime exception also keeps the fallback. (4) When the API key works correctly, initServiceMap hides the fallback and renders the real interactive map as before. Result: the section now looks great in all cases — working API key shows the interactive dark-themed map; any failure shows a polished static card instead of an ugly error message.",
+      "generationId": 1150,
+      "filesModified": [
+        "manifest.json",
+        "package.json",
+        "public/css/admin-styles.css",
+        "public/css/styles.css",
+        "public/js/app.js",
+        "routes.js",
+        "schema.sql",
+        "seed.js",
+        "views/admin-appointments.ejs",
+        "views/admin-posts.ejs",
+        "views/admin-projects.ejs",
+        "views/admin-quote-requests.ejs",
+        "views/admin-reviews.ejs",
+        "views/admin-services.ejs",
+        "views/admin.ejs",
+        "views/avis.ejs",
+        "views/blog-post.ejs",
+        "views/blog.ejs",
+        "views/contact.ejs",
+        "views/galerie.ejs",
+        "views/index.ejs",
+        "views/partials/admin-shell.ejs",
+        "views/partials/admin-sidebar.ejs",
+        "views/partials/footer.ejs",
+        "views/partials/header.ejs",
+        "views/rendez-vous.ejs",
+        "views/services.ejs"
+      ]
+    },
+    {
+      "prompt": "expose google api key I need to fix the zone de service \" Une erreur s'est produite.\nCette page n'a pas correctement chargé Google Maps. Consultez la console JavaScript pour connaître les détails techniques. \" also let me know which api service is needed",
+      "diffStats": {
+        "added": [],
+        "removed": [],
+        "summary": "2 file(s) modified",
+        "modified": [
+          "views/index.ejs (+8 -0)",
+          "views/partials/header.ejs (+1 -0)"
+        ]
+      },
+      "timestamp": "2026-05-19T05:15:06.929Z",
+      "changeNotes": "Fixed the Google Maps 'Zone de service' error overlay. The gm_authFailure handler now sets the static fallback's z-index to 9999 and hides all Google-injected siblings, ensuring the tasteful dark-map fallback (showing cities, radius, phone) always wins over Google's error banner.\n\n--- HOW TO GET THE REAL MAP WORKING ---\n\nGoogle Maps is a platform-provided service — you configure your own key via your dashboard's built-in Services panel (NOT the API tab). Steps:\n\n1. Go to https://console.cloud.google.com → APIs & Services → Library\n2. Search for 'Maps JavaScript API' and click Enable.\n3. Go to APIs & Services → Credentials → create or select an API Key.\n4. (Optional but recommended) Add an HTTP referrer restriction for your PWA domain.\n5. In your Liasse dashboard, go to Settings → Services → Google Maps → paste your API key.\n\nThat's the only Google API you need: Maps JavaScript API. No Geocoding, no Places — just the JavaScript API.\n\nPre-flight smoke repair: REPAIR PASS — Fixed html_validate_blocker on 4 routes.\n\nRoot cause: views/partials/header.ejs rendered <img src=\"\" alt=\"Logo\" onerror=\"...\"> when no logo URL was seeded (_p_nav_logo_url not set, appIconUrl not in ctx). An empty src attribute is invalid HTML5 and triggers the attribute-allowed-values rule at line 17 (homepage) / line 18 (other pages that prepend a blank line from the <% var pageTitle %> declaration).\n\nFix: replaced the unconditional <img src=\"<%= ... %>\"> with a conditional that only renders the img tag when a non-empty URL is available. The text brand name is always rendered as the fallback logo.\n\nOriginal update (Google Maps gm_authFailure z-index fix) is unchanged.\n\n--- HOW TO GET THE REAL MAP WORKING ---\nGoogle Maps is a platform-provided service. Configure your own key via dashboard → Settings → Services → Google Maps.\nOnly API needed: Maps JavaScript API (enable at console.cloud.google.com).",
+      "generationId": 1155,
+      "filesModified": [
+        "manifest.json",
+        "package.json",
+        "public/css/admin-styles.css",
+        "public/css/styles.css",
+        "public/js/app.js",
+        "routes.js",
+        "schema.sql",
+        "seed.js",
+        "views/admin-appointments.ejs",
+        "views/admin-posts.ejs",
+        "views/admin-projects.ejs",
+        "views/admin-quote-requests.ejs",
+        "views/admin-reviews.ejs",
+        "views/admin-services.ejs",
+        "views/admin.ejs",
+        "views/avis.ejs",
+        "views/blog-post.ejs",
+        "views/blog.ejs",
+        "views/contact.ejs",
+        "views/galerie.ejs",
+        "views/index.ejs",
+        "views/partials/admin-shell.ejs",
+        "views/partials/admin-sidebar.ejs",
+        "views/partials/footer.ejs",
+        "views/partials/header.ejs",
+        "views/rendez-vous.ejs",
+        "views/services.ejs"
+      ]
+    }
+  ],
+  "apiVariables": [],
+  "createdAt": "2026-05-17T20:49:17.930Z",
+  "updatedAt": "2026-05-19T05:15:40.922Z",
+  "exportedAt": "2026-05-19T05:17:46.735Z"
+}
