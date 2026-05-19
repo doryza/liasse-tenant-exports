@@ -99,7 +99,7 @@ module.exports = function(services) {
   function truncate(s, n) {
     if (!s) return '';
     s = String(s);
-    return s.length > n ? s.slice(0, n).trim() + '\u2026' : s;
+    return s.length > n ? s.slice(0, n).trim() + '…' : s;
   }
 
   router.use(async function(req, res, next) {
@@ -298,6 +298,13 @@ module.exports = function(services) {
     try {
       var c = await ctx(req, res);
       res.render('admin-quote-requests', Object.assign(c, { moduleKey: 'quote_requests', moduleLabel: 'Soumissions', pageTitle: 'Soumissions' }));
+    } catch (err) { console.error(err); res.status(500).send('Erreur'); }
+  });
+
+  router.get('/admin/settings', requireAdmin, async function(req, res) {
+    try {
+      var c = await ctx(req, res);
+      res.render('admin-settings', Object.assign(c, { pageTitle: 'Zone de service' }));
     } catch (err) { console.error(err); res.status(500).send('Erreur'); }
   });
 
