@@ -1,0 +1,209 @@
+<%- include('partials/header') %>
+
+<!-- Hero -->
+<section class="hero" style="min-height:70vh">
+  <img src="https://res.cloudinary.com/duhp69meg/image/upload/v1779174942/managed_agent_updates/ma_update_image_1779174942533.png" alt="TREX LIVE IPTV" class="hero-img">
+  <div class="hero-overlay">
+    <div class="hero-content">
+      <div class="hero-badges">
+        <span class="pill">🦕 TREX LIVE</span>
+        <span class="pill">📺 <%= t.badge_4k %></span>
+        <span class="pill">🔒 <%= t.badge_secure %></span>
+      </div>
+      <h1><%= lang === 'en' ? 'TREX LIVE — A New Way to Watch TV' : 'TREX LIVE — Une nouvelle façon de regarder la télévision' %></h1>
+      <p><%= lang === 'en'
+        ? 'A complete, stable service designed for lovers of French-language content and international entertainment.'
+        : 'Un service complet, stable et pensé pour les amateurs de contenu francophone et de divertissement international.' %></p>
+      <div class="hero-cta">
+        <a href="#trex-plans" class="btn-primary btn-lg" style="background-color:#22c55e;color:#fff" onclick="event.preventDefault();document.getElementById('trex-plans').scrollIntoView({behavior:'smooth'})">
+          <%= lang === 'en' ? 'See plans ↓' : 'Voir les forfaits ↓' %>
+        </a>
+        <a href="contact" class="btn-secondary btn-lg"><%= t.nav_contact %></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Plans Section -->
+<section id="trex-plans" class="section" style="background:var(--bg-2)">
+  <div class="container">
+    <div class="section-head">
+      <h2><%= lang === 'en' ? 'TREX LIVE Plans' : 'Forfaits TREX LIVE' %></h2>
+      <p><%= lang === 'en'
+        ? 'Choose the duration that suits you. All plans include full access to 10,000+ channels in HD/4K on the Trex server.'
+        : 'Choisissez la durée qui vous convient. Tous les forfaits donnent accès complet à 10 000+ chaînes en HD/4K sur le serveur Trex.' %></p>
+    </div>
+
+    <% if (typeof plans !== 'undefined' && plans.length > 0) { %>
+      <div class="plans-grid plans-grid-full">
+        <% plans.forEach(function(p){ %>
+          <div class="plan-card <%= p.featured ? 'featured' : '' %>">
+            <% if (p.badge) { %><div class="plan-badge" style="background-color:#22c55e;color:#fff"><%= p.badge %></div><% } %>
+            <h3><%= lang === 'en' && p.name_en ? p.name_en : p.name %></h3>
+            <p class="plan-desc"><%= lang === 'en' && p.description_en ? p.description_en : (p.description || '') %></p>
+            <div class="plan-price">
+              <span class="price-amount"><%= formatPrice(p.price_cents, 'CAD', lang) %></span>
+              <span class="price-period"><%= t.valid_for.replace('{n}', p.duration_days) %></span>
+            </div>
+            <% if (p.features || p.features_en) { %>
+              <h4 class="features-title"><%= t.features_label %></h4>
+              <ul class="plan-features">
+                <% var feats = ((lang === 'en' && p.features_en) ? p.features_en : (p.features || '')).split('\n').filter(function(f){return f.trim()}); %>
+                <% feats.forEach(function(f){ %><li>✓ <%= f.trim() %></li><% }); %>
+              </ul>
+            <% } %>
+            <a href="checkout/<%= p.id %>" class="btn-primary plan-cta" style="background-color:#22c55e;color:#fff"><%= t.cta_subscribe %></a>
+          </div>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <!-- Fallback static pricing -->
+      <%
+        var trexPricing = [
+          { label_fr: '1 Mois', label_en: '1 Month', days: 30, cents: 2000, badge: null },
+          { label_fr: '3 Mois', label_en: '3 Months', days: 90, cents: 5000, badge: null },
+          { label_fr: '6 Mois', label_en: '6 Months', days: 180, cents: 8000, badge: null },
+          { label_fr: '12 Mois', label_en: '12 Months', days: 365, cents: 14000, badge: lang === 'en' ? 'BEST VALUE' : 'MEILLEURE OFFRE' }
+        ];
+      %>
+      <div class="plans-grid plans-grid-full">
+        <% trexPricing.forEach(function(p){ %>
+          <div class="plan-card">
+            <% if (p.badge) { %><div class="plan-badge" style="background-color:#22c55e;color:#fff"><%= p.badge %></div><% } %>
+            <h3><%= lang === 'en' ? p.label_en : p.label_fr %></h3>
+            <div class="plan-price">
+              <span class="price-amount"><%= formatPrice(p.cents, 'CAD', lang) %></span>
+              <span class="price-period"><%= lang === 'en' ? 'for ' + p.days + ' days' : 'pour ' + p.days + ' jours' %></span>
+            </div>
+            <a href="contact" class="btn-primary plan-cta" style="background-color:#22c55e;color:#fff"><%= lang === 'en' ? 'Contact us' : 'Nous contacter' %></a>
+          </div>
+        <% }); %>
+      </div>
+    <% } %>
+  </div>
+</section>
+
+<!-- Why TREX LIVE -->
+<section class="section" style="background:var(--bg)">
+  <div class="container">
+    <div class="section-head">
+      <h2><%= lang === 'en' ? '⭐ Why choose TREX LIVE?' : '⭐ Pourquoi choisir TREX LIVE?' %></h2>
+      <p><%= lang === 'en'
+        ? 'A complete streaming experience built for performance and content variety.'
+        : 'Une expérience de streaming complète, conçue pour la performance et la diversité des contenus.' %></p>
+    </div>
+    <div class="features-grid features-grid-full">
+
+      <div class="feature-card">
+        <div class="feature-icon">🎞️</div>
+        <h3><%= lang === 'en' ? 'Massive Content Library' : 'Un énorme choix de contenu' %></h3>
+        <ul style="list-style:none;padding:0;margin:.75rem 0 0;display:flex;flex-direction:column;gap:.35rem">
+          <li style="color:var(--text-dim);font-size:.9rem">✓ <%= lang === 'en' ? 'Quebec channels' : 'Chaînes du Québec' %></li>
+          <li style="color:var(--text-dim);font-size:.9rem">✓ <%= lang === 'en' ? 'Canadian & international TV' : 'Télévision canadienne et internationale' %></li>
+          <li style="color:var(--text-dim);font-size:.9rem">✓ <%= lang === 'en' ? 'Live sports' : 'Sports en direct' %></li>
+          <li style="color:var(--text-dim);font-size:.9rem">✓ <%= lang === 'en' ? 'Recent movies & popular series' : 'Films récents et séries populaires' %></li>
+          <li style="color:var(--text-dim);font-size:.9rem">✓ <%= lang === 'en' ? 'Documentaries & kids content' : 'Documentaires et contenu jeunesse' %></li>
+        </ul>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🍿</div>
+        <h3><%= lang === 'en' ? 'Movies & Series On Demand' : 'Films et séries sur demande' %></h3>
+        <p><%= lang === 'en'
+          ? 'Watch French-language and international content whenever you want thanks to a regularly updated library.'
+          : 'Visionnez du contenu francophone et international quand vous le souhaitez grâce à une bibliothèque régulièrement mise à jour.' %></p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">⏯️</div>
+        <h3><%= lang === 'en' ? 'Catchup & Advanced Features' : 'Reprise et fonctionnalités avancées' %></h3>
+        <p><%= lang === 'en'
+          ? 'Some channels offer catchup features so you can rewatch your favourite shows after they air.'
+          : 'Certaines chaînes offrent des fonctions de reprise pour revoir vos émissions préférées après leur diffusion.' %></p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🥊</div>
+        <h3><%= lang === 'en' ? 'Sports & PPV Events' : 'Sports & événements PPV' %></h3>
+        <ul style="list-style:none;padding:0;margin:.75rem 0 0;display:flex;flex-direction:column;gap:.35rem">
+          <li style="color:var(--text-dim);font-size:.9rem">✓ Hockey</li>
+          <li style="color:var(--text-dim);font-size:.9rem">✓ UFC</li>
+          <li style="color:var(--text-dim);font-size:.9rem">✓ <%= lang === 'en' ? 'Boxing & Wrestling' : 'Boxe et Lutte' %></li>
+          <li style="color:var(--text-dim);font-size:.9rem">✓ <%= lang === 'en' ? 'Exclusive events' : 'Événements exclusifs' %></li>
+        </ul>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🔥</div>
+        <h3><%= lang === 'en' ? 'High Quality Picture' : 'Image haute qualité' %></h3>
+        <ul style="list-style:none;padding:0;margin:.75rem 0 0;display:flex;flex-direction:column;gap:.35rem">
+          <li style="color:var(--text-dim);font-size:.9rem">✓ HD</li>
+          <li style="color:var(--text-dim);font-size:.9rem">✓ Full HD</li>
+          <li style="color:var(--text-dim);font-size:.9rem">✓ 4K (<%= lang === 'en' ? 'where available' : 'selon disponibilité' %>)</li>
+        </ul>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">⚙️</div>
+        <h3><%= lang === 'en' ? 'Stable & Modern Platform' : 'Une expérience stable et moderne' %></h3>
+        <ul style="list-style:none;padding:0;margin:.75rem 0 0;display:flex;flex-direction:column;gap:.35rem">
+          <li style="color:var(--text-dim);font-size:.9rem">✓ <%= lang === 'en' ? 'Optimized stability' : 'Stabilité optimisée' %></li>
+          <li style="color:var(--text-dim);font-size:.9rem">✓ <%= lang === 'en' ? 'Improved service quality' : 'Qualité de service améliorée' %></li>
+          <li style="color:var(--text-dim);font-size:.9rem">✓ <%= lang === 'en' ? 'New content added regularly' : 'Nouveau contenu ajouté régulièrement' %></li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- Compatible Devices -->
+<section class="section" style="background:var(--bg-2)">
+  <div class="container">
+    <div class="section-head">
+      <h2><%= lang === 'en' ? '📱 Compatible with Your Devices' : '📱 Compatible avec vos appareils favoris' %></h2>
+      <p><%= lang === 'en'
+        ? 'TREX LIVE works on all your screens — at home or on the go.'
+        : 'TREX LIVE fonctionne sur tous vos écrans — à la maison ou en déplacement.' %></p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">📺</div>
+        <h3>Firestick &amp; Smart TV</h3>
+        <p><%= lang === 'en' ? 'Amazon Fire TV Stick, Samsung, LG, Sony, Hisense and more.' : 'Amazon Fire TV Stick, Samsung, LG, Sony, Hisense et plus.' %></p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📦</div>
+        <h3>Android Box &amp; Formuler</h3>
+        <p><%= lang === 'en' ? 'Android boxes and Formuler Z10/Z11 set-top boxes.' : 'Boîtiers Android et décodeurs Formuler Z10/Z11.' %></p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📱</div>
+        <h3><%= lang === 'en' ? 'Phones & Tablets' : 'Téléphones et tablettes' %></h3>
+        <p><%= lang === 'en' ? 'iPhone, iPad, Android — stream anywhere, anytime.' : 'iPhone, iPad, Android — streamez partout, à tout moment.' %></p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💻</div>
+        <h3><%= lang === 'en' ? 'Computers' : 'Ordinateurs' %></h3>
+        <p><%= lang === 'en' ? 'Windows, macOS and Linux via your browser or IPTV app.' : 'Windows, macOS et Linux via votre navigateur ou application IPTV.' %></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-overlay">
+    <div class="container text-center">
+      <h2><%= lang === 'en' ? '💥 TREX LIVE — More content. More quality. More freedom.' : '💥 TREX LIVE — Plus de contenu. Plus de qualité. Plus de liberté.' %></h2>
+      <p><%= lang === 'en'
+        ? 'Available now via OptimalTV Plus. Choose your plan above and start streaming today.'
+        : 'Disponible dès maintenant via OptimalTVplus. Choisissez votre forfait ci-dessus et commencez à streamer dès aujourd\'hui.' %></p>
+      <a href="#trex-plans" class="btn-primary btn-lg" style="background-color:#fff;color:#16a34a" onclick="event.preventDefault();document.getElementById('trex-plans').scrollIntoView({behavior:'smooth'})">
+        <%= lang === 'en' ? 'View Plans ↑' : 'Voir les forfaits ↑' %>
+      </a>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

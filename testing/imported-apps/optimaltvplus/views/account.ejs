@@ -38,7 +38,10 @@
             <%
               var hasMain = !!(subscription.m3u_url || subscription.credentials_username);
               var hasFirstaru = !!(subscription.firstaru_m3u_url || subscription.firstaru_credentials_username);
-              var showTabs = hasMain || hasFirstaru;
+              var hasOmega = !!(subscription.omega_m3u_url || subscription.omega_credentials_username);
+              var hasEdge = !!(subscription.edge_m3u_url || subscription.edge_credentials_username);
+              var hasTrex = !!(subscription.trex_m3u_url || subscription.trex_credentials_username);
+              var showTabs = hasMain || hasFirstaru || hasOmega || hasEdge || hasTrex;
             %>
 
             <% if (showTabs) { %>
@@ -47,7 +50,7 @@
                 <p class="cred-help"><%= t.cred_help %></p>
 
                 <!-- Server tabs -->
-                <div class="server-tabs" style="display:flex;gap:0;border-bottom:2px solid rgba(255,255,255,.1);margin-bottom:1.25rem">
+                <div class="server-tabs" style="display:flex;gap:0;border-bottom:2px solid rgba(255,255,255,.1);margin-bottom:1.25rem;flex-wrap:wrap">
                   <button type="button"
                     class="server-tab-btn active"
                     data-tab="main"
@@ -59,6 +62,24 @@
                     data-tab="firstaru"
                     style="padding:.6rem 1.25rem;background:none;border:none;cursor:pointer;font-weight:700;font-size:.95rem;color:rgba(255,255,255,.5);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .15s">
                     🌐 <%= t.cred_server_firstaru %>
+                  </button>
+                  <button type="button"
+                    class="server-tab-btn"
+                    data-tab="omega"
+                    style="padding:.6rem 1.25rem;background:none;border:none;cursor:pointer;font-weight:700;font-size:.95rem;color:rgba(255,255,255,.5);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .15s">
+                    🔷 <%= t.cred_server_omega %>
+                  </button>
+                  <button type="button"
+                    class="server-tab-btn"
+                    data-tab="edge"
+                    style="padding:.6rem 1.25rem;background:none;border:none;cursor:pointer;font-weight:700;font-size:.95rem;color:rgba(255,255,255,.5);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .15s">
+                    ⚡ <%= t.cred_server_edge %>
+                  </button>
+                  <button type="button"
+                    class="server-tab-btn"
+                    data-tab="trex"
+                    style="padding:.6rem 1.25rem;background:none;border:none;cursor:pointer;font-weight:700;font-size:.95rem;color:rgba(255,255,255,.5);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .15s">
+                    🦕 <%= t.cred_server_trex %>
                   </button>
                 </div>
 
@@ -135,6 +156,118 @@
                     </p>
                   <% } %>
                 </div>
+
+                <!-- Omega server panel -->
+                <div id="cred-panel-omega" class="cred-panel" style="display:none">
+                  <% if (hasOmega) { %>
+                    <% if (subscription.omega_m3u_url) { %>
+                      <div class="cred-row">
+                        <label><%= t.cred_url %></label>
+                        <div class="cred-value">
+                          <code><%= subscription.omega_m3u_url %></code>
+                          <button type="button" class="btn-copy" data-copy="<%= subscription.omega_m3u_url %>"><%= t.cred_copy %></button>
+                        </div>
+                      </div>
+                    <% } %>
+                    <% if (subscription.omega_credentials_username) { %>
+                      <div class="cred-row">
+                        <label><%= t.cred_user %></label>
+                        <div class="cred-value">
+                          <code><%= subscription.omega_credentials_username %></code>
+                          <button type="button" class="btn-copy" data-copy="<%= subscription.omega_credentials_username %>"><%= t.cred_copy %></button>
+                        </div>
+                      </div>
+                    <% } %>
+                    <% if (subscription.omega_credentials_password) { %>
+                      <div class="cred-row">
+                        <label><%= t.cred_pass %></label>
+                        <div class="cred-value">
+                          <code><%= subscription.omega_credentials_password %></code>
+                          <button type="button" class="btn-copy" data-copy="<%= subscription.omega_credentials_password %>"><%= t.cred_copy %></button>
+                        </div>
+                      </div>
+                    <% } %>
+                  <% } else { %>
+                    <p class="cred-help" style="color:rgba(255,255,255,.5);font-style:italic">
+                      <%= lang === 'en' ? 'Omega server credentials will be available here shortly.' : 'Les identifiants du serveur Omega seront disponibles ici sous peu.' %>
+                    </p>
+                  <% } %>
+                </div>
+
+                <!-- Edge server panel -->
+                <div id="cred-panel-edge" class="cred-panel" style="display:none">
+                  <% if (hasEdge) { %>
+                    <% if (subscription.edge_m3u_url) { %>
+                      <div class="cred-row">
+                        <label><%= t.cred_url %></label>
+                        <div class="cred-value">
+                          <code><%= subscription.edge_m3u_url %></code>
+                          <button type="button" class="btn-copy" data-copy="<%= subscription.edge_m3u_url %>"><%= t.cred_copy %></button>
+                        </div>
+                      </div>
+                    <% } %>
+                    <% if (subscription.edge_credentials_username) { %>
+                      <div class="cred-row">
+                        <label><%= t.cred_user %></label>
+                        <div class="cred-value">
+                          <code><%= subscription.edge_credentials_username %></code>
+                          <button type="button" class="btn-copy" data-copy="<%= subscription.edge_credentials_username %>"><%= t.cred_copy %></button>
+                        </div>
+                      </div>
+                    <% } %>
+                    <% if (subscription.edge_credentials_password) { %>
+                      <div class="cred-row">
+                        <label><%= t.cred_pass %></label>
+                        <div class="cred-value">
+                          <code><%= subscription.edge_credentials_password %></code>
+                          <button type="button" class="btn-copy" data-copy="<%= subscription.edge_credentials_password %>"><%= t.cred_copy %></button>
+                        </div>
+                      </div>
+                    <% } %>
+                  <% } else { %>
+                    <p class="cred-help" style="color:rgba(255,255,255,.5);font-style:italic">
+                      <%= lang === 'en' ? 'Edge server credentials will be available here shortly.' : 'Les identifiants du serveur Edge seront disponibles ici sous peu.' %>
+                    </p>
+                  <% } %>
+                </div>
+
+                <!-- Trex server panel -->
+                <div id="cred-panel-trex" class="cred-panel" style="display:none">
+                  <% if (hasTrex) { %>
+                    <% if (subscription.trex_m3u_url) { %>
+                      <div class="cred-row">
+                        <label><%= t.cred_url %></label>
+                        <div class="cred-value">
+                          <code><%= subscription.trex_m3u_url %></code>
+                          <button type="button" class="btn-copy" data-copy="<%= subscription.trex_m3u_url %>"><%= t.cred_copy %></button>
+                        </div>
+                      </div>
+                    <% } %>
+                    <% if (subscription.trex_credentials_username) { %>
+                      <div class="cred-row">
+                        <label><%= t.cred_user %></label>
+                        <div class="cred-value">
+                          <code><%= subscription.trex_credentials_username %></code>
+                          <button type="button" class="btn-copy" data-copy="<%= subscription.trex_credentials_username %>"><%= t.cred_copy %></button>
+                        </div>
+                      </div>
+                    <% } %>
+                    <% if (subscription.trex_credentials_password) { %>
+                      <div class="cred-row">
+                        <label><%= t.cred_pass %></label>
+                        <div class="cred-value">
+                          <code><%= subscription.trex_credentials_password %></code>
+                          <button type="button" class="btn-copy" data-copy="<%= subscription.trex_credentials_password %>"><%= t.cred_copy %></button>
+                        </div>
+                      </div>
+                    <% } %>
+                  <% } else { %>
+                    <p class="cred-help" style="color:rgba(255,255,255,.5);font-style:italic">
+                      <%= lang === 'en' ? 'Trex server credentials will be available here shortly.' : 'Les identifiants du serveur Trex seront disponibles ici sous peu.' %>
+                    </p>
+                  <% } %>
+                </div>
+
               </div>
             <% } else { %>
               <p class="cred-help"><%= lang === 'en' ? 'Your credentials will be available here shortly. Check back in a few minutes.' : 'Vos identifiants seront disponibles ici sous peu. Revenez dans quelques minutes.' %></p>

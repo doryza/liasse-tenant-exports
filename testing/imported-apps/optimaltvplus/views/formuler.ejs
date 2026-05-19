@@ -1,0 +1,215 @@
+<%- include('partials/header') %>
+<section class="page-header">
+  <div class="container">
+    <h1>📺 <%= lang === 'en' ? 'Formuler Devices' : 'Appareils Formuler' %></h1>
+    <p><%= lang === 'en' ? 'Premium IPTV set-top boxes — plug in, configure with your credentials, and stream instantly.' : 'Boîtiers IPTV premium — branchez, configurez avec vos identifiants et streamez instantanément.' %></p>
+  </div>
+</section>
+
+<section class="section" style="background:var(--bg-2)">
+  <div class="container">
+    <div class="section-head">
+      <h2><%= lang === 'en' ? 'Our Formuler Selection' : 'Notre sélection Formuler' %></h2>
+      <p><%= lang === 'en' ? 'All devices are compatible with our Optimal TV Plus subscriptions. Quick setup, immediate streaming.' : 'Tous les appareils sont compatibles avec nos abonnements Optimal TV Plus. Configuration rapide, streaming immédiat.' %></p>
+    </div>
+
+    <% if (typeof products !== 'undefined' && products.length > 0) { %>
+      <div class="plans-grid plans-grid-full">
+        <% products.forEach(function(p){ %>
+          <div class="plan-card" style="text-align:center">
+            <% if (p.badge) { %><div class="plan-badge" style="background-color:#22c55e;color:#fff"><%= p.badge %></div><% } %>
+            <% if (p.image_url) { %>
+              <div style="background:rgba(255,255,255,.05);border-radius:12px;padding:1rem;margin-bottom:1.25rem">
+                <img src="<%= p.image_url %>" alt="<%= lang === 'en' && p.name_en ? p.name_en : p.name %>" style="width:100%;max-height:200px;object-fit:contain;border-radius:8px">
+              </div>
+            <% } %>
+            <h3 style="font-size:1.6rem"><%= lang === 'en' && p.name_en ? p.name_en : p.name %></h3>
+            <p class="plan-desc"><%= lang === 'en' && p.description_en ? p.description_en : (p.description || '') %></p>
+            <div class="plan-price">
+              <span class="price-amount"><%= formatPrice(p.price_cents, 'CAD', lang) %></span>
+              <span class="price-period"><%= lang === 'en' ? 'one-time purchase' : 'achat unique' %></span>
+            </div>
+            <% if (p.features || p.features_en) { %>
+              <h4 class="features-title"><%= lang === 'en' ? 'Specifications' : 'Caractéristiques' %></h4>
+              <ul class="plan-features" style="text-align:left">
+                <% var feats = ((lang === 'en' && p.features_en) ? p.features_en : (p.features || '')).split('\n').filter(function(f){return f.trim()}); %>
+                <% feats.forEach(function(f){ %><li>✓ <%= f.trim() %></li><% }); %>
+              </ul>
+            <% } %>
+            <% if (!user) { %>
+              <a href="#" class="btn-primary plan-cta" data-login-btn style="background-color:#22c55e;color:#fff">🛒 <%= lang === 'en' ? 'Buy now' : 'Commander' %></a>
+            <% } else { %>
+              <button type="button"
+                class="btn-primary plan-cta order-btn"
+                data-id="<%= p.id %>"
+                data-name="<%= (lang === 'en' && p.name_en ? p.name_en : p.name).replace(/"/g,'&quot;') %>"
+                data-price="<%= p.price_cents %>"
+                style="background-color:#22c55e;color:#fff">
+                🛒 <%= lang === 'en' ? 'Buy now' : 'Commander' %>
+              </button>
+            <% } %>
+          </div>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <div class="empty-state"><p><%= lang === 'en' ? 'No devices available at the moment.' : 'Aucun appareil disponible pour le moment.' %></p></div>
+    <% } %>
+  </div>
+</section>
+
+<!-- Why Formuler -->
+<section class="section section-features">
+  <div class="container">
+    <div class="section-head">
+      <h2><%= lang === 'en' ? 'Why choose a Formuler device?' : 'Pourquoi choisir un appareil Formuler?' %></h2>
+      <p><%= lang === 'en' ? 'Industry-leading hardware built specifically for IPTV streaming.' : 'Matériel de pointe conçu spécifiquement pour le streaming IPTV.' %></p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3><%= lang === 'en' ? 'Plug &amp; Play' : 'Prêt à l\'emploi' %></h3>
+        <p><%= lang === 'en' ? 'Connect to your TV, enter your IPTV credentials and start watching immediately. No technical knowledge required.' : 'Connectez à votre télé, entrez vos identifiants IPTV et commencez à regarder immédiatement. Aucune connaissance technique requise.' %></p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎬</div>
+        <h3>4K HDR10+</h3>
+        <p><%= lang === 'en' ? 'Full support for 4K HDR10+ content for a breathtaking picture quality on your compatible TV.' : 'Support complet du contenu 4K HDR10+ pour une qualité d\'image époustouflante sur votre TV compatible.' %></p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📱</div>
+        <h3>myTV Online 2</h3>
+        <p><%= lang === 'en' ? 'Pre-loaded with myTV Online 2 — the best IPTV app for Formuler devices. Works seamlessly with Optimal TV Plus.' : 'Préchargé avec myTV Online 2 — la meilleure appli IPTV pour les appareils Formuler. Compatible Optimal TV Plus.' %></p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💬</div>
+        <h3>Support 24/7</h3>
+        <p><%= lang === 'en' ? 'Our team is available to help you set up and configure your Formuler device with your IPTV subscription.' : 'Notre équipe est disponible pour vous aider à configurer votre appareil Formuler avec votre abonnement IPTV.' %></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Bundle CTA -->
+<section class="cta-section">
+  <div class="cta-overlay">
+    <div class="container text-center">
+      <h2><%= lang === 'en' ? 'Bundle &amp; save — device + subscription' : 'Bundle économique — appareil + abonnement' %></h2>
+      <p><%= lang === 'en' ? 'Order your Formuler device and an IPTV subscription together for the best streaming experience.' : 'Commandez votre appareil Formuler et un abonnement IPTV ensemble pour la meilleure expérience de streaming.' %></p>
+      <a href="plans" class="btn-primary btn-lg" style="background-color:#fff;color:#16a34a"><%= lang === 'en' ? 'View IPTV plans →' : 'Voir les forfaits IPTV →' %></a>
+    </div>
+  </div>
+</section>
+
+<!-- Order confirmation modal -->
+<div id="orderModal" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:100;align-items:center;justify-content:center;padding:1rem">
+  <div style="background:#1a1a1a;border:1px solid rgba(255,255,255,.15);border-radius:16px;max-width:480px;width:100%;padding:2rem;position:relative;animation:slideUp .2s ease">
+    <button id="closeOrderModal" style="position:absolute;top:1rem;right:1.25rem;background:none;border:none;color:rgba(255,255,255,.6);font-size:1.75rem;cursor:pointer;line-height:1">×</button>
+    <h2 style="margin-bottom:.25rem;font-size:1.35rem;color:#f5f5f5">🛒 <span id="modalProductName"></span></h2>
+    <p id="modalProductPrice" style="font-size:2rem;font-weight:900;color:#4ade80;margin-bottom:1.5rem;margin-top:.25rem"></p>
+    <form id="orderForm">
+      <div style="margin-bottom:1rem">
+        <label style="display:block;margin-bottom:.4rem;font-weight:600;font-size:.875rem;color:#f5f5f5"><%= lang === 'en' ? 'Full name' : 'Nom complet' %> *</label>
+        <input type="text" id="orderName" required value="<%= user ? (user.display_name || '') : '' %>"
+          style="width:100%;padding:.7rem 1rem;background:#0f0f0f;border:1px solid rgba(255,255,255,.15);color:#f5f5f5;border-radius:8px;font-size:.95rem;font-family:inherit">
+      </div>
+      <div style="margin-bottom:1.25rem">
+        <label style="display:block;margin-bottom:.4rem;font-weight:600;font-size:.875rem;color:#f5f5f5"><%= lang === 'en' ? 'Phone (optional)' : 'Téléphone (optionnel)' %></label>
+        <input type="tel" id="orderPhone" value="<%= user ? (user.phone || '') : '' %>"
+          style="width:100%;padding:.7rem 1rem;background:#0f0f0f;border:1px solid rgba(255,255,255,.15);color:#f5f5f5;border-radius:8px;font-size:.95rem;font-family:inherit">
+      </div>
+      <div id="orderMsg" style="display:none;padding:.7rem 1rem;border-radius:8px;font-size:.875rem;margin-bottom:1rem"></div>
+      <button type="submit" id="orderSubmitBtn" class="btn-primary btn-lg btn-block" style="background-color:#22c55e;color:#fff">
+        🔒 <%= lang === 'en' ? 'Confirm order' : 'Confirmer la commande' %>
+      </button>
+      <p style="margin-top:.85rem;font-size:.8rem;color:rgba(255,255,255,.45);text-align:center"><%= lang === 'en' ? 'Payment via Interac e-Transfer — instructions sent after confirmation.' : 'Paiement par virement Interac — instructions envoyées après confirmation.' %></p>
+    </form>
+  </div>
+</div>
+
+<% if (user) { %>
+<script>
+(function(){
+  var modal = document.getElementById('orderModal');
+  var closeBtn = document.getElementById('closeOrderModal');
+  var form = document.getElementById('orderForm');
+  var submitBtn = document.getElementById('orderSubmitBtn');
+  var msgEl = document.getElementById('orderMsg');
+  var nameInput = document.getElementById('orderName');
+  var phoneInput = document.getElementById('orderPhone');
+  var currentProductId = null;
+  var LANG = <%- JSON.stringify(lang) %>;
+  var T_CONFIRM = LANG === 'en' ? 'Confirm order' : 'Confirmer la commande';
+  var T_PROCESSING = LANG === 'en' ? 'Processing...' : 'Traitement en cours...';
+  var T_ERROR = LANG === 'en' ? 'An error occurred. Please try again.' : 'Une erreur s\'est produite. Réessayez.';
+
+  function fmtPrice(cents) {
+    var v = (cents / 100).toFixed(2);
+    return LANG === 'en' ? ('$' + v + ' CAD') : (v.replace('.', ',') + ' $ CAD');
+  }
+
+  function showMsg(txt, isErr) {
+    msgEl.textContent = txt;
+    msgEl.style.display = 'block';
+    if (isErr) {
+      msgEl.style.background = 'rgba(239,68,68,.15)';
+      msgEl.style.color = '#fca5a5';
+      msgEl.style.border = '1px solid rgba(239,68,68,.3)';
+    } else {
+      msgEl.style.background = 'rgba(34,197,94,.15)';
+      msgEl.style.color = '#4ade80';
+      msgEl.style.border = '1px solid rgba(34,197,94,.3)';
+    }
+  }
+
+  document.querySelectorAll('.order-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      currentProductId = btn.getAttribute('data-id');
+      var name = btn.getAttribute('data-name');
+      var price = parseInt(btn.getAttribute('data-price')) || 0;
+      document.getElementById('modalProductName').textContent = name;
+      document.getElementById('modalProductPrice').textContent = fmtPrice(price);
+      msgEl.style.display = 'none';
+      submitBtn.disabled = false;
+      submitBtn.textContent = '🔒 ' + T_CONFIRM;
+      modal.style.display = 'flex';
+    });
+  });
+
+  function closeModal() { modal.style.display = 'none'; }
+  closeBtn.addEventListener('click', closeModal);
+  modal.addEventListener('click', function(e) { if (e.target === modal) closeModal(); });
+  document.addEventListener('keydown', function(e) { if (e.key === 'Escape' && modal.style.display === 'flex') closeModal(); });
+
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    if (!currentProductId) return;
+    submitBtn.disabled = true;
+    submitBtn.textContent = T_PROCESSING;
+    msgEl.style.display = 'none';
+    try {
+      var payload = { productId: currentProductId, customerName: nameInput.value, customerPhone: phoneInput.value };
+      var res = await TenantSDK.fetch('api/formuler-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      var json = await res.json();
+      if (res.ok && json.success && json.orderId) {
+        closeModal();
+        window.location.href = 'thank-you/' + json.orderId;
+      } else {
+        showMsg((json && json.error) || T_ERROR, true);
+        submitBtn.disabled = false;
+        submitBtn.textContent = '🔒 ' + T_CONFIRM;
+      }
+    } catch (err) {
+      showMsg(T_ERROR, true);
+      submitBtn.disabled = false;
+      submitBtn.textContent = '🔒 ' + T_CONFIRM;
+    }
+  });
+})();
+</script>
+<% } %>
+
+<%- include('partials/footer') %>

@@ -17,7 +17,8 @@
 <header class="site-header">
   <div class="nav-container">
     <a href="." class="logo">
-      <img src="<%= (settings._p_nav_logo_url) ? settings._p_nav_logo_url : ((typeof appIconUrl !== 'undefined' && appIconUrl) ? appIconUrl : '') %>" alt="Logo" class="logo-img" onerror="this.style.display='none'">
+      <% var _navLogoSrc = (settings._p_nav_logo_url) || (typeof appIconUrl !== 'undefined' && appIconUrl ? appIconUrl : ''); %>
+      <% if (_navLogoSrc) { %><img src="<%= _navLogoSrc %>" alt="<%= t.site_title %>" class="logo-img"><% } %>
       <span class="logo-text"><%= t.site_title %></span>
     </a>
     <nav class="desktop-nav">
@@ -25,7 +26,11 @@
       <a href="plans"><%= t.nav_plans %></a>
       <a href="firstaru"><%= t.nav_firstaru %></a>
       <a href="omega"><%= t.nav_omega %></a>
+      <a href="edge"><%= t.nav_edge %></a>
+      <a href="trex"><%= t.nav_trex %></a>
+      <a href="formuler"><%= t.nav_formuler %></a>
       <a href="features"><%= t.nav_features %></a>
+      <a href="reseller"><%= t.nav_reseller %></a>
       <a href="contact"><%= t.nav_contact %></a>
       <a href="account" data-auth-only style="display:none"><%= t.nav_account %></a>
     </nav>
@@ -47,7 +52,11 @@
     <a href="plans"><%= t.nav_plans %></a>
     <a href="firstaru"><%= t.nav_firstaru %></a>
     <a href="omega"><%= t.nav_omega %></a>
+    <a href="edge"><%= t.nav_edge %></a>
+    <a href="trex"><%= t.nav_trex %></a>
+    <a href="formuler"><%= t.nav_formuler %></a>
     <a href="features"><%= t.nav_features %></a>
+    <a href="reseller"><%= t.nav_reseller %></a>
     <a href="contact"><%= t.nav_contact %></a>
     <a href="account" data-auth-only style="display:none"><%= t.nav_account %></a>
     <a href="#" data-login-btn><%= t.nav_login %></a>

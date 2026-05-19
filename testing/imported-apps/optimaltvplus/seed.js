@@ -37,22 +37,10 @@ module.exports = async function(db) {
   if (!firstCheck || firstCheck.c === 0) {
     const faruFeats = '10 000+ chaînes\nQualité 4K Ultra HD\nServeur Firstaru Premium\nMulti-appareils\nSupport 24/7\nActivation en moins de 30 min';
     const faruFeatsEn = '10,000+ channels\n4K Ultra HD quality\nFirstaru Premium Server\nMulti-device\n24/7 Support\nActivation in under 30 min';
-    await db.run(
-      'INSERT INTO plans (name, name_en, description, description_en, price_cents, duration_days, features, features_en, badge, featured, sort_order, active) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)',
-      ['Firstaru 1 Mois', 'Firstaru 1 Month', 'Abonnement Firstaru 1 mois.', 'Firstaru 1-month subscription.', 3000, 30, faruFeats, faruFeatsEn, null, 0, 20, 1]
-    );
-    await db.run(
-      'INSERT INTO plans (name, name_en, description, description_en, price_cents, duration_days, features, features_en, badge, featured, sort_order, active) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)',
-      ['Firstaru 3 Mois', 'Firstaru 3 Months', 'Abonnement Firstaru 3 mois — économisez 15 $.', 'Firstaru 3-month subscription — save $15.', 7500, 90, faruFeats, faruFeatsEn, null, 0, 21, 1]
-    );
-    await db.run(
-      'INSERT INTO plans (name, name_en, description, description_en, price_cents, duration_days, features, features_en, badge, featured, sort_order, active) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)',
-      ['Firstaru 6 Mois', 'Firstaru 6 Months', 'Abonnement Firstaru 6 mois — économisez 40 $.', 'Firstaru 6-month subscription — save $40.', 14000, 180, faruFeats, faruFeatsEn, null, 0, 22, 1]
-    );
-    await db.run(
-      'INSERT INTO plans (name, name_en, description, description_en, price_cents, duration_days, features, features_en, badge, featured, sort_order, active) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)',
-      ['Firstaru 12 Mois', 'Firstaru 12 Months', 'Abonnement Firstaru 12 mois — meilleure offre!', 'Firstaru 12-month subscription — best deal!', 25000, 365, faruFeats, faruFeatsEn, 'MEILLEURE OFFRE', 0, 23, 1]
-    );
+    await db.run('INSERT INTO plans (name, name_en, description, description_en, price_cents, duration_days, features, features_en, badge, featured, sort_order, active) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)', ['Firstaru 1 Mois', 'Firstaru 1 Month', 'Abonnement Firstaru 1 mois.', 'Firstaru 1-month subscription.', 3000, 30, faruFeats, faruFeatsEn, null, 0, 20, 1]);
+    await db.run('INSERT INTO plans (name, name_en, description, description_en, price_cents, duration_days, features, features_en, badge, featured, sort_order, active) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)', ['Firstaru 3 Mois', 'Firstaru 3 Months', 'Abonnement Firstaru 3 mois — économisez 15 $.', 'Firstaru 3-month subscription — save $15.', 7500, 90, faruFeats, faruFeatsEn, null, 0, 21, 1]);
+    await db.run('INSERT INTO plans (name, name_en, description, description_en, price_cents, duration_days, features, features_en, badge, featured, sort_order, active) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)', ['Firstaru 6 Mois', 'Firstaru 6 Months', 'Abonnement Firstaru 6 mois — économisez 40 $.', 'Firstaru 6-month subscription — save $40.', 14000, 180, faruFeats, faruFeatsEn, null, 0, 22, 1]);
+    await db.run('INSERT INTO plans (name, name_en, description, description_en, price_cents, duration_days, features, features_en, badge, featured, sort_order, active) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)', ['Firstaru 12 Mois', 'Firstaru 12 Months', 'Abonnement Firstaru 12 mois — meilleure offre!', 'Firstaru 12-month subscription — best deal!', 25000, 365, faruFeats, faruFeatsEn, 'MEILLEURE OFFRE', 0, 23, 1]);
   }
 
   // Omega server plans
@@ -60,21 +48,75 @@ module.exports = async function(db) {
   if (!omegaCheck || omegaCheck.c === 0) {
     const omegaFeats = '10 000+ chaînes\nQualité 4K Ultra HD\nServeur Omega Premium\nMulti-appareils\nSupport 24/7\nActivation en moins de 30 min';
     const omegaFeatsEn = '10,000+ channels\n4K Ultra HD quality\nOmega Premium Server\nMulti-device\n24/7 Support\nActivation in under 30 min';
+    await db.run('INSERT INTO plans (name, name_en, description, description_en, price_cents, duration_days, features, features_en, badge, featured, sort_order, active) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)', ['Omega 1 Mois', 'Omega 1 Month', 'Abonnement Omega 1 mois.', 'Omega 1-month subscription.', 2500, 30, omegaFeats, omegaFeatsEn, null, 0, 30, 1]);
+    await db.run('INSERT INTO plans (name, name_en, description, description_en, price_cents, duration_days, features, features_en, badge, featured, sort_order, active) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)', ['Omega 3 Mois', 'Omega 3 Months', 'Abonnement Omega 3 mois — économisez 15 $.', 'Omega 3-month subscription — save $15.', 6000, 90, omegaFeats, omegaFeatsEn, null, 0, 31, 1]);
+    await db.run('INSERT INTO plans (name, name_en, description, description_en, price_cents, duration_days, features, features_en, badge, featured, sort_order, active) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)', ['Omega 6 Mois', 'Omega 6 Months', 'Abonnement Omega 6 mois — économisez 50 $.', 'Omega 6-month subscription — save $50.', 10000, 180, omegaFeats, omegaFeatsEn, null, 0, 32, 1]);
+    await db.run('INSERT INTO plans (name, name_en, description, description_en, price_cents, duration_days, features, features_en, badge, featured, sort_order, active) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)', ['Omega 12 Mois', 'Omega 12 Months', 'Abonnement Omega 12 mois — meilleure offre!', 'Omega 12-month subscription — best deal!', 20000, 365, omegaFeats, omegaFeatsEn, 'MEILLEURE OFFRE', 0, 33, 1]);
+  }
+
+  // Edge server plans
+  const edgeCheck = await db.get("SELECT COUNT(*)::int AS c FROM plans WHERE LOWER(name) LIKE 'edge%'");
+  if (!edgeCheck || edgeCheck.c === 0) {
+    const edgeFeats = '10 000+ chaînes\nQualité 4K Ultra HD\nServeur Edge Premium\nMulti-appareils\nSupport 24/7\nActivation en moins de 30 min';
+    const edgeFeatsEn = '10,000+ channels\n4K Ultra HD quality\nEdge Premium Server\nMulti-device\n24/7 Support\nActivation in under 30 min';
+    await db.run('INSERT INTO plans (name, name_en, description, description_en, price_cents, duration_days, features, features_en, badge, featured, sort_order, active) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)', ['Edge 1 Mois', 'Edge 1 Month', 'Abonnement Edge 1 mois.', 'Edge 1-month subscription.', 2000, 30, edgeFeats, edgeFeatsEn, null, 0, 40, 1]);
+    await db.run('INSERT INTO plans (name, name_en, description, description_en, price_cents, duration_days, features, features_en, badge, featured, sort_order, active) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)', ['Edge 3 Mois', 'Edge 3 Months', 'Abonnement Edge 3 mois — économisez 10 $.', 'Edge 3-month subscription — save $10.', 5000, 90, edgeFeats, edgeFeatsEn, null, 0, 41, 1]);
+    await db.run('INSERT INTO plans (name, name_en, description, description_en, price_cents, duration_days, features, features_en, badge, featured, sort_order, active) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)', ['Edge 6 Mois', 'Edge 6 Months', 'Abonnement Edge 6 mois — économisez 40 $.', 'Edge 6-month subscription — save $40.', 8000, 180, edgeFeats, edgeFeatsEn, null, 0, 42, 1]);
+    await db.run('INSERT INTO plans (name, name_en, description, description_en, price_cents, duration_days, features, features_en, badge, featured, sort_order, active) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)', ['Edge 12 Mois', 'Edge 12 Months', 'Abonnement Edge 12 mois — meilleure offre!', 'Edge 12-month subscription — best deal!', 15000, 365, edgeFeats, edgeFeatsEn, 'MEILLEURE OFFRE', 0, 43, 1]);
+  }
+
+  // Trex server plans
+  const trexCheck = await db.get("SELECT COUNT(*)::int AS c FROM plans WHERE LOWER(name) LIKE 'trex%'");
+  if (!trexCheck || trexCheck.c === 0) {
+    const trexFeats = '10 000+ chaînes\nQualité HD/4K Ultra HD\nServeur Trex Premium\nChaînes du Québec incluses\nSports en direct & PPV\nFilms et séries sur demande\nSupport 24/7\nActivation en moins de 30 min';
+    const trexFeatsEn = '10,000+ channels\nHD/4K Ultra HD quality\nTrex Premium Server\nQuebec channels included\nLive sports & PPV\nMovies and series on demand\n24/7 Support\nActivation in under 30 min';
+    await db.run('INSERT INTO plans (name, name_en, description, description_en, price_cents, duration_days, features, features_en, badge, featured, sort_order, active) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)', ['Trex 1 Mois', 'Trex 1 Month', 'Abonnement TREX LIVE 1 mois.', 'TREX LIVE 1-month subscription.', 2000, 30, trexFeats, trexFeatsEn, null, 0, 50, 1]);
+    await db.run('INSERT INTO plans (name, name_en, description, description_en, price_cents, duration_days, features, features_en, badge, featured, sort_order, active) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)', ['Trex 3 Mois', 'Trex 3 Months', 'Abonnement TREX LIVE 3 mois — économisez 10 $.', 'TREX LIVE 3-month subscription — save $10.', 5000, 90, trexFeats, trexFeatsEn, null, 0, 51, 1]);
+    await db.run('INSERT INTO plans (name, name_en, description, description_en, price_cents, duration_days, features, features_en, badge, featured, sort_order, active) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)', ['Trex 6 Mois', 'Trex 6 Months', 'Abonnement TREX LIVE 6 mois — économisez 40 $.', 'TREX LIVE 6-month subscription — save $40.', 8000, 180, trexFeats, trexFeatsEn, null, 0, 52, 1]);
+    await db.run('INSERT INTO plans (name, name_en, description, description_en, price_cents, duration_days, features, features_en, badge, featured, sort_order, active) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)', ['Trex 12 Mois', 'Trex 12 Months', 'Abonnement TREX LIVE 12 mois — meilleure offre!', 'TREX LIVE 12-month subscription — best deal!', 14000, 365, trexFeats, trexFeatsEn, 'MEILLEURE OFFRE', 0, 53, 1]);
+  }
+
+  // Formuler devices
+  const formulerCheck = await db.get("SELECT COUNT(*)::int AS c FROM formuler_products");
+  if (!formulerCheck || formulerCheck.c === 0) {
     await db.run(
-      'INSERT INTO plans (name, name_en, description, description_en, price_cents, duration_days, features, features_en, badge, featured, sort_order, active) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)',
-      ['Omega 1 Mois', 'Omega 1 Month', 'Abonnement Omega 1 mois.', 'Omega 1-month subscription.', 2500, 30, omegaFeats, omegaFeatsEn, null, 0, 30, 1]
+      'INSERT INTO formuler_products (name, name_en, description, description_en, price_cents, features, features_en, image_url, badge, sort_order, active) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',
+      [
+        'Formuler Z10', 'Formuler Z10',
+        'Boîtier Android 4K HDR10+ avec lecteur multimédia myTV Online 2 préinstallé. Compatible avec tous les services IPTV.',
+        'Android 4K HDR10+ set-top box with myTV Online 2 pre-installed. Compatible with all IPTV services.',
+        16000,
+        'Android 10\nCPU Quad-core\n2GB RAM / 8GB ROM\n4K HDR10+\nUSB 3.0\nmyTV Online 2 préinstallé\nTélécommande IR premium',
+        'Android 10\nQuad-core CPU\n2GB RAM / 8GB ROM\n4K HDR10+\nUSB 3.0\nmyTV Online 2 pre-installed\nPremium IR remote',
+        'https://res.cloudinary.com/duhp69meg/image/upload/v1778771061/managed_agent_updates/ma_update_image_1778771061394.png',
+        null, 1, 1
+      ]
     );
     await db.run(
-      'INSERT INTO plans (name, name_en, description, description_en, price_cents, duration_days, features, features_en, badge, featured, sort_order, active) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)',
-      ['Omega 3 Mois', 'Omega 3 Months', 'Abonnement Omega 3 mois — économisez 15 $.', 'Omega 3-month subscription — save $15.', 6000, 90, omegaFeats, omegaFeatsEn, null, 0, 31, 1]
+      'INSERT INTO formuler_products (name, name_en, description, description_en, price_cents, features, features_en, image_url, badge, sort_order, active) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',
+      [
+        'Formuler Z11 Pro', 'Formuler Z11 Pro',
+        'Boîtier Android premium avec texture carbone, 16 Go de stockage et support HDR10+. La référence en matière de streaming IPTV.',
+        'Premium Android set-top box with carbon texture, 16GB storage and HDR10+ support. The reference for IPTV streaming.',
+        21000,
+        'Android 11\nCPU Quad-core\n2GB RAM / 16GB ROM\n4K HDR10+\nMicro SD\nmyTV Online 3 préinstallé\nTélécommande IR premium\nDesign carbone premium',
+        'Android 11\nQuad-core CPU\n2GB RAM / 16GB ROM\n4K HDR10+\nMicro SD slot\nmyTV Online 3 pre-installed\nPremium IR remote\nPremium carbon design',
+        'https://res.cloudinary.com/duhp69meg/image/upload/v1778771103/managed_agent_updates/ma_update_image_1778771103595.png',
+        'TOP VENTE', 2, 1
+      ]
     );
     await db.run(
-      'INSERT INTO plans (name, name_en, description, description_en, price_cents, duration_days, features, features_en, badge, featured, sort_order, active) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)',
-      ['Omega 6 Mois', 'Omega 6 Months', 'Abonnement Omega 6 mois — économisez 50 $.', 'Omega 6-month subscription — save $50.', 10000, 180, omegaFeats, omegaFeatsEn, null, 0, 32, 1]
-    );
-    await db.run(
-      'INSERT INTO plans (name, name_en, description, description_en, price_cents, duration_days, features, features_en, badge, featured, sort_order, active) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)',
-      ['Omega 12 Mois', 'Omega 12 Months', 'Abonnement Omega 12 mois — meilleure offre!', 'Omega 12-month subscription — best deal!', 20000, 365, omegaFeats, omegaFeatsEn, 'MEILLEURE OFFRE', 0, 33, 1]
+      'INSERT INTO formuler_products (name, name_en, description, description_en, price_cents, features, features_en, image_url, badge, sort_order, active) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',
+      [
+        'Formuler Z mini', 'Formuler Z mini',
+        'Dongle IPTV ultra-compact se branchant directement sur votre port HDMI. La solution IPTV la plus portable du marché.',
+        'Ultra-compact IPTV dongle plugging directly into your HDMI port. The most portable IPTV solution on the market.',
+        18000,
+        'Android 9\n1GB RAM / 8GB ROM\n4K HDR\nHDMI direct\nmyTV Online 2 préinstallé\nTélécommande BT vocale\nUltra-compact et portable',
+        'Android 9\n1GB RAM / 8GB ROM\n4K HDR\nDirect HDMI\nmyTV Online 2 pre-installed\nBluetooth voice remote\nUltra-compact and portable',
+        'https://res.cloudinary.com/duhp69meg/image/upload/v1778771144/managed_agent_updates/ma_update_image_1778771144235.png',
+        null, 3, 1
+      ]
     );
   }
 

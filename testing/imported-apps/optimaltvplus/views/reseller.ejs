@@ -1,0 +1,232 @@
+<%- include('partials/header') %>
+
+<!-- Hero -->
+<section class="hero" style="min-height:60vh">
+  <img src="https://res.cloudinary.com/duhp69meg/image/upload/v1779050851/managed_agent_updates/ma_update_image_1779050851522.png" alt="<%= lang === 'en' ? 'Become a Reseller' : 'Devenez Revendeur' %>" class="hero-img">
+  <div class="hero-overlay">
+    <div class="hero-content">
+      <div class="hero-badges">
+        <span class="pill">💼 <%= lang === 'en' ? 'RESELLER PROGRAM' : 'PROGRAMME REVENDEUR' %></span>
+        <span class="pill">✅ <%= lang === 'en' ? 'FLEXIBLE SCHEDULE' : 'HORAIRES FLEXIBLES' %></span>
+        <span class="pill">💰 <%= lang === 'en' ? 'EXTRA INCOME' : 'REVENUS SUPPLÉMENTAIRES' %></span>
+      </div>
+      <h1><%= lang === 'en' ? 'Become a Reseller with OptimalTV Plus' : 'Devenez Revendeur avec Optimal TV Plus' %></h1>
+      <p><%= lang === 'en'
+        ? 'Want to start your own reselling business and offer a modern entertainment service to your clients? Join our reseller program and enjoy a simple, stable and professional platform.'
+        : "Vous souhaitez démarrer votre propre activité de revente et offrir un service de divertissement moderne à vos clients? Rejoignez notre programme de revendeur et profitez d'une plateforme simple, stable et professionnelle." %></p>
+      <div class="hero-cta">
+        <a href="contact" class="btn-primary btn-lg" style="background-color:#22c55e;color:#fff"><%= lang === 'en' ? 'Contact us now →' : 'Nous contacter →' %></a>
+        <a href="#why-reseller" class="btn-secondary btn-lg" onclick="event.preventDefault();document.getElementById('why-reseller').scrollIntoView({behavior:'smooth'})"><%= lang === 'en' ? 'Learn more' : 'En savoir plus' %></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- What a reseller does -->
+<section class="section" style="background:var(--bg-2)">
+  <div class="container">
+    <div class="section-head">
+      <h2><%= lang === 'en' ? 'What a Reseller Does' : 'Ce qu\'un revendeur fait' %></h2>
+      <p><%= lang === 'en' ? 'As an OptimalTV Plus reseller, you play a key role in growing our network and serving customers.' : 'En tant que revendeur Optimal TV Plus, vous jouez un rôle clé dans la croissance de notre réseau et le service à la clientèle.' %></p>
+    </div>
+
+    <div class="features-grid features-grid-full">
+
+      <!-- Find clients -->
+      <div class="feature-card large">
+        <div class="feature-icon">📢</div>
+        <h3><%= lang === 'en' ? 'Find Clients' : 'Trouver des clients' %></h3>
+        <p style="margin-bottom:1rem"><%= lang === 'en'
+          ? 'The main role of the reseller is to promote services and find new customers through:'
+          : 'Le rôle principal du revendeur est de promouvoir les services et trouver de nouveaux clients via :' %></p>
+        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:.4rem">
+          <li style="color:var(--text-dim);font-size:.9rem">✓ Facebook &amp; Marketplace</li>
+          <li style="color:var(--text-dim);font-size:.9rem">✓ <%= lang === 'en' ? 'Local groups' : 'Groupes locaux' %></li>
+          <li style="color:var(--text-dim);font-size:.9rem">✓ <%= lang === 'en' ? 'Referrals &amp; word of mouth' : 'Références &amp; bouche-à-oreille' %></li>
+          <li style="color:var(--text-dim);font-size:.9rem">✓ <%= lang === 'en' ? 'Online advertising' : 'Publicité en ligne' %></li>
+        </ul>
+      </div>
+
+      <!-- Respond to clients -->
+      <div class="feature-card large">
+        <div class="feature-icon">💬</div>
+        <h3><%= lang === 'en' ? 'Respond to Clients' : 'Répondre aux clients' %></h3>
+        <p style="margin-bottom:1rem"><%= lang === 'en'
+          ? 'The reseller must:'
+          : 'Le revendeur doit :' %></p>
+        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:.4rem">
+          <li style="color:var(--text-dim);font-size:.9rem">✓ <%= lang === 'en' ? 'Answer client questions' : 'Répondre aux questions des clients' %></li>
+          <li style="color:var(--text-dim);font-size:.9rem">✓ <%= lang === 'en' ? 'Explain available plans' : 'Expliquer les forfaits disponibles' %></li>
+          <li style="color:var(--text-dim);font-size:.9rem">✓ <%= lang === 'en' ? 'Advise on compatible devices' : 'Conseiller les appareils compatibles' %></li>
+          <li style="color:var(--text-dim);font-size:.9rem">✓ <%= lang === 'en' ? 'Offer good pre &amp; after-sales service' : 'Offrir un bon service avant et après la vente' %></li>
+        </ul>
+      </div>
+
+      <!-- Create and manage subscriptions -->
+      <div class="feature-card large">
+        <div class="feature-icon">🔑</div>
+        <h3><%= lang === 'en' ? 'Create &amp; Manage Subscriptions' : 'Créer et gérer les abonnements' %></h3>
+        <p style="margin-bottom:1rem"><%= lang === 'en'
+          ? 'The reseller can:'
+          : 'Le revendeur peut :' %></p>
+        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:.4rem">
+          <li style="color:var(--text-dim);font-size:.9rem">✓ <%= lang === 'en' ? 'Create subscriptions' : 'Créer des abonnements' %></li>
+          <li style="color:var(--text-dim);font-size:.9rem">✓ <%= lang === 'en' ? 'Renew existing clients' : 'Renouveler les clients' %></li>
+          <li style="color:var(--text-dim);font-size:.9rem">✓ <%= lang === 'en' ? 'Manage trials' : 'Gérer les essais' %></li>
+          <li style="color:var(--text-dim);font-size:.9rem">✓ <%= lang === 'en' ? 'Track payments' : 'Assurer le suivi des paiements' %></li>
+        </ul>
+      </div>
+
+      <!-- Help with installation -->
+      <div class="feature-card large">
+        <div class="feature-icon">📱</div>
+        <h3><%= lang === 'en' ? 'Help with Installation' : 'Aider à l\'installation' %></h3>
+        <p style="margin-bottom:1rem"><%= lang === 'en'
+          ? 'The reseller helps clients configure their service on:'
+          : 'Le revendeur aide les clients à configurer leur service sur :' %></p>
+        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:.4rem">
+          <li style="color:var(--text-dim);font-size:.9rem">✓ Firestick</li>
+          <li style="color:var(--text-dim);font-size:.9rem">✓ Formuler</li>
+          <li style="color:var(--text-dim);font-size:.9rem">✓ Android Box</li>
+          <li style="color:var(--text-dim);font-size:.9rem">✓ Smart TV</li>
+          <li style="color:var(--text-dim);font-size:.9rem">✓ <%= lang === 'en' ? 'Phone &amp; tablet' : 'Téléphone et tablette' %></li>
+        </ul>
+      </div>
+
+      <!-- Basic support -->
+      <div class="feature-card large">
+        <div class="feature-icon">🛠️</div>
+        <h3><%= lang === 'en' ? 'Basic Support' : 'Support de base' %></h3>
+        <p style="margin-bottom:1rem"><%= lang === 'en'
+          ? 'The reseller must be able to:'
+          : 'Le revendeur doit être capable de :' %></p>
+        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:.4rem">
+          <li style="color:var(--text-dim);font-size:.9rem">✓ <%= lang === 'en' ? 'Help with connections' : 'Aider avec les connexions' %></li>
+          <li style="color:var(--text-dim);font-size:.9rem">✓ <%= lang === 'en' ? 'Explain how to refresh a playlist' : 'Expliquer comment actualiser une liste' %></li>
+          <li style="color:var(--text-dim);font-size:.9rem">✓ <%= lang === 'en' ? 'Help with certain apps' : 'Aider avec certaines applications' %></li>
+          <li style="color:var(--text-dim);font-size:.9rem">✓ <%= lang === 'en' ? 'Give basic stability tips' : 'Donner les conseils de base pour une meilleure stabilité' %></li>
+        </ul>
+      </div>
+
+      <!-- Build client loyalty -->
+      <div class="feature-card large">
+        <div class="feature-icon">🤝</div>
+        <h3><%= lang === 'en' ? 'Build Client Loyalty' : 'Fidéliser les clients' %></h3>
+        <p style="margin-bottom:1rem"><%= lang === 'en'
+          ? 'A good reseller:'
+          : 'Un bon revendeur :' %></p>
+        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:.4rem">
+          <li style="color:var(--text-dim);font-size:.9rem">✓ <%= lang === 'en' ? 'Stays professional' : 'Reste professionnel' %></li>
+          <li style="color:var(--text-dim);font-size:.9rem">✓ <%= lang === 'en' ? 'Responds quickly' : 'Répond rapidement' %></li>
+          <li style="color:var(--text-dim);font-size:.9rem">✓ <%= lang === 'en' ? 'Keeps clients informed of updates' : 'Informe les clients des mises à jour' %></li>
+          <li style="color:var(--text-dim);font-size:.9rem">✓ <%= lang === 'en' ? 'Builds a relationship of trust' : 'Crée une relation de confiance' %></li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- Why become a reseller? -->
+<section id="why-reseller" class="section" style="background:var(--bg)">
+  <div class="container">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center" class="reseller-why-grid">
+      <div>
+        <h2 style="font-size:clamp(1.75rem,3.5vw,2.5rem);font-weight:800;margin-bottom:1.5rem;letter-spacing:-.01em">
+          <%= lang === 'en' ? 'Why become a reseller?' : 'Pourquoi devenir revendeur?' %>
+        </h2>
+        <div style="display:flex;flex-direction:column;gap:1rem">
+          <div style="display:flex;align-items:center;gap:1rem;background:var(--bg-3);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem">
+            <span style="font-size:1.75rem;flex-shrink:0">💰</span>
+            <div>
+              <strong style="display:block;margin-bottom:.2rem"><%= lang === 'en' ? 'Extra income' : 'Revenus supplémentaires' %></strong>
+              <span style="color:var(--text-dim);font-size:.9rem"><%= lang === 'en' ? 'Generate additional revenue by growing your own client base.' : 'Générez des revenus supplémentaires en développant votre propre clientèle.' %></span>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:1rem;background:var(--bg-3);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem">
+            <span style="font-size:1.75rem;flex-shrink:0">🏠</span>
+            <div>
+              <strong style="display:block;margin-bottom:.2rem"><%= lang === 'en' ? 'Work from home' : 'Travail à domicile' %></strong>
+              <span style="color:var(--text-dim);font-size:.9rem"><%= lang === 'en' ? 'Manage your business entirely remotely, at your own pace.' : 'Gérez votre activité entièrement à distance, à votre propre rythme.' %></span>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:1rem;background:var(--bg-3);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem">
+            <span style="font-size:1.75rem;flex-shrink:0">🕐</span>
+            <div>
+              <strong style="display:block;margin-bottom:.2rem"><%= lang === 'en' ? 'Flexible schedule' : 'Horaires flexibles' %></strong>
+              <span style="color:var(--text-dim);font-size:.9rem"><%= lang === 'en' ? 'Work when you want — mornings, evenings, weekends.' : 'Travaillez quand vous voulez — matin, soir, fin de semaine.' %></span>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:1rem;background:var(--bg-3);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem">
+            <span style="font-size:1.75rem;flex-shrink:0">🤝</span>
+            <div>
+              <strong style="display:block;margin-bottom:.2rem"><%= lang === 'en' ? 'Team support' : 'Support de notre équipe' %></strong>
+              <span style="color:var(--text-dim);font-size:.9rem"><%= lang === 'en' ? 'Our team is here to guide and support you at every step.' : 'Notre équipe est là pour vous guider et vous soutenir à chaque étape.' %></span>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:1rem;background:var(--bg-3);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem">
+            <span style="font-size:1.75rem;flex-shrink:0">⚡</span>
+            <div>
+              <strong style="display:block;margin-bottom:.2rem"><%= lang === 'en' ? 'Stable professional platform' : 'Plateforme stable et professionnelle' %></strong>
+              <span style="color:var(--text-dim);font-size:.9rem"><%= lang === 'en' ? 'Reliable infrastructure with 10,000+ channels and 4K quality.' : 'Infrastructure fiable avec plus de 10 000 chaînes et qualité 4K.' %></span>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:1rem;background:var(--bg-3);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem">
+            <span style="font-size:1.75rem;flex-shrink:0">📈</span>
+            <div>
+              <strong style="display:block;margin-bottom:.2rem"><%= lang === 'en' ? 'Grow your own network' : 'Développer votre propre réseau' %></strong>
+              <span style="color:var(--text-dim);font-size:.9rem"><%= lang === 'en' ? 'Build a loyal client base and expand your business over time.' : 'Bâtissez une clientèle fidèle et développez votre activité dans le temps.' %></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div style="background:linear-gradient(135deg,rgba(34,197,94,.12),rgba(34,197,94,.04));border:1px solid rgba(34,197,94,.3);border-radius:20px;padding:2.5rem;text-align:center">
+          <div style="font-size:3.5rem;margin-bottom:1rem">🚀</div>
+          <h3 style="font-size:1.75rem;font-weight:800;margin-bottom:.75rem;color:var(--brand-light)">
+            <%= lang === 'en' ? 'Join the OptimalTV Plus team' : 'Rejoignez l\'équipe Optimal TV Plus' %>
+          </h3>
+          <p style="color:var(--text-dim);margin-bottom:2rem;line-height:1.7">
+            <%= lang === 'en'
+              ? 'Start today and build your own network with a serious and experienced team.'
+              : 'Commencez dès aujourd\'hui et développez votre propre réseau avec une équipe sérieuse et expérimentée.' %>
+          </p>
+          <div style="display:flex;flex-direction:column;gap:.75rem">
+            <a href="contact" class="btn-primary btn-lg" style="background-color:#22c55e;color:#fff;display:block;text-align:center">
+              📩 <%= lang === 'en' ? 'Contact us for more information' : 'Contactez-nous pour plus d\'informations' %>
+            </a>
+            <a href="plans" class="btn-secondary btn-lg" style="display:block;text-align:center">
+              <%= lang === 'en' ? 'View our plans →' : 'Voir nos forfaits →' %>
+            </a>
+          </div>
+          <p style="margin-top:1.5rem;font-size:.825rem;color:var(--text-dim)">
+            <%= lang === 'en' ? 'Free to join — no upfront cost' : 'Gratuit à rejoindre — aucun frais initial' %>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Banner -->
+<section class="cta-section">
+  <div class="cta-overlay">
+    <div class="container text-center">
+      <h2><%= lang === 'en' ? 'Ready to start your reseller journey?' : 'Prêt à démarrer votre activité de revendeur?' %></h2>
+      <p><%= lang === 'en'
+        ? 'Contact us today to learn more about our reseller program and get started.'
+        : 'Contactez-nous dès aujourd\'hui pour en savoir plus sur notre programme de revendeur et commencer.' %></p>
+      <a href="contact" class="btn-primary btn-lg" style="background-color:#fff;color:#16a34a">
+        📩 <%= lang === 'en' ? 'Get in touch →' : 'Nous joindre →' %>
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+@media (max-width:768px) {
+  .reseller-why-grid { grid-template-columns: 1fr !important; }
+}
+</style>
+
+<%- include('partials/footer') %>

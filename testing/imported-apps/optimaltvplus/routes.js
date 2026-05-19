@@ -6,7 +6,7 @@ module.exports = function(services) {
     fr: {
       site_title: 'Optimal TV Plus',
       nav_home: 'Accueil', nav_plans: 'Forfaits', nav_features: 'Fonctionnalités', nav_contact: 'Contact', nav_account: 'Mon compte', nav_login: 'Connexion', nav_logout: 'Déconnexion', nav_admin: 'Admin',
-      nav_firstaru: 'Firstaru', nav_omega: 'Omega',
+      nav_firstaru: 'Firstaru', nav_omega: 'Omega', nav_edge: 'Edge', nav_trex: 'Trex IPTV', nav_formuler: 'Appareils', nav_reseller: 'Revendeurs',
       hero_title: 'Streaming illimité en qualité Ultra HD',
       hero_subtitle: 'Plus de 10 000 chaînes en direct, films et séries à la demande. Disponible sur tous vos appareils.',
       hero_cta_primary: 'Voir les forfaits', hero_cta_secondary: 'Comment ça marche',
@@ -36,6 +36,9 @@ module.exports = function(services) {
       cred_help: 'Utilisez ces identifiants dans votre application IPTV (IPTV Smarters, TiviMate, Perfect Player, etc.)',
       cred_server_main: 'Serveur Principal',
       cred_server_firstaru: 'Serveur Firstaru',
+      cred_server_omega: 'Serveur Omega',
+      cred_server_edge: 'Serveur Edge',
+      cred_server_trex: 'Serveur Trex',
       cred_no_server: 'Aucun identifiant disponible pour ce serveur.',
       status_pending: 'En attente de paiement', status_paid: 'Payé', status_active: 'Actif', status_expired: 'Expiré', status_cancelled: 'Annulé', status_refunded: 'Remboursé', status_new: 'Nouveau', status_read: 'Lu', status_responded: 'Répondu', status_archived: 'Archivé',
       checkout_heading: 'Finalisation de votre abonnement', checkout_order_summary: 'Récapitulatif de la commande', checkout_plan: 'Forfait', checkout_duration: 'Durée', checkout_total: 'Total à payer', checkout_payment_method: 'Mode de paiement', checkout_etransfer: 'Virement Interac', checkout_confirm: 'Confirmer la commande', checkout_processing: 'Traitement...',
@@ -58,7 +61,7 @@ module.exports = function(services) {
     en: {
       site_title: 'Optimal TV Plus',
       nav_home: 'Home', nav_plans: 'Plans', nav_features: 'Features', nav_contact: 'Contact', nav_account: 'My Account', nav_login: 'Sign In', nav_logout: 'Sign Out', nav_admin: 'Admin',
-      nav_firstaru: 'Firstaru', nav_omega: 'Omega',
+      nav_firstaru: 'Firstaru', nav_omega: 'Omega', nav_edge: 'Edge', nav_trex: 'Trex IPTV', nav_formuler: 'Devices', nav_reseller: 'Resellers',
       hero_title: 'Unlimited streaming in Ultra HD quality',
       hero_subtitle: 'Over 10,000 live channels, movies and series on demand. Available on all your devices.',
       hero_cta_primary: 'View Plans', hero_cta_secondary: 'How it works',
@@ -88,6 +91,9 @@ module.exports = function(services) {
       cred_help: 'Use these credentials in your IPTV app (IPTV Smarters, TiviMate, Perfect Player, etc.)',
       cred_server_main: 'Main Server',
       cred_server_firstaru: 'Firstaru Server',
+      cred_server_omega: 'Omega Server',
+      cred_server_edge: 'Edge Server',
+      cred_server_trex: 'Trex Server',
       cred_no_server: 'No credentials available for this server.',
       status_pending: 'Pending payment', status_paid: 'Paid', status_active: 'Active', status_expired: 'Expired', status_cancelled: 'Cancelled', status_refunded: 'Refunded', status_new: 'New', status_read: 'Read', status_responded: 'Responded', status_archived: 'Archived',
       checkout_heading: 'Complete your subscription', checkout_order_summary: 'Order summary', checkout_plan: 'Plan', checkout_duration: 'Duration', checkout_total: 'Total to pay', checkout_payment_method: 'Payment method', checkout_etransfer: 'Interac e-Transfer', checkout_confirm: 'Confirm order', checkout_processing: 'Processing...',
@@ -157,7 +163,32 @@ module.exports = function(services) {
         { name: 'credentials_password', type: 'text', description: 'Mot de passe IPTV du client (serveur principal).', placeholder: 'pass12345' },
         { name: 'firstaru_m3u_url', type: 'text', description: "URL du serveur Firstaru (M3U/Xtream) à fournir au client.", placeholder: 'http://firstaru.net:8080/get.php?username=...&password=...&type=m3u_plus' },
         { name: 'firstaru_credentials_username', type: 'text', description: "Nom d'utilisateur IPTV du client (serveur Firstaru).", placeholder: 'user12345' },
-        { name: 'firstaru_credentials_password', type: 'text', description: 'Mot de passe IPTV du client (serveur Firstaru).', placeholder: 'pass12345' }
+        { name: 'firstaru_credentials_password', type: 'text', description: 'Mot de passe IPTV du client (serveur Firstaru).', placeholder: 'pass12345' },
+        { name: 'omega_m3u_url', type: 'text', description: "URL du serveur Omega (M3U/Xtream) à fournir au client.", placeholder: 'http://omega-server.com:8080/get.php?username=...&password=...&type=m3u_plus' },
+        { name: 'omega_credentials_username', type: 'text', description: "Nom d'utilisateur IPTV du client (serveur Omega).", placeholder: 'user12345' },
+        { name: 'omega_credentials_password', type: 'text', description: 'Mot de passe IPTV du client (serveur Omega).', placeholder: 'pass12345' },
+        { name: 'edge_m3u_url', type: 'text', description: "URL du serveur Edge (M3U/Xtream) à fournir au client.", placeholder: 'http://edge-server.com:8080/get.php?username=...&password=...&type=m3u_plus' },
+        { name: 'edge_credentials_username', type: 'text', description: "Nom d'utilisateur IPTV du client (serveur Edge).", placeholder: 'user12345' },
+        { name: 'edge_credentials_password', type: 'text', description: 'Mot de passe IPTV du client (serveur Edge).', placeholder: 'pass12345' },
+        { name: 'trex_m3u_url', type: 'text', description: "URL du serveur Trex (M3U/Xtream) à fournir au client.", placeholder: 'http://trex-server.com:8080/get.php?username=...&password=...&type=m3u_plus' },
+        { name: 'trex_credentials_username', type: 'text', description: "Nom d'utilisateur IPTV du client (serveur Trex).", placeholder: 'user12345' },
+        { name: 'trex_credentials_password', type: 'text', description: 'Mot de passe IPTV du client (serveur Trex).', placeholder: 'pass12345' }
+      ]
+    },
+    formuler_products: {
+      label: 'Appareils Formuler', icon: 'tv',
+      fields: [
+        { name: 'name', type: 'text', required: true, maxLength: 100, description: 'Nom de l\'appareil (ex: Formuler Z10).', placeholder: 'Formuler Z10' },
+        { name: 'name_en', type: 'text', maxLength: 100, description: 'Nom de l\'appareil en anglais.', placeholder: 'Formuler Z10' },
+        { name: 'description', type: 'textarea', description: 'Description courte de l\'appareil (français).', placeholder: 'Boîtier Android IPTV 4K HDR10+' },
+        { name: 'description_en', type: 'textarea', description: 'Description courte de l\'appareil (anglais).', placeholder: 'Android IPTV 4K HDR10+ set-top box' },
+        { name: 'price_cents', type: 'number', min: 0, step: 1, required: true, description: 'Prix en cents canadiens. Ex: 16000 = 160,00 $', placeholder: '16000' },
+        { name: 'features', type: 'textarea', description: 'Caractéristiques techniques, une par ligne (français).', placeholder: 'Android 10\nCPU Quad-core\n2GB RAM / 8GB ROM' },
+        { name: 'features_en', type: 'textarea', description: 'Technical specifications, one per line (English).', placeholder: 'Android 10\nQuad-core CPU\n2GB RAM / 8GB ROM' },
+        { name: 'image_url', type: 'image', description: 'Photo de l\'appareil. Format paysage recommandé: 800×600.' },
+        { name: 'badge', type: 'text', maxLength: 30, description: 'Badge affiché (ex: NOUVEAU, TOP VENTE). Laisser vide si aucun.', placeholder: 'NOUVEAU' },
+        { name: 'sort_order', type: 'number', default: 0, description: 'Ordre d\'affichage. Plus petit = affiché en premier.', placeholder: '0' },
+        { name: 'active', type: 'boolean', default: true, description: 'Décocher pour cacher l\'appareil du site public.' }
       ]
     },
     posts: {
@@ -309,7 +340,7 @@ module.exports = function(services) {
     try {
       const ctx = await buildContext(req);
       const [plans, testimonials, channels, posts] = await Promise.all([
-        services.db.all("SELECT * FROM plans WHERE active = 1 AND LOWER(name) NOT LIKE 'firstaru%' AND LOWER(name) NOT LIKE 'omega%' ORDER BY sort_order, id LIMIT 4"),
+        services.db.all("SELECT * FROM plans WHERE active = 1 AND LOWER(name) NOT LIKE 'firstaru%' AND LOWER(name) NOT LIKE 'omega%' AND LOWER(name) NOT LIKE 'edge%' AND LOWER(name) NOT LIKE 'trex%' ORDER BY sort_order, id LIMIT 4"),
         services.db.all('SELECT * FROM testimonials WHERE published = 1 ORDER BY id DESC LIMIT 6'),
         services.db.all('SELECT * FROM channels WHERE featured = 1 ORDER BY id LIMIT 12'),
         services.db.all('SELECT * FROM posts WHERE published = 1 ORDER BY created_at DESC LIMIT 3')
@@ -324,7 +355,7 @@ module.exports = function(services) {
   router.get('/plans', services.auth.optionalAuth, async (req, res) => {
     try {
       const ctx = await buildContext(req);
-      const plans = await services.db.all("SELECT * FROM plans WHERE active = 1 AND LOWER(name) NOT LIKE 'firstaru%' AND LOWER(name) NOT LIKE 'omega%' ORDER BY sort_order, id");
+      const plans = await services.db.all("SELECT * FROM plans WHERE active = 1 AND LOWER(name) NOT LIKE 'firstaru%' AND LOWER(name) NOT LIKE 'omega%' AND LOWER(name) NOT LIKE 'edge%' AND LOWER(name) NOT LIKE 'trex%' ORDER BY sort_order, id");
       res.render('plans', Object.assign(ctx, { plans }));
     } catch (e) {
       console.error('Plans error:', e.message);
@@ -350,6 +381,49 @@ module.exports = function(services) {
       res.render('omega', Object.assign(ctx, { plans }));
     } catch (e) {
       console.error('Omega page error:', e.message);
+      res.status(500).send('Server error');
+    }
+  });
+
+  router.get('/edge', services.auth.optionalAuth, async (req, res) => {
+    try {
+      const ctx = await buildContext(req);
+      const plans = await services.db.all("SELECT * FROM plans WHERE LOWER(name) LIKE 'edge%' AND active = 1 ORDER BY price_cents");
+      res.render('edge', Object.assign(ctx, { plans }));
+    } catch (e) {
+      console.error('Edge page error:', e.message);
+      res.status(500).send('Server error');
+    }
+  });
+
+  router.get('/trex', services.auth.optionalAuth, async (req, res) => {
+    try {
+      const ctx = await buildContext(req);
+      const plans = await services.db.all("SELECT * FROM plans WHERE LOWER(name) LIKE 'trex%' AND active = 1 ORDER BY price_cents");
+      res.render('trex', Object.assign(ctx, { plans }));
+    } catch (e) {
+      console.error('Trex page error:', e.message);
+      res.status(500).send('Server error');
+    }
+  });
+
+  router.get('/formuler', services.auth.optionalAuth, async (req, res) => {
+    try {
+      const ctx = await buildContext(req);
+      const products = await services.db.all('SELECT * FROM formuler_products WHERE active = 1 ORDER BY sort_order, id');
+      res.render('formuler', Object.assign(ctx, { products }));
+    } catch (e) {
+      console.error('Formuler page error:', e.message);
+      res.status(500).send('Server error');
+    }
+  });
+
+  router.get('/reseller', services.auth.optionalAuth, async (req, res) => {
+    try {
+      const ctx = await buildContext(req);
+      res.render('reseller', ctx);
+    } catch (e) {
+      console.error('Reseller page error:', e.message);
       res.status(500).send('Server error');
     }
   });
@@ -405,6 +479,15 @@ module.exports = function(services) {
     }
   });
 
+  router.get('/thank-you/:orderId', services.auth.optionalAuth, async (req, res) => {
+    try {
+      const ctx = await buildContext(req);
+      const order = await services.db.get('SELECT o.*, p.name AS plan_name, p.name_en AS plan_name_en FROM orders o LEFT JOIN plans p ON o.plan_id = p.id WHERE o.id = $1', [parseInt(req.params.orderId) || 0]);
+      if (!order) return res.redirect('.');
+      res.render('thank-you', Object.assign(ctx, { order }));
+    } catch (e) { res.status(500).send('Server error'); }
+  });
+
   router.post('/api/checkout', services.auth.requireAuth, async (req, res) => {
     try {
       const { planId, customerName, customerPhone } = req.body || {};
@@ -434,13 +517,34 @@ module.exports = function(services) {
     }
   });
 
-  router.get('/thank-you/:orderId', services.auth.optionalAuth, async (req, res) => {
+  router.post('/api/formuler-order', services.auth.requireAuth, async (req, res) => {
     try {
-      const ctx = await buildContext(req);
-      const order = await services.db.get('SELECT o.*, p.name AS plan_name, p.name_en AS plan_name_en FROM orders o LEFT JOIN plans p ON o.plan_id = p.id WHERE o.id = $1', [parseInt(req.params.orderId) || 0]);
-      if (!order) return res.redirect('.');
-      res.render('thank-you', Object.assign(ctx, { order }));
-    } catch (e) { res.status(500).send('Server error'); }
+      const { productId, customerName, customerPhone } = req.body || {};
+      const pid = parseInt(productId) || 0;
+      if (!pid) return res.status(400).json({ error: 'Missing product' });
+      const product = await services.db.get('SELECT * FROM formuler_products WHERE id = $1 AND active = 1', [pid]);
+      if (!product) return res.status(404).json({ error: 'Product not found' });
+      const user = req.user;
+      const productNote = 'Appareil Formuler: ' + product.name;
+      const result = await services.db.run(
+        "INSERT INTO orders (user_id, customer_name, customer_email, customer_phone, amount_cents, currency, status, payment_method, notes, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, 'CAD', 'pending', 'Interac', $6, NOW(), NOW()) RETURNING id",
+        [user.id, (customerName || user.display_name || '').slice(0, 100), user.email || '', (customerPhone || user.phone || '').slice(0, 30), product.price_cents, productNote]
+      );
+      const orderId = result.lastInsertRowid;
+      try {
+        if (services.config.contactEmail) {
+          await services.email.send({
+            to: services.config.contactEmail,
+            subject: 'Nouvelle commande appareil #' + orderId + ' - ' + product.name,
+            html: '<h2>Nouvelle commande appareil Formuler</h2><p><strong>Commande:</strong> #' + orderId + '</p><p><strong>Client:</strong> ' + (customerName || user.display_name || '') + ' (' + (user.email || '') + ')</p><p><strong>Téléphone:</strong> ' + (customerPhone || user.phone || '') + '</p><p><strong>Appareil:</strong> ' + product.name + '</p><p><strong>Montant:</strong> ' + (product.price_cents / 100).toFixed(2) + ' $ CAD</p><p>Connectez-vous au tableau de bord pour confirmer le paiement.</p>'
+          });
+        }
+      } catch (e) { console.error('Email notify failed:', e.message); }
+      res.json({ success: true, orderId });
+    } catch (e) {
+      console.error('Formuler order error:', e.message);
+      res.status(500).json({ error: 'Order creation failed' });
+    }
   });
 
   router.post('/api/contact', async (req, res) => {
@@ -572,6 +676,7 @@ module.exports = function(services) {
     const allowedFields = fields.map(f => f.name);
     const booleanFields = fields.filter(f => f.type === 'boolean').map(f => f.name);
     const numberFields = fields.filter(f => f.type === 'number').map(f => f.name);
+    const datetimeFields = fields.filter(f => f.type === 'datetime').map(f => f.name);
 
     router.get('/api/admin/' + moduleKey, requireAdmin, async (req, res) => {
       try {
@@ -590,6 +695,7 @@ module.exports = function(services) {
           let v = body[f];
           if (booleanFields.indexOf(f) >= 0) v = (v === true || v === 1 || v === '1' || v === 'true') ? 1 : 0;
           else if (numberFields.indexOf(f) >= 0) v = (v === '' || v === null) ? null : Number(v);
+          else if (datetimeFields.indexOf(f) >= 0) v = (v === '' || v === null) ? null : v;
           cols.push(f); vals.push(v); placeholders.push('$' + i); i++;
         }
         if (cols.length === 0) return res.status(400).json({ error: 'No data' });
@@ -613,6 +719,7 @@ module.exports = function(services) {
           let v = body[f];
           if (booleanFields.indexOf(f) >= 0) v = (v === true || v === 1 || v === '1' || v === 'true') ? 1 : 0;
           else if (numberFields.indexOf(f) >= 0) v = (v === '' || v === null) ? null : Number(v);
+          else if (datetimeFields.indexOf(f) >= 0) v = (v === '' || v === null) ? null : v;
           sets.push(f + ' = $' + i); vals.push(v); i++;
         }
         if (sets.length === 0) return res.status(400).json({ error: 'No data' });
