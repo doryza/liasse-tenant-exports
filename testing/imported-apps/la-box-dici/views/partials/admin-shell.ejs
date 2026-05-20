@@ -54,7 +54,7 @@ async function loadFields(){
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
 function formatCell(value, field, colName){
   if(value==null||value==='')return '<span class="muted">—</span>';
-  if(field && field.type==='boolean'){return '<span class="cell-bool">'+(value?'✅':'⬜'):'</span>'.replace(':',''); }
+  if(field && field.type==='boolean'){return '<span class="cell-bool">'+(value?'✅':'⬜')+'</span>'; }
   if(field && field.type==='image' && typeof value==='string' && value.match(/^https?:/)){return '<img src="'+esc(value)+'" class="thumb" alt="">';}
   if(colName==='status'){
     var cls='pill-muted';
