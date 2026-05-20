@@ -1,0 +1,68 @@
+<%- include('partials/header') %>
+<section class="hero">
+  <img src="<%= (typeof settings!=='undefined' && settings._p_hero_image_url) ? settings._p_hero_image_url : 'https://placehold.co/1600x900/1e293b/cbd5e1/png?text=La+Box+d%27Ici' %>" alt="" class="hero-img">
+  <div class="hero-overlay"></div>
+  <div class="container hero-content">
+    <h1><%= (typeof settings !== 'undefined' && settings['hero_title_' + lang]) ? settings['hero_title_' + lang] : t.hero_title %></h1>
+    <p class="hero-sub"><%= (typeof settings !== 'undefined' && settings['hero_subtitle_' + lang]) ? settings['hero_subtitle_' + lang] : t.hero_subtitle %></p>
+    <div class="hero-cta">
+      <% if (user) { %>
+        <a href="fil" class="btn-primary" style="background-color:#6366f1;color:#fff"><%= t.nav_feed %></a>
+      <% } else { %>
+        <a href="#" data-login-btn class="btn-primary" style="background-color:#6366f1;color:#fff"><%= t.hero_cta_join %></a>
+      <% } %>
+      <a href="a-propos" class="btn-outline"><%= t.hero_cta_learn %></a>
+    </div>
+  </div>
+</section>
+
+<section class="section section-features">
+  <div class="container">
+    <h2 class="section-title"><%= t.feature_h %></h2>
+    <div class="feature-grid">
+      <div class="feature-card"><div class="feature-icon">🔒</div><h3><%= t.feature1_t %></h3><p><%= t.feature1_d %></p></div>
+      <div class="feature-card"><div class="feature-icon">🛡️</div><h3><%= t.feature2_t %></h3><p><%= t.feature2_d %></p></div>
+      <div class="feature-card"><div class="feature-icon">⚖️</div><h3><%= t.feature3_t %></h3><p><%= t.feature3_d %></p></div>
+      <div class="feature-card"><div class="feature-icon">👨‍👩‍👧</div><h3><%= t.feature4_t %></h3><p><%= t.feature4_d %></p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-news">
+  <div class="container">
+    <div class="section-head">
+      <h2 class="section-title"><%= t.news_h %></h2>
+      <a href="annonces" class="link-arrow"><%= t.news_more %> →</a>
+    </div>
+    <% if (typeof posts !== 'undefined' && posts && posts.length > 0) { %>
+      <div class="news-grid">
+        <% posts.forEach(function(p) { %>
+          <a href="annonces/<%= p.id %>" class="news-card">
+            <% if (p.image_url) { %><img src="<%= p.image_url %>" alt=""><% } %>
+            <div class="news-body">
+              <% if (p.category) { %><span class="badge"><%= p.category %></span><% } %>
+              <h3><%= p.title %></h3>
+              <p><%= (p.content || '').substring(0, 140) %><% if ((p.content || '').length > 140) { %>...<% } %></p>
+              <span class="news-date"><%= fmtDate(p.created_at, lang) %></span>
+            </div>
+          </a>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <p class="empty-state"><%= t.news_empty %></p>
+    <% } %>
+  </div>
+</section>
+
+<section class="section section-cta">
+  <div class="container cta-box">
+    <h2><%= t.cta_h %></h2>
+    <p><%= t.cta_d %></p>
+    <% if (!user) { %>
+      <a href="#" data-login-btn class="btn-primary" style="background-color:#fff;color:#4f46e5"><%= t.cta_btn %></a>
+    <% } else { %>
+      <a href="fil" class="btn-primary" style="background-color:#fff;color:#4f46e5"><%= t.nav_feed %></a>
+    <% } %>
+  </div>
+</section>
+<%- include('partials/footer') %>

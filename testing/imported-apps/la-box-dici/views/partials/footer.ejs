@@ -1,0 +1,42 @@
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div>
+      <div class="footer-brand"><%= t.site_name %></div>
+      <p class="footer-tag"><%= t.tagline %></p>
+    </div>
+    <div>
+      <h4><%= t.nav_about %></h4>
+      <ul>
+        <li><a href="a-propos"><%= t.nav_about %></a></li>
+        <li><a href="securite"><%= t.nav_security %></a></li>
+        <li><a href="annonces"><%= t.nav_news %></a></li>
+        <li><a href="contact"><%= t.nav_contact %></a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Légal</h4>
+      <ul>
+        <li><a href="conditions"><%= t.nav_terms %></a></li>
+        <li><a href="confidentialite"><%= t.nav_privacy %></a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Notifications</h4>
+      <button data-push-btn class="btn-ghost"><%= t.enable_notifications %></button>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <span><%= (typeof settings !== 'undefined' && settings['footer_text_' + lang]) ? settings['footer_text_' + lang] : t.copyright %></span>
+  </div>
+</footer>
+<script>
+(function(){
+  function ready(cb){if(document.readyState!=='loading')cb();else document.addEventListener('DOMContentLoaded',cb);}
+  ready(function(){
+    try{ if(window.TenantSDK&&TenantSDK.ui&&TenantSDK.ui.showInstallBanner)TenantSDK.ui.showInstallBanner(); }catch(e){}
+    setTimeout(function(){ try{ if(window.TenantSDK&&TenantSDK.ui&&TenantSDK.ui.showPushPrompt)TenantSDK.ui.showPushPrompt(); }catch(e){} },8000);
+  });
+})();
+</script>
+</body>
+</html>

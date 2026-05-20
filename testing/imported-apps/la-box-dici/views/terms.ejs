@@ -1,0 +1,35 @@
+<%- include('partials/header') %>
+<section class="page-hero">
+  <div class="container">
+    <h1><%= t.terms_h %></h1>
+    <p class="page-lede"><%= t.terms_updated %> : <%= fmtDate(new Date(), lang) %></p>
+  </div>
+</section>
+<section class="section">
+  <div class="container narrow prose">
+    <% if (lang === 'fr') { %>
+      <h2>1. Acceptation</h2><p>En accédant à La Box d'Ici, vous acceptez les présentes conditions. Si vous ne les acceptez pas, n'utilisez pas le service.</p>
+      <h2>2. Admissibilité</h2><p>L'inscription est par invitation uniquement, à partir d'un code valide donné par un membre actuel. Les personnes de moins de 16 ans doivent être inscrites par un parent ou tuteur légal, dont le compte est lié au leur.</p>
+      <h2>3. Conduite</h2><p>Vous vous engagez à : (a) ne pas publier de contenu illégal, haineux, harcelant ou diffamatoire ; (b) ne pas usurper l'identité d'autrui ; (c) ne pas diffuser de désinformation manifeste ; (d) respecter les autres membres.</p>
+      <h2>4. Modération</h2><p>Tout contenu peut être retiré et tout compte peut être suspendu par notre équipe de modération basée au Québec, sans préavis, en cas de violation de ces conditions.</p>
+      <h2>5. Propriété intellectuelle</h2><p>Vous conservez les droits sur votre contenu, mais vous nous accordez une licence limitée pour l'afficher au sein de la plateforme aux personnes que vous avez acceptées comme amies.</p>
+      <h2>6. Confidentialité</h2><p>Veuillez consulter notre <a href="confidentialite">politique de confidentialité</a>.</p>
+      <h2>7. Limitation de responsabilité</h2><p>Le service est fourni « tel quel ». Nous faisons de notre mieux pour assurer sa disponibilité et sa sécurité, sans garantie absolue.</p>
+      <h2>8. Résiliation</h2><p>Vous pouvez supprimer votre compte à tout moment depuis vos paramètres. Nous pouvons résilier votre compte en cas de violation des présentes conditions.</p>
+      <h2>9. Modifications</h2><p>Ces conditions peuvent être mises à jour. Les modifications importantes seront annoncées sur la plateforme.</p>
+      <h2>10. Loi applicable</h2><p>Les présentes conditions sont régies par les lois du Québec et du Canada.</p>
+    <% } else { %>
+      <h2>1. Acceptance</h2><p>By accessing La Box d'Ici, you accept these terms. If you do not accept them, do not use the service.</p>
+      <h2>2. Eligibility</h2><p>Sign-up is invitation-only, using a valid code from a current member. People under 16 must be enrolled by a parent or legal guardian whose account is linked to theirs.</p>
+      <h2>3. Conduct</h2><p>You agree to: (a) not post illegal, hateful, harassing or defamatory content; (b) not impersonate others; (c) not spread obvious misinformation; (d) respect other members.</p>
+      <h2>4. Moderation</h2><p>Content may be removed and accounts may be suspended by our Quebec-based moderation team, without notice, if these terms are violated.</p>
+      <h2>5. Intellectual property</h2><p>You retain rights to your content, but grant us a limited license to display it within the platform to people you have accepted as friends.</p>
+      <h2>6. Privacy</h2><p>Please review our <a href="confidentialite">privacy policy</a>.</p>
+      <h2>7. Limitation of liability</h2><p>The service is provided "as is." We do our best to ensure availability and security, without absolute guarantee.</p>
+      <h2>8. Termination</h2><p>You may delete your account at any time from settings. We may terminate accounts that violate these terms.</p>
+      <h2>9. Changes</h2><p>These terms may be updated. Major changes will be announced on the platform.</p>
+      <h2>10. Governing law</h2><p>These terms are governed by the laws of Quebec and Canada.</p>
+    <% } %>
+  </div>
+</section>
+<%- include('partials/footer') %>

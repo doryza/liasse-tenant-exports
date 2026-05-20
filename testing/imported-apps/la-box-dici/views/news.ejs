@@ -1,0 +1,26 @@
+<%- include('partials/header') %>
+<section class="page-hero">
+  <div class="container"><h1><%= t.nav_news %></h1></div>
+</section>
+<section class="section">
+  <div class="container">
+    <% if (typeof posts !== 'undefined' && posts && posts.length > 0) { %>
+      <div class="news-grid">
+        <% posts.forEach(function(p) { %>
+          <a href="annonces/<%= p.id %>" class="news-card">
+            <% if (p.image_url) { %><img src="<%= p.image_url %>" alt=""><% } %>
+            <div class="news-body">
+              <% if (p.category) { %><span class="badge"><%= p.category %></span><% } %>
+              <h3><%= p.title %></h3>
+              <p><%= (p.content || '').substring(0, 180) %><% if ((p.content || '').length > 180) { %>...<% } %></p>
+              <span class="news-date"><%= fmtDate(p.created_at, lang) %></span>
+            </div>
+          </a>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <p class="empty-state"><%= t.news_empty %></p>
+    <% } %>
+  </div>
+</section>
+<%- include('partials/footer') %>

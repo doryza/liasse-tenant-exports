@@ -1,0 +1,74 @@
+{
+  "slug": "la-box-dici",
+  "displayName": "La Box d'Ici",
+  "description": "Type de projet: Site de réseautage social québécois\n\nObjectif principal: Créer un espace respectueux et authentique, loin de la désinformation.\n\nPublic cible: Québécois recherchant des interactions civilisées.\n\nFonctionnalités clés:\n- Réseau fermé: seules les personnes connues peuvent s'ajouter.\n- Confidentialité stricte: informations de base minimum et non partageables aux non-membres.\n- Sécurité renforcée: outils de blocage et de signalement de contenu.\n- Messagerie adaptative: contrôles parentaux simples pour les moins de 16 ans, gérés depuis le compte du parent.\n\nConditions légales:\n- Base de conditions d'utilisation et politique de confidentialité à inclure.\n\nDesign & marque:\n- Ambiance moderne et vintage, avec une palette de bleus.",
+  "status": "active",
+  "generationVersion": 1,
+  "primaryColor": "#6366f1",
+  "iconUrl": "https://res.cloudinary.com/duhp69meg/image/upload/v1779306081/tapavis_tenant_la-box-dici/icon_la-box-dici_1779306081329.png",
+  "enabledAuthMethods": [
+    "webauthn",
+    "sms",
+    "email"
+  ],
+  "notificationsEnabled": true,
+  "geolocationEnabled": true,
+  "customConfig": {
+    "language": "both",
+    "aiSummary": {
+      "en": {
+        "dashboard": "Welcome to your Admin Dashboard! This is your command center for \"La Box d'Ici\". You can find it by clicking the 'Admin' tab when you're logged in.\n\nFrom here, you can oversee everything happening in your community. You have full control to review and manage all member posts, check on friend connections, and see any content that members have reported for being inappropriate. You can also manage official site 'Announcements' that appear for everyone.\n\nThis is also where you'll manage your community members. You can view member profiles, handle invitations for new users, and manage any blocked accounts to keep your space safe.\n\nYou'll find all the messages sent through your 'Contact Us' form here, so you'll never miss an inquiry. When you need to reach everyone, you can also send out notifications to all your members right from the dashboard.\n\nFinally, you can check your app's visitor statistics to see how your community is growing and visit the 'Settings' area to make site-wide changes. Everything you need is just a click away!",
+        "variables": "Great news! Your new app, \"La Box d'Ici\", is all set up and ready to go. You don't need any special keys or codes to get started. Everything it needs to work is already built right in. You can jump straight into inviting members and building your community!"
+      },
+      "fr": {
+        "dashboard": "Bienvenue à votre tableau de bord d'administration! C'est votre centre de commande pour « La Box d'Ici ». Vous le trouverez en cliquant sur l'onglet 'Admin' une fois connecté.\n\nD'ici, vous pouvez superviser tout ce qui se passe dans votre communauté. Vous avez le plein contrôle pour réviser et gérer toutes les publications des membres, vérifier les connexions d'amitié et voir tout contenu qui a été signalé par des utilisateurs. Vous pouvez aussi gérer les 'Annonces' officielles du site qui sont visibles par tout le monde.\n\nC'est aussi ici que vous gérez les membres de votre communauté. Vous pouvez consulter leurs profils, traiter les invitations pour les nouveaux utilisateurs et gérer les comptes bloqués pour assurer la sécurité de votre espace.\n\nVous trouverez ici tous les messages envoyés via votre formulaire de contact, pour ne jamais rien manquer. Quand vous aurez besoin de rejoindre tout le monde, vous pourrez aussi envoyer des notifications à tous vos membres directement depuis le tableau de bord.\n\nFinalement, vous pouvez consulter les statistiques de visites de votre application pour voir la croissance de votre communauté et visiter la section 'Réglages' pour faire des changements sur l'ensemble du site. Tout ce dont vous avez besoin est à portée de clic!",
+        "variables": "Bonne nouvelle! Votre nouvelle application, « La Box d'Ici », est prête à être utilisée. Vous n'avez besoin d'aucune clé ou code spécial pour commencer. Tout le nécessaire pour qu'elle fonctionne est déjà intégré. Vous pouvez tout de suite commencer à inviter des membres et à bâtir votre communauté!"
+      }
+    },
+    "aiSummaryVersion": 1
+  },
+  "promptHistory": [
+    {
+      "prompt": "Type de projet: Site de réseautage social québécois\n\nObjectif principal: Créer un espace respectueux et authentique, loin de la désinformation.\n\nPublic cible: Québécois recherchant des interactions civilisées.\n\nFonctionnalités clés:\n- Réseau fermé: seules les personnes connues peuvent s'ajouter.\n- Confidentialité stricte: informations de base minimum et non partageables aux non-membres.\n- Sécurité renforcée: outils de blocage et de signalement de contenu.\n- Messagerie adaptative: contrôles parentaux simples pour les moins de 16 ans, gérés depuis le compte du parent.\n\nConditions légales:\n- Base de conditions d'utilisation et politique de confidentialité à inclure.\n\nDesign & marque:\n- Ambiance moderne et vintage, avec une palette de bleus.",
+      "timestamp": "2026-05-20T19:41:29.187Z",
+      "changeNotes": "Initial build of La Box d'Ici, a closed Quebec social network with full bilingual FR/EN support, member feed, friend connections via invite codes, private messaging, content reporting, parental controls for under-16s, marketing pages (about, security, terms, privacy, contact), and complete admin backend for moderation.\n\nAdmin enrichment: (1) Dashboard now has gradient accent stat-card, larger stat icons, descriptive subtitle, two-column 'Recent messages' + 'Recent reports' panels, alert badges on modules with open reports / unhandled messages, colored module icons, and empty states with icons. (2) Admin shell modal CRUD UI substantially improved: better form rendering with labeled boolean checkboxes, required-field markers, image previews, hint tooltips, placeholders, ESC to close, save-button loading state, required-field validation, friendlier delete confirmation. (3) Table improvements: status pills (open/resolved/reviewing/dismissed), boolean cells render as Oui/Non pills, image thumbs, ID cells styled, hover row highlight, count shows filtered/total, friendly empty states with primary CTA. (4) Toolbar gets a search icon. (5) admin-styles.css enriched with status pills, panels, badge-alert, image-preview, stat-accent gradient, focus-visible outlines, soft shadows, backdrop-blur on modal. (6) Dashboard route now passes recentReports. (7) Frontend CTA button text contrast hardened (white-bg / brand-dark text) via !important. (8) Login/cta button shadow & focus states added. (9) 404 page tightened. (10) All placeholder tokens (e.g. {{IMG_HERO}}) preserved exactly. No functional CRUD content was migrated as static marketing copy is the only hardcoded text; service-tier-like modules already exist as DB-backed entities.",
+      "generationId": 1169,
+      "filesModified": [
+        "manifest.json",
+        "migrations.sql",
+        "public/css/admin-styles.css",
+        "public/css/styles.css",
+        "routes.js",
+        "schema.sql",
+        "seed.js",
+        "views/404.ejs",
+        "views/about.ejs",
+        "views/admin-form_submissions.ejs",
+        "views/admin-invites.ejs",
+        "views/admin-member_posts.ejs",
+        "views/admin-posts.ejs",
+        "views/admin-reports.ejs",
+        "views/admin.ejs",
+        "views/contact.ejs",
+        "views/feed.ejs",
+        "views/friends.ejs",
+        "views/index.ejs",
+        "views/messages.ejs",
+        "views/news-detail.ejs",
+        "views/news.ejs",
+        "views/partials/admin-shell.ejs",
+        "views/partials/admin-sidebar.ejs",
+        "views/partials/footer.ejs",
+        "views/partials/header.ejs",
+        "views/privacy.ejs",
+        "views/profile.ejs",
+        "views/security.ejs",
+        "views/terms.ejs"
+      ]
+    }
+  ],
+  "apiVariables": [],
+  "createdAt": "2026-05-20T19:08:34.874Z",
+  "updatedAt": "2026-05-20T19:41:55.170Z",
+  "exportedAt": "2026-05-20T22:35:45.872Z"
+}

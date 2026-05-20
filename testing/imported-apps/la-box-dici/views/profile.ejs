@@ -1,0 +1,39 @@
+<%- include('partials/header') %>
+<section class="section section-app">
+  <div class="container narrow">
+    <h1 class="app-h1"><%= t.profile_h %></h1>
+    <% if (typeof user !== 'undefined' && user && typeof profile !== 'undefined' && profile) { %>
+      <% if (typeof saved !== 'undefined' && saved) { %><div class="alert alert-success"><%= t.profile_saved %></div><% } %>
+      <form id="profileForm" class="form-card">
+        <div class="field"><label><%= t.profile_name %></label><input type="text" name="display_name" value="<%= profile.display_name || '' %>" required></div>
+        <div class="field"><label><%= t.profile_bio %></label><textarea name="bio" rows="3" maxlength="300"><%= profile.bio || '' %></textarea></div>
+        <div class="field"><label><%= t.profile_location %></label><input type="text" name="location" value="<%= profile.location || '' %>" placeholder="ex. Québec, Montréal"></div>
+        <div class="field"><label><%= t.profile_birth %></label><input type="number" name="birth_year" min="1900" max="<%= new Date().getFullYear() %>" value="<%= profile.birth_year || '' %>"></div>
+        <div id="profileStatus" class="form-status"></div>
+        <button type="submit" class="btn-primary" style="background-color:#6366f1;color:#fff"><%= t.profile_save %></button>
+      </form>
+      <div class="profile-extra">
+        <h3><%= t.enable_notifications %></h3>
+        <button data-push-btn class="btn-outline"><%= t.enable_notifications %></button>
+      </div>
+    <% } else { %>
+      <div class="login-card"><p><%= t.feed_login %></p><a href="#" data-login-btn class="btn-primary" style="background-color:#6366f1;color:#fff"><%= t.nav_login %></a></div>
+    <% } %>
+  </div>
+</section>
+<script>
+(function(){
+  var form=document.getElementById('profileForm');
+  if(!form)return;
+  form.addEventListener('submit',async function(e){
+    e.preventDefault();
+    var d={display_name:form.display_name.value,bio:form.bio.value,location:form.location.value,birth_year:form.birth_year.value};
+    var st=document.getElementById('profileStatus');
+    st.textContent='...';st.className='form-status loading';
+    var res=await TenantSDK.fetch('api/profile/update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});
+    if(res.ok){window.location.href='profil?saved=1';}
+    else{st.textContent='Erreur';st.className='form-status error';}
+  });
+})();
+</script>
+<%- include('partials/footer') %>

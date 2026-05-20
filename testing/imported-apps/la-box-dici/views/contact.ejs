@@ -1,0 +1,38 @@
+<%- include('partials/header') %>
+<section class="page-hero">
+  <div class="container"><h1><%= t.contact_h %></h1><p class="page-lede"><%= (typeof settings !== 'undefined' && settings['contact_intro_' + lang]) ? settings['contact_intro_' + lang] : t.contact_intro %></p></div>
+</section>
+<section class="section">
+  <div class="container narrow">
+    <% if (typeof sent !== 'undefined' && sent) { %>
+      <div class="alert alert-success"><%= t.form_thanks %></div>
+    <% } %>
+    <form id="contactForm" class="form-card">
+      <div class="field"><label><%= t.form_name %> *</label><input type="text" name="name" required></div>
+      <div class="field"><label><%= t.form_email %></label><input type="email" name="email"></div>
+      <div class="field"><label><%= t.form_subject %></label><input type="text" name="subject"></div>
+      <div class="field"><label><%= t.form_message %> *</label><textarea name="message" rows="6" required></textarea></div>
+      <div id="contactStatus" class="form-status"></div>
+      <button type="submit" class="btn-primary" style="background-color:#6366f1;color:#fff"><%= t.form_send %></button>
+    </form>
+  </div>
+</section>
+<script>
+(function(){
+  var form=document.getElementById('contactForm');
+  var status=document.getElementById('contactStatus');
+  if(!form)return;
+  form.addEventListener('submit',async function(e){
+    e.preventDefault();
+    var data={name:form.name.value,email:form.email.value,subject:form.subject.value,message:form.message.value};
+    status.textContent='...';status.className='form-status loading';
+    try{
+      var res=await fetch('api/contact',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+      var j=await res.json();
+      if(j.success){window.location.href='contact?sent=1';}
+      else{status.textContent=j.error||'<%- t.form_error %>';status.className='form-status error';}
+    }catch(err){status.textContent='<%- t.form_error %>';status.className='form-status error';}
+  });
+})();
+</script>
+<%- include('partials/footer') %>

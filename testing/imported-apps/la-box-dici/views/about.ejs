@@ -1,0 +1,26 @@
+<%- include('partials/header') %>
+<section class="page-hero">
+  <div class="container">
+    <h1><%= t.about_h %></h1>
+    <p class="page-lede"><%= t.tagline %></p>
+  </div>
+</section>
+<section class="section">
+  <div class="container narrow">
+    <div class="prose">
+      <% var aboutText = (typeof settings !== 'undefined' && settings['about_text_' + lang]) ? settings['about_text_' + lang] : ''; %>
+      <% if (aboutText) { aboutText.split('\n\n').forEach(function(par) { %><p><%= par %></p><% }); } else { %>
+        <p><%= t.about_section_values_d %></p>
+      <% } %>
+    </div>
+    <div class="about-cards">
+      <div class="about-card"><h3><%= t.about_section_team_t %></h3><p><%= t.about_section_team_d %></p></div>
+      <div class="about-card"><h3><%= t.about_section_values_t %></h3><p><%= t.about_section_values_d %></p></div>
+      <div class="about-card"><h3><%= t.about_section_join_t %></h3><p><%= t.about_section_join_d %></p></div>
+    </div>
+    <div style="text-align:center;margin-top:32px">
+      <a href="." class="btn-outline"><%= t.about_back %></a>
+    </div>
+  </div>
+</section>
+<%- include('partials/footer') %>

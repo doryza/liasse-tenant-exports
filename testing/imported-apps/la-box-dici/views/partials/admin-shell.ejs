@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title><%= moduleLabel %> — Admin La Box d'Ici</title><link rel="stylesheet" href="public/css/admin-styles.css"></head>
+<body>
+<div class="admin-layout">
+<%- include('admin-sidebar', { page: page }) %>
+<main class="admin-main">
+  <header class="admin-header">
+    <div>
+      <h1><%= moduleLabel %></h1>
+      <p class="admin-subtitle">Gérez, modifiez et supprimez les <%= singularLabel %>s depuis cette interface.</p>
+    </div>
+    <div class="admin-header-actions">
+      <button class="btn-ghost" onclick="location.href='admin'">← Tableau de bord</button>
+      <button class="btn-primary" onclick="openCreate()">＋ Nouvelle <%= singularLabel %></button>
+      <button class="sidebar-toggle" onclick="document.body.classList.toggle('sidebar-open')" aria-label="Menu">☰</button>
+    </div>
+  </header>
+  <div class="toolbar">
+    <div class="toolbar-left">
+      <input type="text" id="searchInput" placeholder="🔎 Rechercher dans <%= moduleLabel.toLowerCase() %>..." oninput="renderTable()">
+    </div>
+    <span id="itemCount" class="muted"></span>
+  </div>
+  <div id="tableWrap"></div>
+</main>
+</div>
+<div id="editModal" class="modal" style="display:none" role="dialog" aria-modal="true">
+  <div class="modal-content">
+    <h3 id="modalTitle">Édition</h3>
+    <p class="modal-subtitle" id="modalSubtitle">Remplissez les champs ci-dessous puis enregistrez.</p>
+    <form id="editForm" onsubmit="event.preventDefault();saveItem();"></form>
+    <div class="modal-actions">
+      <button type="button" class="btn-ghost" onclick="closeModal()">Annuler</button>
+      <button type="button" class="btn-primary" id="saveBtn" onclick="saveItem()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+<script>
+var MODULE_KEY=<%- JSON.stringify(moduleKey) %>;
+var SINGULAR=<%- JSON.stringify(singularLabel) %>;
+var items=<%- JSON.stringify(items) %>;
+var fields=[];
+var editingId=null;
+async function loadFields(){
+  try{
+    var r=await fetch('api/admin/modules');
+    var d=await r.json();
+    var m=(d.modules||[]).find(function(x){return x.key===MODULE_KEY;});
+    fields=m?m.fields:[];
+  }catch(e){fields=[];}
+  renderTable();
+}
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function formatCell(value, field, colName){
+  if(value==null||value==='')return '<span class="muted">—</span>';
+  if(field && field.type==='boolean'){return '<span class="cell-bool">'+(value?'✅':'⬜'):'</span>'.replace(':',''); }
+  if(field && field.type==='image' && typeof value==='string' && value.match(/^https?:/)){return '<img src="'+esc(value)+'" class="thumb" alt="">';}
+  if(colName==='status'){
+    var cls='pill-muted';
+    if(value==='open')cls='pill-warn';
+    else if(value==='resolved')cls='pill-ok';
+    else if(value==='reviewing')cls='pill-info';
+    else if(value==='dismissed')cls='pill-muted';
+    return '<span class="pill '+cls+'">'+esc(value)+'</span>';
+  }
+  if(colName==='published'||colName==='handled'||colName==='hidden'){
+    return value?'<span class="pill pill-ok">Oui</span>':'<span class="pill pill-muted">Non</span>';
+  }
+  if(typeof value==='string' && value.length>80)return esc(value.substring(0,80))+'…';
+  return esc(value);
+}
+function renderTable(){
+  var q=(document.getElementById('searchInput').value||'').toLowerCase();
+  var filtered=items.filter(function(it){if(!q)return true;return JSON.stringify(it).toLowerCase().indexOf(q)>=0;});
+  document.getElementById('itemCount').textContent=filtered.length+' / '+items.length+' '+(filtered.length===1?'élément':'éléments');
+  if(!items.length){
+    document.getElementById('tableWrap').innerHTML='<div class="panel"><div class="empty"><div class="empty-icon">📭</div><p>Aucune entrée pour le moment.</p><p style="margin-top:14px"><button class="btn-primary" onclick="openCreate()">＋ Créer la première '+esc(SINGULAR)+'</button></p></div></div>';
+    return;
+  }
+  if(!filtered.length){
+    document.getElementById('tableWrap').innerHTML='<div class="panel"><div class="empty"><div class="empty-icon">🔍</div><p>Aucun résultat pour cette recherche.</p></div></div>';
+    return;
+  }
+  var cols=['id'].concat(fields.map(function(f){return f.name;})).concat(['created_at']);
+  var html='<div style="overflow-x:auto"><table class="admin-table"><thead><tr>';
+  cols.forEach(function(c){html+='<th>'+esc(c)+'</th>';});
+  html+='<th style="text-align:right">Actions</th></tr></thead><tbody>';
+  filtered.forEach(function(it){
+    html+='<tr>';
+    cols.forEach(function(c){
+      var v=it[c];
+      var field=fields.find(function(f){return f.name===c;});
+      if(c==='id'){html+='<td class="cell-id">#'+esc(v)+'</td>';}
+      else if(c==='created_at'&&v){html+='<td class="nowrap">'+esc(new Date(v).toLocaleDateString('fr-CA'))+'</td>';}
+      else{html+='<td>'+formatCell(v,field,c)+'</td>';}
+    });
+    html+='<td class="actions"><button class="btn-small" onclick="editItem('+it.id+')">✎ Modifier</button> <button class="btn-small btn-danger" onclick="deleteItem('+it.id+')">🗑 Supprimer</button></td></tr>';
+  });
+  html+='</tbody></table></div>';
+  document.getElementById('tableWrap').innerHTML=html;
+}
+function openCreate(){editingId=null;document.getElementById('modalTitle').textContent='Nouvelle '+SINGULAR;document.getElementById('modalSubtitle').textContent='Remplissez les champs ci-dessous puis enregistrez.';buildForm({});document.getElementById('editModal').style.display='flex';}
+function editItem(id){var it=items.find(function(x){return x.id===id;});if(!it)return;editingId=id;document.getElementById('modalTitle').textContent='Modifier '+SINGULAR+' #'+id;document.getElementById('modalSubtitle').textContent='Ajustez les valeurs puis enregistrez les changements.';buildForm(it);document.getElementById('editModal').style.display='flex';}
+function buildForm(data){
+  var html='';
+  fields.forEach(function(f){
+    var v=data[f.name];
+    if(v==null && f.default!==undefined)v=f.default;
+    var labelHtml=esc(f.name)+(f.required?' <span class="field-required">*</span>':'');
+    if(f.type==='boolean'){
+      html+='<div class="field field-bool"><input type="checkbox" id="f_'+f.name+'" name="'+f.name+'"'+(v?' checked':'')+'><label for="f_'+f.name+'">'+labelHtml+'</label></div>';
+      if(f.description)html=html.replace('</div>','<div class="hint" style="width:100%">'+esc(f.description)+'</div></div>');
+      return;
+    }
+    html+='<div class="field"><label for="f_'+f.name+'">'+labelHtml+'</label>';
+    var ph=f.placeholder?' placeholder="'+esc(f.placeholder)+'"':'';
+    if(f.type==='textarea'){html+='<textarea id="f_'+f.name+'" name="'+f.name+'" rows="5"'+ph+'>'+esc(v||'')+'</textarea>';}
+    else if(f.type==='select'&&f.options){html+='<select id="f_'+f.name+'" name="'+f.name+'">';if(!f.required)html+='<option value="">— Choisir —</option>';f.options.forEach(function(o){html+='<option value="'+esc(o)+'"'+(v===o?' selected':'')+'>'+esc(o)+'</option>';});html+='</select>';}
+    else if(f.type==='number'){html+='<input type="number" id="f_'+f.name+'" name="'+f.name+'" value="'+esc(v==null?'':v)+'"'+ph+'>';}
+    else if(f.type==='image'){html+='<input type="url" id="f_'+f.name+'" name="'+f.name+'" value="'+esc(v||'')+'" placeholder="https://...">';if(v)html+='<div class="image-preview"><img src="'+esc(v)+'" alt=""></div>';}
+    else if(f.type==='email'){html+='<input type="email" id="f_'+f.name+'" name="'+f.name+'" value="'+esc(v||'')+'"'+ph+'>';}
+    else if(f.type==='url'){html+='<input type="url" id="f_'+f.name+'" name="'+f.name+'" value="'+esc(v||'')+'"'+ph+'>';}
+    else{html+='<input type="text" id="f_'+f.name+'" name="'+f.name+'" value="'+esc(v==null?'':v)+'"'+(f.maxLength?' maxlength="'+f.maxLength+'"':'')+ph+'>';}
+    if(f.description)html+='<div class="hint">'+esc(f.description)+'</div>';
+    html+='</div>';
+  });
+  if(!fields.length)html='<p class="muted">Aucun champ configuré pour ce module.</p>';
+  document.getElementById('editForm').innerHTML=html;
+}
+function closeModal(){document.getElementById('editModal').style.display='none';editingId=null;}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeModal();});
+async function saveItem(){
+  var btn=document.getElementById('saveBtn');
+  btn.disabled=true;btn.textContent='Enregistrement...';
+  var data={};
+  var missing=null;
+  fields.forEach(function(f){
+    var el=document.getElementById('editForm').querySelector('[name="'+f.name+'"]');
+    if(!el)return;
+    var v;
+    if(f.type==='boolean')v=el.checked?1:0;
+    else if(f.type==='number')v=el.value?parseFloat(el.value):null;
+    else v=el.value;
+    if(f.required && (v===''||v==null) && f.type!=='boolean'){if(!missing)missing=f.name;}
+    data[f.name]=v;
+  });
+  if(missing){alert('Le champ « '+missing+' » est requis.');btn.disabled=false;btn.textContent='Enregistrer';return;}
+  var url='api/admin/'+MODULE_KEY+(editingId?'/'+editingId:'');
+  var method=editingId?'PUT':'POST';
+  try{
+    var r=await fetch(url,{method:method,headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+    if(r.ok){location.reload();}
+    else{var j=await r.json().catch(function(){return{};});alert('Erreur: '+(j.error||r.status));btn.disabled=false;btn.textContent='Enregistrer';}
+  }catch(e){alert('Erreur réseau: '+e.message);btn.disabled=false;btn.textContent='Enregistrer';}
+}
+async function deleteItem(id){
+  if(!confirm('Supprimer définitivement cet élément ? Cette action est irréversible.'))return;
+  try{
+    var r=await fetch('api/admin/'+MODULE_KEY+'/'+id,{method:'DELETE'});
+    if(r.ok)location.reload();
+    else alert('Erreur lors de la suppression');
+  }catch(e){alert('Erreur réseau');}
+}
+loadFields();
+</script>
+</body>
+</html>

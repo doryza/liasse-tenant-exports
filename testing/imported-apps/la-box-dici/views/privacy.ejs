@@ -1,0 +1,31 @@
+<%- include('partials/header') %>
+<section class="page-hero">
+  <div class="container">
+    <h1><%= t.privacy_h %></h1>
+    <p class="page-lede"><%= t.terms_updated %> : <%= fmtDate(new Date(), lang) %></p>
+  </div>
+</section>
+<section class="section">
+  <div class="container narrow prose">
+    <% if (lang === 'fr') { %>
+      <h2>Ce que nous collectons</h2><p>Le strict minimum : votre nom affiché, votre courriel ou numéro de téléphone (pour la connexion), votre année de naissance (pour appliquer les contrôles parentaux), et le contenu que vous publiez vous-même.</p>
+      <h2>Ce que nous NE collectons PAS</h2><p>Aucun suivi tiers. Aucun pixel publicitaire. Aucun partage avec les réseaux sociaux externes. Aucun fichier sur vos contacts ou votre carnet d'adresses.</p>
+      <h2>Qui voit votre contenu</h2><p>Seules les personnes que vous avez explicitement acceptées comme amies voient vos publications et messages. Les non-membres ne voient rien.</p>
+      <h2>Stockage des données</h2><p>Vos données sont hébergées sur des serveurs au Canada. Elles sont chiffrées en transit et au repos.</p>
+      <h2>Comptes des mineurs</h2><p>Pour les moins de 16 ans, un parent doit créer et superviser le compte. Le parent voit les demandes d'amis et peut limiter qui peut envoyer des messages.</p>
+      <h2>Vos droits</h2><p>Vous pouvez en tout temps : consulter, modifier ou supprimer vos informations depuis votre profil ; demander une copie de toutes vos données ; supprimer votre compte définitivement.</p>
+      <h2>Conservation</h2><p>Vos données sont conservées tant que votre compte existe. Après suppression, elles sont effacées de nos systèmes dans les 30 jours.</p>
+      <h2>Contact</h2><p>Pour toute question sur la confidentialité, écrivez-nous via la page <a href="contact">Contact</a>.</p>
+    <% } else { %>
+      <h2>What we collect</h2><p>The strict minimum: your display name, your email or phone (for sign-in), your birth year (to apply parental controls), and the content you yourself post.</p>
+      <h2>What we do NOT collect</h2><p>No third-party tracking. No advertising pixels. No sharing with external social networks. No upload of your contacts or address book.</p>
+      <h2>Who sees your content</h2><p>Only the people you have explicitly accepted as friends see your posts and messages. Non-members see nothing.</p>
+      <h2>Data storage</h2><p>Your data is stored on servers in Canada. It is encrypted in transit and at rest.</p>
+      <h2>Minor accounts</h2><p>For users under 16, a parent must create and supervise the account. The parent receives friend requests and can limit who can send messages.</p>
+      <h2>Your rights</h2><p>You can at any time: view, edit or delete your information from your profile; request a copy of all your data; permanently delete your account.</p>
+      <h2>Retention</h2><p>Your data is kept as long as your account exists. After deletion, it is erased from our systems within 30 days.</p>
+      <h2>Contact</h2><p>For privacy questions, contact us via the <a href="contact">Contact</a> page.</p>
+    <% } %>
+  </div>
+</section>
+<%- include('partials/footer') %>

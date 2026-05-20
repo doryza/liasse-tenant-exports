@@ -1,0 +1,419 @@
+{
+  "exportedAt": "2026-05-20T22:35:45.893Z",
+  "tables": {
+    "admin_users": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "password_hash",
+        "display_name",
+        "role",
+        "active",
+        "activation_token",
+        "invited_by",
+        "invite_token",
+        "invite_expires_at",
+        "last_login_at",
+        "is_active",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_invites": {
+      "columns": [
+        "id",
+        "email",
+        "token",
+        "role",
+        "status",
+        "invited_by",
+        "expires_at",
+        "accepted_at",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_webauthn_credentials": {
+      "columns": [
+        "id",
+        "admin_user_id",
+        "credential_id",
+        "public_key",
+        "counter",
+        "device_name",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_settings": {
+      "columns": [
+        "key",
+        "value",
+        "updated_at"
+      ],
+      "totalRows": 45,
+      "sampleRows": [
+        {
+          "key": "hero_title_fr",
+          "value": "Un réseau social fait pour les vrais liens",
+          "updated_at": "2026-05-20T19:41:09.110Z"
+        },
+        {
+          "key": "hero_title_en",
+          "value": "A social network built for real connections",
+          "updated_at": "2026-05-20T19:41:09.117Z"
+        },
+        {
+          "key": "hero_subtitle_fr",
+          "value": "Restez en contact avec les gens que vous connaissez, à l'abri de la désinformation et des inconnus.",
+          "updated_at": "2026-05-20T19:41:09.127Z"
+        },
+        {
+          "key": "hero_subtitle_en",
+          "value": "Stay in touch with the people you actually know — far from misinformation and strangers.",
+          "updated_at": "2026-05-20T19:41:09.139Z"
+        },
+        {
+          "key": "tagline_fr",
+          "value": "Le réseau social respectueux du Québec",
+          "updated_at": "2026-05-20T19:41:09.147Z"
+        },
+        {
+          "key": "tagline_en",
+          "value": "The respectful social network of Quebec",
+          "updated_at": "2026-05-20T19:41:09.156Z"
+        },
+        {
+          "key": "about_text_fr",
+          "value": "La Box d'Ici est née d'une idée simple : redonner aux Québécois un espace en ligne où les conversations restent civilisées, où les relations sont vraies, et où la désinformation n'a pas sa place.\n\nNous croyons que les réseaux sociaux devraient rapprocher les gens, pas les diviser. C'est pourquoi notre plateforme est fermée : seules les personnes que vous connaissez personnellement peuvent vous rejoindre, via un code d'invitation.",
+          "updated_at": "2026-05-20T19:41:09.163Z"
+        },
+        {
+          "key": "about_text_en",
+          "value": "La Box d'Ici was born from a simple idea: give Quebecers an online space where conversations stay civil, relationships are genuine, and misinformation has no place.\n\nWe believe social networks should bring people together, not divide them. That's why our platform is closed: only people you personally know can join you, through an invitation code.",
+          "updated_at": "2026-05-20T19:41:09.171Z"
+        },
+        {
+          "key": "mission_fr",
+          "value": "Construire un espace numérique québécois respectueux, sécuritaire et authentique pour toutes les générations.",
+          "updated_at": "2026-05-20T19:41:09.183Z"
+        },
+        {
+          "key": "mission_en",
+          "value": "Build a respectful, safe, authentic Quebec digital space for every generation.",
+          "updated_at": "2026-05-20T19:41:09.193Z"
+        }
+      ]
+    },
+    "site_visits": {
+      "columns": [
+        "id",
+        "path",
+        "created_at"
+      ],
+      "totalRows": 61,
+      "sampleRows": [
+        {
+          "id": 1,
+          "path": "/",
+          "created_at": "2026-05-20T19:43:36.850Z"
+        },
+        {
+          "id": 2,
+          "path": "/a-propos",
+          "created_at": "2026-05-20T19:45:09.957Z"
+        },
+        {
+          "id": 3,
+          "path": "/",
+          "created_at": "2026-05-20T19:47:55.456Z"
+        },
+        {
+          "id": 4,
+          "path": "/",
+          "created_at": "2026-05-20T19:48:29.313Z"
+        },
+        {
+          "id": 5,
+          "path": "/",
+          "created_at": "2026-05-20T19:48:34.467Z"
+        },
+        {
+          "id": 6,
+          "path": "/annonces",
+          "created_at": "2026-05-20T19:49:21.792Z"
+        },
+        {
+          "id": 7,
+          "path": "/annonces",
+          "created_at": "2026-05-20T19:49:29.981Z"
+        },
+        {
+          "id": 8,
+          "path": "/admin",
+          "created_at": "2026-05-20T19:52:56.121Z"
+        },
+        {
+          "id": 9,
+          "path": "/admin/posts",
+          "created_at": "2026-05-20T19:53:04.675Z"
+        },
+        {
+          "id": 10,
+          "path": "/",
+          "created_at": "2026-05-20T19:53:20.082Z"
+        }
+      ]
+    },
+    "posts": {
+      "columns": [
+        "id",
+        "title",
+        "content",
+        "image_url",
+        "category",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 5,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Bienvenue sur La Box d’Ici",
+          "content": "Notre réseau ouvre ses portes à toute personne invitée par un membre actuel. Si vous lisez ceci, c’est que vous faites partie de ceux qui veulent un Internet plus humain. Merci d’être ici.",
+          "image_url": null,
+          "category": "Annonces",
+          "published": 1,
+          "created_at": "2026-05-20T19:41:09.254Z",
+          "updated_at": "2026-05-20T19:41:09.254Z"
+        },
+        {
+          "id": 2,
+          "title": "Nos engagements en matière de confidentialité",
+          "content": "Aucune donnée vendue. Aucun profil partagé à l’extérieur. Vos publications restent visibles uniquement par les amis que vous avez vous-même acceptés.",
+          "image_url": null,
+          "category": "Confidentialité",
+          "published": 1,
+          "created_at": "2026-05-20T19:41:09.262Z",
+          "updated_at": "2026-05-20T19:41:09.262Z"
+        },
+        {
+          "id": 3,
+          "title": "Modération humaine, basée au Québec",
+          "content": "Tous les signalements sont examinés par une équipe humaine au Québec, en français. Nous ne sous-traitons pas la modération.",
+          "image_url": null,
+          "category": "Sécurité",
+          "published": 1,
+          "created_at": "2026-05-20T19:41:09.269Z",
+          "updated_at": "2026-05-20T19:41:09.269Z"
+        },
+        {
+          "id": 4,
+          "title": "Contrôles parentaux simples",
+          "content": "Les comptes des jeunes de moins de 16 ans sont liés à un parent. Le parent voit les demandes d’amis et peut ajuster qui peut leur écrire en quelques clics.",
+          "image_url": null,
+          "category": "Famille",
+          "published": 1,
+          "created_at": "2026-05-20T19:41:09.282Z",
+          "updated_at": "2026-05-20T19:41:09.282Z"
+        },
+        {
+          "id": 5,
+          "title": "Petites améliorations cette semaine",
+          "content": "Nouveau bouton de blocage rapide depuis les publications, traduction améliorée et un nouvel onglet pour les invitations en attente.",
+          "image_url": null,
+          "category": "Mises à jour",
+          "published": 1,
+          "created_at": "2026-05-20T19:41:09.294Z",
+          "updated_at": "2026-05-20T19:41:09.294Z"
+        }
+      ]
+    },
+    "profiles": {
+      "columns": [
+        "user_id",
+        "display_name",
+        "bio",
+        "avatar_url",
+        "location",
+        "birth_year",
+        "parent_user_id",
+        "is_minor",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 1,
+      "sampleRows": [
+        {
+          "user_id": 1,
+          "display_name": "Maskass The Shy Guy",
+          "bio": "Bienvenue dans la boîte à poux",
+          "avatar_url": null,
+          "location": "Québec, Canada",
+          "birth_year": 1991,
+          "parent_user_id": null,
+          "is_minor": 0,
+          "image_url": null,
+          "created_at": "2026-05-20T19:53:34.554Z",
+          "updated_at": "2026-05-20T21:16:25.978Z"
+        }
+      ]
+    },
+    "member_posts": {
+      "columns": [
+        "id",
+        "user_id",
+        "content",
+        "image_url",
+        "hidden",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 1,
+      "sampleRows": [
+        {
+          "id": 1,
+          "user_id": 1,
+          "content": "J'ai joué à Zelda NES En version 3D Doom",
+          "image_url": null,
+          "hidden": 0,
+          "created_at": "2026-05-20T19:54:07.409Z",
+          "updated_at": "2026-05-20T19:54:07.409Z"
+        }
+      ]
+    },
+    "connections": {
+      "columns": [
+        "id",
+        "requester_id",
+        "recipient_id",
+        "status",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "messages": {
+      "columns": [
+        "id",
+        "sender_id",
+        "recipient_id",
+        "content",
+        "read_at",
+        "image_url",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "reports": {
+      "columns": [
+        "id",
+        "reporter_id",
+        "target_type",
+        "target_id",
+        "reason",
+        "details",
+        "status",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "blocks": {
+      "columns": [
+        "id",
+        "blocker_id",
+        "blocked_id",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "invites": {
+      "columns": [
+        "id",
+        "code",
+        "created_by",
+        "used_by",
+        "used_at",
+        "note",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "code": "BIENVENUE-2024",
+          "created_by": null,
+          "used_by": null,
+          "used_at": null,
+          "note": "Code de bienvenue pour les premiers membres",
+          "image_url": null,
+          "created_at": "2026-05-20T19:41:09.307Z",
+          "updated_at": "2026-05-20T19:41:09.307Z"
+        },
+        {
+          "id": 2,
+          "code": "VOISIN-QC-001",
+          "created_by": null,
+          "used_by": null,
+          "used_at": null,
+          "note": "Invitation pour les voisins du quartier",
+          "image_url": null,
+          "created_at": "2026-05-20T19:41:09.316Z",
+          "updated_at": "2026-05-20T19:41:09.316Z"
+        },
+        {
+          "id": 3,
+          "code": "FAMILLE-001",
+          "created_by": null,
+          "used_by": null,
+          "used_at": null,
+          "note": "Invitation famille",
+          "image_url": null,
+          "created_at": "2026-05-20T19:41:09.323Z",
+          "updated_at": "2026-05-20T19:41:09.323Z"
+        },
+        {
+          "id": 4,
+          "code": "ORVK91-FPVK",
+          "created_by": 1,
+          "used_by": null,
+          "used_at": null,
+          "note": null,
+          "image_url": null,
+          "created_at": "2026-05-20T19:54:30.876Z",
+          "updated_at": "2026-05-20T19:54:30.876Z"
+        }
+      ]
+    },
+    "form_submissions": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "subject",
+        "message",
+        "image_url",
+        "handled",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    }
+  }
+}

@@ -1,0 +1,59 @@
+<%- include('partials/header') %>
+<section class="section section-app">
+  <div class="container">
+    <h1 class="app-h1"><%= t.messages_h %></h1>
+    <% if (typeof user !== 'undefined' && user) { %>
+      <div class="messages-layout">
+        <aside class="convo-list">
+          <% if (typeof convos !== 'undefined' && convos.length > 0) { %>
+            <% convos.forEach(function(c) { %>
+              <a href="messages/<%= c.other_id %>" class="convo-item <%= (typeof activeUserId !== 'undefined' && activeUserId === c.other_id) ? 'active' : '' %>">
+                <div class="avatar"><%= (c.display_name || 'M').charAt(0).toUpperCase() %></div>
+                <div class="convo-info"><div class="convo-name"><%= c.display_name || ('Membre ' + c.other_id) %></div><div class="convo-last"><%= (c.last_content || '').substring(0, 50) %></div></div>
+                <div class="convo-time"><%= timeAgo(c.last_at, lang) %></div>
+              </a>
+            <% }) %>
+          <% } else { %>
+            <p class="muted small" style="padding:16px"><%= t.messages_empty %></p>
+          <% } %>
+        </aside>
+        <div class="chat-pane">
+          <% if (typeof activeUserId !== 'undefined' && activeUserId && typeof otherProfile !== 'undefined' && otherProfile) { %>
+            <div class="chat-head"><a href="messages" class="chat-back">←</a><div class="avatar"><%= (otherProfile.display_name || 'M').charAt(0).toUpperCase() %></div><div class="chat-name"><%= otherProfile.display_name || ('Membre ' + activeUserId) %></div></div>
+            <div class="chat-thread" id="chatThread">
+              <% (thread || []).forEach(function(m) { %>
+                <div class="msg <%= m.sender_id === user.id ? 'msg-mine' : 'msg-theirs' %>"><div class="msg-body"><%= m.content %></div><div class="msg-time"><%= timeAgo(m.created_at, lang) %></div></div>
+              <% }) %>
+            </div>
+            <form id="msgForm" class="chat-compose">
+              <input type="text" id="msgInput" placeholder="<%= t.messages_ph %>" maxlength="2000" required>
+              <button class="btn-primary" style="background-color:#6366f1;color:#fff"><%= t.messages_send %></button>
+            </form>
+          <% } else { %>
+            <div class="chat-empty"><p><%= t.messages_empty %></p><a href="amis" class="btn-outline"><%= t.nav_friends %></a></div>
+          <% } %>
+        </div>
+      </div>
+    <% } else { %>
+      <div class="login-card"><p><%= t.feed_login %></p><a href="#" data-login-btn class="btn-primary" style="background-color:#6366f1;color:#fff"><%= t.nav_login %></a></div>
+    <% } %>
+  </div>
+</section>
+<script>
+(function(){
+  var thread=document.getElementById('chatThread');
+  if(thread)thread.scrollTop=thread.scrollHeight;
+  var form=document.getElementById('msgForm');
+  if(!form)return;
+  var activeId=<%- (typeof activeUserId !== 'undefined' && activeUserId) ? activeUserId : 'null' %>;
+  form.addEventListener('submit',async function(e){
+    e.preventDefault();
+    var input=document.getElementById('msgInput');
+    var c=input.value.trim();
+    if(!c)return;
+    var res=await TenantSDK.fetch('api/messages/send',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({recipientId:activeId,content:c})});
+    if(res.ok){location.reload();}
+  });
+})();
+</script>
+<%- include('partials/footer') %>

@@ -1,0 +1,84 @@
+<%- include('partials/header') %>
+<section class="section section-app">
+  <div class="container">
+    <h1 class="app-h1"><%= t.friends_h %></h1>
+    <% if (typeof user !== 'undefined' && user) { %>
+      <div class="friends-grid">
+        <div class="side-card">
+          <h3><%= t.friends_code_h %></h3>
+          <p class="muted"><%= t.friends_code_d %></p>
+          <div class="code-box"><%= myCode %></div>
+          <button class="btn-outline" onclick="navigator.clipboard.writeText('<%= myCode %>');this.textContent='Copié !'">Copier</button>
+        </div>
+        <div class="main-card">
+          <h3><%= t.friends_invite %></h3>
+          <form id="inviteForm" class="inline-form">
+            <input type="text" id="inviteCode" placeholder="<%= t.friends_invite_ph %>" required>
+            <button class="btn-primary" style="background-color:#6366f1;color:#fff"><%= t.friends_invite_btn %></button>
+          </form>
+          <div id="inviteStatus" class="form-status"></div>
+          <h3 style="margin-top:24px"><%= t.friends_pending %></h3>
+          <% if (typeof pending !== 'undefined' && pending.length > 0) { %>
+            <ul class="friend-list">
+              <% pending.forEach(function(c) { %>
+                <li>
+                  <div class="avatar"><%= (c.display_name || 'M').charAt(0).toUpperCase() %></div>
+                  <div class="friend-info"><div><%= c.display_name || ('Membre ' + c.requester_id) %></div><div class="muted small"><%= timeAgo(c.created_at, lang) %></div></div>
+                  <div>
+                    <button class="btn-primary small" style="background-color:#6366f1;color:#fff" onclick="acceptF(<%= c.id %>)"><%= t.friends_accept %></button>
+                    <button class="btn-ghost small" onclick="declineF(<%= c.id %>)"><%= t.friends_decline %></button>
+                  </div>
+                </li>
+              <% }) %>
+            </ul>
+          <% } else { %>
+            <p class="muted small"><%= t.friends_pending_empty %></p>
+          <% } %>
+          <h3 style="margin-top:24px"><%= t.friends_accepted %></h3>
+          <% if (typeof accepted !== 'undefined' && accepted.length > 0) { %>
+            <ul class="friend-list">
+              <% accepted.forEach(function(c) { %>
+                <li>
+                  <div class="avatar"><%= (c.display_name || 'M').charAt(0).toUpperCase() %></div>
+                  <div class="friend-info"><div><%= c.display_name || ('Membre ' + c.friend_id) %></div><% if (c.bio) { %><div class="muted small"><%= c.bio %></div><% } %></div>
+                  <div>
+                    <a href="messages/<%= c.friend_id %>" class="btn-outline small"><%= t.nav_messages %></a>
+                    <button class="btn-ghost small" onclick="removeF(<%= c.friend_id %>)"><%= t.friends_remove %></button>
+                    <button class="btn-ghost small" onclick="blockF(<%= c.friend_id %>)"><%= t.friends_block %></button>
+                  </div>
+                </li>
+              <% }) %>
+            </ul>
+          <% } else { %>
+            <p class="muted small"><%= t.friends_empty %></p>
+          <% } %>
+        </div>
+      </div>
+    <% } else { %>
+      <div class="login-card"><p><%= t.feed_login %></p><a href="#" data-login-btn class="btn-primary" style="background-color:#6366f1;color:#fff"><%= t.nav_login %></a></div>
+    <% } %>
+  </div>
+</section>
+<script>
+var tRemove='<%- t.remove_confirm %>';
+var tBlock='<%- t.block_confirm %>';
+(function(){
+  var form=document.getElementById('inviteForm');
+  if(!form)return;
+  form.addEventListener('submit',async function(e){
+    e.preventDefault();
+    var code=document.getElementById('inviteCode').value.trim();
+    var st=document.getElementById('inviteStatus');
+    st.textContent='...';st.className='form-status loading';
+    var res=await TenantSDK.fetch('api/friends/request',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:code})});
+    var j=await res.json();
+    if(j.success){st.textContent='Demande envoyée';st.className='form-status success';setTimeout(()=>location.reload(),800);}
+    else{st.textContent=j.error||'Erreur';st.className='form-status error';}
+  });
+})();
+async function acceptF(id){var r=await TenantSDK.fetch('api/friends/accept/'+id,{method:'POST'});if(r.ok)location.reload();}
+async function declineF(id){var r=await TenantSDK.fetch('api/friends/decline/'+id,{method:'POST'});if(r.ok)location.reload();}
+async function removeF(id){if(!confirm(tRemove))return;var r=await TenantSDK.fetch('api/friends/remove/'+id,{method:'POST'});if(r.ok)location.reload();}
+async function blockF(id){if(!confirm(tBlock))return;var r=await TenantSDK.fetch('api/friends/block/'+id,{method:'POST'});if(r.ok)location.reload();}
+</script>
+<%- include('partials/footer') %>

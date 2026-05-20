@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#6366f1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="description" content="<%= t.tagline %>">
+<title><%= (typeof pageTitle !== 'undefined' && pageTitle) ? pageTitle + ' — ' + t.site_name : t.site_name %></title>
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="public/css/styles.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="container nav-wrap">
+    <a href="." class="brand">
+      <img src="<%= (typeof settings!=='undefined' && settings._p_nav_logo_url) ? settings._p_nav_logo_url : (typeof appIconUrl !== 'undefined' ? appIconUrl : '') %>" alt="" onerror="this.style.display='none'" class="brand-logo">
+      <span class="brand-name"><%= t.site_name %></span>
+    </a>
+    <nav class="nav-desktop" aria-label="Principal">
+      <a href="." class="<%= currentPath==='/' ? 'active' : '' %>"><%= t.nav_home %></a>
+      <a href="a-propos" class="<%= currentPath==='/a-propos' ? 'active' : '' %>"><%= t.nav_about %></a>
+      <a href="securite" class="<%= currentPath==='/securite' ? 'active' : '' %>"><%= t.nav_security %></a>
+      <a href="annonces" class="<%= currentPath && currentPath.indexOf('/annonces')===0 ? 'active' : '' %>"><%= t.nav_news %></a>
+      <a href="contact" class="<%= currentPath==='/contact' ? 'active' : '' %>"><%= t.nav_contact %></a>
+      <% if (typeof user !== 'undefined' && user) { %>
+        <a href="fil" class="<%= currentPath==='/fil' ? 'active' : '' %>"><%= t.nav_feed %></a>
+        <a href="amis" class="<%= currentPath==='/amis' ? 'active' : '' %>"><%= t.nav_friends %></a>
+        <a href="messages" class="<%= currentPath && currentPath.indexOf('/messages')===0 ? 'active' : '' %>"><%= t.nav_messages %></a>
+        <a href="profil" class="<%= currentPath==='/profil' ? 'active' : '' %>"><%= t.nav_profile %></a>
+      <% } %>
+    </nav>
+    <div class="nav-actions">
+      <span class="lang-toggle">
+        <a href="?lang=fr" class="<%= lang==='fr' ? 'active' : '' %>">FR</a>
+        <span class="sep">|</span>
+        <a href="?lang=en" class="<%= lang==='en' ? 'active' : '' %>">EN</a>
+      </span>
+      <% if (typeof user !== 'undefined' && user) { %>
+        <a href="admin/logout" class="btn-ghost" style="display:none" data-auth-only><%= t.nav_logout %></a>
+      <% } else { %>
+        <a href="#" data-login-btn class="btn-primary" style="background-color:#6366f1;color:#fff"><%= t.nav_login %></a>
+      <% } %>
+      <button class="hamburger" id="hamburgerBtn" aria-label="<%= t.menu_label %>" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+  <div class="nav-mobile" id="mobileMenu">
+    <a href="."><%= t.nav_home %></a>
+    <a href="a-propos"><%= t.nav_about %></a>
+    <a href="securite"><%= t.nav_security %></a>
+    <a href="annonces"><%= t.nav_news %></a>
+    <a href="contact"><%= t.nav_contact %></a>
+    <% if (typeof user !== 'undefined' && user) { %>
+      <a href="fil"><%= t.nav_feed %></a>
+      <a href="amis"><%= t.nav_friends %></a>
+      <a href="messages"><%= t.nav_messages %></a>
+      <a href="profil"><%= t.nav_profile %></a>
+      <a href="admin/logout" data-auth-only style="display:none"><%= t.nav_logout %></a>
+    <% } else { %>
+      <a href="#" data-login-btn class="mobile-login"><%= t.nav_login %></a>
+    <% } %>
+    <div class="mobile-lang">
+      <a href="?lang=fr" class="<%= lang==='fr' ? 'active' : '' %>">FR</a>
+      <a href="?lang=en" class="<%= lang==='en' ? 'active' : '' %>">EN</a>
+    </div>
+  </div>
+</header>
+<script>
+(function(){
+  var btn=document.getElementById('hamburgerBtn');
+  var menu=document.getElementById('mobileMenu');
+  if(btn&&menu){
+    btn.addEventListener('click',function(){
+      var open=menu.classList.toggle('open');
+      btn.classList.toggle('open',open);
+      btn.setAttribute('aria-expanded',open?'true':'false');
+    });
+  }
+})();
+</script>

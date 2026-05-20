@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Tableau de bord — Admin La Box d'Ici</title><link rel="stylesheet" href="public/css/admin-styles.css"></head>
+<body>
+<div class="admin-layout">
+<%- include('partials/admin-sidebar', { page: 'dashboard' }) %>
+<main class="admin-main">
+  <header class="admin-header">
+    <div>
+      <h1>Tableau de bord</h1>
+      <p class="admin-subtitle">Vue d'ensemble de la communauté et de la modération.</p>
+    </div>
+    <div class="admin-header-actions">
+      <a href="." target="_blank" class="btn-ghost">↗ Voir le site</a>
+      <button class="sidebar-toggle" onclick="document.body.classList.toggle('sidebar-open')" aria-label="Menu">☰</button>
+    </div>
+  </header>
+
+  <section class="stats-grid">
+    <div class="stat-card stat-accent">
+      <div class="stat-icon">👥</div>
+      <div><div class="stat-label">Membres</div><div class="stat-value"><%= stats.userCount %></div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🔔</div>
+      <div><div class="stat-label">Abonnés notifications</div><div class="stat-value"><%= stats.pushSubscriberCount %></div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">📈</div>
+      <div><div class="stat-label">Visites (7 jours)</div><div class="stat-value"><%= stats.recentVisits %></div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">📊</div>
+      <div><div class="stat-label">Visites totales</div><div class="stat-value"><%= stats.totalVisits %></div></div>
+    </div>
+  </section>
+
+  <section class="section-block">
+    <h2 class="section-h2">Modules à gérer</h2>
+    <div class="modules-grid">
+      <a href="admin/posts" class="module-card">
+        <div class="module-icon" style="background:#dbeafe;color:#1e40af">📰</div>
+        <div class="module-text">
+          <div class="module-name">Annonces</div>
+          <div class="module-count"><%= stats.postsCount %> élément(s)</div>
+        </div>
+        <div class="module-arrow">→</div>
+      </a>
+      <a href="admin/member_posts" class="module-card">
+        <div class="module-icon" style="background:#e0e7ff;color:#4338ca">💬</div>
+        <div class="module-text">
+          <div class="module-name">Publications membres</div>
+          <div class="module-count"><%= stats.memberPostsCount %> élément(s)</div>
+        </div>
+        <div class="module-arrow">→</div>
+      </a>
+      <a href="admin/reports" class="module-card <%= stats.reportsCount > 0 ? 'module-alert' : '' %>">
+        <div class="module-icon" style="background:#fee2e2;color:#b91c1c">⚑</div>
+        <div class="module-text">
+          <div class="module-name">Signalements ouverts</div>
+          <div class="module-count"><%= stats.reportsCount %> en attente</div>
+        </div>
+        <% if (stats.reportsCount > 0) { %><span class="badge-alert"><%= stats.reportsCount %></span><% } %>
+        <div class="module-arrow">→</div>
+      </a>
+      <a href="admin/invites" class="module-card">
+        <div class="module-icon" style="background:#fef3c7;color:#92400e">🔑</div>
+        <div class="module-text">
+          <div class="module-name">Invitations non utilisées</div>
+          <div class="module-count"><%= stats.invitesCount %> dispos</div>
+        </div>
+        <div class="module-arrow">→</div>
+      </a>
+      <a href="admin/form_submissions" class="module-card <%= stats.formSubsCount > 0 ? 'module-alert' : '' %>">
+        <div class="module-icon" style="background:#d1fae5;color:#065f46">✉️</div>
+        <div class="module-text">
+          <div class="module-name">Messages contact</div>
+          <div class="module-count"><%= stats.formSubsCount %> non traité(s)</div>
+        </div>
+        <% if (stats.formSubsCount > 0) { %><span class="badge-alert"><%= stats.formSubsCount %></span><% } %>
+        <div class="module-arrow">→</div>
+      </a>
+    </div>
+  </section>
+
+  <section class="two-col">
+    <div class="panel">
+      <div class="panel-head">
+        <h2 class="section-h2">Derniers messages reçus</h2>
+        <a href="admin/form_submissions" class="link-small">Tout voir →</a>
+      </div>
+      <% if (recentSubs && recentSubs.length > 0) { %>
+        <table class="admin-table">
+          <thead><tr><th>Date</th><th>Nom</th><th>Sujet</th><th>Aperçu</th></tr></thead>
+          <tbody>
+            <% recentSubs.forEach(function(s) { %>
+              <tr><td class="nowrap"><%= new Date(s.created_at).toLocaleDateString('fr-CA') %></td><td><strong><%= s.name %></strong></td><td><%= s.subject || '—' %></td><td class="truncate"><%= (s.message || '').substring(0, 80) %></td></tr>
+            <% }) %>
+          </tbody>
+        </table>
+      <% } else { %>
+        <div class="empty"><div class="empty-icon">📭</div><p>Aucun message pour l'instant.</p></div>
+      <% } %>
+    </div>
+    <div class="panel">
+      <div class="panel-head">
+        <h2 class="section-h2">Signalements récents</h2>
+        <a href="admin/reports" class="link-small">Tout voir →</a>
+      </div>
+      <% if (typeof recentReports !== 'undefined' && recentReports && recentReports.length > 0) { %>
+        <table class="admin-table">
+          <thead><tr><th>Date</th><th>Type</th><th>Motif</th><th>Statut</th></tr></thead>
+          <tbody>
+            <% recentReports.forEach(function(r) { %>
+              <tr><td class="nowrap"><%= new Date(r.created_at).toLocaleDateString('fr-CA') %></td><td><%= r.target_type %></td><td><%= r.reason %></td><td><span class="pill pill-warn"><%= r.status %></span></td></tr>
+            <% }) %>
+          </tbody>
+        </table>
+      <% } else { %>
+        <div class="empty"><div class="empty-icon">✅</div><p>Aucun signalement ouvert. Bravo !</p></div>
+      <% } %>
+    </div>
+  </section>
+</main>
+</div>
+</body>
+</html>
