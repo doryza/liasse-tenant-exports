@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin — <%= title %></title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body>
+<div class="admin-layout">
+<%- include('admin-sidebar', { page: page }) %>
+<main class="admin-main">
+<div class="admin-header">
+  <div>
+    <h1><%= title %></h1>
+    <p style="margin:0.25rem 0 0;color:#718096;font-size:0.9rem" id="countLabel"></p>
+  </div>
+  <button class="btn btn-primary" onclick="openModal()" style="background-color:#39FF14;color:#000">+ Ajouter</button>
+</div>
+<div class="toolbar">
+  <input type="text" id="searchInput" placeholder="🔍 Rechercher…" oninput="renderList()">
+  <select id="statusFilter" onchange="renderList()" style="display:none">
+    <option value="">Tous les statuts</option>
+    <option value="pending">En attente</option>
+    <option value="confirmed">Confirmé</option>
+    <option value="declined">Refusé</option>
+    <option value="completed">Complété</option>
+  </select>
+</div>
+<div class="card">
+  <div id="listContainer"><p class="empty"><span class="emoji">⏳</span>Chargement…</p></div>
+</div>
+</main>
+</div>
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <h2 id="modalTitle">Ajouter</h2>
+    <form id="itemForm">
+      <div id="formFields"></div>
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Annuler</button>
+        <button type="submit" class="btn btn-primary" id="saveBtn" style="background-color:#39FF14;color:#000">Enregistrer</button>
+      </div>
+    </form>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+var MODULE_KEY = '<%- moduleKey %>';
+var items = [];
+var fields = [];
+var editingId = null;
+
+function esc(s) { if (s == null) return ''; return String(s).replace(/[&<>"']/g, function(c){ return ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[c]; }); }
+function labelFor(f) { return f.label || f.name; }
+
+function toast(msg, type) {
+  var t = document.getElementById('toast');
+  t.className = 'toast toast-' + (type || 'success');
+  t.textContent = msg;
+  setTimeout(function(){ t.classList.add('show'); }, 10);
+  setTimeout(function(){ t.classList.remove('show'); }, 2800);
+}
+
+function statusBadge(status) {
+  var cls = 'muted', label = status || '—';
+  if (status === 'confirmed') { cls = 'success'; label = 'Confirmé'; }
+  else if (status === 'pending') { cls = 'warn'; label = 'En attente'; }
+  else if (status === 'declined') { cls = 'danger'; label = 'Refusé'; }
+  else if (status === 'completed') { cls = 'muted'; label = 'Complété'; }
+  return '<span class="badge badge-' + cls + '">' + esc(label) + '</span>';
+}
+
+async function loadModule() {
+  try {
+    var r = await fetch('api/admin/modules');
+    var data = await r.json();
+    var m = (data.modules || []).find(function(x){ return x.key === MODULE_KEY; });
+    if (m) fields = m.fields;
+    if (MODULE_KEY === 'reservations') document.getElementById('statusFilter').style.display = '';
+    await loadItems();
+  } catch(e) { document.getElementById('listContainer').innerHTML = '<p class="empty"><span class="emoji">⚠️</span>Erreur de chargement</p>'; }
+}
+
+async function loadItems() {
+  try {
+    var r = await fetch('api/admin/' + MODULE_KEY);
+    var data = await r.json();
+    items = data[MODULE_KEY] || [];
+    renderList();
+  } catch(e) { document.getElementById('listContainer').innerHTML = '<p class="empty"><span class="emoji">⚠️</span>Erreur de chargement</p>'; }
+}
+
+function matchesSearch(it, q) {
+  if (!q) return true;
+  q = q.toLowerCase();
+  for (var k in it) {
+    var v = it[k];
+    if (v != null && String(v).toLowerCase().indexOf(q) !== -1) return true;
+  }
+  return false;
+}
+
+function renderList() {
+  var c = document.getElementById('listContainer');
+  var countLabel = document.getElementById('countLabel');
+  var q = (document.getElementById('searchInput') || {}).value || '';
+  var statusFilter = (document.getElementById('statusFilter') || {}).value || '';
+  var filtered = items.filter(function(it){
+    if (statusFilter && it.status !== statusFilter) return false;
+    return matchesSearch(it, q);
+  });
+  countLabel.textContent = filtered.length + ' / ' + items.length + ' élément' + (items.length>1?'s':'');
+  if (!items.length) {
+    c.innerHTML = '<p class="empty"><span class="emoji">📭</span>Aucun élément pour l\'instant.<br><span style="font-size:0.85rem;color:#a0aec0">Cliquez sur <strong>+ Ajouter</strong> pour commencer.</span></p>';
+    return;
+  }
+  if (!filtered.length) { c.innerHTML = '<p class="empty"><span class="emoji">🔍</span>Aucun résultat pour cette recherche.</p>'; return; }
+  var displayFields = fields.filter(function(f){ return f.name !== 'message' && f.type !== 'textarea' || f.name === 'content'; }).slice(0, 5);
+  if (MODULE_KEY === 'reservations') displayFields = fields.filter(function(f){ return ['event_date','contact_name','event_type','guests','status'].indexOf(f.name) !== -1; });
+  else if (MODULE_KEY === 'menu_items') displayFields = fields.filter(function(f){ return ['image_url','name_fr','price','category','available'].indexOf(f.name) !== -1; });
+  else if (MODULE_KEY === 'delivery_platforms') displayFields = fields.filter(function(f){ return ['logo_url','name','link_url','active'].indexOf(f.name) !== -1; });
+  else if (MODULE_KEY === 'posts') displayFields = fields.filter(function(f){ return ['image_url','title','category','published'].indexOf(f.name) !== -1; });
+
+  var html = '<div style="overflow-x:auto"><table><thead><tr>';
+  displayFields.forEach(function(f){ html += '<th>' + esc(labelFor(f)) + '</th>'; });
+  html += '<th style="text-align:right">Actions</th></tr></thead><tbody>';
+  filtered.forEach(function(it){
+    html += '<tr>';
+    displayFields.forEach(function(f){
+      var v = it[f.name];
+      if (f.type === 'image' && v) html += '<td><img src="' + esc(v) + '" alt=""></td>';
+      else if (f.type === 'image') html += '<td><div style="width:48px;height:48px;background:#e2e8f0;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#a0aec0">—</div></td>';
+      else if (f.name === 'status') html += '<td>' + statusBadge(v) + '</td>';
+      else if (f.type === 'boolean') html += '<td>' + (v && v != '0' ? '<span class="badge badge-success">✓</span>' : '<span class="badge badge-muted">—</span>') + '</td>';
+      else if (f.type === 'date' && v) html += '<td>' + esc(String(v).substring(0,10)) + '</td>';
+      else if (f.name === 'price' && v != null) html += '<td><strong>' + esc(Number(v).toFixed(2)) + ' $</strong></td>';
+      else if (f.name === 'link_url' && v) html += '<td><a href="' + esc(v) + '" target="_blank" style="color:#16a34a">🔗 Lien</a></td>';
+      else if (v != null && String(v).length > 60) html += '<td>' + esc(String(v).substring(0,60)) + '…</td>';
+      else html += '<td>' + esc(v == null ? '—' : String(v)) + '</td>';
+    });
+    html += '<td class="row-actions" style="text-align:right">';
+    if (MODULE_KEY === 'reservations' && it.status === 'pending') {
+      html += '<button class="btn btn-sm btn-primary" onclick="setStatus(' + it.id + ',\'confirmed\')" style="background-color:#16a34a;color:#fff" title="Confirmer">✓</button>';
+    }
+    html += '<button class="btn btn-sm btn-secondary" onclick="editItem(' + it.id + ')" title="Modifier">✏️</button>';
+    html += '<button class="btn btn-sm btn-danger" onclick="deleteItem(' + it.id + ')" title="Supprimer">🗑️</button>';
+    html += '</td>';
+    html += '</tr>';
+  });
+  html += '</tbody></table></div>';
+  c.innerHTML = html;
+}
+
+function buildFormFields(item) {
+  var html = '';
+  fields.forEach(function(f){
+    var v = item ? (item[f.name] == null ? '' : item[f.name]) : (f.default !== undefined ? f.default : '');
+    var id = 'fld_' + f.name;
+    var req = f.required ? ' required' : '';
+    var reqStar = f.required ? ' <span style="color:#e53e3e">*</span>' : '';
+    html += '<div class="form-group"><label for="' + id + '">' + esc(labelFor(f)) + reqStar + '</label>';
+    if (f.type === 'textarea') {
+      html += '<textarea id="' + id + '" class="form-control"' + req + ' placeholder="' + esc(f.placeholder || '') + '">' + esc(v) + '</textarea>';
+    } else if (f.type === 'boolean') {
+      html += '<div class="field-checkbox"><input type="checkbox" id="' + id + '"' + (v && v != '0' ? ' checked' : '') + '><span class="help-text" style="margin:0">' + esc(f.description || '') + '</span></div>';
+      html += '</div>';
+      return;
+    } else if (f.type === 'select') {
+      html += '<select id="' + id + '" class="form-control">';
+      (f.options || []).forEach(function(o){ html += '<option value="' + esc(o) + '"' + (String(v) === String(o) ? ' selected' : '') + '>' + esc(o) + '</option>'; });
+      html += '</select>';
+    } else if (f.type === 'image') {
+      html += '<input type="text" id="' + id + '" class="form-control" placeholder="URL de l\'image" value="' + esc(v) + '" oninput="refreshPreview(\'' + id + '\')">';
+      html += '<input type="file" accept="image/*" onchange="uploadImage(this, \'' + id + '\')" style="margin-top:0.5rem;font-size:0.85rem">';
+      html += '<div id="' + id + '_preview">' + (v ? '<img src="' + esc(v) + '" class="img-preview">' : '') + '</div>';
+    } else if (f.type === 'date') {
+      var dv = v ? String(v).substring(0,10) : '';
+      html += '<input type="date" id="' + id + '" class="form-control"' + req + ' value="' + esc(dv) + '">';
+    } else if (f.type === 'number') {
+      var step = f.step != null ? f.step : '1';
+      var mn = f.min != null ? ' min="' + f.min + '"' : '';
+      html += '<input type="number" id="' + id + '" class="form-control"' + req + ' value="' + esc(v) + '" step="' + step + '"' + mn + ' placeholder="' + esc(f.placeholder || '') + '">';
+    } else if (f.type === 'email') {
+      html += '<input type="email" id="' + id + '" class="form-control"' + req + ' value="' + esc(v) + '">';
+    } else if (f.type === 'url') {
+      html += '<input type="url" id="' + id + '" class="form-control"' + req + ' value="' + esc(v) + '" placeholder="' + esc(f.placeholder || '') + '">';
+    } else {
+      html += '<input type="text" id="' + id + '" class="form-control"' + req + ' value="' + esc(v) + '" placeholder="' + esc(f.placeholder || '') + '">';
+    }
+    if (f.description) html += '<div class="help-text">' + esc(f.description) + '</div>';
+    html += '</div>';
+  });
+  return html;
+}
+
+function refreshPreview(fieldId) {
+  var url = document.getElementById(fieldId).value;
+  document.getElementById(fieldId + '_preview').innerHTML = url ? '<img src="' + url.replace(/"/g,'&quot;') + '" class="img-preview">' : '';
+}
+
+async function uploadImage(input, fieldId) {
+  var file = input.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = async function() {
+    try {
+      var r = await fetch('api/admin/upload', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ dataUri: reader.result }) });
+      var data = await r.json();
+      if (data.url) {
+        document.getElementById(fieldId).value = data.url;
+        refreshPreview(fieldId);
+        toast('Image téléchargée', 'success');
+      } else { toast('Erreur: ' + (data.error || 'inconnue'), 'error'); }
+    } catch(e) { toast('Erreur de téléchargement', 'error'); }
+  };
+  reader.readAsDataURL(file);
+}
+
+function openModal(item) {
+  editingId = item ? item.id : null;
+  document.getElementById('modalTitle').textContent = item ? 'Modifier' : 'Ajouter';
+  document.getElementById('formFields').innerHTML = buildFormFields(item);
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+function editItem(id) { var it = items.find(function(x){ return x.id === id; }); if (it) openModal(it); }
+
+async function setStatus(id, status) {
+  try {
+    var r = await fetch('api/admin/' + MODULE_KEY + '/' + id, { method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ status: status }) });
+    if (r.ok) { toast('Statut mis à jour', 'success'); loadItems(); }
+    else toast('Erreur', 'error');
+  } catch(e) { toast('Erreur réseau', 'error'); }
+}
+
+async function deleteItem(id) {
+  if (!confirm('Supprimer cet élément définitivement?')) return;
+  try {
+    var r = await fetch('api/admin/' + MODULE_KEY + '/' + id, { method: 'DELETE' });
+    if (r.ok) { toast('Supprimé', 'success'); loadItems(); }
+    else toast('Erreur de suppression', 'error');
+  } catch(e) { toast('Erreur réseau', 'error'); }
+}
+
+document.getElementById('itemForm').addEventListener('submit', async function(e){
+  e.preventDefault();
+  var data = {};
+  fields.forEach(function(f){
+    var el = document.getElementById('fld_' + f.name);
+    if (!el) return;
+    if (f.type === 'boolean') data[f.name] = el.checked ? 1 : 0;
+    else if (f.type === 'number') data[f.name] = el.value === '' ? null : parseFloat(el.value);
+    else data[f.name] = el.value;
+  });
+  var saveBtn = document.getElementById('saveBtn');
+  saveBtn.disabled = true; saveBtn.textContent = 'Enregistrement…';
+  try {
+    var url = editingId ? ('api/admin/' + MODULE_KEY + '/' + editingId) : ('api/admin/' + MODULE_KEY);
+    var r = await fetch(url, { method: editingId ? 'PUT' : 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data) });
+    if (r.ok) { closeModal(); toast(editingId ? 'Modifié avec succès' : 'Ajouté avec succès', 'success'); loadItems(); }
+    else { var err = await r.json().catch(function(){ return {}; }); toast('Erreur: ' + (err.error || 'inconnue'), 'error'); }
+  } catch(e) { toast('Erreur réseau', 'error'); }
+  finally { saveBtn.disabled = false; saveBtn.textContent = 'Enregistrer'; }
+});
+
+document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeModal(); });
+
+loadModule();
+</script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin — PoutineFest</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body>
+<div class="admin-layout">
+<%- include('partials/admin-sidebar', { page: 'dashboard' }) %>
+<main class="admin-main">
+<div class="admin-header">
+  <div>
+    <h1>Tableau de bord</h1>
+    <p style="margin:0.25rem 0 0;color:#718096;font-size:0.9rem">Bienvenue dans le panneau d'administration de PoutineFest.</p>
+  </div>
+  <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+    <a href="." target="_blank" class="btn btn-secondary">🌐 Voir le site</a>
+    <a href="admin/reservations" class="btn btn-primary" style="background-color:#39FF14;color:#000">📅 Demandes</a>
+  </div>
+</div>
+
+<% if (stats.pendingReservations > 0) { %>
+<div class="card" style="background:linear-gradient(135deg,#fef3c7,#fefce8);border-left:4px solid #f59e0b;margin-bottom:1.5rem">
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem">
+    <div>
+      <h2 style="margin:0 0 0.25rem;color:#92400e">⚠️ <%= stats.pendingReservations %> demande<%= stats.pendingReservations>1?'s':'' %> en attente</h2>
+      <p style="margin:0;color:#78350f">Vous avez de nouvelles demandes de réservation à traiter.</p>
+    </div>
+    <a href="admin/reservations" class="btn btn-primary" style="background-color:#f59e0b;color:#fff">Traiter maintenant →</a>
+  </div>
+</div>
+<% } %>
+
+<h2 style="margin:0 0 1rem;font-size:1.1rem;color:#4a5568;text-transform:uppercase;letter-spacing:0.05em">Activité du site</h2>
+<div class="stat-grid">
+  <div class="stat-card"><div class="label">Visites totales</div><div class="value"><%= stats.visits %></div></div>
+  <div class="stat-card"><div class="label">7 derniers jours</div><div class="value"><%= stats.visits7 %></div></div>
+  <div class="stat-card"><div class="label">Utilisateurs</div><div class="value"><%= stats.users %></div></div>
+  <div class="stat-card"><div class="label">Abonnés push</div><div class="value"><%= stats.pushSubs %></div></div>
+</div>
+
+<h2 style="margin:2rem 0 1rem;font-size:1.1rem;color:#4a5568;text-transform:uppercase;letter-spacing:0.05em">Gestion du contenu</h2>
+<div class="module-grid">
+  <a href="admin/menu" class="module-card">
+    <div class="module-icon">🍴</div>
+    <h3>Menu</h3>
+    <p><strong><%= stats.menu %></strong> plat<%= stats.menu>1?'s':'' %> · <span style="color:#16a34a"><%= stats.availableMenu %> disponible<%= stats.availableMenu>1?'s':'' %></span></p>
+  </a>
+  <a href="admin/delivery" class="module-card">
+    <div class="module-icon">🚚</div>
+    <h3>Livraison</h3>
+    <p><strong><%= stats.platforms %></strong> plateforme<%= stats.platforms>1?'s':'' %> · <span style="color:#16a34a"><%= stats.activePlatforms %> active<%= stats.activePlatforms>1?'s':'' %></span></p>
+  </a>
+  <a href="admin/reservations" class="module-card">
+    <div class="module-icon">📅</div>
+    <h3>Réservations</h3>
+    <p><strong><%= stats.reservations %></strong> demande<%= stats.reservations>1?'s':'' %><% if (stats.pendingReservations > 0) { %> · <span style="color:#f59e0b"><%= stats.pendingReservations %> en attente</span><% } %></p>
+  </a>
+  <a href="admin/posts" class="module-card">
+    <div class="module-icon">📝</div>
+    <h3>Nouvelles</h3>
+    <p><strong><%= stats.posts %></strong> publication<%= stats.posts>1?'s':'' %></p>
+  </a>
+</div>
+
+<% if (recentReservations && recentReservations.length > 0) { %>
+<div class="card" style="margin-top:2rem">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem">
+    <h2 style="margin:0">Dernières demandes de camion</h2>
+    <a href="admin/reservations" style="color:#16a34a;font-weight:700;font-size:0.9rem">Voir tout →</a>
+  </div>
+  <div style="overflow-x:auto">
+  <table>
+    <thead><tr><th>Événement</th><th>Contact</th><th>Type</th><th>Invités</th><th>Statut</th></tr></thead>
+    <tbody>
+    <% recentReservations.forEach(function(r) { %>
+      <tr>
+        <td><strong><%= r.event_date ? new Date(r.event_date).toLocaleDateString('fr-CA') : '' %></strong></td>
+        <td><strong><%= r.contact_name %></strong><br><small style="color:#718096"><%= r.contact_email %></small></td>
+        <td><%= r.event_type || '—' %></td>
+        <td><%= r.guests || '—' %></td>
+        <td><span class="badge badge-<%= r.status==='confirmed'?'success':(r.status==='pending'?'warn':(r.status==='declined'?'danger':'muted')) %>"><%= r.status %></span></td>
+      </tr>
+    <% }); %>
+    </tbody>
+  </table>
+  </div>
+</div>
+<% } else { %>
+<div class="card" style="margin-top:2rem;text-align:center;padding:3rem 1rem">
+  <div style="font-size:3rem;margin-bottom:0.5rem">📭</div>
+  <h2 style="margin:0 0 0.5rem">Aucune demande pour l'instant</h2>
+  <p style="color:#718096;margin:0">Les demandes de réservation du camion apparaîtront ici.</p>
+</div>
+<% } %>
+</main>
+</div>
+</body>
+</html>

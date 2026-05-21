@@ -1,0 +1,64 @@
+{
+  "slug": "poutinefest",
+  "displayName": "PoutineFest",
+  "description": "make we a restaurant website for a restaurant named PoutineFest with primary color being toxic green. I need to display my menu with photos. Display delivery with platform section where I can upload my own logos and links to delivery platforms. And about us. And a reserve the foodtruck space with a form that has event date. the main image will be our brick and mortar store and foodtruck parked near it. we'll provide that image.",
+  "status": "active",
+  "generationVersion": 1,
+  "primaryColor": "#6366f1",
+  "iconUrl": "https://res.cloudinary.com/duhp69meg/image/upload/v1779217153/subscriber_pwa_icons/inaklcotzdjouhzm8ues.png",
+  "enabledAuthMethods": [
+    "webauthn",
+    "sms",
+    "email"
+  ],
+  "notificationsEnabled": true,
+  "geolocationEnabled": true,
+  "customConfig": {
+    "language": "both",
+    "aiSummary": {
+      "en": {
+        "dashboard": "Welcome to your new control center! This is where you'll manage everything on your PoutineFest website. To get there, just go to your admin page.\n\nHere’s a quick tour of what you can do:\n\n*   **Update Your Menu:** In the 'Menu' section, you can add new poutine dishes, change prices, and upload mouth-watering photos for each item. Keeping your menu fresh is now super easy.\n\n*   **Manage Delivery Partners:** Go to the 'Delivery' section to add or update the services you use, like SkipTheDishes or Uber Eats. You can upload their logos and add the direct link for your customers to order.\n\n*   **Check Food Truck Bookings:** When someone fills out the form to reserve your food truck, their request will pop up in the 'Reservations' section. You can see all the event details there.\n\n*   **Share News:** You have a 'Posts' section, which is perfect for announcements! Use it to post about special deals, new menu items, or where your food truck will be next.\n\n*   **See Your Stats:** Curious how many people are visiting your site? Your dashboard has a spot to show you your visitor stats, so you can watch your popularity grow!",
+        "variables": "Great news! Your new 'PoutineFest' website is all set up and ready to go. You don't need any extra keys or technical bits to get started. Everything is built-in, so you can jump right into adding your delicious menu items and sharing your site with the world. It’s that simple!"
+      },
+      "fr": {
+        "dashboard": "Bienvenue dans votre panneau de contrôle! C'est ici que vous allez gérer tout le contenu de votre site web PoutineFest. Pour y accéder, vous n'avez qu'à vous rendre sur votre page d'administration.\n\nVoici un petit tour de ce que vous pouvez faire :\n\n*   **Mettre votre menu à jour :** Dans la section 'Menu', vous pouvez ajouter vos nouveaux plats de poutine, changer les prix et téléverser des photos qui donnent l'eau à la bouche pour chaque item.\n\n*   **Gérer les partenaires de livraison :** Allez dans la section 'Livraison' pour ajouter ou modifier les services que vous utilisez, comme Skip ou Uber Eats. Vous pouvez y mettre leur logo et le lien direct pour que vos clients puissent commander.\n\n*   **Voir les réservations du camion de rue :** Quand une personne remplit le formulaire pour réserver votre 'food truck', sa demande va apparaître dans la section 'Réservations'. Vous pourrez y consulter tous les détails de l'événement.\n\n*   **Partager des nouvelles :** Vous avez une section 'Publications' qui est parfaite pour les annonces! Utilisez-la pour parler de vos promotions, de vos nouveautés ou pour dire où votre camion de rue sera cette semaine.\n\n*   **Consulter vos statistiques :** Curieux de savoir combien de gens visitent votre site? Votre panneau de contrôle inclut un endroit pour voir les statistiques de visites, pour vous permettre de suivre votre popularité!",
+        "variables": "Excellente nouvelle! Votre nouveau site web 'PoutineFest' est fin prêt à être utilisé. Vous n'avez besoin d'aucune clé spéciale ou de configuration technique pour commencer. Tout est déjà inclus, alors vous pouvez tout de suite commencer à ajouter vos délicieux plats et partager votre site avec tout le monde. C'est aussi simple que ça!"
+      }
+    },
+    "aiSummaryVersion": 1
+  },
+  "promptHistory": [
+    {
+      "prompt": "make we a restaurant website for a restaurant named PoutineFest with primary color being toxic green. I need to display my menu with photos. Display delivery with platform section where I can upload my own logos and links to delivery platforms. And about us. And a reserve the foodtruck space with a form that has event date. the main image will be our brick and mortar store and foodtruck parked near it. we'll provide that image.",
+      "timestamp": "2026-05-19T18:43:35.881Z",
+      "changeNotes": "Initial build of PoutineFest — a bilingual (FR/EN) PWA for a Quebec poutine restaurant with brick-and-mortar + food truck operations. Includes a toxic-green dark theme matching the brand, full menu with photos and category filtering, delivery platforms section with admin-editable logos and links, about page with values, and a complete food truck reservation form that emails the owner and stores submissions. Full admin backend with CRUD for menu items, delivery platforms, reservations, and posts.\n\nEnhanced admin UX: richer dashboard with status badges and quick actions; admin-shell now uses human-readable field labels, status badges for reservations, image previews, better empty states and toast feedback; improved contrast on admin and frontend (text/badge readability); polished delivery cards and menu category badges with accessible focus states; preserved all {{IMG_*}} tokens and existing functionality.",
+      "generationId": 1162,
+      "filesModified": [
+        "manifest.json",
+        "public/css/admin-styles.css",
+        "public/css/styles.css",
+        "routes.js",
+        "schema.sql",
+        "seed.js",
+        "views/admin-delivery.ejs",
+        "views/admin-menu.ejs",
+        "views/admin-posts.ejs",
+        "views/admin-reservations.ejs",
+        "views/admin.ejs",
+        "views/apropos.ejs",
+        "views/index.ejs",
+        "views/livraison.ejs",
+        "views/menu.ejs",
+        "views/partials/admin-shell.ejs",
+        "views/partials/admin-sidebar.ejs",
+        "views/partials/footer.ejs",
+        "views/partials/header.ejs",
+        "views/reserver.ejs"
+      ]
+    }
+  ],
+  "apiVariables": [],
+  "createdAt": "2026-05-19T18:14:46.671Z",
+  "updatedAt": "2026-05-19T19:26:08.608Z",
+  "exportedAt": "2026-05-21T03:23:28.696Z"
+}

@@ -1,0 +1,93 @@
+<%- include('partials/header') %>
+<section class="hero">
+  <img src="<%= (typeof settings!=='undefined' && settings._p_hero_image_url) ? settings._p_hero_image_url : 'https://placehold.co/1600x900/0a0a0a/39FF14/png?text=PoutineFest' %>" alt="<%= t.brand %>" class="hero-img">
+  <div class="hero-overlay"></div>
+  <div class="container hero-inner">
+    <h1><%= t.hero_title %></h1>
+    <p><%= t.hero_subtitle %></p>
+    <div class="hero-ctas">
+      <a href="menu" class="btn btn-primary" style="background-color:#39FF14;color:#000"><%= t.cta_menu %> →</a>
+      <a href="reserver" class="btn btn-secondary" style="border-color:#39FF14;color:#39FF14"><%= t.cta_reserve %></a>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <h2 class="section-title"><%= t.menu_title %></h2>
+    <p class="section-sub"><%= t.menu_subtitle %></p>
+    <% if (typeof menu !== 'undefined' && menu && menu.length > 0) { %>
+      <div class="menu-grid">
+        <% menu.forEach(function(m) { %>
+        <div class="menu-card">
+          <% if (m.image_url) { %><img src="<%= m.image_url %>" alt="<%= pickLang(m,'name',lang) %>" class="menu-card-img"><% } else { %><div class="menu-card-img"></div><% } %>
+          <div class="menu-card-body">
+            <h3><%= pickLang(m, 'name', lang) %></h3>
+            <p class="desc"><%= pickLang(m, 'description', lang) %></p>
+            <div class="row">
+              <span class="cat-badge"><%= m.category || '' %></span>
+              <span class="price"><%= formatPrice(m.price) %></span>
+            </div>
+          </div>
+        </div>
+        <% }); %>
+      </div>
+      <p style="text-align:center;margin-top:2.5rem"><a href="menu" class="btn btn-secondary" style="border-color:#39FF14;color:#39FF14"><%= t.view_full_menu %> →</a></p>
+    <% } else { %>
+      <p class="empty-state"><%= t.no_menu %></p>
+    <% } %>
+  </div>
+</section>
+
+<section class="section alt-section">
+  <div class="container">
+    <h2 class="section-title"><%= t.delivery_title %></h2>
+    <p class="section-sub"><%= t.delivery_subtitle %></p>
+    <% if (typeof platforms !== 'undefined' && platforms && platforms.length > 0) { %>
+      <div class="delivery-grid">
+        <% platforms.forEach(function(p) { %>
+        <div class="delivery-card">
+          <% if (p.logo_url) { %><img src="<%= p.logo_url %>" alt="<%= p.name %>"><% } else { %><div class="logo-placeholder">🚚</div><% } %>
+          <h3><%= p.name %></h3>
+          <a href="<%= p.link_url %>" target="_blank" rel="noopener" class="btn btn-primary" style="background-color:#39FF14;color:#000"><%= t.order_now %></a>
+        </div>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <p class="empty-state"><%= t.no_platforms %></p>
+    <% } %>
+  </div>
+</section>
+
+<section class="section cta-section">
+  <div class="container">
+    <div class="cta-box">
+      <h2><%= t.reserve_title %></h2>
+      <p><%= t.reserve_subtitle %></p>
+      <a href="reserver" class="btn btn-primary" style="background-color:#39FF14;color:#000"><%= t.all_truck_cta %> →</a>
+    </div>
+  </div>
+</section>
+
+<% if (typeof posts !== 'undefined' && posts && posts.length > 0) { %>
+<section class="section alt-section">
+  <div class="container">
+    <h2 class="section-title"><%= t.latest_news %></h2>
+    <div class="posts-grid">
+    <% posts.forEach(function(p) { %>
+      <div class="post-card">
+        <% if (p.image_url) { %><img src="<%= p.image_url %>" alt="<%= p.title %>"><% } %>
+        <div class="post-card-body">
+          <% if (p.category) { %><span class="cat-badge"><%= p.category %></span><% } %>
+          <h3><%= p.title %></h3>
+          <p class="date"><%= formatDate(p.created_at, lang) %></p>
+          <% if (p.content) { %><p class="excerpt"><%= String(p.content).substring(0,160) %><%= String(p.content).length > 160 ? '...' : '' %></p><% } %>
+        </div>
+      </div>
+    <% }); %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<%- include('partials/footer') %>

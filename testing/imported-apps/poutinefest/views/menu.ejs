@@ -1,0 +1,52 @@
+<%- include('partials/header') %>
+<section class="section" style="padding-top:3rem">
+  <div class="container">
+    <h1 class="section-title"><%= t.menu_title %></h1>
+    <p class="section-sub"><%= t.menu_subtitle %></p>
+    <% if (typeof menu !== 'undefined' && menu && menu.length > 0) { %>
+      <div class="category-filter" id="catFilter" role="tablist">
+        <button class="active" data-cat="all" style="background-color:#39FF14;color:#000"><%= t.category_all %></button>
+        <button data-cat="classique"><%= t.category_classique %></button>
+        <button data-cat="signature"><%= t.category_signature %></button>
+        <button data-cat="vegan"><%= t.category_vegan %></button>
+        <button data-cat="dessert"><%= t.category_dessert %></button>
+      </div>
+      <div class="menu-grid" id="menuGrid">
+        <% menu.forEach(function(m) { %>
+        <div class="menu-card <%= m.available ? '' : 'unavailable' %>" data-cat="<%= m.category || '' %>">
+          <% if (m.image_url) { %><img src="<%= m.image_url %>" alt="<%= pickLang(m,'name',lang) %>" class="menu-card-img"><% } else { %><div class="menu-card-img"></div><% } %>
+          <div class="menu-card-body">
+            <h3><%= pickLang(m, 'name', lang) %></h3>
+            <p class="desc"><%= pickLang(m, 'description', lang) %></p>
+            <div class="row">
+              <span class="cat-badge"><%= m.category || '' %></span>
+              <span class="price"><%= formatPrice(m.price) %></span>
+            </div>
+          </div>
+        </div>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <p class="empty-state"><%= t.no_menu %></p>
+    <% } %>
+  </div>
+</section>
+<script>
+(function(){
+  var btns = document.querySelectorAll('#catFilter button');
+  var cards = document.querySelectorAll('#menuGrid .menu-card');
+  btns.forEach(function(b){
+    b.addEventListener('click', function(){
+      btns.forEach(function(x){ x.classList.remove('active'); x.style.backgroundColor=''; x.style.color=''; });
+      b.classList.add('active');
+      b.style.backgroundColor = '#39FF14';
+      b.style.color = '#000';
+      var c = b.getAttribute('data-cat');
+      cards.forEach(function(card){
+        card.style.display = (c === 'all' || card.getAttribute('data-cat') === c) ? '' : 'none';
+      });
+    });
+  });
+})();
+</script>
+<%- include('partials/footer') %>

@@ -1,0 +1,62 @@
+<%- include('partials/header') %>
+<section class="section" style="padding-top:3rem">
+  <div class="container">
+    <h1 class="section-title"><%= t.reserve_title %></h1>
+    <p class="section-sub"><%= t.reserve_subtitle %></p>
+    <div class="form-wrap">
+      <div id="successMsg" class="alert alert-success" style="display:none"><%= t.reserve_success %></div>
+      <div id="errorMsg" class="alert alert-error" style="display:none"></div>
+      <form id="reserveForm">
+        <div class="form-row">
+          <div class="form-group"><label><%= t.form_name %> <span class="req">*</span></label><input type="text" name="contact_name" class="form-control" required></div>
+          <div class="form-group"><label><%= t.form_email %> <span class="req">*</span></label><input type="email" name="contact_email" class="form-control" required></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label><%= t.form_phone %></label><input type="tel" name="contact_phone" class="form-control"></div>
+          <div class="form-group"><label><%= t.form_event_date %> <span class="req">*</span></label><input type="date" name="event_date" class="form-control" required></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label><%= t.form_event_type %></label><input type="text" name="event_type" class="form-control" placeholder="<%= lang === 'fr' ? 'Mariage, Festival, Corpo...' : 'Wedding, Festival, Corporate...' %>"></div>
+          <div class="form-group"><label><%= t.form_guests %></label><input type="number" name="guests" class="form-control" min="0" placeholder="50"></div>
+        </div>
+        <div class="form-group"><label><%= t.form_location %></label><input type="text" name="location" class="form-control" placeholder="<%= lang === 'fr' ? 'Adresse complète ou nom du lieu' : 'Full address or venue name' %>"></div>
+        <div class="form-group"><label><%= t.form_message %></label><textarea name="message" class="form-control" rows="4" placeholder="<%= lang === 'fr' ? 'Détails supplémentaires, contraintes, etc.' : 'Additional details, constraints, etc.' %>"></textarea></div>
+        <button type="submit" class="btn btn-primary btn-block" style="background-color:#39FF14;color:#000" id="submitBtn"><%= t.form_submit %></button>
+      </form>
+    </div>
+  </div>
+</section>
+<script>
+(function(){
+  var form = document.getElementById('reserveForm');
+  var btn = document.getElementById('submitBtn');
+  var success = document.getElementById('successMsg');
+  var error = document.getElementById('errorMsg');
+  var submitText = '<%- t.form_submit %>';
+  form.addEventListener('submit', async function(e){
+    e.preventDefault();
+    success.style.display = 'none'; error.style.display = 'none';
+    btn.disabled = true; btn.textContent = '...';
+    var data = {};
+    new FormData(form).forEach(function(v,k){ data[k] = v; });
+    try {
+      var r = await fetch('api/reserve', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data) });
+      var j = await r.json().catch(function(){ return {}; });
+      if (r.ok && j.success) {
+        success.style.display = 'block';
+        form.reset();
+        success.scrollIntoView({behavior:'smooth', block:'center'});
+      } else {
+        error.textContent = j.error || '<%- t.reserve_error %>';
+        error.style.display = 'block';
+      }
+    } catch(err) {
+      error.textContent = '<%- t.reserve_error %>';
+      error.style.display = 'block';
+    } finally {
+      btn.disabled = false; btn.textContent = submitText;
+    }
+  });
+})();
+</script>
+<%- include('partials/footer') %>

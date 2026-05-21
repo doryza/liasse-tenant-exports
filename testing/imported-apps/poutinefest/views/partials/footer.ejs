@@ -1,0 +1,32 @@
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <h4><%= t.brand %></h4>
+        <p><%= settings.tagline || t.hero_subtitle %></p>
+      </div>
+      <div>
+        <h4><%= t.contact_us %></h4>
+        <% if (settings.business_address) { %><p><%= settings.business_address %></p><% } %>
+        <% if (settings.contact_phone) { %><p><%= t.phone %> : <a href="tel:<%= settings.contact_phone %>" style="color:#ccc"><%= settings.contact_phone %></a></p><% } %>
+        <% if (settings.contact_email) { %><p><%= t.email %> : <a href="mailto:<%= settings.contact_email %>" style="color:#ccc"><%= settings.contact_email %></a></p><% } %>
+      </div>
+      <div>
+        <h4><%= t.open_hours %></h4>
+        <pre class="hours-pre"><%= settings.hours || '' %></pre>
+      </div>
+      <div>
+        <h4><%= t.enable_notif %></h4>
+        <button class="btn btn-secondary" data-push-btn style="border-color:#39FF14;color:#39FF14"><%= t.enable_notif %></button>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© <%= new Date().getFullYear() %> <%= settings.business_name || t.brand %> — <%= t.footer_rights %></p>
+    </div>
+  </div>
+</footer>
+<script>
+try { if (window.TenantSDK) { TenantSDK.ui.showInstallBanner(); setTimeout(function(){ try { TenantSDK.ui.showPushPrompt(); } catch(e){} }, 8000); } } catch(e) {}
+</script>
+</body>
+</html>

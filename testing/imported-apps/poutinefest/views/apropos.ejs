@@ -1,0 +1,27 @@
+<%- include('partials/header') %>
+<section class="section" style="padding-top:3rem">
+  <div class="container">
+    <h1 class="section-title"><%= t.about_title %></h1>
+    <div class="about-grid" style="margin-top:3rem">
+      <div>
+        <p style="font-size:1.15rem;line-height:1.8"><%= lang === 'en' ? (settings.about_text_en || 'Since 2018, PoutineFest celebrates Quebec cuisine with passion.') : (settings.about_text_fr || 'Depuis 2018, PoutineFest célèbre la cuisine québécoise avec passion.') %></p>
+        <% if (settings.business_address || settings.contact_phone || settings.contact_email) { %>
+        <div style="margin-top:2rem;padding:1.5rem;background:#141414;border-radius:12px;border:1px solid #2a2a2a">
+          <h3 style="color:#39FF14;margin:0 0 1rem"><%= t.contact_us %></h3>
+          <% if (settings.business_address) { %><p>📍 <%= settings.business_address %></p><% } %>
+          <% if (settings.contact_phone) { %><p>📞 <a href="tel:<%= settings.contact_phone %>" style="color:#39FF14"><%= settings.contact_phone %></a></p><% } %>
+          <% if (settings.contact_email) { %><p>✉️ <a href="mailto:<%= settings.contact_email %>" style="color:#39FF14"><%= settings.contact_email %></a></p><% } %>
+        </div>
+        <% } %>
+      </div>
+      <img src="<%= settings._p_about_image_url || 'https://placehold.co/800x600/0a0a0a/39FF14/png?text=PoutineFest' %>" alt="<%= t.brand %>">
+    </div>
+    <h2 class="section-title" style="margin-top:5rem"><%= t.values_title %></h2>
+    <div class="values-grid">
+      <div class="value-card"><div class="icon">🥔</div><h3><%= t.val1_t %></h3><p><%= t.val1_d %></p></div>
+      <div class="value-card"><div class="icon">🚚</div><h3><%= t.val2_t %></h3><p><%= t.val2_d %></p></div>
+      <div class="value-card"><div class="icon">🧀</div><h3><%= t.val3_t %></h3><p><%= t.val3_d %></p></div>
+    </div>
+  </div>
+</section>
+<%- include('partials/footer') %>

@@ -1,0 +1,406 @@
+{
+  "exportedAt": "2026-05-21T03:23:28.728Z",
+  "tables": {
+    "admin_invites": {
+      "columns": [
+        "id",
+        "email",
+        "token",
+        "role",
+        "status",
+        "invited_by",
+        "expires_at",
+        "accepted_at",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_webauthn_credentials": {
+      "columns": [
+        "id",
+        "admin_user_id",
+        "credential_id",
+        "public_key",
+        "counter",
+        "device_name",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_users": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "password_hash",
+        "display_name",
+        "role",
+        "active",
+        "activation_token",
+        "invited_by",
+        "invite_token",
+        "invite_expires_at",
+        "last_login_at",
+        "is_active",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_settings": {
+      "columns": [
+        "key",
+        "value",
+        "updated_at"
+      ],
+      "totalRows": 41,
+      "sampleRows": [
+        {
+          "key": "_p_about_image_url",
+          "value": "https://res.cloudinary.com/duhp69meg/image/upload/v1779215130/tapavis_tenant_poutinefest/build_poutinefest_1779215130910.png",
+          "updated_at": "2026-05-19T18:43:04.052Z"
+        },
+        {
+          "key": "tagline",
+          "value": "La poutine la plus authentique en ville.",
+          "updated_at": "2026-05-19T18:43:04.060Z"
+        },
+        {
+          "key": "business_name",
+          "value": "PoutineFest",
+          "updated_at": "2026-05-19T18:43:04.068Z"
+        },
+        {
+          "key": "contact_email",
+          "value": "",
+          "updated_at": "2026-05-19T18:43:04.075Z"
+        },
+        {
+          "key": "contact_phone",
+          "value": "",
+          "updated_at": "2026-05-19T18:43:04.083Z"
+        },
+        {
+          "key": "business_address",
+          "value": "",
+          "updated_at": "2026-05-19T18:43:04.090Z"
+        },
+        {
+          "key": "hours",
+          "value": "Lun-Jeu : 11h - 22h\nVen-Sam : 11h - minuit\nDim : 12h - 21h",
+          "updated_at": "2026-05-19T18:43:04.099Z"
+        },
+        {
+          "key": "about_text_fr",
+          "value": "Depuis 2018, PoutineFest célèbre la cuisine québécoise avec passion. Nos pommes de terre proviennent de fermes québécoises, notre fromage en grains est livré tous les matins, et notre sauce brune maison mijote 6 heures pour un goût incomparable. Notre camion-restaurant parcourt la province pour servir festivals, mariages et événements corporatifs.",
+          "updated_at": "2026-05-19T18:43:04.106Z"
+        },
+        {
+          "key": "about_text_en",
+          "value": "Since 2018, PoutineFest has been celebrating Quebec cuisine with passion. Our potatoes come from Quebec farms, our cheese curds are delivered every morning, and our house-made gravy simmers for 6 hours to deliver an unmatched flavor. Our food truck travels across the province for festivals, weddings and corporate events.",
+          "updated_at": "2026-05-19T18:43:04.115Z"
+        },
+        {
+          "key": "_seed_version",
+          "value": "7b58791fb669",
+          "updated_at": "2026-05-19T18:43:04.340Z"
+        }
+      ]
+    },
+    "site_visits": {
+      "columns": [
+        "id",
+        "path",
+        "visited_at"
+      ],
+      "totalRows": 753,
+      "sampleRows": [
+        {
+          "id": 1,
+          "path": "/",
+          "visited_at": "2026-05-19T18:44:27.022Z"
+        },
+        {
+          "id": 2,
+          "path": "/livraison",
+          "visited_at": "2026-05-19T18:48:40.844Z"
+        },
+        {
+          "id": 3,
+          "path": "/menu",
+          "visited_at": "2026-05-19T18:48:44.298Z"
+        },
+        {
+          "id": 4,
+          "path": "/livraison",
+          "visited_at": "2026-05-19T18:48:54.972Z"
+        },
+        {
+          "id": 5,
+          "path": "/livraison",
+          "visited_at": "2026-05-19T18:49:02.571Z"
+        },
+        {
+          "id": 6,
+          "path": "/menu",
+          "visited_at": "2026-05-19T18:49:03.814Z"
+        },
+        {
+          "id": 7,
+          "path": "/",
+          "visited_at": "2026-05-19T18:49:04.951Z"
+        },
+        {
+          "id": 8,
+          "path": "/",
+          "visited_at": "2026-05-19T18:57:48.195Z"
+        },
+        {
+          "id": 9,
+          "path": "/",
+          "visited_at": "2026-05-19T18:58:08.751Z"
+        },
+        {
+          "id": 10,
+          "path": "/",
+          "visited_at": "2026-05-19T18:58:16.026Z"
+        }
+      ]
+    },
+    "posts": {
+      "columns": [
+        "id",
+        "title",
+        "content",
+        "image_url",
+        "category",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Le camion sera au Festival de la Poutine!",
+          "content": "Du 28 au 31 août, retrouvez notre camion-restaurant au Festival de la Poutine de Drummondville. Menu spécial sur place avec 2 poutines exclusives au festival, à ne pas manquer!",
+          "image_url": null,
+          "category": "Événement",
+          "published": 1,
+          "created_at": "2026-05-19T18:43:04.214Z",
+          "updated_at": "2026-05-19T18:43:04.214Z"
+        },
+        {
+          "id": 2,
+          "title": "Nouveau menu d'automne en arrivée",
+          "content": "Découvrez nos 3 nouvelles poutines inspirées des saveurs d'automne: érable-bacon, courge musquée rôtie, et notre nouvelle Forêt Noire à la sauce vénison. Disponibles dès le 15 septembre.",
+          "image_url": null,
+          "category": "Menu",
+          "published": 1,
+          "created_at": "2026-05-19T18:43:04.222Z",
+          "updated_at": "2026-05-19T18:43:04.222Z"
+        },
+        {
+          "id": 3,
+          "title": "Réservez tôt pour le temps des fêtes",
+          "content": "Notre camion est presque complet pour décembre. Réservez dès maintenant pour vos fêtes d'entreprise et événements de fin d'année. Tarif spécial pour les groupes de 50+.",
+          "image_url": null,
+          "category": "Annonce",
+          "published": 1,
+          "created_at": "2026-05-19T18:43:04.229Z",
+          "updated_at": "2026-05-19T18:43:04.229Z"
+        },
+        {
+          "id": 4,
+          "title": "Notre fromage en grains : la fraîcheur avant tout",
+          "content": "Saviez-vous que nos grains de fromage sont livrés tous les matins par une fromagerie de l'Estrie? Si ça ne couine pas dans la bouche, on n'en sert pas. C'est notre engagement.",
+          "image_url": null,
+          "category": "Coulisses",
+          "published": 1,
+          "created_at": "2026-05-19T18:43:04.238Z",
+          "updated_at": "2026-05-19T18:43:04.238Z"
+        }
+      ]
+    },
+    "menu_items": {
+      "columns": [
+        "id",
+        "name_fr",
+        "name_en",
+        "description_fr",
+        "description_en",
+        "price",
+        "category",
+        "image_url",
+        "position",
+        "featured",
+        "available",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 6,
+      "sampleRows": [
+        {
+          "id": 1,
+          "name_fr": "Classique",
+          "name_en": "Classic Poutine",
+          "description_fr": "Frites fraîches maison, fromage en grains du jour et sauce brune mijotée 6 heures. La base intemporelle.",
+          "description_en": "House-cut fresh fries, daily cheese curds, and 6-hour simmered house gravy. The timeless classic.",
+          "price": 9.99,
+          "category": "classique",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1779215126/tapavis_tenant_poutinefest/build_poutinefest_1779215126366.png",
+          "position": 1,
+          "featured": 1,
+          "available": 1,
+          "created_at": "2026-05-19T18:43:04.132Z",
+          "updated_at": "2026-05-19T18:43:04.132Z"
+        },
+        {
+          "id": 2,
+          "name_fr": "Italienne",
+          "name_en": "Italian",
+          "description_fr": "Sauce à la viande maison, parmesan râpé et fromage en grains. Une signature québécoise.",
+          "description_en": "House meat sauce, grated parmesan, cheese curds. A Quebec staple.",
+          "price": 12.99,
+          "category": "signature",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1779215125/tapavis_tenant_poutinefest/build_poutinefest_1779215125800.png",
+          "position": 2,
+          "featured": 1,
+          "available": 1,
+          "created_at": "2026-05-19T18:43:04.140Z",
+          "updated_at": "2026-05-19T18:43:04.140Z"
+        },
+        {
+          "id": 4,
+          "name_fr": "Bacon Deluxe",
+          "name_en": "Bacon Deluxe",
+          "description_fr": "Bacon croustillant double portion, oignons caramélisés et sauce au poivre noir.",
+          "description_en": "Double crispy bacon, caramelized onions, black peppercorn gravy.",
+          "price": 13.99,
+          "category": "signature",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1779215133/tapavis_tenant_poutinefest/build_poutinefest_1779215133562.png",
+          "position": 4,
+          "featured": 0,
+          "available": 1,
+          "created_at": "2026-05-19T18:43:04.156Z",
+          "updated_at": "2026-05-19T18:43:04.156Z"
+        },
+        {
+          "id": 5,
+          "name_fr": "Forestière Végé",
+          "name_en": "Forest Veggie",
+          "description_fr": "Champignons sauvages sautés au beurre à l'ail, sauce aux champignons et fromage en grains. 100% végétarienne.",
+          "description_en": "Wild mushrooms sautéed in garlic butter, mushroom gravy, cheese curds. 100% vegetarian.",
+          "price": 12.99,
+          "category": "vegan",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1779215123/tapavis_tenant_poutinefest/build_poutinefest_1779215123464.png",
+          "position": 5,
+          "featured": 1,
+          "available": 1,
+          "created_at": "2026-05-19T18:43:04.165Z",
+          "updated_at": "2026-05-19T18:43:04.165Z"
+        },
+        {
+          "id": 6,
+          "name_fr": "Deluxe Festival",
+          "name_en": "Festival Deluxe",
+          "description_fr": "Bacon, saucisse fumée, poulet effiloché, double portion de fromage et sauce maison. Pour les grandes faims.",
+          "description_en": "Bacon, smoked sausage, pulled chicken, double cheese, house gravy. For big appetites.",
+          "price": 17.99,
+          "category": "signature",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1779215133/tapavis_tenant_poutinefest/build_poutinefest_1779215133750.png",
+          "position": 6,
+          "featured": 1,
+          "available": 1,
+          "created_at": "2026-05-19T18:43:04.172Z",
+          "updated_at": "2026-05-19T18:43:04.172Z"
+        },
+        {
+          "id": 3,
+          "name_fr": "La cochonne",
+          "name_en": "La cochonne",
+          "description_fr": "Effiloché de porc fumé 12 heures, sauce BBQ maison, oignons frits croustillants et fromage en grains.",
+          "description_en": "12hr smoked pulled pork, house BBQ sauce, crispy fried onions, cheese curds.",
+          "price": 14.99,
+          "category": "signature",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1779221855/poutinefest/admin/cpg8pgzsparlbrxzhlq4.jpg",
+          "position": 3,
+          "featured": 1,
+          "available": 1,
+          "created_at": "2026-05-19T18:43:04.148Z",
+          "updated_at": "2026-05-19T20:17:38.156Z"
+        }
+      ]
+    },
+    "delivery_platforms": {
+      "columns": [
+        "id",
+        "name",
+        "logo_url",
+        "link_url",
+        "position",
+        "active",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 3,
+      "sampleRows": [
+        {
+          "id": 1,
+          "name": "Uber Eats",
+          "logo_url": "",
+          "link_url": "https://www.ubereats.com",
+          "position": 1,
+          "active": 1,
+          "image_url": null,
+          "created_at": "2026-05-19T18:43:04.184Z",
+          "updated_at": "2026-05-19T18:43:04.184Z"
+        },
+        {
+          "id": 2,
+          "name": "DoorDash",
+          "logo_url": "",
+          "link_url": "https://www.doordash.com",
+          "position": 2,
+          "active": 1,
+          "image_url": null,
+          "created_at": "2026-05-19T18:43:04.192Z",
+          "updated_at": "2026-05-19T18:43:04.192Z"
+        },
+        {
+          "id": 3,
+          "name": "SkipTheDishes",
+          "logo_url": "",
+          "link_url": "https://www.skipthedishes.com",
+          "position": 3,
+          "active": 1,
+          "image_url": null,
+          "created_at": "2026-05-19T18:43:04.199Z",
+          "updated_at": "2026-05-19T18:43:04.199Z"
+        }
+      ]
+    },
+    "reservations": {
+      "columns": [
+        "id",
+        "contact_name",
+        "contact_email",
+        "contact_phone",
+        "event_date",
+        "event_type",
+        "location",
+        "guests",
+        "message",
+        "status",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    }
+  }
+}
