@@ -18,15 +18,28 @@
     <p class="section-sub"><%= t.menu_subtitle %></p>
     <% if (typeof menu !== 'undefined' && menu && menu.length > 0) { %>
       <div class="menu-grid">
-        <% menu.forEach(function(m) { %>
+        <% menu.forEach(function(m) {
+          var catName = '';
+          if (typeof categories !== 'undefined' && categories) {
+            var _c = categories.find(function(x){ return x.slug === m.category; });
+            if (_c) catName = (lang === 'en' && _c.name_en) ? _c.name_en : _c.name_fr;
+          }
+          var _sizes = (typeof parseSizes === 'function') ? parseSizes(m.sizes_json) : null;
+        %>
         <div class="menu-card">
           <% if (m.image_url) { %><img src="<%= m.image_url %>" alt="<%= pickLang(m,'name',lang) %>" class="menu-card-img"><% } else { %><div class="menu-card-img"></div><% } %>
           <div class="menu-card-body">
             <h3><%= pickLang(m, 'name', lang) %></h3>
             <p class="desc"><%= pickLang(m, 'description', lang) %></p>
             <div class="row">
-              <span class="cat-badge"><%= m.category || '' %></span>
-              <span class="price"><%= formatPrice(m.price) %></span>
+              <span class="cat-badge"><%= catName || m.category || '' %></span>
+              <% if (_sizes && _sizes.length > 1) { %>
+                <span class="price"><%= lang === 'en' ? 'from' : 'dès' %> <%= formatPrice(Math.min.apply(null, _sizes.map(function(s){ return s.price == null ? Infinity : s.price; }))) %></span>
+              <% } else if (_sizes && _sizes.length === 1) { %>
+                <span class="price"><%= formatPrice(_sizes[0].price) %></span>
+              <% } else { %>
+                <span class="price"><%= formatPrice(m.price) %></span>
+              <% } %>
             </div>
           </div>
         </div>
