@@ -182,7 +182,7 @@ module.exports = function(services) {
   }
 
   async function getMenuCategories() {
-    try { return await db.all('SELECT * FROM menu_categories WHERE active = 1 ORDER BY position ASC, id ASC'); }
+    try { return await db.all('SELECT * FROM menu_categories WHERE active = 1 ORDER BY id ASC'); }
     catch(e) { return []; }
   }
 
@@ -227,7 +227,7 @@ module.exports = function(services) {
   router.get('/', async function(req, res) {
     try {
       const ctx = await renderCtx(req);
-      const menu = await db.all("SELECT * FROM menu_items WHERE available = 1 ORDER BY featured DESC, position ASC LIMIT 6").catch(function(){ return []; });
+      const menu = await db.all("SELECT m.* FROM menu_items m LEFT JOIN menu_categories c ON c.slug = m.category WHERE m.available = 1 ORDER BY m.featured DESC, COALESCE(c.id, 999999) ASC, m.position ASC, m.id ASC LIMIT 6").catch(function(){ return []; });
       const platforms = await db.all('SELECT * FROM delivery_platforms WHERE active = 1 ORDER BY position ASC').catch(function(){ return []; });
       const posts = await db.all('SELECT * FROM posts WHERE published = 1 ORDER BY created_at DESC LIMIT 3').catch(function(){ return []; });
       const categories = await getMenuCategories();
@@ -238,7 +238,7 @@ module.exports = function(services) {
   router.get('/menu', async function(req, res) {
     try {
       const ctx = await renderCtx(req);
-      const menu = await db.all('SELECT * FROM menu_items ORDER BY position ASC, id ASC').catch(function(){ return []; });
+      const menu = await db.all('SELECT m.* FROM menu_items m LEFT JOIN menu_categories c ON c.slug = m.category ORDER BY COALESCE(c.id, 999999) ASC, m.position ASC, m.id ASC').catch(function(){ return []; });
       const categories = await getMenuCategories();
       res.render('menu', Object.assign(ctx, { menu: menu, categories: categories }));
     } catch(e) { res.status(500).send('Erreur'); }
@@ -444,7 +444,6 @@ module.exports = function(services) {
             { name: 'sizes_json', label: 'Tailles & prix (optionnel)', type: 'size_list', description: 'Ajoutez plusieurs tailles avec leur prix (ex. Petit 10$, Moyen 15$, Grand 20$). Si vide, le prix de base s\'affiche.' },
             { name: 'category', label: 'Catégorie', type: 'select_dynamic', source: 'menu_categories', valueField: 'slug', labelField: 'name_fr', editable: true, description: 'Choisissez une catégorie, renommez-la, ou créez-en une nouvelle ici.' },
             { name: 'image_url', label: 'Photo du plat', type: 'image', description: 'Photo du plat. Recommandé: 800x600px (4:3).' },
-            { name: 'position', label: "Ordre d'affichage", type: 'number', default: 0, description: 'Plus petit = en premier.', placeholder: '0' },
             { name: 'featured', label: 'À la une (accueil)', type: 'boolean', default: false, description: "Afficher sur la page d'accueil (max 6 plats à la une)." },
             { name: 'available', label: 'Disponible', type: 'boolean', default: true, description: 'Disponible à la commande. Décochez pour masquer.' }
           ]
@@ -548,18 +547,50 @@ module.exports = function(services) {
   // --- CRUD: menu_items ---
   router.get('/api/admin/menu_items', isAdminApi, async function(req, res) {
     try {
-      const rows = await db.all('SELECT * FROM menu_items ORDER BY position ASC, id ASC');
+      const rows = await db.all('SELECT m.* FROM menu_items m LEFT JOIN menu_categories c ON c.slug = m.category ORDER BY COALESCE(c.id, 999999) ASC, m.position ASC, m.id ASC');
       res.json({ menu_items: rows });
     } catch(e) { res.status(500).json({ error: e.message }); }
   });
   router.post('/api/admin/menu_items', isAdminApi, async function(req, res) {
     try {
-      const q = adminInsert('menu_items', ['name_fr','name_en','description_fr','description_en','price','category','image_url','position','featured','available','sizes_json'], req.body);
+      const b = Object.assign({}, req.body || {});
+      // Auto-position new items at the bottom of their category so manual
+      // ordering (drag-drop) is preserved and additions land at the end.
+      if (b.position == null || b.position === '') {
+        try {
+          const maxRow = await db.get('SELECT COALESCE(MAX(position), -1) + 1 AS next FROM menu_items WHERE category IS NOT DISTINCT FROM $1', [b.category || null]);
+          b.position = (maxRow && maxRow.next != null) ? Number(maxRow.next) : 0;
+        } catch(_) { b.position = 0; }
+      }
+      const q = adminInsert('menu_items', ['name_fr','name_en','description_fr','description_en','price','category','image_url','position','featured','available','sizes_json'], b);
       if (!q) return res.status(400).json({ error: 'No fields' });
       const r = await db.run(q.sql, q.vals);
       const row = await db.get('SELECT * FROM menu_items WHERE id = $1', [r.lastInsertRowid]);
       res.json({ item: row, id: r.lastInsertRowid });
     } catch(e) { res.status(500).json({ error: e.message }); }
+  });
+
+  router.post('/api/admin/menu_items/reorder', isAdminApi, async function(req, res) {
+    try {
+      const b = req.body || {};
+      const ids = Array.isArray(b.ordered_ids) ? b.ordered_ids : [];
+      const category = b.category == null ? null : String(b.category);
+      if (!ids.length) return res.status(400).json({ error: 'no_ids' });
+      // Update positions sequentially. Scoped to a category so items in
+      // other categories aren't disturbed.
+      let i = 0;
+      for (const rawId of ids) {
+        const id = parseInt(rawId, 10);
+        if (!id) continue;
+        if (category === null) {
+          await db.run('UPDATE menu_items SET position = $1, updated_at = NOW() WHERE id = $2 AND category IS NULL', [i, id]);
+        } else {
+          await db.run('UPDATE menu_items SET position = $1, updated_at = NOW() WHERE id = $2 AND category = $3', [i, id, category]);
+        }
+        i++;
+      }
+      res.json({ success: true, updated: i });
+    } catch(e) { console.error('Reorder error:', e.message); res.status(500).json({ error: e.message }); }
   });
   router.put('/api/admin/menu_items/:id', isAdminApi, async function(req, res) {
     try {

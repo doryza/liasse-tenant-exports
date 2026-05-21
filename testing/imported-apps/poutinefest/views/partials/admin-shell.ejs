@@ -129,11 +129,13 @@ function renderList() {
   if (!filtered.length) { c.innerHTML = '<p class="empty"><span class="emoji">🔍</span>Aucun résultat pour cette recherche.</p>'; return; }
   var displayFields = fields.filter(function(f){ return f.name !== 'message' && f.type !== 'textarea' || f.name === 'content'; }).slice(0, 5);
   if (MODULE_KEY === 'reservations') displayFields = fields.filter(function(f){ return ['event_date','contact_name','event_type','guests','status'].indexOf(f.name) !== -1; });
-  else if (MODULE_KEY === 'menu_items') displayFields = fields.filter(function(f){ return ['image_url','name_fr','price','category','available'].indexOf(f.name) !== -1; });
+  else if (MODULE_KEY === 'menu_items') displayFields = fields.filter(function(f){ return ['image_url','name_fr','price','available'].indexOf(f.name) !== -1; });
   else if (MODULE_KEY === 'delivery_platforms') displayFields = fields.filter(function(f){ return ['logo_url','name','link_url','active'].indexOf(f.name) !== -1; });
   else if (MODULE_KEY === 'posts') displayFields = fields.filter(function(f){ return ['image_url','title','category','published'].indexOf(f.name) !== -1; });
   else if (MODULE_KEY === 'offers') displayFields = fields.filter(function(f){ return ['image_url','title_fr','discount_label','expires_at','active'].indexOf(f.name) !== -1; });
   else if (MODULE_KEY === 'menu_categories') displayFields = fields.filter(function(f){ return ['position','name_fr','name_en','slug','active'].indexOf(f.name) !== -1; });
+
+  if (MODULE_KEY === 'menu_items') { renderMenuItemsGrouped(c, filtered, displayFields); return; }
 
   var html = '<div style="overflow-x:auto"><table><thead><tr>';
   displayFields.forEach(function(f){ html += '<th>' + esc(labelFor(f)) + '</th>'; });
@@ -275,6 +277,101 @@ async function uploadImage(input, fieldId) {
     } catch(e) { toast('Erreur de téléchargement', 'error'); }
   };
   reader.readAsDataURL(file);
+}
+
+function renderMenuItemsGrouped(c, filtered, displayFields) {
+  var dynRows = dynamicSources['menu_categories'] || [];
+  var orderedCats = dynRows.map(function(r){ return r.slug; });
+  // Bucket items by category
+  var groups = {};
+  filtered.forEach(function(it){ var cat = it.category || ''; if (!groups[cat]) groups[cat] = []; groups[cat].push(it); });
+  // Build display order: known categories first (by id ASC = order added), then unknown/empty
+  var presentCats = orderedCats.filter(function(s){ return groups[s] && groups[s].length; });
+  Object.keys(groups).forEach(function(s){ if (presentCats.indexOf(s) === -1) presentCats.push(s); });
+
+  var html = '<div style="overflow-x:auto"><table id="menuItemsTable">';
+  html += '<thead><tr><th style="width:30px"></th>';
+  displayFields.forEach(function(f){ html += '<th>' + esc(labelFor(f)) + '</th>'; });
+  html += '<th style="text-align:right">Actions</th></tr></thead>';
+
+  presentCats.forEach(function(slug){
+    var catRow = dynRows.find(function(r){ return r.slug === slug; });
+    var catLabel = catRow ? (catRow.name_fr || slug) : (slug || 'Sans catégorie');
+    html += '<tbody data-menu-cat="' + esc(slug) + '">';
+    html += '<tr class="menu-cat-header"><td colspan="' + (displayFields.length + 2) + '" style="background:#f7fafc;padding:0.6rem 0.85rem;font-weight:800;color:#2d3748;font-size:0.82rem;text-transform:uppercase;letter-spacing:0.06em;border-top:1px solid #e2e8f0">' + esc(catLabel) + '</td></tr>';
+    groups[slug].forEach(function(it){
+      html += '<tr class="menu-row" draggable="true" data-id="' + it.id + '" data-menu-cat="' + esc(slug) + '" ondragstart="menuDragStart(event)" ondragover="menuDragOver(event)" ondragleave="menuDragLeave(event)" ondrop="menuDrop(event)" ondragend="menuDragEnd(event)">';
+      html += '<td class="drag-handle" style="cursor:grab;color:#a0aec0;font-size:1.1rem;user-select:none;text-align:center" title="Glisser pour réordonner">⋮⋮</td>';
+      displayFields.forEach(function(f){
+        var v = it[f.name];
+        if (f.type === 'image' && v) html += '<td><img src="' + esc(v) + '" alt=""></td>';
+        else if (f.type === 'image') html += '<td><div style="width:48px;height:48px;background:#e2e8f0;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#a0aec0">—</div></td>';
+        else if (f.type === 'boolean') html += '<td>' + (v && v != '0' ? '<span class="badge badge-success">✓</span>' : '<span class="badge badge-muted">—</span>') + '</td>';
+        else if (f.name === 'price' && v != null) html += '<td><strong>' + esc(Number(v).toFixed(2)) + ' $</strong></td>';
+        else if (v != null && String(v).length > 60) html += '<td>' + esc(String(v).substring(0,60)) + '…</td>';
+        else html += '<td>' + esc(v == null ? '—' : String(v)) + '</td>';
+      });
+      html += '<td class="row-actions" style="text-align:right">';
+      html += '<button class="btn btn-sm btn-secondary" onclick="editItem(' + it.id + ')" title="Modifier">✏️</button>';
+      html += '<button class="btn btn-sm btn-danger" onclick="deleteItem(' + it.id + ')" title="Supprimer">🗑️</button>';
+      html += '</td></tr>';
+    });
+    html += '</tbody>';
+  });
+  html += '</table></div>';
+  html += '<p style="margin:0.8rem 0 0;color:#718096;font-size:0.82rem">💡 Glissez les plats dans une catégorie pour les réordonner. L\'ordre par défaut est celui d\'ajout des catégories.</p>';
+  c.innerHTML = html;
+}
+
+var _menuDragSrc = null;
+function menuDragStart(e) {
+  var row = e.target.closest && e.target.closest('tr.menu-row');
+  if (!row) return;
+  _menuDragSrc = row;
+  if (e.dataTransfer) {
+    e.dataTransfer.effectAllowed = 'move';
+    try { e.dataTransfer.setData('text/plain', row.getAttribute('data-id')); } catch(_) {}
+  }
+  row.style.opacity = '0.45';
+}
+function menuDragOver(e) {
+  var row = e.target.closest && e.target.closest('tr.menu-row');
+  if (!row || !_menuDragSrc || row === _menuDragSrc) return;
+  if (row.getAttribute('data-menu-cat') !== _menuDragSrc.getAttribute('data-menu-cat')) return;
+  e.preventDefault();
+  if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
+  var rect = row.getBoundingClientRect();
+  var pos = e.clientY < (rect.top + rect.height / 2) ? 'before' : 'after';
+  row.dataset.dropPos = pos;
+  row.style.borderTop = pos === 'before' ? '3px solid #39FF14' : '';
+  row.style.borderBottom = pos === 'after' ? '3px solid #39FF14' : '';
+}
+function menuDragLeave(e) {
+  var row = e.target.closest && e.target.closest('tr.menu-row');
+  if (row) { row.style.borderTop = ''; row.style.borderBottom = ''; }
+}
+function menuDrop(e) {
+  e.preventDefault();
+  var row = e.target.closest && e.target.closest('tr.menu-row');
+  if (!row || !_menuDragSrc || row === _menuDragSrc) { menuDragEnd(); return; }
+  if (row.getAttribute('data-menu-cat') !== _menuDragSrc.getAttribute('data-menu-cat')) { menuDragEnd(); return; }
+  var parent = row.parentNode;
+  var pos = row.dataset.dropPos || 'before';
+  if (pos === 'before') parent.insertBefore(_menuDragSrc, row);
+  else parent.insertBefore(_menuDragSrc, row.nextSibling);
+  var cat = _menuDragSrc.getAttribute('data-menu-cat');
+  var ids = [];
+  parent.querySelectorAll('tr.menu-row').forEach(function(r){ ids.push(parseInt(r.getAttribute('data-id'), 10)); });
+  fetch('api/admin/menu_items/reorder', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ category: cat || null, ordered_ids: ids }) })
+    .then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(d){ if (d && d.success) toast('Ordre mis à jour'); else toast('Erreur lors de la sauvegarde', 'error'); })
+    .catch(function(){ toast('Erreur réseau', 'error'); });
+  menuDragEnd();
+}
+function menuDragEnd() {
+  if (_menuDragSrc) _menuDragSrc.style.opacity = '';
+  document.querySelectorAll('tr.menu-row').forEach(function(r){ r.style.borderTop = ''; r.style.borderBottom = ''; });
+  _menuDragSrc = null;
 }
 
 async function dynRefreshSource(source) {
