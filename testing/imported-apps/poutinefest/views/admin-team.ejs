@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin — Équipe</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+<style>
+.team-wrap { max-width: 760px; }
+.team-card { background: #fff; padding: 1.5rem 1.75rem; border-radius: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); margin-bottom: 1.25rem; }
+.team-card h2 { margin: 0 0 0.4rem; font-size: 1.15rem; }
+.team-card .hint { color: #718096; font-size: 0.88rem; margin: 0 0 1.2rem; }
+.invite-row { display: grid; grid-template-columns: 1fr 140px 110px; gap: 0.6rem; align-items: stretch; }
+@media (max-width: 600px) { .invite-row { grid-template-columns: 1fr; } }
+.team-list { list-style: none; padding: 0; margin: 0; }
+.team-list li { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid #edf2f7; gap: 0.75rem; }
+.team-list li:last-child { border-bottom: 0; }
+.team-list .who { display: flex; flex-direction: column; gap: 0.15rem; min-width: 0; }
+.team-list .name { font-weight: 700; font-size: 0.95rem; color: #1a202c; }
+.team-list .email { font-size: 0.82rem; color: #718096; }
+.badges { display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap; }
+.empty-row { color: #a0aec0; font-style: italic; font-size: 0.9rem; padding: 0.5rem 0; }
+.result-banner { padding: 0.85rem 1.1rem; border-radius: 10px; margin-bottom: 1rem; font-weight: 600; font-size: 0.92rem; }
+.result-banner.ok { background: #e8fff0; color: #0a6e2e; border: 1px solid #b7f5cb; }
+.result-banner.err { background: #ffeaea; color: #8a1a1a; border: 1px solid #f8b3b3; }
+.copy-link { font-family: monospace; font-size: 0.78rem; color: #1a73e8; word-break: break-all; cursor: pointer; }
+</style>
+</head>
+<body>
+<div class="admin-layout">
+<%- include('partials/admin-sidebar', { page: 'team' }) %>
+<main class="admin-main">
+<div class="admin-header">
+  <div>
+    <h1>Équipe</h1>
+    <p style="margin:0.25rem 0 0;color:#718096;font-size:0.9rem">Invitez des administrateurs pour gérer votre application.</p>
+  </div>
+</div>
+
+<div class="team-wrap">
+
+  <div class="team-card">
+    <h2>✉️ Inviter un administrateur</h2>
+    <p class="hint">L'invité reçoit un courriel avec un lien d'activation valide 7 jours. Il choisit son nom et mot de passe pour activer son accès.</p>
+    <div id="resultArea"></div>
+    <form id="inviteForm">
+      <div class="invite-row">
+        <input type="email" id="inviteEmail" class="form-control" placeholder="admin@exemple.ca" required>
+        <select id="inviteRole" class="form-control">
+          <option value="admin">Administrateur</option>
+          <option value="editor">Éditeur</option>
+          <option value="viewer">Lecture seule</option>
+        </select>
+        <button type="submit" class="btn btn-primary" id="inviteBtn" style="background-color:#39FF14;color:#000">Inviter</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="team-card">
+    <h2>👤 Membres de l'équipe</h2>
+    <ul class="team-list" id="membersList"><li class="empty-row">Chargement…</li></ul>
+  </div>
+
+  <div class="team-card">
+    <h2>⏳ Invitations en attente</h2>
+    <ul class="team-list" id="invitesList"><li class="empty-row">Chargement…</li></ul>
+  </div>
+
+</div>
+
+</main>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+function esc(s) { if (s == null) return ''; return String(s).replace(/[&<>"']/g, function(c){ return ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[c]; }); }
+function toast(msg, type) { var t = document.getElementById('toast'); t.className = 'toast toast-' + (type || 'success'); t.textContent = msg; setTimeout(function(){ t.classList.add('show'); }, 10); setTimeout(function(){ t.classList.remove('show'); }, 2800); }
+function fmtDate(s) { if (!s) return '—'; try { return new Date(s).toLocaleDateString('fr-CA', { year:'numeric', month:'short', day:'numeric' }); } catch(_) { return s; } }
+
+function renderMembers(rows) {
+  var el = document.getElementById('membersList');
+  if (!rows || !rows.length) { el.innerHTML = '<li class="empty-row">Aucun membre pour l\'instant.</li>'; return; }
+  el.innerHTML = rows.map(function(m){
+    var statusBadge = m.active ? '<span class="badge badge-success">Actif</span>' : '<span class="badge badge-muted">Désactivé</span>';
+    var roleBadge = '<span class="badge badge-muted">' + esc(m.role || 'admin') + '</span>';
+    var revokeBtn = m.active ? '<button class="btn btn-sm btn-danger" onclick="revokeMember(' + m.id + ', \'' + esc(m.email).replace(/'/g, "\\'") + '\')">Révoquer</button>' : '';
+    return '<li>' +
+      '<div class="who">' +
+        '<span class="name">' + esc(m.name || m.display_name || m.email) + '</span>' +
+        '<span class="email">' + esc(m.email) + ' · Ajouté le ' + fmtDate(m.created_at) + (m.last_login_at ? ' · Dernière connexion ' + fmtDate(m.last_login_at) : '') + '</span>' +
+      '</div>' +
+      '<div class="badges">' + statusBadge + roleBadge + revokeBtn + '</div>' +
+    '</li>';
+  }).join('');
+}
+
+function renderInvites(rows) {
+  var el = document.getElementById('invitesList');
+  var pending = (rows || []).filter(function(i){ return i.status === 'pending'; });
+  if (!pending.length) { el.innerHTML = '<li class="empty-row">Aucune invitation en attente.</li>'; return; }
+  el.innerHTML = pending.map(function(i){
+    var expBadge = i.expires_at && new Date(i.expires_at) < new Date() ? '<span class="badge badge-danger">Expirée</span>' : '<span class="badge badge-warn">En attente</span>';
+    var roleBadge = '<span class="badge badge-muted">' + esc(i.role || 'admin') + '</span>';
+    return '<li>' +
+      '<div class="who">' +
+        '<span class="name">' + esc(i.email) + '</span>' +
+        '<span class="email">Envoyée ' + fmtDate(i.created_at) + (i.expires_at ? ' · Expire ' + fmtDate(i.expires_at) : '') + '</span>' +
+      '</div>' +
+      '<div class="badges">' + expBadge + roleBadge +
+        '<button class="btn btn-sm btn-danger" onclick="cancelInvite(' + i.id + ')">Annuler</button>' +
+      '</div>' +
+    '</li>';
+  }).join('');
+}
+
+function errorMessage(code) {
+  if (code === 'invalid_email') return 'Courriel invalide.';
+  if (code === 'already_admin') return 'Ce courriel est déjà un administrateur actif.';
+  if (code === 'already_invited') return 'Une invitation est déjà en attente pour ce courriel.';
+  if (code === 'email_send_failed') return 'L\'invitation a été créée mais l\'envoi du courriel a échoué. Copiez le lien manuellement.';
+  return 'Erreur: ' + code;
+}
+
+async function loadTeam() {
+  try {
+    var r = await fetch('api/admin/team');
+    var d = await r.json();
+    renderMembers(d.members || []);
+    renderInvites(d.invites || []);
+  } catch(e) {
+    document.getElementById('membersList').innerHTML = '<li class="empty-row">Erreur de chargement.</li>';
+    document.getElementById('invitesList').innerHTML = '';
+  }
+}
+
+document.getElementById('inviteForm').addEventListener('submit', async function(e){
+  e.preventDefault();
+  var email = document.getElementById('inviteEmail').value.trim();
+  var role = document.getElementById('inviteRole').value;
+  if (!email) return;
+  var btn = document.getElementById('inviteBtn');
+  btn.disabled = true; btn.textContent = '⏳';
+  document.getElementById('resultArea').innerHTML = '';
+  try {
+    var r = await fetch('api/admin/team/invite', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: email, role: role }) });
+    var d = await r.json().catch(function(){ return {}; });
+    if (r.ok && d.success) {
+      document.getElementById('resultArea').innerHTML = '<div class="result-banner ok">✅ Invitation envoyée à ' + esc(email) + '.</div>';
+      document.getElementById('inviteEmail').value = '';
+      loadTeam();
+    } else if (d.activation_url) {
+      document.getElementById('resultArea').innerHTML = '<div class="result-banner err">⚠️ ' + errorMessage(d.error) + '<br><br>Lien d\'activation à copier:<br><span class="copy-link" onclick="navigator.clipboard.writeText(this.textContent);toast(\'Lien copié\')">' + esc(d.activation_url) + '</span></div>';
+      loadTeam();
+    } else {
+      document.getElementById('resultArea').innerHTML = '<div class="result-banner err">' + esc(errorMessage(d.error || 'inconnue')) + '</div>';
+    }
+  } catch(e) {
+    document.getElementById('resultArea').innerHTML = '<div class="result-banner err">Erreur réseau.</div>';
+  } finally {
+    btn.disabled = false; btn.textContent = 'Inviter';
+  }
+});
+
+async function revokeMember(id, email) {
+  if (!confirm('Révoquer l\'accès de ' + email + '?')) return;
+  try {
+    var r = await fetch('api/admin/team/revoke/' + id, { method: 'POST' });
+    if (r.ok) { toast('Accès révoqué'); loadTeam(); }
+    else toast('Erreur', 'error');
+  } catch(e) { toast('Erreur réseau', 'error'); }
+}
+
+async function cancelInvite(id) {
+  if (!confirm('Annuler cette invitation?')) return;
+  try {
+    var r = await fetch('api/admin/team/invite/' + id, { method: 'DELETE' });
+    if (r.ok) { toast('Invitation annulée'); loadTeam(); }
+    else toast('Erreur', 'error');
+  } catch(e) { toast('Erreur réseau', 'error'); }
+}
+
+loadTeam();
+</script>
+</body>
+</html>

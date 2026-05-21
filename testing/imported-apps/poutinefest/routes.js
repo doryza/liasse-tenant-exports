@@ -419,6 +419,89 @@ module.exports = function(services) {
   router.get('/admin/delivery', isAdminPage, function(req, res) { res.render('admin-delivery', { page: 'delivery' }); });
   router.get('/admin/reservations', isAdminPage, function(req, res) { res.render('admin-reservations', { page: 'reservations' }); });
   router.get('/admin/posts', isAdminPage, function(req, res) { res.render('admin-posts', { page: 'posts' }); });
+  // Explicit /admin/team registered BEFORE the auto-injected /admin/:module
+  // handler (which `return`s without responding for mod === 'team'), so this
+  // wins via Express's first-match-wins routing.
+  router.get('/admin/team', isAdminPage, function(req, res) { res.render('admin-team', { page: 'team' }); });
+
+  // --- Admin team management (admin_users + admin_invites are platform tables in tenant schema) ---
+  router.get('/api/admin/team', isAdminApi, async function(req, res) {
+    try {
+      const members = await db.all('SELECT id, name, email, role, active, created_at, last_login_at FROM admin_users ORDER BY created_at DESC').catch(function(){ return []; });
+      const invites = await db.all('SELECT id, email, role, status, created_at, expires_at FROM admin_invites ORDER BY created_at DESC').catch(function(){ return []; });
+      res.json({ members: members || [], invites: invites || [] });
+    } catch(e) { res.status(500).json({ error: e.message }); }
+  });
+
+  router.post('/api/admin/team/invite', isAdminApi, async function(req, res) {
+    try {
+      const b = req.body || {};
+      const email = (b.email || '').trim().toLowerCase();
+      const role = (b.role || 'admin').trim().toLowerCase();
+      if (!email || email.indexOf('@') === -1) return res.status(400).json({ error: 'invalid_email' });
+
+      const existing = await db.get('SELECT id FROM admin_users WHERE email = $1 AND active = 1', [email]);
+      if (existing) return res.status(409).json({ error: 'already_admin' });
+      const pending = await db.get("SELECT id FROM admin_invites WHERE email = $1 AND status = 'pending'", [email]);
+      if (pending) return res.status(409).json({ error: 'already_invited' });
+
+      const crypto = require('crypto');
+      const token = crypto.randomBytes(32).toString('hex');
+      const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+      await db.run(
+        "INSERT INTO admin_invites (email, token, role, status, expires_at, created_at) VALUES ($1, $2, $3, 'pending', $4, NOW())",
+        [email, token, role, expiresAt]
+      );
+
+      // Build absolute activation URL — tenantPath handles both custom domain
+      // and platform-served (/pwa/<slug>/) cases.
+      const proto = (req.headers['x-forwarded-proto'] || req.protocol || 'https').toString().split(',')[0];
+      const host = req.get('host') || '';
+      const path = typeof req.tenantPath === 'function' ? req.tenantPath('/admin/activate/' + token) : '/admin/activate/' + token;
+      const activationUrl = proto + '://' + host + path;
+      const appName = (services.config && services.config.displayName) || 'PoutineFest';
+
+      try {
+        await services.email.send({
+          to: email,
+          subject: 'Invitation à gérer ' + appName,
+          html: '<div style="font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;max-width:540px;margin:0 auto;padding:32px;color:#1a1a1a">' +
+            '<h2 style="margin:0 0 16px">Vous êtes invité(e)!</h2>' +
+            '<p style="line-height:1.6;color:#444">Vous avez été invité(e) comme <strong>' + role + '</strong> pour gérer <strong>' + appName + '</strong>.</p>' +
+            '<p style="line-height:1.6;color:#444">Cliquez sur le bouton ci-dessous pour activer votre compte:</p>' +
+            '<p style="margin:24px 0"><a href="' + activationUrl + '" style="display:inline-block;padding:13px 28px;background:#39FF14;color:#000;font-weight:800;border-radius:8px;text-decoration:none">Activer mon accès</a></p>' +
+            '<p style="font-size:13px;color:#888;line-height:1.5">Ce lien expire dans 7 jours. Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur:<br><span style="word-break:break-all">' + activationUrl + '</span></p>' +
+            '</div>'
+        });
+      } catch (emailErr) {
+        console.error('Team invite email failed:', emailErr.message);
+        // Don't delete the invite — admin can copy the activation URL manually
+        return res.status(500).json({ error: 'email_send_failed', activation_url: activationUrl });
+      }
+      res.json({ success: true, invite: { email: email, role: role } });
+    } catch(e) {
+      console.error('Team invite error:', e.message);
+      res.status(500).json({ error: e.message });
+    }
+  });
+
+  router.post('/api/admin/team/revoke/:id', isAdminApi, async function(req, res) {
+    try {
+      const id = parseInt(req.params.id, 10);
+      if (!id) return res.status(400).json({ error: 'invalid_id' });
+      await db.run('UPDATE admin_users SET active = 0 WHERE id = $1', [id]);
+      res.json({ success: true });
+    } catch(e) { res.status(500).json({ error: e.message }); }
+  });
+
+  router.delete('/api/admin/team/invite/:id', isAdminApi, async function(req, res) {
+    try {
+      const id = parseInt(req.params.id, 10);
+      if (!id) return res.status(400).json({ error: 'invalid_id' });
+      await db.run('DELETE FROM admin_invites WHERE id = $1', [id]);
+      res.json({ success: true });
+    } catch(e) { res.status(500).json({ error: e.message }); }
+  });
 
   router.get('/api/admin/stats', isAdminApi, async function(req, res) {
     const safeCount = async function(sql) { try { const r = await db.get(sql); return (r && (r.c || r.count)) || 0; } catch(e) { return 0; } };
