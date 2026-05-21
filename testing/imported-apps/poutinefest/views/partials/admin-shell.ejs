@@ -149,6 +149,12 @@ function renderList() {
       else if (f.type === 'date' && v) html += '<td>' + esc(String(v).substring(0,10)) + '</td>';
       else if (f.type === 'datetime' && v) html += '<td>' + esc(String(v).replace('T',' ').substring(0,16)) + '</td>';
       else if (f.name === 'price' && v != null) html += '<td><strong>' + esc(Number(v).toFixed(2)) + ' $</strong></td>';
+      else if (f.type === 'select_dynamic' && f.source) {
+        var dynRows = dynamicSources[f.source] || [];
+        var match = dynRows.find(function(r){ return String(r[f.valueField || 'slug']) === String(v); });
+        var dynLabel = match ? (match[f.labelField || 'name_fr'] || match[f.valueField || 'slug']) : v;
+        html += '<td>' + esc(dynLabel == null || dynLabel === '' ? '—' : String(dynLabel)) + '</td>';
+      }
       else if (f.name === 'link_url' && v) html += '<td><a href="' + esc(v) + '" target="_blank" style="color:#16a34a">🔗 Lien</a></td>';
       else if (v != null && String(v).length > 60) html += '<td>' + esc(String(v).substring(0,60)) + '…</td>';
       else html += '<td>' + esc(v == null ? '—' : String(v)) + '</td>';
@@ -341,6 +347,7 @@ async function dynSubmitCreate(fieldId) {
     var newVal = d.item && d.item[valueField] ? d.item[valueField] : null;
     dynRerenderSelect(fieldId, newVal);
     dynCloseInline(fieldId);
+    try { renderList(); } catch(_) {}
     toast('Catégorie créée', 'success');
   } catch(e) { toast('Erreur réseau', 'error'); }
 }
@@ -380,6 +387,7 @@ async function dynSubmitRename(fieldId, id) {
     var keep = document.getElementById(fieldId).value;
     dynRerenderSelect(fieldId, keep);
     dynCloseInline(fieldId);
+    try { renderList(); } catch(_) {}
     toast('Catégorie renommée', 'success');
   } catch(e) { toast('Erreur réseau', 'error'); }
 }
