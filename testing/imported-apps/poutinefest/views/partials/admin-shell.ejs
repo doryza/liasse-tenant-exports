@@ -17,6 +17,9 @@
   </div>
   <button class="btn btn-primary" onclick="openModal()" style="background-color:#39FF14;color:#000">+ Ajouter</button>
 </div>
+<% if (typeof topPartial !== 'undefined' && topPartial) { %>
+<%- include(topPartial) %>
+<% } %>
 <div class="toolbar">
   <input type="text" id="searchInput" placeholder="🔍 Rechercher…" oninput="renderList()">
   <select id="statusFilter" onchange="renderList()" style="display:none">

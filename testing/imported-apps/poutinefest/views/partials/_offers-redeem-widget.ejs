@@ -1,0 +1,132 @@
+<style>
+.redeem-widget { background: #fff; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); margin-bottom: 1.25rem; overflow: hidden; }
+.redeem-widget-header { display: flex; align-items: center; justify-content: space-between; padding: 0.85rem 1.25rem; cursor: pointer; user-select: none; background: linear-gradient(90deg, rgba(57,255,20,0.06), transparent); border-bottom: 1px solid transparent; transition: border-color 0.15s; }
+.redeem-widget.open .redeem-widget-header { border-bottom-color: #e2e8f0; }
+.redeem-widget-header:hover { background: rgba(57,255,20,0.08); }
+.redeem-widget-header h3 { margin: 0; font-size: 1rem; color: #1a202c; font-weight: 700; }
+.redeem-widget-header .chevron { transition: transform 0.2s; color: #4a5568; font-size: 0.85rem; }
+.redeem-widget.open .chevron { transform: rotate(180deg); }
+.redeem-widget-body { display: none; padding: 1.25rem; }
+.redeem-widget.open .redeem-widget-body { display: block; }
+.redeem-input-row { display: flex; gap: 0.6rem; margin-bottom: 0.9rem; }
+.redeem-input-row input { flex: 1; font-family: 'SFMono-Regular','Menlo',Consolas,monospace; font-size: 1.35rem; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; padding: 0.65rem 0.9rem; border: 2px solid #e2e8f0; border-radius: 9px; }
+.redeem-input-row input:focus { outline: none; border-color: #39FF14; box-shadow: 0 0 0 4px rgba(57,255,20,0.15); }
+.redeem-result { padding: 0.8rem 0; font-size: 0.9rem; }
+.redeem-result-row { display: flex; justify-content: space-between; padding: 0.45rem 0; border-bottom: 1px solid #edf2f7; gap: 1rem; }
+.redeem-result-row:last-child { border-bottom: 0; }
+.redeem-result-row .lbl { color: #718096; font-size: 0.85rem; }
+.redeem-result-row .val { font-weight: 600; text-align: right; }
+.redeem-banner { padding: 0.7rem 1rem; border-radius: 9px; margin-bottom: 0.85rem; font-weight: 600; font-size: 0.9rem; }
+.redeem-banner.ok { background: #e8fff0; color: #0a6e2e; border: 1px solid #b7f5cb; }
+.redeem-banner.warn { background: #fff7e0; color: #92500a; border: 1px solid #f7d889; }
+.redeem-banner.err { background: #ffeaea; color: #8a1a1a; border: 1px solid #f8b3b3; }
+.btn-redeem-confirm { background: #39FF14; color: #000; padding: 0.75rem 1.25rem; font-weight: 800; font-size: 0.95rem; border-radius: 9px; border: 0; cursor: pointer; width: 100%; margin-top: 0.6rem; }
+.btn-redeem-confirm:hover { background: #5cff44; }
+.btn-redeem-confirm:disabled { background: #cbd5e0; color: #4a5568; cursor: not-allowed; }
+</style>
+
+<div class="redeem-widget" id="redeemWidget">
+  <div class="redeem-widget-header" onclick="document.getElementById('redeemWidget').classList.toggle('open')">
+    <h3>✅ Échanger un code client</h3>
+    <span class="chevron">▼</span>
+  </div>
+  <div class="redeem-widget-body">
+    <p style="margin:0 0 0.85rem;color:#718096;font-size:0.85rem">Entrez le code à 8 caractères que le client présente au comptoir.</p>
+    <div class="redeem-input-row">
+      <input type="text" id="redeemCodeInput" maxlength="8" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ex. B7XK9P2M">
+      <button class="btn btn-primary" id="redeemLookupBtn" style="background-color:#39FF14;color:#000">Vérifier</button>
+    </div>
+    <div id="redeemResultArea"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  function rEsc(s) { if (s == null) return ''; return String(s).replace(/[&<>"']/g, function(c){ return ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[c]; }); }
+  function rToast(msg, type) { if (typeof toast === 'function') return toast(msg, type); }
+  function fmtDateTime(s) { if (!s) return '—'; try { return new Date(s).toLocaleString('fr-CA', { year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' }); } catch(_) { return s; } }
+
+  function statusLabel(s) {
+    if (s === 'claimed') return '<span class="badge badge-warn">Réservé</span>';
+    if (s === 'redeemed') return '<span class="badge badge-success">Utilisé</span>';
+    if (s === 'expired') return '<span class="badge badge-muted">Expiré</span>';
+    return '<span class="badge badge-muted">' + rEsc(s || '—') + '</span>';
+  }
+  function userLabel(u) {
+    if (!u) return '—';
+    if (u.display_name) return rEsc(u.display_name);
+    if (u.email) return rEsc(u.email);
+    if (u.phone) return rEsc(u.phone);
+    return '—';
+  }
+  function errorBanner(err) {
+    if (err === 'not_found') return '<div class="redeem-banner err">⚠️ Code introuvable.</div>';
+    if (err === 'expired') return '<div class="redeem-banner err">⚠️ Cette offre est expirée.</div>';
+    if (err === 'offer_inactive') return '<div class="redeem-banner err">⚠️ Cette offre n\'est plus active.</div>';
+    if (err === 'already_redeemed') return '<div class="redeem-banner warn">⚠️ Ce code a déjà été utilisé.</div>';
+    return '<div class="redeem-banner err">Erreur: ' + rEsc(err || 'inconnue') + '</div>';
+  }
+  function renderClaim(c, banner) {
+    if (!c) return '';
+    var title = c.title_fr || c.title_en || ('Offre #' + c.offer_id);
+    var html = '';
+    if (banner) html += banner;
+    html += '<div class="redeem-result">';
+    html += '<div class="redeem-result-row"><div class="lbl">Code</div><div class="val" style="font-family:monospace;letter-spacing:0.12em">' + rEsc(c.short_code) + '</div></div>';
+    html += '<div class="redeem-result-row"><div class="lbl">Offre</div><div class="val">' + rEsc(title) + (c.discount_label ? ' <span style="color:#16a34a">(' + rEsc(c.discount_label) + ')</span>' : '') + '</div></div>';
+    html += '<div class="redeem-result-row"><div class="lbl">Client</div><div class="val">' + userLabel(c._user) + '</div></div>';
+    html += '<div class="redeem-result-row"><div class="lbl">Réservé le</div><div class="val">' + fmtDateTime(c.claimed_at) + '</div></div>';
+    html += '<div class="redeem-result-row"><div class="lbl">Expire le</div><div class="val">' + fmtDateTime(c.offer_expires_at) + '</div></div>';
+    html += '<div class="redeem-result-row"><div class="lbl">Statut</div><div class="val">' + statusLabel(c.status) + '</div></div>';
+    if (c.status === 'redeemed') html += '<div class="redeem-result-row"><div class="lbl">Utilisé le</div><div class="val">' + fmtDateTime(c.redeemed_at) + '</div></div>';
+    html += '</div>';
+    if (c.status === 'claimed' && c.offer_active != 0 && new Date(c.offer_expires_at) > new Date()) {
+      html += '<button class="btn-redeem-confirm" id="redeemConfirmBtn" data-code="' + rEsc(c.short_code) + '">✓ Valider et marquer comme utilisé</button>';
+    }
+    return html;
+  }
+
+  async function lookupCode() {
+    var input = document.getElementById('redeemCodeInput');
+    var code = (input.value || '').trim().toUpperCase();
+    if (!code) { rToast('Entrez un code', 'error'); input.focus(); return; }
+    var area = document.getElementById('redeemResultArea');
+    area.innerHTML = '<div class="redeem-banner warn">⏳ Recherche…</div>';
+    try {
+      var r = await fetch('api/admin/offer_claims/lookup', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ short_code: code }) });
+      var data = await r.json().catch(function(){ return {}; });
+      if (r.status === 404) { area.innerHTML = errorBanner('not_found'); return; }
+      if (!r.ok || !data.claim) { area.innerHTML = errorBanner(data.error || 'unknown'); return; }
+      area.innerHTML = renderClaim(data.claim);
+    } catch(e) { area.innerHTML = errorBanner('network'); }
+  }
+
+  async function redeemClaim(code) {
+    var btn = document.getElementById('redeemConfirmBtn');
+    if (btn) { btn.disabled = true; btn.textContent = '⏳ Validation…'; }
+    try {
+      var r = await fetch('api/admin/offer_claims/redeem', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ short_code: code }) });
+      var data = await r.json().catch(function(){ return {}; });
+      var area = document.getElementById('redeemResultArea');
+      if (r.ok && data.success) {
+        rToast('Code validé!', 'success');
+        area.innerHTML = renderClaim(data.claim, '<div class="redeem-banner ok">✅ Code validé. Servez le client.</div>');
+      } else {
+        var banner = errorBanner(data.error || 'unknown');
+        area.innerHTML = data.claim ? renderClaim(data.claim, banner) : banner;
+      }
+    } catch(e) {
+      rToast('Erreur réseau', 'error');
+      if (btn) { btn.disabled = false; btn.textContent = '✓ Valider et marquer comme utilisé'; }
+    }
+  }
+
+  document.getElementById('redeemCodeInput').addEventListener('input', function(e){ e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,''); });
+  document.getElementById('redeemCodeInput').addEventListener('keydown', function(e){ if (e.key === 'Enter') { e.preventDefault(); lookupCode(); } });
+  document.getElementById('redeemLookupBtn').addEventListener('click', lookupCode);
+  document.addEventListener('click', function(e){
+    var b = e.target.closest && e.target.closest('#redeemConfirmBtn');
+    if (b) { e.preventDefault(); redeemClaim(b.getAttribute('data-code')); }
+  });
+})();
+</script>
