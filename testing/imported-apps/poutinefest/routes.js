@@ -37,7 +37,27 @@ module.exports = function(services) {
       open_hours: 'Heures d\'ouverture', address: 'Adresse', phone: 'Téléphone', email: 'Courriel',
       latest_news: 'Dernières nouvelles', read_more: 'Lire plus',
       category_all: 'Tous', category_classique: 'Classiques', category_signature: 'Signatures', category_vegan: 'Végé', category_dessert: 'Desserts',
-      all_truck_cta: 'Recevoir le camion à votre événement'
+      all_truck_cta: 'Recevoir le camion à votre événement',
+      nav_offers: 'Offres',
+      offers_title: 'Offres spéciales', offers_subtitle: 'Réservez votre offre, présentez votre code en restaurant.',
+      offers_empty: 'Aucune offre active pour l\'instant. Revenez bientôt!',
+      offer_starts: 'Commence le', offer_ends: 'Expire le',
+      offer_remaining: 'restantes',
+      offer_claim_btn: 'Réserver l\'offre',
+      offer_login_to_claim: 'Connectez-vous pour réserver',
+      offer_already_claimed: 'Déjà réservée',
+      offer_sold_out: 'Épuisée',
+      offer_upcoming: 'Bientôt disponible',
+      offer_expired: 'Expirée',
+      offer_max_per_user: 'Limite atteinte',
+      offer_code_label: 'Votre code à présenter',
+      offer_code_hint: 'Montrez ce code au comptoir avant l\'expiration.',
+      offer_status_claimed: 'Réservée',
+      offer_status_redeemed: 'Utilisée',
+      offer_claim_success: 'Offre réservée! Présentez ce code en restaurant.',
+      offer_claim_error: 'Impossible de réserver. Veuillez réessayer.',
+      my_offers_title: 'Mes offres',
+      no_my_offers: 'Vous n\'avez réservé aucune offre.'
     },
     en: {
       brand: 'PoutineFest',
@@ -72,13 +92,49 @@ module.exports = function(services) {
       open_hours: 'Hours', address: 'Address', phone: 'Phone', email: 'Email',
       latest_news: 'Latest news', read_more: 'Read more',
       category_all: 'All', category_classique: 'Classics', category_signature: 'Signatures', category_vegan: 'Veggie', category_dessert: 'Desserts',
-      all_truck_cta: 'Bring the truck to your event'
+      all_truck_cta: 'Bring the truck to your event',
+      nav_offers: 'Offers',
+      offers_title: 'Special offers', offers_subtitle: 'Reserve an offer, show your code in-store.',
+      offers_empty: 'No active offers right now. Check back soon!',
+      offer_starts: 'Starts', offer_ends: 'Expires',
+      offer_remaining: 'left',
+      offer_claim_btn: 'Reserve offer',
+      offer_login_to_claim: 'Sign in to reserve',
+      offer_already_claimed: 'Already reserved',
+      offer_sold_out: 'Sold out',
+      offer_upcoming: 'Coming soon',
+      offer_expired: 'Expired',
+      offer_max_per_user: 'Limit reached',
+      offer_code_label: 'Your code to show',
+      offer_code_hint: 'Show this code at the counter before it expires.',
+      offer_status_claimed: 'Reserved',
+      offer_status_redeemed: 'Used',
+      offer_claim_success: 'Offer reserved! Show this code in-store.',
+      offer_claim_error: 'Could not reserve. Please try again.',
+      my_offers_title: 'My offers',
+      no_my_offers: 'You haven\'t reserved any offers yet.'
     }
   };
 
   function formatPrice(p) { if (p == null || p === '') return ''; return Number(p).toFixed(2) + ' $'; }
   function formatDate(d, lang) { if (!d) return ''; try { return new Date(d).toLocaleDateString(lang === 'en' ? 'en-CA' : 'fr-CA', { year:'numeric', month:'long', day:'numeric'}); } catch(e) { return String(d); } }
+  function formatDateTime(d, lang) { if (!d) return ''; try { return new Date(d).toLocaleString(lang === 'en' ? 'en-CA' : 'fr-CA', { year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'}); } catch(e) { return String(d); } }
   function pickLang(item, field, lang) { if (!item) return ''; return item[field + '_' + lang] || item[field + '_fr'] || item[field] || ''; }
+
+  // Short-code generation: 8 chars, no ambiguous (0/O, 1/I/L, U/V)
+  const SHORT_CODE_ALPHABET = 'BCDFGHJKMNPQRSTWXYZ23456789';
+  function generateShortCode() {
+    let s = '';
+    for (let i = 0; i < 8; i++) s += SHORT_CODE_ALPHABET.charAt(Math.floor(Math.random() * SHORT_CODE_ALPHABET.length));
+    return s;
+  }
+  function offerStatus(o, now) {
+    now = now || new Date();
+    if (!o || o.active == 0) return 'inactive';
+    if (o.expires_at && new Date(o.expires_at) <= now) return 'expired';
+    if (o.starts_at && new Date(o.starts_at) > now) return 'upcoming';
+    return 'active';
+  }
 
   async function getSettings() {
     try { const rows = await db.all('SELECT key, value FROM admin_settings'); const o = {}; rows.forEach(function(r){ o[r.key] = r.value; }); return o; } catch(e) { return {}; }
@@ -149,6 +205,94 @@ module.exports = function(services) {
       const ctx = await renderCtx(req);
       res.render('apropos', ctx);
     } catch(e) { res.status(500).send('Erreur'); }
+  });
+
+  router.get('/offres', services.auth.optionalAuth, async function(req, res) {
+    try {
+      const ctx = await renderCtx(req);
+      const now = new Date();
+      const offers = await db.all(
+        "SELECT * FROM offers WHERE active = 1 AND expires_at > NOW() ORDER BY position ASC, expires_at ASC"
+      ).catch(function(){ return []; });
+      let claimsByOffer = {};
+      let myClaims = [];
+      if (req.user) {
+        myClaims = await db.all(
+          "SELECT c.*, o.title_fr, o.title_en, o.image_url, o.discount_label, o.expires_at " +
+          "FROM offer_claims c JOIN offers o ON o.id = c.offer_id " +
+          "WHERE c.user_id = $1 ORDER BY c.claimed_at DESC",
+          [req.user.id]
+        ).catch(function(){ return []; });
+        myClaims.forEach(function(c){ if (!claimsByOffer[c.offer_id]) claimsByOffer[c.offer_id] = []; claimsByOffer[c.offer_id].push(c); });
+      }
+      // Annotate offers with display status
+      offers.forEach(function(o){
+        o._status = offerStatus(o, now);
+        if (req.user) {
+          const mine = claimsByOffer[o.id] || [];
+          o._my_claim_count = mine.length;
+          o._my_active_claim = mine.find(function(c){ return c.status === 'claimed'; }) || null;
+        } else {
+          o._my_claim_count = 0;
+          o._my_active_claim = null;
+        }
+      });
+      res.render('offres', Object.assign(ctx, { offers: offers, myClaims: myClaims, user: req.user || null, formatDateTime: formatDateTime }));
+    } catch(e) { console.error('Offers page error:', e.message); res.status(500).send('Erreur'); }
+  });
+
+  router.post('/api/offers/:id/claim', services.auth.requireAuth, async function(req, res) {
+    try {
+      const offerId = parseInt(req.params.id);
+      if (!offerId) return res.status(400).json({ error: 'invalid_offer' });
+      const o = await db.get('SELECT * FROM offers WHERE id = $1', [offerId]);
+      if (!o) return res.status(404).json({ error: 'not_found' });
+      const status = offerStatus(o, new Date());
+      if (status === 'inactive') return res.status(400).json({ error: 'inactive' });
+      if (status === 'expired') return res.status(400).json({ error: 'expired' });
+      if (status === 'upcoming') return res.status(400).json({ error: 'not_started' });
+
+      const maxPerUser = o.max_per_user == null ? 1 : Number(o.max_per_user);
+      if (maxPerUser > 0) {
+        const userCount = await db.get('SELECT COUNT(*) AS c FROM offer_claims WHERE offer_id = $1 AND user_id = $2', [offerId, req.user.id]);
+        if ((userCount && Number(userCount.c)) >= maxPerUser) return res.status(400).json({ error: 'max_per_user' });
+      }
+      if (o.max_claims != null && Number(o.max_claims) > 0) {
+        const total = await db.get('SELECT COUNT(*) AS c FROM offer_claims WHERE offer_id = $1', [offerId]);
+        if ((total && Number(total.c)) >= Number(o.max_claims)) return res.status(400).json({ error: 'sold_out' });
+      }
+
+      // Generate unique short code with retry on collision
+      let code = null;
+      for (let attempt = 0; attempt < 6; attempt++) {
+        const candidate = generateShortCode();
+        const exists = await db.get('SELECT 1 AS x FROM offer_claims WHERE short_code = $1', [candidate]);
+        if (!exists) { code = candidate; break; }
+      }
+      if (!code) return res.status(500).json({ error: 'code_gen_failed' });
+
+      const r = await db.run(
+        'INSERT INTO offer_claims (offer_id, user_id, short_code, status) VALUES ($1,$2,$3,$4) RETURNING id',
+        [offerId, req.user.id, code, 'claimed']
+      );
+      const claim = await db.get('SELECT * FROM offer_claims WHERE id = $1', [r.lastInsertRowid]);
+      res.json({ success: true, claim: claim });
+    } catch(e) {
+      console.error('Claim error:', e.message);
+      res.status(500).json({ error: 'server' });
+    }
+  });
+
+  router.get('/api/offers/my-claims', services.auth.requireAuth, async function(req, res) {
+    try {
+      const rows = await db.all(
+        "SELECT c.*, o.title_fr, o.title_en, o.image_url, o.discount_label, o.expires_at " +
+        "FROM offer_claims c JOIN offers o ON o.id = c.offer_id " +
+        "WHERE c.user_id = $1 ORDER BY c.claimed_at DESC",
+        [req.user.id]
+      );
+      res.json({ claims: rows });
+    } catch(e) { res.status(500).json({ error: e.message }); }
   });
 
   router.get('/reserver', async function(req, res) {
@@ -272,6 +416,23 @@ module.exports = function(services) {
             { name: 'guests', label: "Nombre d'invités", type: 'number', min: 0, description: "Nombre d'invités estimé." },
             { name: 'message', label: 'Message client', type: 'textarea', description: 'Message ou détails fournis par le client.' },
             { name: 'status', label: 'Statut', type: 'select', options: ['pending','confirmed','declined','completed'], default: 'pending', description: 'Statut de la demande. Changez à "confirmed" une fois la réservation acceptée.' }
+          ]
+        },
+        {
+          key: 'offers', label: 'Offres', icon: 'tag',
+          fields: [
+            { name: 'title_fr', label: 'Titre (FR)', type: 'text', required: true, maxLength: 120, description: "Titre de l'offre en français.", placeholder: 'ex. 2 poutines pour 20$' },
+            { name: 'title_en', label: 'Titre (EN)', type: 'text', maxLength: 120, description: 'Title in English (optional).', placeholder: 'e.g. 2 poutines for $20' },
+            { name: 'description_fr', label: 'Description (FR)', type: 'textarea', description: 'Détails de l\'offre en français.', placeholder: 'ex. Valide sur toutes les poutines classiques.' },
+            { name: 'description_en', label: 'Description (EN)', type: 'textarea', description: 'Details in English (optional).' },
+            { name: 'discount_label', label: 'Étiquette de rabais', type: 'text', maxLength: 40, description: 'Affichée en grand sur la carte (ex. "-20%", "1 gratuit").', placeholder: 'ex. -20%' },
+            { name: 'image_url', label: 'Image', type: 'image', description: 'Image de l\'offre. Recommandé: 1200x630px (16:9).' },
+            { name: 'starts_at', label: 'Date de début', type: 'datetime', description: "Quand l'offre devient visible. Laissez vide pour activer immédiatement." },
+            { name: 'expires_at', label: 'Date d\'expiration', type: 'datetime', required: true, description: "Après cette date, l'offre disparaît et les codes existants ne peuvent plus être utilisés." },
+            { name: 'max_per_user', label: 'Limite par client', type: 'number', min: 0, default: 1, description: '0 = illimité. Par défaut: 1 réservation par client.' },
+            { name: 'max_claims', label: 'Total maximum (optionnel)', type: 'number', min: 0, description: 'Plafond total de réservations toutes personnes confondues. Laissez vide pour illimité.' },
+            { name: 'position', label: "Ordre d'affichage", type: 'number', default: 0, description: 'Plus petit = en premier.' },
+            { name: 'active', label: 'Active', type: 'boolean', default: true, description: 'Décochez pour masquer sans supprimer.' }
           ]
         },
         {
@@ -447,6 +608,112 @@ module.exports = function(services) {
   router.delete('/api/admin/posts/:id', isAdminApi, async function(req, res) {
     try { await db.run('DELETE FROM posts WHERE id = $1', [req.params.id]); res.json({ success: true }); }
     catch(e) { res.status(500).json({ error: e.message }); }
+  });
+
+  // --- CRUD: offers ---
+  const OFFER_FIELDS = ['title_fr','title_en','description_fr','description_en','image_url','discount_label','starts_at','expires_at','max_claims','max_per_user','position','active'];
+  router.get('/api/admin/offers', isAdminApi, async function(req, res) {
+    try {
+      const rows = await db.all(
+        "SELECT o.*, " +
+        "(SELECT COUNT(*) FROM offer_claims c WHERE c.offer_id = o.id) AS claim_count, " +
+        "(SELECT COUNT(*) FROM offer_claims c WHERE c.offer_id = o.id AND c.status = 'redeemed') AS redeem_count " +
+        "FROM offers o ORDER BY position ASC, id DESC"
+      );
+      res.json({ offers: rows });
+    } catch(e) { res.status(500).json({ error: e.message }); }
+  });
+  router.post('/api/admin/offers', isAdminApi, async function(req, res) {
+    try {
+      const q = adminInsert('offers', OFFER_FIELDS, req.body);
+      if (!q) return res.status(400).json({ error: 'No fields' });
+      const r = await db.run(q.sql, q.vals);
+      const row = await db.get('SELECT * FROM offers WHERE id = $1', [r.lastInsertRowid]);
+      res.json({ item: row, id: r.lastInsertRowid });
+    } catch(e) { res.status(500).json({ error: e.message }); }
+  });
+  router.put('/api/admin/offers/:id', isAdminApi, async function(req, res) {
+    try {
+      const q = adminUpdate('offers', OFFER_FIELDS, req.body, req.params.id);
+      if (!q) return res.status(400).json({ error: 'No fields' });
+      await db.run(q.sql, q.vals);
+      const row = await db.get('SELECT * FROM offers WHERE id = $1', [req.params.id]);
+      res.json({ item: row });
+    } catch(e) { res.status(500).json({ error: e.message }); }
+  });
+  router.delete('/api/admin/offers/:id', isAdminApi, async function(req, res) {
+    try { await db.run('DELETE FROM offers WHERE id = $1', [req.params.id]); res.json({ success: true }); }
+    catch(e) { res.status(500).json({ error: e.message }); }
+  });
+
+  // --- Admin: offer_claims listing + redemption ---
+  router.get('/api/admin/offer_claims', isAdminApi, async function(req, res) {
+    try {
+      const params = [];
+      let where = '1=1';
+      if (req.query.status) { params.push(req.query.status); where += ' AND c.status = $' + params.length; }
+      if (req.query.code) { params.push(String(req.query.code).toUpperCase().trim()); where += ' AND c.short_code = $' + params.length; }
+      if (req.query.offer_id) { params.push(parseInt(req.query.offer_id)); where += ' AND c.offer_id = $' + params.length; }
+      const rows = await db.all(
+        "SELECT c.*, o.title_fr, o.title_en, o.discount_label, o.expires_at AS offer_expires_at, o.active AS offer_active " +
+        "FROM offer_claims c JOIN offers o ON o.id = c.offer_id " +
+        "WHERE " + where + " ORDER BY c.claimed_at DESC LIMIT 200",
+        params
+      );
+      // Enrich with user info (best effort)
+      for (const row of rows) {
+        try {
+          const u = await services.auth.getUser(row.user_id);
+          if (u) row._user = { display_name: u.display_name || null, email: u.email || null, phone: u.phone || null };
+        } catch(e) { /* ignore */ }
+      }
+      res.json({ claims: rows });
+    } catch(e) { res.status(500).json({ error: e.message }); }
+  });
+
+  router.post('/api/admin/offer_claims/lookup', isAdminApi, async function(req, res) {
+    try {
+      const code = (req.body && req.body.short_code ? String(req.body.short_code) : '').toUpperCase().trim();
+      if (!code) return res.status(400).json({ error: 'missing_code' });
+      const row = await db.get(
+        "SELECT c.*, o.title_fr, o.title_en, o.discount_label, o.expires_at AS offer_expires_at, o.active AS offer_active " +
+        "FROM offer_claims c JOIN offers o ON o.id = c.offer_id WHERE c.short_code = $1",
+        [code]
+      );
+      if (!row) return res.status(404).json({ error: 'not_found' });
+      try {
+        const u = await services.auth.getUser(row.user_id);
+        if (u) row._user = { display_name: u.display_name || null, email: u.email || null, phone: u.phone || null };
+      } catch(e) { /* ignore */ }
+      res.json({ claim: row });
+    } catch(e) { res.status(500).json({ error: e.message }); }
+  });
+
+  router.post('/api/admin/offer_claims/redeem', isAdminApi, async function(req, res) {
+    try {
+      const code = (req.body && req.body.short_code ? String(req.body.short_code) : '').toUpperCase().trim();
+      if (!code) return res.status(400).json({ error: 'missing_code' });
+      const claim = await db.get(
+        "SELECT c.*, o.expires_at AS offer_expires_at, o.active AS offer_active, o.title_fr, o.title_en, o.discount_label " +
+        "FROM offer_claims c JOIN offers o ON o.id = c.offer_id WHERE c.short_code = $1",
+        [code]
+      );
+      if (!claim) return res.status(404).json({ error: 'not_found' });
+      if (claim.status === 'redeemed') return res.status(409).json({ error: 'already_redeemed', claim: claim });
+      if (claim.offer_active == 0) return res.status(400).json({ error: 'offer_inactive', claim: claim });
+      if (claim.offer_expires_at && new Date(claim.offer_expires_at) <= new Date()) return res.status(400).json({ error: 'expired', claim: claim });
+
+      const adminUserId = (req.adminUser && req.adminUser.id) || (services.admin.getAdminUserId ? services.admin.getAdminUserId(req) : null);
+      await db.run(
+        "UPDATE offer_claims SET status = 'redeemed', redeemed_at = NOW(), redeemed_by_user_id = $1 WHERE id = $2 AND status = 'claimed'",
+        [adminUserId, claim.id]
+      );
+      const updated = await db.get('SELECT * FROM offer_claims WHERE id = $1', [claim.id]);
+      res.json({ success: true, claim: Object.assign({}, claim, updated) });
+    } catch(e) {
+      console.error('Redeem error:', e.message);
+      res.status(500).json({ error: e.message });
+    }
   });
 
   router.post('/api/admin/upload', isAdminApi, async function(req, res) {

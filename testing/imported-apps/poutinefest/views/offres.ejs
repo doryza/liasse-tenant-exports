@@ -1,0 +1,145 @@
+<%- include('partials/header') %>
+<section class="section" style="padding-top:3rem">
+  <div class="container">
+    <h1 class="section-title"><%= t.offers_title %></h1>
+    <p class="section-sub"><%= t.offers_subtitle %></p>
+
+    <% if (!offers || offers.length === 0) { %>
+      <p class="empty-state"><%= t.offers_empty %></p>
+    <% } else { %>
+      <div class="menu-grid" id="offersGrid">
+        <% offers.forEach(function(o) {
+          var title = pickLang(o, 'title', lang);
+          var desc = pickLang(o, 'description', lang);
+          var status = o._status || 'active';
+          var mine = o._my_active_claim;
+          var atUserLimit = (typeof user !== 'undefined' && user) && o.max_per_user > 0 && o._my_claim_count >= o.max_per_user && !mine;
+        %>
+        <article class="menu-card offer-card" data-offer-id="<%= o.id %>" data-status="<%= status %>">
+          <% if (o.image_url) { %><img src="<%= o.image_url %>" alt="<%= title %>" class="menu-card-img"><% } else { %><div class="menu-card-img"></div><% } %>
+          <% if (o.discount_label) { %><div class="offer-badge"><%= o.discount_label %></div><% } %>
+          <div class="menu-card-body">
+            <h3><%= title %></h3>
+            <% if (desc) { %><p class="desc"><%= desc %></p><% } %>
+            <div class="offer-meta">
+              <% if (o.starts_at && status === 'upcoming') { %>
+                <div><span class="meta-label"><%= t.offer_starts %>:</span> <span class="meta-val"><%= formatDateTime(o.starts_at, lang) %></span></div>
+              <% } %>
+              <div><span class="meta-label"><%= t.offer_ends %>:</span> <span class="meta-val"><%= formatDateTime(o.expires_at, lang) %></span></div>
+            </div>
+
+            <% if (mine) { %>
+              <div class="claim-code-box" data-claim-id="<%= mine.id %>">
+                <div class="claim-code-label"><%= t.offer_code_label %></div>
+                <div class="claim-code"><%= mine.short_code %></div>
+                <div class="claim-code-hint"><%= t.offer_code_hint %></div>
+                <% if (mine.status === 'redeemed') { %>
+                  <div class="claim-status claim-status-redeemed">✓ <%= t.offer_status_redeemed %></div>
+                <% } else { %>
+                  <div class="claim-status claim-status-claimed"><%= t.offer_status_claimed %></div>
+                <% } %>
+              </div>
+            <% } else if (status === 'upcoming') { %>
+              <button class="btn btn-secondary btn-block" disabled><%= t.offer_upcoming %></button>
+            <% } else if (status === 'expired') { %>
+              <button class="btn btn-secondary btn-block" disabled><%= t.offer_expired %></button>
+            <% } else if (atUserLimit) { %>
+              <button class="btn btn-secondary btn-block" disabled><%= t.offer_max_per_user %></button>
+            <% } else if (typeof user !== 'undefined' && user) { %>
+              <button class="btn btn-primary btn-block" data-claim-btn data-offer-id="<%= o.id %>"><%= t.offer_claim_btn %></button>
+            <% } else { %>
+              <button class="btn btn-primary btn-block" data-login-btn><%= t.offer_login_to_claim %></button>
+            <% } %>
+          </div>
+        </article>
+        <% }); %>
+      </div>
+    <% } %>
+  </div>
+</section>
+
+<style>
+.offer-card { position: relative; }
+.offer-badge { position: absolute; top: 0.85rem; right: 0.85rem; background: var(--brand); color: #000; font-weight: 900; padding: 0.45rem 0.85rem; border-radius: 999px; font-size: 0.95rem; box-shadow: 0 6px 20px rgba(57,255,20,0.35); letter-spacing: 0.02em; }
+.offer-meta { display: flex; flex-direction: column; gap: 0.3rem; margin: 0.9rem 0 1rem; font-size: 0.85rem; color: var(--muted); }
+.offer-meta .meta-label { color: #888; }
+.offer-meta .meta-val { color: #ccc; }
+.claim-code-box { background: rgba(57,255,20,0.08); border: 1px solid rgba(57,255,20,0.4); border-radius: 12px; padding: 1rem; text-align: center; margin-top: 0.5rem; }
+.claim-code-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--brand); font-weight: 700; margin-bottom: 0.5rem; }
+.claim-code { font-family: 'SFMono-Regular', 'Menlo', Consolas, monospace; font-size: 2rem; font-weight: 900; letter-spacing: 0.15em; color: #fff; padding: 0.5rem 0; user-select: all; }
+.claim-code-hint { font-size: 0.78rem; color: var(--muted); margin-top: 0.3rem; }
+.claim-status { margin-top: 0.6rem; font-size: 0.85rem; font-weight: 700; padding: 0.3rem 0.7rem; border-radius: 999px; display: inline-block; }
+.claim-status-claimed { background: rgba(57,255,20,0.15); color: var(--brand); }
+.claim-status-redeemed { background: rgba(255,255,255,0.08); color: #aaa; text-decoration: line-through; }
+.offer-toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); background: #1a1a1a; color: var(--text); padding: 0.85rem 1.4rem; border-radius: 8px; border: 1px solid var(--border); box-shadow: 0 12px 32px rgba(0,0,0,0.5); opacity: 0; transition: opacity 0.2s; z-index: 200; font-weight: 600; }
+.offer-toast.show { opacity: 1; }
+.offer-toast.error { border-color: var(--danger); color: #ffb3b3; }
+</style>
+
+<div class="offer-toast" id="offerToast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  var T_OK = <%- JSON.stringify(t.offer_claim_success) %>;
+  var T_ERR = <%- JSON.stringify(t.offer_claim_error) %>;
+  var T_CODE_LABEL = <%- JSON.stringify(t.offer_code_label) %>;
+  var T_CODE_HINT = <%- JSON.stringify(t.offer_code_hint) %>;
+  var T_STATUS_CLAIMED = <%- JSON.stringify(t.offer_status_claimed) %>;
+  var T_SOLD_OUT = <%- JSON.stringify(t.offer_sold_out) %>;
+  var T_MAX_PER_USER = <%- JSON.stringify(t.offer_max_per_user) %>;
+  var T_EXPIRED = <%- JSON.stringify(t.offer_expired) %>;
+
+  function toast(msg, isErr) {
+    var el = document.getElementById('offerToast');
+    el.textContent = msg;
+    el.className = 'offer-toast show' + (isErr ? ' error' : '');
+    setTimeout(function(){ el.classList.remove('show'); }, 2800);
+  }
+
+  function errorMessage(err) {
+    if (err === 'sold_out') return T_SOLD_OUT;
+    if (err === 'max_per_user') return T_MAX_PER_USER;
+    if (err === 'expired' || err === 'inactive') return T_EXPIRED;
+    return T_ERR;
+  }
+
+  function renderCodeBox(claim) {
+    var html = '<div class="claim-code-label">' + T_CODE_LABEL + '</div>';
+    html += '<div class="claim-code">' + (claim.short_code || '') + '</div>';
+    html += '<div class="claim-code-hint">' + T_CODE_HINT + '</div>';
+    html += '<div class="claim-status claim-status-claimed">' + T_STATUS_CLAIMED + '</div>';
+    return html;
+  }
+
+  document.addEventListener('click', async function(e) {
+    var btn = e.target.closest('[data-claim-btn]');
+    if (!btn) return;
+    e.preventDefault();
+    var offerId = btn.getAttribute('data-offer-id');
+    btn.disabled = true;
+    btn.textContent = '…';
+    try {
+      var r = await fetch('api/offers/' + offerId + '/claim', { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+      var data = await r.json().catch(function(){ return {}; });
+      if (r.ok && data.success) {
+        toast(T_OK);
+        var card = btn.closest('.offer-card');
+        var box = document.createElement('div');
+        box.className = 'claim-code-box';
+        box.setAttribute('data-claim-id', data.claim.id);
+        box.innerHTML = renderCodeBox(data.claim);
+        btn.replaceWith(box);
+      } else {
+        toast(errorMessage(data.error), true);
+        btn.disabled = false;
+        btn.textContent = <%- JSON.stringify(t.offer_claim_btn) %>;
+      }
+    } catch(err) {
+      toast(T_ERR, true);
+      btn.disabled = false;
+      btn.textContent = <%- JSON.stringify(t.offer_claim_btn) %>;
+    }
+  });
+})();
+</script>
+<%- include('partials/footer') %>

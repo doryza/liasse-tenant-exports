@@ -64,3 +64,35 @@ CREATE TABLE IF NOT EXISTS reservations (
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+CREATE TABLE IF NOT EXISTS offers (
+  id SERIAL PRIMARY KEY,
+  title_fr TEXT NOT NULL,
+  title_en TEXT,
+  description_fr TEXT,
+  description_en TEXT,
+  image_url TEXT,
+  discount_label TEXT,
+  starts_at TIMESTAMPTZ,
+  expires_at TIMESTAMPTZ NOT NULL,
+  max_claims INTEGER,
+  max_per_user INTEGER DEFAULT 1,
+  position INTEGER DEFAULT 0,
+  active INTEGER DEFAULT 1,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS offer_claims (
+  id SERIAL PRIMARY KEY,
+  offer_id INTEGER NOT NULL REFERENCES offers(id) ON DELETE CASCADE,
+  user_id INTEGER NOT NULL,
+  short_code TEXT NOT NULL UNIQUE,
+  status TEXT DEFAULT 'claimed',
+  claimed_at TIMESTAMPTZ DEFAULT NOW(),
+  redeemed_at TIMESTAMPTZ,
+  redeemed_by_user_id INTEGER
+);
+CREATE INDEX IF NOT EXISTS offer_claims_short_code_idx ON offer_claims(short_code);
+CREATE INDEX IF NOT EXISTS offer_claims_user_idx ON offer_claims(user_id);
+CREATE INDEX IF NOT EXISTS offer_claims_offer_idx ON offer_claims(offer_id);
