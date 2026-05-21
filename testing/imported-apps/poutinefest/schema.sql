@@ -33,9 +33,26 @@ CREATE TABLE IF NOT EXISTS menu_items (
   position INTEGER DEFAULT 0,
   featured INTEGER DEFAULT 0,
   available INTEGER DEFAULT 1,
+  sizes_json TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+CREATE TABLE IF NOT EXISTS menu_categories (
+  id SERIAL PRIMARY KEY,
+  slug TEXT NOT NULL UNIQUE,
+  name_fr TEXT NOT NULL,
+  name_en TEXT,
+  position INTEGER DEFAULT 0,
+  active INTEGER DEFAULT 1,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+INSERT INTO menu_categories (slug, name_fr, name_en, position) VALUES ('classique', 'Classiques', 'Classics', 1) ON CONFLICT (slug) DO NOTHING;
+INSERT INTO menu_categories (slug, name_fr, name_en, position) VALUES ('signature', 'Signatures', 'Signatures', 2) ON CONFLICT (slug) DO NOTHING;
+INSERT INTO menu_categories (slug, name_fr, name_en, position) VALUES ('vegan', 'Végé', 'Veggie', 3) ON CONFLICT (slug) DO NOTHING;
+INSERT INTO menu_categories (slug, name_fr, name_en, position) VALUES ('dessert', 'Desserts', 'Desserts', 4) ON CONFLICT (slug) DO NOTHING;
 
 CREATE TABLE IF NOT EXISTS delivery_platforms (
   id SERIAL PRIMARY KEY,

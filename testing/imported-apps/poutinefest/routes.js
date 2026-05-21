@@ -170,6 +170,22 @@ module.exports = function(services) {
     return (settings && (settings.admin_email || settings.contact_email)) || (services.config && services.config.contactEmail) || '';
   }
 
+  function parseSizes(raw) {
+    if (!raw) return null;
+    try {
+      const arr = typeof raw === 'string' ? JSON.parse(raw) : raw;
+      if (!Array.isArray(arr) || !arr.length) return null;
+      return arr
+        .map(function(r){ return r && (r.label_fr || r.label_en) ? { label_fr: String(r.label_fr || r.label_en || ''), label_en: String(r.label_en || r.label_fr || ''), price: r.price == null || r.price === '' ? null : Number(r.price) } : null; })
+        .filter(Boolean);
+    } catch(e) { return null; }
+  }
+
+  async function getMenuCategories() {
+    try { return await db.all('SELECT * FROM menu_categories WHERE active = 1 ORDER BY position ASC, id ASC'); }
+    catch(e) { return []; }
+  }
+
   async function getSettings() {
     try { const rows = await db.all('SELECT key, value FROM admin_settings'); const o = {}; rows.forEach(function(r){ o[r.key] = r.value; }); return o; } catch(e) { return {}; }
   }
@@ -205,7 +221,7 @@ module.exports = function(services) {
   async function renderCtx(req) {
     const settings = await getSettings();
     const t = applyTextOverrides(Object.assign({}, T[req.lang] || T.fr), settings, req.lang);
-    return { t: t, lang: req.lang, settings: settings, formatPrice: formatPrice, formatDate: formatDate, pickLang: pickLang, hours: parseHours(settings.hours_json) };
+    return { t: t, lang: req.lang, settings: settings, formatPrice: formatPrice, formatDate: formatDate, pickLang: pickLang, hours: parseHours(settings.hours_json), parseSizes: parseSizes };
   }
 
   router.get('/', async function(req, res) {
@@ -214,7 +230,8 @@ module.exports = function(services) {
       const menu = await db.all("SELECT * FROM menu_items WHERE available = 1 ORDER BY featured DESC, position ASC LIMIT 6").catch(function(){ return []; });
       const platforms = await db.all('SELECT * FROM delivery_platforms WHERE active = 1 ORDER BY position ASC').catch(function(){ return []; });
       const posts = await db.all('SELECT * FROM posts WHERE published = 1 ORDER BY created_at DESC LIMIT 3').catch(function(){ return []; });
-      res.render('index', Object.assign(ctx, { menu: menu, platforms: platforms, posts: posts }));
+      const categories = await getMenuCategories();
+      res.render('index', Object.assign(ctx, { menu: menu, platforms: platforms, posts: posts, categories: categories }));
     } catch(e) { res.status(500).send('Erreur'); }
   });
 
@@ -222,7 +239,8 @@ module.exports = function(services) {
     try {
       const ctx = await renderCtx(req);
       const menu = await db.all('SELECT * FROM menu_items ORDER BY position ASC, id ASC').catch(function(){ return []; });
-      res.render('menu', Object.assign(ctx, { menu: menu }));
+      const categories = await getMenuCategories();
+      res.render('menu', Object.assign(ctx, { menu: menu, categories: categories }));
     } catch(e) { res.status(500).send('Erreur'); }
   });
 
@@ -422,12 +440,23 @@ module.exports = function(services) {
             { name: 'name_en', label: 'Nom (EN)', type: 'text', required: false, maxLength: 100, description: 'Name in English (optional).', placeholder: 'e.g. Classic Poutine' },
             { name: 'description_fr', label: 'Description (FR)', type: 'textarea', description: 'Description courte en français (1-2 phrases).', placeholder: 'ex. Frites maison, fromage en grains du jour, sauce brune maison.' },
             { name: 'description_en', label: 'Description (EN)', type: 'textarea', description: 'English description (optional).', placeholder: 'e.g. House-cut fries, daily cheese curds, house gravy.' },
-            { name: 'price', label: 'Prix ($ CAD)', type: 'number', required: true, min: 0, step: 0.01, description: 'Prix en dollars canadiens.', placeholder: '12.99' },
-            { name: 'category', label: 'Catégorie', type: 'select', options: ['classique','signature','vegan','dessert'], description: 'Catégorie du menu (filtre sur la page Menu).' },
+            { name: 'price', label: 'Prix de base ($ CAD)', type: 'number', required: true, min: 0, step: 0.01, description: 'Prix affiché si aucune taille n\'est définie. Sinon les tailles ci-dessous prennent le dessus.', placeholder: '12.99' },
+            { name: 'sizes_json', label: 'Tailles & prix (optionnel)', type: 'size_list', description: 'Ajoutez plusieurs tailles avec leur prix (ex. Petit 10$, Moyen 15$, Grand 20$). Si vide, le prix de base s\'affiche.' },
+            { name: 'category', label: 'Catégorie', type: 'select_dynamic', source: 'menu_categories', valueField: 'slug', labelField: 'name_fr', description: 'Catégorie du menu (gérée dans "Catégories du menu").' },
             { name: 'image_url', label: 'Photo du plat', type: 'image', description: 'Photo du plat. Recommandé: 800x600px (4:3).' },
             { name: 'position', label: "Ordre d'affichage", type: 'number', default: 0, description: 'Plus petit = en premier.', placeholder: '0' },
             { name: 'featured', label: 'À la une (accueil)', type: 'boolean', default: false, description: "Afficher sur la page d'accueil (max 6 plats à la une)." },
             { name: 'available', label: 'Disponible', type: 'boolean', default: true, description: 'Disponible à la commande. Décochez pour masquer.' }
+          ]
+        },
+        {
+          key: 'menu_categories', label: 'Catégories du menu', icon: 'tag',
+          fields: [
+            { name: 'slug', label: 'Identifiant (slug)', type: 'text', required: true, maxLength: 60, description: 'Identifiant technique (minuscules, sans accents). Ne le changez pas si des plats utilisent déjà cette catégorie.', placeholder: 'ex. classique' },
+            { name: 'name_fr', label: 'Nom affiché (FR)', type: 'text', required: true, maxLength: 80, description: 'Nom affiché sur le site (FR).', placeholder: 'ex. Classiques' },
+            { name: 'name_en', label: 'Nom affiché (EN)', type: 'text', maxLength: 80, description: 'Nom affiché sur le site (EN). Optionnel.', placeholder: 'e.g. Classics' },
+            { name: 'position', label: "Ordre d'affichage", type: 'number', default: 0, description: 'Plus petit = en premier dans les filtres.' },
+            { name: 'active', label: 'Active', type: 'boolean', default: true, description: 'Décochez pour masquer du site sans supprimer.' }
           ]
         },
         {
@@ -535,7 +564,7 @@ module.exports = function(services) {
   });
   router.post('/api/admin/menu_items', isAdminApi, async function(req, res) {
     try {
-      const q = adminInsert('menu_items', ['name_fr','name_en','description_fr','description_en','price','category','image_url','position','featured','available'], req.body);
+      const q = adminInsert('menu_items', ['name_fr','name_en','description_fr','description_en','price','category','image_url','position','featured','available','sizes_json'], req.body);
       if (!q) return res.status(400).json({ error: 'No fields' });
       const r = await db.run(q.sql, q.vals);
       const row = await db.get('SELECT * FROM menu_items WHERE id = $1', [r.lastInsertRowid]);
@@ -544,7 +573,7 @@ module.exports = function(services) {
   });
   router.put('/api/admin/menu_items/:id', isAdminApi, async function(req, res) {
     try {
-      const q = adminUpdate('menu_items', ['name_fr','name_en','description_fr','description_en','price','category','image_url','position','featured','available'], req.body, req.params.id);
+      const q = adminUpdate('menu_items', ['name_fr','name_en','description_fr','description_en','price','category','image_url','position','featured','available','sizes_json'], req.body, req.params.id);
       if (!q) return res.status(400).json({ error: 'No fields' });
       await db.run(q.sql, q.vals);
       const row = await db.get('SELECT * FROM menu_items WHERE id = $1', [req.params.id]);
@@ -553,6 +582,55 @@ module.exports = function(services) {
   });
   router.delete('/api/admin/menu_items/:id', isAdminApi, async function(req, res) {
     try { await db.run('DELETE FROM menu_items WHERE id = $1', [req.params.id]); res.json({ success: true }); }
+    catch(e) { res.status(500).json({ error: e.message }); }
+  });
+
+  // --- CRUD: menu_categories ---
+  const MENU_CATEGORY_FIELDS = ['slug','name_fr','name_en','position','active'];
+  function slugify(s) { return String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60); }
+  router.get('/api/admin/menu_categories', isAdminApi, async function(req, res) {
+    try {
+      const rows = await db.all('SELECT * FROM menu_categories ORDER BY position ASC, id ASC');
+      res.json({ menu_categories: rows });
+    } catch(e) { res.status(500).json({ error: e.message }); }
+  });
+  router.post('/api/admin/menu_categories', isAdminApi, async function(req, res) {
+    try {
+      const b = Object.assign({}, req.body || {});
+      if (!b.slug && b.name_fr) b.slug = slugify(b.name_fr);
+      b.slug = slugify(b.slug);
+      if (!b.slug) return res.status(400).json({ error: 'invalid_slug' });
+      const q = adminInsert('menu_categories', MENU_CATEGORY_FIELDS, b);
+      if (!q) return res.status(400).json({ error: 'No fields' });
+      const r = await db.run(q.sql, q.vals);
+      const row = await db.get('SELECT * FROM menu_categories WHERE id = $1', [r.lastInsertRowid]);
+      res.json({ item: row, id: r.lastInsertRowid });
+    } catch(e) {
+      if ((e.message || '').toLowerCase().includes('duplicate') || (e.code === '23505')) return res.status(409).json({ error: 'slug_exists' });
+      res.status(500).json({ error: e.message });
+    }
+  });
+  router.put('/api/admin/menu_categories/:id', isAdminApi, async function(req, res) {
+    try {
+      const b = Object.assign({}, req.body || {});
+      if (b.slug != null) b.slug = slugify(b.slug);
+      // Keep existing menu_items.category in sync if slug changes
+      const before = await db.get('SELECT slug FROM menu_categories WHERE id = $1', [req.params.id]);
+      const q = adminUpdate('menu_categories', MENU_CATEGORY_FIELDS, b, req.params.id);
+      if (!q) return res.status(400).json({ error: 'No fields' });
+      await db.run(q.sql, q.vals);
+      if (before && b.slug && before.slug !== b.slug) {
+        try { await db.run('UPDATE menu_items SET category = $1 WHERE category = $2', [b.slug, before.slug]); } catch(_) {}
+      }
+      const row = await db.get('SELECT * FROM menu_categories WHERE id = $1', [req.params.id]);
+      res.json({ item: row });
+    } catch(e) {
+      if ((e.message || '').toLowerCase().includes('duplicate') || (e.code === '23505')) return res.status(409).json({ error: 'slug_exists' });
+      res.status(500).json({ error: e.message });
+    }
+  });
+  router.delete('/api/admin/menu_categories/:id', isAdminApi, async function(req, res) {
+    try { await db.run('DELETE FROM menu_categories WHERE id = $1', [req.params.id]); res.json({ success: true }); }
     catch(e) { res.status(500).json({ error: e.message }); }
   });
 
