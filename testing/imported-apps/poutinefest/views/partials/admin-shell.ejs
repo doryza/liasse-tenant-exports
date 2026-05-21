@@ -50,6 +50,7 @@ var MODULE_KEY = '<%- moduleKey %>';
 var items = [];
 var fields = [];
 var editingId = null;
+var dynamicSources = {}; // sourceKey -> array of rows
 
 function esc(s) { if (s == null) return ''; return String(s).replace(/[&<>"']/g, function(c){ return ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[c]; }); }
 function labelFor(f) { return f.label || f.name; }
@@ -78,6 +79,16 @@ async function loadModule() {
     var m = (data.modules || []).find(function(x){ return x.key === MODULE_KEY; });
     if (m) fields = m.fields;
     if (MODULE_KEY === 'reservations') document.getElementById('statusFilter').style.display = '';
+    // Pre-fetch select_dynamic sources
+    var sources = [];
+    fields.forEach(function(f){ if (f.type === 'select_dynamic' && f.source && sources.indexOf(f.source) === -1) sources.push(f.source); });
+    await Promise.all(sources.map(async function(src){
+      try {
+        var rr = await fetch('api/admin/' + src);
+        var dd = await rr.json();
+        dynamicSources[src] = dd[src] || [];
+      } catch(e) { dynamicSources[src] = []; }
+    }));
     await loadItems();
   } catch(e) { document.getElementById('listContainer').innerHTML = '<p class="empty"><span class="emoji">⚠️</span>Erreur de chargement</p>'; }
 }
@@ -122,6 +133,7 @@ function renderList() {
   else if (MODULE_KEY === 'delivery_platforms') displayFields = fields.filter(function(f){ return ['logo_url','name','link_url','active'].indexOf(f.name) !== -1; });
   else if (MODULE_KEY === 'posts') displayFields = fields.filter(function(f){ return ['image_url','title','category','published'].indexOf(f.name) !== -1; });
   else if (MODULE_KEY === 'offers') displayFields = fields.filter(function(f){ return ['image_url','title_fr','discount_label','expires_at','active'].indexOf(f.name) !== -1; });
+  else if (MODULE_KEY === 'menu_categories') displayFields = fields.filter(function(f){ return ['position','name_fr','name_en','slug','active'].indexOf(f.name) !== -1; });
 
   var html = '<div style="overflow-x:auto"><table><thead><tr>';
   displayFields.forEach(function(f){ html += '<th>' + esc(labelFor(f)) + '</th>'; });
@@ -172,6 +184,30 @@ function buildFormFields(item) {
       html += '<select id="' + id + '" class="form-control">';
       (f.options || []).forEach(function(o){ html += '<option value="' + esc(o) + '"' + (String(v) === String(o) ? ' selected' : '') + '>' + esc(o) + '</option>'; });
       html += '</select>';
+    } else if (f.type === 'select_dynamic') {
+      var rows = dynamicSources[f.source] || [];
+      var valueField = f.valueField || 'slug';
+      var labelField = f.labelField || 'name_fr';
+      html += '<select id="' + id + '" class="form-control"' + req + '>';
+      html += '<option value="">' + (f.required ? '— Choisir —' : '— Aucune —') + '</option>';
+      rows.forEach(function(row){
+        var optVal = row[valueField] == null ? '' : String(row[valueField]);
+        var optLabel = row[labelField] || row[valueField] || ('#' + row.id);
+        html += '<option value="' + esc(optVal) + '"' + (String(v) === optVal ? ' selected' : '') + '>' + esc(optLabel) + '</option>';
+      });
+      html += '</select>';
+      if (rows.length === 0) html += '<div class="help-text" style="color:#e53e3e">Aucune entrée disponible. Créez-en une dans le module source.</div>';
+    } else if (f.type === 'size_list') {
+      var sizes = [];
+      try { sizes = v ? (typeof v === 'string' ? JSON.parse(v) : v) : []; } catch(_) { sizes = []; }
+      if (!Array.isArray(sizes)) sizes = [];
+      html += '<div class="size-list" data-field-id="' + id + '">';
+      html += '<div class="size-list-rows" id="' + id + '_rows"></div>';
+      html += '<button type="button" class="btn btn-sm btn-secondary" onclick="addSizeRow(\'' + id + '\')" style="margin-top:0.4rem">+ Ajouter une taille</button>';
+      html += '</div>';
+      // Stash initial rows for render after DOM insertion
+      window._pendingSizeInit = window._pendingSizeInit || {};
+      window._pendingSizeInit[id] = sizes;
     } else if (f.type === 'image') {
       html += '<input type="text" id="' + id + '" class="form-control" placeholder="URL de l\'image" value="' + esc(v) + '" oninput="refreshPreview(\'' + id + '\')">';
       html += '<input type="file" accept="image/*" onchange="uploadImage(this, \'' + id + '\')" style="margin-top:0.5rem;font-size:0.85rem">';
@@ -227,10 +263,56 @@ async function uploadImage(input, fieldId) {
   reader.readAsDataURL(file);
 }
 
+function renderSizeRowsInto(fieldId, sizes) {
+  var container = document.getElementById(fieldId + '_rows');
+  if (!container) return;
+  if (!sizes || !sizes.length) { container.innerHTML = '<p style="color:#a0aec0;font-size:0.85rem;margin:0.25rem 0">Aucune taille — le prix de base s\'applique.</p>'; return; }
+  var html = '';
+  sizes.forEach(function(s, idx){
+    var lfr = s.label_fr == null ? '' : s.label_fr;
+    var len = s.label_en == null ? '' : s.label_en;
+    var price = s.price == null || s.price === '' ? '' : s.price;
+    html += '<div class="size-row" data-row-idx="' + idx + '" style="display:grid;grid-template-columns:1fr 1fr 110px 36px;gap:0.4rem;margin-bottom:0.4rem;align-items:center">';
+    html += '<input type="text" class="form-control size-fr" placeholder="Taille (FR)" value="' + esc(lfr) + '" style="font-size:0.9rem">';
+    html += '<input type="text" class="form-control size-en" placeholder="Size (EN)" value="' + esc(len) + '" style="font-size:0.9rem">';
+    html += '<input type="number" class="form-control size-price" placeholder="Prix" step="0.01" min="0" value="' + esc(price) + '" style="font-size:0.9rem">';
+    html += '<button type="button" class="btn btn-sm btn-danger" onclick="removeSizeRow(\'' + fieldId + '\', ' + idx + ')" title="Supprimer">×</button>';
+    html += '</div>';
+  });
+  container.innerHTML = html;
+}
+function collectSizeRows(fieldId) {
+  var rows = document.querySelectorAll('#' + fieldId + '_rows .size-row');
+  var out = [];
+  rows.forEach(function(r){
+    var lfr = (r.querySelector('.size-fr') || {}).value || '';
+    var len = (r.querySelector('.size-en') || {}).value || '';
+    var p = (r.querySelector('.size-price') || {}).value;
+    var price = p === '' ? null : parseFloat(p);
+    if (lfr || len || price != null) out.push({ label_fr: lfr.trim(), label_en: len.trim(), price: price });
+  });
+  return out;
+}
+function addSizeRow(fieldId) {
+  var current = collectSizeRows(fieldId);
+  current.push({ label_fr: '', label_en: '', price: '' });
+  renderSizeRowsInto(fieldId, current);
+}
+function removeSizeRow(fieldId, idx) {
+  var current = collectSizeRows(fieldId);
+  current.splice(idx, 1);
+  renderSizeRowsInto(fieldId, current);
+}
+
 function openModal(item) {
   editingId = item ? item.id : null;
   document.getElementById('modalTitle').textContent = item ? 'Modifier' : 'Ajouter';
   document.getElementById('formFields').innerHTML = buildFormFields(item);
+  // Flush any pending size_list initializations now that DOM exists
+  if (window._pendingSizeInit) {
+    for (var k in window._pendingSizeInit) renderSizeRowsInto(k, window._pendingSizeInit[k]);
+    window._pendingSizeInit = {};
+  }
   document.getElementById('modal').classList.add('open');
 }
 function closeModal() { document.getElementById('modal').classList.remove('open'); }
@@ -257,6 +339,12 @@ document.getElementById('itemForm').addEventListener('submit', async function(e)
   e.preventDefault();
   var data = {};
   fields.forEach(function(f){
+    if (f.type === 'size_list') {
+      var fieldId = 'fld_' + f.name;
+      var rows = collectSizeRows(fieldId);
+      data[f.name] = rows.length ? JSON.stringify(rows) : null;
+      return;
+    }
     var el = document.getElementById('fld_' + f.name);
     if (!el) return;
     if (f.type === 'boolean') data[f.name] = el.checked ? 1 : 0;

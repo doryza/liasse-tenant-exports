@@ -4,24 +4,45 @@
     <h1 class="section-title"><%= t.menu_title %></h1>
     <p class="section-sub"><%= t.menu_subtitle %></p>
     <% if (typeof menu !== 'undefined' && menu && menu.length > 0) { %>
+      <% var cats = (typeof categories !== 'undefined' && categories) ? categories : []; %>
+      <% if (cats.length > 0) { %>
       <div class="category-filter" id="catFilter" role="tablist">
         <button class="active" data-cat="all" style="background-color:#39FF14;color:#000"><%= t.category_all %></button>
-        <button data-cat="classique"><%= t.category_classique %></button>
-        <button data-cat="signature"><%= t.category_signature %></button>
-        <button data-cat="vegan"><%= t.category_vegan %></button>
-        <button data-cat="dessert"><%= t.category_dessert %></button>
+        <% cats.forEach(function(c){ %>
+          <button data-cat="<%= c.slug %>"><%= (lang === 'en' && c.name_en) ? c.name_en : c.name_fr %></button>
+        <% }); %>
       </div>
+      <% } %>
       <div class="menu-grid" id="menuGrid">
-        <% menu.forEach(function(m) { %>
+        <% menu.forEach(function(m) {
+          var catName = '';
+          var _c = cats.find(function(x){ return x.slug === m.category; });
+          if (_c) catName = (lang === 'en' && _c.name_en) ? _c.name_en : _c.name_fr;
+          var _sizes = (typeof parseSizes === 'function') ? parseSizes(m.sizes_json) : null;
+        %>
         <div class="menu-card <%= m.available ? '' : 'unavailable' %>" data-cat="<%= m.category || '' %>">
           <% if (m.image_url) { %><img src="<%= m.image_url %>" alt="<%= pickLang(m,'name',lang) %>" class="menu-card-img"><% } else { %><div class="menu-card-img"></div><% } %>
           <div class="menu-card-body">
             <h3><%= pickLang(m, 'name', lang) %></h3>
             <p class="desc"><%= pickLang(m, 'description', lang) %></p>
-            <div class="row">
-              <span class="cat-badge"><%= m.category || '' %></span>
-              <span class="price"><%= formatPrice(m.price) %></span>
-            </div>
+            <% if (_sizes && _sizes.length > 0) { %>
+              <div class="sizes-list">
+                <% _sizes.forEach(function(s){ %>
+                  <div class="size-row">
+                    <span class="size-label"><%= (lang === 'en' && s.label_en) ? s.label_en : (s.label_fr || s.label_en || '') %></span>
+                    <span class="size-price"><%= formatPrice(s.price) %></span>
+                  </div>
+                <% }); %>
+              </div>
+              <div class="row" style="margin-top:0.6rem">
+                <span class="cat-badge"><%= catName || m.category || '' %></span>
+              </div>
+            <% } else { %>
+              <div class="row">
+                <span class="cat-badge"><%= catName || m.category || '' %></span>
+                <span class="price"><%= formatPrice(m.price) %></span>
+              </div>
+            <% } %>
           </div>
         </div>
         <% }); %>
@@ -31,6 +52,14 @@
     <% } %>
   </div>
 </section>
+
+<style>
+.menu-card .sizes-list { display: flex; flex-direction: column; gap: 0.3rem; margin-top: 0.5rem; padding-top: 0.6rem; border-top: 1px solid #1f1f1f; }
+.menu-card .sizes-list .size-row { display: flex; justify-content: space-between; align-items: baseline; font-size: 0.95rem; }
+.menu-card .sizes-list .size-label { color: #bbb; }
+.menu-card .sizes-list .size-price { color: #39FF14; font-weight: 800; font-size: 1.05rem; }
+</style>
+
 <script>
 (function(){
   var btns = document.querySelectorAll('#catFilter button');
