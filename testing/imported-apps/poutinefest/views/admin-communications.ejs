@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin — Communications</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+<style>
+.comm-wrap { max-width: 720px; }
+.comm-card { background: #fff; padding: 1.75rem; border-radius: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 1.25rem; }
+.comm-card h2 { margin: 0 0 0.4rem; font-size: 1.2rem; }
+.comm-card .hint { color: #718096; font-size: 0.88rem; margin: 0 0 1.25rem; }
+.channel-row { display: flex; align-items: center; gap: 0.7rem; padding: 0.7rem 0.9rem; border: 1px solid #e2e8f0; border-radius: 10px; margin-bottom: 0.55rem; cursor: pointer; transition: all 0.15s; }
+.channel-row:hover { border-color: #39FF14; background: rgba(57,255,20,0.04); }
+.channel-row input[type="checkbox"] { width: 18px; height: 18px; accent-color: #39FF14; cursor: pointer; }
+.channel-row.disabled { opacity: 0.5; cursor: not-allowed; background: #f7fafc; }
+.channel-row .count { margin-left: auto; font-weight: 700; color: #4a5568; font-size: 0.9rem; }
+.send-btn { width: 100%; padding: 1rem; background: #39FF14; color: #000; font-weight: 800; font-size: 1.05rem; border: 0; border-radius: 10px; cursor: pointer; margin-top: 0.5rem; }
+.send-btn:hover { background: #5cff44; }
+.send-btn:disabled { background: #cbd5e0; color: #4a5568; cursor: not-allowed; }
+.result-banner { padding: 1rem 1.2rem; border-radius: 10px; margin-bottom: 1rem; font-weight: 600; }
+.result-banner.ok { background: #e8fff0; color: #0a6e2e; border: 1px solid #b7f5cb; }
+.result-banner.warn { background: #fff7e0; color: #92500a; border: 1px solid #f7d889; }
+.result-banner.err { background: #ffeaea; color: #8a1a1a; border: 1px solid #f8b3b3; }
+.preview-box { background: #f7fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 1rem; margin-top: 0.5rem; }
+.preview-box .pt { font-weight: 700; font-size: 1rem; color: #1a202c; margin: 0 0 0.35rem; }
+.preview-box .pb { color: #4a5568; font-size: 0.92rem; line-height: 1.45; margin: 0; white-space: pre-wrap; }
+.char-count { font-size: 0.78rem; color: #a0aec0; text-align: right; margin-top: 0.2rem; }
+</style>
+</head>
+<body>
+<div class="admin-layout">
+<%- include('partials/admin-sidebar', { page: 'communications' }) %>
+<main class="admin-main">
+<div class="admin-header">
+  <div>
+    <h1>Communications</h1>
+    <p style="margin:0.25rem 0 0;color:#718096;font-size:0.9rem">Envoyez une notification push et/ou un courriel à vos abonnés.</p>
+  </div>
+</div>
+
+<div class="comm-wrap">
+  <div class="comm-card">
+    <h2>📣 Nouveau message</h2>
+    <p class="hint">Choisissez les canaux, écrivez votre message, puis envoyez. Les utilisateurs désabonnés ne reçoivent rien.</p>
+
+    <div id="resultArea"></div>
+
+    <form id="broadcastForm">
+      <div class="form-group">
+        <label>Canaux d'envoi</label>
+        <label class="channel-row" id="pushRow">
+          <input type="checkbox" id="channelPush" checked>
+          <span>🔔 Notification push</span>
+          <span class="count" id="pushCount">—</span>
+        </label>
+        <label class="channel-row" id="emailRow">
+          <input type="checkbox" id="channelEmail">
+          <span>📧 Courriel</span>
+          <span class="count" id="emailCount">—</span>
+        </label>
+      </div>
+
+      <div class="form-group">
+        <label>Titre <span style="color:#e53e3e">*</span></label>
+        <input type="text" class="form-control" id="commTitle" maxlength="100" placeholder="ex. Nouveau menu d'automne!" required>
+        <div class="char-count"><span id="titleLen">0</span> / 100</div>
+      </div>
+
+      <div class="form-group">
+        <label>Message <span style="color:#e53e3e">*</span></label>
+        <textarea class="form-control" id="commBody" rows="4" maxlength="500" placeholder="Détails de votre message…" required></textarea>
+        <div class="char-count"><span id="bodyLen">0</span> / 500</div>
+      </div>
+
+      <div class="form-group">
+        <label>Aperçu</label>
+        <div class="preview-box">
+          <p class="pt" id="previewTitle">—</p>
+          <p class="pb" id="previewBody">—</p>
+        </div>
+      </div>
+
+      <button type="submit" class="send-btn" id="sendBtn">Envoyer maintenant</button>
+    </form>
+  </div>
+</div>
+
+</main>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+function esc(s) { if (s == null) return ''; return String(s).replace(/[&<>"']/g, function(c){ return ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[c]; }); }
+function toast(msg, type) { var t = document.getElementById('toast'); t.className = 'toast toast-' + (type || 'success'); t.textContent = msg; setTimeout(function(){ t.classList.add('show'); }, 10); setTimeout(function(){ t.classList.remove('show'); }, 2800); }
+
+async function loadCounts() {
+  try {
+    var r = await fetch('api/admin/stats');
+    var data = await r.json();
+    document.getElementById('pushCount').textContent = (data.pushSubscriberCount || 0) + ' abonné(s)';
+    document.getElementById('emailCount').textContent = (data.userCount || 0) + ' utilisateur(s)';
+  } catch(e) {
+    document.getElementById('pushCount').textContent = '—';
+    document.getElementById('emailCount').textContent = '—';
+  }
+}
+
+function updatePreview() {
+  var t = document.getElementById('commTitle').value || '—';
+  var b = document.getElementById('commBody').value || '—';
+  document.getElementById('previewTitle').textContent = t;
+  document.getElementById('previewBody').textContent = b;
+  document.getElementById('titleLen').textContent = document.getElementById('commTitle').value.length;
+  document.getElementById('bodyLen').textContent = document.getElementById('commBody').value.length;
+}
+
+function renderResult(result) {
+  var html = '';
+  var ok = true;
+  if (result.push) {
+    if (result.push.error) { html += '<div class="result-banner err">Push: erreur (' + esc(result.push.error) + ')</div>'; ok = false; }
+    else { html += '<div class="result-banner ok">🔔 Push: ' + (result.push.sent || 0) + ' / ' + (result.push.total || 0) + ' envoyé(s)' + (result.push.failed ? ', ' + result.push.failed + ' échoué(s)' : '') + '</div>'; }
+  }
+  if (result.email) {
+    if (result.email.error) { html += '<div class="result-banner err">Courriel: erreur (' + esc(result.email.error) + ')</div>'; ok = false; }
+    else { html += '<div class="result-banner ok">📧 Courriel: ' + (result.email.sent || 0) + ' / ' + (result.email.total || 0) + ' envoyé(s)' + (result.email.failed ? ', ' + result.email.failed + ' échoué(s)' : '') + '</div>'; }
+  }
+  document.getElementById('resultArea').innerHTML = html;
+  return ok;
+}
+
+document.getElementById('commTitle').addEventListener('input', updatePreview);
+document.getElementById('commBody').addEventListener('input', updatePreview);
+
+document.getElementById('broadcastForm').addEventListener('submit', async function(e){
+  e.preventDefault();
+  var title = document.getElementById('commTitle').value.trim();
+  var body = document.getElementById('commBody').value.trim();
+  var sendPush = document.getElementById('channelPush').checked;
+  var sendEmail = document.getElementById('channelEmail').checked;
+  if (!title || !body) { toast('Titre et message requis', 'error'); return; }
+  if (!sendPush && !sendEmail) { toast('Choisissez au moins un canal', 'error'); return; }
+
+  var totalRecipients = 0;
+  try {
+    var pc = document.getElementById('pushCount').textContent.match(/\d+/);
+    var ec = document.getElementById('emailCount').textContent.match(/\d+/);
+    if (sendPush && pc) totalRecipients += parseInt(pc[0]);
+    if (sendEmail && ec) totalRecipients += parseInt(ec[0]);
+  } catch(e) {}
+  var channels = [];
+  if (sendPush) channels.push('push');
+  if (sendEmail) channels.push('courriel');
+  var confirmMsg = 'Envoyer "' + title + '" à ' + (totalRecipients ? '~' + totalRecipients + ' destinataire(s)' : 'tous les abonnés') + ' via ' + channels.join(' + ') + '?';
+  if (!confirm(confirmMsg)) return;
+
+  var btn = document.getElementById('sendBtn');
+  btn.disabled = true; btn.textContent = '⏳ Envoi en cours…';
+  document.getElementById('resultArea').innerHTML = '';
+  try {
+    var r = await fetch('api/admin/broadcast', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title: title, body: body, channels: { push: sendPush, email: sendEmail } }) });
+    var data = await r.json().catch(function(){ return {}; });
+    if (r.ok && data.success) {
+      renderResult(data.result || {});
+      toast('Envoi terminé', 'success');
+      document.getElementById('commTitle').value = '';
+      document.getElementById('commBody').value = '';
+      updatePreview();
+    } else {
+      document.getElementById('resultArea').innerHTML = '<div class="result-banner err">Erreur: ' + esc(data.error || 'inconnue') + '</div>';
+      toast('Erreur d\'envoi', 'error');
+    }
+  } catch(e) {
+    document.getElementById('resultArea').innerHTML = '<div class="result-banner err">Erreur réseau</div>';
+    toast('Erreur réseau', 'error');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Envoyer maintenant';
+  }
+});
+
+loadCounts();
+updatePreview();
+</script>
+</body>
+</html>
