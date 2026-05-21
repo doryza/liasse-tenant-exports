@@ -38,6 +38,12 @@ module.exports = function(services) {
       latest_news: 'Dernières nouvelles', read_more: 'Lire plus',
       category_all: 'Tous', category_classique: 'Classiques', category_signature: 'Signatures', category_vegan: 'Végé', category_dessert: 'Desserts',
       all_truck_cta: 'Recevoir le camion à votre événement',
+      reserve_success_title: 'Merci pour votre demande!',
+      reserve_success_body: 'Nous avons bien reçu les détails de votre événement et vous contacterons sous 24 heures pour confirmer.',
+      reserve_back_form: 'Faire une autre demande',
+      day_mon: 'Lundi', day_tue: 'Mardi', day_wed: 'Mercredi', day_thu: 'Jeudi', day_fri: 'Vendredi', day_sat: 'Samedi', day_sun: 'Dimanche',
+      closed: 'Fermé',
+      follow_us: 'Nous suivre',
       nav_offers: 'Offres',
       offers_title: 'Offres spéciales', offers_subtitle: 'Réservez votre offre, présentez votre code en restaurant.',
       offers_empty: 'Aucune offre active pour l\'instant. Revenez bientôt!',
@@ -93,6 +99,12 @@ module.exports = function(services) {
       latest_news: 'Latest news', read_more: 'Read more',
       category_all: 'All', category_classique: 'Classics', category_signature: 'Signatures', category_vegan: 'Veggie', category_dessert: 'Desserts',
       all_truck_cta: 'Bring the truck to your event',
+      reserve_success_title: 'Thank you for your request!',
+      reserve_success_body: 'We received your event details and will contact you within 24 hours to confirm.',
+      reserve_back_form: 'Submit another request',
+      day_mon: 'Monday', day_tue: 'Tuesday', day_wed: 'Wednesday', day_thu: 'Thursday', day_fri: 'Friday', day_sat: 'Saturday', day_sun: 'Sunday',
+      closed: 'Closed',
+      follow_us: 'Follow us',
       nav_offers: 'Offers',
       offers_title: 'Special offers', offers_subtitle: 'Reserve an offer, show your code in-store.',
       offers_empty: 'No active offers right now. Check back soon!',
@@ -136,6 +148,28 @@ module.exports = function(services) {
     return 'active';
   }
 
+  const DAY_KEYS = ['mon','tue','wed','thu','fri','sat','sun'];
+  function parseHours(raw) {
+    if (!raw) return null;
+    try {
+      const arr = typeof raw === 'string' ? JSON.parse(raw) : raw;
+      if (!Array.isArray(arr)) return null;
+      const byDay = {};
+      for (const row of arr) {
+        if (!row || !row.day) continue;
+        byDay[String(row.day).toLowerCase()] = row;
+      }
+      return DAY_KEYS.map(function(d){
+        const r = byDay[d] || {};
+        return { day: d, open: r.open || '', close: r.close || '', closed: !!r.closed };
+      });
+    } catch(e) { return null; }
+  }
+
+  function resolveContactEmail(settings) {
+    return (settings && (settings.admin_email || settings.contact_email)) || (services.config && services.config.contactEmail) || '';
+  }
+
   async function getSettings() {
     try { const rows = await db.all('SELECT key, value FROM admin_settings'); const o = {}; rows.forEach(function(r){ o[r.key] = r.value; }); return o; } catch(e) { return {}; }
   }
@@ -171,7 +205,7 @@ module.exports = function(services) {
   async function renderCtx(req) {
     const settings = await getSettings();
     const t = applyTextOverrides(Object.assign({}, T[req.lang] || T.fr), settings, req.lang);
-    return { t: t, lang: req.lang, settings: settings, formatPrice: formatPrice, formatDate: formatDate, pickLang: pickLang };
+    return { t: t, lang: req.lang, settings: settings, formatPrice: formatPrice, formatDate: formatDate, pickLang: pickLang, hours: parseHours(settings.hours_json) };
   }
 
   router.get('/', async function(req, res) {
@@ -309,7 +343,9 @@ module.exports = function(services) {
       await db.run('INSERT INTO reservations (event_date, event_type, contact_name, contact_email, contact_phone, location, guests, message, status) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)',
         [b.event_date, b.event_type || '', b.contact_name, b.contact_email, b.contact_phone || '', b.location || '', parseInt(b.guests) || 0, b.message || '', 'pending']);
       try {
-        if (services.config.contactEmail) {
+        const settings = await getSettings();
+        const toEmail = resolveContactEmail(settings);
+        if (toEmail) {
           const html = '<h2>Nouvelle demande de camion - PoutineFest</h2>' +
             '<p><strong>Nom:</strong> ' + b.contact_name + '</p>' +
             '<p><strong>Courriel:</strong> ' + b.contact_email + '</p>' +
@@ -319,7 +355,7 @@ module.exports = function(services) {
             '<p><strong>Lieu:</strong> ' + (b.location || '-') + '</p>' +
             '<p><strong>Invités:</strong> ' + (b.guests || '-') + '</p>' +
             '<p><strong>Message:</strong></p><p>' + (b.message || '-').replace(/\n/g, '<br>') + '</p>';
-          try { await services.email.send({ to: services.config.contactEmail, subject: 'Nouvelle demande de camion - ' + b.contact_name, html: html }); } catch (emailErr) { console.error('Email send failed:', emailErr.message); }
+          try { await services.email.send({ to: toEmail, subject: 'Nouvelle demande de camion - ' + b.contact_name, html: html }); } catch (emailErr) { console.error('Email send failed:', emailErr.message); }
         }
       } catch(emailErr) { console.error('Email failed:', emailErr.message); }
       res.json({ success: true });
@@ -738,6 +774,90 @@ module.exports = function(services) {
       await db.run('INSERT INTO admin_settings (key, value, updated_at) VALUES ($1, $2, NOW()) ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = NOW()', [b.key, b.value == null ? '' : String(b.value)]);
       res.json({ success: true });
     } catch(e) { res.status(500).json({ error: e.message }); }
+  });
+
+  // Bulk settings upsert — accepts { settings: { key1: val1, key2: val2 } }
+  const SITE_SETTINGS_ALLOWED = new Set([
+    'business_name','tagline','admin_email','contact_email','contact_phone','business_address',
+    'footer_intro_fr','footer_intro_en','hours_json',
+    'social_facebook','social_instagram','social_twitter','social_tiktok','social_youtube','social_linkedin',
+    '_p_nav_logo_url'
+  ]);
+  router.put('/api/admin/site_settings', isAdminApi, async function(req, res) {
+    try {
+      const incoming = (req.body && req.body.settings) || {};
+      const keys = Object.keys(incoming).filter(function(k){ return SITE_SETTINGS_ALLOWED.has(k); });
+      for (const k of keys) {
+        const v = incoming[k];
+        await db.run(
+          'INSERT INTO admin_settings (key, value, updated_at) VALUES ($1, $2, NOW()) ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = NOW()',
+          [k, v == null ? '' : String(v)]
+        );
+      }
+      res.json({ success: true, saved: keys.length });
+    } catch(e) { res.status(500).json({ error: e.message }); }
+  });
+
+  router.post('/api/admin/broadcast', isAdminApi, async function(req, res) {
+    try {
+      const b = req.body || {};
+      const title = (b.title || '').toString().trim();
+      const body = (b.body || '').toString().trim();
+      if (!title || !body) return res.status(400).json({ error: 'missing_fields' });
+      const channels = b.channels || {};
+      const sendPush = channels.push !== false;
+      const sendEmail = !!channels.email;
+      if (!sendPush && !sendEmail) return res.status(400).json({ error: 'no_channel' });
+
+      const result = {};
+
+      if (sendPush) {
+        try {
+          if (services.push && typeof services.push.broadcast === 'function') {
+            const pushRes = await services.push.broadcast({ title: title, body: body });
+            result.push = { sent: pushRes.sent || 0, failed: pushRes.failed || 0, total: pushRes.total || 0 };
+          } else {
+            result.push = { error: 'push_unavailable' };
+          }
+        } catch(e) {
+          console.error('Broadcast push error:', e.message);
+          result.push = { error: e.message };
+        }
+      }
+
+      if (sendEmail) {
+        try {
+          const emailUsers = await db.all(
+            "SELECT id, email FROM users WHERE email IS NOT NULL AND email <> '' AND (email_verified IS NULL OR email_verified = 1) AND email_unsubscribed_at IS NULL"
+          ).catch(function(){ return []; });
+          const appName = (services.config && services.config.displayName) || 'PoutineFest';
+          const safeBody = body.replace(/[<>]/g, function(c){ return c === '<' ? '&lt;' : '&gt;'; }).replace(/\n/g, '<br>');
+          const safeTitle = title.replace(/[<>]/g, function(c){ return c === '<' ? '&lt;' : '&gt;'; });
+          const html = '<div style="font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;max-width:560px;margin:0 auto;padding:24px;background:#fff;color:#1a1a1a">' +
+            '<h2 style="color:#0a0a0a;margin:0 0 16px">' + safeTitle + '</h2>' +
+            '<div style="font-size:15px;line-height:1.55;color:#333">' + safeBody + '</div>' +
+            '<hr style="border:none;border-top:1px solid #eee;margin:24px 0">' +
+            '<p style="font-size:12px;color:#888;margin:0">' + appName + '</p>' +
+            '</div>';
+          let sent = 0, failed = 0;
+          for (const row of emailUsers) {
+            try {
+              await services.email.send({ to: row.email, subject: appName + ' — ' + title, html: html });
+              sent++;
+            } catch(e) { failed++; console.error('Broadcast email failed for', row.email, e.message); }
+          }
+          result.email = { sent: sent, failed: failed, total: emailUsers.length };
+        } catch(e) {
+          console.error('Broadcast email error:', e.message);
+          result.email = { error: e.message };
+        }
+      }
+
+      res.json({ success: true, result: result });
+    } catch(e) {
+      console.error('Broadcast error:', e.message);
+      res.status(500).json({ error: e.message });
+    }
   });
 
   // Catch-all: redirect unknown GET routes to PWA home (prevents "Cannot GET" errors)

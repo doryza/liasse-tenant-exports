@@ -1,10 +1,10 @@
 <%- include('partials/header') %>
 <section class="section" style="padding-top:3rem">
   <div class="container">
-    <h1 class="section-title"><%= t.reserve_title %></h1>
-    <p class="section-sub"><%= t.reserve_subtitle %></p>
-    <div class="form-wrap">
-      <div id="successMsg" class="alert alert-success" style="display:none"><%= t.reserve_success %></div>
+    <h1 class="section-title" id="pageTitle"><%= t.reserve_title %></h1>
+    <p class="section-sub" id="pageSub"><%= t.reserve_subtitle %></p>
+
+    <div class="form-wrap" id="formWrap">
       <div id="errorMsg" class="alert alert-error" style="display:none"></div>
       <form id="reserveForm">
         <div class="form-row">
@@ -24,18 +24,26 @@
         <button type="submit" class="btn btn-primary btn-block" style="background-color:#39FF14;color:#000" id="submitBtn"><%= t.form_submit %></button>
       </form>
     </div>
+
+    <div id="thankYouPanel" style="display:none;text-align:center;padding:3rem 1.5rem;background:rgba(57,255,20,0.06);border:2px solid rgba(57,255,20,0.4);border-radius:18px;max-width:640px;margin:0 auto">
+      <div style="font-size:4rem;line-height:1;margin-bottom:1rem">🎉</div>
+      <h2 style="color:#39FF14;margin:0 0 0.75rem;font-size:1.8rem"><%= t.reserve_success_title %></h2>
+      <p style="color:#ddd;margin:0 0 1.5rem;font-size:1.05rem;line-height:1.55"><%= t.reserve_success_body %></p>
+      <button class="btn btn-secondary" id="resetBtn" style="border-color:#39FF14;color:#39FF14"><%= t.reserve_back_form %></button>
+    </div>
   </div>
 </section>
 <script>
 (function(){
   var form = document.getElementById('reserveForm');
   var btn = document.getElementById('submitBtn');
-  var success = document.getElementById('successMsg');
+  var formWrap = document.getElementById('formWrap');
+  var thankYou = document.getElementById('thankYouPanel');
   var error = document.getElementById('errorMsg');
   var submitText = '<%- t.form_submit %>';
   form.addEventListener('submit', async function(e){
     e.preventDefault();
-    success.style.display = 'none'; error.style.display = 'none';
+    error.style.display = 'none';
     btn.disabled = true; btn.textContent = '...';
     var data = {};
     new FormData(form).forEach(function(v,k){ data[k] = v; });
@@ -43,9 +51,10 @@
       var r = await fetch('api/reserve', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data) });
       var j = await r.json().catch(function(){ return {}; });
       if (r.ok && j.success) {
-        success.style.display = 'block';
         form.reset();
-        success.scrollIntoView({behavior:'smooth', block:'center'});
+        formWrap.style.display = 'none';
+        thankYou.style.display = 'block';
+        thankYou.scrollIntoView({ behavior: 'smooth', block: 'center' });
       } else {
         error.textContent = j.error || '<%- t.reserve_error %>';
         error.style.display = 'block';
@@ -56,6 +65,11 @@
     } finally {
       btn.disabled = false; btn.textContent = submitText;
     }
+  });
+  document.getElementById('resetBtn').addEventListener('click', function(){
+    thankYou.style.display = 'none';
+    formWrap.style.display = '';
+    formWrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 })();
 </script>
