@@ -188,15 +188,23 @@ function buildFormFields(item) {
       var rows = dynamicSources[f.source] || [];
       var valueField = f.valueField || 'slug';
       var labelField = f.labelField || 'name_fr';
-      html += '<select id="' + id + '" class="form-control"' + req + '>';
+      var editable = !!f.editable;
+      html += '<div class="select-dynamic-wrap" data-source="' + esc(f.source) + '" data-field-id="' + id + '" data-value-field="' + esc(valueField) + '" data-label-field="' + esc(labelField) + '" style="display:flex;gap:0.4rem;align-items:stretch;flex-wrap:wrap">';
+      html += '<select id="' + id + '" class="form-control"' + req + ' style="flex:1;min-width:160px">';
       html += '<option value="">' + (f.required ? '— Choisir —' : '— Aucune —') + '</option>';
       rows.forEach(function(row){
         var optVal = row[valueField] == null ? '' : String(row[valueField]);
         var optLabel = row[labelField] || row[valueField] || ('#' + row.id);
-        html += '<option value="' + esc(optVal) + '"' + (String(v) === optVal ? ' selected' : '') + '>' + esc(optLabel) + '</option>';
+        html += '<option value="' + esc(optVal) + '" data-id="' + esc(row.id) + '" data-name-fr="' + esc(row.name_fr || '') + '" data-name-en="' + esc(row.name_en || '') + '"' + (String(v) === optVal ? ' selected' : '') + '>' + esc(optLabel) + '</option>';
       });
       html += '</select>';
-      if (rows.length === 0) html += '<div class="help-text" style="color:#e53e3e">Aucune entrée disponible. Créez-en une dans le module source.</div>';
+      if (editable) {
+        html += '<button type="button" class="btn btn-sm btn-secondary" onclick="dynRename(\'' + id + '\')" title="Renommer la catégorie sélectionnée">✏️</button>';
+        html += '<button type="button" class="btn btn-sm btn-secondary" onclick="dynCreate(\'' + id + '\')" title="Créer une nouvelle catégorie" style="background:#39FF14;color:#000">+ Nouvelle</button>';
+      }
+      html += '</div>';
+      if (editable) html += '<div id="' + id + '_inline" style="display:none;margin-top:0.5rem;padding:0.75rem;background:#f7fafc;border:1px solid #e2e8f0;border-radius:8px"></div>';
+      if (rows.length === 0 && !editable) html += '<div class="help-text" style="color:#e53e3e">Aucune entrée disponible.</div>';
     } else if (f.type === 'size_list') {
       var sizes = [];
       try { sizes = v ? (typeof v === 'string' ? JSON.parse(v) : v) : []; } catch(_) { sizes = []; }
@@ -261,6 +269,119 @@ async function uploadImage(input, fieldId) {
     } catch(e) { toast('Erreur de téléchargement', 'error'); }
   };
   reader.readAsDataURL(file);
+}
+
+async function dynRefreshSource(source) {
+  try {
+    var r = await fetch('api/admin/' + source);
+    var d = await r.json();
+    dynamicSources[source] = d[source] || [];
+    return dynamicSources[source];
+  } catch(e) { return dynamicSources[source] || []; }
+}
+
+function dynRerenderSelect(fieldId, selectedValue) {
+  var wrap = document.querySelector('.select-dynamic-wrap[data-field-id="' + fieldId + '"]');
+  if (!wrap) return;
+  var source = wrap.getAttribute('data-source');
+  var valueField = wrap.getAttribute('data-value-field') || 'slug';
+  var labelField = wrap.getAttribute('data-label-field') || 'name_fr';
+  var rows = dynamicSources[source] || [];
+  var sel = document.getElementById(fieldId);
+  if (!sel) return;
+  var keep = selectedValue != null ? String(selectedValue) : String(sel.value || '');
+  var hadEmpty = sel.querySelector('option[value=""]');
+  var emptyLabel = hadEmpty ? hadEmpty.textContent : '— Aucune —';
+  var html = '<option value="">' + esc(emptyLabel) + '</option>';
+  rows.forEach(function(row){
+    var optVal = row[valueField] == null ? '' : String(row[valueField]);
+    var optLabel = row[labelField] || row[valueField] || ('#' + row.id);
+    html += '<option value="' + esc(optVal) + '" data-id="' + esc(row.id) + '" data-name-fr="' + esc(row.name_fr || '') + '" data-name-en="' + esc(row.name_en || '') + '"' + (String(keep) === optVal ? ' selected' : '') + '>' + esc(optLabel) + '</option>';
+  });
+  sel.innerHTML = html;
+}
+
+function dynCloseInline(fieldId) {
+  var box = document.getElementById(fieldId + '_inline');
+  if (box) { box.style.display = 'none'; box.innerHTML = ''; }
+}
+
+function dynShowInline(fieldId, html) {
+  var box = document.getElementById(fieldId + '_inline');
+  if (box) { box.innerHTML = html; box.style.display = 'block'; }
+}
+
+function dynCreate(fieldId) {
+  dynShowInline(fieldId,
+    '<div style="font-weight:700;font-size:0.92rem;margin-bottom:0.5rem">Nouvelle catégorie</div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr auto auto;gap:0.4rem;align-items:center">' +
+    '<input type="text" id="' + fieldId + '_new_fr" class="form-control" placeholder="Nom (FR)" style="font-size:0.9rem">' +
+    '<input type="text" id="' + fieldId + '_new_en" class="form-control" placeholder="Name (EN)" style="font-size:0.9rem">' +
+    '<button type="button" class="btn btn-sm btn-primary" onclick="dynSubmitCreate(\'' + fieldId + '\')" style="background-color:#39FF14;color:#000">✓ Créer</button>' +
+    '<button type="button" class="btn btn-sm btn-secondary" onclick="dynCloseInline(\'' + fieldId + '\')">×</button>' +
+    '</div>'
+  );
+  var el = document.getElementById(fieldId + '_new_fr');
+  if (el) el.focus();
+}
+
+async function dynSubmitCreate(fieldId) {
+  var wrap = document.querySelector('.select-dynamic-wrap[data-field-id="' + fieldId + '"]');
+  if (!wrap) return;
+  var source = wrap.getAttribute('data-source');
+  var valueField = wrap.getAttribute('data-value-field') || 'slug';
+  var nameFr = (document.getElementById(fieldId + '_new_fr').value || '').trim();
+  var nameEn = (document.getElementById(fieldId + '_new_en').value || '').trim();
+  if (!nameFr) { toast('Nom requis', 'error'); return; }
+  try {
+    var r = await fetch('api/admin/' + source, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name_fr: nameFr, name_en: nameEn }) });
+    var d = await r.json().catch(function(){ return {}; });
+    if (!r.ok) { toast('Erreur: ' + (d.error || 'inconnue'), 'error'); return; }
+    await dynRefreshSource(source);
+    var newVal = d.item && d.item[valueField] ? d.item[valueField] : null;
+    dynRerenderSelect(fieldId, newVal);
+    dynCloseInline(fieldId);
+    toast('Catégorie créée', 'success');
+  } catch(e) { toast('Erreur réseau', 'error'); }
+}
+
+function dynRename(fieldId) {
+  var sel = document.getElementById(fieldId);
+  if (!sel || !sel.value) { toast('Choisissez une catégorie à renommer', 'error'); return; }
+  var opt = sel.options[sel.selectedIndex];
+  var id = opt.getAttribute('data-id');
+  var nameFr = opt.getAttribute('data-name-fr') || opt.textContent;
+  var nameEn = opt.getAttribute('data-name-en') || '';
+  if (!id) { toast('Catégorie introuvable', 'error'); return; }
+  dynShowInline(fieldId,
+    '<div style="font-weight:700;font-size:0.92rem;margin-bottom:0.5rem">Renommer la catégorie</div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr auto auto;gap:0.4rem;align-items:center">' +
+    '<input type="text" id="' + fieldId + '_ren_fr" class="form-control" value="' + esc(nameFr) + '" placeholder="Nom (FR)" style="font-size:0.9rem">' +
+    '<input type="text" id="' + fieldId + '_ren_en" class="form-control" value="' + esc(nameEn) + '" placeholder="Name (EN)" style="font-size:0.9rem">' +
+    '<button type="button" class="btn btn-sm btn-primary" onclick="dynSubmitRename(\'' + fieldId + '\', ' + id + ')" style="background-color:#39FF14;color:#000">✓ Sauver</button>' +
+    '<button type="button" class="btn btn-sm btn-secondary" onclick="dynCloseInline(\'' + fieldId + '\')">×</button>' +
+    '</div>' +
+    '<div style="font-size:0.78rem;color:#718096;margin-top:0.4rem">Seul le nom affiché change. Les plats existants restent dans cette catégorie.</div>'
+  );
+}
+
+async function dynSubmitRename(fieldId, id) {
+  var wrap = document.querySelector('.select-dynamic-wrap[data-field-id="' + fieldId + '"]');
+  if (!wrap) return;
+  var source = wrap.getAttribute('data-source');
+  var nameFr = (document.getElementById(fieldId + '_ren_fr').value || '').trim();
+  var nameEn = (document.getElementById(fieldId + '_ren_en').value || '').trim();
+  if (!nameFr) { toast('Nom requis', 'error'); return; }
+  try {
+    var r = await fetch('api/admin/' + source + '/' + id, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name_fr: nameFr, name_en: nameEn }) });
+    var d = await r.json().catch(function(){ return {}; });
+    if (!r.ok) { toast('Erreur: ' + (d.error || 'inconnue'), 'error'); return; }
+    await dynRefreshSource(source);
+    var keep = document.getElementById(fieldId).value;
+    dynRerenderSelect(fieldId, keep);
+    dynCloseInline(fieldId);
+    toast('Catégorie renommée', 'success');
+  } catch(e) { toast('Erreur réseau', 'error'); }
 }
 
 function renderSizeRowsInto(fieldId, sizes) {

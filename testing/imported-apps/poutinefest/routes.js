@@ -442,21 +442,11 @@ module.exports = function(services) {
             { name: 'description_en', label: 'Description (EN)', type: 'textarea', description: 'English description (optional).', placeholder: 'e.g. House-cut fries, daily cheese curds, house gravy.' },
             { name: 'price', label: 'Prix de base ($ CAD)', type: 'number', required: true, min: 0, step: 0.01, description: 'Prix affiché si aucune taille n\'est définie. Sinon les tailles ci-dessous prennent le dessus.', placeholder: '12.99' },
             { name: 'sizes_json', label: 'Tailles & prix (optionnel)', type: 'size_list', description: 'Ajoutez plusieurs tailles avec leur prix (ex. Petit 10$, Moyen 15$, Grand 20$). Si vide, le prix de base s\'affiche.' },
-            { name: 'category', label: 'Catégorie', type: 'select_dynamic', source: 'menu_categories', valueField: 'slug', labelField: 'name_fr', description: 'Catégorie du menu (gérée dans "Catégories du menu").' },
+            { name: 'category', label: 'Catégorie', type: 'select_dynamic', source: 'menu_categories', valueField: 'slug', labelField: 'name_fr', editable: true, description: 'Choisissez une catégorie, renommez-la, ou créez-en une nouvelle ici.' },
             { name: 'image_url', label: 'Photo du plat', type: 'image', description: 'Photo du plat. Recommandé: 800x600px (4:3).' },
             { name: 'position', label: "Ordre d'affichage", type: 'number', default: 0, description: 'Plus petit = en premier.', placeholder: '0' },
             { name: 'featured', label: 'À la une (accueil)', type: 'boolean', default: false, description: "Afficher sur la page d'accueil (max 6 plats à la une)." },
             { name: 'available', label: 'Disponible', type: 'boolean', default: true, description: 'Disponible à la commande. Décochez pour masquer.' }
-          ]
-        },
-        {
-          key: 'menu_categories', label: 'Catégories du menu', icon: 'tag',
-          fields: [
-            { name: 'slug', label: 'Identifiant (slug)', type: 'text', required: true, maxLength: 60, description: 'Identifiant technique (minuscules, sans accents). Ne le changez pas si des plats utilisent déjà cette catégorie.', placeholder: 'ex. classique' },
-            { name: 'name_fr', label: 'Nom affiché (FR)', type: 'text', required: true, maxLength: 80, description: 'Nom affiché sur le site (FR).', placeholder: 'ex. Classiques' },
-            { name: 'name_en', label: 'Nom affiché (EN)', type: 'text', maxLength: 80, description: 'Nom affiché sur le site (EN). Optionnel.', placeholder: 'e.g. Classics' },
-            { name: 'position', label: "Ordre d'affichage", type: 'number', default: 0, description: 'Plus petit = en premier dans les filtres.' },
-            { name: 'active', label: 'Active', type: 'boolean', default: true, description: 'Décochez pour masquer du site sans supprimer.' }
           ]
         },
         {
