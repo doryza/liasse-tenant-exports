@@ -446,7 +446,15 @@ module.exports = function(services) {
         'SELECT google_place_id FROM public.subscriber_pwas WHERE slug = $1',
         [slug]
       );
-      return (row && row.google_place_id) || null;
+      const value = (row && row.google_place_id) || null;
+      // First-touch debug: log so we can see in server output what the
+      // attribution flow + modal partial will use as the Place ID. Remove
+      // once the flow is proven stable.
+      if (!fetchAppGooglePlaceId._loggedOnce) {
+        console.log('[keychain-place-id] subscriber_pwas slug=' + slug + ' google_place_id=' + (value || '(null)'));
+        fetchAppGooglePlaceId._loggedOnce = true;
+      }
+      return value;
     } catch (err) {
       console.warn('[fetchAppGooglePlaceId] lookup failed:', err && err.message);
       return null;
