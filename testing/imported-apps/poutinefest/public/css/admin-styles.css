@@ -70,11 +70,61 @@ select.form-control { background: #fff; }
 .row-actions { white-space: nowrap; }
 .row-actions button { margin-left: 0.25rem; }
 
+/* Mobile drawer infrastructure — hidden on desktop, activated by the media
+   query below. */
+.admin-mobile-topbar { display: none; }
+.admin-nav-backdrop { display: none; }
+.admin-sidebar-close { display: none; }
+
 @media (max-width: 768px) {
+  /* Compact sticky top bar replaces the always-on sidebar. */
+  .admin-mobile-topbar {
+    display: flex; align-items: center; gap: 0.5rem;
+    position: sticky; top: 0; z-index: 90;
+    background: #1a1f2e; color: #fff;
+    padding: 0.55rem 0.75rem;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+  }
+  .admin-mobile-topbar .brand { color: #39FF14; margin: 0; font-size: 1rem; font-weight: 800; letter-spacing: -0.01em; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .admin-mobile-topbar .icon-btn { background: transparent; border: 0; color: #fff; padding: 0.45rem 0.55rem; cursor: pointer; font-size: 1.1rem; line-height: 1; border-radius: 8px; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
+  .admin-mobile-topbar .icon-btn:hover, .admin-mobile-topbar .icon-btn:active { background: rgba(255,255,255,0.08); }
+  .admin-mobile-topbar .icon-btn svg { width: 22px; height: 22px; display: block; }
+
+  /* Sidebar becomes a slide-in drawer. */
   .admin-layout { flex-direction: column; }
-  .admin-sidebar { width: 100%; padding: 1rem; }
-  .admin-sidebar nav { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.25rem; }
-  .admin-sidebar h2 { display: none; }
+  .admin-sidebar {
+    position: fixed; top: 0; left: 0; bottom: 0;
+    width: min(82vw, 300px);
+    transform: translateX(-100%);
+    transition: transform 0.22s ease-out;
+    z-index: 110;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 1.25rem 1rem 1.5rem;
+    box-shadow: 4px 0 28px rgba(0,0,0,0.45);
+  }
+  .admin-sidebar h2 { display: block; padding-right: 2.5rem; }
+  .admin-sidebar nav { display: block; }
+  .admin-sidebar nav a { padding: 0.75rem 0.85rem; font-size: 1rem; }
+
+  body.admin-nav-open .admin-sidebar { transform: translateX(0); }
+  body.admin-nav-open .admin-nav-backdrop { display: block; }
+  body.admin-nav-open { overflow: hidden; }
+
+  .admin-nav-backdrop {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 100;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .admin-sidebar-close {
+    display: flex; align-items: center; justify-content: center;
+    position: absolute; top: 0.85rem; right: 0.85rem;
+    width: 36px; height: 36px;
+    background: rgba(255,255,255,0.08); border: 0; color: #fff;
+    border-radius: 9px; cursor: pointer; font-size: 1.1rem; line-height: 1;
+  }
+  .admin-sidebar-close:hover { background: rgba(255,255,255,0.14); }
+
   .admin-main { padding: 1rem; }
   .modal { padding: 1.25rem; }
   .toolbar input, .toolbar select { min-width: 0; flex: 1; }
