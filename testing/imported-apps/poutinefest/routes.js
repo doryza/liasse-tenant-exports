@@ -302,16 +302,23 @@ module.exports = function(services) {
          RETURNING id`,
         [userId, req.user.email || null, req.user.full_name || req.user.name || null, keychainId]
       );
-      const wasFirstAttribution = !!(inserted && inserted.rows && inserted.rows.length);
+      // PgTenantDb.run returns { changes, lastInsertRowid } (better-sqlite3
+      // style), NOT raw pg's { rows, rowCount }. Earlier check read
+      // inserted.rows[0]?.id which was always undefined → wasFirstAttribution
+      // stayed false → row got inserted but upsell + show-review cookie were
+      // never triggered. Use lastInsertRowid (which RETURNING id populates)
+      // as the "is this the first attribution?" signal.
+      const wasFirstAttribution = !!(inserted && inserted.lastInsertRowid);
+      const insertedRowId = inserted && inserted.lastInsertRowid;
 
       if (wasFirstAttribution) {
-        console.log('[keychain-mw] FIRST attribution recorded id=' + inserted.rows[0].id + ' user=' + userId + ' keychain=' + keychainId);
+        console.log('[keychain-mw] FIRST attribution recorded id=' + insertedRowId + ' user=' + userId + ' keychain=' + keychainId);
         sendTapContactUpsellEmail({
           user_id: userId,
           email: req.user.email,
           full_name: req.user.full_name || req.user.name,
           keychain_id: keychainId,
-          insertedId: inserted.rows[0].id,
+          insertedId: insertedRowId,
         }).catch(function (err) {
           console.error('[keychain-mw] TapContact upsell failed:', err && err.message);
         });
