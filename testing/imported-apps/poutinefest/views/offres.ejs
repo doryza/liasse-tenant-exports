@@ -22,6 +22,12 @@
             <h3><%= title %></h3>
             <% if (desc) { %><p class="desc"><%= desc %></p><% } %>
             <div class="offer-meta">
+              <% if (o._remaining != null && o._remaining > 0 && status !== 'expired' && status !== 'sold_out') { %>
+                <div class="offer-stock<%= o._low_stock ? ' low' : '' %>" role="status">
+                  <span class="stock-emoji" aria-hidden="true"><%= o._low_stock ? '🔥' : '⏳' %></span>
+                  <span><%= o._low_stock ? t.offer_only_left_low : t.offer_only_left %> <span class="stock-count"><%= o._remaining %></span> <%= t.offer_remaining %></span>
+                </div>
+              <% } %>
               <% if (o.starts_at && status === 'upcoming') { %>
                 <div><span class="meta-label"><%= t.offer_starts %>:</span> <span class="meta-val"><%= formatDateTime(o.starts_at, lang) %></span></div>
               <% } %>
@@ -44,6 +50,8 @@
               <button class="btn btn-secondary btn-block" disabled><%= t.offer_upcoming %></button>
             <% } else if (status === 'expired') { %>
               <button class="btn btn-secondary btn-block" disabled><%= t.offer_expired %></button>
+            <% } else if (status === 'sold_out') { %>
+              <button class="btn btn-secondary btn-block" disabled><%= t.offer_sold_out %></button>
             <% } else if (atUserLimit) { %>
               <button class="btn btn-secondary btn-block" disabled><%= t.offer_max_per_user %></button>
             <% } else if (typeof user !== 'undefined' && user) { %>
@@ -65,6 +73,12 @@
 .offer-meta { display: flex; flex-direction: column; gap: 0.3rem; margin: 0.9rem 0 1rem; font-size: 0.85rem; color: var(--muted); }
 .offer-meta .meta-label { color: #888; }
 .offer-meta .meta-val { color: #ccc; }
+.offer-stock { align-self: flex-start; display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.3rem 0.7rem; border-radius: 999px; background: rgba(251,191,36,0.12); border: 1px solid rgba(251,191,36,0.4); color: #fbbf24; font-weight: 700; font-size: 0.82rem; letter-spacing: 0.01em; }
+.offer-stock .stock-emoji { font-size: 0.95rem; line-height: 1; }
+.offer-stock .stock-count { font-variant-numeric: tabular-nums; }
+.offer-stock.low { background: rgba(255,80,80,0.16); border-color: rgba(255,80,80,0.55); color: #ff8585; animation: stock-pulse 1.6s ease-in-out infinite; }
+@keyframes stock-pulse { 0%,100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,80,80,0.35); } 50% { transform: scale(1.03); box-shadow: 0 0 0 6px rgba(255,80,80,0); } }
+@media (prefers-reduced-motion: reduce) { .offer-stock.low { animation: none; } }
 .claim-code-box { background: rgba(57,255,20,0.08); border: 1px solid rgba(57,255,20,0.4); border-radius: 12px; padding: 1rem; text-align: center; margin-top: 0.5rem; }
 .claim-code-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--brand); font-weight: 700; margin-bottom: 0.5rem; }
 .claim-qr { display: inline-block; background: #fff; padding: 12px; border-radius: 10px; margin: 0.25rem auto 0.5rem; box-shadow: 0 4px 14px rgba(0,0,0,0.3); }
