@@ -226,6 +226,159 @@ module.exports = function(services) {
     next();
   });
 
+  // =========================================================================
+  // Keychain attribution middlewares — MUST be registered BEFORE the route
+  // handlers (Express middleware only applies to subsequent routes). Earlier
+  // version had these below /offres etc. → never fired on the landing pages.
+  // =========================================================================
+  function tpath(req, sub) {
+    return typeof req.tenantPath === 'function' ? req.tenantPath(sub) : sub;
+  }
+
+  // Step 1: capture ?keychain= into a year-long httpOnly cookie. Sanity-
+  // checked shape so the URL can't poison the cookie. Verbose log so the
+  // first reproduction attempt produces a clear breadcrumb in server logs.
+  router.use(function captureKeychainCookie(req, res, next) {
+    if (req.method === 'GET' && req.query && typeof req.query.keychain === 'string') {
+      var k = req.query.keychain.trim();
+      if (/^[A-Za-z0-9_-]{4,64}$/.test(k)) {
+        try {
+          res.cookie('keychain_attribution', k, {
+            maxAge: 365 * 24 * 60 * 60 * 1000,
+            httpOnly: true,
+            sameSite: 'lax',
+          });
+          console.log('[keychain-mw] captured keychain=' + k + ' path=' + req.path);
+        } catch (e) {
+          console.warn('[keychain-mw] cookie set failed:', e && e.message);
+        }
+      } else if (k) {
+        console.warn('[keychain-mw] rejected malformed keychain param: ' + k);
+      }
+    }
+    next();
+  });
+
+  // Step 2: post-auth attribution + upsell. services.auth.optionalAuth
+  // populates req.user when a session exists. Wraps everything in try/catch
+  // so a DB or email failure here can never break a page render.
+  router.use(services.auth.optionalAuth, async function attributeKeychainOnLogin(req, res, next) {
+    try {
+      var hasUser = !!(req.user && req.user.id);
+      var hasCookie = !!(req.cookies && req.cookies.keychain_attribution);
+      // Loud log only when there's anything to attribute. Quiet on every
+      // anonymous render to avoid log noise.
+      if (hasUser && hasCookie) {
+        console.log('[keychain-mw] auth user=' + req.user.id + ' cookie=' + req.cookies.keychain_attribution + ' path=' + req.path);
+      }
+      if (!hasUser || !hasCookie) return next();
+
+      const keychainId = req.cookies.keychain_attribution;
+      const userId = req.user.id;
+
+      // ON CONFLICT DO NOTHING + RETURNING tells us whether this is the
+      // first attribution for this (user, keychain) pair.
+      const inserted = await db.run(
+        `INSERT INTO keychain_visitors (user_id, email, full_name, keychain_id, created_at, updated_at)
+         VALUES ($1, $2, $3, $4, NOW(), NOW())
+         ON CONFLICT (user_id, keychain_id) DO NOTHING
+         RETURNING id`,
+        [userId, req.user.email || null, req.user.full_name || req.user.name || null, keychainId]
+      );
+      const wasFirstAttribution = !!(inserted && inserted.rows && inserted.rows.length);
+
+      if (wasFirstAttribution) {
+        console.log('[keychain-mw] FIRST attribution recorded id=' + inserted.rows[0].id + ' user=' + userId + ' keychain=' + keychainId);
+        sendTapContactUpsellEmail({
+          user_id: userId,
+          email: req.user.email,
+          full_name: req.user.full_name || req.user.name,
+          keychain_id: keychainId,
+          insertedId: inserted.rows[0].id,
+        }).catch(function (err) {
+          console.error('[keychain-mw] TapContact upsell failed:', err && err.message);
+        });
+        try {
+          res.cookie('keychain_show_review', '1', {
+            maxAge: 30 * 60 * 1000,
+            httpOnly: false,
+            sameSite: 'lax',
+          });
+        } catch (_) { /* noop */ }
+        try { res.clearCookie('keychain_attribution'); } catch (_) {}
+      } else {
+        console.log('[keychain-mw] already attributed (no-op) user=' + userId + ' keychain=' + keychainId);
+        // Still consume the cookie so we don't keep re-attempting.
+        try { res.clearCookie('keychain_attribution'); } catch (_) {}
+      }
+    } catch (err) {
+      console.error('[keychain-mw] middleware error:', err && err.message, err && err.stack);
+    }
+    next();
+  });
+
+  // Quick debug endpoint: dumps current attribution state for the logged-in
+  // user. Returns JSON. Useful for verifying middleware ran without having
+  // to scrape server logs. Safe to leave in — exposes only the user's own
+  // attribution rows. Hit /api/keychain-debug from the browser console
+  // after logging in.
+  router.get('/api/keychain-debug', services.auth.optionalAuth, async function (req, res) {
+    try {
+      const userId = req.user && req.user.id;
+      const cookies = req.cookies || {};
+      const rows = userId
+        ? await db.all(
+            'SELECT id, user_id, email, keychain_id, upsell_sent_at, created_at FROM keychain_visitors WHERE user_id = $1 ORDER BY created_at DESC LIMIT 10',
+            [userId]
+          )
+        : [];
+      res.json({
+        loggedIn: !!userId,
+        userId: userId || null,
+        userEmail: req.user && req.user.email || null,
+        cookieKeychainAttribution: cookies.keychain_attribution || null,
+        cookieShowReview: cookies.keychain_show_review || null,
+        cookieTenantTokenPresent: !!cookies.tenant_token,
+        attributions: rows,
+      });
+    } catch (err) {
+      res.status(500).json({ error: err && err.message });
+    }
+  });
+
+  // Helper: send the TapContact upsell. Defined here so the middleware can
+  // call it; full implementation matches the prior PR (sender, copy, CTA).
+  async function sendTapContactUpsellEmail(visitor) {
+    if (!visitor || !visitor.email || !visitor.keychain_id) {
+      console.warn('[keychain-mw] upsell skipped — missing email or keychain on visitor row:', JSON.stringify(visitor));
+      return;
+    }
+    const appName = (services.config && services.config.displayName) || 'PoutineFest';
+    const activationUrl = 'https://tapcontact.ca/subscribe/' + encodeURIComponent(visitor.keychain_id);
+    const subject = 'We noticed you got a TapContact keychain';
+    const html = '<div style="font-family:-apple-system,BlinkMacSystemFont,sans-serif;max-width:520px;margin:0 auto;padding:24px;color:#111">' +
+      '<h2 style="margin:0 0 16px;font-size:20px">Hey!</h2>' +
+      '<p style="line-height:1.6">We notice you acquired a keychain from <strong>' + appName + '</strong>. Make it your personal contact card or business card by creating a profile here:</p>' +
+      '<p style="text-align:center;margin:24px 0"><a href="' + activationUrl + '" style="display:inline-block;background:#dc2626;color:#fff;padding:14px 28px;border-radius:8px;text-decoration:none;font-weight:700">Activate my TapContact</a></p>' +
+      '<p style="line-height:1.6">Unlimited sharing of your TapContact profile <strong>for life</strong> — one-time $12.95.</p>' +
+      '<p style="color:#888;font-size:12px;margin-top:24px">If the button does not work, copy this link:<br>' + activationUrl + '</p>' +
+      '</div>';
+    await services.email.send({
+      to: visitor.email,
+      from: { email: 'contact@tapcontact.ca', name: 'TapContact' },
+      subject: subject,
+      html: html,
+    });
+    const stampId = visitor.insertedId || visitor.id;
+    if (stampId) {
+      await db.run(
+        'UPDATE keychain_visitors SET upsell_sent_at = NOW(), updated_at = NOW() WHERE id = $1',
+        [stampId]
+      );
+    }
+    console.log('[keychain-mw] TapContact upsell sent to ' + visitor.email + ' (keychain=' + visitor.keychain_id + ')');
+  }
+
   async function renderCtx(req) {
     const settings = await getSettings();
     const t = applyTextOverrides(Object.assign({}, T[req.lang] || T.fr), settings, req.lang);
@@ -374,114 +527,6 @@ module.exports = function(services) {
     } catch(e) { res.status(500).json({ error: e.message }); }
   });
 
-  // =========================================================================
-  // Keychain attribution funnel (platform-auth integration)
-  //
-  // NFC keychains encoded with this app's slug land visitors here carrying
-  // ?keychain=<id>. The flow integrates with the EXISTING platform auth
-  // (services.auth + the Connexion TenantSDK login) rather than running
-  // a parallel signup:
-  //
-  //   1. Visitor lands on any tenant page with ?keychain=<id>
-  //   2. attribution middleware below drops a `keychain_attribution` cookie
-  //   3. Visitor clicks Connexion → platform OTP modal → comes back
-  //      logged in (req.user set by services.auth.optionalAuth)
-  //   4. post-auth middleware detects (req.user + cookie + no prior
-  //      keychain_visitors row for this (user, keychain) pair):
-  //        - INSERTs keychain_visitors row
-  //        - Fires TapContact upsell email (fire-and-forget)
-  //        - Sets `keychain_show_review=1` cookie (one-shot)
-  //        - Clears `keychain_attribution` cookie
-  //   5. The review-modal partial in footer.ejs renders the modal on the
-  //      visitor's NEXT render based on `keychain_show_review`. The
-  //      visitor stays on whichever page they're on.
-  //
-  // Earlier iteration tried a parallel /signup form with our own email
-  // OTP; visitors used the platform Connexion instead, so our code never
-  // ran. This pivot fixes that.
-  // =========================================================================
-  function tpath(req, sub) {
-    return typeof req.tenantPath === 'function' ? req.tenantPath(sub) : sub;
-  }
-
-  // Step 1: capture ?keychain= into a year-long cookie. Runs on every GET
-  // so a visitor can scan → land anywhere → still be attributed when they
-  // log in later. We don't trust ?keychain= naively — clamp to a sane shape
-  // so URLs can't poison the cookie with garbage.
-  router.use(function(req, res, next) {
-    if (req.method === 'GET' && req.query && typeof req.query.keychain === 'string') {
-      var k = req.query.keychain.trim();
-      if (/^[A-Za-z0-9_-]{4,64}$/.test(k)) {
-        try {
-          res.cookie('keychain_attribution', k, {
-            maxAge: 365 * 24 * 60 * 60 * 1000,
-            httpOnly: true,
-            sameSite: 'lax',
-          });
-        } catch (_) { /* cookie set failure is non-fatal — visitor just won't be attributed */ }
-      }
-    }
-    next();
-  });
-
-  // Step 2: post-auth attribution + upsell. services.auth.optionalAuth
-  // populates req.user when a session exists; this middleware then checks
-  // for the attribution cookie and, if everything lines up, fires the
-  // upsell + flips the show-review cookie. Wrapped in try/catch around
-  // every DB / email call so an error here can never break the page render.
-  router.use(services.auth.optionalAuth, async function attributeKeychainOnLogin(req, res, next) {
-    try {
-      if (!req.user || !req.user.id) return next();
-      if (!req.cookies || !req.cookies.keychain_attribution) return next();
-      const keychainId = req.cookies.keychain_attribution;
-      const userId = req.user.id;
-
-      // Upsert-or-noop. Unique index on (user_id, keychain_id) means a
-      // second visit won't fire the upsell again — ON CONFLICT DO NOTHING
-      // + RETURNING tells us whether this was the first attribution.
-      const inserted = await db.run(
-        `INSERT INTO keychain_visitors (user_id, email, full_name, keychain_id, created_at, updated_at)
-         VALUES ($1, $2, $3, $4, NOW(), NOW())
-         ON CONFLICT (user_id, keychain_id) DO NOTHING
-         RETURNING id`,
-        [userId, req.user.email || null, req.user.full_name || req.user.name || null, keychainId]
-      );
-      const wasFirstAttribution = !!(inserted && inserted.rows && inserted.rows.length);
-
-      if (wasFirstAttribution) {
-        // Fire upsell email in the background. Pass the row data we just
-        // inserted so we don't need an extra SELECT.
-        sendTapContactUpsellEmail({
-          user_id: userId,
-          email: req.user.email,
-          full_name: req.user.full_name || req.user.name,
-          keychain_id: keychainId,
-          insertedId: inserted.rows[0].id,
-        }).catch(function (err) {
-          console.error('[keychain-attribution] TapContact upsell failed:', err && err.message);
-        });
-
-        // One-shot cookie that the footer modal partial keys off of.
-        // Visitor sees the modal on the next render; once they close it,
-        // the modal-side JS clears this cookie.
-        try {
-          res.cookie('keychain_show_review', '1', {
-            maxAge: 30 * 60 * 1000, // 30 min — long enough to survive a redirect / reload but not forever
-            httpOnly: false,         // false so the modal-side JS can clear it
-            sameSite: 'lax',
-          });
-        } catch (_) { /* noop */ }
-
-        // Clear the attribution cookie — we've consumed it.
-        try { res.clearCookie('keychain_attribution'); } catch (_) {}
-        console.log('[keychain-attribution] attributed user=' + userId + ' to keychain=' + keychainId);
-      }
-    } catch (err) {
-      console.error('[keychain-attribution] middleware error:', err && err.message);
-    }
-    next();
-  });
-
   // Captures 1-3 star feedback from the in-page review modal. Emails the
   // tenant's contact_email. 4 and 5 star paths are handled client-side
   // (thank-you / Google review link) and never POST here.
@@ -537,42 +582,6 @@ module.exports = function(services) {
     return String(s).replace(/[&<>"']/g, function(c) {
       return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c];
     });
-  }
-
-  // Helper: send the TapContact "we noticed you got a keychain" upsell.
-  // Wrapped in a top-level helper rather than inlined so the middleware
-  // stays readable. Updates upsell_sent_at on success.
-  async function sendTapContactUpsellEmail(visitor) {
-    if (!visitor || !visitor.email || !visitor.keychain_id) return;
-    const appName = (services.config && services.config.displayName) || 'PoutineFest';
-    const activationUrl = 'https://tapcontact.ca/subscribe/' + encodeURIComponent(visitor.keychain_id);
-    const subject = 'We noticed you got a TapContact keychain';
-    const html = '<div style="font-family:-apple-system,BlinkMacSystemFont,sans-serif;max-width:520px;margin:0 auto;padding:24px;color:#111">' +
-      '<h2 style="margin:0 0 16px;font-size:20px">Hey!</h2>' +
-      '<p style="line-height:1.6">We notice you acquired a keychain from <strong>' + appName + '</strong>. Make it your personal contact card or business card by creating a profile here:</p>' +
-      '<p style="text-align:center;margin:24px 0"><a href="' + activationUrl + '" style="display:inline-block;background:#dc2626;color:#fff;padding:14px 28px;border-radius:8px;text-decoration:none;font-weight:700">Activate my TapContact</a></p>' +
-      '<p style="line-height:1.6">Unlimited sharing of your TapContact profile <strong>for life</strong> — one-time $12.95.</p>' +
-      '<p style="color:#888;font-size:12px;margin-top:24px">If the button does not work, copy this link:<br>' + activationUrl + '</p>' +
-      '</div>';
-    await services.email.send({
-      to: visitor.email,
-      from: { email: 'contact@tapcontact.ca', name: 'TapContact' },
-      subject: subject,
-      html: html,
-    });
-    // Visitor row may be addressed by either insertedId (from the
-    // attribution middleware path) or id (from legacy callers). Stamp
-    // upsell_sent_at on the right row either way; defensive nullcheck
-    // because the SELECT path on /api/keychain-review also constructs
-    // visitor synthetically.
-    const stampId = visitor.insertedId || visitor.id;
-    if (stampId) {
-      await db.run(
-        'UPDATE keychain_visitors SET upsell_sent_at = NOW(), updated_at = NOW() WHERE id = $1',
-        [stampId]
-      );
-    }
-    console.log('[keychain-attribution] TapContact upsell sent to ' + visitor.email + ' (keychain=' + visitor.keychain_id + ')');
   }
 
   router.get('/reserver', async function(req, res) {
