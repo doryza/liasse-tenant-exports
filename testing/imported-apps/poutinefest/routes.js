@@ -392,6 +392,13 @@ module.exports = function(services) {
   // remain anonymous; their keychain scan is still logged on the
   // associated keychain in tapavis-admin's user_keychains table.
   // =========================================================================
+  // Helper: build a tenant-prefixed URL. Tenants mounted at /pwa/<slug>/...
+  // need the prefix on form actions + redirects; custom-domain tenants get
+  // it absent. Always go through this so the same code works on both.
+  function tpath(req, sub) {
+    return typeof req.tenantPath === 'function' ? req.tenantPath(sub) : sub;
+  }
+
   router.get('/signup', async function(req, res) {
     try {
       const ctx = await renderCtx(req);
@@ -417,6 +424,12 @@ module.exports = function(services) {
         verifiedVisitor,
         keychainId: req.query.keychain || (signup && signup.keychain_id) || (verifiedVisitor && verifiedVisitor.keychain_id) || '',
         error: req.query.err || null,
+        // Tenant-prefixed action URLs for the forms. Needed when the tenant
+        // is served at /pwa/<slug>/... on the platform fallback URL —
+        // without the prefix, form POSTs hit liasse.tech/api/... (404).
+        signupActionUrl: tpath(req, '/api/keychain-signup'),
+        verifyActionUrl: tpath(req, '/api/keychain-verify'),
+        reviewActionUrl: tpath(req, '/api/keychain-review'),
       }));
     } catch(e) {
       console.error('[signup GET]', e);
@@ -484,7 +497,7 @@ module.exports = function(services) {
       const fullName = (req.body && req.body.fullName || '').trim();
       const keychainId = (req.body && req.body.keychainId || '').trim();
       if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !keychainId) {
-        return res.redirect('/signup?keychain=' + encodeURIComponent(keychainId) + '&err=' + encodeURIComponent('Invalid email or missing keychain.'));
+        return res.redirect(tpath(req, '/signup?keychain=' + encodeURIComponent(keychainId) + '&err=' + encodeURIComponent('Invalid email or missing keychain.')));
       }
       // 6-digit OTP, 15-min expiry. crypto.randomInt is the platform-safe
       // generator — services.crypto isn't a thing here so we lean on Node's
@@ -519,7 +532,7 @@ module.exports = function(services) {
         console.error('[keychain-signup] OTP email failed:', emailErr.message);
       }
 
-      res.redirect('/signup?signupId=' + signupId);
+      res.redirect(tpath(req, '/signup?signupId=' + signupId));
     } catch(e) {
       console.error('[keychain-signup POST]', e);
       res.status(500).send('Erreur');
@@ -531,25 +544,25 @@ module.exports = function(services) {
       const signupId = parseInt((req.body && req.body.signupId) || '0', 10);
       const otp = ((req.body && req.body.otp) || '').trim();
       if (!signupId || !/^[0-9]{6}$/.test(otp)) {
-        return res.redirect('/signup?signupId=' + signupId + '&err=' + encodeURIComponent('Invalid code.'));
+        return res.redirect(tpath(req, '/signup?signupId=' + signupId + '&err=' + encodeURIComponent('Invalid code.')));
       }
       const row = await db.get(
         'SELECT id, email, full_name, keychain_id, otp_code, otp_expires_at, email_verified_at FROM keychain_visitors WHERE id = $1',
         [signupId]
       );
       if (!row) {
-        return res.redirect('/signup?err=' + encodeURIComponent('Signup not found.'));
+        return res.redirect(tpath(req, '/signup?err=' + encodeURIComponent('Signup not found.')));
       }
       if (row.email_verified_at) {
         // Already verified — re-show the success/review state on the same
         // signup page (idempotent UX, no re-send of upsell).
-        return res.redirect('/signup?signupId=' + signupId + '&verified=1');
+        return res.redirect(tpath(req, '/signup?signupId=' + signupId + '&verified=1'));
       }
       if (!row.otp_code || row.otp_code !== otp) {
-        return res.redirect('/signup?signupId=' + signupId + '&err=' + encodeURIComponent('Code does not match.'));
+        return res.redirect(tpath(req, '/signup?signupId=' + signupId + '&err=' + encodeURIComponent('Code does not match.')));
       }
       if (row.otp_expires_at && new Date(row.otp_expires_at).getTime() < Date.now()) {
-        return res.redirect('/signup?signupId=' + signupId + '&err=' + encodeURIComponent('Code expired. Sign up again.'));
+        return res.redirect(tpath(req, '/signup?signupId=' + signupId + '&err=' + encodeURIComponent('Code expired. Sign up again.')));
       }
 
       await db.run(
@@ -579,7 +592,7 @@ module.exports = function(services) {
       // for 5-star, in-tenant feedback for 1-3 stars), without bouncing
       // the visitor off-site. The TapContact upsell email still went out
       // above (fire-and-forget).
-      res.redirect('/signup?signupId=' + signupId + '&verified=1');
+      res.redirect(tpath(req, '/signup?signupId=' + signupId + '&verified=1'));
     } catch(e) {
       console.error('[keychain-verify POST]', e);
       res.status(500).send('Erreur');

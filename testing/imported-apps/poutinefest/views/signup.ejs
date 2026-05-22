@@ -108,7 +108,7 @@
           var text = (msg.value || '').trim();
           if (!text) return;
           send.disabled = true;
-          fetch('/api/keychain-review', {
+          fetch(<%- JSON.stringify(reviewActionUrl) %>, {
             method: 'POST',
             credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
@@ -141,7 +141,7 @@
       <div style="background:#fef2f2;color:#991b1b;border:1px solid #fecaca;padding:12px;border-radius:8px;margin-bottom:16px;font-size:14px"><%= error %></div>
     <% } %>
 
-    <form method="POST" action="/api/keychain-signup" style="display:flex;flex-direction:column;gap:12px">
+    <form method="POST" action="<%= signupActionUrl %>" style="display:flex;flex-direction:column;gap:12px">
       <input type="hidden" name="keychainId" value="<%= keychainId %>">
       <label style="font-size:13px;color:#374151;font-weight:600"><%= lang === 'en' ? 'Email' : 'Courriel' %>
         <input type="email" name="email" required style="width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:6px;margin-top:4px;font-size:16px">
@@ -163,7 +163,7 @@
       <div style="background:#fef2f2;color:#991b1b;border:1px solid #fecaca;padding:12px;border-radius:8px;margin-bottom:16px;font-size:14px"><%= error %></div>
     <% } %>
 
-    <form method="POST" action="/api/keychain-verify" style="display:flex;flex-direction:column;gap:12px">
+    <form method="POST" action="<%= verifyActionUrl %>" style="display:flex;flex-direction:column;gap:12px">
       <input type="hidden" name="signupId" value="<%= signup.id %>">
       <label style="font-size:13px;color:#374151;font-weight:600"><%= lang === 'en' ? 'Verification code' : 'Code de vérification' %>
         <input type="text" name="otp" required pattern="[0-9]{6}" inputmode="numeric" maxlength="6" autocomplete="one-time-code" style="width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:6px;margin-top:4px;font-size:20px;text-align:center;letter-spacing:0.3em;font-family:monospace">
