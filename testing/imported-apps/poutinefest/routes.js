@@ -288,12 +288,17 @@ module.exports = function(services) {
       const keychainId = req.cookies.keychain_attribution;
       const userId = req.user.id;
 
-      // ON CONFLICT DO NOTHING + RETURNING tells us whether this is the
-      // first attribution for this (user, keychain) pair.
+      // ON CONFLICT must include the partial-index WHERE clause to match
+      // the schema's `keychain_visitors_user_keychain_idx ... WHERE user_id
+      // IS NOT NULL`. Without it Postgres throws:
+      //   "there is no unique or exclusion constraint matching the ON
+      //    CONFLICT specification"
+      // because a partial unique index requires the conflict target to
+      // include the same predicate.
       const inserted = await db.run(
         `INSERT INTO keychain_visitors (user_id, email, full_name, keychain_id, created_at, updated_at)
          VALUES ($1, $2, $3, $4, NOW(), NOW())
-         ON CONFLICT (user_id, keychain_id) DO NOTHING
+         ON CONFLICT (user_id, keychain_id) WHERE user_id IS NOT NULL DO NOTHING
          RETURNING id`,
         [userId, req.user.email || null, req.user.full_name || req.user.name || null, keychainId]
       );
