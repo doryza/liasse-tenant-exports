@@ -49,6 +49,8 @@ module.exports = function(services) {
       offers_empty: 'Aucune offre active pour l\'instant. Revenez bientôt!',
       offer_starts: 'Commence le', offer_ends: 'Expire le',
       offer_remaining: 'restantes',
+      offer_only_left: 'Plus que',
+      offer_only_left_low: 'Vite, plus que',
       offer_claim_btn: 'Réserver l\'offre',
       offer_login_to_claim: 'Connectez-vous pour réserver',
       offer_already_claimed: 'Déjà réservée',
@@ -110,6 +112,8 @@ module.exports = function(services) {
       offers_empty: 'No active offers right now. Check back soon!',
       offer_starts: 'Starts', offer_ends: 'Expires',
       offer_remaining: 'left',
+      offer_only_left: 'Only',
+      offer_only_left_low: 'Hurry — only',
       offer_claim_btn: 'Reserve offer',
       offer_login_to_claim: 'Sign in to reserve',
       offer_already_claimed: 'Already reserved',
@@ -145,6 +149,10 @@ module.exports = function(services) {
     if (!o || o.active == 0) return 'inactive';
     if (o.expires_at && new Date(o.expires_at) <= now) return 'expired';
     if (o.starts_at && new Date(o.starts_at) > now) return 'upcoming';
+    // claim_count is only populated by callers that selected it (the public
+    // /offres list). When absent we treat the offer as having stock and let
+    // the claim endpoint's own sold-out check enforce the cap at claim time.
+    if (o.max_claims != null && Number(o.max_claims) > 0 && Number(o.claim_count || 0) >= Number(o.max_claims)) return 'sold_out';
     return 'active';
   }
 
@@ -264,7 +272,8 @@ module.exports = function(services) {
       const ctx = await renderCtx(req);
       const now = new Date();
       const offers = await db.all(
-        "SELECT * FROM offers WHERE active = 1 AND expires_at > NOW() ORDER BY position ASC, expires_at ASC"
+        "SELECT o.*, (SELECT COUNT(*) FROM offer_claims c WHERE c.offer_id = o.id) AS claim_count " +
+        "FROM offers o WHERE o.active = 1 AND o.expires_at > NOW() ORDER BY o.position ASC, o.expires_at ASC"
       ).catch(function(){ return []; });
       let claimsByOffer = {};
       let myClaims = [];
@@ -279,6 +288,20 @@ module.exports = function(services) {
       }
       // Annotate offers with display status
       offers.forEach(function(o){
+        // pg returns COUNT(*) (bigint) as a string — coerce before any math
+        o.claim_count = Number(o.claim_count || 0);
+        if (o.max_claims != null && Number(o.max_claims) > 0) {
+          var maxClaims = Number(o.max_claims);
+          o._remaining = Math.max(0, maxClaims - o.claim_count);
+          // Urgency threshold: ≤ 5 absolute or ≤ 20% of the original cap,
+          // whichever is more permissive (so a 100-cap offer pulses at 20
+          // left, while a 6-cap offer pulses at 3 left).
+          var lowThreshold = Math.max(5, Math.ceil(maxClaims * 0.2));
+          o._low_stock = o._remaining > 0 && o._remaining <= lowThreshold;
+        } else {
+          o._remaining = null;
+          o._low_stock = false;
+        }
         o._status = offerStatus(o, now);
         if (req.user) {
           const mine = claimsByOffer[o.id] || [];
