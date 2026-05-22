@@ -293,7 +293,11 @@ module.exports = function(services) {
     } catch(e) { console.error('Offers page error:', e.message); res.status(500).send('Erreur'); }
   });
 
-  router.post('/api/offers/:id/claim', services.auth.requireAuth, async function(req, res) {
+  // Public API namespaced under /api/promos (not /api/offers) so it doesn't
+  // collide with the platform's legacy /api/offers/* router, which
+  // intercepts that prefix on custom-domain tenants before the
+  // customDomainResolver runs.
+  router.post('/api/promos/:id/claim', services.auth.requireAuth, async function(req, res) {
     try {
       const offerId = parseInt(req.params.id);
       if (!offerId) return res.status(400).json({ error: 'invalid_offer' });
@@ -335,7 +339,7 @@ module.exports = function(services) {
     }
   });
 
-  router.get('/api/offers/my-claims', services.auth.requireAuth, async function(req, res) {
+  router.get('/api/promos/my-claims', services.auth.requireAuth, async function(req, res) {
     try {
       const rows = await db.all(
         "SELECT c.*, o.title_fr, o.title_en, o.image_url, o.discount_label, o.expires_at " +
