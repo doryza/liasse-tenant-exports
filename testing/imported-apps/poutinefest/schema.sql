@@ -113,3 +113,24 @@ CREATE TABLE IF NOT EXISTS offer_claims (
 CREATE INDEX IF NOT EXISTS offer_claims_short_code_idx ON offer_claims(short_code);
 CREATE INDEX IF NOT EXISTS offer_claims_user_idx ON offer_claims(user_id);
 CREATE INDEX IF NOT EXISTS offer_claims_offer_idx ON offer_claims(offer_id);
+
+-- Keychain visitor signups. Captured when a NFC keychain encoded with
+-- this app's slug lands a visitor here carrying ?keychain=<id> and they
+-- complete the lightweight email-OTP gate. We persist verified rows so
+-- the TapContact upsell email + review-modal trigger can fire post-OTP.
+-- Independent from the platform's pwa_users / services.auth — this is
+-- purely the keychain-attribution funnel.
+CREATE TABLE IF NOT EXISTS keychain_visitors (
+  id SERIAL PRIMARY KEY,
+  email TEXT NOT NULL,
+  full_name TEXT,
+  keychain_id TEXT NOT NULL,
+  otp_code TEXT,
+  otp_expires_at TIMESTAMPTZ,
+  email_verified_at TIMESTAMPTZ,
+  upsell_sent_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS keychain_visitors_email_idx ON keychain_visitors((LOWER(email)));
+CREATE INDEX IF NOT EXISTS keychain_visitors_keychain_id_idx ON keychain_visitors(keychain_id);
