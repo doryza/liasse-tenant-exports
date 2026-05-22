@@ -1,0 +1,138 @@
+<%# Keychain review modal. Renders only when the visitor was just attributed
+    to a keychain via the post-login middleware (cookie keychain_show_review=1).
+    The modal:
+      - 5★ → Google review URL using settings.google_place_id (admin sets in
+             /admin/settings → Google Place ID). Falls back to a thank-you
+             screen if not configured.
+      - 4★ → thank-you screen.
+      - 1-3★ → feedback textarea → POST /api/keychain-review.
+    Cookie is cleared on dismiss/submit so the modal doesn't re-appear on
+    every page load after attribution. %>
+<div id="krm-root" data-action-url="<%= typeof reviewActionUrl !== 'undefined' && reviewActionUrl ? reviewActionUrl : '/api/keychain-review' %>" data-place-id="<%= settings.google_place_id || '' %>" data-lang="<%= lang %>" style="position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.65);z-index:9999;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">
+  <div style="background:#fff;color:#111;max-width:440px;width:calc(100% - 32px);border-radius:14px;padding:24px;position:relative;box-shadow:0 20px 60px rgba(0,0,0,0.4)">
+    <button id="krm-close" type="button" aria-label="Close" style="position:absolute;top:10px;right:14px;background:none;border:none;font-size:24px;line-height:1;color:#888;cursor:pointer">×</button>
+    <h2 style="margin:0 0 6px;font-size:20px"><%= lang === 'en' ? 'Thanks for visiting!' : 'Merci de votre visite!' %></h2>
+    <p style="margin:0 0 16px;color:#555;font-size:14px">
+      <%= lang === 'en' ? 'How was your experience with ' + (settings.business_name_en || settings.business_name || 'us') + '?' : 'Comment était votre expérience avec ' + (settings.business_name_fr || settings.business_name || 'nous') + '?' %>
+    </p>
+    <div id="krm-stars" style="display:flex;justify-content:center;gap:8px;margin:8px 0 12px">
+      <% [1,2,3,4,5].forEach(function(r){ %>
+        <button type="button" data-rating="<%= r %>" class="krm-star" style="background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:8px 14px;font-size:26px;cursor:pointer;line-height:1;color:#9ca3af">☆</button>
+      <% }); %>
+    </div>
+
+    <div id="krm-feedback" style="display:none;margin-top:8px">
+      <p style="color:#555;font-size:13px;margin:0 0 6px"><%= lang === 'en' ? 'Tell us what could be better:' : 'Dites-nous ce qui pourrait être mieux:' %></p>
+      <textarea id="krm-message" rows="4" style="width:100%;padding:10px;border:1px solid #d1d5db;border-radius:6px;font-size:14px;font-family:inherit;box-sizing:border-box"></textarea>
+      <button id="krm-send" type="button" style="margin-top:8px;background:#dc2626;color:#fff;border:none;padding:10px 20px;border-radius:6px;font-weight:600;cursor:pointer;width:100%"><%= lang === 'en' ? 'Send feedback' : 'Envoyer le commentaire' %></button>
+      <p id="krm-feedback-status" style="color:#16a34a;font-size:13px;margin:8px 0 0;display:none"><%= lang === 'en' ? '✓ Thank you — we received your message.' : '✓ Merci — nous avons reçu votre message.' %></p>
+    </div>
+
+    <div id="krm-thanks" style="display:none;margin-top:8px;text-align:center">
+      <p style="color:#16a34a;font-weight:600;margin:0"><%= lang === 'en' ? '✓ Thank you for the feedback!' : '✓ Merci pour votre commentaire!' %></p>
+    </div>
+
+    <div id="krm-google" style="display:none;margin-top:8px;text-align:center">
+      <p style="color:#111;margin:0 0 10px;font-size:14px"><%= lang === 'en' ? 'Awesome! Would you share that on Google?' : 'Génial! Partageriez-vous cela sur Google?' %></p>
+      <a id="krm-google-link" href="#" target="_blank" rel="noopener noreferrer" style="display:inline-block;background:#4285f4;color:#fff;padding:10px 22px;border-radius:6px;text-decoration:none;font-weight:600"><%= lang === 'en' ? 'Leave a Google review →' : 'Laisser un avis Google →' %></a>
+    </div>
+
+    <div id="krm-noplace" style="display:none;margin-top:8px;text-align:center">
+      <p style="color:#16a34a;font-weight:600;margin:0"><%= lang === 'en' ? '✓ Thanks for the 5 stars!' : '✓ Merci pour les 5 étoiles!' %></p>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  // Reads the keychain_show_review cookie set by the post-login attribution
+  // middleware. When present, opens the modal once and clears the cookie so
+  // it doesn't pop on subsequent navigations.
+  function getCookie(name) {
+    var m = document.cookie.match(new RegExp('(?:^|; )' + name.replace(/[.$?*|{}()[\]\\\/+^]/g, '\\$&') + '=([^;]*)'));
+    return m ? decodeURIComponent(m[1]) : null;
+  }
+  function clearCookie(name) {
+    document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+  }
+  var root = document.getElementById('krm-root');
+  if (!root) return;
+  if (getCookie('keychain_show_review') !== '1') return;
+  // Clear immediately so a quick reload doesn't re-show.
+  clearCookie('keychain_show_review');
+
+  root.style.display = 'flex';
+  var stars = root.querySelectorAll('.krm-star');
+  var feedback = document.getElementById('krm-feedback');
+  var thanks = document.getElementById('krm-thanks');
+  var googleBlock = document.getElementById('krm-google');
+  var googleLink = document.getElementById('krm-google-link');
+  var noPlace = document.getElementById('krm-noplace');
+  var sendBtn = document.getElementById('krm-send');
+  var status = document.getElementById('krm-feedback-status');
+  var msg = document.getElementById('krm-message');
+  var closeBtn = document.getElementById('krm-close');
+  var actionUrl = root.getAttribute('data-action-url');
+  var placeId = root.getAttribute('data-place-id') || '';
+  var selected = 0;
+
+  function hideAll() {
+    feedback.style.display = 'none';
+    thanks.style.display = 'none';
+    googleBlock.style.display = 'none';
+    noPlace.style.display = 'none';
+  }
+  function dismiss() { root.style.display = 'none'; }
+
+  stars.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      selected = parseInt(btn.getAttribute('data-rating'), 10);
+      stars.forEach(function(b, i) {
+        b.textContent = i < selected ? '★' : '☆';
+        b.style.color = i < selected ? '#facc15' : '#9ca3af';
+      });
+      hideAll();
+      if (selected >= 5) {
+        if (placeId) {
+          googleLink.href = 'https://search.google.com/local/writereview?placeid=' + encodeURIComponent(placeId);
+          googleBlock.style.display = 'block';
+        } else {
+          noPlace.style.display = 'block';
+        }
+      } else if (selected === 4) {
+        thanks.style.display = 'block';
+      } else {
+        feedback.style.display = 'block';
+      }
+    });
+  });
+
+  sendBtn.addEventListener('click', function() {
+    var text = (msg.value || '').trim();
+    if (!text) return;
+    sendBtn.disabled = true;
+    fetch(actionUrl, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ rating: selected, message: text })
+    })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data && data.success) {
+          msg.style.display = 'none';
+          sendBtn.style.display = 'none';
+          status.style.display = 'block';
+          setTimeout(dismiss, 1800);
+        } else {
+          sendBtn.disabled = false;
+          alert((data && data.error) || 'Failed');
+        }
+      })
+      .catch(function() { sendBtn.disabled = false; });
+  });
+
+  closeBtn.addEventListener('click', dismiss);
+  // Click outside the card to dismiss.
+  root.addEventListener('click', function(e) { if (e.target === root) dismiss(); });
+})();
+</script>

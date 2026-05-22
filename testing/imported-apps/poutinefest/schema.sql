@@ -114,23 +114,37 @@ CREATE INDEX IF NOT EXISTS offer_claims_short_code_idx ON offer_claims(short_cod
 CREATE INDEX IF NOT EXISTS offer_claims_user_idx ON offer_claims(user_id);
 CREATE INDEX IF NOT EXISTS offer_claims_offer_idx ON offer_claims(offer_id);
 
--- Keychain visitor signups. Captured when a NFC keychain encoded with
--- this app's slug lands a visitor here carrying ?keychain=<id> and they
--- complete the lightweight email-OTP gate. We persist verified rows so
--- the TapContact upsell email + review-modal trigger can fire post-OTP.
--- Independent from the platform's pwa_users / services.auth — this is
--- purely the keychain-attribution funnel.
+-- Keychain attribution ledger. Records WHICH platform user (pwa_users via
+-- services.auth) was first associated with WHICH keychain ID, so the
+-- TapContact upsell email fires exactly once per (user, keychain) pair.
+--
+-- Workflow: NFC scan → visitor lands on any tenant page with ?keychain=<id>
+-- → middleware drops a `keychain_attribution` cookie → visitor clicks the
+-- platform Connexion button → OTP via platform → returns logged in →
+-- post-auth middleware detects (req.user + cookie) → INSERT row + send
+-- upsell + set keychain_show_review cookie. The review modal partial
+-- (included in footer.ejs) renders on the next render based on that
+-- cookie.
+--
+-- Previous schema had email/otp_code/otp_expires_at because the original
+-- design built a parallel /signup form. We pivoted to use the platform's
+-- existing auth instead — those columns are now dropped via the ALTER
+-- statements below. The DROP COLUMN IF EXISTS makes this idempotent for
+-- both fresh tenants and ones that already had the old schema.
 CREATE TABLE IF NOT EXISTS keychain_visitors (
   id SERIAL PRIMARY KEY,
-  email TEXT NOT NULL,
+  email TEXT,
   full_name TEXT,
   keychain_id TEXT NOT NULL,
-  otp_code TEXT,
-  otp_expires_at TIMESTAMPTZ,
-  email_verified_at TIMESTAMPTZ,
   upsell_sent_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
-CREATE INDEX IF NOT EXISTS keychain_visitors_email_idx ON keychain_visitors((LOWER(email)));
+ALTER TABLE keychain_visitors ADD COLUMN IF NOT EXISTS user_id INTEGER;
+ALTER TABLE keychain_visitors ALTER COLUMN email DROP NOT NULL;
+ALTER TABLE keychain_visitors DROP COLUMN IF EXISTS otp_code;
+ALTER TABLE keychain_visitors DROP COLUMN IF EXISTS otp_expires_at;
+ALTER TABLE keychain_visitors DROP COLUMN IF EXISTS email_verified_at;
+CREATE UNIQUE INDEX IF NOT EXISTS keychain_visitors_user_keychain_idx
+  ON keychain_visitors(user_id, keychain_id) WHERE user_id IS NOT NULL;
 CREATE INDEX IF NOT EXISTS keychain_visitors_keychain_id_idx ON keychain_visitors(keychain_id);
