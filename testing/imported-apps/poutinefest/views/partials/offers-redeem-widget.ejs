@@ -1,4 +1,28 @@
 <style>
+.offer-stats-wrap { margin-bottom: 1.25rem; }
+.offer-stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0.75rem; margin-bottom: 1rem; }
+.offer-stat-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1rem 1.1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+.offer-stat-card .label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: #718096; font-weight: 700; margin-bottom: 0.35rem; }
+.offer-stat-card .value { font-size: 1.6rem; font-weight: 800; color: #1a202c; line-height: 1.1; }
+.offer-stat-card .sub { font-size: 0.78rem; color: #718096; margin-top: 0.25rem; }
+.offer-stats-table-wrap { background: #fff; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); padding: 1rem 1.1rem 1.1rem; margin-bottom: 1.25rem; overflow-x: auto; }
+.offer-stats-table-wrap h3 { margin: 0 0 0.75rem; font-size: 0.95rem; color: #1a202c; font-weight: 700; }
+.offer-stats-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.offer-stats-table th { text-align: left; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: #718096; font-weight: 700; padding: 0.5rem 0.6rem; border-bottom: 1px solid #edf2f7; }
+.offer-stats-table th.num, .offer-stats-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
+.offer-stats-table td { padding: 0.65rem 0.6rem; border-bottom: 1px solid #f7fafc; color: #2d3748; }
+.offer-stats-table tr:last-child td { border-bottom: 0; }
+.offer-stats-table .offer-title { font-weight: 600; color: #1a202c; }
+.offer-stats-table .offer-meta { font-size: 0.78rem; color: #a0aec0; }
+.offer-stats-empty { padding: 1.25rem; text-align: center; color: #718096; font-size: 0.9rem; }
+.offer-stats-status { font-size: 0.72rem; padding: 0.18rem 0.5rem; border-radius: 999px; font-weight: 700; display: inline-block; }
+.offer-stats-status.active { background: #e6fffa; color: #0a6e5a; }
+.offer-stats-status.inactive { background: #f7fafc; color: #718096; }
+.offer-stats-status.expired { background: #fff5f5; color: #9b2c2c; }
+.offer-stats-status.upcoming { background: #fffaf0; color: #92500a; }
+.offer-stats-rate { font-weight: 700; color: #16a34a; }
+.offer-stats-rate.low { color: #a0aec0; }
+
 .redeem-widget { background: #fff; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); margin-bottom: 1.25rem; overflow: hidden; }
 .redeem-widget-header { display: flex; align-items: center; justify-content: space-between; padding: 0.85rem 1.25rem; cursor: pointer; user-select: none; background: linear-gradient(90deg, rgba(57,255,20,0.06), transparent); border-bottom: 1px solid transparent; transition: border-color 0.15s; }
 .redeem-widget.open .redeem-widget-header { border-bottom-color: #e2e8f0; }
@@ -24,6 +48,20 @@
 .btn-redeem-confirm:hover { background: #5cff44; }
 .btn-redeem-confirm:disabled { background: #cbd5e0; color: #4a5568; cursor: not-allowed; }
 </style>
+
+<div class="offer-stats-wrap">
+  <div class="offer-stats-grid" id="offerStatsOverall">
+    <div class="offer-stat-card"><div class="label">Offres totales</div><div class="value" id="osTotal">—</div><div class="sub" id="osActive">—</div></div>
+    <div class="offer-stat-card"><div class="label">Réservations</div><div class="value" id="osClaims">—</div><div class="sub">Codes émis aux clients</div></div>
+    <div class="offer-stat-card"><div class="label">Utilisations</div><div class="value" id="osRedeemed">—</div><div class="sub">Codes échangés au comptoir</div></div>
+    <div class="offer-stat-card"><div class="label">Taux d'utilisation</div><div class="value" id="osRate">—</div><div class="sub">Utilisations / réservations</div></div>
+  </div>
+</div>
+
+<div class="offer-stats-table-wrap" id="offerStatsTableWrap">
+  <h3>Statistiques par campagne</h3>
+  <div id="offerStatsTableBody"><div class="offer-stats-empty">Chargement…</div></div>
+</div>
 
 <div class="redeem-widget" id="redeemWidget">
   <div class="redeem-widget-header" onclick="document.getElementById('redeemWidget').classList.toggle('open')">
@@ -120,6 +158,72 @@
       if (btn) { btn.disabled = false; btn.textContent = '✓ Valider et marquer comme utilisé'; }
     }
   }
+
+  function offerStatusKey(o, now) {
+    if (!o || o.active == 0) return 'inactive';
+    if (o.expires_at && new Date(o.expires_at) <= now) return 'expired';
+    if (o.starts_at && new Date(o.starts_at) > now) return 'upcoming';
+    return 'active';
+  }
+  function fmtDate(s) { if (!s) return '—'; try { return new Date(s).toLocaleDateString('fr-CA', { year:'numeric', month:'short', day:'numeric' }); } catch(_) { return s; } }
+  function statusBadge(key) {
+    var label = key === 'active' ? 'Active' : key === 'expired' ? 'Expirée' : key === 'upcoming' ? 'À venir' : 'Inactive';
+    return '<span class="offer-stats-status ' + key + '">' + label + '</span>';
+  }
+  function pct(num, den) {
+    if (!den) return { text: '—', low: true };
+    var r = (num / den) * 100;
+    return { text: (r >= 10 ? Math.round(r) : r.toFixed(1)) + ' %', low: r < 1 };
+  }
+
+  async function loadOfferStats() {
+    var overall = { total: 0, active: 0, claims: 0, redeemed: 0 };
+    var tableBody = document.getElementById('offerStatsTableBody');
+    try {
+      var r = await fetch('api/admin/offers', { headers: { 'Accept': 'application/json' } });
+      var data = await r.json().catch(function(){ return {}; });
+      var offers = (data && data.offers) || [];
+      var now = new Date();
+      if (!offers.length) {
+        tableBody.innerHTML = '<div class="offer-stats-empty">Aucune offre créée pour l\'instant.</div>';
+      } else {
+        var rows = '<table class="offer-stats-table"><thead><tr>' +
+          '<th>Offre</th><th>Statut</th><th class="num">Réservations</th>' +
+          '<th class="num">Utilisations</th><th class="num">Taux</th></tr></thead><tbody>';
+        offers.forEach(function(o){
+          var key = offerStatusKey(o, now);
+          if (key === 'active') overall.active++;
+          overall.total++;
+          var claims = Number(o.claim_count || 0);
+          var redeemed = Number(o.redeem_count || 0);
+          overall.claims += claims;
+          overall.redeemed += redeemed;
+          var rate = pct(redeemed, claims);
+          var title = rEsc(o.title_fr || o.title_en || ('Offre #' + o.id));
+          var discount = o.discount_label ? ' <span style="color:#16a34a;font-size:0.78rem">(' + rEsc(o.discount_label) + ')</span>' : '';
+          var meta = '<div class="offer-meta">Expire le ' + fmtDate(o.expires_at) + '</div>';
+          rows += '<tr>' +
+            '<td><div class="offer-title">' + title + discount + '</div>' + meta + '</td>' +
+            '<td>' + statusBadge(key) + '</td>' +
+            '<td class="num">' + claims + '</td>' +
+            '<td class="num">' + redeemed + '</td>' +
+            '<td class="num"><span class="offer-stats-rate' + (rate.low ? ' low' : '') + '">' + rate.text + '</span></td>' +
+            '</tr>';
+        });
+        rows += '</tbody></table>';
+        tableBody.innerHTML = rows;
+      }
+    } catch(e) {
+      tableBody.innerHTML = '<div class="offer-stats-empty">Erreur lors du chargement des statistiques.</div>';
+    }
+    document.getElementById('osTotal').textContent = overall.total;
+    document.getElementById('osActive').textContent = overall.active + ' active' + (overall.active === 1 ? '' : 's');
+    document.getElementById('osClaims').textContent = overall.claims;
+    document.getElementById('osRedeemed').textContent = overall.redeemed;
+    var overallRate = pct(overall.redeemed, overall.claims);
+    document.getElementById('osRate').textContent = overallRate.text;
+  }
+  loadOfferStats();
 
   document.getElementById('redeemCodeInput').addEventListener('input', function(e){ e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,''); });
   document.getElementById('redeemCodeInput').addEventListener('keydown', function(e){ if (e.key === 'Enter') { e.preventDefault(); lookupCode(); } });

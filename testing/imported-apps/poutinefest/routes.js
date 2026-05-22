@@ -427,6 +427,37 @@ module.exports = function(services) {
   // handler (which `return`s without responding for mod === 'team'), so this
   // wins via Express's first-match-wins routing.
   router.get('/admin/team', isAdminPage, function(req, res) { res.render('admin-team', { page: 'team' }); });
+  router.get('/admin/members', isAdminPage, async function(req, res) {
+    var stats = await fetchMemberStats().catch(function(){ return null; });
+    res.render('admin-members', { page: 'members', stats: stats });
+  });
+
+  // Aggregate-only, anonymized counts about the tenant's audience. No PII
+  // ever leaves this endpoint — only totals. Mirrors the email-reach filter
+  // used by the broadcast endpoint (email present, not unsubscribed,
+  // email_verified NULL-or-1) so the "joignable" number matches what a
+  // broadcast would actually deliver to.
+  async function fetchMemberStats() {
+    function coerceInt(row) { return row && row.c != null ? parseInt(row.c, 10) || 0 : 0; }
+    var totalMembers = await db.get('SELECT COUNT(*) AS c FROM users').then(coerceInt).catch(function(){ return 0; });
+    var emailReachable = await db.get(
+      "SELECT COUNT(*) AS c FROM users WHERE email IS NOT NULL AND email <> '' AND (email_verified IS NULL OR email_verified = 1) AND email_unsubscribed_at IS NULL"
+    ).then(coerceInt).catch(function(){ return 0; });
+    var pushReachable = await db.get('SELECT COUNT(DISTINCT user_id) AS c FROM push_subscriptions').then(coerceInt).catch(function(){ return 0; });
+    var visits7 = await db.get("SELECT COUNT(*) AS c FROM site_visits WHERE visited_at > NOW() - INTERVAL '7 days'").then(coerceInt).catch(function(){ return 0; });
+    var newMembers7 = await db.get("SELECT COUNT(*) AS c FROM users WHERE created_at > NOW() - INTERVAL '7 days'").then(coerceInt).catch(function(){ return 0; });
+    return {
+      totalMembers: totalMembers,
+      emailReachable: emailReachable,
+      pushReachable: pushReachable,
+      visits7: visits7,
+      newMembers7: newMembers7
+    };
+  }
+  router.get('/api/admin/members/stats', isAdminApi, async function(req, res) {
+    try { res.json({ stats: await fetchMemberStats() }); }
+    catch(e) { res.status(500).json({ error: e.message }); }
+  });
 
   // --- Admin team management (admin_users + admin_invites are platform tables in tenant schema) ---
   router.get('/api/admin/team', isAdminApi, async function(req, res) {
