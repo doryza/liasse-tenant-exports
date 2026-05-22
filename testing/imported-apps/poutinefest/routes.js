@@ -558,12 +558,17 @@ module.exports = function(services) {
     try {
       const rating = parseInt((req.body && req.body.rating) || '0', 10);
       const message = ((req.body && req.body.message) || '').trim().slice(0, 5000);
-      // We trust req.user (from optionalAuth above) — visitor must be
-      // logged in to have seen the modal in the first place.
+      // userEmail from the modal form's email input — the visitor's own
+      // address so the admin can reply directly. Falls back to the
+      // logged-in pwa_user's email if the form omitted it.
+      const formEmailRaw = ((req.body && req.body.userEmail) || '').trim();
       const userId = req.user && req.user.id;
       if (!userId || !rating || rating < 1 || rating > 5 || !message) {
         return res.status(400).json({ success: false, error: 'Missing fields' });
       }
+      const userEmail = formEmailRaw && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formEmailRaw)
+        ? formEmailRaw
+        : (req.user && req.user.email) || null;
       const visitor = await db.get(
         `SELECT v.id, v.email, v.full_name, v.keychain_id
            FROM keychain_visitors v
@@ -574,27 +579,34 @@ module.exports = function(services) {
       if (!visitor) {
         return res.status(404).json({ success: false, error: 'No attribution' });
       }
+      // Route to the tenant's "Courriel administrateur" (admin_email)
+      // first, falling back to contact_email per resolveContactEmail.
+      // Matches the tapavis-admin /api/low-rating-feedback recipient path
+      // so the rating modal behavior is parity with business-association.
       const toEmail = resolveContactEmail(await getSettings());
       const appName = (services.config && services.config.displayName) || 'PoutineFest';
-      const subject = appName + ' — new ' + rating + '-star feedback';
-      const html = '<div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:24px">' +
-        '<h2 style="margin:0 0 12px;color:#111">New keychain visitor feedback</h2>' +
-        '<p><strong>Rating:</strong> ' + '★'.repeat(rating) + '☆'.repeat(5 - rating) + ' (' + rating + '/5)</p>' +
-        '<p><strong>From:</strong> ' + (visitor.full_name ? visitor.full_name + ' (' : '') + (visitor.email || req.user.email || '—') + (visitor.full_name ? ')' : '') + '</p>' +
-        '<p><strong>Keychain:</strong> ' + visitor.keychain_id + '</p>' +
-        '<div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:12px;margin-top:16px;white-space:pre-wrap">' + escapeHtml(message) + '</div>' +
+      const subject = appName + ' — ' + rating + '-star feedback from keychain visitor';
+      const senderLine = (visitor.full_name ? visitor.full_name + ' (' : '') + (userEmail || '—') + (visitor.full_name ? ')' : '');
+      const html = '<div style="font-family:-apple-system,BlinkMacSystemFont,sans-serif;max-width:520px;margin:0 auto;padding:24px;color:#111">' +
+        '<h2 style="margin:0 0 12px">New keychain visitor feedback</h2>' +
+        '<p><strong>Rating:</strong> <span style="color:#fbbf24;letter-spacing:2px;font-size:18px">' + '★'.repeat(rating) + '</span><span style="color:#d1d5db;letter-spacing:2px;font-size:18px">' + '☆'.repeat(5 - rating) + '</span> (' + rating + '/5)</p>' +
+        '<p><strong>From:</strong> ' + escapeHtml(senderLine) + '</p>' +
+        '<p><strong>Keychain ID:</strong> <code style="background:#f3f4f6;padding:2px 6px;border-radius:4px">' + escapeHtml(visitor.keychain_id) + '</code></p>' +
+        '<div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:14px;margin-top:16px;white-space:pre-wrap;line-height:1.5">' + escapeHtml(message) + '</div>' +
+        '<p style="color:#6b7280;font-size:13px;margin-top:18px">Reply to this email to respond directly to ' + escapeHtml(userEmail || 'the visitor') + '.</p>' +
         '</div>';
       try {
         await services.email.send({
           to: toEmail,
           subject: subject,
           html: html,
-          replyTo: visitor.email || req.user.email,
+          replyTo: userEmail || undefined,
         });
       } catch (emailErr) {
         console.error('[keychain-review] email failed:', emailErr.message);
         return res.status(500).json({ success: false, error: 'Email send failed' });
       }
+      console.log('[keychain-review] feedback emailed to ' + toEmail + ' (rating=' + rating + ' from=' + (userEmail || 'unknown') + ')');
       res.json({ success: true });
     } catch(e) {
       console.error('[keychain-review POST]', e);
