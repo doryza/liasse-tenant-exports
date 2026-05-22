@@ -396,17 +396,26 @@ module.exports = function(services) {
     try {
       const ctx = await renderCtx(req);
       let signup = null;
-      let error = null;
+      let verifiedVisitor = null;
       if (req.query.signupId) {
         const row = await db.get(
-          'SELECT id, email, keychain_id, email_verified_at FROM keychain_visitors WHERE id = $1',
+          'SELECT id, email, full_name, keychain_id, email_verified_at FROM keychain_visitors WHERE id = $1',
           [parseInt(req.query.signupId, 10)]
         );
-        if (row && !row.email_verified_at) signup = row;
+        if (row) {
+          if (row.email_verified_at && req.query.verified) {
+            // Success state: render the review modal instead of any form.
+            verifiedVisitor = row;
+          } else if (!row.email_verified_at) {
+            // Pending OTP entry.
+            signup = row;
+          }
+        }
       }
       res.render('signup', Object.assign(ctx, {
         signup,
-        keychainId: req.query.keychain || (signup && signup.keychain_id) || '',
+        verifiedVisitor,
+        keychainId: req.query.keychain || (signup && signup.keychain_id) || (verifiedVisitor && verifiedVisitor.keychain_id) || '',
         error: req.query.err || null,
       }));
     } catch(e) {
@@ -414,6 +423,60 @@ module.exports = function(services) {
       res.status(500).send('Erreur');
     }
   });
+
+  // Captures 1-3 star feedback on the verified visitor's review modal.
+  // Emails the tenant contact_email (same recipient the tapavis-admin
+  // /api/low-rating-feedback uses, just routed locally so the visitor
+  // never leaves the tenant). 4 and 5 star paths are handled client-side
+  // (thank-you / Google review link) and never POST here.
+  router.post('/api/keychain-review', async function(req, res) {
+    try {
+      const visitorId = parseInt((req.body && req.body.visitorId) || '0', 10);
+      const rating = parseInt((req.body && req.body.rating) || '0', 10);
+      const message = ((req.body && req.body.message) || '').trim().slice(0, 5000);
+      if (!visitorId || !rating || rating < 1 || rating > 5 || !message) {
+        return res.status(400).json({ success: false, error: 'Missing fields' });
+      }
+      const visitor = await db.get(
+        'SELECT id, email, full_name, keychain_id, email_verified_at FROM keychain_visitors WHERE id = $1',
+        [visitorId]
+      );
+      if (!visitor || !visitor.email_verified_at) {
+        return res.status(403).json({ success: false, error: 'Not verified' });
+      }
+      const toEmail = resolveContactEmail(await getSettings());
+      const appName = (services.config && services.config.displayName) || 'PoutineFest';
+      const subject = appName + ' — new ' + rating + '-star feedback';
+      const html = '<div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:24px">' +
+        '<h2 style="margin:0 0 12px;color:#111">New keychain visitor feedback</h2>' +
+        '<p><strong>Rating:</strong> ' + '★'.repeat(rating) + '☆'.repeat(5 - rating) + ' (' + rating + '/5)</p>' +
+        '<p><strong>From:</strong> ' + (visitor.full_name ? visitor.full_name + ' (' : '') + visitor.email + (visitor.full_name ? ')' : '') + '</p>' +
+        '<p><strong>Keychain:</strong> ' + visitor.keychain_id + '</p>' +
+        '<div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:12px;margin-top:16px;white-space:pre-wrap">' + escapeHtml(message) + '</div>' +
+        '</div>';
+      try {
+        await services.email.send({
+          to: toEmail,
+          subject: subject,
+          html: html,
+          replyTo: visitor.email,
+        });
+      } catch (emailErr) {
+        console.error('[keychain-review] email failed:', emailErr.message);
+        return res.status(500).json({ success: false, error: 'Email send failed' });
+      }
+      res.json({ success: true });
+    } catch(e) {
+      console.error('[keychain-review POST]', e);
+      res.status(500).json({ success: false, error: 'Server error' });
+    }
+  });
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, function(c) {
+      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c];
+    });
+  }
 
   router.post('/api/keychain-signup', async function(req, res) {
     try {
@@ -478,9 +541,9 @@ module.exports = function(services) {
         return res.redirect('/signup?err=' + encodeURIComponent('Signup not found.'));
       }
       if (row.email_verified_at) {
-        // Already verified — still bounce to the TapContact keychain page
-        // so the rating overlay surfaces (idempotent UX).
-        return res.redirect('https://tapcontact.ca/uk/' + encodeURIComponent(row.keychain_id));
+        // Already verified — re-show the success/review state on the same
+        // signup page (idempotent UX, no re-send of upsell).
+        return res.redirect('/signup?signupId=' + signupId + '&verified=1');
       }
       if (!row.otp_code || row.otp_code !== otp) {
         return res.redirect('/signup?signupId=' + signupId + '&err=' + encodeURIComponent('Code does not match.'));
@@ -499,12 +562,24 @@ module.exports = function(services) {
         console.error('[keychain-verify] TapContact upsell failed:', err.message);
       });
 
-      // Bounce to the TapContact keychain landing page. tapavis-admin's
-      // /uk/<id> renders the rating overlay using the app's google_place_id
-      // (set in admin > AI Builder > Apps > Set Place ID), so the visitor
-      // sees the review prompt right after verifying their email — exactly
-      // what the spec asked for.
-      res.redirect('https://tapcontact.ca/uk/' + encodeURIComponent(row.keychain_id));
+      // Set a lightweight "logged in" cookie for the verified keychain
+      // visitor so subsequent renders can greet them and gate any future
+      // visitor-only UI. Signed cookies would be better; left as a TODO
+      // since the visitor scope is currently just the review-modal trigger.
+      try {
+        res.cookie('keychain_visitor_id', String(row.id), {
+          httpOnly: true,
+          sameSite: 'lax',
+          maxAge: 365 * 24 * 60 * 60 * 1000,
+        });
+      } catch (_) { /* noop — cookies optional */ }
+
+      // Stay on the tenant. ?verified=1 makes the signup page swap into a
+      // success state that surfaces the review modal (Google forwarding
+      // for 5-star, in-tenant feedback for 1-3 stars), without bouncing
+      // the visitor off-site. The TapContact upsell email still went out
+      // above (fire-and-forget).
+      res.redirect('/signup?signupId=' + signupId + '&verified=1');
     } catch(e) {
       console.error('[keychain-verify POST]', e);
       res.status(500).send('Erreur');

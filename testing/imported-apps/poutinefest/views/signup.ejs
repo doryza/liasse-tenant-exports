@@ -1,12 +1,136 @@
-<%# Lightweight keychain-attribution signup flow.
-    - Step 1 (no signupId): collect email + name, POST → server generates OTP, emails it.
-    - Step 2 (signupId in URL): show OTP-entry form, POST → server verifies, redirects.
+<%# Keychain-attribution signup flow.
+    - !signup && !verifiedVisitor : step 1 = email entry
+    - signup (unverified)         : step 2 = OTP entry
+    - verifiedVisitor             : step 3 = success + review modal
     Captures ?keychain=<id> from the URL into a hidden field so it survives form submit.
-    Intentionally minimal styling — matches the bare-bones poutinefest brand colors. %>
+    Inline-styled to keep zero CSS dependency. %>
 <%- include('partials/header') %>
 
-<div style="max-width:480px;margin:48px auto;padding:0 16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">
-  <% if (!signup) { %>
+<div style="max-width:520px;margin:48px auto;padding:0 16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">
+  <% if (verifiedVisitor) { %>
+    <%# ===== Step 3: success + review modal ===== %>
+    <h1 style="font-size:24px;color:#111;margin:0 0 8px">
+      <%= lang === 'en' ? ('Welcome' + (verifiedVisitor.full_name ? ', ' + verifiedVisitor.full_name : '') + '!') : ('Bienvenue' + (verifiedVisitor.full_name ? ', ' + verifiedVisitor.full_name : '') + '!') %>
+    </h1>
+    <p style="color:#16a34a;font-weight:600;margin:0 0 4px"><%= lang === 'en' ? '✓ Email verified' : '✓ Courriel vérifié' %></p>
+    <p style="color:#555;margin:0 0 24px">
+      <%= lang === 'en'
+        ? 'You’re all set. We just emailed you a TapContact offer too — check your inbox to turn this keychain into your personal contact card.'
+        : 'Tout est en ordre. Nous venons aussi de vous envoyer une offre TapContact — vérifiez votre boîte de réception pour transformer ce porte-clés en carte de contact personnelle.' %>
+    </p>
+
+    <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:24px;margin-top:32px">
+      <p style="font-weight:600;color:#111;margin:0 0 12px;text-align:center">
+        <%= lang === 'en' ? 'How was your experience with ' + (settings.business_name_en || settings.business_name || 'us') + '?' : 'Comment était votre expérience avec ' + (settings.business_name_fr || settings.business_name || 'nous') + '?' %>
+      </p>
+
+      <%# Star row. CSS-free; large tap targets for mobile. %>
+      <div id="kr-stars" style="display:flex;justify-content:center;gap:8px;margin:16px 0">
+        <% [1,2,3,4,5].forEach(function(r){ %>
+          <button type="button" data-rating="<%= r %>" class="kr-star" style="background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:10px 14px;font-size:28px;cursor:pointer;line-height:1">☆</button>
+        <% }); %>
+      </div>
+
+      <%# Hidden states surfaced by JS based on rating. %>
+      <div id="kr-feedback" style="display:none;margin-top:12px">
+        <p style="color:#555;font-size:14px;margin:0 0 8px"><%= lang === 'en' ? 'Tell us what could be better:' : 'Dites-nous ce qui pourrait être mieux:' %></p>
+        <textarea id="kr-message" rows="4" style="width:100%;padding:10px;border:1px solid #d1d5db;border-radius:6px;font-size:14px;font-family:inherit"></textarea>
+        <button id="kr-send" type="button" style="margin-top:8px;background:#dc2626;color:#fff;border:none;padding:10px 20px;border-radius:6px;font-weight:600;cursor:pointer;width:100%"><%= lang === 'en' ? 'Send feedback' : 'Envoyer le commentaire' %></button>
+        <p id="kr-feedback-status" style="color:#16a34a;font-size:13px;margin:8px 0 0;display:none"><%= lang === 'en' ? '✓ Thank you — we received your message.' : '✓ Merci — nous avons reçu votre message.' %></p>
+      </div>
+
+      <div id="kr-thanks" style="display:none;margin-top:12px;text-align:center">
+        <p style="color:#16a34a;font-weight:600;margin:0"><%= lang === 'en' ? '✓ Thank you for the feedback!' : '✓ Merci pour votre commentaire!' %></p>
+      </div>
+
+      <div id="kr-google" style="display:none;margin-top:12px;text-align:center">
+        <p style="color:#111;margin:0 0 12px;font-size:14px">
+          <%= lang === 'en'
+            ? 'Awesome! Would you share that on Google?'
+            : 'Génial! Partageriez-vous cela sur Google?' %>
+        </p>
+        <a id="kr-google-link" href="#" target="_blank" rel="noopener noreferrer" style="display:inline-block;background:#4285f4;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:600">
+          <%= lang === 'en' ? 'Leave a Google review →' : 'Laisser un avis Google →' %>
+        </a>
+      </div>
+
+      <div id="kr-no-place" style="display:none;margin-top:12px;text-align:center">
+        <p style="color:#16a34a;font-weight:600;margin:0"><%= lang === 'en' ? '✓ Thanks for the 5 stars!' : '✓ Merci pour les 5 étoiles!' %></p>
+      </div>
+    </div>
+
+    <script>
+      (function(){
+        var visitorId = <%- JSON.stringify(verifiedVisitor.id) %>;
+        var placeId = <%- JSON.stringify(settings.google_place_id || '') %>;
+        var stars = document.querySelectorAll('.kr-star');
+        var feedback = document.getElementById('kr-feedback');
+        var thanks = document.getElementById('kr-thanks');
+        var googleBlock = document.getElementById('kr-google');
+        var googleLink = document.getElementById('kr-google-link');
+        var noPlace = document.getElementById('kr-no-place');
+        var send = document.getElementById('kr-send');
+        var status = document.getElementById('kr-feedback-status');
+        var msg = document.getElementById('kr-message');
+        var selected = 0;
+
+        function hideAll() {
+          feedback.style.display = 'none';
+          thanks.style.display = 'none';
+          googleBlock.style.display = 'none';
+          noPlace.style.display = 'none';
+        }
+
+        stars.forEach(function(btn) {
+          btn.addEventListener('click', function() {
+            selected = parseInt(btn.getAttribute('data-rating'), 10);
+            stars.forEach(function(b, i) {
+              b.textContent = i < selected ? '★' : '☆';
+              b.style.color = i < selected ? '#facc15' : '#9ca3af';
+            });
+            hideAll();
+            if (selected >= 5) {
+              if (placeId) {
+                googleLink.href = 'https://search.google.com/local/writereview?placeid=' + encodeURIComponent(placeId);
+                googleBlock.style.display = 'block';
+              } else {
+                noPlace.style.display = 'block';
+              }
+            } else if (selected === 4) {
+              thanks.style.display = 'block';
+            } else {
+              feedback.style.display = 'block';
+            }
+          });
+        });
+
+        send.addEventListener('click', function() {
+          var text = (msg.value || '').trim();
+          if (!text) return;
+          send.disabled = true;
+          fetch('/api/keychain-review', {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ visitorId: visitorId, rating: selected, message: text })
+          })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+              if (data && data.success) {
+                msg.style.display = 'none';
+                send.style.display = 'none';
+                status.style.display = 'block';
+              } else {
+                send.disabled = false;
+                alert((data && data.error) || 'Failed');
+              }
+            })
+            .catch(function() { send.disabled = false; });
+        });
+      })();
+    </script>
+
+  <% } else if (!signup) { %>
     <%# ===== Step 1: email entry ===== %>
     <h1 style="font-size:24px;color:#111;margin:0 0 8px"><%= lang === 'en' ? 'Welcome!' : 'Bienvenue!' %></h1>
     <p style="color:#555;margin:0 0 24px"><%= lang === 'en'
