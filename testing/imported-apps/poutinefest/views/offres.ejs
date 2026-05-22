@@ -119,7 +119,7 @@
     btn.disabled = true;
     btn.textContent = '…';
     try {
-      var r = await fetch('api/offers/' + offerId + '/claim', { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+      var r = await fetch('api/promos/' + offerId + '/claim', { method: 'POST', headers: { 'Content-Type': 'application/json' } });
       var data = await r.json().catch(function(){ return {}; });
       if (r.ok && data.success) {
         toast(T_OK);
