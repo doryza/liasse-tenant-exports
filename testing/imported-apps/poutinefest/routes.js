@@ -374,6 +374,172 @@ module.exports = function(services) {
     } catch(e) { res.status(500).json({ error: e.message }); }
   });
 
+  // =========================================================================
+  // Keychain attribution funnel
+  //
+  // NFC keychains encoded with this app's slug land visitors here carrying
+  // a ?keychain=<id> query param. Flow:
+  //   1. GET /signup?keychain=<id>    → email-entry form
+  //   2. POST /api/keychain-signup     → create keychain_visitors row + email OTP
+  //   3. GET /signup?signupId=<id>    → OTP-entry form
+  //   4. POST /api/keychain-verify     → verify OTP, send TapContact upsell
+  //                                       email, redirect to home with
+  //                                       ?showReview=1 so the existing
+  //                                       rating overlay fires.
+  //
+  // Independent from services.auth — purely a keychain-attribution capture
+  // for the TapContact upsell flow. Visitors who don't complete the flow
+  // remain anonymous; their keychain scan is still logged on the
+  // associated keychain in tapavis-admin's user_keychains table.
+  // =========================================================================
+  router.get('/signup', async function(req, res) {
+    try {
+      const ctx = await renderCtx(req);
+      let signup = null;
+      let error = null;
+      if (req.query.signupId) {
+        const row = await db.get(
+          'SELECT id, email, keychain_id, email_verified_at FROM keychain_visitors WHERE id = $1',
+          [parseInt(req.query.signupId, 10)]
+        );
+        if (row && !row.email_verified_at) signup = row;
+      }
+      res.render('signup', Object.assign(ctx, {
+        signup,
+        keychainId: req.query.keychain || (signup && signup.keychain_id) || '',
+        error: req.query.err || null,
+      }));
+    } catch(e) {
+      console.error('[signup GET]', e);
+      res.status(500).send('Erreur');
+    }
+  });
+
+  router.post('/api/keychain-signup', async function(req, res) {
+    try {
+      const email = (req.body && req.body.email || '').trim().toLowerCase();
+      const fullName = (req.body && req.body.fullName || '').trim();
+      const keychainId = (req.body && req.body.keychainId || '').trim();
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !keychainId) {
+        return res.redirect('/signup?keychain=' + encodeURIComponent(keychainId) + '&err=' + encodeURIComponent('Invalid email or missing keychain.'));
+      }
+      // 6-digit OTP, 15-min expiry. crypto.randomInt is the platform-safe
+      // generator — services.crypto isn't a thing here so we lean on Node's
+      // built-in directly.
+      const crypto = require('crypto');
+      const otp = String(crypto.randomInt(100000, 999999));
+      const expiresAt = new Date(Date.now() + 15 * 60 * 1000).toISOString();
+      const insRes = await db.run(
+        `INSERT INTO keychain_visitors (email, full_name, keychain_id, otp_code, otp_expires_at, created_at, updated_at)
+         VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
+         RETURNING id`,
+        [email, fullName || null, keychainId, otp, expiresAt]
+      );
+      const signupId = insRes && insRes.rows && insRes.rows[0] ? insRes.rows[0].id : null;
+
+      // Send the OTP. Best-effort: a SendGrid failure shouldn't black-hole
+      // the signup since the user already sees the next step. Logged for
+      // admin follow-up.
+      try {
+        const appName = (services.config && services.config.displayName) || 'PoutineFest';
+        await services.email.send({
+          to: email,
+          subject: appName + ' — verification code: ' + otp,
+          html: '<div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:24px">' +
+                '<h2 style="color:#111">' + appName + '</h2>' +
+                '<p>Your verification code is:</p>' +
+                '<p style="font-size:32px;font-weight:700;letter-spacing:0.2em;font-family:monospace;color:#dc2626;text-align:center;background:#fff7ed;padding:16px;border-radius:8px">' + otp + '</p>' +
+                '<p style="color:#888;font-size:13px">Expires in 15 minutes.</p>' +
+                '</div>',
+        });
+      } catch (emailErr) {
+        console.error('[keychain-signup] OTP email failed:', emailErr.message);
+      }
+
+      res.redirect('/signup?signupId=' + signupId);
+    } catch(e) {
+      console.error('[keychain-signup POST]', e);
+      res.status(500).send('Erreur');
+    }
+  });
+
+  router.post('/api/keychain-verify', async function(req, res) {
+    try {
+      const signupId = parseInt((req.body && req.body.signupId) || '0', 10);
+      const otp = ((req.body && req.body.otp) || '').trim();
+      if (!signupId || !/^[0-9]{6}$/.test(otp)) {
+        return res.redirect('/signup?signupId=' + signupId + '&err=' + encodeURIComponent('Invalid code.'));
+      }
+      const row = await db.get(
+        'SELECT id, email, full_name, keychain_id, otp_code, otp_expires_at, email_verified_at FROM keychain_visitors WHERE id = $1',
+        [signupId]
+      );
+      if (!row) {
+        return res.redirect('/signup?err=' + encodeURIComponent('Signup not found.'));
+      }
+      if (row.email_verified_at) {
+        // Already verified — still bounce to the TapContact keychain page
+        // so the rating overlay surfaces (idempotent UX).
+        return res.redirect('https://tapcontact.ca/uk/' + encodeURIComponent(row.keychain_id));
+      }
+      if (!row.otp_code || row.otp_code !== otp) {
+        return res.redirect('/signup?signupId=' + signupId + '&err=' + encodeURIComponent('Code does not match.'));
+      }
+      if (row.otp_expires_at && new Date(row.otp_expires_at).getTime() < Date.now()) {
+        return res.redirect('/signup?signupId=' + signupId + '&err=' + encodeURIComponent('Code expired. Sign up again.'));
+      }
+
+      await db.run(
+        'UPDATE keychain_visitors SET email_verified_at = NOW(), updated_at = NOW(), otp_code = NULL WHERE id = $1',
+        [signupId]
+      );
+
+      // Fire-and-forget: TapContact upsell email. See helper above.
+      sendTapContactUpsellEmail(row).catch(function (err) {
+        console.error('[keychain-verify] TapContact upsell failed:', err.message);
+      });
+
+      // Bounce to the TapContact keychain landing page. tapavis-admin's
+      // /uk/<id> renders the rating overlay using the app's google_place_id
+      // (set in admin > AI Builder > Apps > Set Place ID), so the visitor
+      // sees the review prompt right after verifying their email — exactly
+      // what the spec asked for.
+      res.redirect('https://tapcontact.ca/uk/' + encodeURIComponent(row.keychain_id));
+    } catch(e) {
+      console.error('[keychain-verify POST]', e);
+      res.status(500).send('Erreur');
+    }
+  });
+
+  // Helper: send the TapContact "we noticed you got a keychain" upsell.
+  // Wrapped in a top-level helper rather than inlined so the verify route
+  // stays readable and the helper can be reused (e.g., for resend logic
+  // in a follow-up). Updates upsell_sent_at on success.
+  async function sendTapContactUpsellEmail(visitor) {
+    if (!visitor || !visitor.email || !visitor.keychain_id) return;
+    const appName = (services.config && services.config.displayName) || 'PoutineFest';
+    const activationUrl = 'https://tapcontact.ca/subscribe/' + encodeURIComponent(visitor.keychain_id);
+    const subject = 'We noticed you got a TapContact keychain';
+    const html = '<div style="font-family:-apple-system,BlinkMacSystemFont,sans-serif;max-width:520px;margin:0 auto;padding:24px;color:#111">' +
+      '<h2 style="margin:0 0 16px;font-size:20px">Hey!</h2>' +
+      '<p style="line-height:1.6">We notice you acquired a keychain from <strong>' + appName + '</strong>. Make it your personal contact card or business card by creating a profile here:</p>' +
+      '<p style="text-align:center;margin:24px 0"><a href="' + activationUrl + '" style="display:inline-block;background:#dc2626;color:#fff;padding:14px 28px;border-radius:8px;text-decoration:none;font-weight:700">Activate my TapContact</a></p>' +
+      '<p style="line-height:1.6">Unlimited sharing of your TapContact profile <strong>for life</strong> — one-time $12.95.</p>' +
+      '<p style="color:#888;font-size:12px;margin-top:24px">If the button does not work, copy this link:<br>' + activationUrl + '</p>' +
+      '</div>';
+    await services.email.send({
+      to: visitor.email,
+      from: { email: 'contact@tapcontact.ca', name: 'TapContact' },
+      subject: subject,
+      html: html,
+    });
+    await db.run(
+      'UPDATE keychain_visitors SET upsell_sent_at = NOW(), updated_at = NOW() WHERE id = $1',
+      [visitor.id]
+    );
+    console.log('[keychain-verify] TapContact upsell sent to ' + visitor.email + ' (keychain=' + visitor.keychain_id + ')');
+  }
+
   router.get('/reserver', async function(req, res) {
     try {
       const ctx = await renderCtx(req);
