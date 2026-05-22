@@ -60,6 +60,20 @@
 .btn-redeem-confirm:disabled { background: #cbd5e0; color: #4a5568; cursor: not-allowed; }
 </style>
 
+<div class="offer-stats-wrap">
+  <div class="offer-stats-grid" id="offerStatsOverall">
+    <div class="offer-stat-card"><div class="label">Offres totales</div><div class="value" id="osTotal">—</div><div class="sub" id="osActive">—</div></div>
+    <div class="offer-stat-card"><div class="label">Réservations</div><div class="value" id="osClaims">—</div><div class="sub">Codes émis aux clients</div></div>
+    <div class="offer-stat-card"><div class="label">Utilisations</div><div class="value" id="osRedeemed">—</div><div class="sub">Codes échangés au comptoir</div></div>
+    <div class="offer-stat-card"><div class="label">Taux d'utilisation</div><div class="value" id="osRate">—</div><div class="sub">Utilisations / réservations</div></div>
+  </div>
+</div>
+
+<div class="offer-stats-table-wrap" id="offerStatsTableWrap">
+  <h3>Statistiques par campagne</h3>
+  <div id="offerStatsTableBody"><div class="offer-stats-empty">Chargement…</div></div>
+</div>
+
 <div class="redeem-widget" id="redeemWidget">
   <div class="redeem-widget-header">
     <h3>✅ Échanger un code client</h3>
@@ -92,20 +106,6 @@
 
     <div id="redeemResultArea" style="margin-top:1rem"></div>
   </div>
-</div>
-
-<div class="offer-stats-wrap">
-  <div class="offer-stats-grid" id="offerStatsOverall">
-    <div class="offer-stat-card"><div class="label">Offres totales</div><div class="value" id="osTotal">—</div><div class="sub" id="osActive">—</div></div>
-    <div class="offer-stat-card"><div class="label">Réservations</div><div class="value" id="osClaims">—</div><div class="sub">Codes émis aux clients</div></div>
-    <div class="offer-stat-card"><div class="label">Utilisations</div><div class="value" id="osRedeemed">—</div><div class="sub">Codes échangés au comptoir</div></div>
-    <div class="offer-stat-card"><div class="label">Taux d'utilisation</div><div class="value" id="osRate">—</div><div class="sub">Utilisations / réservations</div></div>
-  </div>
-</div>
-
-<div class="offer-stats-table-wrap" id="offerStatsTableWrap">
-  <h3>Statistiques par campagne</h3>
-  <div id="offerStatsTableBody"><div class="offer-stats-empty">Chargement…</div></div>
 </div>
 
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>

@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-05-22T03:43:50.722Z",
+  "exportedAt": "2026-05-22T14:36:25.041Z",
   "tables": {
     "admin_invites": {
       "columns": [
@@ -13,7 +13,7 @@
         "accepted_at",
         "created_at"
       ],
-      "totalRows": 1,
+      "totalRows": 2,
       "sampleRows": [
         {
           "id": 1,
@@ -25,6 +25,17 @@
           "expires_at": "2026-05-28T04:00:57.609Z",
           "accepted_at": "2026-05-21T04:01:18.667Z",
           "created_at": "2026-05-21T04:00:57.617Z"
+        },
+        {
+          "id": 2,
+          "email": "dory@liasse.tech",
+          "token": "1c848791675eba2aa8398769a6cbbb8cc7955c1b4f585d7eec74fe68fba8f792",
+          "role": "admin",
+          "status": "accepted",
+          "invited_by": null,
+          "expires_at": "2026-05-29T14:29:55.318Z",
+          "accepted_at": "2026-05-22T14:30:21.429Z",
+          "created_at": "2026-05-22T14:29:55.323Z"
         }
       ]
     },
@@ -58,7 +69,7 @@
         "is_active",
         "created_at"
       ],
-      "totalRows": 1,
+      "totalRows": 2,
       "sampleRows": [
         {
           "id": 1,
@@ -72,9 +83,25 @@
           "invited_by": null,
           "invite_token": null,
           "invite_expires_at": null,
-          "last_login_at": "2026-05-22T03:43:30.855Z",
+          "last_login_at": "2026-05-22T05:35:14.140Z",
           "is_active": true,
           "created_at": "2026-05-21T04:01:18.660Z"
+        },
+        {
+          "id": 2,
+          "name": "Dory",
+          "email": "dory@liasse.tech",
+          "password_hash": "$2b$10$5O80pjAxnxOgxDqzW1m.cueXyGneqpoEAnnJ3R503i.l5QNr.XyDy",
+          "display_name": null,
+          "role": "admin",
+          "active": 1,
+          "activation_token": null,
+          "invited_by": null,
+          "invite_token": null,
+          "invite_expires_at": null,
+          "last_login_at": "2026-05-22T14:34:58.159Z",
+          "is_active": true,
+          "created_at": "2026-05-22T14:30:21.420Z"
         }
       ]
     },
@@ -144,7 +171,7 @@
         "path",
         "visited_at"
       ],
-      "totalRows": 1195,
+      "totalRows": 1447,
       "sampleRows": [
         {
           "id": 1,
@@ -270,7 +297,7 @@
         "updated_at",
         "sizes_json"
       ],
-      "totalRows": 8,
+      "totalRows": 9,
       "sampleRows": [
         {
           "id": 7,
@@ -399,6 +426,22 @@
           "created_at": "2026-05-19T18:43:04.172Z",
           "updated_at": "2026-05-21T14:13:58.066Z",
           "sizes_json": "[{\"label_fr\":\"Petite\",\"label_en\":\"Small\",\"price\":13.05},{\"label_fr\":\"Grande\",\"label_en\":\"Large\",\"price\":17.4}]"
+        },
+        {
+          "id": 9,
+          "name_fr": "Test",
+          "name_en": "Test",
+          "description_fr": "123",
+          "description_en": "123",
+          "price": 1,
+          "category": "signature",
+          "image_url": null,
+          "position": 9,
+          "featured": 1,
+          "available": 1,
+          "created_at": "2026-05-22T06:15:26.796Z",
+          "updated_at": "2026-05-22T06:17:58.132Z",
+          "sizes_json": null
         }
       ]
     },
@@ -492,20 +535,20 @@
       "sampleRows": [
         {
           "id": 1,
-          "title_fr": "2 poutines pour $20",
-          "title_en": "2 poutines for $20",
-          "description_fr": "Valide sur toutes les poutines petit format.",
-          "description_en": "Valid on all small size poutines.",
-          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1779335901/poutinefest/admin/ncxdjs8xskftrooff1pe.jpg",
-          "discount_label": "2 pour $20",
+          "title_fr": "Soupe Aux Kleenex (wonton) GRATUITE",
+          "title_en": "Wonton soup FREE",
+          "description_fr": "Aucun achat requis. Qté limitée. 1 per customer.",
+          "description_en": "No purchase necessary. Ltd quantity. 1 par client.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1779429578/poutinefest/admin/pwyfa8pqnpwjhhz2trpq.jpg",
+          "discount_label": "GRATUIT/FREE",
           "starts_at": null,
           "expires_at": "2026-05-24T23:58:00.000Z",
-          "max_claims": null,
+          "max_claims": 65,
           "max_per_user": 1,
           "position": 0,
           "active": 1,
           "created_at": "2026-05-21T03:58:39.079Z",
-          "updated_at": "2026-05-21T14:24:10.270Z"
+          "updated_at": "2026-05-22T05:59:45.505Z"
         }
       ]
     },
@@ -520,7 +563,7 @@
         "redeemed_at",
         "redeemed_by_user_id"
       ],
-      "totalRows": 1,
+      "totalRows": 5,
       "sampleRows": [
         {
           "id": 1,
@@ -530,6 +573,46 @@
           "status": "redeemed",
           "claimed_at": "2026-05-21T03:59:33.358Z",
           "redeemed_at": "2026-05-21T03:59:54.507Z",
+          "redeemed_by_user_id": null
+        },
+        {
+          "id": 2,
+          "offer_id": 1,
+          "user_id": 4,
+          "short_code": "73J7WX3F",
+          "status": "claimed",
+          "claimed_at": "2026-05-22T04:53:48.352Z",
+          "redeemed_at": null,
+          "redeemed_by_user_id": null
+        },
+        {
+          "id": 3,
+          "offer_id": 1,
+          "user_id": 6,
+          "short_code": "T9RDH8T4",
+          "status": "redeemed",
+          "claimed_at": "2026-05-22T05:09:27.008Z",
+          "redeemed_at": "2026-05-22T05:09:55.997Z",
+          "redeemed_by_user_id": null
+        },
+        {
+          "id": 4,
+          "offer_id": 1,
+          "user_id": 2,
+          "short_code": "5BS9RKZ4",
+          "status": "redeemed",
+          "claimed_at": "2026-05-22T05:35:49.839Z",
+          "redeemed_at": "2026-05-22T05:36:09.535Z",
+          "redeemed_by_user_id": null
+        },
+        {
+          "id": 5,
+          "offer_id": 1,
+          "user_id": 7,
+          "short_code": "FTMRQ9G8",
+          "status": "claimed",
+          "claimed_at": "2026-05-22T05:46:06.907Z",
+          "redeemed_at": null,
           "redeemed_by_user_id": null
         }
       ]
