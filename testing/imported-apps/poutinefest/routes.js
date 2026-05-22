@@ -491,7 +491,14 @@ module.exports = function(services) {
     });
   }
 
-  router.post('/api/keychain-signup', async function(req, res) {
+  // express.urlencoded MUST be on the keychain-signup + keychain-verify
+  // POSTs explicitly: the tenant platform middleware only installs
+  // express.json(), so HTML form submissions (which post as
+  // application/x-www-form-urlencoded) get a `req.body` of undefined
+  // without this. Existing tenant POSTs (like /api/reserve) work because
+  // they're fetch+JSON, not HTML forms. Our signup intentionally uses
+  // bare HTML forms so it works without JS — hence the explicit parser.
+  router.post('/api/keychain-signup', express.urlencoded({ extended: false }), async function(req, res) {
     try {
       const email = (req.body && req.body.email || '').trim().toLowerCase();
       const fullName = (req.body && req.body.fullName || '').trim();
@@ -539,7 +546,7 @@ module.exports = function(services) {
     }
   });
 
-  router.post('/api/keychain-verify', async function(req, res) {
+  router.post('/api/keychain-verify', express.urlencoded({ extended: false }), async function(req, res) {
     try {
       const signupId = parseInt((req.body && req.body.signupId) || '0', 10);
       const otp = ((req.body && req.body.otp) || '').trim();
