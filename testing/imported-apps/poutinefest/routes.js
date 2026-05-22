@@ -266,10 +266,22 @@ module.exports = function(services) {
     try {
       var hasUser = !!(req.user && req.user.id);
       var hasCookie = !!(req.cookies && req.cookies.keychain_attribution);
-      // Loud log only when there's anything to attribute. Quiet on every
-      // anonymous render to avoid log noise.
-      if (hasUser && hasCookie) {
-        console.log('[keychain-mw] auth user=' + req.user.id + ' cookie=' + req.cookies.keychain_attribution + ' path=' + req.path);
+      // Verbose state log on EVERY non-asset, non-API request — only way to
+      // see when the keychain cookie is present but req.user isn't (means
+      // services.auth.optionalAuth didn't recognize the session). Filter out
+      // assets/api so log volume stays sane. Remove once the flow is proven.
+      if (
+        req.method === 'GET' &&
+        !req.path.startsWith('/api/') &&
+        !req.path.includes('.')
+      ) {
+        var cookieKeys = req.cookies ? Object.keys(req.cookies) : [];
+        console.log(
+          '[keychain-mw:probe] path=' + req.path +
+          ' hasUser=' + hasUser +
+          ' hasCookie=' + hasCookie +
+          ' cookies=[' + cookieKeys.join(',') + ']'
+        );
       }
       if (!hasUser || !hasCookie) return next();
 
