@@ -24,17 +24,28 @@
 .offer-stats-rate.low { color: #a0aec0; }
 
 .redeem-widget { background: #fff; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); margin-bottom: 1.25rem; overflow: hidden; }
-.redeem-widget-header { display: flex; align-items: center; justify-content: space-between; padding: 0.85rem 1.25rem; cursor: pointer; user-select: none; background: linear-gradient(90deg, rgba(57,255,20,0.06), transparent); border-bottom: 1px solid transparent; transition: border-color 0.15s; }
-.redeem-widget.open .redeem-widget-header { border-bottom-color: #e2e8f0; }
-.redeem-widget-header:hover { background: rgba(57,255,20,0.08); }
+.redeem-widget-header { display: flex; align-items: center; justify-content: space-between; padding: 0.85rem 1.25rem; user-select: none; background: linear-gradient(90deg, rgba(57,255,20,0.06), transparent); border-bottom: 1px solid #e2e8f0; }
 .redeem-widget-header h3 { margin: 0; font-size: 1rem; color: #1a202c; font-weight: 700; }
-.redeem-widget-header .chevron { transition: transform 0.2s; color: #4a5568; font-size: 0.85rem; }
-.redeem-widget.open .chevron { transform: rotate(180deg); }
-.redeem-widget-body { display: none; padding: 1.25rem; }
-.redeem-widget.open .redeem-widget-body { display: block; }
+.redeem-widget-body { padding: 1.25rem; }
+.redeem-tabs { display: flex; gap: 0.5rem; margin-bottom: 1rem; background: #f7fafc; padding: 0.25rem; border-radius: 10px; }
+.redeem-tab { flex: 1; padding: 0.6rem 0.85rem; text-align: center; font-size: 0.92rem; font-weight: 700; color: #4a5568; background: transparent; border: 0; border-radius: 8px; cursor: pointer; transition: background 0.15s, color 0.15s; }
+.redeem-tab.active { background: #fff; color: #1a202c; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+.redeem-tab:hover:not(.active) { background: rgba(255,255,255,0.6); }
+.redeem-mode { display: none; }
+.redeem-mode.active { display: block; }
 .redeem-input-row { display: flex; gap: 0.6rem; margin-bottom: 0.9rem; }
 .redeem-input-row input { flex: 1; font-family: 'SFMono-Regular','Menlo',Consolas,monospace; font-size: 1.35rem; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; padding: 0.65rem 0.9rem; border: 2px solid #e2e8f0; border-radius: 9px; }
 .redeem-input-row input:focus { outline: none; border-color: #39FF14; box-shadow: 0 0 0 4px rgba(57,255,20,0.15); }
+.redeem-scan-area { position: relative; }
+#qrReader { width: 100%; max-width: 360px; margin: 0 auto; border-radius: 12px; overflow: hidden; background: #0a0a0a; }
+#qrReader video { width: 100%; display: block; }
+.qr-scan-hint { text-align: center; color: #718096; font-size: 0.85rem; margin: 0.75rem 0 0; }
+.qr-scan-controls { display: flex; gap: 0.5rem; justify-content: center; margin-top: 0.75rem; }
+.qr-scan-controls .btn { padding: 0.55rem 1.1rem; font-size: 0.9rem; font-weight: 700; border-radius: 8px; border: 0; cursor: pointer; }
+.qr-scan-controls .btn-stop { background: #fed7d7; color: #9b2c2c; }
+.qr-scan-controls .btn-stop:hover { background: #feb2b2; }
+.qr-scan-error { background: #fff5f5; border: 1px solid #fed7d7; color: #9b2c2c; padding: 0.7rem 0.95rem; border-radius: 9px; font-size: 0.88rem; margin-bottom: 0.75rem; }
+.qr-scan-placeholder { aspect-ratio: 1; max-width: 360px; margin: 0 auto; background: #f7fafc; border: 2px dashed #cbd5e0; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #a0aec0; font-size: 0.9rem; text-align: center; padding: 1rem; }
 .redeem-result { padding: 0.8rem 0; font-size: 0.9rem; }
 .redeem-result-row { display: flex; justify-content: space-between; padding: 0.45rem 0; border-bottom: 1px solid #edf2f7; gap: 1rem; }
 .redeem-result-row:last-child { border-bottom: 0; }
@@ -64,20 +75,40 @@
 </div>
 
 <div class="redeem-widget" id="redeemWidget">
-  <div class="redeem-widget-header" onclick="document.getElementById('redeemWidget').classList.toggle('open')">
+  <div class="redeem-widget-header">
     <h3>✅ Échanger un code client</h3>
-    <span class="chevron">▼</span>
   </div>
   <div class="redeem-widget-body">
-    <p style="margin:0 0 0.85rem;color:#718096;font-size:0.85rem">Entrez le code à 8 caractères que le client présente au comptoir.</p>
-    <div class="redeem-input-row">
-      <input type="text" id="redeemCodeInput" maxlength="8" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ex. B7XK9P2M">
-      <button class="btn btn-primary" id="redeemLookupBtn" style="background-color:#39FF14;color:#000">Vérifier</button>
+    <div class="redeem-tabs" role="tablist">
+      <button class="redeem-tab active" id="redeemTabKey" type="button" role="tab" aria-selected="true">📝 Saisir le code</button>
+      <button class="redeem-tab" id="redeemTabScan" type="button" role="tab" aria-selected="false">📷 Scanner le QR</button>
     </div>
-    <div id="redeemResultArea"></div>
+
+    <div class="redeem-mode active" id="redeemModeKey" role="tabpanel">
+      <p style="margin:0 0 0.85rem;color:#718096;font-size:0.85rem">Entrez le code à 8 caractères que le client présente au comptoir.</p>
+      <div class="redeem-input-row">
+        <input type="text" id="redeemCodeInput" maxlength="8" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ex. B7XK9P2M">
+        <button class="btn btn-primary" id="redeemLookupBtn" style="background-color:#39FF14;color:#000">Vérifier</button>
+      </div>
+    </div>
+
+    <div class="redeem-mode" id="redeemModeScan" role="tabpanel">
+      <div id="qrScanError" class="qr-scan-error" style="display:none"></div>
+      <div class="redeem-scan-area">
+        <div id="qrReader"></div>
+        <div id="qrReaderPlaceholder" class="qr-scan-placeholder" style="display:none">📷 Activation de la caméra…</div>
+      </div>
+      <p class="qr-scan-hint">Pointez la caméra vers le QR code affiché sur le téléphone du client.</p>
+      <div class="qr-scan-controls">
+        <button type="button" class="btn btn-stop" id="qrStopBtn" style="display:none">Arrêter la caméra</button>
+      </div>
+    </div>
+
+    <div id="redeemResultArea" style="margin-top:1rem"></div>
   </div>
 </div>
 
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <script>
 (function(){
   function rEsc(s) { if (s == null) return ''; return String(s).replace(/[&<>"']/g, function(c){ return ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[c]; }); }
@@ -232,5 +263,102 @@
     var b = e.target.closest && e.target.closest('#redeemConfirmBtn');
     if (b) { e.preventDefault(); redeemClaim(b.getAttribute('data-code')); }
   });
+
+  // ---- Tabs (Saisir le code / Scanner le QR) -----------------------------
+  var tabKey = document.getElementById('redeemTabKey');
+  var tabScan = document.getElementById('redeemTabScan');
+  var modeKey = document.getElementById('redeemModeKey');
+  var modeScan = document.getElementById('redeemModeScan');
+  var qrErrorEl = document.getElementById('qrScanError');
+  var qrPlaceholder = document.getElementById('qrReaderPlaceholder');
+  var qrStopBtn = document.getElementById('qrStopBtn');
+  var qrScanner = null;
+  var qrScanInFlight = false;
+
+  function setMode(mode) {
+    var scan = mode === 'scan';
+    tabKey.classList.toggle('active', !scan); tabKey.setAttribute('aria-selected', String(!scan));
+    tabScan.classList.toggle('active', scan); tabScan.setAttribute('aria-selected', String(scan));
+    modeKey.classList.toggle('active', !scan);
+    modeScan.classList.toggle('active', scan);
+    if (scan) startScanner(); else stopScanner();
+  }
+
+  function showScanError(msg) {
+    if (!qrErrorEl) return;
+    qrErrorEl.textContent = msg;
+    qrErrorEl.style.display = msg ? 'block' : 'none';
+  }
+
+  function startScanner() {
+    showScanError('');
+    if (typeof Html5Qrcode === 'undefined') {
+      showScanError('Le module de scan n\'a pas pu être chargé. Vérifiez votre connexion.');
+      return;
+    }
+    if (qrScanner) return; // already running
+    qrPlaceholder.style.display = 'flex';
+    qrStopBtn.style.display = 'none';
+    try {
+      qrScanner = new Html5Qrcode('qrReader', { verbose: false });
+    } catch(e) {
+      showScanError('Impossible d\'initialiser la caméra: ' + (e.message || e));
+      qrScanner = null;
+      qrPlaceholder.style.display = 'none';
+      return;
+    }
+    var config = { fps: 10, qrbox: { width: 240, height: 240 }, aspectRatio: 1.0 };
+    qrScanner.start({ facingMode: 'environment' }, config, onScanSuccess, function(){ /* ignore per-frame decode errors */ })
+      .then(function(){
+        qrPlaceholder.style.display = 'none';
+        qrStopBtn.style.display = 'inline-block';
+      })
+      .catch(function(err){
+        var msg = (err && err.message) || String(err) || 'inconnue';
+        if (/NotAllowed|Permission/i.test(msg)) {
+          showScanError('Accès à la caméra refusé. Autorisez la caméra dans les réglages du navigateur.');
+        } else if (/NotFound|no camera/i.test(msg)) {
+          showScanError('Aucune caméra disponible sur cet appareil.');
+        } else {
+          showScanError('Erreur caméra: ' + msg);
+        }
+        qrScanner = null;
+        qrPlaceholder.style.display = 'none';
+      });
+  }
+
+  function stopScanner() {
+    if (!qrScanner) return;
+    var s = qrScanner;
+    qrScanner = null;
+    qrStopBtn.style.display = 'none';
+    s.stop().then(function(){ try { s.clear(); } catch(_) {} }).catch(function(){});
+  }
+
+  function onScanSuccess(decodedText) {
+    if (qrScanInFlight) return;
+    // Codes are 8-char alphanumeric (BCDFGHJKMNPQRSTWXYZ23456789). Extract from
+    // anything else the QR may carry (e.g. a URL with the code in it).
+    var code = String(decodedText || '').toUpperCase().match(/[BCDFGHJKMNPQRSTWXYZ23456789]{8}/);
+    if (!code) {
+      showScanError('QR scanné, mais aucun code de réservation valide détecté.');
+      return;
+    }
+    qrScanInFlight = true;
+    showScanError('');
+    stopScanner();
+    document.getElementById('redeemCodeInput').value = code[0];
+    // Bounce the admin back to the keyboard tab so they see the result + can confirm.
+    setMode('key');
+    lookupCode().finally(function(){ qrScanInFlight = false; });
+  }
+
+  tabKey.addEventListener('click', function(){ setMode('key'); });
+  tabScan.addEventListener('click', function(){ setMode('scan'); });
+  qrStopBtn.addEventListener('click', function(){ stopScanner(); setMode('key'); });
+
+  // Stop the camera if the admin navigates away or hides the tab.
+  window.addEventListener('pagehide', stopScanner);
+  document.addEventListener('visibilitychange', function(){ if (document.hidden) stopScanner(); });
 })();
 </script>
