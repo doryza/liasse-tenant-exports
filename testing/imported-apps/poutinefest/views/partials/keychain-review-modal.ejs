@@ -143,6 +143,12 @@
 
   var actionUrl = overlay.getAttribute('data-action-url');
   var placeId = overlay.getAttribute('data-place-id') || '';
+  // Browser-console breadcrumb so the next 5-star test is self-diagnosing.
+  // Open DevTools → Console before clicking the star. If placeId is empty
+  // string, the platform value (subscriber_pwas.google_place_id) didn't
+  // thread through; check server logs for [keychain-place-id] and confirm
+  // the Place ID is set in tapavis-admin → AI Builder → Apps.
+  console.log('[krm] modal mounted, placeId="' + placeId + '" (empty = will fall back to thanks on 5-star)');
 
   var stepRate = document.getElementById('krm-step-rate');
   var stepGoogle = document.getElementById('krm-step-google');
