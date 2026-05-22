@@ -49,7 +49,11 @@
   .krm-error { color: #b91c1c; font-size: 13px; margin: 8px 0 0; text-align: center; display: none; }
   .krm-error.is-visible { display: block; }
 </style>
-<div id="krm-overlay" class="krm-overlay" data-action-url="<%= typeof reviewActionUrl !== 'undefined' && reviewActionUrl ? reviewActionUrl : '/api/keychain-review' %>" data-place-id="<%= settings.google_place_id || '' %>" data-lang="<%= lang %>">
+<%# place-id source: googlePlaceId comes from renderCtx (lookup against
+    public.subscriber_pwas — admin sets it in tapavis-admin → AI Builder →
+    Apps). settings.google_place_id remains as a fallback in case anyone
+    sets it in the local admin_settings too. %>
+<div id="krm-overlay" class="krm-overlay" data-action-url="<%= typeof reviewActionUrl !== 'undefined' && reviewActionUrl ? reviewActionUrl : '/api/keychain-review' %>" data-place-id="<%= (typeof googlePlaceId !== 'undefined' && googlePlaceId) || settings.google_place_id || '' %>" data-lang="<%= lang %>">
   <div class="krm-card" role="dialog" aria-modal="true" aria-labelledby="krm-title">
     <button id="krm-close" type="button" class="krm-close" aria-label="<%= lang === 'en' ? 'Close' : 'Fermer' %>">×</button>
 

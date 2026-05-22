@@ -313,12 +313,20 @@ module.exports = function(services) {
 
       if (wasFirstAttribution) {
         console.log('[keychain-mw] FIRST attribution recorded id=' + insertedRowId + ' user=' + userId + ' keychain=' + keychainId);
+        // Pass the visitor's locale (from the tenant lang middleware) so
+        // sendTapContactUpsellEmail can localize the body. Falls back to
+        // req.user.preferred_language if the platform user record has one
+        // (some pwa_users rows carry it), else 'en'.
+        const visitorLang = (req.lang === 'fr' || req.lang === 'en')
+          ? req.lang
+          : (req.user && req.user.preferred_language) || 'en';
         sendTapContactUpsellEmail({
           user_id: userId,
           email: req.user.email,
           full_name: req.user.full_name || req.user.name,
           keychain_id: keychainId,
           insertedId: insertedRowId,
+          lang: visitorLang,
         }).catch(function (err) {
           console.error('[keychain-mw] TapContact upsell failed:', err && err.message);
         });
@@ -370,22 +378,43 @@ module.exports = function(services) {
     }
   });
 
-  // Helper: send the TapContact upsell. Defined here so the middleware can
-  // call it; full implementation matches the prior PR (sender, copy, CTA).
+  // Helper: send the TapContact upsell. Localized via visitor.lang (set
+  // by the attribution middleware from req.lang). Link points at the
+  // TapContact homepage with ?keychain=<id> appended — the homepage
+  // (views/home.ejs in tapavis-admin) detects the param and shows the
+  // "You seem to already have a keychain! Activate your subscription"
+  // prompt that links to /subscribe/<id>. This lets the homepage own
+  // the activation CTA copy instead of duplicating it in this email.
   async function sendTapContactUpsellEmail(visitor) {
     if (!visitor || !visitor.email || !visitor.keychain_id) {
       console.warn('[keychain-mw] upsell skipped — missing email or keychain on visitor row:', JSON.stringify(visitor));
       return;
     }
     const appName = (services.config && services.config.displayName) || 'PoutineFest';
-    const activationUrl = 'https://tapcontact.ca/subscribe/' + encodeURIComponent(visitor.keychain_id);
-    const subject = 'We noticed you got a TapContact keychain';
+    const homeUrl = 'https://tapcontact.ca/?keychain=' + encodeURIComponent(visitor.keychain_id);
+    const isFr = visitor.lang === 'fr';
+
+    const subject = isFr
+      ? 'Vous avez un porte-clés TapContact'
+      : 'You have a TapContact keychain';
+    const greeting = isFr ? 'Bonjour !' : 'Hey!';
+    const intro = isFr
+      ? 'Nous remarquons que vous avez acquis un porte-clés de <strong>' + appName + '</strong>. Transformez-le en carte de contact personnelle ou de carte d\'affaires en créant votre profil ici :'
+      : 'We notice you acquired a keychain from <strong>' + appName + '</strong>. Make it your personal contact card or business card by creating a profile here:';
+    const ctaLabel = isFr ? 'Activer mon abonnement' : 'Activate my subscription';
+    const benefits = isFr
+      ? 'Partage illimité de votre profil TapContact <strong>à vie</strong> — paiement unique de 12,95 $.'
+      : 'Unlimited sharing of your TapContact profile <strong>for life</strong> — one-time $12.95.';
+    const fallback = isFr
+      ? 'Si le bouton ne fonctionne pas, copiez ce lien :'
+      : 'If the button does not work, copy this link:';
+
     const html = '<div style="font-family:-apple-system,BlinkMacSystemFont,sans-serif;max-width:520px;margin:0 auto;padding:24px;color:#111">' +
-      '<h2 style="margin:0 0 16px;font-size:20px">Hey!</h2>' +
-      '<p style="line-height:1.6">We notice you acquired a keychain from <strong>' + appName + '</strong>. Make it your personal contact card or business card by creating a profile here:</p>' +
-      '<p style="text-align:center;margin:24px 0"><a href="' + activationUrl + '" style="display:inline-block;background:#dc2626;color:#fff;padding:14px 28px;border-radius:8px;text-decoration:none;font-weight:700">Activate my TapContact</a></p>' +
-      '<p style="line-height:1.6">Unlimited sharing of your TapContact profile <strong>for life</strong> — one-time $12.95.</p>' +
-      '<p style="color:#888;font-size:12px;margin-top:24px">If the button does not work, copy this link:<br>' + activationUrl + '</p>' +
+      '<h2 style="margin:0 0 16px;font-size:20px">' + greeting + '</h2>' +
+      '<p style="line-height:1.6">' + intro + '</p>' +
+      '<p style="text-align:center;margin:24px 0"><a href="' + homeUrl + '" style="display:inline-block;background:#dc2626;color:#fff;padding:14px 28px;border-radius:8px;text-decoration:none;font-weight:700">' + ctaLabel + '</a></p>' +
+      '<p style="line-height:1.6">' + benefits + '</p>' +
+      '<p style="color:#888;font-size:12px;margin-top:24px">' + fallback + '<br>' + homeUrl + '</p>' +
       '</div>';
     await services.email.send({
       to: visitor.email,
@@ -400,13 +429,48 @@ module.exports = function(services) {
         [stampId]
       );
     }
-    console.log('[keychain-mw] TapContact upsell sent to ' + visitor.email + ' (keychain=' + visitor.keychain_id + ')');
+    console.log('[keychain-mw] TapContact upsell sent to ' + visitor.email + ' (keychain=' + visitor.keychain_id + ' lang=' + visitor.lang + ')');
+  }
+
+  // Reads google_place_id from the PLATFORM table public.subscriber_pwas.
+  // The admin sets it in tapavis-admin → AI Builder → Apps → "Set Place ID"
+  // (NOT in this tenant's admin_settings). PgTenantDb sets search_path to
+  // "tenant_<slug>, public" so unqualified subscriber_pwas resolves to the
+  // platform schema. Cached per process for the lifetime of a single
+  // request via a closure-free SELECT each time — value rarely changes so
+  // the small DB hit is negligible.
+  async function fetchAppGooglePlaceId() {
+    try {
+      const slug = (services.config && services.config.slug) || 'poutinefest';
+      const row = await db.get(
+        'SELECT google_place_id FROM public.subscriber_pwas WHERE slug = $1',
+        [slug]
+      );
+      return (row && row.google_place_id) || null;
+    } catch (err) {
+      console.warn('[fetchAppGooglePlaceId] lookup failed:', err && err.message);
+      return null;
+    }
   }
 
   async function renderCtx(req) {
     const settings = await getSettings();
     const t = applyTextOverrides(Object.assign({}, T[req.lang] || T.fr), settings, req.lang);
-    return { t: t, lang: req.lang, settings: settings, formatPrice: formatPrice, formatDate: formatDate, pickLang: pickLang, hours: parseHours(settings.hours_json), parseSizes: parseSizes };
+    // googlePlaceId pulled from the platform table so the in-tenant review
+    // modal can build the 5-star Google review URL from the same value the
+    // admin set in tapavis-admin's AI Builder Apps list.
+    const googlePlaceId = await fetchAppGooglePlaceId();
+    return {
+      t: t,
+      lang: req.lang,
+      settings: settings,
+      googlePlaceId: googlePlaceId,
+      formatPrice: formatPrice,
+      formatDate: formatDate,
+      pickLang: pickLang,
+      hours: parseHours(settings.hours_json),
+      parseSizes: parseSizes,
+    };
   }
 
   router.get('/', async function(req, res) {
