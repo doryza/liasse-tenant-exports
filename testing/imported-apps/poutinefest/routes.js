@@ -375,87 +375,135 @@ module.exports = function(services) {
   });
 
   // =========================================================================
-  // Keychain attribution funnel
+  // Keychain attribution funnel (platform-auth integration)
   //
   // NFC keychains encoded with this app's slug land visitors here carrying
-  // a ?keychain=<id> query param. Flow:
-  //   1. GET /signup?keychain=<id>    → email-entry form
-  //   2. POST /api/keychain-signup     → create keychain_visitors row + email OTP
-  //   3. GET /signup?signupId=<id>    → OTP-entry form
-  //   4. POST /api/keychain-verify     → verify OTP, send TapContact upsell
-  //                                       email, redirect to home with
-  //                                       ?showReview=1 so the existing
-  //                                       rating overlay fires.
+  // ?keychain=<id>. The flow integrates with the EXISTING platform auth
+  // (services.auth + the Connexion TenantSDK login) rather than running
+  // a parallel signup:
   //
-  // Independent from services.auth — purely a keychain-attribution capture
-  // for the TapContact upsell flow. Visitors who don't complete the flow
-  // remain anonymous; their keychain scan is still logged on the
-  // associated keychain in tapavis-admin's user_keychains table.
+  //   1. Visitor lands on any tenant page with ?keychain=<id>
+  //   2. attribution middleware below drops a `keychain_attribution` cookie
+  //   3. Visitor clicks Connexion → platform OTP modal → comes back
+  //      logged in (req.user set by services.auth.optionalAuth)
+  //   4. post-auth middleware detects (req.user + cookie + no prior
+  //      keychain_visitors row for this (user, keychain) pair):
+  //        - INSERTs keychain_visitors row
+  //        - Fires TapContact upsell email (fire-and-forget)
+  //        - Sets `keychain_show_review=1` cookie (one-shot)
+  //        - Clears `keychain_attribution` cookie
+  //   5. The review-modal partial in footer.ejs renders the modal on the
+  //      visitor's NEXT render based on `keychain_show_review`. The
+  //      visitor stays on whichever page they're on.
+  //
+  // Earlier iteration tried a parallel /signup form with our own email
+  // OTP; visitors used the platform Connexion instead, so our code never
+  // ran. This pivot fixes that.
   // =========================================================================
-  // Helper: build a tenant-prefixed URL. Tenants mounted at /pwa/<slug>/...
-  // need the prefix on form actions + redirects; custom-domain tenants get
-  // it absent. Always go through this so the same code works on both.
   function tpath(req, sub) {
     return typeof req.tenantPath === 'function' ? req.tenantPath(sub) : sub;
   }
 
-  router.get('/signup', async function(req, res) {
-    try {
-      const ctx = await renderCtx(req);
-      let signup = null;
-      let verifiedVisitor = null;
-      if (req.query.signupId) {
-        const row = await db.get(
-          'SELECT id, email, full_name, keychain_id, email_verified_at FROM keychain_visitors WHERE id = $1',
-          [parseInt(req.query.signupId, 10)]
-        );
-        if (row) {
-          if (row.email_verified_at && req.query.verified) {
-            // Success state: render the review modal instead of any form.
-            verifiedVisitor = row;
-          } else if (!row.email_verified_at) {
-            // Pending OTP entry.
-            signup = row;
-          }
-        }
+  // Step 1: capture ?keychain= into a year-long cookie. Runs on every GET
+  // so a visitor can scan → land anywhere → still be attributed when they
+  // log in later. We don't trust ?keychain= naively — clamp to a sane shape
+  // so URLs can't poison the cookie with garbage.
+  router.use(function(req, res, next) {
+    if (req.method === 'GET' && req.query && typeof req.query.keychain === 'string') {
+      var k = req.query.keychain.trim();
+      if (/^[A-Za-z0-9_-]{4,64}$/.test(k)) {
+        try {
+          res.cookie('keychain_attribution', k, {
+            maxAge: 365 * 24 * 60 * 60 * 1000,
+            httpOnly: true,
+            sameSite: 'lax',
+          });
+        } catch (_) { /* cookie set failure is non-fatal — visitor just won't be attributed */ }
       }
-      res.render('signup', Object.assign(ctx, {
-        signup,
-        verifiedVisitor,
-        keychainId: req.query.keychain || (signup && signup.keychain_id) || (verifiedVisitor && verifiedVisitor.keychain_id) || '',
-        error: req.query.err || null,
-        // Tenant-prefixed action URLs for the forms. Needed when the tenant
-        // is served at /pwa/<slug>/... on the platform fallback URL —
-        // without the prefix, form POSTs hit liasse.tech/api/... (404).
-        signupActionUrl: tpath(req, '/api/keychain-signup'),
-        verifyActionUrl: tpath(req, '/api/keychain-verify'),
-        reviewActionUrl: tpath(req, '/api/keychain-review'),
-      }));
-    } catch(e) {
-      console.error('[signup GET]', e);
-      res.status(500).send('Erreur');
     }
+    next();
   });
 
-  // Captures 1-3 star feedback on the verified visitor's review modal.
-  // Emails the tenant contact_email (same recipient the tapavis-admin
-  // /api/low-rating-feedback uses, just routed locally so the visitor
-  // never leaves the tenant). 4 and 5 star paths are handled client-side
+  // Step 2: post-auth attribution + upsell. services.auth.optionalAuth
+  // populates req.user when a session exists; this middleware then checks
+  // for the attribution cookie and, if everything lines up, fires the
+  // upsell + flips the show-review cookie. Wrapped in try/catch around
+  // every DB / email call so an error here can never break the page render.
+  router.use(services.auth.optionalAuth, async function attributeKeychainOnLogin(req, res, next) {
+    try {
+      if (!req.user || !req.user.id) return next();
+      if (!req.cookies || !req.cookies.keychain_attribution) return next();
+      const keychainId = req.cookies.keychain_attribution;
+      const userId = req.user.id;
+
+      // Upsert-or-noop. Unique index on (user_id, keychain_id) means a
+      // second visit won't fire the upsell again — ON CONFLICT DO NOTHING
+      // + RETURNING tells us whether this was the first attribution.
+      const inserted = await db.run(
+        `INSERT INTO keychain_visitors (user_id, email, full_name, keychain_id, created_at, updated_at)
+         VALUES ($1, $2, $3, $4, NOW(), NOW())
+         ON CONFLICT (user_id, keychain_id) DO NOTHING
+         RETURNING id`,
+        [userId, req.user.email || null, req.user.full_name || req.user.name || null, keychainId]
+      );
+      const wasFirstAttribution = !!(inserted && inserted.rows && inserted.rows.length);
+
+      if (wasFirstAttribution) {
+        // Fire upsell email in the background. Pass the row data we just
+        // inserted so we don't need an extra SELECT.
+        sendTapContactUpsellEmail({
+          user_id: userId,
+          email: req.user.email,
+          full_name: req.user.full_name || req.user.name,
+          keychain_id: keychainId,
+          insertedId: inserted.rows[0].id,
+        }).catch(function (err) {
+          console.error('[keychain-attribution] TapContact upsell failed:', err && err.message);
+        });
+
+        // One-shot cookie that the footer modal partial keys off of.
+        // Visitor sees the modal on the next render; once they close it,
+        // the modal-side JS clears this cookie.
+        try {
+          res.cookie('keychain_show_review', '1', {
+            maxAge: 30 * 60 * 1000, // 30 min — long enough to survive a redirect / reload but not forever
+            httpOnly: false,         // false so the modal-side JS can clear it
+            sameSite: 'lax',
+          });
+        } catch (_) { /* noop */ }
+
+        // Clear the attribution cookie — we've consumed it.
+        try { res.clearCookie('keychain_attribution'); } catch (_) {}
+        console.log('[keychain-attribution] attributed user=' + userId + ' to keychain=' + keychainId);
+      }
+    } catch (err) {
+      console.error('[keychain-attribution] middleware error:', err && err.message);
+    }
+    next();
+  });
+
+  // Captures 1-3 star feedback from the in-page review modal. Emails the
+  // tenant's contact_email. 4 and 5 star paths are handled client-side
   // (thank-you / Google review link) and never POST here.
   router.post('/api/keychain-review', async function(req, res) {
     try {
-      const visitorId = parseInt((req.body && req.body.visitorId) || '0', 10);
       const rating = parseInt((req.body && req.body.rating) || '0', 10);
       const message = ((req.body && req.body.message) || '').trim().slice(0, 5000);
-      if (!visitorId || !rating || rating < 1 || rating > 5 || !message) {
+      // We trust req.user (from optionalAuth above) — visitor must be
+      // logged in to have seen the modal in the first place.
+      const userId = req.user && req.user.id;
+      if (!userId || !rating || rating < 1 || rating > 5 || !message) {
         return res.status(400).json({ success: false, error: 'Missing fields' });
       }
       const visitor = await db.get(
-        'SELECT id, email, full_name, keychain_id, email_verified_at FROM keychain_visitors WHERE id = $1',
-        [visitorId]
+        `SELECT v.id, v.email, v.full_name, v.keychain_id
+           FROM keychain_visitors v
+          WHERE v.user_id = $1
+          ORDER BY v.created_at DESC LIMIT 1`,
+        [userId]
       );
-      if (!visitor || !visitor.email_verified_at) {
-        return res.status(403).json({ success: false, error: 'Not verified' });
+      if (!visitor) {
+        return res.status(404).json({ success: false, error: 'No attribution' });
       }
       const toEmail = resolveContactEmail(await getSettings());
       const appName = (services.config && services.config.displayName) || 'PoutineFest';
@@ -463,7 +511,7 @@ module.exports = function(services) {
       const html = '<div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:24px">' +
         '<h2 style="margin:0 0 12px;color:#111">New keychain visitor feedback</h2>' +
         '<p><strong>Rating:</strong> ' + '★'.repeat(rating) + '☆'.repeat(5 - rating) + ' (' + rating + '/5)</p>' +
-        '<p><strong>From:</strong> ' + (visitor.full_name ? visitor.full_name + ' (' : '') + visitor.email + (visitor.full_name ? ')' : '') + '</p>' +
+        '<p><strong>From:</strong> ' + (visitor.full_name ? visitor.full_name + ' (' : '') + (visitor.email || req.user.email || '—') + (visitor.full_name ? ')' : '') + '</p>' +
         '<p><strong>Keychain:</strong> ' + visitor.keychain_id + '</p>' +
         '<div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:12px;margin-top:16px;white-space:pre-wrap">' + escapeHtml(message) + '</div>' +
         '</div>';
@@ -472,7 +520,7 @@ module.exports = function(services) {
           to: toEmail,
           subject: subject,
           html: html,
-          replyTo: visitor.email,
+          replyTo: visitor.email || req.user.email,
         });
       } catch (emailErr) {
         console.error('[keychain-review] email failed:', emailErr.message);
@@ -491,125 +539,9 @@ module.exports = function(services) {
     });
   }
 
-  // express.urlencoded MUST be on the keychain-signup + keychain-verify
-  // POSTs explicitly: the tenant platform middleware only installs
-  // express.json(), so HTML form submissions (which post as
-  // application/x-www-form-urlencoded) get a `req.body` of undefined
-  // without this. Existing tenant POSTs (like /api/reserve) work because
-  // they're fetch+JSON, not HTML forms. Our signup intentionally uses
-  // bare HTML forms so it works without JS — hence the explicit parser.
-  router.post('/api/keychain-signup', express.urlencoded({ extended: false }), async function(req, res) {
-    try {
-      const email = (req.body && req.body.email || '').trim().toLowerCase();
-      const fullName = (req.body && req.body.fullName || '').trim();
-      const keychainId = (req.body && req.body.keychainId || '').trim();
-      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !keychainId) {
-        return res.redirect(tpath(req, '/signup?keychain=' + encodeURIComponent(keychainId) + '&err=' + encodeURIComponent('Invalid email or missing keychain.')));
-      }
-      // 6-digit OTP, 15-min expiry. crypto.randomInt is the platform-safe
-      // generator — services.crypto isn't a thing here so we lean on Node's
-      // built-in directly.
-      const crypto = require('crypto');
-      const otp = String(crypto.randomInt(100000, 999999));
-      const expiresAt = new Date(Date.now() + 15 * 60 * 1000).toISOString();
-      const insRes = await db.run(
-        `INSERT INTO keychain_visitors (email, full_name, keychain_id, otp_code, otp_expires_at, created_at, updated_at)
-         VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
-         RETURNING id`,
-        [email, fullName || null, keychainId, otp, expiresAt]
-      );
-      const signupId = insRes && insRes.rows && insRes.rows[0] ? insRes.rows[0].id : null;
-
-      // Send the OTP. Best-effort: a SendGrid failure shouldn't black-hole
-      // the signup since the user already sees the next step. Logged for
-      // admin follow-up.
-      try {
-        const appName = (services.config && services.config.displayName) || 'PoutineFest';
-        await services.email.send({
-          to: email,
-          subject: appName + ' — verification code: ' + otp,
-          html: '<div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:24px">' +
-                '<h2 style="color:#111">' + appName + '</h2>' +
-                '<p>Your verification code is:</p>' +
-                '<p style="font-size:32px;font-weight:700;letter-spacing:0.2em;font-family:monospace;color:#dc2626;text-align:center;background:#fff7ed;padding:16px;border-radius:8px">' + otp + '</p>' +
-                '<p style="color:#888;font-size:13px">Expires in 15 minutes.</p>' +
-                '</div>',
-        });
-      } catch (emailErr) {
-        console.error('[keychain-signup] OTP email failed:', emailErr.message);
-      }
-
-      res.redirect(tpath(req, '/signup?signupId=' + signupId));
-    } catch(e) {
-      console.error('[keychain-signup POST]', e);
-      res.status(500).send('Erreur');
-    }
-  });
-
-  router.post('/api/keychain-verify', express.urlencoded({ extended: false }), async function(req, res) {
-    try {
-      const signupId = parseInt((req.body && req.body.signupId) || '0', 10);
-      const otp = ((req.body && req.body.otp) || '').trim();
-      if (!signupId || !/^[0-9]{6}$/.test(otp)) {
-        return res.redirect(tpath(req, '/signup?signupId=' + signupId + '&err=' + encodeURIComponent('Invalid code.')));
-      }
-      const row = await db.get(
-        'SELECT id, email, full_name, keychain_id, otp_code, otp_expires_at, email_verified_at FROM keychain_visitors WHERE id = $1',
-        [signupId]
-      );
-      if (!row) {
-        return res.redirect(tpath(req, '/signup?err=' + encodeURIComponent('Signup not found.')));
-      }
-      if (row.email_verified_at) {
-        // Already verified — re-show the success/review state on the same
-        // signup page (idempotent UX, no re-send of upsell).
-        return res.redirect(tpath(req, '/signup?signupId=' + signupId + '&verified=1'));
-      }
-      if (!row.otp_code || row.otp_code !== otp) {
-        return res.redirect(tpath(req, '/signup?signupId=' + signupId + '&err=' + encodeURIComponent('Code does not match.')));
-      }
-      if (row.otp_expires_at && new Date(row.otp_expires_at).getTime() < Date.now()) {
-        return res.redirect(tpath(req, '/signup?signupId=' + signupId + '&err=' + encodeURIComponent('Code expired. Sign up again.')));
-      }
-
-      await db.run(
-        'UPDATE keychain_visitors SET email_verified_at = NOW(), updated_at = NOW(), otp_code = NULL WHERE id = $1',
-        [signupId]
-      );
-
-      // Fire-and-forget: TapContact upsell email. See helper above.
-      sendTapContactUpsellEmail(row).catch(function (err) {
-        console.error('[keychain-verify] TapContact upsell failed:', err.message);
-      });
-
-      // Set a lightweight "logged in" cookie for the verified keychain
-      // visitor so subsequent renders can greet them and gate any future
-      // visitor-only UI. Signed cookies would be better; left as a TODO
-      // since the visitor scope is currently just the review-modal trigger.
-      try {
-        res.cookie('keychain_visitor_id', String(row.id), {
-          httpOnly: true,
-          sameSite: 'lax',
-          maxAge: 365 * 24 * 60 * 60 * 1000,
-        });
-      } catch (_) { /* noop — cookies optional */ }
-
-      // Stay on the tenant. ?verified=1 makes the signup page swap into a
-      // success state that surfaces the review modal (Google forwarding
-      // for 5-star, in-tenant feedback for 1-3 stars), without bouncing
-      // the visitor off-site. The TapContact upsell email still went out
-      // above (fire-and-forget).
-      res.redirect(tpath(req, '/signup?signupId=' + signupId + '&verified=1'));
-    } catch(e) {
-      console.error('[keychain-verify POST]', e);
-      res.status(500).send('Erreur');
-    }
-  });
-
   // Helper: send the TapContact "we noticed you got a keychain" upsell.
-  // Wrapped in a top-level helper rather than inlined so the verify route
-  // stays readable and the helper can be reused (e.g., for resend logic
-  // in a follow-up). Updates upsell_sent_at on success.
+  // Wrapped in a top-level helper rather than inlined so the middleware
+  // stays readable. Updates upsell_sent_at on success.
   async function sendTapContactUpsellEmail(visitor) {
     if (!visitor || !visitor.email || !visitor.keychain_id) return;
     const appName = (services.config && services.config.displayName) || 'PoutineFest';
@@ -628,11 +560,19 @@ module.exports = function(services) {
       subject: subject,
       html: html,
     });
-    await db.run(
-      'UPDATE keychain_visitors SET upsell_sent_at = NOW(), updated_at = NOW() WHERE id = $1',
-      [visitor.id]
-    );
-    console.log('[keychain-verify] TapContact upsell sent to ' + visitor.email + ' (keychain=' + visitor.keychain_id + ')');
+    // Visitor row may be addressed by either insertedId (from the
+    // attribution middleware path) or id (from legacy callers). Stamp
+    // upsell_sent_at on the right row either way; defensive nullcheck
+    // because the SELECT path on /api/keychain-review also constructs
+    // visitor synthetically.
+    const stampId = visitor.insertedId || visitor.id;
+    if (stampId) {
+      await db.run(
+        'UPDATE keychain_visitors SET upsell_sent_at = NOW(), updated_at = NOW() WHERE id = $1',
+        [stampId]
+      );
+    }
+    console.log('[keychain-attribution] TapContact upsell sent to ' + visitor.email + ' (keychain=' + visitor.keychain_id + ')');
   }
 
   router.get('/reserver', async function(req, res) {

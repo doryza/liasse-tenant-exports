@@ -57,5 +57,10 @@
 <script>
 try { if (window.TenantSDK) { TenantSDK.ui.showInstallBanner(); setTimeout(function(){ try { TenantSDK.ui.showPushPrompt(); } catch(e){} }, 8000); } } catch(e) {}
 </script>
+<%# Keychain review modal. Renders inert markup on every page; the inline
+    script inside the partial only opens the modal when the
+    keychain_show_review cookie is present (set by the post-login
+    attribution middleware in routes.js). Cheap to include everywhere. %>
+<%- include('keychain-review-modal') %>
 </body>
 </html>
