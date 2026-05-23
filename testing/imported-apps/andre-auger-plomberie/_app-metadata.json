@@ -1,0 +1,68 @@
+{
+  "slug": "andre-auger-plomberie",
+  "displayName": "André Auger Plomberie",
+  "description": "Website for André Auger Plomberie; pricing shown by transparency, schedule appointment as per my availabilities, and other nice features for a plumbing service. make it nice and outlining experience and transparency",
+  "status": "active",
+  "generationVersion": 1,
+  "primaryColor": "#6366f1",
+  "iconUrl": "https://res.cloudinary.com/duhp69meg/image/upload/v1778696801/tapavis_tenant_andre-auger-plomberie/icon_andre-auger-plomberie_1778696801709.png",
+  "enabledAuthMethods": [
+    "webauthn",
+    "sms",
+    "email"
+  ],
+  "notificationsEnabled": true,
+  "geolocationEnabled": true,
+  "customConfig": {
+    "language": "both",
+    "aiSummary": {
+      "en": {
+        "dashboard": "Welcome to your Admin Dashboard! Think of this as the control center for your entire website. From here, you can easily manage all your content and customer interactions.\n\nHere’s a quick tour:\n\n- **Services**: Want to add a new plumbing service or update your prices? Head to the 'Services' section. You can describe what you offer and set costs to maintain that transparency you wanted.\n\n- **Availability & Appointments**: This is key for your business. First, go to 'Availability' to set the days and times you're free. It's like opening up your calendar. Once customers book a time, you'll see all your upcoming jobs in the 'Appointments' section.\n\n- **Testimonials & Posts**: To build trust, you can add happy customer reviews under 'Testimonials'. The 'Posts' section acts as your blog, perfect for sharing news or helpful plumbing tips.\n\n- **Submissions**: Any messages sent through your contact page will appear neatly in 'Submissions'. You'll never miss a customer inquiry.\n\n- **Stats**: Curious how many people are visiting your site? Your dashboard shows you simple visitor stats so you can see how you're doing.",
+        "variables": "Great news! Your new web app for André Auger Plomberie is all set up and ready to go. You don't need any special keys or codes to get started. Everything is built-in, so you can jump right into managing your business online. Congratulations on your new site!"
+      },
+      "fr": {
+        "dashboard": "Bienvenue à votre tableau de bord d'administration! Voyez-le comme le centre de contrôle de votre site web. D'ici, vous pouvez facilement gérer tout votre contenu et les interactions avec vos clients.\n\nVoici un petit tour rapide :\n\n- **Services** : Vous voulez ajouter un nouveau service de plomberie ou mettre à jour vos tarifs? Allez dans la section 'Services'. Vous pouvez y décrire ce que vous offrez et fixer vos prix pour garder la belle transparence que vous souhaitiez.\n\n- **Disponibilités et Rendez-vous** : C'est le cœur de votre entreprise. D'abord, allez dans 'Disponibilités' pour indiquer les jours et les heures où vous êtes libre. C'est comme ouvrir votre agenda. Une fois qu'un client réserve, vous verrez tous vos rendez-vous à venir dans la section 'Rendez-vous'.\n\n- **Témoignages et Publications** : Pour bâtir la confiance, vous pouvez ajouter les bons commentaires de vos clients sous 'Témoignages'. La section 'Publications' est votre blogue, parfait pour partager des nouvelles ou des conseils de plomberie.\n\n- **Soumissions** : Tous les messages envoyés via votre page de contact apparaîtront bien classés dans 'Soumissions'. Vous ne manquerez jamais une demande d'un client.\n\n- **Statistiques** : Curieux de savoir combien de personnes visitent votre site? Votre tableau de bord vous montre des statistiques de visites simples pour que vous puissiez suivre votre popularité.",
+        "variables": "Excellente nouvelle! Votre nouvelle application web pour André Auger Plomberie est fin prête. Vous n'avez besoin d'aucune clé spéciale ou de configuration supplémentaire pour commencer. Tout est déjà intégré, vous pouvez donc commencer à gérer votre entreprise en ligne dès maintenant. Félicitations pour votre nouveau site!"
+      }
+    },
+    "aiSummaryVersion": 1
+  },
+  "promptHistory": [
+    {
+      "prompt": "Website for André Auger Plomberie; pricing shown by transparency, schedule appointment as per my availabilities, and other nice features for a plumbing service. make it nice and outlining experience and transparency",
+      "timestamp": "2026-05-13T18:26:49.845Z",
+      "changeNotes": "Built a complete bilingual (FR/EN) PWA for André Auger Plomberie: home page with hero, features, featured services with transparent pricing, testimonials and blog posts; full services catalog with pricing fourchettes; multi-step online booking with real-time slot availability; contact form with optional emergency call CTA; user appointment tracking after login; about page with rich prose. Admin backend includes dashboard with stats, posts/services/testimonials/appointments/messages CRUD via shared shell, plus a custom availability page with bulk slot creation (date range × weekdays × times). Seeded 8 plumbing services with realistic FR/EN content and pricing, 6 testimonials, 4 blog posts, and 21 days of weekday + Saturday availability slots so the booking flow works immediately.\n\nAdmin UX/UI enriched: dashboard now uses iconized stat cards with descriptions, color-coded by category, dedicated 'Today's appointments' panel, business health snapshot, and helpful onboarding tips. Admin shell upgraded with toast notifications, friendly field labels, image upload preview, contextual help text, better empty states with action CTAs, and confirm modals replacing browser confirm(). Availability page upgraded with calendar-style grouped slot view, quick-action presets (next 7/14 days), and visual feedback. Admin sidebar now shows a 'View site' link, user count badge, and improved hover states. Frontend: improved hero contrast with stronger overlay gradient, added focus-visible outlines for accessibility, improved button hover transitions, better testimonial card hierarchy, refined service card prices with clear visual hierarchy. Added SEO metadata.",
+      "generationId": 1106,
+      "filesModified": [
+        "manifest.json",
+        "public/css/admin-styles.css",
+        "public/css/styles.css",
+        "public/js/app.js",
+        "routes.js",
+        "schema.sql",
+        "seed.js",
+        "views/about.ejs",
+        "views/admin-appointments.ejs",
+        "views/admin-availability.ejs",
+        "views/admin-posts.ejs",
+        "views/admin-services.ejs",
+        "views/admin-submissions.ejs",
+        "views/admin-testimonials.ejs",
+        "views/admin.ejs",
+        "views/booking.ejs",
+        "views/contact.ejs",
+        "views/index.ejs",
+        "views/my-appointments.ejs",
+        "views/partials/admin-shell.ejs",
+        "views/partials/admin-sidebar.ejs",
+        "views/partials/footer.ejs",
+        "views/partials/header.ejs",
+        "views/services.ejs"
+      ]
+    }
+  ],
+  "apiVariables": [],
+  "createdAt": "2026-05-13T17:54:52.417Z",
+  "updatedAt": "2026-05-13T18:27:26.244Z",
+  "exportedAt": "2026-05-23T02:47:43.932Z"
+}

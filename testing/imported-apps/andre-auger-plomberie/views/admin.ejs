@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — <%= (settings && settings.business_name) ? settings.business_name : 'André Auger' %></title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body>
+<%- include('partials/admin-sidebar', { active: 'dashboard' }) %>
+<div class="admin-content">
+  <header class="admin-header">
+    <div>
+      <h1><%= lang==='en'?'Dashboard':'Tableau de bord' %></h1>
+      <p style="color:#64748b;margin-top:.25rem;font-size:.95rem"><%= lang==='en'?'Welcome back — here is your business at a glance.':'Bienvenue — voici un coup d\'œil sur votre activité.' %></p>
+    </div>
+    <a href="." target="_blank" class="btn-secondary">🌐 <%= lang==='en'?'View public site':'Voir le site public' %></a>
+  </header>
+
+  <% if (stats.appointmentsPending > 0 || stats.submissionsNew > 0) { %>
+  <div class="alert-banner">
+    <span style="font-size:1.25rem">🔔</span>
+    <div>
+      <strong><%= lang==='en'?'You have items to review':'Vous avez des éléments à traiter' %></strong>
+      <div style="font-size:.9rem;margin-top:.25rem">
+        <% if (stats.appointmentsPending > 0) { %><a href="admin/appointments"><%= stats.appointmentsPending %> <%= lang==='en'?'pending appointment(s)':'rendez-vous en attente' %></a><% } %>
+        <% if (stats.appointmentsPending > 0 && stats.submissionsNew > 0) { %> · <% } %>
+        <% if (stats.submissionsNew > 0) { %><a href="admin/submissions"><%= stats.submissionsNew %> <%= lang==='en'?'new message(s)':'nouveau(x) message(s)' %></a><% } %>
+      </div>
+    </div>
+  </div>
+  <% } %>
+
+  <section class="admin-section">
+    <h2><%= lang==='en'?'Today':'Aujourd\'hui' %></h2>
+    <% if (todayAppts && todayAppts.length > 0) { %>
+      <div class="today-list">
+        <% todayAppts.forEach(function(a){ %>
+          <div class="today-appt">
+            <div class="today-time"><%= a.slot_time || '' %></div>
+            <div class="today-info">
+              <strong><%= a.customer_name %></strong>
+              <% if (a.service_name) { %><span class="chip"><%= a.service_name %></span><% } %>
+              <div style="color:#64748b;font-size:.875rem;margin-top:.15rem">📞 <%= a.customer_phone %><% if (a.customer_address) { %> · 📍 <%= a.customer_address %><% } %></div>
+            </div>
+            <span class="status status-<%= a.status %>"><%= a.status %></span>
+          </div>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <div class="empty-soft">
+        <p style="color:#64748b;margin-bottom:.5rem">✨ <%= lang==='en'?'No appointments scheduled for today.':'Aucun rendez-vous prévu aujourd\'hui.' %></p>
+        <a href="admin/availability" class="link-arrow"><%= lang==='en'?'Open more availability →':'Ouvrir plus de disponibilités →' %></a>
+      </div>
+    <% } %>
+  </section>
+
+  <h2 class="section-title"><%= lang==='en'?'Business at a glance':'Vue d\'ensemble' %></h2>
+  <div class="stats-grid">
+    <a href="admin/appointments" class="stat-card stat-link stat-primary">
+      <div class="stat-icon">🗓</div>
+      <div class="stat-num"><%= stats.appointments %></div>
+      <div class="stat-label"><%= lang==='en'?'Total appointments':'Rendez-vous totaux' %></div>
+      <% if (stats.appointmentsPending > 0) { %><span class="stat-badge"><%= stats.appointmentsPending %> <%= lang==='en'?'pending':'en attente' %></span><% } %>
+    </a>
+    <a href="admin/availability" class="stat-card stat-link">
+      <div class="stat-icon">📅</div>
+      <div class="stat-num"><%= stats.slots %></div>
+      <div class="stat-label"><%= lang==='en'?'Open slots ahead':'Créneaux libres à venir' %></div>
+      <% if (stats.slotsBooked > 0) { %><small style="color:#64748b"><%= stats.slotsBooked %> <%= lang==='en'?'booked':'réservés' %></small><% } %>
+    </a>
+    <a href="admin/services" class="stat-card stat-link">
+      <div class="stat-icon">🔧</div>
+      <div class="stat-num"><%= stats.services %></div>
+      <div class="stat-label">Services</div>
+      <small style="color:#64748b"><%= stats.servicesPublished %> <%= lang==='en'?'published':'publiés' %></small>
+    </a>
+    <a href="admin/posts" class="stat-card stat-link">
+      <div class="stat-icon">📝</div>
+      <div class="stat-num"><%= stats.posts %></div>
+      <div class="stat-label">Articles</div>
+      <small style="color:#64748b"><%= stats.postsPublished %> <%= lang==='en'?'published':'publiés' %></small>
+    </a>
+    <a href="admin/testimonials" class="stat-card stat-link">
+      <div class="stat-icon">⭐</div>
+      <div class="stat-num"><%= stats.testimonials %></div>
+      <div class="stat-label"><%= lang==='en'?'Testimonials':'Témoignages' %></div>
+    </a>
+    <a href="admin/submissions" class="stat-card stat-link">
+      <div class="stat-icon">✉</div>
+      <div class="stat-num"><%= stats.submissions %></div>
+      <div class="stat-label">Messages</div>
+      <% if (stats.submissionsNew > 0) { %><span class="stat-badge"><%= stats.submissionsNew %> <%= lang==='en'?'new':'nouveaux' %></span><% } %>
+    </a>
+    <div class="stat-card">
+      <div class="stat-icon">👥</div>
+      <div class="stat-num"><%= stats.users %></div>
+      <div class="stat-label"><%= lang==='en'?'Registered users':'Utilisateurs inscrits' %></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🔔</div>
+      <div class="stat-num"><%= stats.push %></div>
+      <div class="stat-label"><%= lang==='en'?'Push subscribers':'Abonnés push' %></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">📊</div>
+      <div class="stat-num"><%= stats.recentVisits %></div>
+      <div class="stat-label"><%= lang==='en'?'Visits (last 7 days)':'Visites (7 derniers jours)' %></div>
+      <small style="color:#64748b"><%= stats.visits %> <%= lang==='en'?'all time':'au total' %></small>
+    </div>
+  </div>
+
+  <section class="admin-section">
+    <h2><%= lang==='en'?'Quick actions':'Actions rapides' %></h2>
+    <div class="quick-actions">
+      <a href="admin/availability" class="btn-primary">📅 <%= lang==='en'?'Manage availability':'Gérer mes disponibilités' %></a>
+      <a href="admin/appointments" class="btn-secondary">🗓 <%= lang==='en'?'View appointments':'Voir les rendez-vous' %></a>
+      <a href="admin/services" class="btn-secondary">🔧 <%= lang==='en'?'Edit services & prices':'Modifier services & prix' %></a>
+      <a href="admin/posts" class="btn-secondary">📝 <%= lang==='en'?'Write an article':'Rédiger un article' %></a>
+      <a href="admin/submissions" class="btn-secondary">✉ <%= lang==='en'?'Read messages':'Lire les messages' %></a>
+    </div>
+  </section>
+
+  <section class="admin-section">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem;margin-bottom:1rem">
+      <h2 style="margin:0"><%= lang==='en'?'Recent appointments':'Rendez-vous récents' %></h2>
+      <a href="admin/appointments" class="link-arrow"><%= lang==='en'?'See all →':'Tout voir →' %></a>
+    </div>
+    <% if (recentAppts && recentAppts.length > 0) { %>
+      <div class="table-wrap">
+        <table class="admin-table">
+          <thead><tr><th><%= lang==='en'?'Date / Time':'Date / Heure' %></th><th><%= lang==='en'?'Customer':'Client' %></th><th><%= lang==='en'?'Service':'Service' %></th><th><%= lang==='en'?'Phone':'Téléphone' %></th><th>Status</th></tr></thead>
+          <tbody>
+            <% recentAppts.forEach(function(a){ %>
+              <tr>
+                <td><%= a.slot_date ? new Date(a.slot_date).toLocaleDateString(lang==='en'?'en-CA':'fr-CA',{month:'short',day:'numeric'}) : '-' %> <strong><%= a.slot_time || '' %></strong></td>
+                <td><%= a.customer_name %></td>
+                <td><%= a.service_name || '-' %></td>
+                <td><a href="tel:<%= a.customer_phone %>"><%= a.customer_phone %></a></td>
+                <td><span class="status status-<%= a.status %>"><%= a.status %></span></td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    <% } else { %>
+      <div class="empty-soft"><p style="color:#64748b"><%= lang==='en'?'No appointments yet. Customers will show up here once they book.':'Aucun rendez-vous pour le moment. Les clients apparaîtront ici dès qu\'ils réserveront.' %></p></div>
+    <% } %>
+  </section>
+
+  <section class="admin-section tips-section">
+    <h2>💡 <%= lang==='en'?'Tips to grow':'Conseils pour faire croître votre activité' %></h2>
+    <ul class="tips-list">
+      <li><strong><%= lang==='en'?'Keep slots open at least 14 days ahead':'Gardez des créneaux libres au moins 14 jours à l\'avance' %></strong> — <%= lang==='en'?'customers book up to 2 weeks in advance.':'les clients réservent jusqu\'à 2 semaines à l\'avance.' %></li>
+      <li><strong><%= lang==='en'?'Publish new tip articles monthly':'Publiez un nouvel article de conseil chaque mois' %></strong> — <%= lang==='en'?'helps Google find your business.':'cela aide Google à trouver votre entreprise.' %></li>
+      <li><strong><%= lang==='en'?'Ask happy customers for testimonials':'Demandez des témoignages à vos clients satisfaits' %></strong> — <%= lang==='en'?'social proof boosts bookings.':'la preuve sociale augmente les réservations.' %></li>
+    </ul>
+  </section>
+</div>
+</body>
+</html>

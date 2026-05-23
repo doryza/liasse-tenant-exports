@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#6366f1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title><%= (settings && settings.business_name) ? settings.business_name : 'André Auger Plomberie' %></title>
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="public/css/styles.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="container nav-inner">
+    <a href="." class="brand">
+      <img src="<%= (typeof settings!=='undefined' && settings._p_nav_logo_url) ? settings._p_nav_logo_url : (typeof appIconUrl !== 'undefined' ? appIconUrl : '') %>" alt="Logo" class="brand-logo" onerror="this.style.display='none'">
+      <span class="brand-name"><%= (settings && settings.business_name) ? settings.business_name : 'André Auger Plomberie' %></span>
+    </a>
+    <nav class="desktop-nav">
+      <a href="."><%= t.nav_home %></a>
+      <a href="services"><%= t.nav_services %></a>
+      <a href="reservation"><%= t.nav_booking %></a>
+      <a href="a-propos"><%= t.nav_about %></a>
+      <a href="contact"><%= t.nav_contact %></a>
+      <a href="mes-rendez-vous" data-auth-only style="display:none"><%= t.nav_my_appts %></a>
+      <a href="#" data-login-btn class="btn-login" style="background-color:#6366f1;color:#fff"><%= t.nav_login %></a>
+      <span class="lang-switch">
+        <a href="?lang=fr" class="<%= lang === 'fr' ? 'active' : '' %>">FR</a>
+        <span> | </span>
+        <a href="?lang=en" class="<%= lang === 'en' ? 'active' : '' %>">EN</a>
+      </span>
+    </nav>
+    <button class="hamburger" aria-label="Menu" id="hamburger-btn">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <div class="mobile-nav" id="mobile-nav">
+    <a href="."><%= t.nav_home %></a>
+    <a href="services"><%= t.nav_services %></a>
+    <a href="reservation"><%= t.nav_booking %></a>
+    <a href="a-propos"><%= t.nav_about %></a>
+    <a href="contact"><%= t.nav_contact %></a>
+    <a href="mes-rendez-vous" data-auth-only style="display:none"><%= t.nav_my_appts %></a>
+    <a href="#" data-login-btn><%= t.nav_login %></a>
+    <div class="lang-switch-mobile">
+      <a href="?lang=fr" class="<%= lang === 'fr' ? 'active' : '' %>">FR</a> | <a href="?lang=en" class="<%= lang === 'en' ? 'active' : '' %>">EN</a>
+    </div>
+  </div>
+</header>
+<script>
+(function(){
+  var btn=document.getElementById('hamburger-btn');
+  var nav=document.getElementById('mobile-nav');
+  if(btn&&nav){btn.addEventListener('click',function(){nav.classList.toggle('open');btn.classList.toggle('open');});}
+})();
+</script>
+<main>

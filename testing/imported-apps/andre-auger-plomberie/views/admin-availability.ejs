@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title><%= lang==='en'?'Availability':'Disponibilités' %> — Admin</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body>
+<%- include('partials/admin-sidebar', { active: 'availability_slots' }) %>
+<div class="admin-content">
+  <header class="admin-header">
+    <div>
+      <h1>📅 <%= lang==='en'?'Availability':'Disponibilités' %></h1>
+      <p style="color:#64748b;margin-top:.25rem;font-size:.95rem"><%= lang==='en'?'Open time slots so customers can book appointments online.':'Ouvrez des créneaux horaires pour que les clients puissent réserver en ligne.' %></p>
+    </div>
+    <button class="btn-primary" id="add-single">+ <%= lang==='en'?'Single slot':'Créneau unique' %></button>
+  </header>
+
+  <section class="admin-section">
+    <h2><%= lang==='en'?'Bulk create slots':'Créer plusieurs créneaux en lot' %></h2>
+    <p style="color:#64748b;margin-bottom:1rem"><%= lang==='en'?'Quickly generate slots across a date range. Customers will see all open slots when booking.':'Générez rapidement des créneaux sur une plage de dates. Les clients verront tous les créneaux libres lors de la réservation.' %></p>
+    <div class="preset-buttons">
+      <button type="button" class="preset-btn" data-preset="7"><%= lang==='en'?'Next 7 days':'7 prochains jours' %></button>
+      <button type="button" class="preset-btn" data-preset="14"><%= lang==='en'?'Next 14 days':'14 prochains jours' %></button>
+      <button type="button" class="preset-btn" data-preset="30"><%= lang==='en'?'Next 30 days':'30 prochains jours' %></button>
+    </div>
+    <form id="bulk-form" class="bulk-form">
+      <div class="form-row">
+        <div><label><%= lang==='en'?'Start date':'Date de début' %></label><input type="date" name="start_date" required></div>
+        <div><label><%= lang==='en'?'End date':'Date de fin' %></label><input type="date" name="end_date" required></div>
+      </div>
+      <div class="form-row">
+        <div><label><%= lang==='en'?'Times (HH:MM, comma-separated)':'Heures (HH:MM, séparées par virgule)' %></label><input type="text" name="times" placeholder="08:00, 10:00, 13:00, 15:00" value="08:00, 10:00, 13:00, 15:00" required></div>
+        <div><label><%= lang==='en'?'Duration (min)':'Durée (min)' %></label><input type="number" name="duration_min" value="60" min="15"></div>
+      </div>
+      <div>
+        <label style="display:block;margin-bottom:.5rem;font-weight:600"><%= lang==='en'?'Weekdays to include':'Jours de la semaine à inclure' %></label>
+        <div class="weekdays">
+          <label><input type="checkbox" value="1" checked> <%= lang==='en'?'Mon':'Lun' %></label>
+          <label><input type="checkbox" value="2" checked> <%= lang==='en'?'Tue':'Mar' %></label>
+          <label><input type="checkbox" value="3" checked> <%= lang==='en'?'Wed':'Mer' %></label>
+          <label><input type="checkbox" value="4" checked> <%= lang==='en'?'Thu':'Jeu' %></label>
+          <label><input type="checkbox" value="5" checked> <%= lang==='en'?'Fri':'Ven' %></label>
+          <label><input type="checkbox" value="6"> <%= lang==='en'?'Sat':'Sam' %></label>
+          <label><input type="checkbox" value="0"> <%= lang==='en'?'Sun':'Dim' %></label>
+        </div>
+      </div>
+      <button type="submit" class="btn-primary">✨ <%= lang==='en'?'Generate slots':'Générer les créneaux' %></button>
+    </form>
+  </section>
+
+  <section class="admin-section">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-bottom:1rem">
+      <h2 style="margin:0"><%= lang==='en'?'Calendar view':'Vue calendrier' %></h2>
+      <div class="admin-toolbar" style="margin:0">
+        <select id="filter">
+          <option value="open" selected><%= lang==='en'?'Open (upcoming)':'Libres (à venir)' %></option>
+          <option value="booked"><%= lang==='en'?'Booked only':'Réservés seulement' %></option>
+          <option value="all"><%= lang==='en'?'All':'Tous' %></option>
+        </select>
+      </div>
+    </div>
+    <div id="slots-loading" class="loading"><%= lang==='en'?'Loading...':'Chargement…' %></div>
+    <div id="slots-container" style="display:none"></div>
+    <div id="slots-empty" class="empty-state" style="display:none">
+      <div class="empty-state-icon">📅</div>
+      <p style="margin-bottom:.5rem"><strong><%= lang==='en'?'No slots match the filter.':'Aucun créneau ne correspond au filtre.' %></strong></p>
+      <p style="font-size:.9rem"><%= lang==='en'?'Use the form above to create slots in bulk.':'Utilisez le formulaire ci-dessus pour créer des créneaux en lot.' %></p>
+    </div>
+  </section>
+</div>
+
+<div id="modal" class="modal" style="display:none">
+  <div class="modal-content">
+    <header class="modal-header"><h2><%= lang==='en'?'New slot':'Nouveau créneau' %></h2><button class="modal-close" onclick="closeM()">&times;</button></header>
+    <form id="single-form" class="modal-body">
+      <div class="field"><label><%= lang==='en'?'Date':'Date' %> *</label><input type="date" name="slot_date" required></div>
+      <div class="field"><label><%= lang==='en'?'Time (HH:MM)':'Heure (HH:MM)' %> *</label><input type="text" name="slot_time" placeholder="14:30" required></div>
+      <div class="field"><label><%= lang==='en'?'Duration (min)':'Durée (min)' %></label><input type="number" name="duration_min" value="60" min="15"></div>
+    </form>
+    <footer class="modal-footer"><button class="btn-secondary" onclick="closeM()"><%= lang==='en'?'Cancel':'Annuler' %></button><button class="btn-primary" onclick="saveSingle()"><%= lang==='en'?'Save':'Enregistrer' %></button></footer>
+  </div>
+</div>
+
+<script>
+var LANG = <%- JSON.stringify(lang) %>;
+var ITEMS = [];
+
+function toast(msg, type){
+  var el = document.createElement('div');
+  el.className = 'toast ' + (type||'success');
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(function(){ el.remove(); }, 3200);
+}
+
+function loadSlots(){
+  document.getElementById('slots-loading').style.display='block';
+  document.getElementById('slots-container').style.display='none';
+  document.getElementById('slots-empty').style.display='none';
+  fetch('api/admin/availability_slots').then(function(r){return r.json();}).then(function(d){
+    ITEMS = d.availability_slots || [];
+    document.getElementById('slots-loading').style.display='none';
+    renderSlots();
+  });
+}
+function renderSlots(){
+  var f = document.getElementById('filter').value;
+  var todayStr = new Date().toISOString().slice(0,10);
+  var filtered = ITEMS.filter(function(s){
+    var sd = s.slot_date ? String(s.slot_date).slice(0,10) : '';
+    if (f === 'open') return !s.booked && sd >= todayStr;
+    if (f === 'booked') return !!s.booked;
+    return true;
+  });
+  if (!filtered.length) {
+    document.getElementById('slots-container').style.display='none';
+    document.getElementById('slots-empty').style.display='block';
+    return;
+  }
+  document.getElementById('slots-empty').style.display='none';
+  document.getElementById('slots-container').style.display='block';
+  // group by date
+  var groups = {};
+  filtered.forEach(function(s){
+    var k = String(s.slot_date).slice(0,10);
+    if (!groups[k]) groups[k] = [];
+    groups[k].push(s);
+  });
+  var keys = Object.keys(groups).sort();
+  var html = '';
+  keys.forEach(function(date){
+    var slots = groups[date].sort(function(a,b){ return (a.slot_time||'').localeCompare(b.slot_time||''); });
+    var dateLabel = new Date(date+'T00:00:00').toLocaleDateString(LANG==='en'?'en-CA':'fr-CA',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+    var openCount = slots.filter(function(s){return !s.booked;}).length;
+    html += '<div class="day-group">';
+    html += '<div class="day-header"><span>'+dateLabel+'</span><span>'+slots.length+' '+(LANG==='en'?'slots':'créneaux')+' · '+openCount+' '+(LANG==='en'?'open':'libres')+'</span></div>';
+    html += '<div class="day-slots">';
+    slots.forEach(function(s){
+      html += '<span class="slot-pill '+(s.booked?'booked':'')+'">';
+      html += s.slot_time;
+      html += '<button class="slot-pill-del" onclick="delSlot('+s.id+')" title="'+(LANG==='en'?'Delete':'Supprimer')+'">×</button>';
+      html += '</span>';
+    });
+    html += '</div></div>';
+  });
+  document.getElementById('slots-container').innerHTML = html;
+}
+window.delSlot = function(id){
+  if (!confirm(LANG==='en'?'Delete this slot?':'Supprimer ce créneau?')) return;
+  fetch('api/admin/availability_slots/'+id,{method:'DELETE'}).then(function(){ toast(LANG==='en'?'Slot deleted':'Créneau supprimé','success'); loadSlots(); });
+};
+window.closeM = function(){ document.getElementById('modal').style.display='none'; };
+window.saveSingle = function(){
+  var form = document.getElementById('single-form');
+  var data = { slot_date: form.elements.slot_date.value, slot_time: form.elements.slot_time.value, duration_min: parseInt(form.elements.duration_min.value)||60, booked: 0 };
+  if (!data.slot_date || !data.slot_time) { toast(LANG==='en'?'Date and time required':'Date et heure requises','error'); return; }
+  fetch('api/admin/availability_slots',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)})
+    .then(function(r){return r.json();}).then(function(res){
+      if (res.error) { toast(res.error,'error'); return; }
+      closeM(); toast(LANG==='en'?'Slot created':'Créneau créé','success'); loadSlots();
+    });
+};
+
+document.getElementById('add-single').addEventListener('click', function(){
+  document.getElementById('single-form').reset();
+  document.getElementById('single-form').elements.duration_min.value=60;
+  document.getElementById('modal').style.display='flex';
+});
+document.getElementById('filter').addEventListener('change', renderSlots);
+
+document.querySelectorAll('.preset-btn').forEach(function(b){
+  b.addEventListener('click', function(){
+    var days = parseInt(this.getAttribute('data-preset'));
+    var start = new Date(); start.setDate(start.getDate()+1);
+    var end = new Date(); end.setDate(end.getDate()+days);
+    document.querySelector('#bulk-form [name=start_date]').value = start.toISOString().slice(0,10);
+    document.querySelector('#bulk-form [name=end_date]').value = end.toISOString().slice(0,10);
+  });
+});
+
+document.getElementById('bulk-form').addEventListener('submit', function(e){
+  e.preventDefault();
+  var fd = new FormData(this);
+  var times = (fd.get('times')||'').split(',').map(function(t){ return t.trim(); }).filter(Boolean);
+  var weekdays = Array.prototype.slice.call(this.querySelectorAll('.weekdays input:checked')).map(function(c){ return parseInt(c.value); });
+  var data = { start_date: fd.get('start_date'), end_date: fd.get('end_date'), times: times, duration_min: parseInt(fd.get('duration_min'))||60, weekdays: weekdays };
+  fetch('api/admin/availability_slots/bulk',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)})
+    .then(function(r){return r.json();}).then(function(res){
+      if (res.success) { toast('✓ '+(LANG==='en'?'Created ':'Créé ')+res.created+(LANG==='en'?' new slots':' nouveaux créneaux'),'success'); }
+      else { toast('⚠ '+(res.error||'Erreur'),'error'); }
+      loadSlots();
+    }).catch(function(){ toast(LANG==='en'?'Connection error':'Erreur de connexion','error'); });
+});
+
+loadSlots();
+</script>
+</body>
+</html>

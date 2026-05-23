@@ -1,0 +1,41 @@
+<%- include('partials/header') %>
+<section class="page-header">
+  <div class="container"><h1><%= t.my_appts_title %></h1></div>
+</section>
+<section class="container" style="padding-top:2rem;padding-bottom:3rem">
+  <% if (user) { %>
+    <% if (appts && appts.length > 0) { %>
+      <div class="appts-list">
+        <% appts.forEach(function(a){ %>
+          <div class="appt-card">
+            <div class="appt-date">
+              <strong><%= fmtDate(a.slot_date, lang) %></strong>
+              <span><%= a.slot_time || '' %></span>
+            </div>
+            <div class="appt-info">
+              <% if (a.service_name) { %><h3><%= (lang==='en' && a.service_name_en) ? a.service_name_en : a.service_name %></h3><% } %>
+              <span class="status status-<%= a.status %>"><%= t['status_' + a.status] || a.status %></span>
+              <% if (a.problem_description) { %><p style="margin-top:.75rem"><%= a.problem_description %></p><% } %>
+              <% if (a.customer_address) { %><p style="color:var(--muted)">📍 <%= a.customer_address %></p><% } %>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+      <div style="text-align:center;margin-top:2rem">
+        <a href="reservation" class="btn-primary" style="background-color:#6366f1;color:#fff">+ <%= t.my_appts_book %></a>
+      </div>
+    <% } else { %>
+      <div class="empty-state">
+        <p style="font-size:1.1rem;margin-bottom:1rem"><%= t.my_appts_empty %></p>
+        <a href="reservation" class="btn-primary" style="background-color:#6366f1;color:#fff"><%= t.my_appts_book %></a>
+      </div>
+    <% } %>
+  <% } else { %>
+    <div class="empty-state">
+      <p style="font-size:1.1rem;margin-bottom:1rem"><%= t.booking_login_prompt %></p>
+      <button data-login-btn class="btn-primary" style="background-color:#6366f1;color:#fff"><%= t.nav_login %></button>
+    </div>
+  <% } %>
+</section>
+<%- include('partials/footer') %>
+<script>try{if(window.TenantSDK)TenantSDK.ui.showInstallBanner();}catch(e){}</script>

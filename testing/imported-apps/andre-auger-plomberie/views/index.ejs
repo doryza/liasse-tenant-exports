@@ -1,0 +1,111 @@
+<%- include('partials/header') %>
+<section class="hero">
+  <img src="<%= (typeof settings!=='undefined' && settings._p_hero_image_url) ? settings._p_hero_image_url : 'https://placehold.co/1600x900/6366f1/fff/png?text=Plomberie' %>" alt="Hero" class="hero-img">
+  <div class="hero-overlay">
+    <div class="container">
+      <h1><%= t.hero_title %></h1>
+      <p><%= t.hero_subtitle %></p>
+      <div class="hero-cta">
+        <a href="reservation" class="btn-primary btn-lg" style="background-color:#fff;color:#6366f1"><%= t.hero_cta_book %></a>
+        <a href="services" class="btn-outline"><%= t.hero_cta_services %></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="features container">
+  <h2 style="text-align:center"><%= t.features_title %></h2>
+  <div class="feature-grid">
+    <div class="feature-card"><div class="feature-icon">💰</div><h3><%= t.feat1_title %></h3><p><%= t.feat1_desc %></p></div>
+    <div class="feature-card"><div class="feature-icon">📅</div><h3><%= t.feat2_title %></h3><p><%= t.feat2_desc %></p></div>
+    <div class="feature-card"><div class="feature-icon">✅</div><h3><%= t.feat3_title %></h3><p><%= t.feat3_desc %></p></div>
+    <div class="feature-card"><div class="feature-icon">🚨</div><h3><%= t.feat4_title %></h3><p><%= t.feat4_desc %></p></div>
+  </div>
+</section>
+
+<section class="services-preview">
+  <div class="container">
+    <h2 style="text-align:center"><%= t.services_title %></h2>
+    <p class="section-subtitle" style="text-align:center"><%= t.services_subtitle %></p>
+    <% if (services_list && services_list.length > 0) { %>
+      <div class="services-grid">
+        <% services_list.forEach(function(s){ %>
+          <div class="service-card">
+            <% if (s.image_url) { %><img src="<%= s.image_url %>" alt="<%= pickLang(s,'name',lang) %>"><% } %>
+            <div class="service-body">
+              <% if (s.category) { %><span class="badge"><%= s.category %></span><% } %>
+              <h3><%= pickLang(s,'name',lang) %></h3>
+              <p class="service-desc"><%= (pickLang(s,'description',lang)||'').slice(0,140) %><% if ((pickLang(s,'description',lang)||'').length > 140) { %>…<% } %></p>
+              <% if (s.price_min) { %>
+                <div class="price-block">
+                  <span class="price-label"><%= t.pricing_from %></span>
+                  <span class="price-value"><%= fmtPrice(s.price_min) %></span>
+                  <% if (s.price_unit && s.price_unit !== 'fixe') { %><small style="color:var(--muted)">(<%= s.price_unit %>)</small><% } %>
+                </div>
+              <% } else { %>
+                <div class="price-block"><span class="price-value" style="font-size:1.05rem"><%= t.pricing_estimate %></span></div>
+              <% } %>
+              <a href="reservation?service=<%= s.id %>" class="btn-primary btn-sm" style="background-color:#6366f1;color:#fff"><%= t.book_this_service %></a>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+      <div style="text-align:center;margin-top:2rem"><a href="services" class="btn-secondary"><%= t.nav_services %> →</a></div>
+    <% } else { %>
+      <p class="empty-state"><%= t.empty_no_services %></p>
+    <% } %>
+  </div>
+</section>
+
+<% if (testimonials && testimonials.length > 0) { %>
+<section class="testimonials">
+  <div class="container">
+    <h2 style="text-align:center"><%= t.testimonials_title %></h2>
+    <div class="testimonials-grid">
+      <% testimonials.forEach(function(tm){ %>
+        <div class="testimonial-card">
+          <div class="stars"><% for (var i=0; i<(tm.rating||5); i++) { %>★<% } %></div>
+          <p class="testimonial-content">« <%= tm.content %> »</p>
+          <div class="testimonial-author">
+            <% if (tm.image_url) { %><img src="<%= tm.image_url %>" alt="<%= tm.author %>"><% } %>
+            <div><strong><%= tm.author %></strong><% if (tm.location) { %><br><small><%= tm.location %></small><% } %></div>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<% if (posts && posts.length > 0) { %>
+<section class="container">
+  <h2 style="text-align:center"><%= t.latest_news %></h2>
+  <div class="posts-grid">
+    <% posts.forEach(function(p){ %>
+      <article class="post-card">
+        <% if (p.image_url) { %><img src="<%= p.image_url %>" alt="<%= pickLang(p,'title',lang) %>"><% } %>
+        <div class="post-body">
+          <% if (p.category) { %><span class="badge"><%= p.category %></span><% } %>
+          <h3><%= pickLang(p,'title',lang) %></h3>
+          <p><%= (pickLang(p,'content',lang)||'').slice(0,160) %>…</p>
+          <small style="color:var(--muted)"><%= fmtDate(p.created_at, lang) %></small>
+        </div>
+      </article>
+    <% }); %>
+  </div>
+</section>
+<% } %>
+
+<section class="cta-section">
+  <div class="container">
+    <h2><%= t.cta_ready %></h2>
+    <p style="opacity:.95;margin-bottom:1.5rem"><%= t.cta_ready_sub %></p>
+    <a href="reservation" class="btn-primary btn-lg" style="background-color:#fff;color:#6366f1"><%= t.cta_book_now %></a>
+  </div>
+</section>
+
+<%- include('partials/footer') %>
+<script>
+try { if (window.TenantSDK) { TenantSDK.ui.showInstallBanner(); } } catch(e){}
+setTimeout(function(){ try { if (window.TenantSDK) TenantSDK.ui.showPushPrompt(); } catch(e){} }, 8000);
+</script>

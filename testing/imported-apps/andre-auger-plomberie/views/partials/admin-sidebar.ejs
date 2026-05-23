@@ -1,0 +1,21 @@
+<aside class="admin-sidebar" id="admin-sidebar">
+  <div class="sidebar-brand">
+    <strong>Admin</strong>
+    <small><%= (typeof settings !== 'undefined' && settings.business_name) ? settings.business_name : 'André Auger' %></small>
+  </div>
+  <nav class="sidebar-nav">
+    <a href="admin" class="<%= active==='dashboard' ? 'active' : '' %>"><span>📊 <%= (typeof lang!=='undefined' && lang==='en') ? 'Dashboard' : 'Tableau de bord' %></span></a>
+    <a href="admin/appointments" class="<%= active==='appointments' ? 'active' : '' %>"><span>🗓 <%= (typeof lang!=='undefined' && lang==='en') ? 'Appointments' : 'Rendez-vous' %></span></a>
+    <a href="admin/availability" class="<%= active==='availability_slots' ? 'active' : '' %>"><span>📅 <%= (typeof lang!=='undefined' && lang==='en') ? 'Availability' : 'Disponibilités' %></span></a>
+    <a href="admin/services" class="<%= active==='services' ? 'active' : '' %>"><span>🔧 Services</span></a>
+    <a href="admin/posts" class="<%= active==='posts' ? 'active' : '' %>"><span>📝 Articles</span></a>
+    <a href="admin/testimonials" class="<%= active==='testimonials' ? 'active' : '' %>"><span>⭐ <%= (typeof lang!=='undefined' && lang==='en') ? 'Testimonials' : 'Témoignages' %></span></a>
+    <a href="admin/submissions" class="<%= active==='form_submissions' ? 'active' : '' %>"><span>✉ Messages</span></a>
+  </nav>
+  <div class="sidebar-footer">
+    <a href="." target="_blank">🌐 <%= (typeof lang!=='undefined' && lang==='en') ? 'View site ↗' : 'Voir le site ↗' %></a>
+    <a href="admin/logout">🚪 <%= (typeof lang!=='undefined' && lang==='en') ? 'Logout' : 'Déconnexion' %></a>
+  </div>
+</aside>
+<button class="admin-menu-toggle" id="admin-menu-toggle" aria-label="Menu">☰</button>
+<script>(function(){var b=document.getElementById('admin-menu-toggle');var s=document.getElementById('admin-sidebar');if(b&&s){b.addEventListener('click',function(){s.classList.toggle('open');});}})();</script>

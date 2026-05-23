@@ -1,0 +1,66 @@
+<%- include('partials/header') %>
+<section class="page-header">
+  <div class="container">
+    <h1><%= t.contact_title %></h1>
+    <p><%= t.contact_subtitle %></p>
+  </div>
+</section>
+<section class="container contact-page">
+  <div class="contact-grid">
+    <div class="contact-info">
+      <% if (settings && settings.contact_phone) { %>
+        <div class="contact-card emergency">
+          <h3>🚨 <%= t.contact_emergency %></h3>
+          <p style="margin-bottom:.75rem"><%= lang==='en'?'Available 24/7 for major issues':'Disponible 24/7 pour les urgences majeures' %></p>
+          <a href="tel:<%= settings.contact_phone %>" class="btn-primary" style="background-color:#6366f1;color:#fff"><%= t.contact_call_now %>: <%= settings.contact_phone %></a>
+        </div>
+      <% } %>
+      <h3 style="margin-bottom:1rem"><%= t.footer_contact %></h3>
+      <% if (settings && settings.contact_email) { %><p>✉ <a href="mailto:<%= settings.contact_email %>"><%= settings.contact_email %></a></p><% } %>
+      <% if (settings && settings.contact_phone) { %><p>📞 <a href="tel:<%= settings.contact_phone %>"><%= settings.contact_phone %></a></p><% } %>
+      <% if (settings && settings.business_address) { %><p>📍 <%= settings.business_address %></p><% } %>
+      <p><strong><%= t.footer_hours %>:</strong></p>
+      <p><%= (settings && settings['hours_text_' + lang]) ? settings['hours_text_' + lang] : (lang==='en' ? 'Mon–Fri: 7am–6pm | Sat: 9am–3pm' : 'Lun–Ven: 7h–18h | Sam: 9h–15h') %></p>
+    </div>
+    <form id="contact-form" class="contact-form">
+      <div class="form-row">
+        <div><label><%= t.contact_name %> *</label><input type="text" name="name" required class="form-input"></div>
+        <div><label><%= t.contact_phone %></label><input type="tel" name="phone" class="form-input"></div>
+      </div>
+      <div><label><%= t.contact_email %></label><input type="email" name="email" class="form-input"></div>
+      <div><label><%= t.contact_subject %></label><input type="text" name="subject" class="form-input"></div>
+      <div><label><%= t.contact_message %> *</label><textarea name="message" rows="5" required class="form-input"></textarea></div>
+      <button type="submit" id="contact-submit" class="btn-primary btn-lg" style="background-color:#6366f1;color:#fff"><%= t.contact_send %></button>
+      <p id="contact-msg" style="display:none;margin-top:1rem"></p>
+    </form>
+  </div>
+</section>
+<%- include('partials/footer') %>
+<script>
+(function(){
+  var form=document.getElementById('contact-form');
+  var msg=document.getElementById('contact-msg');
+  var sendLabel=<%- JSON.stringify(t.contact_send) %>;
+  var successMsg=<%- JSON.stringify(t.contact_success) %>;
+  var errMsg=<%- JSON.stringify(t.contact_err) %>;
+  var connErr=<%- JSON.stringify(t.conn_err) %>;
+  if (!form) return;
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var fd=new FormData(form); var data={};
+    fd.forEach(function(v,k){data[k]=v;});
+    var btn=document.getElementById('contact-submit');
+    btn.disabled=true; btn.textContent='…';
+    fetch('api/contact',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)})
+      .then(function(r){return r.json();}).then(function(res){
+        btn.disabled=false; btn.textContent=sendLabel;
+        if (res.success) { form.reset(); msg.textContent='✓ '+successMsg; msg.style.color='#16a34a'; msg.style.display='block'; }
+        else { msg.textContent='⚠ '+(res.error||errMsg); msg.style.color='#dc2626'; msg.style.display='block'; }
+      }).catch(function(){
+        btn.disabled=false; btn.textContent=sendLabel;
+        msg.textContent='⚠ '+connErr; msg.style.color='#dc2626'; msg.style.display='block';
+      });
+  });
+})();
+</script>
+<script>try{if(window.TenantSDK)TenantSDK.ui.showInstallBanner();}catch(e){}</script>

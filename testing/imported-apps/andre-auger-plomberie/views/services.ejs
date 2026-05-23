@@ -1,0 +1,41 @@
+<%- include('partials/header') %>
+<section class="page-header">
+  <div class="container">
+    <h1><%= t.services_title %></h1>
+    <p><%= t.services_subtitle %></p>
+  </div>
+</section>
+<section class="container services-page">
+  <% if (services_list && services_list.length > 0) { %>
+    <div class="services-grid">
+      <% services_list.forEach(function(s){ %>
+        <div class="service-card">
+          <% if (s.image_url) { %><img src="<%= s.image_url %>" alt="<%= pickLang(s,'name',lang) %>"><% } %>
+          <div class="service-body">
+            <% if (s.category) { %><span class="badge"><%= s.category %></span><% } %>
+            <h3><%= pickLang(s,'name',lang) %></h3>
+            <p class="service-desc"><%= pickLang(s,'description',lang) %></p>
+            <% if (s.duration_min) { %><p class="meta">⏱ <%= t.duration_label %>: <%= s.duration_min %> <%= t.minutes %></p><% } %>
+            <div class="price-block">
+              <% if (s.price_min && s.price_max && s.price_max > s.price_min) { %>
+                <span class="price-label"><%= t.pricing_from %></span>
+                <span class="price-value"><%= fmtPrice(s.price_min) %> – <%= fmtPrice(s.price_max) %></span>
+              <% } else if (s.price_min) { %>
+                <span class="price-label"><%= t.pricing_from %></span>
+                <span class="price-value"><%= fmtPrice(s.price_min) %></span>
+              <% } else { %>
+                <span class="price-value" style="font-size:1.05rem"><%= t.pricing_estimate %></span>
+              <% } %>
+              <% if (s.price_unit && s.price_unit !== 'fixe') { %><small style="color:var(--muted)">(<%= s.price_unit %>)</small><% } %>
+            </div>
+            <a href="reservation?service=<%= s.id %>" class="btn-primary" style="background-color:#6366f1;color:#fff"><%= t.book_this_service %></a>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+  <% } else { %>
+    <div class="empty-state"><p><%= t.empty_no_services %></p></div>
+  <% } %>
+</section>
+<%- include('partials/footer') %>
+<script>try{if(window.TenantSDK)TenantSDK.ui.showInstallBanner();}catch(e){}</script>

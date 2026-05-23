@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="<%= typeof lang !=='undefined' ? lang : 'fr' %>">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title><%= moduleLabel %> — Admin</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body>
+<%- include('admin-sidebar', { active: moduleKey }) %>
+<div class="admin-content">
+  <header class="admin-header">
+    <div>
+      <h1><%= moduleLabel %></h1>
+      <p id="items-count" style="color:#64748b;margin-top:.25rem;font-size:.9rem"></p>
+    </div>
+    <button class="btn-primary" id="add-btn">+ <%= (typeof lang!=='undefined' && lang==='en') ? 'New' : 'Nouveau' %></button>
+  </header>
+  <div class="admin-toolbar">
+    <input type="search" id="search-input" placeholder="<%= (typeof lang!=='undefined' && lang==='en') ? 'Search...' : 'Rechercher...' %>">
+    <span class="toolbar-info" id="filtered-count"></span>
+  </div>
+  <div id="loading-state" class="loading"><%= (typeof lang!=='undefined' && lang==='en') ? 'Loading...' : 'Chargement…' %></div>
+  <div id="empty-state" class="empty-state" style="display:none">
+    <div class="empty-state-icon">📭</div>
+    <p style="font-weight:600;margin-bottom:.5rem"><%= (typeof lang!=='undefined' && lang==='en') ? 'No items yet' : 'Aucun élément pour l\'instant' %></p>
+    <p style="font-size:.9rem;margin-bottom:1rem"><%= (typeof lang!=='undefined' && lang==='en') ? 'Get started by creating your first entry.' : 'Commencez par créer votre première entrée.' %></p>
+    <button class="btn-primary" id="add-btn-empty">+ <%= (typeof lang!=='undefined' && lang==='en') ? 'Create one' : 'En créer un' %></button>
+  </div>
+  <div id="table-container" style="display:none">
+    <div class="table-wrap">
+      <table class="admin-table">
+        <thead id="table-head"></thead>
+        <tbody id="table-body"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<div id="modal" class="modal" style="display:none">
+  <div class="modal-content">
+    <header class="modal-header">
+      <h2 id="modal-title"></h2>
+      <button class="modal-close" id="modal-close">&times;</button>
+    </header>
+    <form id="item-form" class="modal-body"></form>
+    <footer class="modal-footer">
+      <button type="button" id="cancel-btn" class="btn-secondary"><%= (typeof lang!=='undefined' && lang==='en') ? 'Cancel' : 'Annuler' %></button>
+      <button type="button" id="save-btn" class="btn-primary"><%= (typeof lang!=='undefined' && lang==='en') ? 'Save' : 'Enregistrer' %></button>
+    </footer>
+  </div>
+</div>
+<script>
+var MODULE_KEY = <%- JSON.stringify(moduleKey) %>;
+var MODULE_LABEL = <%- JSON.stringify(moduleLabel) %>;
+var LANG = <%- JSON.stringify(typeof lang !=='undefined' ? lang : 'fr') %>;
+var FIELDS = [];
+var ITEMS = [];
+var editingId = null;
+
+function tr(fr, en){ return LANG==='en' ? en : fr; }
+function escHtml(s){ return String(s==null?'':s).replace(/[&<>"]/g, function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+
+function toast(msg, type){
+  var el = document.createElement('div');
+  el.className = 'toast ' + (type||'success');
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(function(){ el.remove(); }, 3200);
+}
+
+function loadFields(){
+  return fetch('api/admin/modules').then(function(r){return r.json();}).then(function(data){
+    var mod = (data.modules||[]).find(function(m){ return m.key === MODULE_KEY; });
+    if (mod) FIELDS = mod.fields || [];
+  });
+}
+function loadItems(){
+  document.getElementById('loading-state').style.display='block';
+  document.getElementById('table-container').style.display='none';
+  document.getElementById('empty-state').style.display='none';
+  return fetch('api/admin/' + MODULE_KEY).then(function(r){return r.json();}).then(function(data){
+    ITEMS = data[MODULE_KEY] || [];
+    document.getElementById('loading-state').style.display='none';
+    document.getElementById('items-count').textContent = ITEMS.length + ' ' + tr(ITEMS.length>1?'éléments':'élément', ITEMS.length>1?'items':'item');
+    render();
+  });
+}
+function labelFor(f){ return f.label || f.name; }
+function render(){
+  var q = (document.getElementById('search-input').value || '').toLowerCase();
+  var filtered = ITEMS.filter(function(it){
+    if (!q) return true;
+    return Object.values(it).some(function(v){ return v != null && String(v).toLowerCase().indexOf(q) >= 0; });
+  });
+  document.getElementById('filtered-count').textContent = q ? (filtered.length + ' ' + tr('résultat(s)','result(s)')) : '';
+  if (!ITEMS.length) {
+    document.getElementById('table-container').style.display='none';
+    document.getElementById('empty-state').style.display='block';
+    return;
+  }
+  if (!filtered.length) {
+    document.getElementById('table-container').style.display='none';
+    document.getElementById('empty-state').style.display='block';
+    return;
+  }
+  document.getElementById('empty-state').style.display='none';
+  document.getElementById('table-container').style.display='block';
+  var primary = FIELDS.filter(function(f){ return f.type!=='textarea' && f.type!=='hidden'; }).slice(0,4);
+  var head = '<tr>';
+  primary.forEach(function(f){ head += '<th>' + escHtml(labelFor(f)) + '</th>'; });
+  head += '<th style="text-align:right">Actions</th></tr>';
+  document.getElementById('table-head').innerHTML = head;
+  var body = '';
+  filtered.forEach(function(it){
+    body += '<tr>';
+    primary.forEach(function(f){
+      var v = it[f.name];
+      if (f.type === 'image' && v) v = '<img src="'+escHtml(v)+'" class="thumb">';
+      else if (f.type === 'boolean') v = (v==1||v===true||v==='1'||v==='true') ? '<span style="color:#16a34a;font-weight:700">✓</span>' : '<span style="color:#94a3b8">–</span>';
+      else if (f.type === 'select' && v) v = '<span class="status status-'+escHtml(v)+'">'+escHtml(v)+'</span>';
+      else if (f.type === 'number' && v != null) v = escHtml(String(v));
+      else if (v == null || v === '') v = '<span style="color:#94a3b8">–</span>';
+      else v = escHtml(String(v).slice(0, 80));
+      body += '<td>' + v + '</td>';
+    });
+    body += '<td class="row-actions">';
+    body += '<button class="btn-icon" onclick="editItem('+it.id+')" title="'+tr('Modifier','Edit')+'">✎</button>';
+    body += '<button class="btn-icon btn-danger" onclick="deleteItem('+it.id+')" title="'+tr('Supprimer','Delete')+'">🗑</button>';
+    body += '</td></tr>';
+  });
+  document.getElementById('table-body').innerHTML = body;
+}
+function buildForm(item){
+  item = item || {};
+  var html = '';
+  FIELDS.forEach(function(f){
+    if (f.type === 'hidden') { html += '<input type="hidden" name="'+f.name+'" value="'+escHtml(item[f.name]||'')+'">'; return; }
+    if (f.type === 'readonly') {
+      html += '<div class="field"><label>'+escHtml(labelFor(f))+'</label><p class="readonly-value">'+escHtml(item[f.name]||'-')+'</p></div>';
+      return;
+    }
+    var val = item[f.name];
+    if (val === null || val === undefined) val = f.default !== undefined ? f.default : '';
+    if (f.type === 'boolean') {
+      var checked = (val===true||val===1||val==='1'||val==='true') ? 'checked' : '';
+      html += '<div class="field"><div class="field-checkbox"><input type="checkbox" name="'+f.name+'" id="f_'+f.name+'" '+checked+'><label for="f_'+f.name+'">'+escHtml(labelFor(f))+'</label></div>';
+      if (f.description) html += '<small>'+escHtml(f.description)+'</small>';
+      html += '</div>';
+      return;
+    }
+    html += '<div class="field">';
+    html += '<label>'+escHtml(labelFor(f))+(f.required?' <span style="color:#dc2626">*</span>':'')+'</label>';
+    if (f.type === 'textarea') {
+      html += '<textarea name="'+f.name+'" rows="5"'+(f.placeholder?' placeholder="'+escHtml(f.placeholder)+'"':'')+'>'+escHtml(val)+'</textarea>';
+    } else if (f.type === 'select') {
+      html += '<select name="'+f.name+'">';
+      (f.options||[]).forEach(function(o){ html += '<option value="'+escHtml(o)+'" '+(String(val)===String(o)?'selected':'')+'>'+escHtml(o||'-')+'</option>'; });
+      html += '</select>';
+    } else if (f.type === 'number') {
+      html += '<input type="number" name="'+f.name+'" value="'+escHtml(val)+'"'+(f.min!==undefined?' min="'+f.min+'"':'')+(f.max!==undefined?' max="'+f.max+'"':'')+(f.step?' step="'+f.step+'"':'')+(f.placeholder?' placeholder="'+escHtml(f.placeholder)+'"':'')+'>';
+    } else if (f.type === 'date') {
+      var dv = val; if (dv && String(dv).length > 10) dv = String(dv).slice(0,10);
+      html += '<input type="date" name="'+f.name+'" value="'+escHtml(dv)+'">';
+    } else if (f.type === 'image') {
+      html += '<input type="url" name="'+f.name+'" value="'+escHtml(val)+'" placeholder="https://..." oninput="document.getElementById(\'preview_'+f.name+'\').src=this.value">';
+      html += '<img id="preview_'+f.name+'" src="'+escHtml(val||'')+'" class="thumb-preview" style="'+(val?'':'display:none')+'" onerror="this.style.display=\'none\'" onload="this.style.display=\'block\'">';
+    } else {
+      html += '<input type="text" name="'+f.name+'" value="'+escHtml(val)+'"'+(f.maxLength?' maxlength="'+f.maxLength+'"':'')+(f.required?' required':'')+(f.placeholder?' placeholder="'+escHtml(f.placeholder)+'"':'')+'>';
+    }
+    if (f.description) html += '<small>'+escHtml(f.description)+'</small>';
+    html += '</div>';
+  });
+  document.getElementById('item-form').innerHTML = html;
+}
+function openModal(item){
+  editingId = item ? item.id : null;
+  document.getElementById('modal-title').textContent = item ? tr('Modifier','Edit')+' — '+MODULE_LABEL : tr('Nouveau','New')+' — '+MODULE_LABEL;
+  buildForm(item);
+  document.getElementById('modal').style.display='flex';
+}
+function closeModal(){ document.getElementById('modal').style.display='none'; editingId = null; }
+window.editItem = function(id){ var it = ITEMS.find(function(x){ return x.id === id; }); if (it) openModal(it); };
+window.deleteItem = function(id){
+  if (!confirm(tr('Supprimer cet élément? Cette action est définitive.','Delete this item? This cannot be undone.'))) return;
+  fetch('api/admin/' + MODULE_KEY + '/' + id, { method:'DELETE' }).then(function(r){return r.json();}).then(function(res){
+    if (res.error) { toast(res.error, 'error'); return; }
+    toast(tr('Supprimé','Deleted'),'success');
+    loadItems();
+  });
+};
+document.addEventListener('DOMContentLoaded', function(){
+  document.getElementById('add-btn').addEventListener('click', function(){ openModal(null); });
+  var emptyBtn = document.getElementById('add-btn-empty');
+  if (emptyBtn) emptyBtn.addEventListener('click', function(){ openModal(null); });
+  document.getElementById('modal-close').addEventListener('click', closeModal);
+  document.getElementById('cancel-btn').addEventListener('click', closeModal);
+  document.getElementById('search-input').addEventListener('input', render);
+  document.getElementById('modal').addEventListener('click', function(e){ if (e.target===this) closeModal(); });
+  document.getElementById('save-btn').addEventListener('click', function(){
+    var form = document.getElementById('item-form');
+    var data = {};
+    FIELDS.forEach(function(f){
+      if (f.type === 'readonly') return;
+      var el = form.elements[f.name];
+      if (!el) return;
+      if (f.type === 'boolean') data[f.name] = el.checked ? 1 : 0;
+      else if (f.type === 'number') data[f.name] = el.value === '' ? null : parseFloat(el.value);
+      else data[f.name] = el.value;
+    });
+    var url = editingId ? ('api/admin/'+MODULE_KEY+'/'+editingId) : ('api/admin/'+MODULE_KEY);
+    var method = editingId ? 'PUT' : 'POST';
+    var saveBtn = document.getElementById('save-btn');
+    saveBtn.disabled = true; saveBtn.textContent = '…';
+    fetch(url, { method:method, headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) })
+      .then(function(r){return r.json();}).then(function(res){
+        saveBtn.disabled = false; saveBtn.textContent = tr('Enregistrer','Save');
+        if (res.error) { toast(res.error, 'error'); return; }
+        closeModal();
+        toast(editingId ? tr('Modifications enregistrées','Changes saved') : tr('Créé avec succès','Created successfully'),'success');
+        loadItems();
+      }).catch(function(e){
+        saveBtn.disabled = false; saveBtn.textContent = tr('Enregistrer','Save');
+        toast(tr('Erreur de connexion','Connection error'),'error');
+      });
+  });
+  loadFields().then(loadItems);
+});
+</script>
+</body>
+</html>

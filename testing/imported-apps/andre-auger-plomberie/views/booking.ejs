@@ -1,0 +1,120 @@
+<%- include('partials/header') %>
+<section class="page-header">
+  <div class="container">
+    <h1><%= t.booking_title %></h1>
+    <p><%= t.booking_subtitle %></p>
+  </div>
+</section>
+<section class="container booking-page">
+  <div id="booking-success" class="success-box" style="display:none">
+    <h2>✓ <%= t.booking_success %></h2>
+    <p><%= t.booking_success_msg %></p>
+    <% if (user) { %>
+      <a href="mes-rendez-vous" class="btn-primary" style="background-color:#6366f1;color:#fff"><%= t.nav_my_appts %></a>
+    <% } else { %>
+      <p style="margin-top:1rem"><%= t.booking_login_prompt %></p>
+      <button data-login-btn class="btn-primary" style="background-color:#6366f1;color:#fff"><%= t.nav_login %></button>
+    <% } %>
+    <p style="margin-top:1rem"><a href=".">← <%= t.nav_home %></a></p>
+  </div>
+
+  <form id="booking-form" class="booking-form">
+    <div class="booking-step">
+      <h3><%= t.booking_step1 %></h3>
+      <select name="service_id" id="service_id" class="form-input">
+        <option value=""><%= t.booking_select_service %></option>
+        <% (services_list||[]).forEach(function(s){ %>
+          <option value="<%= s.id %>" <%= (String(preselect) === String(s.id)) ? 'selected' : '' %>><%= pickLang(s,'name',lang) %><% if (s.price_min) { %> — <%= t.pricing_from %> <%= fmtPrice(s.price_min) %><% } %></option>
+        <% }); %>
+      </select>
+    </div>
+
+    <div class="booking-step">
+      <h3><%= t.booking_step2 %></h3>
+      <label><%= t.booking_select_date %></label>
+      <input type="date" name="date" id="date" class="form-input" min="<%= new Date().toISOString().slice(0,10) %>">
+      <div id="slots-container"><p class="hint"><%= t.booking_pick_date %></p></div>
+      <input type="hidden" name="slot_id" id="slot_id">
+    </div>
+
+    <div class="booking-step">
+      <h3><%= t.booking_step3 %></h3>
+      <div class="form-row">
+        <div><label><%= t.booking_name %> *</label><input type="text" name="customer_name" required class="form-input" value="<%= (user && user.display_name) ? user.display_name : '' %>"></div>
+        <div><label><%= t.booking_phone %> *</label><input type="tel" name="customer_phone" required class="form-input" value="<%= (user && user.phone) ? user.phone : '' %>"></div>
+      </div>
+      <div class="form-row">
+        <div><label><%= t.booking_email %></label><input type="email" name="customer_email" class="form-input" value="<%= (user && user.email) ? user.email : '' %>"></div>
+        <div><label><%= t.booking_address %></label><input type="text" name="customer_address" class="form-input"></div>
+      </div>
+      <div><label><%= t.booking_problem %></label><textarea name="problem_description" rows="4" class="form-input"></textarea></div>
+    </div>
+
+    <div class="booking-actions">
+      <button type="submit" id="submit-btn" class="btn-primary btn-lg" style="background-color:#6366f1;color:#fff"><%= t.booking_confirm %></button>
+      <p id="booking-error" class="error-msg" style="display:none"></p>
+    </div>
+  </form>
+</section>
+<%- include('partials/footer') %>
+<script>
+(function(){
+  var dateInput=document.getElementById('date');
+  var slotsContainer=document.getElementById('slots-container');
+  var slotIdInput=document.getElementById('slot_id');
+  var form=document.getElementById('booking-form');
+  var errEl=document.getElementById('booking-error');
+  var successBox=document.getElementById('booking-success');
+  var noSlotsMsg=<%- JSON.stringify(t.booking_no_slots) %>;
+  var slotErrMsg=<%- JSON.stringify(t.booking_no_slot_err) %>;
+  var connErr=<%- JSON.stringify(t.conn_err) %>;
+  var confirmLabel=<%- JSON.stringify(t.booking_confirm) %>;
+  function loadSlots(date){
+    slotsContainer.innerHTML='<p class="hint">…</p>';
+    slotIdInput.value='';
+    fetch('api/slots?date='+encodeURIComponent(date)).then(function(r){return r.json();}).then(function(data){
+      if (!data.slots || !data.slots.length) { slotsContainer.innerHTML='<p class="hint">'+noSlotsMsg+'</p>'; return; }
+      var html='<div class="slot-grid">';
+      data.slots.forEach(function(s){ html+='<button type="button" class="slot-btn" data-id="'+s.id+'">'+s.slot_time+'</button>'; });
+      html+='</div>';
+      slotsContainer.innerHTML=html;
+      var btns=slotsContainer.querySelectorAll('.slot-btn');
+      btns.forEach(function(btn){
+        btn.addEventListener('click', function(){
+          btns.forEach(function(b){b.classList.remove('selected');b.style.backgroundColor='';b.style.color='';});
+          btn.classList.add('selected');
+          btn.style.backgroundColor='#6366f1';
+          btn.style.color='#fff';
+          slotIdInput.value=btn.getAttribute('data-id');
+        });
+      });
+    }).catch(function(){ slotsContainer.innerHTML='<p class="hint">'+connErr+'</p>'; });
+  }
+  if (dateInput) dateInput.addEventListener('change', function(){ if (this.value) loadSlots(this.value); });
+  if (form) form.addEventListener('submit', function(e){
+    e.preventDefault();
+    errEl.style.display='none';
+    if (!slotIdInput.value) { errEl.textContent='⚠ '+slotErrMsg; errEl.style.display='block'; return; }
+    var fd=new FormData(form); var data={};
+    fd.forEach(function(v,k){ data[k]=v; });
+    var btn=document.getElementById('submit-btn');
+    btn.disabled=true; btn.textContent='…';
+    var fetchFn = (window.TenantSDK && TenantSDK.fetch) ? TenantSDK.fetch : fetch;
+    fetchFn('api/booking', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) })
+      .then(function(r){return r.json();}).then(function(res){
+        btn.disabled=false; btn.textContent=confirmLabel;
+        if (res.success) {
+          form.style.display='none';
+          successBox.style.display='block';
+          window.scrollTo({top:0,behavior:'smooth'});
+        } else {
+          errEl.textContent='⚠ '+(res.error||'Erreur'); errEl.style.display='block';
+        }
+      }).catch(function(){
+        btn.disabled=false; btn.textContent=confirmLabel;
+        errEl.textContent='⚠ '+connErr; errEl.style.display='block';
+      });
+  });
+})();
+</script>
+<script>try{if(window.TenantSDK)TenantSDK.ui.showInstallBanner();}catch(e){}</script>

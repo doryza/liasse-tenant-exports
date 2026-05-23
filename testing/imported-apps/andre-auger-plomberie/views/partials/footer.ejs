@@ -1,0 +1,35 @@
+</main>
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div>
+      <h4><%= (settings && settings.business_name) ? settings.business_name : 'André Auger Plomberie' %></h4>
+      <p><%= t.footer_tagline %></p>
+    </div>
+    <div>
+      <h4><%= t.footer_quicklinks %></h4>
+      <ul>
+        <li><a href="services"><%= t.nav_services %></a></li>
+        <li><a href="reservation"><%= t.nav_booking %></a></li>
+        <li><a href="a-propos"><%= t.nav_about %></a></li>
+        <li><a href="contact"><%= t.nav_contact %></a></li>
+      </ul>
+    </div>
+    <div>
+      <h4><%= t.footer_contact %></h4>
+      <% if (settings && settings.contact_phone) { %><p>📞 <a href="tel:<%= settings.contact_phone %>"><%= settings.contact_phone %></a></p><% } %>
+      <% if (settings && settings.contact_email) { %><p>✉ <a href="mailto:<%= settings.contact_email %>"><%= settings.contact_email %></a></p><% } %>
+      <% if (settings && settings.business_address) { %><p>📍 <%= settings.business_address %></p><% } %>
+    </div>
+    <div>
+      <h4><%= t.footer_hours %></h4>
+      <p><%= (settings && settings['hours_text_' + lang]) ? settings['hours_text_' + lang] : (lang==='en' ? 'Mon–Fri: 7am–6pm' : 'Lun–Ven: 7h–18h') %></p>
+      <button data-push-btn class="btn-outline-light"><%= t.enable_notifications %></button>
+    </div>
+  </div>
+  <div class="footer-bottom container">
+    <p>© <%= new Date().getFullYear() %> <%= (settings && settings.business_name) ? settings.business_name : 'André Auger Plomberie' %>. <%= t.footer_rights %></p>
+  </div>
+</footer>
+<script src="public/js/app.js"></script>
+</body>
+</html>

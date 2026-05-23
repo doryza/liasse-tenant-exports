@@ -1,0 +1,615 @@
+{
+  "exportedAt": "2026-05-23T02:47:43.946Z",
+  "tables": {
+    "admin_users": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "password_hash",
+        "display_name",
+        "role",
+        "active",
+        "activation_token",
+        "invited_by",
+        "invite_token",
+        "invite_expires_at",
+        "last_login_at",
+        "is_active",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_invites": {
+      "columns": [
+        "id",
+        "email",
+        "token",
+        "role",
+        "status",
+        "invited_by",
+        "expires_at",
+        "accepted_at",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_webauthn_credentials": {
+      "columns": [
+        "id",
+        "admin_user_id",
+        "credential_id",
+        "public_key",
+        "counter",
+        "device_name",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_settings": {
+      "columns": [
+        "key",
+        "value",
+        "updated_at"
+      ],
+      "totalRows": 38,
+      "sampleRows": [
+        {
+          "key": "business_name",
+          "value": "André Auger Plomberie",
+          "updated_at": "2026-05-13T18:26:18.199Z"
+        },
+        {
+          "key": "contact_email",
+          "value": "andreaugerplomberie@liasse.tech",
+          "updated_at": "2026-05-13T18:26:18.209Z"
+        },
+        {
+          "key": "hours_text_fr",
+          "value": "Lun–Ven: 7h–18h | Sam: 9h–15h | Dim: urgences seulement",
+          "updated_at": "2026-05-13T18:26:18.219Z"
+        },
+        {
+          "key": "hours_text_en",
+          "value": "Mon–Fri: 7am–6pm | Sat: 9am–3pm | Sun: emergencies only",
+          "updated_at": "2026-05-13T18:26:18.228Z"
+        },
+        {
+          "key": "about_text_fr",
+          "value": "<p><strong>André Auger Plomberie</strong> est un service de plomberie de confiance, fondé sur trois principes simples: <em>la transparence des prix</em>, <em>la rapidité d'intervention</em>, et <em>un travail bien fait du premier coup</em>.</p><p>Trop souvent, faire venir un plombier signifie ne pas savoir ce qu'on va payer avant que la facture arrive. Chez nous, c'est différent. <strong>Tous nos tarifs sont publiés sur le site</strong>: vous savez exactement à quoi vous attendre avant même de réserver.</p><p>Notre calendrier est synchronisé en temps réel. Choisissez un créneau qui vous convient, et nous serons là. Pour les urgences, nous sommes disponibles 24/7.</p><p>Plombier certifié, assuré, et reconnu par la <strong>CMMTQ</strong>. Travail garanti.</p>",
+          "updated_at": "2026-05-13T18:26:18.238Z"
+        },
+        {
+          "key": "about_text_en",
+          "value": "<p><strong>André Auger Plomberie</strong> is a trusted plumbing service, built on three simple principles: <em>transparent pricing</em>, <em>fast response</em>, and <em>doing the job right the first time</em>.</p><p>Too often, calling a plumber means not knowing what you will pay until the bill arrives. We do things differently. <strong>All our rates are published on the website</strong>: you know exactly what to expect before you even book.</p><p>Our schedule is synced in real time. Pick a slot that works for you, and we will be there. For emergencies, we are available 24/7.</p><p>Certified, insured plumber, recognized by the <strong>CMMTQ</strong>. Work is guaranteed.</p>",
+          "updated_at": "2026-05-13T18:26:18.252Z"
+        },
+        {
+          "key": "_p_hero_image_url",
+          "value": "https://res.cloudinary.com/duhp69meg/image/upload/v1778695827/tapavis_tenant_andre-auger-plomberie/build_andre-auger-plomberie_1778695827179.png",
+          "updated_at": "2026-05-13T18:26:18.267Z"
+        },
+        {
+          "key": "about_image_url",
+          "value": "https://res.cloudinary.com/duhp69meg/image/upload/v1778695822/tapavis_tenant_andre-auger-plomberie/build_andre-auger-plomberie_1778695822550.png",
+          "updated_at": "2026-05-13T18:26:18.275Z"
+        },
+        {
+          "key": "_seed_version",
+          "value": "a9affa687d6e",
+          "updated_at": "2026-05-13T18:26:19.664Z"
+        },
+        {
+          "key": "_seeded_at",
+          "value": "2026-05-13 18:26:19.674013+00",
+          "updated_at": "2026-05-13T18:26:19.674Z"
+        }
+      ]
+    },
+    "site_visits": {
+      "columns": [
+        "id",
+        "path",
+        "created_at"
+      ],
+      "totalRows": 12,
+      "sampleRows": [
+        {
+          "id": 1,
+          "path": "/",
+          "created_at": "2026-05-13T18:38:44.301Z"
+        },
+        {
+          "id": 2,
+          "path": "/services",
+          "created_at": "2026-05-13T18:39:11.498Z"
+        },
+        {
+          "id": 3,
+          "path": "/reservation",
+          "created_at": "2026-05-13T18:39:12.692Z"
+        },
+        {
+          "id": 4,
+          "path": "/a-propos",
+          "created_at": "2026-05-13T18:39:13.608Z"
+        },
+        {
+          "id": 5,
+          "path": "/reservation",
+          "created_at": "2026-05-13T18:39:14.798Z"
+        },
+        {
+          "id": 6,
+          "path": "/",
+          "created_at": "2026-05-13T18:39:34.209Z"
+        },
+        {
+          "id": 7,
+          "path": "/",
+          "created_at": "2026-05-13T18:40:58.985Z"
+        },
+        {
+          "id": 8,
+          "path": "/",
+          "created_at": "2026-05-14T18:24:14.527Z"
+        },
+        {
+          "id": 9,
+          "path": "/",
+          "created_at": "2026-05-14T18:37:45.481Z"
+        },
+        {
+          "id": 10,
+          "path": "/",
+          "created_at": "2026-05-14T21:36:14.646Z"
+        }
+      ]
+    },
+    "posts": {
+      "columns": [
+        "id",
+        "title",
+        "title_en",
+        "content",
+        "content_en",
+        "image_url",
+        "category",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Comment éviter les fuites en hiver",
+          "title_en": "How to prevent winter leaks",
+          "content": "En hiver, les tuyaux exposés au froid peuvent geler, se dilater et éclater — causant des dégâts d'eau majeurs. Voici nos meilleurs conseils:\n\n1. Isolez vos tuyaux exposés (sous-sol non chauffé, vide sanitaire, garage). Des manchons en mousse coûtent quelques dollars et durent des années.\n2. Maintenez le chauffage à au moins 13°C même en cas d'absence prolongée.\n3. Lors d'un grand froid (-25°C ou moins), laissez un mince filet d'eau couler des robinets les plus exposés. L'eau qui coule gèle beaucoup moins facilement.\n4. Repérez la valve de coupure principale et apprenez à la fermer rapidement en cas d'urgence.\n\nSi un tuyau a déjà gelé sans éclater, ne le réchauffez jamais avec une flamme nue. Appelez-nous!",
+          "content_en": "In winter, exposed pipes can freeze, expand, and burst — causing major water damage. Here are our best tips:\n\n1. Insulate exposed pipes (unheated basement, crawlspace, garage). Foam sleeves cost a few dollars and last for years.\n2. Keep heating at at least 13°C even during extended absences.\n3. During extreme cold (-25°C or lower), let a thin trickle of water run from the most exposed faucets. Running water freezes much less easily.\n4. Locate the main shutoff valve and learn how to close it quickly in case of emergency.\n\nIf a pipe has already frozen without bursting, never warm it with an open flame. Call us!",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778695829/tapavis_tenant_andre-auger-plomberie/build_andre-auger-plomberie_1778695829575.png",
+          "category": "Conseils",
+          "published": 1,
+          "created_at": "2026-05-13T18:26:18.428Z",
+          "updated_at": "2026-05-13T18:26:18.428Z"
+        },
+        {
+          "id": 2,
+          "title": "Signes que votre chauffe-eau doit être remplacé",
+          "title_en": "Signs your water heater needs replacing",
+          "content": "Un chauffe-eau dure en moyenne 8 à 12 ans. Voici les signes qui indiquent qu'il est temps de le remplacer:\n\n• Eau brune ou rouille à la sortie du robinet d'eau chaude (mais pas froide)\n• Sons étranges venant du réservoir (grondements, claquements)\n• Eau tiède ou jamais assez chaude, même au max\n• Fuite à la base de l'appareil — c'est presque toujours irréparable\n• Plus de 10-12 ans d'âge (vérifiez l'étiquette du fabricant)\n\nUn chauffe-eau qui lâche peut causer des milliers de dollars de dégâts. Mieux vaut prévenir!",
+          "content_en": "A water heater lasts on average 8-12 years. Here are the signs it's time to replace it:\n\n• Brown or rusty water from the hot tap (but not cold)\n• Strange sounds from the tank (rumbling, banging)\n• Lukewarm water, never hot enough, even at max\n• Leak at the base of the unit — almost always unrepairable\n• Over 10-12 years old (check manufacturer label)\n\nA failing water heater can cause thousands in damage. Better safe than sorry!",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778695831/tapavis_tenant_andre-auger-plomberie/build_andre-auger-plomberie_1778695831620.png",
+          "category": "Conseils",
+          "published": 1,
+          "created_at": "2026-05-13T18:26:18.438Z",
+          "updated_at": "2026-05-13T18:26:18.438Z"
+        },
+        {
+          "id": 3,
+          "title": "Pourquoi nous publions nos prix",
+          "title_en": "Why we publish our prices",
+          "content": "La transparence est au cœur de notre service. Nous croyons fermement que les clients méritent de savoir combien ils vont payer AVANT que le plombier sonne à leur porte.\n\nCela élimine le stress, les négociations gênantes, et les mauvaises surprises sur la facture. Nos prix sont calculés pour être justes pour vous comme pour nous: pas de gonflage, pas de frais cachés.\n\nC'est aussi pourquoi nous prenons les rendez-vous en ligne — vous choisissez votre créneau, vous voyez le prix, vous réservez. Simple.",
+          "content_en": "Transparency is at the heart of our service. We firmly believe customers deserve to know how much they'll pay BEFORE the plumber rings their doorbell.\n\nIt eliminates stress, awkward negotiations, and nasty surprises on the bill. Our prices are calculated to be fair for you and for us: no inflation, no hidden fees.\n\nThat's also why we take bookings online — you pick your slot, see the price, and book. Simple.",
+          "image_url": null,
+          "category": "Nouvelles",
+          "published": 1,
+          "created_at": "2026-05-13T18:26:18.448Z",
+          "updated_at": "2026-05-13T18:26:18.448Z"
+        },
+        {
+          "id": 4,
+          "title": "Urgences plomberie : quand appeler?",
+          "title_en": "Plumbing emergencies: when to call?",
+          "content": "Toutes les situations ne sont pas des vraies urgences. Voici comment reconnaître les cas qui justifient un appel immédiat (et donc un tarif d'urgence):\n\n✓ Fuite active qui ne s'arrête pas, même en fermant le robinet local\n✓ Refoulement d'égout dans le sous-sol ou la toilette\n✓ Tuyau gelé qui menace d'éclater\n✓ Chauffe-eau qui fuit à la base\n\nPour ces cas, fermez immédiatement la valve principale d'eau de la maison, puis appelez-nous.\n\nCe qui peut attendre le lendemain matin:\n• Robinet qui goutte\n• Toilette qui fait du bruit après chasse\n• Drain qui s'écoule lentement\n\nDans le doute, appelez — nous vous dirons honnêtement si c'est une vraie urgence.",
+          "content_en": "Not all situations are real emergencies. Here's how to recognize cases that justify an immediate call (and therefore an emergency rate):\n\n✓ Active leak that won't stop, even when closing the local valve\n✓ Sewer backup in basement or toilet\n✓ Frozen pipe threatening to burst\n✓ Water heater leaking at the base\n\nFor these cases, immediately close the main water valve, then call us.\n\nWhat can wait until morning:\n• Dripping faucet\n• Toilet that makes noise after flush\n• Slow-draining sink\n\nWhen in doubt, call — we'll honestly tell you if it's a real emergency.",
+          "image_url": null,
+          "category": "Conseils",
+          "published": 1,
+          "created_at": "2026-05-13T18:26:18.457Z",
+          "updated_at": "2026-05-13T18:26:18.457Z"
+        }
+      ]
+    },
+    "services": {
+      "columns": [
+        "id",
+        "name",
+        "name_en",
+        "description",
+        "description_en",
+        "image_url",
+        "price_min",
+        "price_max",
+        "price_unit",
+        "duration_min",
+        "category",
+        "featured",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 8,
+      "sampleRows": [
+        {
+          "id": 1,
+          "name": "Réparation de fuite",
+          "name_en": "Leak repair",
+          "description": "Diagnostic et réparation de fuites sous évier, lavabo, douche, baignoire ou tuyauterie apparente. Inclut le diagnostic initial, le serrage ou remplacement du raccord défectueux, et un test d'étanchéité avant départ.",
+          "description_en": "Diagnosis and repair of leaks under sinks, lavatories, showers, tubs, or visible piping. Includes initial diagnosis, tightening or replacement of the faulty fitting, and a leak test before leaving.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778695832/tapavis_tenant_andre-auger-plomberie/build_andre-auger-plomberie_1778695832607.png",
+          "price_min": 95,
+          "price_max": 250,
+          "price_unit": "fixe",
+          "duration_min": 60,
+          "category": "Urgence",
+          "featured": 1,
+          "published": 1,
+          "created_at": "2026-05-13T18:26:18.287Z",
+          "updated_at": "2026-05-13T18:26:18.287Z"
+        },
+        {
+          "id": 2,
+          "name": "Débouchage de drains",
+          "name_en": "Drain unclogging",
+          "description": "Débouchage de drains, lavabos, baignoires et toilettes. Selon le cas, nous utilisons une furet manuel, électrique, ou de l'hydropression. Diagnostic caméra disponible si nécessaire.",
+          "description_en": "Unclogging of drains, sinks, tubs, and toilets. Depending on the case, we use manual or electric augers, or hydro-jetting. Camera diagnosis available if needed.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778695834/tapavis_tenant_andre-auger-plomberie/build_andre-auger-plomberie_1778695834786.png",
+          "price_min": 120,
+          "price_max": 350,
+          "price_unit": "fixe",
+          "duration_min": 90,
+          "category": "Urgence",
+          "featured": 1,
+          "published": 1,
+          "created_at": "2026-05-13T18:26:18.297Z",
+          "updated_at": "2026-05-13T18:26:18.297Z"
+        },
+        {
+          "id": 3,
+          "name": "Installation de chauffe-eau",
+          "name_en": "Water heater installation",
+          "description": "Installation complète d'un chauffe-eau standard (40 ou 60 gallons) ou sans réservoir, incluant le retrait de l'ancien appareil, la mise aux normes, et la mise en marche.",
+          "description_en": "Complete installation of a standard water heater (40 or 60 gallons) or tankless, including removal of the old unit, code compliance, and startup.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778695816/tapavis_tenant_andre-auger-plomberie/build_andre-auger-plomberie_1778695816246.png",
+          "price_min": 350,
+          "price_max": 950,
+          "price_unit": "fixe",
+          "duration_min": 180,
+          "category": "Installation",
+          "featured": 1,
+          "published": 1,
+          "created_at": "2026-05-13T18:26:18.306Z",
+          "updated_at": "2026-05-13T18:26:18.306Z"
+        },
+        {
+          "id": 4,
+          "name": "Rénovation salle de bain",
+          "name_en": "Bathroom renovation",
+          "description": "Plomberie complète pour rénovation de salle de bain: déplacement de tuyauterie, installation de bain ou douche, toilette, lavabo, robinetterie. Estimation gratuite sur place.",
+          "description_en": "Full bathroom renovation plumbing: pipe relocation, tub or shower installation, toilet, sink, faucets. Free on-site estimate.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778695822/tapavis_tenant_andre-auger-plomberie/build_andre-auger-plomberie_1778695822834.png",
+          "price_min": 800,
+          "price_max": 3500,
+          "price_unit": "sur estimation",
+          "duration_min": 480,
+          "category": "Installation",
+          "featured": 0,
+          "published": 1,
+          "created_at": "2026-05-13T18:26:18.315Z",
+          "updated_at": "2026-05-13T18:26:18.315Z"
+        },
+        {
+          "id": 5,
+          "name": "Inspection caméra de drain",
+          "name_en": "Drain camera inspection",
+          "description": "Inspection vidéo de votre tuyauterie pour détecter racines, fissures, affaissements ou obstructions — sans démolition. Vous recevez la vidéo par courriel.",
+          "description_en": "Video inspection of your piping to detect roots, cracks, sagging, or obstructions — without demolition. You receive the video by email.",
+          "image_url": null,
+          "price_min": 150,
+          "price_max": 250,
+          "price_unit": "fixe",
+          "duration_min": 60,
+          "category": "Diagnostic",
+          "featured": 0,
+          "published": 1,
+          "created_at": "2026-05-13T18:26:18.323Z",
+          "updated_at": "2026-05-13T18:26:18.323Z"
+        },
+        {
+          "id": 6,
+          "name": "Entretien préventif annuel",
+          "name_en": "Annual preventive maintenance",
+          "description": "Visite annuelle: vérification de pression d'eau, du chauffe-eau (anode, soupape), des drains, des toilettes (chasse, joints), et des robinets. Petits ajustements et conseils inclus.",
+          "description_en": "Annual visit: water pressure check, water heater (anode, valve), drains, toilets (flush, seals), and faucets. Minor adjustments and advice included.",
+          "image_url": null,
+          "price_min": 175,
+          "price_max": null,
+          "price_unit": "fixe",
+          "duration_min": 120,
+          "category": "Entretien",
+          "featured": 0,
+          "published": 1,
+          "created_at": "2026-05-13T18:26:18.332Z",
+          "updated_at": "2026-05-13T18:26:18.332Z"
+        },
+        {
+          "id": 7,
+          "name": "Urgence 24/7",
+          "name_en": "Emergency 24/7",
+          "description": "Service d'urgence en tout temps — fuite majeure, dégât d'eau, refoulement, gel de tuyaux. Tarif horaire; majoration soirs et fins de semaine.",
+          "description_en": "Emergency service anytime — major leak, water damage, backup, frozen pipes. Hourly rate; surcharge evenings and weekends.",
+          "image_url": null,
+          "price_min": 145,
+          "price_max": null,
+          "price_unit": "horaire",
+          "duration_min": 60,
+          "category": "Urgence",
+          "featured": 1,
+          "published": 1,
+          "created_at": "2026-05-13T18:26:18.341Z",
+          "updated_at": "2026-05-13T18:26:18.341Z"
+        },
+        {
+          "id": 8,
+          "name": "Installation de toilette",
+          "name_en": "Toilet installation",
+          "description": "Remplacement complet d'une toilette: retrait de l'ancienne, installation du nouveau modèle, scellement à la cire, raccordement et test. Disposition de l'ancienne incluse.",
+          "description_en": "Complete toilet replacement: removal of old toilet, installation of the new model, wax sealing, connection, and test. Disposal of old unit included.",
+          "image_url": null,
+          "price_min": 275,
+          "price_max": 475,
+          "price_unit": "fixe",
+          "duration_min": 90,
+          "category": "Installation",
+          "featured": 0,
+          "published": 1,
+          "created_at": "2026-05-13T18:26:18.351Z",
+          "updated_at": "2026-05-13T18:26:18.351Z"
+        }
+      ]
+    },
+    "testimonials": {
+      "columns": [
+        "id",
+        "author",
+        "location",
+        "content",
+        "image_url",
+        "rating",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 6,
+      "sampleRows": [
+        {
+          "id": 1,
+          "author": "Marie Tremblay",
+          "location": "Québec",
+          "content": "Service rapide et professionnel. André est arrivé en moins de 2 heures pour une fuite urgente et le prix était exactement comme annoncé sur le site. Très transparent, je recommande!",
+          "image_url": null,
+          "rating": 5,
+          "published": 1,
+          "created_at": "2026-05-13T18:26:18.361Z",
+          "updated_at": "2026-05-13T18:26:18.361Z"
+        },
+        {
+          "id": 2,
+          "author": "Jean-François Bouchard",
+          "location": "Lévis",
+          "content": "Excellent travail pour l'installation de notre nouveau chauffe-eau. Propre, ponctuel, et tout fonctionne parfaitement depuis 6 mois.",
+          "image_url": null,
+          "rating": 5,
+          "published": 1,
+          "created_at": "2026-05-13T18:26:18.370Z",
+          "updated_at": "2026-05-13T18:26:18.370Z"
+        },
+        {
+          "id": 3,
+          "author": "Sophie Lavoie",
+          "location": "Sainte-Foy",
+          "content": "J'ai apprécié de pouvoir voir les prix avant même d'appeler. Pas de surprise sur la facture finale, et le service a été impeccable.",
+          "image_url": null,
+          "rating": 5,
+          "published": 1,
+          "created_at": "2026-05-13T18:26:18.378Z",
+          "updated_at": "2026-05-13T18:26:18.378Z"
+        },
+        {
+          "id": 4,
+          "author": "Pierre Gagné",
+          "location": "Charlesbourg",
+          "content": "Drain bouché un samedi matin, ils sont venus le jour même. Prix raisonnable et conseils utiles pour éviter que ça se reproduise.",
+          "image_url": null,
+          "rating": 5,
+          "published": 1,
+          "created_at": "2026-05-13T18:26:18.387Z",
+          "updated_at": "2026-05-13T18:26:18.387Z"
+        },
+        {
+          "id": 5,
+          "author": "Linda Robitaille",
+          "location": "Beauport",
+          "content": "Rénovation complète de notre salle de bain. Très satisfaite du résultat et du suivi tout au long du projet. Travail de qualité.",
+          "image_url": null,
+          "rating": 5,
+          "published": 1,
+          "created_at": "2026-05-13T18:26:18.399Z",
+          "updated_at": "2026-05-13T18:26:18.399Z"
+        },
+        {
+          "id": 6,
+          "author": "Marc-André Côté",
+          "location": "Limoilou",
+          "content": "La prise de rendez-vous en ligne est super pratique — j'ai choisi mon créneau en 30 secondes. Service à la clientèle excellent.",
+          "image_url": null,
+          "rating": 5,
+          "published": 1,
+          "created_at": "2026-05-13T18:26:18.415Z",
+          "updated_at": "2026-05-13T18:26:18.415Z"
+        }
+      ]
+    },
+    "availability_slots": {
+      "columns": [
+        "id",
+        "slot_date",
+        "slot_time",
+        "duration_min",
+        "booked",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 102,
+      "sampleRows": [
+        {
+          "id": 1,
+          "slot_date": "2026-05-14T00:00:00.000Z",
+          "slot_time": "08:00",
+          "duration_min": 60,
+          "booked": 0,
+          "created_at": "2026-05-13T18:26:18.467Z",
+          "updated_at": "2026-05-13T18:26:18.467Z"
+        },
+        {
+          "id": 2,
+          "slot_date": "2026-05-14T00:00:00.000Z",
+          "slot_time": "09:30",
+          "duration_min": 60,
+          "booked": 0,
+          "created_at": "2026-05-13T18:26:18.477Z",
+          "updated_at": "2026-05-13T18:26:18.477Z"
+        },
+        {
+          "id": 3,
+          "slot_date": "2026-05-14T00:00:00.000Z",
+          "slot_time": "11:00",
+          "duration_min": 60,
+          "booked": 0,
+          "created_at": "2026-05-13T18:26:18.487Z",
+          "updated_at": "2026-05-13T18:26:18.487Z"
+        },
+        {
+          "id": 4,
+          "slot_date": "2026-05-14T00:00:00.000Z",
+          "slot_time": "13:00",
+          "duration_min": 60,
+          "booked": 0,
+          "created_at": "2026-05-13T18:26:18.500Z",
+          "updated_at": "2026-05-13T18:26:18.500Z"
+        },
+        {
+          "id": 5,
+          "slot_date": "2026-05-14T00:00:00.000Z",
+          "slot_time": "14:30",
+          "duration_min": 60,
+          "booked": 0,
+          "created_at": "2026-05-13T18:26:18.509Z",
+          "updated_at": "2026-05-13T18:26:18.509Z"
+        },
+        {
+          "id": 6,
+          "slot_date": "2026-05-14T00:00:00.000Z",
+          "slot_time": "16:00",
+          "duration_min": 60,
+          "booked": 0,
+          "created_at": "2026-05-13T18:26:18.520Z",
+          "updated_at": "2026-05-13T18:26:18.520Z"
+        },
+        {
+          "id": 7,
+          "slot_date": "2026-05-15T00:00:00.000Z",
+          "slot_time": "08:00",
+          "duration_min": 60,
+          "booked": 0,
+          "created_at": "2026-05-13T18:26:18.533Z",
+          "updated_at": "2026-05-13T18:26:18.533Z"
+        },
+        {
+          "id": 8,
+          "slot_date": "2026-05-15T00:00:00.000Z",
+          "slot_time": "09:30",
+          "duration_min": 60,
+          "booked": 0,
+          "created_at": "2026-05-13T18:26:18.542Z",
+          "updated_at": "2026-05-13T18:26:18.542Z"
+        },
+        {
+          "id": 9,
+          "slot_date": "2026-05-15T00:00:00.000Z",
+          "slot_time": "11:00",
+          "duration_min": 60,
+          "booked": 0,
+          "created_at": "2026-05-13T18:26:18.556Z",
+          "updated_at": "2026-05-13T18:26:18.556Z"
+        },
+        {
+          "id": 10,
+          "slot_date": "2026-05-15T00:00:00.000Z",
+          "slot_time": "13:00",
+          "duration_min": 60,
+          "booked": 0,
+          "created_at": "2026-05-13T18:26:18.567Z",
+          "updated_at": "2026-05-13T18:26:18.567Z"
+        }
+      ]
+    },
+    "appointments": {
+      "columns": [
+        "id",
+        "user_id",
+        "slot_id",
+        "service_id",
+        "customer_name",
+        "customer_phone",
+        "customer_email",
+        "customer_address",
+        "problem_description",
+        "status",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "form_submissions": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "phone",
+        "subject",
+        "message",
+        "status",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    }
+  }
+}
