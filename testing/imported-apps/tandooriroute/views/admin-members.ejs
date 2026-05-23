@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin — Membres</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+<style>
+.members-wrap { max-width: 960px; }
+.members-section-title { margin: 1.75rem 0 0.85rem; font-size: 1.05rem; color: #4a5568; text-transform: uppercase; letter-spacing: 0.05em; }
+.members-section-title:first-of-type { margin-top: 0.5rem; }
+.members-note { background: #f7fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 0.85rem 1rem; color: #4a5568; font-size: 0.88rem; line-height: 1.5; margin-bottom: 1.25rem; }
+.members-note strong { color: #2d3748; }
+.members-reach-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.85rem; }
+.members-reach-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.1rem 1.2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+.members-reach-card .label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: #718096; font-weight: 700; margin-bottom: 0.4rem; }
+.members-reach-card .value { font-size: 2rem; font-weight: 800; color: #1a202c; line-height: 1.05; }
+.members-reach-card .sub { font-size: 0.82rem; color: #718096; margin-top: 0.35rem; }
+.members-reach-card .pct { font-size: 0.82rem; color: #16a34a; font-weight: 700; }
+.members-reach-card.empty .value { color: #a0aec0; }
+.members-error { background: #fff5f5; border: 1px solid #fed7d7; color: #9b2c2c; padding: 0.85rem 1rem; border-radius: 10px; font-size: 0.9rem; }
+</style>
+</head>
+<body>
+<div class="admin-layout">
+<%- include('partials/admin-sidebar', { page: 'members' }) %>
+<main class="admin-main">
+<div class="admin-header">
+  <div>
+    <h1>Membres</h1>
+    <p style="margin:0.25rem 0 0;color:#718096;font-size:0.9rem">Statistiques anonymisées de votre audience.</p>
+  </div>
+</div>
+
+<div class="members-wrap">
+
+<% if (!stats) { %>
+  <div class="members-error">Impossible de charger les statistiques. Veuillez réessayer.</div>
+<% } else { %>
+
+  <div class="members-note">
+    <strong>Données anonymisées.</strong> Ces nombres représentent l'ensemble de votre audience sans dévoiler l'identité d'aucun membre. Utilisez les chiffres « joignables » pour estimer la portée d'une <a href="admin/communications" style="color:#16a34a;font-weight:700">campagne</a>.
+  </div>
+
+  <h2 class="members-section-title">Audience</h2>
+  <div class="stat-grid">
+    <div class="stat-card"><div class="label">Membres inscrits</div><div class="value"><%= stats.totalMembers %></div></div>
+    <div class="stat-card"><div class="label">Nouveaux (7 jours)</div><div class="value"><%= stats.newMembers7 %></div></div>
+    <div class="stat-card"><div class="label">Visites (7 jours)</div><div class="value"><%= stats.visits7 %></div></div>
+  </div>
+
+  <h2 class="members-section-title">Portée par canal</h2>
+  <div class="members-reach-grid">
+    <%
+      var emailPct = stats.totalMembers > 0 ? Math.round((stats.emailReachable / stats.totalMembers) * 100) : 0;
+      var pushPct  = stats.totalMembers > 0 ? Math.round((stats.pushReachable  / stats.totalMembers) * 100) : 0;
+    %>
+    <div class="members-reach-card<%= stats.emailReachable === 0 ? ' empty' : '' %>">
+      <div class="label">📧 Joignables par courriel</div>
+      <div class="value"><%= stats.emailReachable %></div>
+      <div class="sub">
+        <% if (stats.totalMembers > 0) { %><span class="pct"><%= emailPct %> %</span> des membres avec courriel valide et non désabonné<% } else { %>Aucun membre inscrit pour l'instant.<% } %>
+      </div>
+    </div>
+    <div class="members-reach-card<%= stats.pushReachable === 0 ? ' empty' : '' %>">
+      <div class="label">🔔 Joignables par push</div>
+      <div class="value"><%= stats.pushReachable %></div>
+      <div class="sub">
+        <% if (stats.totalMembers > 0) { %><span class="pct"><%= pushPct %> %</span> des membres ont activé les notifications<% } else { %>Aucun membre inscrit pour l'instant.<% } %>
+      </div>
+    </div>
+  </div>
+
+<% } %>
+
+</div>
+</main>
+</div>
+</body>
+</html>

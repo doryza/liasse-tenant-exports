@@ -1,0 +1,27 @@
+<%- include('partials/header') %>
+<section class="section" style="padding-top:3rem">
+  <div class="container">
+    <h1 class="section-title"><%= t.about_title %></h1>
+    <div class="about-grid" style="margin-top:3rem">
+      <div>
+        <p style="font-size:1.15rem;line-height:1.8"><%= lang === 'en' ? (settings.about_text_en || 'Tandoori Route brings authentic Indian cuisine to Blainville — wood-fired tandoor, fresh spices, family recipes.') : (settings.about_text_fr || "Tandoori Route apporte la cuisine indienne authentique à Blainville — tandoor au feu de bois, épices fraîches, recettes familiales.") %></p>
+        <% if (settings.business_address || settings.contact_phone || settings.contact_email) { %>
+        <div class="contact-card">
+          <h3><%= t.contact_us %></h3>
+          <% if (settings.business_address) { %><p>📍 <%= settings.business_address %></p><% } %>
+          <% if (settings.contact_phone) { %><p>📞 <a href="tel:<%= settings.contact_phone %>"><%= settings.contact_phone %></a></p><% } %>
+          <% if (settings.contact_email) { %><p>✉️ <a href="mailto:<%= settings.contact_email %>"><%= settings.contact_email %></a></p><% } %>
+        </div>
+        <% } %>
+      </div>
+      <img src="<%= settings._p_about_image_url || 'https://placehold.co/800x600/0a0806/F5A524/png?text=Tandoori+Route' %>" alt="<%= t.brand %>">
+    </div>
+    <h2 class="section-title" style="margin-top:5rem"><%= t.values_title %></h2>
+    <div class="values-grid">
+      <div class="value-card"><div class="icon">🔥</div><h3><%= t.val1_t %></h3><p><%= t.val1_d %></p></div>
+      <div class="value-card"><div class="icon">📍</div><h3><%= t.val2_t %></h3><p><%= t.val2_d %></p></div>
+      <div class="value-card"><div class="icon">🌶️</div><h3><%= t.val3_t %></h3><p><%= t.val3_d %></p></div>
+    </div>
+  </div>
+</section>
+<%- include('partials/footer') %>

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin — Paramètres</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+<style>
+.settings-grid { display: grid; gap: 1.5rem; max-width: 900px; }
+.section-card { background: #fff; padding: 1.5rem 1.75rem; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+.section-card h2 { margin: 0 0 0.4rem; font-size: 1.15rem; color: #1a202c; }
+.section-card .section-hint { color: #718096; font-size: 0.88rem; margin: 0 0 1.2rem; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+@media (max-width: 720px) { .field-row { grid-template-columns: 1fr; } }
+.hours-table { width: 100%; border-collapse: collapse; }
+.hours-table th, .hours-table td { padding: 0.55rem 0.5rem; border-bottom: 1px solid #edf2f7; text-align: left; font-size: 0.92rem; vertical-align: middle; }
+.hours-table th { font-size: 0.78rem; color: #4a5568; text-transform: uppercase; letter-spacing: 0.05em; }
+.hours-table input[type="time"] { padding: 0.4rem 0.55rem; border: 1px solid #cbd5e0; border-radius: 6px; font-family: inherit; font-size: 0.9rem; }
+.hours-table input[type="time"]:disabled { background: #f7fafc; color: #a0aec0; }
+.hours-closed { color: #a0aec0; font-style: italic; }
+.social-row { display: grid; grid-template-columns: 100px 1fr; align-items: center; gap: 0.75rem; margin-bottom: 0.6rem; }
+.social-row label { margin: 0; color: #2d3748; }
+.save-bar { position: sticky; bottom: 0; background: #fff; padding: 1rem 1.5rem; margin-top: 1.5rem; border-radius: 10px; box-shadow: 0 -2px 12px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+.save-bar .status { color: #4a5568; font-size: 0.9rem; }
+.checkbox-row { display: flex; align-items: center; gap: 0.45rem; font-size: 0.9rem; }
+</style>
+</head>
+<body>
+<div class="admin-layout">
+<%- include('partials/admin-sidebar', { page: 'settings' }) %>
+<main class="admin-main">
+<div class="admin-header">
+  <div>
+    <h1>Paramètres</h1>
+    <p style="margin:0.25rem 0 0;color:#718096;font-size:0.9rem">Configurez les informations de votre établissement, les heures, les réseaux sociaux et le courriel administrateur.</p>
+  </div>
+</div>
+
+<form id="settingsForm" class="settings-grid">
+
+  <div class="section-card">
+    <h2>🏢 Informations générales</h2>
+    <p class="section-hint">Nom et description publique de votre établissement.</p>
+    <div class="field-row">
+      <div class="form-group"><label>Nom de l'établissement</label><input type="text" class="form-control" name="business_name" placeholder="Tandoori Route"></div>
+      <div class="form-group"><label>Slogan / Sous-titre</label><input type="text" class="form-control" name="tagline" placeholder="Votre route vers la saveur"></div>
+    </div>
+    <div class="field-row">
+      <div class="form-group"><label>Texte du pied de page (FR)</label><textarea class="form-control" name="footer_intro_fr" rows="2" placeholder="Quelques mots sur votre établissement (FR)"></textarea></div>
+      <div class="form-group"><label>Texte du pied de page (EN)</label><textarea class="form-control" name="footer_intro_en" rows="2" placeholder="A short blurb about your business (EN)"></textarea></div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <h2>📧 Coordonnées & courriel admin</h2>
+    <p class="section-hint">
+      <% if (typeof lang !== 'undefined' && lang === 'en') { %>
+        The <strong>admin address</strong> receives new requests from site visitors, including reviews left by them.
+      <% } else { %>
+        L'<strong>adresse administrateur</strong> reçoit les nouvelles demandes des visiteurs du site, incluant les avis laissés par ceux-ci.
+      <% } %>
+    </p>
+    <div class="field-row">
+      <div class="form-group">
+        <label>Courriel administrateur <span style="color:#e53e3e">*</span></label>
+        <input type="email" class="form-control" name="admin_email" placeholder="tandooriroute@gmail.com">
+        <div class="help-text" style="font-size:0.82rem;color:#718096;margin-top:0.3rem">Destinataire des notifications de réservation. Affiché publiquement seulement si "Courriel public" est vide.</div>
+      </div>
+      <div class="form-group">
+        <label>Courriel public (optionnel)</label>
+        <input type="email" class="form-control" name="contact_email" placeholder="tandooriroute@gmail.com">
+        <div class="help-text" style="font-size:0.82rem;color:#718096;margin-top:0.3rem">Affiché sur le site et dans le pied de page.</div>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="form-group"><label>Téléphone public</label><input type="tel" class="form-control" name="contact_phone" placeholder="+1 514 555 0123"></div>
+      <div class="form-group"><label>Adresse</label><input type="text" class="form-control" name="business_address" placeholder="1185 Bd Curé-Labelle, Blainville, QC, J7C 4K6"></div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <h2>🕐 Heures d'ouverture</h2>
+    <p class="section-hint">Cochez "Fermé" pour les jours hors service. Les jours fermés s'affichent comme "Fermé" sur le site.</p>
+    <table class="hours-table">
+      <thead><tr><th>Jour</th><th style="width:35%">Ouverture</th><th style="width:35%">Fermeture</th><th>Fermé</th></tr></thead>
+      <tbody id="hoursBody"></tbody>
+    </table>
+  </div>
+
+  <div class="section-card">
+    <h2>🌐 Réseaux sociaux</h2>
+    <p class="section-hint">Coller le lien complet (https://…). Laissez vide pour masquer.</p>
+    <div class="social-row"><label>Facebook</label><input type="url" class="form-control" name="social_facebook" placeholder="https://facebook.com/votre-page"></div>
+    <div class="social-row"><label>Instagram</label><input type="url" class="form-control" name="social_instagram" placeholder="https://instagram.com/votre-compte"></div>
+    <div class="social-row"><label>X / Twitter</label><input type="url" class="form-control" name="social_twitter" placeholder="https://x.com/votre-compte"></div>
+    <div class="social-row"><label>TikTok</label><input type="url" class="form-control" name="social_tiktok" placeholder="https://tiktok.com/@votre-compte"></div>
+    <div class="social-row"><label>YouTube</label><input type="url" class="form-control" name="social_youtube" placeholder="https://youtube.com/@votre-chaine"></div>
+    <div class="social-row"><label>LinkedIn</label><input type="url" class="form-control" name="social_linkedin" placeholder="https://linkedin.com/company/votre-entreprise"></div>
+  </div>
+
+  <div class="save-bar">
+    <span class="status" id="saveStatus">—</span>
+    <button type="submit" class="btn btn-primary" id="saveBtn" style="background-color:#F5A524;color:#000">💾 Enregistrer les modifications</button>
+  </div>
+
+</form>
+
+</main>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+var DAY_KEYS = ['mon','tue','wed','thu','fri','sat','sun'];
+var DAY_LABELS = { mon:'Lundi', tue:'Mardi', wed:'Mercredi', thu:'Jeudi', fri:'Vendredi', sat:'Samedi', sun:'Dimanche' };
+
+function toast(msg, type) {
+  var t = document.getElementById('toast');
+  t.className = 'toast toast-' + (type || 'success');
+  t.textContent = msg;
+  setTimeout(function(){ t.classList.add('show'); }, 10);
+  setTimeout(function(){ t.classList.remove('show'); }, 2800);
+}
+
+function renderHoursRows(parsed) {
+  var byDay = {};
+  (parsed || []).forEach(function(r){ if (r && r.day) byDay[r.day] = r; });
+  var html = '';
+  DAY_KEYS.forEach(function(d){
+    var r = byDay[d] || {};
+    var open = r.open || '';
+    var close = r.close || '';
+    var closed = !!r.closed;
+    html += '<tr data-day="' + d + '">';
+    html += '<td><strong>' + DAY_LABELS[d] + '</strong></td>';
+    html += '<td><input type="time" data-field="open" value="' + open + '"' + (closed ? ' disabled' : '') + '></td>';
+    html += '<td><input type="time" data-field="close" value="' + close + '"' + (closed ? ' disabled' : '') + '></td>';
+    html += '<td><label class="checkbox-row"><input type="checkbox" data-field="closed"' + (closed ? ' checked' : '') + '><span class="hours-closed">' + (closed ? 'Fermé' : '') + '</span></label></td>';
+    html += '</tr>';
+  });
+  document.getElementById('hoursBody').innerHTML = html;
+  // Wire up closed-toggle to disable time inputs
+  document.querySelectorAll('#hoursBody input[data-field="closed"]').forEach(function(cb){
+    cb.addEventListener('change', function(){
+      var row = cb.closest('tr');
+      var checked = cb.checked;
+      row.querySelectorAll('input[type="time"]').forEach(function(inp){ inp.disabled = checked; });
+      row.querySelector('.hours-closed').textContent = checked ? 'Fermé' : '';
+    });
+  });
+}
+
+function collectHours() {
+  var rows = [];
+  document.querySelectorAll('#hoursBody tr').forEach(function(tr){
+    var day = tr.getAttribute('data-day');
+    var closed = !!tr.querySelector('input[data-field="closed"]').checked;
+    var open = tr.querySelector('input[data-field="open"]').value || '';
+    var close = tr.querySelector('input[data-field="close"]').value || '';
+    rows.push({ day: day, open: closed ? '' : open, close: closed ? '' : close, closed: closed });
+  });
+  return rows;
+}
+
+async function loadSettings() {
+  try {
+    var r = await fetch('api/admin/settings');
+    var data = await r.json();
+    var s = data.settings || {};
+    // Fill text inputs
+    document.querySelectorAll('#settingsForm input[name], #settingsForm textarea[name]').forEach(function(el){
+      var k = el.getAttribute('name');
+      if (k === 'hours_json') return;
+      if (s[k] != null) el.value = s[k];
+    });
+    // Parse hours
+    var hours = null;
+    try { if (s.hours_json) hours = JSON.parse(s.hours_json); } catch(e) {}
+    renderHoursRows(hours);
+    document.getElementById('saveStatus').textContent = 'Dernière mise à jour: ' + (s.updated_at_hint || 'à l\'instant');
+  } catch(e) {
+    document.getElementById('saveStatus').textContent = 'Erreur de chargement';
+    renderHoursRows(null);
+  }
+}
+
+document.getElementById('settingsForm').addEventListener('submit', async function(e){
+  e.preventDefault();
+  var btn = document.getElementById('saveBtn');
+  btn.disabled = true; btn.textContent = '⏳ Enregistrement…';
+  var payload = {};
+  document.querySelectorAll('#settingsForm input[name], #settingsForm textarea[name]').forEach(function(el){
+    payload[el.getAttribute('name')] = el.value.trim();
+  });
+  payload.hours_json = JSON.stringify(collectHours());
+  try {
+    var r = await fetch('api/admin/site_settings', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ settings: payload }) });
+    var data = await r.json().catch(function(){ return {}; });
+    if (r.ok && data.success) {
+      toast('Modifications enregistrées (' + (data.saved || 0) + ' champs)', 'success');
+      document.getElementById('saveStatus').textContent = 'Enregistré à ' + new Date().toLocaleTimeString('fr-CA');
+    } else {
+      toast('Erreur: ' + (data.error || 'inconnue'), 'error');
+    }
+  } catch(e) {
+    toast('Erreur réseau', 'error');
+  } finally {
+    btn.disabled = false; btn.textContent = '💾 Enregistrer les modifications';
+  }
+});
+
+loadSettings();
+</script>
+</body>
+</html>
