@@ -1,11 +1,11 @@
 {
   "slug": "tandooriroute",
   "displayName": "Tandoori Route",
-  "description": "Site web bilingue (FR/EN) pour Tandoori Route, restaurant indien à Blainville, QC. Esthétique flamme dorée (or-orangé / noir / fumée). Affiche le menu avec photos, livraison via plateformes, à propos, offres spéciales et nouvelles. Sans page foodtruck.",
+  "description": "tandoori route V1",
   "status": "active",
-  "generationVersion": 1,
-  "primaryColor": "#F5A524",
-  "iconUrl": "",
+  "generationVersion": 2,
+  "primaryColor": "#6366f1",
+  "iconUrl": null,
   "enabledAuthMethods": [
     "webauthn",
     "sms",
@@ -14,49 +14,23 @@
   "notificationsEnabled": true,
   "geolocationEnabled": true,
   "customConfig": {
-    "language": "both",
+    "language": "fr",
     "aiSummary": {
       "en": {
-        "dashboard": "Your admin dashboard is the control center for Tandoori Route.\n\nFrom the Admin area, you can add, edit, and remove the main content on your site:\n- Menu: create categories, add menu items, add photos, update prices and descriptions, and reorder items.\n- Delivery: add delivery platforms, place your own logos, and add the correct links.\n- Posts: create and update news or announcement content.\n- Offers: add promotions and track when customers claim them.\n- Team: manage who has access to help run the site.\n- Members: view member-related information and activity.\n\nIf you want to change content, go to the matching Admin section and use the add or edit options. If something should no longer appear, you can delete it there too.\n\nTo send notifications or updates to users, go to the communications area in Admin. That is where you can send a broadcast message or announcement.\n\nTo change site settings, open the settings section in Admin. This is where you can update general site details and other important information that affects the whole website.\n\nTo check how the app is doing, visit the dashboard stats area. There you can review overall activity, site visits, member stats, and other useful performance numbers.\n\nIn everyday use, you will likely spend most of your time in Menu, Delivery, Offers, Posts, and Settings.",
-        "variables": "Great news! Your app is ready to go — no extra setup required.\n\nTandoori Route already works with the built-in tools, so you do not need to connect any outside services before using it. That means you can start adding your restaurant content right away.\n\nYour site is set up to showcase your menu with photos, your delivery platforms and links, your About Us page, and special offers.\n\nYou can also update your main image, change important site details, and manage content from the admin area.\n\nIn short: no keys, no extra accounts, no complicated setup. Just open your dashboard and start customizing Tandoori Route."
+        "dashboard": "Your Tandoori Route admin dashboard is the control center for your app. From there, you can manage the main parts of your site: menu items, menu categories, delivery options, special offers, team members, posts or updates, member activity, and general settings.\n\nTo add or update content, open the Admin area and choose the section you want. For example, go to Menu to add dishes, change prices, update descriptions, or organize items into categories. Go to Delivery to add or edit delivery platforms and ordering links. Use Posts to publish news or updates. Use Team to add staff or manage who has access. In Offers, you can create promotions, review claims, and mark them as redeemed. If something is no longer needed, you can remove it from its section.\n\nTo send notifications or announcements to users, go to the communications or broadcast area in Admin. There you can send a message to your audience about a new offer, special event, or important update.\n\nTo change site details, open Settings. This is where you update general business information and other app-wide options.\n\nTo check performance, open the main Admin dashboard. You can view overall stats like visits, member activity, and offer activity. This helps you see what people are using most and how your app is performing.",
+        "variables": "Great news! Your app is ready to go — no extra setup required. Tandoori Route works out of the box using built-in platform services, so you do not need to connect any outside accounts or add any special keys before launching. You can start adding your menu, delivery links, offers, team members, and site content right away from the admin area. If you want, the next best step is simply to review your pages, make sure your business details are correct, and publish your content."
       },
       "fr": {
-        "dashboard": "Votre tableau de bord admin, c'est le centre de contrôle de Tandoori Route.\n\nÀ partir de l'Admin, vous pouvez ajouter, modifier ou supprimer le contenu principal du site :\n- Menu : créer des catégories, ajouter des items, téléverser des photos, changer les prix et descriptions, et réorganiser l'ordre.\n- Livraison : ajouter vos plateformes de livraison, téléverser vos logos et entrer les bons liens.\n- Publications : créer ou modifier des nouvelles et annonces.\n- Offres : ajouter des promos et voir quand elles sont réclamées.\n- Équipe : gérer les personnes qui ont accès à l'administration.\n- Membres : consulter les informations et l'activité liées aux membres.\n\nPour changer du contenu, allez dans la section Admin correspondante, puis utilisez l'option pour ajouter ou modifier. Si un élément ne doit plus apparaître, vous pouvez aussi le supprimer au même endroit.\n\nPour envoyer des notifications ou des messages aux utilisateurs, allez dans la section des communications de l'Admin. C'est là que vous pouvez envoyer un message général ou une annonce.\n\nPour modifier les réglages du site, ouvrez la section des paramètres dans l'Admin. Vous pourrez y changer les informations générales et d'autres éléments importants du site.\n\nPour voir les résultats de votre appli, consultez la section des statistiques du tableau de bord. Vous y verrez l'activité générale, les visites du site, les statistiques des membres et d'autres chiffres utiles.\n\nAu quotidien, vous utiliserez surtout les sections Menu, Livraison, Offres, Publications et Paramètres.",
-        "variables": "Bonne nouvelle! Votre appli est prête à être utilisée — aucune configuration supplémentaire n'est nécessaire.\n\nTandoori Route fonctionne déjà avec les outils intégrés, donc vous n'avez pas besoin de brancher des services externes avant de commencer. Vous pouvez tout de suite ajouter votre contenu.\n\nVotre site est déjà préparé pour afficher votre menu avec photos, vos plateformes de livraison avec logos et liens, votre section À propos et vos offres spéciales.\n\nVous pourrez aussi mettre à jour l'image principale, modifier les informations importantes du site et gérer votre contenu à partir du tableau de bord admin.\n\nBref: pas de clés, pas de comptes supplémentaires, pas de casse-tête. Ouvrez simplement votre tableau de bord et personnalisez Tandoori Route."
+        "dashboard": "Le tableau de bord de Tandoori Route, c’est le centre de contrôle de votre appli. C’est là que vous gérez les principales sections du site: le menu, les catégories du menu, les options de livraison, les offres promotionnelles, les membres de l’équipe, les nouvelles ou publications, l’activité des membres et les réglages généraux.\n\nPour ajouter ou modifier du contenu, ouvrez l’espace Admin puis choisissez la section voulue. Par exemple, dans Menu, vous pouvez ajouter des plats, changer les prix, corriger les descriptions et classer les items par catégorie. Dans Livraison, vous pouvez ajouter ou modifier vos plateformes de livraison et leurs liens. Dans Publications, vous pouvez afficher des nouvelles, annonces ou mises à jour. Dans Équipe, vous pouvez gérer les personnes qui ont accès à l’administration. Dans Offres, vous pouvez créer des promotions, voir les demandes et marquer une offre comme utilisée. Si un élément n’est plus nécessaire, vous pouvez aussi le supprimer dans sa section.\n\nPour envoyer des notifications ou annonces à vos utilisateurs, allez dans la section des communications ou des envois dans Admin. Vous pourrez y partager une promo, un événement spécial ou une mise à jour importante.\n\nPour modifier les informations générales du site, allez dans Réglages. C’est l’endroit pour mettre à jour les renseignements de l’entreprise et les préférences globales de l’appli.\n\nPour suivre les résultats, consultez le tableau de bord principal Admin. Vous y verrez des statistiques utiles comme les visites, l’activité des membres et l’utilisation des offres. Ça vous aide à comprendre ce qui attire le plus vos clients.",
+        "variables": "Bonne nouvelle! Votre appli est prête à être utilisée telle quelle — aucune configuration supplémentaire n’est nécessaire. Tandoori Route fonctionne déjà avec les services intégrés de la plateforme, donc vous n’avez pas besoin de brancher de comptes externes ni d’ajouter de clés spéciales avant le lancement. Vous pouvez commencer tout de suite à remplir votre menu, vos options de livraison, vos offres, votre équipe et le contenu du site à partir de l’espace d’administration. La prochaine étape idéale: faire un petit tour des pages, vérifier que les infos de votre entreprise sont exactes, puis publier votre contenu."
       }
     },
-    "aiSummaryVersion": 1
+    "operator_built": true,
+    "aiSummaryVersion": 2
   },
-  "promptHistory": [
-    {
-      "prompt": "Make a bilingual (FR/EN) website for Tandoori Route — a brand-new Indian restaurant in Blainville, QC (1185 Bd Curé-Labelle). Tagline: 'Votre route vers la saveur'. Signature dish: Chicken Biryani. Visual style: golden flame (gold-orange / black / smokey). No foodtruck pages.",
-      "timestamp": "2026-05-23T00:00:00.000Z",
-      "changeNotes": "Initial build of Tandoori Route — bilingual (FR/EN) PWA for a new Indian restaurant in Blainville, QC. Golden-flame visual identity (saffron #F5A524 on smokey near-black). Menu organized by tandoor / biryanis / curries / végé / breads & sides / desserts. Delivery platforms section editable in admin. About page evokes the route-vers-la-saveur journey. Offers + posts modules. No foodtruck reservation page or references.",
-      "generationId": 1,
-      "filesModified": [
-        "manifest.json",
-        "public/css/admin-styles.css",
-        "public/css/styles.css",
-        "routes.js",
-        "schema.sql",
-        "seed.js",
-        "views/admin-delivery.ejs",
-        "views/admin-menu.ejs",
-        "views/admin-posts.ejs",
-        "views/admin.ejs",
-        "views/apropos.ejs",
-        "views/index.ejs",
-        "views/livraison.ejs",
-        "views/menu.ejs",
-        "views/partials/admin-shell.ejs",
-        "views/partials/admin-sidebar.ejs",
-        "views/partials/footer.ejs",
-        "views/partials/header.ejs"
-      ]
-    }
-  ],
+  "promptHistory": [],
   "apiVariables": [],
-  "createdAt": "2026-05-23T00:00:00.000Z",
-  "updatedAt": "2026-05-23T00:00:00.000Z",
-  "exportedAt": "2026-05-23T00:00:00.000Z"
+  "createdAt": "2026-05-23T18:31:48.999Z",
+  "updatedAt": "2026-05-23T18:50:41.556Z",
+  "exportedAt": "2026-05-23T19:09:49.112Z"
 }

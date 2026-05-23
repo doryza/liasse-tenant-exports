@@ -1,0 +1,357 @@
+{
+  "exportedAt": "2026-05-23T19:09:49.141Z",
+  "tables": {
+    "admin_users": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "password_hash",
+        "display_name",
+        "role",
+        "active",
+        "activation_token",
+        "invited_by",
+        "invite_token",
+        "invite_expires_at",
+        "last_login_at",
+        "is_active",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_invites": {
+      "columns": [
+        "id",
+        "email",
+        "token",
+        "role",
+        "status",
+        "invited_by",
+        "expires_at",
+        "accepted_at",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_webauthn_credentials": {
+      "columns": [
+        "id",
+        "admin_user_id",
+        "credential_id",
+        "public_key",
+        "counter",
+        "device_name",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_settings": {
+      "columns": [
+        "key",
+        "value",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "key": "_p_content_registry_rev",
+          "value": "12",
+          "updated_at": "2026-05-23T19:08:11.562Z"
+        },
+        {
+          "key": "_p_hero_image_url",
+          "value": "https://res.cloudinary.com/duhp69meg/image/upload/v1779561489/tandooriroute/site/hero_1779561488508.png",
+          "updated_at": "2026-05-23T18:46:11.026Z"
+        },
+        {
+          "key": "_p_about_image_url",
+          "value": "https://res.cloudinary.com/duhp69meg/image/upload/v1779561488/tandooriroute/site/about_1779561488090.png",
+          "updated_at": "2026-05-23T18:46:11.036Z"
+        },
+        {
+          "key": "_p_nav_logo_url",
+          "value": "https://res.cloudinary.com/duhp69meg/image/upload/v1779561501/tandooriroute/site/nav_logo_1779561501126.png",
+          "updated_at": "2026-05-23T18:46:11.041Z"
+        }
+      ]
+    },
+    "site_visits": {
+      "columns": [
+        "id",
+        "path",
+        "visited_at"
+      ],
+      "totalRows": 54,
+      "sampleRows": [
+        {
+          "id": 1,
+          "path": "/",
+          "visited_at": "2026-05-23T18:32:06.789Z"
+        },
+        {
+          "id": 2,
+          "path": "/",
+          "visited_at": "2026-05-23T18:32:07.808Z"
+        },
+        {
+          "id": 3,
+          "path": "/menu",
+          "visited_at": "2026-05-23T18:32:12.600Z"
+        },
+        {
+          "id": 4,
+          "path": "/",
+          "visited_at": "2026-05-23T18:32:12.825Z"
+        },
+        {
+          "id": 5,
+          "path": "/offres",
+          "visited_at": "2026-05-23T18:32:13.984Z"
+        },
+        {
+          "id": 6,
+          "path": "/livraison",
+          "visited_at": "2026-05-23T18:32:15.132Z"
+        },
+        {
+          "id": 7,
+          "path": "/apropos",
+          "visited_at": "2026-05-23T18:32:16.503Z"
+        },
+        {
+          "id": 8,
+          "path": "/admin",
+          "visited_at": "2026-05-23T18:32:22.839Z"
+        },
+        {
+          "id": 9,
+          "path": "/admin/settings",
+          "visited_at": "2026-05-23T18:32:25.105Z"
+        },
+        {
+          "id": 10,
+          "path": "/admin/settings",
+          "visited_at": "2026-05-23T18:32:29.855Z"
+        }
+      ]
+    },
+    "posts": {
+      "columns": [
+        "id",
+        "title",
+        "content",
+        "image_url",
+        "category",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "menu_items": {
+      "columns": [
+        "id",
+        "name_fr",
+        "name_en",
+        "description_fr",
+        "description_en",
+        "price",
+        "category",
+        "image_url",
+        "position",
+        "featured",
+        "available",
+        "sizes_json",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "menu_categories": {
+      "columns": [
+        "id",
+        "slug",
+        "name_fr",
+        "name_en",
+        "position",
+        "active",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 6,
+      "sampleRows": [
+        {
+          "id": 1,
+          "slug": "tandoor",
+          "name_fr": "Spécialités tandoor",
+          "name_en": "Tandoor specialties",
+          "position": 1,
+          "active": 1,
+          "created_at": "2026-05-23T18:32:04.661Z",
+          "updated_at": "2026-05-23T18:32:04.661Z"
+        },
+        {
+          "id": 2,
+          "slug": "biryani",
+          "name_fr": "Biryanis",
+          "name_en": "Biryanis",
+          "position": 2,
+          "active": 1,
+          "created_at": "2026-05-23T18:32:04.666Z",
+          "updated_at": "2026-05-23T18:32:04.666Z"
+        },
+        {
+          "id": 3,
+          "slug": "curry",
+          "name_fr": "Curries",
+          "name_en": "Curries",
+          "position": 3,
+          "active": 1,
+          "created_at": "2026-05-23T18:32:04.672Z",
+          "updated_at": "2026-05-23T18:32:04.672Z"
+        },
+        {
+          "id": 4,
+          "slug": "vege",
+          "name_fr": "Végétarien",
+          "name_en": "Vegetarian",
+          "position": 4,
+          "active": 1,
+          "created_at": "2026-05-23T18:32:04.676Z",
+          "updated_at": "2026-05-23T18:32:04.676Z"
+        },
+        {
+          "id": 5,
+          "slug": "pain",
+          "name_fr": "Pains & accompagnements",
+          "name_en": "Breads & sides",
+          "position": 5,
+          "active": 1,
+          "created_at": "2026-05-23T18:32:04.681Z",
+          "updated_at": "2026-05-23T18:32:04.681Z"
+        },
+        {
+          "id": 6,
+          "slug": "dessert",
+          "name_fr": "Desserts",
+          "name_en": "Desserts",
+          "position": 6,
+          "active": 1,
+          "created_at": "2026-05-23T18:32:04.688Z",
+          "updated_at": "2026-05-23T18:32:04.688Z"
+        }
+      ]
+    },
+    "delivery_platforms": {
+      "columns": [
+        "id",
+        "name",
+        "logo_url",
+        "link_url",
+        "position",
+        "active",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 2,
+      "sampleRows": [
+        {
+          "id": 1,
+          "name": "UberEats",
+          "logo_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1779562418/tandooriroute/admin/vlnhxfbjemz8uaqkx40t.png",
+          "link_url": "https://www.ubereats.com/ca/store/tandoori-route-boulevard-du-cure-labelle/",
+          "position": 0,
+          "active": 1,
+          "image_url": null,
+          "created_at": "2026-05-23T18:53:40.995Z",
+          "updated_at": "2026-05-23T18:53:40.995Z"
+        },
+        {
+          "id": 2,
+          "name": "DoorDash",
+          "logo_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1779562530/tandooriroute/admin/nknzfqzvuwnwqmwqq59y.png",
+          "link_url": "https://www.doordash.com/store/tandoori-route-blainville-42513649/",
+          "position": 1,
+          "active": 1,
+          "image_url": null,
+          "created_at": "2026-05-23T18:55:17.476Z",
+          "updated_at": "2026-05-23T18:55:32.008Z"
+        }
+      ]
+    },
+    "offers": {
+      "columns": [
+        "id",
+        "title_fr",
+        "title_en",
+        "description_fr",
+        "description_en",
+        "image_url",
+        "discount_label",
+        "starts_at",
+        "expires_at",
+        "max_claims",
+        "max_per_user",
+        "position",
+        "active",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 1,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title_fr": "Tandoori Cuisse $7.99",
+          "title_en": "Tandoori Thigh $7.99",
+          "description_fr": null,
+          "description_en": null,
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1779563285/tandooriroute/admin/u9ohfqsg5rpwr5riktwy.png",
+          "discount_label": "20%",
+          "starts_at": null,
+          "expires_at": "2026-05-30T20:00:00.000Z",
+          "max_claims": null,
+          "max_per_user": 1,
+          "position": 0,
+          "active": 1,
+          "created_at": "2026-05-23T19:02:23.255Z",
+          "updated_at": "2026-05-23T19:08:11.248Z"
+        }
+      ]
+    },
+    "offer_claims": {
+      "columns": [
+        "id",
+        "offer_id",
+        "user_id",
+        "short_code",
+        "status",
+        "claimed_at",
+        "redeemed_at",
+        "redeemed_by_user_id"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "keychain_visitors": {
+      "columns": [
+        "id",
+        "email",
+        "full_name",
+        "keychain_id",
+        "upsell_sent_at",
+        "created_at",
+        "updated_at",
+        "user_id"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    }
+  }
+}
