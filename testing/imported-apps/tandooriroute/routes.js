@@ -864,7 +864,7 @@ module.exports = function(services) {
             { name: 'description_fr', label: 'Description (FR)', type: 'textarea', description: 'Détails de l\'offre en français.', placeholder: 'ex. Valide sur les biryanis au poulet et au légume.' },
             { name: 'description_en', label: 'Description (EN)', type: 'textarea', description: 'Details in English (optional).' },
             { name: 'discount_label', label: 'Étiquette de rabais', type: 'text', maxLength: 40, description: 'Affichée en grand sur la carte (ex. "-20%", "1 gratuit").', placeholder: 'ex. -20%' },
-            { name: 'image_url', label: 'Image', type: 'image', description: 'Image de l\'offre. Recommandé: 1200x630px (16:9).' },
+            { name: 'image_url', label: 'Image', type: 'image', description: 'Image de l\'offre. Recommandé : 1200×900 px (4:3) — la carte d\'offre utilise un cadre 4:3, toute autre proportion sera recadrée.' },
             { name: 'starts_at', label: 'Date de début', type: 'datetime', description: "Quand l'offre devient visible. Laissez vide pour activer immédiatement." },
             { name: 'expires_at', label: 'Date d\'expiration', type: 'datetime', required: true, description: "Après cette date, l'offre disparaît et les codes existants ne peuvent plus être utilisés." },
             { name: 'max_per_user', label: 'Limite par client', type: 'number', min: 0, default: 1, description: '0 = illimité. Par défaut: 1 réservation par client.' },
@@ -878,7 +878,7 @@ module.exports = function(services) {
           fields: [
             { name: 'title', label: 'Titre', type: 'text', required: true, maxLength: 200, description: 'Titre de la nouvelle / publication.', placeholder: 'ex. Nouveau menu d\'automne!' },
             { name: 'content', label: 'Contenu', type: 'textarea', description: "Contenu en texte simple. Sera affiché sur la page d'accueil.", placeholder: 'Détails de votre annonce...' },
-            { name: 'image_url', label: 'Image principale', type: 'image', description: 'Image principale. Recommandé: 1200x630px (16:9).' },
+            { name: 'image_url', label: 'Image principale', type: 'image', description: 'Image principale. Recommandé : 1200×675 px (16:9).' },
             { name: 'category', label: 'Catégorie', type: 'text', maxLength: 50, description: 'Catégorie / étiquette (ex. Événement, Menu, Annonce).', placeholder: 'ex. Événement' },
             { name: 'published', label: 'Publié', type: 'boolean', default: true, description: 'Visible publiquement. Décochez pour brouillon.' }
           ]
