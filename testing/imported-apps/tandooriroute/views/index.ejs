@@ -1,0 +1,107 @@
+<%- include('partials/header') %>
+<section class="hero">
+  <img src="<%= (typeof settings!=='undefined' && settings._p_hero_image_url) ? settings._p_hero_image_url : 'https://placehold.co/1600x900/0a0806/F5A524/png?text=Tandoori+Route' %>" alt="<%= t.brand %>" class="hero-img">
+  <div class="hero-overlay"></div>
+  <div class="container hero-inner">
+    <span class="hero-eyebrow"><%= lang === 'en' ? 'Authentic Indian cuisine · Blainville' : 'Cuisine indienne authentique · Blainville' %></span>
+    <h1><%= t.hero_title %></h1>
+    <p><%= t.hero_subtitle %></p>
+    <div class="hero-ctas">
+      <a href="menu" class="btn btn-primary"><%= t.cta_menu %> →</a>
+      <a href="apropos" class="btn btn-secondary"><%= t.cta_visit %></a>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <h2 class="section-title"><%= t.menu_title %></h2>
+    <p class="section-sub"><%= t.menu_subtitle %></p>
+    <% if (typeof menu !== 'undefined' && menu && menu.length > 0) { %>
+      <div class="menu-grid">
+        <% menu.forEach(function(m) {
+          var catName = '';
+          if (typeof categories !== 'undefined' && categories) {
+            var _c = categories.find(function(x){ return x.slug === m.category; });
+            if (_c) catName = (lang === 'en' && _c.name_en) ? _c.name_en : _c.name_fr;
+          }
+          var _sizes = (typeof parseSizes === 'function') ? parseSizes(m.sizes_json) : null;
+        %>
+        <div class="menu-card">
+          <% if (m.image_url) { %><img src="<%= m.image_url %>" alt="<%= pickLang(m,'name',lang) %>" class="menu-card-img"><% } else { %><div class="menu-card-img menu-card-img-placeholder">🔥</div><% } %>
+          <div class="menu-card-body">
+            <h3><%= pickLang(m, 'name', lang) %></h3>
+            <p class="desc"><%= pickLang(m, 'description', lang) %></p>
+            <div class="row">
+              <span class="cat-badge"><%= catName || m.category || '' %></span>
+              <% if (_sizes && _sizes.length > 1) { %>
+                <span class="price"><%= lang === 'en' ? 'from' : 'dès' %> <%= formatPrice(Math.min.apply(null, _sizes.map(function(s){ return s.price == null ? Infinity : s.price; }))) %></span>
+              <% } else if (_sizes && _sizes.length === 1) { %>
+                <span class="price"><%= formatPrice(_sizes[0].price) %></span>
+              <% } else { %>
+                <span class="price"><%= formatPrice(m.price) %></span>
+              <% } %>
+            </div>
+          </div>
+        </div>
+        <% }); %>
+      </div>
+      <p style="text-align:center;margin-top:2.5rem"><a href="menu" class="btn btn-secondary"><%= t.view_full_menu %> →</a></p>
+    <% } else { %>
+      <p class="empty-state"><%= t.no_menu %></p>
+    <% } %>
+  </div>
+</section>
+
+<section class="section alt-section">
+  <div class="container">
+    <h2 class="section-title"><%= t.delivery_title %></h2>
+    <p class="section-sub"><%= t.delivery_subtitle %></p>
+    <% if (typeof platforms !== 'undefined' && platforms && platforms.length > 0) { %>
+      <div class="delivery-grid">
+        <% platforms.forEach(function(p) { %>
+        <div class="delivery-card">
+          <% if (p.logo_url) { %><img src="<%= p.logo_url %>" alt="<%= p.name %>"><% } else { %><div class="logo-placeholder">🛵</div><% } %>
+          <h3><%= p.name %></h3>
+          <a href="<%= p.link_url %>" target="_blank" rel="noopener" class="btn btn-primary"><%= t.order_now %></a>
+        </div>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <p class="empty-state"><%= t.no_platforms %></p>
+    <% } %>
+  </div>
+</section>
+
+<section class="section cta-section">
+  <div class="container">
+    <div class="cta-box">
+      <h2><%= t.visit_title %></h2>
+      <p><%= t.visit_subtitle %></p>
+      <a href="apropos" class="btn btn-primary"><%= t.visit_cta %> →</a>
+    </div>
+  </div>
+</section>
+
+<% if (typeof posts !== 'undefined' && posts && posts.length > 0) { %>
+<section class="section alt-section">
+  <div class="container">
+    <h2 class="section-title"><%= t.latest_news %></h2>
+    <div class="posts-grid">
+    <% posts.forEach(function(p) { %>
+      <div class="post-card">
+        <% if (p.image_url) { %><img src="<%= p.image_url %>" alt="<%= p.title %>"><% } %>
+        <div class="post-card-body">
+          <% if (p.category) { %><span class="cat-badge"><%= p.category %></span><% } %>
+          <h3><%= p.title %></h3>
+          <p class="date"><%= formatDate(p.created_at, lang) %></p>
+          <% if (p.content) { %><p class="excerpt"><%= String(p.content).substring(0,160) %><%= String(p.content).length > 160 ? '...' : '' %></p><% } %>
+        </div>
+      </div>
+    <% }); %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,81 @@
+<%- include('partials/header') %>
+<section class="section" style="padding-top:3rem">
+  <div class="container">
+    <h1 class="section-title"><%= t.menu_title %></h1>
+    <p class="section-sub"><%= t.menu_subtitle %></p>
+    <% if (typeof menu !== 'undefined' && menu && menu.length > 0) { %>
+      <% var cats = (typeof categories !== 'undefined' && categories) ? categories : []; %>
+      <% if (cats.length > 0) { %>
+      <div class="category-filter" id="catFilter" role="tablist">
+        <button class="active" data-cat="all" style="background-color:#F5A524;color:#000"><%= t.category_all %></button>
+        <% cats.forEach(function(c){ %>
+          <button data-cat="<%= c.slug %>"><%= (lang === 'en' && c.name_en) ? c.name_en : c.name_fr %></button>
+        <% }); %>
+      </div>
+      <% } %>
+      <div class="menu-grid" id="menuGrid">
+        <% menu.forEach(function(m) {
+          var catName = '';
+          var _c = cats.find(function(x){ return x.slug === m.category; });
+          if (_c) catName = (lang === 'en' && _c.name_en) ? _c.name_en : _c.name_fr;
+          var _sizes = (typeof parseSizes === 'function') ? parseSizes(m.sizes_json) : null;
+        %>
+        <div class="menu-card <%= m.available ? '' : 'unavailable' %>" data-cat="<%= m.category || '' %>">
+          <% if (m.image_url) { %><img src="<%= m.image_url %>" alt="<%= pickLang(m,'name',lang) %>" class="menu-card-img"><% } else { %><div class="menu-card-img"></div><% } %>
+          <div class="menu-card-body">
+            <h3><%= pickLang(m, 'name', lang) %></h3>
+            <p class="desc"><%= pickLang(m, 'description', lang) %></p>
+            <% if (_sizes && _sizes.length > 0) { %>
+              <div class="sizes-list">
+                <% _sizes.forEach(function(s){ %>
+                  <div class="size-row">
+                    <span class="size-label"><%= (lang === 'en' && s.label_en) ? s.label_en : (s.label_fr || s.label_en || '') %></span>
+                    <span class="size-price"><%= formatPrice(s.price) %></span>
+                  </div>
+                <% }); %>
+              </div>
+              <div class="row" style="margin-top:0.6rem">
+                <span class="cat-badge"><%= catName || m.category || '' %></span>
+              </div>
+            <% } else { %>
+              <div class="row">
+                <span class="cat-badge"><%= catName || m.category || '' %></span>
+                <span class="price"><%= formatPrice(m.price) %></span>
+              </div>
+            <% } %>
+          </div>
+        </div>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <p class="empty-state"><%= t.no_menu %></p>
+    <% } %>
+  </div>
+</section>
+
+<style>
+.menu-card .sizes-list { display: flex; flex-direction: column; gap: 0.3rem; margin-top: 0.5rem; padding-top: 0.6rem; border-top: 1px solid #1f1f1f; }
+.menu-card .sizes-list .size-row { display: flex; justify-content: space-between; align-items: baseline; font-size: 0.95rem; }
+.menu-card .sizes-list .size-label { color: #bbb; }
+.menu-card .sizes-list .size-price { color: #F5A524; font-weight: 800; font-size: 1.05rem; }
+</style>
+
+<script>
+(function(){
+  var btns = document.querySelectorAll('#catFilter button');
+  var cards = document.querySelectorAll('#menuGrid .menu-card');
+  btns.forEach(function(b){
+    b.addEventListener('click', function(){
+      btns.forEach(function(x){ x.classList.remove('active'); x.style.backgroundColor=''; x.style.color=''; });
+      b.classList.add('active');
+      b.style.backgroundColor = '#F5A524';
+      b.style.color = '#000';
+      var c = b.getAttribute('data-cat');
+      cards.forEach(function(card){
+        card.style.display = (c === 'all' || card.getAttribute('data-cat') === c) ? '' : 'none';
+      });
+    });
+  });
+})();
+</script>
+<%- include('partials/footer') %>
