@@ -1,0 +1,36 @@
+<%- include('partials/header', { settings, pageTitle: 'À propos' }) %>
+<section class="page-hero">
+  <div class="container">
+    <span class="eyebrow">Cindy Bélanger</span>
+    <h1><%= settings.about_title || 'À propos de Cindy' %></h1>
+    <p>Courtier immobilier résidentiel chez <%= settings.agency_name || 'Via Capitale Elite' %></p>
+  </div>
+</section>
+<section class="section">
+  <div class="container about-grid">
+    <div class="about-image-wrap">
+      <img src="<%= (settings._p_about_image_url) || 'https://res.cloudinary.com/duhp69meg/image/upload/v1779384031/tapavis_tenant_cindy-belanger-courtier-immobilier-residentiel/build_cindy-belanger-courtier-immobilier-residentiel_1779384031119.png' %>" alt="Cindy Bélanger" class="about-image">
+    </div>
+    <div class="about-text-wrap">
+      <p class="lead"><%= settings.about_text || 'Passionnée par l\'immobilier et dévouée à mes clients, je vous accompagne à chaque étape de votre projet.' %></p>
+      <h3>Ma mission</h3>
+      <p>Vous offrir une expérience immobilière sereine, transparente et orientée résultats. Que vous vendiez ou achetiez, mon objectif est de défendre vos intérêts et de vous accompagner avec professionnalisme.</p>
+      <h3>Ma valeur ajoutée</h3>
+      <ul class="checklist">
+        <li><%= settings.about_highlight_1 || 'Service personnalisé et à l\'écoute' %></li>
+        <li><%= settings.about_highlight_2 || 'Évaluation rigoureuse du marché' %></li>
+        <li><%= settings.about_highlight_3 || 'Stratégie marketing complète pour vendeurs' %></li>
+        <li><%= settings.about_highlight_4 || 'Accompagnement de A à Z pour acheteurs' %></li>
+        <li>Disponibilité, écoute et communication claire</li>
+        <li>Force du réseau <%= settings.agency_name || 'Via Capitale Elite' %></li>
+      </ul>
+      <h3>Mon territoire</h3>
+      <p><%= settings.service_area || 'Région de Québec et environs' %> — je connais le marché local et ses particularités pour mieux vous servir.</p>
+      <div class="about-ctas">
+        <a href="evaluation" class="btn-primary" style="background-color:#1e3a8a;color:#fff;border-color:#1e3a8a">Demander une évaluation</a>
+        <a href="contact" class="btn-outline">Me contacter</a>
+      </div>
+    </div>
+  </div>
+</section>
+<%- include('partials/footer') %>

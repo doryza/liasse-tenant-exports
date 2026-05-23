@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1e3a8a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title><%= (typeof pageTitle !== 'undefined' ? pageTitle + ' — ' : '') + (settings.business_name || 'Cindy Bélanger') %></title>
+<meta name="description" content="<%= settings.tagline || 'Cindy Bélanger, courtier immobilier résidentiel — Via Capitale Elite.' %>">
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="public/css/styles.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="nav-wrap">
+    <a href="." class="brand" aria-label="Accueil">
+      <img src="<%= (typeof settings!=='undefined' && settings._p_nav_logo_url) ? settings._p_nav_logo_url : (typeof appIconUrl !== 'undefined' ? appIconUrl : '') %>" alt="Logo" class="brand-logo" onerror="this.style.display='none'">
+      <div class="brand-text">
+        <span class="brand-name">Cindy Bélanger</span>
+        <span class="brand-sub">Courtier immobilier · Via Capitale Elite</span>
+      </div>
+    </a>
+    <nav class="nav-desktop" aria-label="Menu principal">
+      <a href="." class="nav-link">Accueil</a>
+      <a href="services" class="nav-link">Services</a>
+      <a href="apropos" class="nav-link">À propos</a>
+      <a href="articles" class="nav-link">Conseils</a>
+      <a href="contact" class="nav-link">Contact</a>
+      <a href="evaluation" class="btn-primary nav-cta" style="background-color:#1e3a8a;color:#fff;border-color:#1e3a8a">Évaluation gratuite</a>
+      <a href="#" data-login-btn class="nav-link">Connexion</a>
+    </nav>
+    <button class="hamburger" aria-label="Menu" aria-expanded="false" id="hamburgerBtn">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <div class="nav-mobile" id="navMobile">
+    <a href=".">Accueil</a>
+    <a href="services">Services</a>
+    <a href="apropos">À propos</a>
+    <a href="articles">Conseils</a>
+    <a href="contact">Contact</a>
+    <a href="evaluation" class="mobile-cta">Évaluation gratuite</a>
+    <a href="#" data-login-btn>Connexion</a>
+  </div>
+</header>

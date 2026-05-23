@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — <%= moduleTitle %></title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body class="admin-body">
+<%- include('partials/admin-sidebar') %>
+<main class="admin-main">
+  <header class="admin-header">
+    <div>
+      <h1><%= moduleTitle %></h1>
+      <% if (typeof moduleSubtitle !== 'undefined' && moduleSubtitle) { %><p class="admin-sub"><%= moduleSubtitle %></p><% } %>
+    </div>
+    <div class="header-actions filter-bar">
+      <input type="text" id="searchInput" placeholder="🔎 Rechercher..." oninput="renderTable()" aria-label="Rechercher">
+      <select id="statusFilter" onchange="renderTable()" aria-label="Filtrer par statut">
+        <option value="">Tous les statuts</option>
+      </select>
+      <button class="btn-ghost" onclick="loadItems()" title="Rafraîchir">↻</button>
+    </div>
+  </header>
+  <div id="summaryBar" class="summary-bar"></div>
+  <div id="tableWrap" class="panel"><p class="empty">Chargement...</p></div>
+</main>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true">
+  <div class="modal-card modal-lg">
+    <div class="modal-head">
+      <h2 id="modalTitle">Détails</h2>
+      <button class="modal-close" onclick="closeModal()" aria-label="Fermer">×</button>
+    </div>
+    <div id="modalBody"></div>
+    <form id="statusForm" onsubmit="return saveStatus(event)">
+      <div class="field">
+        <label for="statusInput">Statut du suivi</label>
+        <select id="statusInput" name="status"></select>
+      </div>
+      <div id="formMsg" class="form-msg"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn-ghost danger" onclick="deleteCurrent()">Supprimer</button>
+        <div class="actions-right">
+          <button type="button" class="btn-ghost" onclick="closeModal()">Fermer</button>
+          <button type="submit" class="btn-primary-admin">Mettre à jour le statut</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+var MODULE_KEY = <%- JSON.stringify(moduleKey) %>;
+var items = [];
+var fields = [];
+var statusOptions = [];
+var current = null;
+
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+function truncate(s, n) { s = String(s || ''); return s.length > n ? s.slice(0, n) + '…' : s; }
+function statusClass(s) {
+  if (s === 'nouveau') return 'badge-new';
+  if (s === 'complété' || s === 'répondu') return 'badge-ok';
+  if (s === 'perdu' || s === 'archivé') return 'badge-muted';
+  return 'badge-gray';
+}
+
+async function loadModules() {
+  var res = await fetch('api/admin/modules');
+  var data = await res.json();
+  var mod = (data.modules || []).find(function(m) { return m.key === MODULE_KEY; });
+  fields = mod ? mod.fields : [];
+  var statusField = fields.find(function(f) { return f.name === 'status'; });
+  statusOptions = statusField ? (statusField.options || []) : ['nouveau'];
+  var filter = document.getElementById('statusFilter');
+  statusOptions.forEach(function(o) {
+    var op = document.createElement('option'); op.value = o; op.textContent = o; filter.appendChild(op);
+  });
+  var sel = document.getElementById('statusInput');
+  statusOptions.forEach(function(o) {
+    var op = document.createElement('option'); op.value = o; op.textContent = o; sel.appendChild(op);
+  });
+}
+
+async function loadItems() {
+  document.getElementById('tableWrap').innerHTML = '<p class="empty">Chargement...</p>';
+  var res = await fetch('api/admin/' + MODULE_KEY);
+  var data = await res.json();
+  items = data[MODULE_KEY] || [];
+  renderSummary();
+  renderTable();
+}
+
+function renderSummary() {
+  var summary = document.getElementById('summaryBar');
+  if (!items.length) { summary.innerHTML = ''; return; }
+  var counts = {};
+  items.forEach(function(it) { var s = it.status || 'nouveau'; counts[s] = (counts[s]||0)+1; });
+  var html = '<div class="pills">';
+  html += '<button class="pill ' + (document.getElementById('statusFilter').value === '' ? 'active' : '') + '" onclick="setFilter(\'\')">Tous <strong>' + items.length + '</strong></button>';
+  statusOptions.forEach(function(o) {
+    var c = counts[o] || 0;
+    var active = document.getElementById('statusFilter').value === o ? 'active' : '';
+    html += '<button class="pill ' + active + '" onclick="setFilter(\'' + o + '\')"><span class="badge ' + statusClass(o) + '">' + esc(o) + '</span> <strong>' + c + '</strong></button>';
+  });
+  html += '</div>';
+  summary.innerHTML = html;
+}
+
+function setFilter(v) {
+  document.getElementById('statusFilter').value = v;
+  renderSummary();
+  renderTable();
+}
+
+function renderTable() {
+  var q = document.getElementById('searchInput').value.toLowerCase();
+  var sf = document.getElementById('statusFilter').value;
+  var filtered = items.filter(function(it) {
+    if (sf && it.status !== sf) return false;
+    if (q) {
+      var blob = JSON.stringify(it).toLowerCase();
+      if (blob.indexOf(q) === -1) return false;
+    }
+    return true;
+  });
+  var wrap = document.getElementById('tableWrap');
+  if (!filtered.length) {
+    wrap.innerHTML = '<div class="empty-block"><div class="empty-icon">📭</div><p>Aucun résultat.</p><p class="muted">Essayez d\'ajuster votre recherche ou les filtres.</p></div>';
+    return;
+  }
+  var html = '<div class="table-scroll"><table class="data-table data-table-leads"><thead><tr><th>Prospect</th><th>Coordonnées</th><th>Détails</th><th>Statut</th><th>Reçu</th><th></th></tr></thead><tbody>';
+  filtered.forEach(function(it) {
+    var details = '';
+    if (MODULE_KEY === 'evaluations') {
+      details = '<strong>' + esc(truncate(it.address || '—', 60)) + '</strong>';
+      var extras = [];
+      if (it.property_type) extras.push(esc(it.property_type));
+      if (it.bedrooms) extras.push(esc(it.bedrooms) + ' ch.');
+      if (it.sale_timeframe) extras.push(esc(it.sale_timeframe));
+      if (extras.length) details += '<br><span class="muted">' + extras.join(' · ') + '</span>';
+    } else {
+      details = esc(truncate(it.subject || it.message || '—', 70));
+    }
+    var coords = '';
+    if (it.email) coords += '<a href="mailto:' + esc(it.email) + '">' + esc(it.email) + '</a>';
+    if (it.phone) coords += (coords ? '<br>' : '') + '<a href="tel:' + esc(it.phone) + '">' + esc(it.phone) + '</a>';
+    html += '<tr>';
+    html += '<td><strong>' + esc(it.name || '—') + '</strong></td>';
+    html += '<td class="col-coords">' + (coords || '<span class="muted">—</span>') + '</td>';
+    html += '<td>' + details + '</td>';
+    html += '<td><span class="badge ' + statusClass(it.status) + '">' + esc(it.status || 'nouveau') + '</span></td>';
+    html += '<td class="muted nowrap">' + (it.created_at ? new Date(it.created_at).toLocaleDateString('fr-CA') : '—') + '</td>';
+    html += '<td class="row-actions"><button onclick="viewItem(' + it.id + ')">Voir</button> <button class="danger" onclick="deleteItemRow(' + it.id + ', event)">×</button></td>';
+    html += '</tr>';
+  });
+  html += '</tbody></table></div>';
+  wrap.innerHTML = html;
+}
+
+function viewItem(id) {
+  current = items.find(function(i) { return i.id === id; });
+  if (!current) return;
+  document.getElementById('modalTitle').textContent = (current.name || 'Détails') + ' — ' + (current.created_at ? new Date(current.created_at).toLocaleString('fr-CA') : '');
+  var html = '<div class="lead-detail">';
+  fields.forEach(function(f) {
+    if (f.name === 'status') return;
+    var v = current[f.name];
+    if (!v) return;
+    var label = f.name.replace(/_/g, ' ');
+    html += '<div class="detail-row"><strong>' + esc(label) + '</strong>';
+    if (f.type === 'textarea') {
+      html += '<div class="detail-val">' + esc(v).replace(/\n/g, '<br>') + '</div>';
+    } else if (f.type === 'email') {
+      html += '<div class="detail-val"><a href="mailto:' + esc(v) + '">' + esc(v) + '</a></div>';
+    } else if (f.name === 'phone') {
+      html += '<div class="detail-val"><a href="tel:' + esc(v) + '">' + esc(v) + '</a></div>';
+    } else {
+      html += '<div class="detail-val">' + esc(v) + '</div>';
+    }
+    html += '</div>';
+  });
+  html += '</div>';
+  document.getElementById('modalBody').innerHTML = html;
+  document.getElementById('statusInput').value = current.status || 'nouveau';
+  document.getElementById('modal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+  current = null;
+  document.getElementById('formMsg').textContent = '';
+}
+
+async function saveStatus(e) {
+  e.preventDefault();
+  if (!current) return false;
+  try {
+    var newStatus = document.getElementById('statusInput').value;
+    var res = await fetch('api/admin/' + MODULE_KEY + '/' + current.id, {
+      method: 'PUT', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: newStatus })
+    });
+    if (!res.ok) { var j = await res.json(); document.getElementById('formMsg').textContent = j.error || 'Erreur'; return false; }
+    closeModal();
+    await loadItems();
+  } catch(err) {
+    document.getElementById('formMsg').textContent = 'Erreur de connexion';
+  }
+  return false;
+}
+
+async function deleteCurrent() {
+  if (!current || !confirm('Supprimer cette entrée ? Cette action est irréversible.')) return;
+  try {
+    await fetch('api/admin/' + MODULE_KEY + '/' + current.id, { method: 'DELETE' });
+    closeModal();
+    await loadItems();
+  } catch(err) { alert('Erreur de suppression'); }
+}
+
+async function deleteItemRow(id, ev) {
+  if (ev) ev.stopPropagation();
+  if (!confirm('Supprimer cette entrée ?')) return;
+  try {
+    await fetch('api/admin/' + MODULE_KEY + '/' + id, { method: 'DELETE' });
+    await loadItems();
+  } catch(err) { alert('Erreur de suppression'); }
+}
+
+(async function() {
+  await loadModules();
+  await loadItems();
+})();
+
+var burger = document.getElementById('adminBurger');
+if (burger) burger.addEventListener('click', function() { document.getElementById('adminSidebar').classList.toggle('open'); });
+
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeModal(); });
+</script>
+</body>
+</html>

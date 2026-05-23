@@ -1,0 +1,162 @@
+<%- include('partials/header', { settings, pageTitle: 'Accueil' }) %>
+<section class="hero">
+  <img src="<%= (typeof settings!=='undefined' && settings._p_hero_image_url) ? settings._p_hero_image_url : 'https://res.cloudinary.com/duhp69meg/image/upload/v1779384034/tapavis_tenant_cindy-belanger-courtier-immobilier-residentiel/build_cindy-belanger-courtier-immobilier-residentiel_1779384034620.png' %>" alt="Immobilier résidentiel" class="hero-img">
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-badge">Via Capitale Elite</div>
+    <h1><%= settings.hero_title || 'Réalisez votre projet immobilier en toute confiance' %></h1>
+    <p class="hero-sub"><%= settings.hero_subtitle || 'Courtier immobilier résidentiel — accompagnement personnalisé et évaluation gratuite.' %></p>
+    <div class="hero-ctas">
+      <a href="evaluation" class="btn-primary btn-lg" style="background-color:#1e3a8a;color:#fff;border-color:#1e3a8a"><%= settings.hero_cta_primary || 'Évaluation gratuite' %></a>
+      <a href="contact" class="btn-white btn-lg"><%= settings.hero_cta_secondary || 'Me contacter' %></a>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <h2><%= settings.why_title || 'Pourquoi me choisir' %></h2>
+      <p><%= settings.why_subtitle || 'L\'expertise Via Capitale Elite au service de votre projet immobilier' %></p>
+    </div>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🏡</div>
+        <h3>Expertise locale</h3>
+        <p>Une connaissance approfondie du marché de la région de Québec pour bien évaluer et négocier.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3>Analyse rigoureuse</h3>
+        <p>Évaluations basées sur les ventes comparables récentes et les tendances actuelles du marché.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🤝</div>
+        <h3>Service personnalisé</h3>
+        <p>Un accompagnement humain, à votre écoute, du premier contact jusqu'à la signature chez le notaire.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⭐</div>
+        <h3>Réseau Via Capitale</h3>
+        <p>Bénéficiez de la force d'une bannière reconnue et d'outils marketing performants.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="container">
+    <div class="section-head">
+      <h2><%= settings.services_title || 'Mes services' %></h2>
+      <p><%= settings.services_subtitle || 'Une approche complète pour vendre, acheter ou évaluer une propriété' %></p>
+    </div>
+    <% if (typeof services !== 'undefined' && services.length > 0) { %>
+      <div class="service-grid">
+        <% services.forEach(function(s) { %>
+          <div class="service-card">
+            <% if (s.image_url) { %><img src="<%= s.image_url %>" alt="<%= s.name %>" class="service-img" loading="lazy"><% } %>
+            <div class="service-body">
+              <% if (s.featured) { %><span class="badge badge-accent">Populaire</span><% } %>
+              <h3><%= s.name %></h3>
+              <% if (s.price_info) { %><div class="service-price"><%= s.price_info %></div><% } %>
+              <p><%= truncate(s.description, 160) %></p>
+              <a href="<%= s.cta_link || 'contact' %>" class="link-arrow"><%= s.cta_label || 'En savoir plus' %> →</a>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <p class="empty-state">Les services seront bientôt présentés ici.</p>
+    <% } %>
+  </div>
+</section>
+
+<section class="section about-section">
+  <div class="container about-grid">
+    <div class="about-image-wrap">
+      <img src="<%= (settings._p_about_image_url) || 'https://res.cloudinary.com/duhp69meg/image/upload/v1779384031/tapavis_tenant_cindy-belanger-courtier-immobilier-residentiel/build_cindy-belanger-courtier-immobilier-residentiel_1779384031119.png' %>" alt="<%= settings.business_name || 'Cindy Bélanger' %>" class="about-image">
+    </div>
+    <div class="about-text-wrap">
+      <div class="section-eyebrow">Cindy Bélanger</div>
+      <h2><%= settings.about_title || 'À propos de Cindy' %></h2>
+      <p><%= settings.about_text || 'Passionnée par l\'immobilier et dévouée à mes clients, je vous accompagne à chaque étape.' %></p>
+      <ul class="checklist">
+        <li><%= settings.about_highlight_1 || 'Service personnalisé et à l\'écoute' %></li>
+        <li><%= settings.about_highlight_2 || 'Évaluation rigoureuse du marché' %></li>
+        <li><%= settings.about_highlight_3 || 'Stratégie marketing complète' %></li>
+        <li><%= settings.about_highlight_4 || 'Accompagnement de A à Z' %></li>
+      </ul>
+      <a href="apropos" class="btn-outline">En savoir plus sur moi</a>
+    </div>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="container">
+    <div class="section-head">
+      <h2><%= settings.testimonials_title || 'Ce que disent mes clients' %></h2>
+      <p><%= settings.testimonials_subtitle || 'La confiance de mes clients est ma plus grande fierté' %></p>
+    </div>
+    <% if (typeof testimonials !== 'undefined' && testimonials.length > 0) { %>
+      <div class="testimonial-grid">
+        <% testimonials.forEach(function(t) { %>
+          <div class="testimonial-card">
+            <div class="stars" aria-label="<%= t.rating || 5 %> étoiles sur 5"><% for (var i = 0; i < (t.rating || 5); i++) { %>★<% } %></div>
+            <p class="testimonial-text">« <%= t.content %> »</p>
+            <div class="testimonial-author">
+              <strong><%= t.author %></strong>
+              <% if (t.role) { %><span><%= t.role %></span><% } %>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <p class="empty-state">Les témoignages seront bientôt présentés ici.</p>
+    <% } %>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <h2><%= settings.posts_title || 'Conseils et actualités' %></h2>
+      <p><%= settings.posts_subtitle || 'Tout ce qu\'il faut savoir sur le marché immobilier' %></p>
+    </div>
+    <% if (typeof posts !== 'undefined' && posts.length > 0) { %>
+      <div class="post-grid">
+        <% posts.forEach(function(p) { %>
+          <article class="post-card">
+            <a href="articles/<%= p.id %>" class="post-img-link">
+              <img src="<%= p.image_url || 'https://placehold.co/600x400/e2e8f0/64748b/png?text=Article' %>" alt="<%= p.title %>" loading="lazy">
+            </a>
+            <div class="post-body">
+              <% if (p.category) { %><span class="badge"><%= p.category %></span><% } %>
+              <h3><a href="articles/<%= p.id %>"><%= p.title %></a></h3>
+              <p><%= truncate(p.excerpt || p.content, 140) %></p>
+              <div class="post-meta"><%= formatDate(p.created_at) %></div>
+            </div>
+          </article>
+        <% }); %>
+      </div>
+      <div class="center-cta">
+        <a href="articles" class="btn-outline">Voir tous les conseils</a>
+      </div>
+    <% } else { %>
+      <p class="empty-state">Les premiers articles arrivent bientôt.</p>
+    <% } %>
+  </div>
+</section>
+
+<section class="cta-section">
+  <img src="<%= (settings._p_cta_image_url) || 'https://res.cloudinary.com/duhp69meg/image/upload/v1779384025/tapavis_tenant_cindy-belanger-courtier-immobilier-residentiel/build_cindy-belanger-courtier-immobilier-residentiel_1779384025069.png' %>" alt="" class="cta-bg">
+  <div class="cta-overlay"></div>
+  <div class="container cta-content">
+    <h2><%= settings.cta_title || 'Prêt à passer à l\'action ?' %></h2>
+    <p><%= settings.cta_subtitle || 'Obtenez une évaluation gratuite ou discutons de votre projet d\'achat — sans engagement.' %></p>
+    <div class="hero-ctas">
+      <a href="evaluation" class="btn-white btn-lg">Demander une évaluation</a>
+      <a href="contact" class="btn-outline-white btn-lg">Me contacter</a>
+    </div>
+  </div>
+</section>
+<%- include('partials/footer') %>

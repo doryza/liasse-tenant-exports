@@ -1,0 +1,20 @@
+<aside class="admin-sidebar" id="adminSidebar">
+  <div class="admin-brand">
+    <strong>Cindy Bélanger</strong>
+    <span>Espace admin · Via Capitale</span>
+  </div>
+  <nav class="admin-nav" aria-label="Navigation admin">
+    <a href="admin" class="<%= activePage === 'dashboard' ? 'active' : '' %>">📊 <span>Tableau de bord</span></a>
+    <div class="admin-nav-section">Prospects</div>
+    <a href="admin/evaluations" class="<%= activePage === 'evaluations' ? 'active' : '' %>">🏡 <span>Demandes d'évaluation</span></a>
+    <a href="admin/contacts" class="<%= activePage === 'contacts' ? 'active' : '' %>">💬 <span>Messages</span></a>
+    <div class="admin-nav-section">Contenu</div>
+    <a href="admin/posts" class="<%= activePage === 'posts' ? 'active' : '' %>">📝 <span>Articles</span></a>
+    <a href="admin/services" class="<%= activePage === 'services' ? 'active' : '' %>">⭐ <span>Services</span></a>
+    <a href="admin/testimonials" class="<%= activePage === 'testimonials' ? 'active' : '' %>">🗣 <span>Témoignages</span></a>
+    <div class="admin-nav-section">Compte</div>
+    <a href="." target="_blank" rel="noopener">🌐 <span>Voir le site</span></a>
+    <a href="admin/logout">↩ <span>Déconnexion</span></a>
+  </nav>
+</aside>
+<button class="admin-burger" id="adminBurger" aria-label="Menu admin">☰</button>

@@ -1,0 +1,33 @@
+<footer class="site-footer">
+  <div class="footer-wrap">
+    <div class="footer-col">
+      <h4>Cindy Bélanger</h4>
+      <p class="footer-sub">Courtier immobilier résidentiel</p>
+      <p class="footer-sub"><%= settings.agency_name || 'Via Capitale Elite' %></p>
+      <p class="footer-sub"><%= settings.service_area || 'Région de Québec' %></p>
+    </div>
+    <div class="footer-col">
+      <h4>Navigation</h4>
+      <a href=".">Accueil</a>
+      <a href="services">Services</a>
+      <a href="apropos">À propos</a>
+      <a href="articles">Conseils</a>
+      <a href="contact">Contact</a>
+    </div>
+    <div class="footer-col">
+      <h4>Me joindre</h4>
+      <% if (typeof services !== 'undefined' && services && services.config && services.config.contactEmail) { %>
+        <a href="mailto:<%= services.config.contactEmail %>"><%= services.config.contactEmail %></a>
+      <% } %>
+      <a href="contact">Formulaire de contact</a>
+      <a href="evaluation">Évaluation gratuite</a>
+      <button data-push-btn class="btn-ghost-sm">Activer les notifications</button>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© <%= new Date().getFullYear() %> <%= settings.footer_text || 'Cindy Bélanger — Via Capitale Elite' %></p>
+  </div>
+</footer>
+<script src="public/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Cindy Bélanger</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body class="admin-body">
+<%- include('partials/admin-sidebar') %>
+<main class="admin-main">
+  <header class="admin-header">
+    <div>
+      <h1>Tableau de bord</h1>
+      <p class="admin-sub">Bienvenue — voici un aperçu de votre activité.</p>
+    </div>
+    <div class="header-actions">
+      <a href="." target="_blank" class="btn-ghost">🌐 Voir le site</a>
+      <a href="admin/evaluations" class="btn-new">Voir les prospects</a>
+    </div>
+  </header>
+
+  <section class="stat-grid">
+    <div class="stat-card stat-accent">
+      <div class="stat-label">Nouvelles évaluations</div>
+      <div class="stat-value"><%= stats.newEvaluations %></div>
+      <a href="admin/evaluations" class="stat-link">Voir les prospects →</a>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Évaluations en cours</div>
+      <div class="stat-value"><%= stats.inProgressEvals %></div>
+      <div class="stat-sub">Contactés et suivis actifs</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Nouveaux messages</div>
+      <div class="stat-value"><%= stats.newContacts %></div>
+      <a href="admin/contacts" class="stat-link">Lire →</a>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Visites (7 jours)</div>
+      <div class="stat-value"><%= stats.recentVisits %></div>
+      <div class="stat-sub">Total : <%= stats.totalVisits %></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <div>
+        <h2>Actions rapides</h2>
+        <p class="panel-sub">Gérez votre contenu en un clic</p>
+      </div>
+    </div>
+    <div class="quick-actions">
+      <a href="admin/posts" class="quick-action">
+        <span class="qa-icon">📝</span>
+        <span class="qa-label">Nouvel article</span>
+      </a>
+      <a href="admin/services" class="quick-action">
+        <span class="qa-icon">⭐</span>
+        <span class="qa-label">Modifier les services</span>
+      </a>
+      <a href="admin/testimonials" class="quick-action">
+        <span class="qa-icon">💬</span>
+        <span class="qa-label">Ajouter un témoignage</span>
+      </a>
+      <a href="admin/evaluations" class="quick-action">
+        <span class="qa-icon">🏡</span>
+        <span class="qa-label">Suivi des évaluations</span>
+      </a>
+    </div>
+  </section>
+
+  <section class="admin-grid-2">
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>Dernières demandes d'évaluation</h2>
+          <p class="panel-sub">Les 5 demandes les plus récentes</p>
+        </div>
+        <a href="admin/evaluations" class="panel-link">Tout voir →</a>
+      </div>
+      <% if (recentEvaluations && recentEvaluations.length > 0) { %>
+        <div class="table-scroll">
+          <table class="data-table">
+            <thead><tr><th>Prospect</th><th>Propriété</th><th>Statut</th><th>Date</th></tr></thead>
+            <tbody>
+            <% recentEvaluations.forEach(function(e) { %>
+              <tr>
+                <td><strong><%= e.name || '—' %></strong><br><span class="muted"><%= e.email || e.phone || '—' %></span></td>
+                <td><%= truncate(e.address || '—', 40) %><% if (e.property_type) { %><br><span class="muted"><%= e.property_type %></span><% } %></td>
+                <td><span class="badge badge-<%= e.status === 'nouveau' ? 'new' : (e.status === 'complété' ? 'ok' : 'gray') %>"><%= e.status %></span></td>
+                <td class="muted"><%= formatDate(e.created_at) %></td>
+              </tr>
+            <% }); %>
+            </tbody>
+          </table>
+        </div>
+      <% } else { %>
+        <div class="empty-block">
+          <div class="empty-icon">🏡</div>
+          <p>Aucune demande d'évaluation pour le moment.</p>
+          <p class="muted">Les nouvelles demandes apparaîtront ici.</p>
+        </div>
+      <% } %>
+    </div>
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>Derniers messages</h2>
+          <p class="panel-sub">Les 5 messages les plus récents</p>
+        </div>
+        <a href="admin/contacts" class="panel-link">Tout voir →</a>
+      </div>
+      <% if (recentContacts && recentContacts.length > 0) { %>
+        <div class="table-scroll">
+          <table class="data-table">
+            <thead><tr><th>De</th><th>Sujet</th><th>Statut</th><th>Date</th></tr></thead>
+            <tbody>
+            <% recentContacts.forEach(function(c) { %>
+              <tr>
+                <td><strong><%= c.name || '—' %></strong><br><span class="muted"><%= c.email || c.phone || '—' %></span></td>
+                <td><%= truncate(c.subject || c.message || '—', 40) %></td>
+                <td><span class="badge badge-<%= c.status === 'nouveau' ? 'new' : (c.status === 'répondu' ? 'ok' : 'gray') %>"><%= c.status %></span></td>
+                <td class="muted"><%= formatDate(c.created_at) %></td>
+              </tr>
+            <% }); %>
+            </tbody>
+          </table>
+        </div>
+      <% } else { %>
+        <div class="empty-block">
+          <div class="empty-icon">💬</div>
+          <p>Aucun message pour le moment.</p>
+          <p class="muted">Les messages du formulaire de contact apparaîtront ici.</p>
+        </div>
+      <% } %>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <div>
+        <h2>Contenu du site</h2>
+        <p class="panel-sub">Gérez les éléments affichés aux visiteurs</p>
+      </div>
+    </div>
+    <div class="module-grid">
+      <a href="admin/posts" class="module-card">
+        <div class="module-icon">📝</div>
+        <div class="module-label">Articles</div>
+        <div class="module-count"><%= counts.posts %></div>
+        <div class="module-action">Gérer →</div>
+      </a>
+      <a href="admin/services" class="module-card">
+        <div class="module-icon">⭐</div>
+        <div class="module-label">Services</div>
+        <div class="module-count"><%= counts.services %></div>
+        <div class="module-action">Gérer →</div>
+      </a>
+      <a href="admin/testimonials" class="module-card">
+        <div class="module-icon">💬</div>
+        <div class="module-label">Témoignages</div>
+        <div class="module-count"><%= counts.testimonials %></div>
+        <div class="module-action">Gérer →</div>
+      </a>
+      <a href="admin/evaluations" class="module-card">
+        <div class="module-icon">🏡</div>
+        <div class="module-label">Évaluations</div>
+        <div class="module-count"><%= counts.evaluations %></div>
+        <div class="module-action">Voir →</div>
+      </a>
+      <a href="admin/contacts" class="module-card">
+        <div class="module-icon">💬</div>
+        <div class="module-label">Messages</div>
+        <div class="module-count"><%= counts.contacts %></div>
+        <div class="module-action">Voir →</div>
+      </a>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head"><h2>Engagement</h2></div>
+    <div class="engagement-grid">
+      <div class="eng-item">
+        <div class="eng-label">Abonnés aux notifications</div>
+        <div class="eng-value"><%= stats.pushCount %></div>
+      </div>
+      <div class="eng-item">
+        <div class="eng-label">Utilisateurs inscrits</div>
+        <div class="eng-value"><%= stats.userCount %></div>
+      </div>
+      <div class="eng-item">
+        <div class="eng-label">Évaluations complétées</div>
+        <div class="eng-value"><%= stats.completedEvals %></div>
+      </div>
+    </div>
+  </section>
+</main>
+<script>
+var burger = document.getElementById('adminBurger');
+if (burger) burger.addEventListener('click', function() {
+  document.getElementById('adminSidebar').classList.toggle('open');
+});
+</script>
+</body>
+</html>

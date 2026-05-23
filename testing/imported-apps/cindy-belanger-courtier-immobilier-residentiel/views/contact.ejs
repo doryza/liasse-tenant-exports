@@ -1,0 +1,112 @@
+<%- include('partials/header', { settings, pageTitle: 'Contact' }) %>
+<section class="page-hero">
+  <div class="container">
+    <span class="eyebrow">Restons en contact</span>
+    <h1><%= settings.contact_title || 'Plusieurs façons de me joindre' %></h1>
+    <p><%= settings.contact_subtitle || 'Choisissez le moyen qui vous convient le mieux.' %></p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container contact-grid">
+    <div class="contact-methods">
+      <% if (typeof config !== 'undefined' && config && config.contactEmail) { %>
+        <a href="mailto:<%= config.contactEmail %>" class="contact-card">
+          <div class="contact-icon">📧</div>
+          <div><h3>Courriel</h3><p><%= config.contactEmail %></p></div>
+        </a>
+      <% } %>
+      <% if (typeof config !== 'undefined' && config && config.contactPhone) { %>
+        <a href="tel:<%= config.contactPhone %>" class="contact-card">
+          <div class="contact-icon">📞</div>
+          <div><h3>Téléphone</h3><p><%= config.contactPhone %></p></div>
+        </a>
+      <% } %>
+      <a href="evaluation" class="contact-card">
+        <div class="contact-icon">🏡</div>
+        <div><h3>Évaluation gratuite</h3><p>Formulaire en ligne, réponse sous 48 h</p></div>
+      </a>
+      <div class="contact-card">
+        <div class="contact-icon">📍</div>
+        <div><h3>Secteur desservi</h3><p><%= settings.service_area || 'Région de Québec et environs' %></p></div>
+      </div>
+      <div class="contact-card">
+        <div class="contact-icon">🏢</div>
+        <div><h3><%= settings.agency_name || 'Via Capitale Elite' %></h3><p><%= settings.agency_tagline || 'Agence immobilière' %></p></div>
+      </div>
+      <% if (settings.social_facebook || settings.social_instagram || settings.social_linkedin) { %>
+        <div class="contact-card">
+          <div class="contact-icon">🔗</div>
+          <div>
+            <h3>Réseaux sociaux</h3>
+            <p class="socials">
+              <% if (settings.social_facebook) { %><a href="<%= settings.social_facebook %>" target="_blank" rel="noopener">Facebook</a><% } %>
+              <% if (settings.social_instagram) { %><a href="<%= settings.social_instagram %>" target="_blank" rel="noopener">Instagram</a><% } %>
+              <% if (settings.social_linkedin) { %><a href="<%= settings.social_linkedin %>" target="_blank" rel="noopener">LinkedIn</a><% } %>
+            </p>
+          </div>
+        </div>
+      <% } %>
+    </div>
+
+    <div class="contact-form-wrap">
+      <% if (success) { %>
+        <div class="alert-success"><strong>Message envoyé !</strong> Je vous reviendrai rapidement.</div>
+      <% } %>
+      <form id="contactForm" class="form-card">
+        <h2>Envoyez-moi un message</h2>
+        <div class="form-row">
+          <label>Nom complet *<input type="text" name="name" required></label>
+        </div>
+        <div class="form-row two-col">
+          <label>Courriel<input type="email" name="email" placeholder="votre@courriel.com"></label>
+          <label>Téléphone<input type="tel" name="phone" placeholder="418 555-1234"></label>
+        </div>
+        <div class="form-row">
+          <label>Sujet
+            <select name="subject">
+              <option value="">— Choisir un sujet —</option>
+              <option>Vendre ma propriété</option>
+              <option>Acheter une propriété</option>
+              <option>Évaluation gratuite</option>
+              <option>Question générale</option>
+              <option>Autre</option>
+            </select>
+          </label>
+        </div>
+        <div class="form-row">
+          <label>Votre message *<textarea name="message" rows="5" required placeholder="Décrivez votre projet ou votre question..."></textarea></label>
+        </div>
+        <div id="contactMsg" class="form-msg"></div>
+        <button type="submit" class="btn-primary btn-lg" style="background-color:#1e3a8a;color:#fff;border-color:#1e3a8a">Envoyer le message</button>
+      </form>
+    </div>
+  </div>
+</section>
+<script>
+document.getElementById('contactForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  var msg = document.getElementById('contactMsg');
+  msg.textContent = ''; msg.className = 'form-msg';
+  var data = {};
+  new FormData(e.target).forEach(function(v, k) { data[k] = v; });
+  var btn = e.target.querySelector('button[type=submit]');
+  btn.disabled = true; btn.textContent = 'Envoi en cours...';
+  try {
+    var res = await fetch('api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+    var j = await res.json();
+    if (res.ok && j.success) {
+      window.location.href = 'contact?success=1';
+    } else {
+      msg.textContent = j.error || 'Une erreur est survenue.';
+      msg.classList.add('error');
+      btn.disabled = false; btn.textContent = 'Envoyer le message';
+    }
+  } catch(err) {
+    msg.textContent = 'Erreur de connexion. Veuillez réessayer.';
+    msg.classList.add('error');
+    btn.disabled = false; btn.textContent = 'Envoyer le message';
+  }
+});
+</script>
+<%- include('partials/footer') %>

@@ -1,0 +1,405 @@
+{
+  "exportedAt": "2026-05-23T02:48:02.080Z",
+  "tables": {
+    "admin_invites": {
+      "columns": [
+        "id",
+        "email",
+        "token",
+        "role",
+        "status",
+        "invited_by",
+        "expires_at",
+        "accepted_at",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_webauthn_credentials": {
+      "columns": [
+        "id",
+        "admin_user_id",
+        "credential_id",
+        "public_key",
+        "counter",
+        "device_name",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_users": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "password_hash",
+        "display_name",
+        "role",
+        "active",
+        "activation_token",
+        "invited_by",
+        "invite_token",
+        "invite_expires_at",
+        "last_login_at",
+        "is_active",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_settings": {
+      "columns": [
+        "key",
+        "value",
+        "updated_at"
+      ],
+      "totalRows": 61,
+      "sampleRows": [
+        {
+          "key": "business_name",
+          "value": "Cindy Bélanger — Courtier Immobilier Résidentiel",
+          "updated_at": "2026-05-21T17:43:56.979Z"
+        },
+        {
+          "key": "tagline",
+          "value": "Votre partenaire de confiance pour acheter ou vendre au Québec",
+          "updated_at": "2026-05-21T17:43:56.988Z"
+        },
+        {
+          "key": "hero_title",
+          "value": "Réalisez votre projet immobilier en toute confiance",
+          "updated_at": "2026-05-21T17:43:56.997Z"
+        },
+        {
+          "key": "hero_subtitle",
+          "value": "Courtier immobilier résidentiel chez Via Capitale Elite — accompagnement personnalisé, évaluation gratuite, résultats concrets.",
+          "updated_at": "2026-05-21T17:43:57.005Z"
+        },
+        {
+          "key": "hero_cta_primary",
+          "value": "Évaluation gratuite",
+          "updated_at": "2026-05-21T17:43:57.014Z"
+        },
+        {
+          "key": "hero_cta_secondary",
+          "value": "Me contacter",
+          "updated_at": "2026-05-21T17:43:57.023Z"
+        },
+        {
+          "key": "about_title",
+          "value": "À propos de Cindy",
+          "updated_at": "2026-05-21T17:43:57.032Z"
+        },
+        {
+          "key": "about_text",
+          "value": "Passionnée par l'immobilier et dévouée à mes clients, je vous accompagne à chaque étape de votre projet, que vous souhaitiez vendre votre propriété au meilleur prix ou trouver la maison de vos rêves. Affiliée à Via Capitale Elite, je mets à votre service mon expertise du marché local, mon réseau et un service personnalisé.",
+          "updated_at": "2026-05-21T17:43:57.040Z"
+        },
+        {
+          "key": "about_highlight_1",
+          "value": "Service personnalisé et à l'écoute",
+          "updated_at": "2026-05-21T17:43:57.049Z"
+        },
+        {
+          "key": "about_highlight_2",
+          "value": "Évaluation rigoureuse du marché",
+          "updated_at": "2026-05-21T17:43:57.058Z"
+        }
+      ]
+    },
+    "site_visits": {
+      "columns": [
+        "id",
+        "path",
+        "created_at"
+      ],
+      "totalRows": 79,
+      "sampleRows": [
+        {
+          "id": 1,
+          "path": "/",
+          "created_at": "2026-05-21T18:01:17.142Z"
+        },
+        {
+          "id": 2,
+          "path": "/",
+          "created_at": "2026-05-21T18:02:06.422Z"
+        },
+        {
+          "id": 3,
+          "path": "/%7B%7BIMG_POST4%7D%7D",
+          "created_at": "2026-05-21T18:02:39.800Z"
+        },
+        {
+          "id": 4,
+          "path": "/",
+          "created_at": "2026-05-21T18:02:39.920Z"
+        },
+        {
+          "id": 5,
+          "path": "/",
+          "created_at": "2026-05-21T18:04:48.698Z"
+        },
+        {
+          "id": 6,
+          "path": "/",
+          "created_at": "2026-05-21T18:06:20.109Z"
+        },
+        {
+          "id": 7,
+          "path": "/services",
+          "created_at": "2026-05-21T18:06:22.631Z"
+        },
+        {
+          "id": 8,
+          "path": "/apropos",
+          "created_at": "2026-05-21T18:06:29.386Z"
+        },
+        {
+          "id": 9,
+          "path": "/contact",
+          "created_at": "2026-05-21T18:06:35.451Z"
+        },
+        {
+          "id": 10,
+          "path": "/contact",
+          "created_at": "2026-05-21T18:07:11.564Z"
+        }
+      ]
+    },
+    "posts": {
+      "columns": [
+        "id",
+        "title",
+        "excerpt",
+        "content",
+        "image_url",
+        "category",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "5 conseils pour bien préparer la vente de votre maison",
+          "excerpt": "Avant de mettre votre propriété sur le marché, quelques préparatifs peuvent faire toute la différence sur le prix de vente et le délai.",
+          "content": "La vente d'une propriété ne s'improvise pas. Voici cinq étapes essentielles pour maximiser votre prix de vente et accélérer le processus.\n\n1. Désencombrer et dépersonnaliser : les acheteurs doivent pouvoir se projeter dans la maison. Rangez les objets personnels et créez des espaces aérés.\n\n2. Petites réparations : un robinet qui fuit, une poignée brisée, une peinture écaillée — autant de détails qui peuvent inquiéter les acheteurs. Réglez-les avant les visites.\n\n3. Mise en valeur (home staging) : un éclairage soigné, quelques accessoires bien choisis et une décoration neutre peuvent transformer la perception d'une pièce.\n\n4. Photos professionnelles : la première impression se fait en ligne. Des photos de qualité multiplient les visites.\n\n5. Fixer le bon prix : un prix trop élevé fait fuir, un prix trop bas vous fait perdre de l'argent. Une évaluation rigoureuse est indispensable.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1779384028/tapavis_tenant_cindy-belanger-courtier-immobilier-residentiel/build_cindy-belanger-courtier-immobilier-residentiel_1779384028175.png",
+          "category": "Conseils vendeurs",
+          "published": 1,
+          "created_at": "2026-05-21T17:43:57.368Z",
+          "updated_at": "2026-05-21T17:43:57.368Z"
+        },
+        {
+          "id": 2,
+          "title": "Comment fonctionne l'évaluation d'une propriété ?",
+          "excerpt": "Comprendre la valeur marchande de votre propriété, c'est la base de toute transaction réussie. Voici comment je procède.",
+          "content": "L'évaluation d'une propriété repose sur trois piliers principaux.\n\nLes ventes comparables : nous analysons les propriétés similaires vendues récemment dans votre secteur. Superficie, nombre de chambres, état général, année de construction — tous ces critères entrent en ligne de compte.\n\nL'état actuel du marché : un marché de vendeurs fait grimper les prix, tandis qu'un marché d'acheteurs les freine. Le taux d'intérêt, le nombre d'inscriptions actives et la durée moyenne des ventes sont des indicateurs clés.\n\nLes caractéristiques uniques : une vue exceptionnelle, des rénovations récentes, un grand terrain ou des matériaux haut de gamme peuvent justifier une valeur supérieure.\n\nL'évaluation que je vous offre est gratuite et sans engagement. C'est un excellent point de départ pour planifier votre projet, même si vous n'êtes pas certain de vendre dans l'immédiat.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1779384025/tapavis_tenant_cindy-belanger-courtier-immobilier-residentiel/build_cindy-belanger-courtier-immobilier-residentiel_1779384025834.png",
+          "category": "Évaluation",
+          "published": 1,
+          "created_at": "2026-05-21T17:43:57.376Z",
+          "updated_at": "2026-05-21T17:43:57.376Z"
+        },
+        {
+          "id": 3,
+          "title": "Premier achat : les étapes à connaître",
+          "excerpt": "Acheter sa première maison est un projet de vie. Voici un guide simple pour vous y retrouver, étape par étape.",
+          "content": "Étape 1 — Préapprobation hypothécaire : avant même de visiter des propriétés, rencontrez un courtier hypothécaire ou votre institution financière pour connaître votre budget réel.\n\nÉtape 2 — Définir vos critères : nombre de chambres, secteur, proximité du travail ou des écoles, type de propriété. Faites la liste de vos « indispensables » et de vos « bonus ».\n\nÉtape 3 — Visiter les propriétés : avec votre courtier, ciblez les visites qui correspondent vraiment à vos critères. Ne vous éparpillez pas.\n\nÉtape 4 — Faire une offre : votre courtier rédige la promesse d'achat avec les conditions qui vous protègent (inspection, financement, etc.).\n\nÉtape 5 — Inspection et négociation : un inspecteur en bâtiment vous donne l'heure juste sur l'état de la propriété. Selon les résultats, on peut renégocier.\n\nÉtape 6 — Notaire et prise de possession : signature finale et remise des clés !",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1779384025/tapavis_tenant_cindy-belanger-courtier-immobilier-residentiel/build_cindy-belanger-courtier-immobilier-residentiel_1779384025320.png",
+          "category": "Conseils acheteurs",
+          "published": 1,
+          "created_at": "2026-05-21T17:43:57.402Z",
+          "updated_at": "2026-05-21T17:43:57.402Z"
+        },
+        {
+          "id": 4,
+          "title": "Marché immobilier de Québec : tendances actuelles",
+          "excerpt": "Un aperçu des grandes tendances qui influencent le marché résidentiel dans la région de Québec en ce moment.",
+          "content": "Le marché immobilier de la région de Québec demeure dynamique. Voici les grandes tendances à surveiller.\n\nLes secteurs en demande : Lévis, Saint-Augustin et certains quartiers centraux de Québec continuent d'attirer des acheteurs, avec des délais de vente courts pour les propriétés bien préparées.\n\nLes taux d'intérêt : leur évolution influence directement le pouvoir d'achat des futurs propriétaires. Une bonne préapprobation est essentielle pour sécuriser un taux avantageux.\n\nLes condos et plex : on observe un regain d'intérêt pour les propriétés à revenus, particulièrement chez les investisseurs cherchant à diversifier leur portefeuille.\n\nLes propriétés rénovées : les acheteurs sont prêts à payer pour des maisons clés en main. Si vous vendez, certaines rénovations stratégiques offrent un excellent retour sur investissement.\n\nPour discuter de votre projet en fonction de ces tendances, contactez-moi pour une consultation gratuite.",
+          "image_url": "{{IMG_POST4}}",
+          "category": "Marché",
+          "published": 1,
+          "created_at": "2026-05-21T17:43:57.410Z",
+          "updated_at": "2026-05-21T17:43:57.410Z"
+        }
+      ]
+    },
+    "services": {
+      "columns": [
+        "id",
+        "name",
+        "description",
+        "image_url",
+        "icon",
+        "price_info",
+        "cta_label",
+        "cta_link",
+        "featured",
+        "sort_order",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "name": "Vendre votre propriété",
+          "description": "Une stratégie de mise en marché clé en main : analyse comparative, photographie professionnelle, visibilité maximale et négociation à votre avantage pour obtenir le meilleur prix dans les meilleurs délais.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1779384024/tapavis_tenant_cindy-belanger-courtier-immobilier-residentiel/build_cindy-belanger-courtier-immobilier-residentiel_1779384024150.png",
+          "icon": "home",
+          "price_info": "Honoraires sur commission",
+          "cta_label": "Demander une évaluation",
+          "cta_link": "evaluation",
+          "featured": 1,
+          "sort_order": 1,
+          "created_at": "2026-05-21T17:43:57.297Z",
+          "updated_at": "2026-05-21T17:43:57.297Z"
+        },
+        {
+          "id": 2,
+          "name": "Acheter une propriété",
+          "description": "Recherche personnalisée selon vos critères, accompagnement aux visites, analyses comparatives de prix et négociation rigoureuse pour faire l'acquisition de la maison qui vous correspond.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1779384028/tapavis_tenant_cindy-belanger-courtier-immobilier-residentiel/build_cindy-belanger-courtier-immobilier-residentiel_1779384028332.png",
+          "icon": "key",
+          "price_info": "Service sans frais pour l'acheteur",
+          "cta_label": "Discuter de mon projet",
+          "cta_link": "contact",
+          "featured": 1,
+          "sort_order": 2,
+          "created_at": "2026-05-21T17:43:57.307Z",
+          "updated_at": "2026-05-21T17:43:57.307Z"
+        },
+        {
+          "id": 3,
+          "name": "Évaluation gratuite",
+          "description": "Estimation détaillée et réaliste de la valeur marchande de votre propriété, basée sur les ventes récentes comparables et les tendances actuelles du marché local.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1779384030/tapavis_tenant_cindy-belanger-courtier-immobilier-residentiel/build_cindy-belanger-courtier-immobilier-residentiel_1779384030553.png",
+          "icon": "chart",
+          "price_info": "Gratuit, sans engagement",
+          "cta_label": "Obtenir mon évaluation",
+          "cta_link": "evaluation",
+          "featured": 1,
+          "sort_order": 3,
+          "created_at": "2026-05-21T17:43:57.315Z",
+          "updated_at": "2026-05-21T17:43:57.315Z"
+        },
+        {
+          "id": 4,
+          "name": "Conseils personnalisés",
+          "description": "Vous hésitez à vendre ou à acheter ? Profitez d'une consultation sans engagement pour clarifier vos options et planifier votre projet en fonction de vos objectifs.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1779384029/tapavis_tenant_cindy-belanger-courtier-immobilier-residentiel/build_cindy-belanger-courtier-immobilier-residentiel_1779384029569.png",
+          "icon": "chat",
+          "price_info": "Consultation gratuite",
+          "cta_label": "Prendre rendez-vous",
+          "cta_link": "contact",
+          "featured": 0,
+          "sort_order": 4,
+          "created_at": "2026-05-21T17:43:57.324Z",
+          "updated_at": "2026-05-21T17:43:57.324Z"
+        }
+      ]
+    },
+    "testimonials": {
+      "columns": [
+        "id",
+        "author",
+        "role",
+        "content",
+        "rating",
+        "image_url",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "author": "Mélanie & Patrick T.",
+          "role": "Vendeurs à Charlesbourg",
+          "content": "Cindy a vendu notre maison en moins de trois semaines et au-dessus de notre prix demandé. Son approche professionnelle et humaine a fait toute la différence. Nous la recommandons sans hésiter.",
+          "rating": 5,
+          "image_url": null,
+          "published": 1,
+          "created_at": "2026-05-21T17:43:57.333Z",
+          "updated_at": "2026-05-21T17:43:57.333Z"
+        },
+        {
+          "id": 2,
+          "author": "Sophie L.",
+          "role": "Première acheteuse",
+          "content": "Acheter une première maison peut être stressant, mais avec Cindy, tout s'est déroulé à merveille. Elle a pris le temps de répondre à toutes mes questions et m'a guidée à chaque étape.",
+          "rating": 5,
+          "image_url": null,
+          "published": 1,
+          "created_at": "2026-05-21T17:43:57.342Z",
+          "updated_at": "2026-05-21T17:43:57.342Z"
+        },
+        {
+          "id": 3,
+          "author": "Jean-François M.",
+          "role": "Acheteur à Sainte-Foy",
+          "content": "Cindy connaît parfaitement le marché et a négocié pour nous une offre vraiment avantageuse. Service impeccable, je n'hésiterai pas à faire à nouveau affaire avec elle.",
+          "rating": 5,
+          "image_url": null,
+          "published": 1,
+          "created_at": "2026-05-21T17:43:57.351Z",
+          "updated_at": "2026-05-21T17:43:57.351Z"
+        },
+        {
+          "id": 4,
+          "author": "Caroline D.",
+          "role": "Vendeuse à Beauport",
+          "content": "Excellente courtière ! Communication claire, photos de la propriété magnifiques, et résultats au rendez-vous. Merci Cindy pour ton travail exceptionnel.",
+          "rating": 5,
+          "image_url": null,
+          "published": 1,
+          "created_at": "2026-05-21T17:43:57.360Z",
+          "updated_at": "2026-05-21T17:43:57.360Z"
+        }
+      ]
+    },
+    "evaluations": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "phone",
+        "address",
+        "property_type",
+        "bedrooms",
+        "bathrooms",
+        "year_built",
+        "sale_timeframe",
+        "notes",
+        "image_url",
+        "status",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "contacts": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "phone",
+        "subject",
+        "message",
+        "image_url",
+        "status",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    }
+  }
+}

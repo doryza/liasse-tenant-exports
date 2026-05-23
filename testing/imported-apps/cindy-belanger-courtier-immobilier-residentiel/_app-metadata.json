@@ -1,0 +1,66 @@
+{
+  "slug": "cindy-belanger-courtier-immobilier-residentiel",
+  "displayName": "Cindy Bélanger, courtier immobilier résidentiel",
+  "description": "créer une app pour les leads en courtage immobilier.\nJe travaille pour Via Capitale Elite, et j'aimerais voir le logo de Via Capitale ou que le site comprend les 2 couleurs de Via Capitale, soir le bleu et le blanc. Je veux juste une page de présentation avec la possibilité de cliquer sur des liens, comme par exemple, pour accéder a une évaluation gratuite de sa propriété. Je vais avoir besoin d'inscrire les façons de me contacter aussi",
+  "status": "active",
+  "generationVersion": 1,
+  "primaryColor": "#6366f1",
+  "iconUrl": "https://res.cloudinary.com/duhp69meg/image/upload/v1779385456/tapavis_tenant_cindy-belanger-courtier-immobilier-residentiel/icon_cindy-belanger-courtier-immobilier-residentiel_1779385456158.png",
+  "enabledAuthMethods": [
+    "webauthn",
+    "sms",
+    "email"
+  ],
+  "notificationsEnabled": true,
+  "geolocationEnabled": true,
+  "customConfig": {
+    "language": "fr",
+    "aiSummary": {
+      "en": {
+        "dashboard": "Think of your admin dashboard as the control center for your website. From here, you can easily update all your content. Want to add a new client success story? Go to the 'Testimonials' section and click 'Add New'. Need to describe a new service you're offering? Head over to 'Services'. You can also write helpful articles for your clients in the 'Articles' section.\n\nMost importantly, this is where you'll see all your new leads! When someone fills out the 'Free Evaluation' or 'Contact Me' form on your site, their information will appear right here in your dashboard. You can find them under the 'Evaluations' and 'Contacts' sections.\n\nYou can also tweak your site's general settings, like your contact information or site title, to keep everything up to date. Curious how many people are visiting your app? Your dashboard has a handy section to show you your visitor statistics. If you ever want to send an update or a message to everyone who has your app, you can do that from here too.",
+        "variables": "Great news! Your new app for 'Cindy Bélanger, courtier immobilier résidentiel' is all set up and ready to go. You don't need any special keys or technical codes to get started. Everything is built-in, so you can jump right in and start connecting with new clients. Congratulations on your new app!"
+      },
+      "fr": {
+        "dashboard": "Pensez à votre tableau de bord comme le centre de contrôle de votre application. C'est ici que vous pouvez facilement gérer tout votre contenu. Par exemple, pour ajouter le témoignage d'un client satisfait, allez dans la section 'Témoignages' et cliquez sur 'Ajouter'. Pour décrire un nouveau service, rendez-vous dans 'Services'. Vous pouvez même rédiger des articles de blogue pour vos visiteurs dans la section 'Articles'.\n\nPlus important encore, c'est ici que vous verrez tous vos nouveaux prospects ! Quand une personne remplit le formulaire 'Évaluation gratuite' ou le formulaire de contact, ses informations apparaîtront directement dans votre tableau de bord, sous les sections 'Évaluations' et 'Contacts'.\n\nVous pouvez aussi ajuster les réglages généraux de votre site, comme vos coordonnées, et consulter les statistiques pour voir combien de personnes visitent votre application. Si vous souhaitez envoyer une nouvelle ou une promotion à vos utilisateurs, c'est aussi par ici que ça se passe.",
+        "variables": "Excellente nouvelle ! Votre nouvelle application pour 'Cindy Bélanger, courtier immobilier résidentiel' est entièrement prête. Vous n'avez besoin d'aucune clé spéciale ou configuration technique pour commencer. Tout est déjà intégré, ce qui vous permet de vous lancer tout de suite et de commencer à attirer de nouveaux clients. Félicitations pour votre nouvelle appli !"
+      }
+    },
+    "aiSummaryVersion": 1
+  },
+  "promptHistory": [
+    {
+      "prompt": "créer une app pour les leads en courtage immobilier.\nJe travaille pour Via Capitale Elite, et j'aimerais voir le logo de Via Capitale ou que le site comprend les 2 couleurs de Via Capitale, soir le bleu et le blanc. Je veux juste une page de présentation avec la possibilité de cliquer sur des liens, comme par exemple, pour accéder a une évaluation gratuite de sa propriété. Je vais avoir besoin d'inscrire les façons de me contacter aussi",
+      "timestamp": "2026-05-21T17:44:22.439Z",
+      "changeNotes": "Build initial — site de présentation pour Cindy Bélanger, courtier immobilier résidentiel chez Via Capitale Elite. Palette aux couleurs Via Capitale (bleu marine #1e3a8a + blanc). Pages : accueil riche (hero, pourquoi me choisir, services en vedette, à propos, témoignages, articles, CTA), Services, À propos, Conseils (articles + filtre par catégorie), Article détaillé, Évaluation gratuite (formulaire complet 11 champs) et Contact (méthodes multiples + formulaire). Admin complet avec dashboard, gestion CRUD pour articles/services/témoignages et inboxes dédiées pour les leads (évaluations + messages) avec recherche, filtres de statut et suivi. Auth OTP, banner d'installation et invitation aux notifications push intégrés. Toutes les coordonnées proviennent de admin_settings et services.config — aucun courriel codé en dur.\n\nAdmin enrichment pass: (1) Added functional fields to services module (cta_label, cta_link, price_info) so the broker can edit each service card's button text and link target — matching the user's stated need for clickable links. (2) Enriched admin dashboard with status breakdown, quick actions, recent activity, and clearer IA. (3) Upgraded admin module page with sortable headers, inline publish toggles, image previews in forms, drag-friendly row actions, and richer empty states. (4) Improved admin leads page with status quick-change pills, click-to-call/email shortcuts, color-coded statuses, and per-row delete. (5) Polished admin CSS (better cards, focus rings, accessible badges, mobile sidebar). (6) Tightened public CSS contrast (button fallbacks, focus states). (7) Fixed evaluation.ejs config bug by passing config explicitly. (8) Added migrations.sql for new service columns. (9) Added admin logout route. (10) Generated SEO metadata for French real-estate broker niche (RealEstateAgent schema). Preserved all {{IMG_*}} placeholder tokens.",
+      "generationId": 1184,
+      "filesModified": [
+        "manifest.json",
+        "migrations.sql",
+        "public/css/admin-styles.css",
+        "public/css/styles.css",
+        "public/js/app.js",
+        "routes.js",
+        "schema.sql",
+        "seed.js",
+        "views/admin-leads.ejs",
+        "views/admin-module.ejs",
+        "views/admin.ejs",
+        "views/apropos.ejs",
+        "views/article.ejs",
+        "views/articles.ejs",
+        "views/contact.ejs",
+        "views/evaluation.ejs",
+        "views/index.ejs",
+        "views/notfound.ejs",
+        "views/partials/admin-sidebar.ejs",
+        "views/partials/footer.ejs",
+        "views/partials/header.ejs",
+        "views/services.ejs"
+      ]
+    }
+  ],
+  "apiVariables": [],
+  "createdAt": "2026-05-21T17:09:05.212Z",
+  "updatedAt": "2026-05-21T17:44:50.177Z",
+  "exportedAt": "2026-05-23T02:48:02.060Z"
+}

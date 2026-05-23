@@ -1,0 +1,44 @@
+<%- include('partials/header', { settings, pageTitle: 'Services' }) %>
+<section class="page-hero">
+  <div class="container">
+    <span class="eyebrow">Ce que je vous offre</span>
+    <h1><%= settings.services_title || 'Mes services' %></h1>
+    <p><%= settings.services_subtitle || 'Une approche complète pour vendre, acheter ou évaluer une propriété résidentielle' %></p>
+  </div>
+</section>
+<section class="section">
+  <div class="container">
+    <% if (typeof services !== 'undefined' && services.length > 0) { %>
+      <div class="service-list">
+        <% services.forEach(function(s, i) { %>
+          <div class="service-row <%= i % 2 === 1 ? 'reverse' : '' %>">
+            <div class="service-row-img">
+              <img src="<%= s.image_url || 'https://placehold.co/800x600/e2e8f0/64748b/png?text=' + encodeURIComponent(s.name) %>" alt="<%= s.name %>" loading="lazy">
+            </div>
+            <div class="service-row-body">
+              <% if (s.featured) { %><span class="badge badge-accent">En vedette</span><% } %>
+              <h2><%= s.name %></h2>
+              <% if (s.price_info) { %><div class="service-price-lg"><%= s.price_info %></div><% } %>
+              <p><%= s.description %></p>
+              <a href="<%= s.cta_link || 'contact' %>" class="btn-primary" style="background-color:#1e3a8a;color:#fff;border-color:#1e3a8a"><%= s.cta_label || 'En discuter' %></a>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <p class="empty-state">Les services seront bientôt disponibles.</p>
+    <% } %>
+  </div>
+</section>
+<section class="cta-section">
+  <div class="cta-overlay" style="background:#1e3a8a"></div>
+  <div class="container cta-content">
+    <h2>Une question sur l'un de mes services ?</h2>
+    <p>Discutons de votre projet — sans engagement.</p>
+    <div class="hero-ctas">
+      <a href="evaluation" class="btn-white btn-lg">Évaluation gratuite</a>
+      <a href="contact" class="btn-outline-white btn-lg">Me contacter</a>
+    </div>
+  </div>
+</section>
+<%- include('partials/footer') %>

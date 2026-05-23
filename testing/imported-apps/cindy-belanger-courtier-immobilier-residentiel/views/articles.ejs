@@ -1,0 +1,40 @@
+<%- include('partials/header', { settings, pageTitle: 'Conseils' }) %>
+<section class="page-hero">
+  <div class="container">
+    <span class="eyebrow">Blog</span>
+    <h1><%= settings.posts_title || 'Conseils et actualités' %></h1>
+    <p><%= settings.posts_subtitle || 'Tout ce qu\'il faut savoir sur le marché immobilier québécois' %></p>
+  </div>
+</section>
+<section class="section">
+  <div class="container">
+    <% if (typeof categories !== 'undefined' && categories.length > 0) { %>
+      <div class="category-tabs">
+        <a href="articles" class="cat-tab <%= !activeCategory ? 'active' : '' %>" <% if (!activeCategory) { %>style="background-color:#1e3a8a;color:#fff;border-color:#1e3a8a"<% } %>>Tous</a>
+        <% categories.forEach(function(c) { %>
+          <a href="articles?category=<%= encodeURIComponent(c) %>" class="cat-tab <%= activeCategory === c ? 'active' : '' %>" <% if (activeCategory === c) { %>style="background-color:#1e3a8a;color:#fff;border-color:#1e3a8a"<% } %>><%= c %></a>
+        <% }); %>
+      </div>
+    <% } %>
+    <% if (typeof posts !== 'undefined' && posts.length > 0) { %>
+      <div class="post-grid">
+        <% posts.forEach(function(p) { %>
+          <article class="post-card">
+            <a href="articles/<%= p.id %>" class="post-img-link">
+              <img src="<%= p.image_url || 'https://placehold.co/600x400/e2e8f0/64748b/png?text=Article' %>" alt="<%= p.title %>" loading="lazy">
+            </a>
+            <div class="post-body">
+              <% if (p.category) { %><span class="badge"><%= p.category %></span><% } %>
+              <h3><a href="articles/<%= p.id %>"><%= p.title %></a></h3>
+              <p><%= truncate(p.excerpt || p.content, 160) %></p>
+              <div class="post-meta"><%= formatDate(p.created_at) %></div>
+            </div>
+          </article>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <p class="empty-state">Aucun article disponible pour le moment.</p>
+    <% } %>
+  </div>
+</section>
+<%- include('partials/footer') %>
