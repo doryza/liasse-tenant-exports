@@ -1,0 +1,39 @@
+</main>
+<footer>
+<div class="container">
+<div class="footer-grid">
+<div>
+<h4><%= t.brand %></h4>
+<p style="color:#cbd5e1;font-size:.9rem"><%= (typeof settings!=='undefined' && (settings['footer_text_'+lang] || settings.footer_text_fr)) || t.tagline %></p>
+</div>
+<div>
+<h4><%= t.nav_services %></h4>
+<ul>
+<li><a href="services"><%= t.nav_services %></a></li>
+<li><a href="inscription"><%= t.nav_signup %></a></li>
+<li><a href="a-propos"><%= t.footer_about %></a></li>
+</ul>
+</div>
+<div>
+<h4><%= t.footer_contact %></h4>
+<ul>
+<% if (typeof settings !== 'undefined' && settings.contact_email) { %><li><a href="mailto:<%= settings.contact_email %>"><%= settings.contact_email %></a></li><% } %>
+<% if (typeof settings !== 'undefined' && settings.contact_phone) { %><li><a href="tel:<%= settings.contact_phone %>"><%= settings.contact_phone %></a></li><% } %>
+<li><a href="contact"><%= t.nav_contact %></a></li>
+</ul>
+</div>
+<div>
+<h4>Notifications</h4>
+<p style="color:#cbd5e1;font-size:.9rem;margin-bottom:.5rem">Recevez les mises à jour de vos livraisons</p>
+<button data-push-btn class="btn btn-sm" style="background:#dc2626;color:#fff">Activer</button>
+</div>
+</div>
+<div class="footer-bottom">© <%= new Date().getFullYear() %> <%= t.brand %>. <%= t.footer_legal %></div>
+</div>
+</footer>
+<script src="public/js/app.js"></script>
+<script>
+try{ if(window.TenantSDK){ TenantSDK.ui.showInstallBanner(); setTimeout(function(){try{TenantSDK.ui.showPushPrompt();}catch(e){}}, 8000); } }catch(e){}
+</script>
+</body>
+</html>

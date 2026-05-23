@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title><%= typeof title !== 'undefined' ? title : 'Admin' %> · Speedy Gonzales</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body>
+<div class="admin-layout">
+<%- include('admin-sidebar') %>
+<main class="admin-main">
+<div class="admin-header">
+<div>
+<h1><%= typeof title !== 'undefined' ? title : moduleLabel %></h1>
+<p class="admin-subtitle" id="countSubtitle">Chargement…</p>
+</div>
+<div class="admin-actions">
+<button class="admin-btn gray" id="refreshBtn" title="Rafraîchir">↻ Rafraîchir</button>
+<button class="admin-btn" id="addBtn">+ Ajouter <%= moduleLabel %></button>
+</div>
+</div>
+<div id="statusBox"></div>
+<div class="admin-card">
+<div class="admin-toolbar">
+<div class="admin-search"><input type="text" id="searchInput" placeholder="Rechercher…" autocomplete="off"></div>
+<select class="admin-filter" id="statusFilter" style="display:none"><option value="">Tous les statuts</option></select>
+</div>
+<div id="tableWrap"><div class="empty">Chargement…</div></div>
+</div>
+</main>
+</div>
+<div class="admin-modal" id="modal">
+<div class="admin-modal-inner">
+<h3 id="modalTitle">Ajouter</h3>
+<div id="modalStatus"></div>
+<form id="itemForm"><div id="fieldsContainer"></div>
+<div class="admin-modal-actions">
+<button type="button" class="admin-btn gray" id="cancelBtn">Annuler</button>
+<button type="submit" class="admin-btn" id="saveBtn">Enregistrer</button>
+</div>
+</form>
+</div>
+</div>
+<script>
+var MODULE_KEY = '<%- moduleKey %>';
+var MODULE_LABEL = '<%- moduleLabel %>';
+var currentEditId = null;
+var moduleConfig = null;
+var items = [];
+var filteredItems = [];
+var sortField = 'id';
+var sortDir = 'desc';
+
+function showToast(msg, type){
+  var existing = document.querySelector('.toast');
+  if (existing) existing.remove();
+  var t = document.createElement('div');
+  t.className = 'toast ' + (type || '');
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(function(){ t.style.opacity='0'; t.style.transition='opacity .3s'; }, 2500);
+  setTimeout(function(){ if(t.parentNode) t.remove(); }, 3000);
+}
+
+async function loadConfig(){
+  try {
+    var r = await fetch('api/admin/modules');
+    var j = await r.json();
+    moduleConfig = (j.modules || []).find(function(m){ return m.key === MODULE_KEY; });
+    var statusF = (moduleConfig && moduleConfig.fields || []).find(function(f){ return f.name === 'status' && f.options; });
+    if (statusF) {
+      var sel = document.getElementById('statusFilter');
+      sel.style.display = 'block';
+      statusF.options.forEach(function(o){ var opt = document.createElement('option'); opt.value = o; opt.textContent = o; sel.appendChild(opt); });
+    }
+  } catch(e) { console.error(e); }
+}
+
+async function loadItems(){
+  try {
+    var r = await fetch('api/admin/' + MODULE_KEY);
+    var j = await r.json();
+    items = j[MODULE_KEY] || [];
+    applyFilters();
+  } catch(e) {
+    document.getElementById('tableWrap').innerHTML = '<div class="empty">Erreur de chargement.</div>';
+  }
+}
+
+function applyFilters(){
+  var q = (document.getElementById('searchInput').value || '').toLowerCase().trim();
+  var statusF = (document.getElementById('statusFilter').value || '').trim();
+  filteredItems = items.filter(function(it){
+    if (statusF && String(it.status||'') !== statusF) return false;
+    if (!q) return true;
+    for (var k in it) {
+      var v = it[k];
+      if (v != null && String(v).toLowerCase().indexOf(q) !== -1) return true;
+    }
+    return false;
+  });
+  filteredItems.sort(function(a,b){
+    var va = a[sortField], vb = b[sortField];
+    if (va == null) return 1; if (vb == null) return -1;
+    if (typeof va === 'number' && typeof vb === 'number') return sortDir==='asc' ? va-vb : vb-va;
+    var sa = String(va), sb = String(vb);
+    return sortDir==='asc' ? sa.localeCompare(sb) : sb.localeCompare(sa);
+  });
+  renderTable();
+  document.getElementById('countSubtitle').textContent = filteredItems.length + ' / ' + items.length + ' élément' + (items.length !== 1 ? 's' : '');
+}
+
+function formatCellValue(v, fieldName, fieldType){
+  if (v === null || v === undefined || v === '') return '<span style="color:#94a3b8">—</span>';
+  if (fieldType === 'boolean') return (v == 1 || v === true || v === '1') ? '<span class="badge badge-1">Oui</span>' : '<span class="badge badge-0">Non</span>';
+  if (fieldType === 'image' && v) return '<img src="' + String(v).replace(/"/g,'&quot;') + '" style="width:44px;height:44px;object-fit:cover;border-radius:6px;border:1px solid #e2e8f0">';
+  if (fieldName === 'status' || fieldName === 'service_level') return '<span class="badge badge-' + v + '">' + v + '</span>';
+  if (fieldName === 'price' || fieldName === 'base_price' || fieldName === 'price_per_km' || fieldName === 'credit_limit') return '<strong>' + Number(v).toFixed(2) + ' $</strong>';
+  if (fieldName === 'distance_km') return Number(v).toFixed(1) + ' km';
+  if (fieldName === 'created_at' || fieldName === 'updated_at' || fieldName === 'scheduled_at') { try { return new Date(v).toLocaleDateString('fr-CA'); } catch(e) { return v; } }
+  var s = String(v);
+  if (s.length > 60) s = s.substring(0,60) + '…';
+  return s;
+}
+
+function renderTable(){
+  var wrap = document.getElementById('tableWrap');
+  if (!filteredItems.length) {
+    wrap.innerHTML = items.length === 0
+      ? '<div class="empty">📋 Aucun élément.<br><small>Cliquez sur « + Ajouter » pour créer votre premier élément.</small></div>'
+      : '<div class="empty">Aucun résultat pour cette recherche.</div>';
+    return;
+  }
+  var cols = (moduleConfig && moduleConfig.fields ? moduleConfig.fields : []).slice(0, 5);
+  var html = '<div style="overflow-x:auto"><table class="admin-table"><thead><tr>';
+  html += '<th class="sortable ' + (sortField==='id'?'sorted':'') + '" data-sort="id">ID<span class="sort-icon">' + (sortField==='id'?(sortDir==='asc'?'▲':'▼'):'⇅') + '</span></th>';
+  cols.forEach(function(f){
+    html += '<th class="sortable ' + (sortField===f.name?'sorted':'') + '" data-sort="' + f.name + '">' + f.name + '<span class="sort-icon">' + (sortField===f.name?(sortDir==='asc'?'▲':'▼'):'⇅') + '</span></th>';
+  });
+  html += '<th style="text-align:right">Actions</th></tr></thead><tbody>';
+  filteredItems.forEach(function(it){
+    html += '<tr><td><strong>#' + it.id + '</strong></td>';
+    cols.forEach(function(f){ html += '<td>' + formatCellValue(it[f.name], f.name, f.type) + '</td>'; });
+    html += '<td class="actions-cell"><button class="admin-btn sm gray" data-edit="' + it.id + '" title="Modifier">✎ Modifier</button> <button class="admin-btn sm danger" data-del="' + it.id + '" title="Supprimer">🗑</button></td></tr>';
+  });
+  html += '</tbody></table></div>';
+  wrap.innerHTML = html;
+  wrap.querySelectorAll('th.sortable').forEach(function(th){
+    th.addEventListener('click', function(){
+      var f = th.dataset.sort;
+      if (sortField === f) sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+      else { sortField = f; sortDir = 'asc'; }
+      applyFilters();
+    });
+  });
+  wrap.querySelectorAll('[data-edit]').forEach(function(b){ b.addEventListener('click', function(){ openEdit(parseInt(b.dataset.edit)); }); });
+  wrap.querySelectorAll('[data-del]').forEach(function(b){ b.addEventListener('click', function(){ delItem(parseInt(b.dataset.del)); }); });
+}
+
+function escAttr(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function renderFields(item){
+  var c = document.getElementById('fieldsContainer');
+  c.innerHTML = '';
+  if (!moduleConfig) return;
+  moduleConfig.fields.forEach(function(f){
+    var v = item ? (item[f.name] != null ? item[f.name] : '') : (f['default'] !== undefined ? f['default'] : '');
+    var fld = document.createElement('div');
+    fld.className = 'admin-field';
+    var input;
+    var ph = escAttr(f.placeholder || '');
+    if (f.type === 'textarea') input = '<textarea name="' + f.name + '" ' + (f.required?'required':'') + ' placeholder="' + ph + '">' + escAttr(v) + '</textarea>';
+    else if (f.type === 'select') { input = '<select name="' + f.name + '" ' + (f.required?'required':'') + '>'; if (!f.required) input += '<option value="">— Choisir —</option>'; (f.options||[]).forEach(function(o){ input += '<option value="' + escAttr(o) + '"' + (String(v)===String(o)?' selected':'') + '>' + o + '</option>'; }); input += '</select>'; }
+    else if (f.type === 'boolean') input = '<div class="check"><input type="checkbox" name="' + f.name + '" value="1" id="chk_' + f.name + '" ' + (v==1||v===true||v==='1'?'checked':'') + '> <label for="chk_' + f.name + '" style="margin:0;font-weight:500">Activé</label></div>';
+    else if (f.type === 'number') input = '<input type="number" name="' + f.name + '" value="' + escAttr(v) + '" ' + (f.min!==undefined?'min="'+f.min+'"':'') + ' ' + (f.step?'step="'+f.step+'"':'') + ' placeholder="' + ph + '" ' + (f.required?'required':'') + '>';
+    else if (f.type === 'image') { input = '<input type="url" name="' + f.name + '" id="img_' + f.name + '" value="' + escAttr(v) + '" placeholder="https://...">'; if (v) input += '<div class="img-preview"><img src="' + escAttr(v) + '" alt=""></div>'; }
+    else if (f.type === 'email') input = '<input type="email" name="' + f.name + '" value="' + escAttr(v) + '" placeholder="' + ph + '">';
+    else input = '<input type="text" name="' + f.name + '" value="' + escAttr(v) + '" ' + (f.required?'required':'') + ' placeholder="' + ph + '">';
+    fld.innerHTML = '<label>' + f.name + (f.required?' <span class="req">*</span>':'') + '</label>' + input + (f.description ? '<div class="help">' + f.description + '</div>' : '');
+    c.appendChild(fld);
+  });
+}
+
+function openAdd(){ currentEditId = null; document.getElementById('modalTitle').textContent = 'Ajouter ' + MODULE_LABEL; document.getElementById('modalStatus').innerHTML = ''; renderFields(null); document.getElementById('modal').classList.add('open'); document.body.style.overflow='hidden'; }
+function openEdit(id){ var it = items.find(function(x){ return x.id === id; }); if (!it) return; currentEditId = id; document.getElementById('modalTitle').textContent = 'Modifier #' + id; document.getElementById('modalStatus').innerHTML = ''; renderFields(it); document.getElementById('modal').classList.add('open'); document.body.style.overflow='hidden'; }
+function closeModal(){ document.getElementById('modal').classList.remove('open'); document.body.style.overflow=''; }
+
+async function delItem(id){
+  if (!confirm('Supprimer cet élément ? Cette action est irréversible.')) return;
+  try {
+    var r = await fetch('api/admin/' + MODULE_KEY + '/' + id, { method:'DELETE' });
+    if (r.ok) { showToast('Élément supprimé', 'success'); loadItems(); }
+    else { showToast('Erreur lors de la suppression', 'error'); }
+  } catch(e) { showToast('Erreur réseau', 'error'); }
+}
+
+document.getElementById('addBtn').addEventListener('click', openAdd);
+document.getElementById('cancelBtn').addEventListener('click', closeModal);
+document.getElementById('refreshBtn').addEventListener('click', function(){ loadItems(); showToast('Liste rafraîchie', 'success'); });
+document.getElementById('searchInput').addEventListener('input', applyFilters);
+document.getElementById('statusFilter').addEventListener('change', applyFilters);
+document.getElementById('modal').addEventListener('click', function(e){ if (e.target === this) closeModal(); });
+document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeModal(); });
+
+document.getElementById('itemForm').addEventListener('submit', async function(e){
+  e.preventDefault();
+  var data = {};
+  if (!moduleConfig) return;
+  moduleConfig.fields.forEach(function(f){
+    var el = e.target.elements[f.name];
+    if (!el) return;
+    if (f.type === 'boolean') data[f.name] = el.checked ? 1 : 0;
+    else if (f.type === 'number') data[f.name] = el.value === '' ? null : parseFloat(el.value);
+    else data[f.name] = el.value;
+  });
+  var saveBtn = document.getElementById('saveBtn');
+  saveBtn.disabled = true; saveBtn.textContent = 'Enregistrement…';
+  var url = 'api/admin/' + MODULE_KEY + (currentEditId ? '/' + currentEditId : '');
+  var method = currentEditId ? 'PUT' : 'POST';
+  try {
+    var r = await fetch(url, { method: method, headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) });
+    var j = await r.json();
+    if (r.ok) { closeModal(); showToast(currentEditId ? 'Élément modifié' : 'Élément créé', 'success'); loadItems(); }
+    else { document.getElementById('modalStatus').innerHTML = '<div style="background:#fee2e2;color:#991b1b;padding:.65rem .85rem;border-radius:6px;margin-bottom:1rem;font-size:.88rem">⚠ ' + (j.error||'Erreur') + '</div>'; }
+  } catch(e) {
+    document.getElementById('modalStatus').innerHTML = '<div style="background:#fee2e2;color:#991b1b;padding:.65rem .85rem;border-radius:6px;margin-bottom:1rem;font-size:.88rem">Erreur réseau</div>';
+  }
+  saveBtn.disabled = false; saveBtn.textContent = 'Enregistrer';
+});
+
+loadConfig().then(loadItems);
+</script>
+</body>
+</html>

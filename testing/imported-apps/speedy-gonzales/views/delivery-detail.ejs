@@ -1,0 +1,52 @@
+<%- include('partials/header') %>
+<div class="container page-head">
+<a href="livraisons" class="muted">← <%= t.back_to_list %></a>
+<h1><%= t.delivery_detail_title %></h1>
+</div>
+<section style="padding-top:1rem">
+<div class="container">
+<% if (typeof user === 'undefined' || !user) { %>
+<div class="form-card text-center"><h3><%= t.need_login_msg %></h3><a href="#" data-login-btn class="btn mt-2" style="background-color:#dc2626;color:#fff"><%= t.nav_login %></a></div>
+<% } else if (!delivery) { %>
+<div class="empty-state"><h3><%= t.not_found %></h3><a href="livraisons" class="btn mt-2"><%= t.back_to_list %></a></div>
+<% } else { %>
+<div class="form-card" style="max-width:800px">
+<div class="flex-between mb-3">
+<h2 style="margin:0">#<%= delivery.id %></h2>
+<span class="badge badge-<%= delivery.status %>"><%= statusLabel(delivery.status, t) %></span>
+</div>
+<div class="grid grid-2">
+<div>
+<h4 class="muted"><%= t.deliveries_from %></h4>
+<p><%= delivery.pickup_address %></p>
+</div>
+<div>
+<h4 class="muted"><%= t.deliveries_to %></h4>
+<p><%= delivery.destination_address %></p>
+</div>
+</div>
+<hr style="border:none;border-top:1px solid #e2e8f0;margin:1rem 0">
+<div class="grid grid-2">
+<div><h4 class="muted"><%= t.deliveries_service %></h4><p><span class="badge badge-<%= delivery.service_level %>"><%= serviceLabel(delivery.service_level, lang, ratesMap) %></span></p></div>
+<div><h4 class="muted"><%= t.new_delivery_quote_distance %></h4><p><%= delivery.distance_km ? Number(delivery.distance_km).toFixed(1) + ' km' : '—' %></p></div>
+<div><h4 class="muted"><%= t.deliveries_price %></h4><p style="font-size:1.5rem;font-weight:800;color:#dc2626"><%= formatPrice(delivery.price) %></p></div>
+<div><h4 class="muted"><%= t.deliveries_date %></h4><p><%= formatDateTime(delivery.created_at, lang) %></p></div>
+</div>
+<% if (delivery.recipient_name || delivery.recipient_phone) { %>
+<hr style="border:none;border-top:1px solid #e2e8f0;margin:1rem 0">
+<h4 class="muted"><%= lang==='en'?'Recipient':'Destinataire' %></h4>
+<p><%= delivery.recipient_name || '' %> <% if (delivery.recipient_phone) { %>· <a href="tel:<%= delivery.recipient_phone %>"><%= delivery.recipient_phone %></a><% } %></p>
+<% } %>
+<% if (delivery.package_description) { %>
+<h4 class="muted"><%= t.new_delivery_package %></h4>
+<p><%= delivery.package_description %></p>
+<% } %>
+<% if (delivery.notes) { %>
+<h4 class="muted"><%= t.new_delivery_special_notes %></h4>
+<p><%= delivery.notes %></p>
+<% } %>
+</div>
+<% } %>
+</div>
+</section>
+<%- include('partials/footer') %>

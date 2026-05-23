@@ -1,0 +1,63 @@
+<%- include('partials/header') %>
+<div class="container page-head">
+<h1><%= t.dashboard_title %></h1>
+<% if (typeof user !== 'undefined' && user && typeof business !== 'undefined' && business) { %>
+<p><%= t.dashboard_welcome %>, <strong><%= business.business_name %></strong>!</p>
+<% } %>
+</div>
+<section style="padding-top:1rem">
+<div class="container">
+<% if (typeof user === 'undefined' || !user) { %>
+<div class="form-card text-center"><h3><%= t.need_login_msg %></h3><a href="#" data-login-btn class="btn mt-2" style="background-color:#dc2626;color:#fff"><%= t.nav_login %></a></div>
+<% } else if (!business) { %>
+<div class="form-card text-center"><h3><%= lang==='en'?'Complete your business registration':'Complétez votre inscription d\'entreprise' %></h3><p><%= t.signup_subtitle %></p><a href="inscription" class="btn mt-2" style="background-color:#dc2626;color:#fff"><%= t.signup_submit %></a></div>
+<% } else if (business.status === 'pending') { %>
+<div class="alert alert-warning"><strong><%= t.signup_pending %></strong></div>
+<div class="form-card mt-3"><p class="muted"><%= lang==='en'?'You will be notified by email once your account is approved. In the meantime, you can update your information.':'Vous serez notifié par courriel dès l\'approbation de votre compte. En attendant, vous pouvez mettre à jour vos informations.' %></p><a href="inscription" class="btn btn-secondary"><%= t.signup_update %></a></div>
+<% } else if (business.status === 'rejected') { %>
+<div class="alert alert-danger"><strong><%= t.signup_rejected %></strong></div>
+<% } else { %>
+<div class="stat-grid">
+<div class="stat-card brand"><div class="label"><%= t.stat_total_deliveries %></div><div class="value"><%= (stats && stats.total) || 0 %></div></div>
+<div class="stat-card blue"><div class="label"><%= t.stat_pending %></div><div class="value"><%= (stats && stats.pending) || 0 %></div></div>
+<div class="stat-card"><div class="label"><%= t.stat_month_spend %></div><div class="value"><%= formatPrice((stats && stats.monthSpend) || 0) %></div></div>
+</div>
+<div class="flex-between mt-3">
+<h2 style="margin:0"><%= t.recent_deliveries %></h2>
+<div>
+<a href="nouvelle-livraison" class="btn btn-sm" style="background-color:#dc2626;color:#fff">+ <%= t.start_delivery %></a>
+<a href="livraisons" class="btn btn-sm btn-secondary"><%= t.view_all %></a>
+</div>
+</div>
+<% if (typeof recentDeliveries !== 'undefined' && recentDeliveries.length > 0) { %>
+<div class="mt-2" style="overflow-x:auto">
+<table>
+<thead><tr><th>#</th><th><%= t.deliveries_date %></th><th><%= t.deliveries_from %></th><th><%= t.deliveries_to %></th><th><%= t.deliveries_service %></th><th><%= t.deliveries_status %></th><th><%= t.deliveries_price %></th><th></th></tr></thead>
+<tbody>
+<% recentDeliveries.forEach(function(d){ %>
+<tr>
+<td>#<%= d.id %></td>
+<td><%= formatDate(d.created_at, lang) %></td>
+<td><%= (d.pickup_address||'').substring(0,40) %></td>
+<td><%= (d.destination_address||'').substring(0,40) %></td>
+<td><span class="badge badge-<%= d.service_level %>"><%= serviceLabel(d.service_level, lang, ratesMap) %></span></td>
+<td><span class="badge badge-<%= d.status %>"><%= statusLabel(d.status, t) %></span></td>
+<td><%= formatPrice(d.price) %></td>
+<td><a href="livraisons/<%= d.id %>" class="btn btn-sm btn-secondary"><%= t.view_details %></a></td>
+</tr>
+<% }); %>
+</tbody>
+</table>
+</div>
+<% } else { %>
+<div class="empty-state"><h3><%= t.no_deliveries %></h3><a href="nouvelle-livraison" class="btn mt-2" style="background-color:#dc2626;color:#fff"><%= t.start_delivery %></a></div>
+<% } %>
+<div class="mt-4 grid grid-3">
+<a href="nouvelle-livraison" class="card" style="text-decoration:none;color:inherit"><div class="card-body text-center"><h3>🚚 <%= t.nav_new_delivery %></h3><p><%= lang==='en'?'Submit a new delivery request':'Soumettre une nouvelle demande' %></p></div></a>
+<a href="lieux-ramassage" class="card" style="text-decoration:none;color:inherit"><div class="card-body text-center"><h3>📍 <%= t.nav_pickup %></h3><p><%= lang==='en'?'Manage your pickup addresses':'Gérez vos adresses de ramassage' %></p></div></a>
+<a href="facturation" class="card" style="text-decoration:none;color:inherit"><div class="card-body text-center"><h3>💰 <%= t.nav_billing %></h3><p><%= lang==='en'?'View your billing history':'Consultez votre historique de facturation' %></p></div></a>
+</div>
+<% } %>
+</div>
+</section>
+<%- include('partials/footer') %>

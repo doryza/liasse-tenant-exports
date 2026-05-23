@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Messages reçus · Speedy Gonzales</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body>
+<div class="admin-layout">
+<%- include('partials/admin-sidebar') %>
+<main class="admin-main">
+<div class="admin-header">
+<div>
+<h1>📬 Messages reçus</h1>
+<p class="admin-subtitle">Soumissions du formulaire de contact</p>
+</div>
+</div>
+<div class="admin-card">
+<% if (typeof submissions !== 'undefined' && submissions.length > 0) { %>
+<div style="overflow-x:auto">
+<table class="admin-table">
+<thead><tr><th>Date</th><th>Nom</th><th>Courriel</th><th>Téléphone</th><th>Sujet</th><th>Message</th></tr></thead>
+<tbody>
+<% submissions.forEach(function(s){ %>
+<tr>
+<td><%= formatDate(s.created_at, 'fr') %></td>
+<td><strong><%= s.name || '—' %></strong></td>
+<td><% if (s.email) { %><a href="mailto:<%= s.email %>"><%= s.email %></a><% } else { %>—<% } %></td>
+<td><% if (s.phone) { %><a href="tel:<%= s.phone %>"><%= s.phone %></a><% } else { %>—<% } %></td>
+<td><%= s.subject || '—' %></td>
+<td style="max-width:380px"><%= (s.message || '').substring(0, 200) %><%= (s.message||'').length>200?'…':'' %></td>
+</tr>
+<% }); %>
+</tbody>
+</table>
+</div>
+<% } else { %>
+<div class="empty">📭 Aucun message reçu pour le moment.<br><small>Les messages du formulaire de contact apparaîtront ici.</small></div>
+<% } %>
+</div>
+</main>
+</div>
+</body>
+</html>

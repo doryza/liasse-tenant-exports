@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tableau de bord admin · Speedy Gonzales</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body>
+<div class="admin-layout">
+<%- include('partials/admin-sidebar') %>
+<main class="admin-main">
+<div class="admin-header">
+<div>
+<h1>📊 Tableau de bord</h1>
+<p class="admin-subtitle">Vue d'ensemble de votre activité courrier</p>
+</div>
+<div class="admin-actions">
+<a href="." target="_blank" class="admin-btn gray">↗ Voir le site</a>
+<a href="admin/deliveries" class="admin-btn">+ Nouvelle livraison</a>
+</div>
+</div>
+<div class="admin-stats">
+<div class="admin-stat brand"><div class="label">Entreprises</div><div class="value"><%= stats.businesses %></div><div class="sublabel"><a href="admin/businesses">Gérer →</a></div></div>
+<div class="admin-stat warn"><div class="label">En attente d'approbation</div><div class="value"><%= stats.pendingBusinesses %></div><div class="sublabel"><a href="admin/businesses">Examiner →</a></div></div>
+<div class="admin-stat blue"><div class="label">Livraisons totales</div><div class="value"><%= stats.deliveries %></div><div class="sublabel"><a href="admin/deliveries">Voir →</a></div></div>
+<div class="admin-stat warn"><div class="label">Livraisons en cours</div><div class="value"><%= stats.pendingDeliveries %></div></div>
+<div class="admin-stat brand"><div class="label">Revenu 30 derniers jours</div><div class="value"><%= formatPrice(stats.revenue) %></div></div>
+<div class="admin-stat"><div class="label">Utilisateurs</div><div class="value"><%= stats.users %></div></div>
+<div class="admin-stat"><div class="label">Abonnés push</div><div class="value"><%= stats.push %></div></div>
+<div class="admin-stat"><div class="label">Visites totales</div><div class="value"><%= stats.visits %></div><div class="sublabel"><%= stats.recentVisits %> sur 7 jours</div></div>
+</div>
+
+<div class="admin-card">
+<div class="admin-card-head">
+<h2>🎯 Gestion rapide</h2>
+</div>
+<div class="quick-grid">
+<a href="admin/businesses" class="quick-tile"><div class="quick-icon">🏢</div><div><strong>Entreprises</strong><span>Approuver, modifier, gérer</span></div></a>
+<a href="admin/deliveries" class="quick-tile"><div class="quick-icon">🚚</div><div><strong>Livraisons</strong><span>Mettre à jour les statuts</span></div></a>
+<a href="admin/rates" class="quick-tile"><div class="quick-icon">💲</div><div><strong>Tarifs</strong><span>Prix de base, $/km, heures limites</span></div></a>
+<a href="admin/pickup-locations" class="quick-tile"><div class="quick-icon">📍</div><div><strong>Lieux de ramassage</strong><span>Adresses des clients</span></div></a>
+<a href="admin/posts" class="quick-tile"><div class="quick-icon">📝</div><div><strong>Actualités</strong><span>Publier sur la page d'accueil</span></div></a>
+<a href="admin/submissions" class="quick-tile"><div class="quick-icon">📬</div><div><strong>Messages reçus</strong><span>Formulaire de contact</span></div></a>
+</div>
+</div>
+
+<% if (typeof pendingBusinessesList !== 'undefined' && pendingBusinessesList.length > 0) { %>
+<div class="admin-card highlight">
+<div class="admin-card-head">
+<h2>⏳ Entreprises en attente d'approbation</h2>
+<a href="admin/businesses" class="admin-btn sm gray">Tout voir</a>
+</div>
+<div style="overflow-x:auto">
+<table class="admin-table">
+<thead><tr><th>Nom</th><th>Contact</th><th>Courriel</th><th>Téléphone</th><th>Date</th><th></th></tr></thead>
+<tbody>
+<% pendingBusinessesList.forEach(function(b){ %>
+<tr>
+<td><strong><%= b.business_name %></strong></td>
+<td><%= b.contact_name || '—' %></td>
+<td><% if(b.contact_email){ %><a href="mailto:<%= b.contact_email %>"><%= b.contact_email %></a><% } else { %>—<% } %></td>
+<td><% if(b.contact_phone){ %><a href="tel:<%= b.contact_phone %>"><%= b.contact_phone %></a><% } else { %>—<% } %></td>
+<td><%= formatDate(b.created_at, 'fr') %></td>
+<td><a href="admin/businesses" class="admin-btn sm">Examiner</a></td>
+</tr>
+<% }); %>
+</tbody>
+</table>
+</div>
+</div>
+<% } %>
+
+<div class="admin-card">
+<div class="admin-card-head">
+<h2>🚚 Livraisons récentes</h2>
+<a href="admin/deliveries" class="admin-btn sm gray">Tout voir</a>
+</div>
+<% if (typeof recentDeliveries !== 'undefined' && recentDeliveries.length > 0) { %>
+<div style="overflow-x:auto">
+<table class="admin-table">
+<thead><tr><th>#</th><th>Entreprise</th><th>Service</th><th>Statut</th><th>Distance</th><th>Prix</th><th>Date</th></tr></thead>
+<tbody>
+<% recentDeliveries.forEach(function(d){ %>
+<tr>
+<td><strong>#<%= d.id %></strong></td>
+<td><%= d.business_name || '—' %></td>
+<td><span class="badge badge-<%= d.service_level %>"><%= d.service_level %></span></td>
+<td><span class="badge badge-<%= d.status %>"><%= d.status %></span></td>
+<td><%= d.distance_km ? Number(d.distance_km).toFixed(1) + ' km' : '—' %></td>
+<td><strong><%= formatPrice(d.price) %></strong></td>
+<td><%= formatDate(d.created_at, 'fr') %></td>
+</tr>
+<% }); %>
+</tbody>
+</table>
+</div>
+<% } else { %>
+<div class="empty">📭 Aucune livraison pour le moment.<br><small>Les nouvelles demandes des clients apparaîtront ici.</small></div>
+<% } %>
+</div>
+
+<% if (typeof recentSubmissions !== 'undefined' && recentSubmissions.length > 0) { %>
+<div class="admin-card">
+<div class="admin-card-head">
+<h2>📬 Messages récents</h2>
+<a href="admin/submissions" class="admin-btn sm gray">Tout voir</a>
+</div>
+<div style="overflow-x:auto">
+<table class="admin-table">
+<thead><tr><th>Date</th><th>De</th><th>Sujet</th><th>Aperçu</th></tr></thead>
+<tbody>
+<% recentSubmissions.forEach(function(s){ %>
+<tr><td><%= formatDate(s.created_at,'fr') %></td><td><%= s.name || '—' %></td><td><%= s.subject || '—' %></td><td><%= (s.message||'').substring(0,80) %></td></tr>
+<% }); %>
+</tbody>
+</table>
+</div>
+</div>
+<% } %>
+</main>
+</div>
+</body>
+</html>

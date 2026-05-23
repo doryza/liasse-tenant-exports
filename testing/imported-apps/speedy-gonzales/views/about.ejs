@@ -1,0 +1,31 @@
+<%- include('partials/header') %>
+<div class="container page-head">
+<h1><%= t.about_title %></h1>
+</div>
+<section style="padding-top:1rem">
+<div class="container">
+<div class="grid grid-2" style="align-items:center">
+<div>
+<h2><%= (typeof settings!=='undefined' && settings['about_title_'+lang]) || (lang==='en' ? 'A local team, personalized service' : 'Une équipe locale, un service personnalisé') %></h2>
+<p style="font-size:1.05rem;line-height:1.7"><%= (typeof settings!=='undefined' && settings['about_text_'+lang]) || (lang==='en' ? 'Speedy Gonzales is an independent courier service based in Montreal.' : 'Speedy Gonzales est un service de courrier indépendant basé à Montréal.') %></p>
+<a href="contact" class="btn"><%= t.nav_contact %></a>
+</div>
+<div>
+<img src="https://res.cloudinary.com/duhp69meg/image/upload/v1778991710/tapavis_tenant_speedy-gonzales/build_speedy-gonzales_1778991710165.png" alt="<%= t.about_title %>" style="border-radius:12px">
+</div>
+</div>
+</div>
+</section>
+<section class="section-alt">
+<div class="container">
+<div class="section-head">
+<h2><%= lang === 'en' ? 'Why choose us?' : 'Pourquoi nous choisir ?' %></h2>
+</div>
+<div class="grid grid-3">
+<div class="card"><div class="card-body"><h3>⚡ <%= lang==='en'?'Speed':'Rapidité' %></h3><p><%= lang==='en'?'Express delivery in under 2 hours when ordered before 2 PM.':'Livraison Express en moins de 2 heures pour les commandes avant 14h.' %></p></div></div>
+<div class="card"><div class="card-body"><h3>📍 <%= lang==='en'?'Local coverage':'Couverture locale' %></h3><p><%= lang==='en'?'We know every neighborhood in Greater Montreal.':'Nous connaissons tous les quartiers du Grand Montréal.' %></p></div></div>
+<div class="card"><div class="card-body"><h3>💼 <%= lang==='en'?'Business-focused':'Pour les entreprises' %></h3><p><%= lang==='en'?'Account billing — no fiddly online payments per delivery.':'Facturation par compte — pas de paiements en ligne pour chaque livraison.' %></p></div></div>
+</div>
+</div>
+</section>
+<%- include('partials/footer') %>

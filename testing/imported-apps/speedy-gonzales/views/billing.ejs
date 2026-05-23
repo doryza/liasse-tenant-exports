@@ -1,0 +1,46 @@
+<%- include('partials/header') %>
+<div class="container page-head">
+<h1><%= t.billing_title %></h1>
+<p><%= t.billing_subtitle %></p>
+</div>
+<section style="padding-top:1rem">
+<div class="container">
+<% if (typeof user === 'undefined' || !user) { %>
+<div class="form-card text-center"><h3><%= t.need_login_msg %></h3><a href="#" data-login-btn class="btn mt-2" style="background-color:#dc2626;color:#fff"><%= t.nav_login %></a></div>
+<% } else if (!business) { %>
+<div class="form-card text-center"><a href="inscription" class="btn" style="background-color:#dc2626;color:#fff"><%= t.signup_submit %></a></div>
+<% } else if (data && data.totalDeliveries > 0) { %>
+<div class="stat-grid">
+<div class="stat-card brand"><div class="label"><%= t.billing_total_spent %></div><div class="value"><%= formatPrice(data.totalSpent) %></div></div>
+<div class="stat-card blue"><div class="label"><%= t.billing_total_deliveries %></div><div class="value"><%= data.totalDeliveries %></div></div>
+</div>
+<% data.months.forEach(function(m){ %>
+<div class="form-card mb-3" style="max-width:none">
+<div class="flex-between mb-2">
+<h3 style="margin:0"><%= m.month %></h3>
+<div><span class="muted"><%= m.count %> <%= t.billing_count.toLowerCase() %></span> · <strong style="color:#dc2626;font-size:1.25rem"><%= formatPrice(m.total) %></strong></div>
+</div>
+<div style="overflow-x:auto">
+<table>
+<thead><tr><th>#</th><th><%= t.deliveries_date %></th><th><%= t.deliveries_to %></th><th><%= t.deliveries_service %></th><th><%= t.deliveries_price %></th></tr></thead>
+<tbody>
+<% m.deliveries.forEach(function(d){ %>
+<tr>
+<td><a href="livraisons/<%= d.id %>">#<%= d.id %></a></td>
+<td><%= formatDate(d.created_at, lang) %></td>
+<td><%= (d.destination_address||'').substring(0,50) %></td>
+<td><span class="badge badge-<%= d.service_level %>"><%= serviceLabel(d.service_level, lang, ratesMap) %></span></td>
+<td><%= formatPrice(d.price) %></td>
+</tr>
+<% }); %>
+</tbody>
+</table>
+</div>
+</div>
+<% }); %>
+<% } else { %>
+<div class="empty-state"><h3><%= t.billing_no_data %></h3><a href="nouvelle-livraison" class="btn mt-2" style="background-color:#dc2626;color:#fff"><%= t.start_delivery %></a></div>
+<% } %>
+</div>
+</section>
+<%- include('partials/footer') %>

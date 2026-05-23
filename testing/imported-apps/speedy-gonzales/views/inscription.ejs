@@ -1,0 +1,63 @@
+<%- include('partials/header') %>
+<div class="container page-head">
+<h1><%= t.signup_title %></h1>
+<p><%= t.signup_subtitle %></p>
+</div>
+<section style="padding-top:1rem">
+<div class="container">
+<% if (typeof user === 'undefined' || !user) { %>
+<div class="form-card text-center">
+<h3><%= t.signup_need_login %></h3>
+<p class="muted"><%= lang === 'en' ? 'Use the button below to sign in via SMS, email, or biometrics.' : 'Utilisez le bouton ci-dessous pour vous connecter par SMS, courriel ou biométrie.' %></p>
+<a href="#" data-login-btn class="btn mt-2" style="background-color:#dc2626;color:#fff"><%= t.nav_login %></a>
+</div>
+<% } else { %>
+<% if (typeof business !== 'undefined' && business) { %>
+<div class="form-card">
+<% if (business.status === 'pending') { %><div class="alert alert-warning"><strong><%= t.signup_pending %></strong></div>
+<% } else if (business.status === 'approved') { %><div class="alert alert-success"><strong><%= t.signup_approved %></strong> · <a href="tableau-bord"><%= t.nav_dashboard %></a></div>
+<% } else if (business.status === 'rejected') { %><div class="alert alert-danger"><strong><%= t.signup_rejected %></strong></div><% } %>
+</div>
+<% } %>
+<div class="form-card mt-3">
+<div id="signupStatus"></div>
+<form id="signupForm">
+<div><label><%= t.signup_business_name %> *</label><input type="text" name="business_name" required value="<%= (typeof business!=='undefined' && business) ? business.business_name : '' %>"></div>
+<div class="form-row">
+<div><label><%= t.signup_contact_name %></label><input type="text" name="contact_name" value="<%= (typeof business!=='undefined' && business) ? (business.contact_name||'') : '' %>"></div>
+<div><label><%= t.signup_contact_phone %></label><input type="tel" name="contact_phone" value="<%= (typeof business!=='undefined' && business) ? (business.contact_phone||user.phone||'') : (user.phone||'') %>"></div>
+</div>
+<div><label><%= t.signup_contact_email %></label><input type="email" name="contact_email" value="<%= (typeof business!=='undefined' && business) ? (business.contact_email||user.email||'') : (user.email||'') %>"></div>
+<div><label><%= t.signup_mailing_address %> *</label><textarea name="mailing_address" required><%= (typeof business!=='undefined' && business) ? (business.mailing_address||'') : '' %></textarea></div>
+<div><label><%= t.signup_notes %></label><textarea name="notes"><%= (typeof business!=='undefined' && business) ? (business.notes||'') : '' %></textarea></div>
+<button type="submit" class="btn" style="background-color:#dc2626;color:#fff"><%= (typeof business!=='undefined' && business) ? t.signup_update : t.signup_submit %></button>
+</form>
+</div>
+<% } %>
+</div>
+</section>
+<script>
+var f = document.getElementById('signupForm');
+if (f) f.addEventListener('submit', async function(e){
+  e.preventDefault();
+  var status = document.getElementById('signupStatus');
+  var btn = this.querySelector('button[type=submit]');
+  btn.disabled = true;
+  var data = {};
+  new FormData(this).forEach(function(v,k){ data[k] = v; });
+  try {
+    var r = await TenantSDK.fetch('api/inscription', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) });
+    var j = await r.json();
+    if (j.success) {
+      status.innerHTML = '<div class="alert alert-success"><%- t.signup_success %></div>';
+      setTimeout(function(){ location.reload(); }, 1200);
+    } else {
+      status.innerHTML = '<div class="alert alert-danger">' + (j.error || 'Error') + '</div>';
+    }
+  } catch(err) {
+    status.innerHTML = '<div class="alert alert-danger">Connection error</div>';
+  }
+  btn.disabled = false;
+});
+</script>
+<%- include('partials/footer') %>

@@ -1,0 +1,371 @@
+{
+  "exportedAt": "2026-05-23T02:48:10.552Z",
+  "tables": {
+    "admin_users": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "password_hash",
+        "display_name",
+        "role",
+        "active",
+        "activation_token",
+        "invited_by",
+        "invite_token",
+        "invite_expires_at",
+        "last_login_at",
+        "is_active",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "site_visits": {
+      "columns": [
+        "id",
+        "path",
+        "visited_at"
+      ],
+      "totalRows": 39,
+      "sampleRows": [
+        {
+          "id": 1,
+          "path": "/",
+          "visited_at": "2026-05-17T04:38:26.020Z"
+        },
+        {
+          "id": 2,
+          "path": "/",
+          "visited_at": "2026-05-17T04:38:43.255Z"
+        },
+        {
+          "id": 3,
+          "path": "/services",
+          "visited_at": "2026-05-17T04:39:26.163Z"
+        },
+        {
+          "id": 4,
+          "path": "/a-propos",
+          "visited_at": "2026-05-17T04:39:29.780Z"
+        },
+        {
+          "id": 5,
+          "path": "/contact",
+          "visited_at": "2026-05-17T04:39:35.353Z"
+        },
+        {
+          "id": 6,
+          "path": "/services",
+          "visited_at": "2026-05-17T04:39:39.621Z"
+        },
+        {
+          "id": 7,
+          "path": "/",
+          "visited_at": "2026-05-17T04:39:41.622Z"
+        },
+        {
+          "id": 8,
+          "path": "/inscription",
+          "visited_at": "2026-05-17T04:39:45.270Z"
+        },
+        {
+          "id": 9,
+          "path": "/inscription",
+          "visited_at": "2026-05-17T04:40:14.290Z"
+        },
+        {
+          "id": 10,
+          "path": "/tableau-bord",
+          "visited_at": "2026-05-17T04:40:32.138Z"
+        }
+      ]
+    },
+    "admin_invites": {
+      "columns": [
+        "id",
+        "email",
+        "token",
+        "role",
+        "status",
+        "invited_by",
+        "expires_at",
+        "accepted_at",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_webauthn_credentials": {
+      "columns": [
+        "id",
+        "admin_user_id",
+        "credential_id",
+        "public_key",
+        "counter",
+        "device_name",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_settings": {
+      "columns": [
+        "key",
+        "value",
+        "updated_at"
+      ],
+      "totalRows": 49,
+      "sampleRows": [
+        {
+          "key": "_p_hero_image_url",
+          "value": "https://res.cloudinary.com/duhp69meg/image/upload/v1778991712/tapavis_tenant_speedy-gonzales/build_speedy-gonzales_1778991712855.png",
+          "updated_at": "2026-05-17T04:37:06.657Z"
+        },
+        {
+          "key": "hero_title_fr",
+          "value": "Livraison rapide à Montréal et Laval",
+          "updated_at": "2026-05-17T04:37:06.665Z"
+        },
+        {
+          "key": "hero_title_en",
+          "value": "Fast delivery across Montreal and Laval",
+          "updated_at": "2026-05-17T04:37:06.671Z"
+        },
+        {
+          "key": "hero_subtitle_fr",
+          "value": "Service de courrier dédié aux entreprises. Express, jour même ou jour suivant — vous choisissez.",
+          "updated_at": "2026-05-17T04:37:06.678Z"
+        },
+        {
+          "key": "hero_subtitle_en",
+          "value": "Business courier service. Express, same day or next day — your choice.",
+          "updated_at": "2026-05-17T04:37:06.686Z"
+        },
+        {
+          "key": "tagline_fr",
+          "value": "Le service de courrier dont votre entreprise a besoin",
+          "updated_at": "2026-05-17T04:37:06.693Z"
+        },
+        {
+          "key": "tagline_en",
+          "value": "The courier service your business needs",
+          "updated_at": "2026-05-17T04:37:06.702Z"
+        },
+        {
+          "key": "about_title_fr",
+          "value": "Une équipe locale, un service personnalisé",
+          "updated_at": "2026-05-17T04:37:06.710Z"
+        },
+        {
+          "key": "about_title_en",
+          "value": "A local team, personalized service",
+          "updated_at": "2026-05-17T04:37:06.717Z"
+        },
+        {
+          "key": "about_text_fr",
+          "value": "Speedy Gonzales est un service de courrier indépendant basé à Montréal. Nous desservons l'ensemble du Grand Montréal incluant Laval et les couronnes nord et sud. Notre flotte de coursiers à vélo, scooter et fourgonnette est prête à répondre aux besoins logistiques de votre entreprise, qu'il s'agisse d'une livraison urgente d'un document ou d'un envoi de plusieurs colis volumineux.",
+          "updated_at": "2026-05-17T04:37:06.724Z"
+        }
+      ]
+    },
+    "posts": {
+      "columns": [
+        "id",
+        "title",
+        "content",
+        "image_url",
+        "category",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Bienvenue chez Speedy Gonzales",
+          "content": "Nous sommes ravis de lancer notre nouveau service de courrier dédié aux entreprises du Grand Montréal. Inscrivez votre entreprise dès aujourd'hui et profitez de nos tarifs préférentiels sur toutes vos livraisons.",
+          "image_url": null,
+          "category": "Annonces",
+          "published": 1,
+          "created_at": "2026-05-17T04:37:06.846Z",
+          "updated_at": "2026-05-17T04:37:06.846Z"
+        },
+        {
+          "id": 2,
+          "title": "Nouveau service Express disponible",
+          "content": "À partir de ce mois-ci, nous offrons un service Express avec livraison garantie en moins de 2 heures partout sur l'île de Montréal. Réservez vos livraisons urgentes avant 14h pour une livraison le jour même.",
+          "image_url": null,
+          "category": "Services",
+          "published": 1,
+          "created_at": "2026-05-17T04:37:06.853Z",
+          "updated_at": "2026-05-17T04:37:06.853Z"
+        },
+        {
+          "id": 3,
+          "title": "Couverture étendue à Laval et la Rive-Nord",
+          "content": "Speedy Gonzales étend ses services à Laval, Boisbriand, Sainte-Thérèse et Blainville. Tous nos niveaux de service (Express, Jour même, Jour suivant) sont disponibles sans frais supplémentaires.",
+          "image_url": null,
+          "category": "Nouvelles",
+          "published": 1,
+          "created_at": "2026-05-17T04:37:06.861Z",
+          "updated_at": "2026-05-17T04:37:06.861Z"
+        },
+        {
+          "id": 4,
+          "title": "Conseils pour optimiser vos livraisons",
+          "content": "Saviez-vous que regrouper plusieurs livraisons à partir du même point de ramassage peut vous faire économiser jusqu'à 30%? Découvrez nos astuces pour réduire vos coûts de courrier.",
+          "image_url": null,
+          "category": "Conseils",
+          "published": 1,
+          "created_at": "2026-05-17T04:37:06.870Z",
+          "updated_at": "2026-05-17T04:37:06.870Z"
+        }
+      ]
+    },
+    "businesses": {
+      "columns": [
+        "id",
+        "user_id",
+        "business_name",
+        "contact_name",
+        "contact_email",
+        "contact_phone",
+        "mailing_address",
+        "notes",
+        "status",
+        "credit_limit",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "pickup_locations": {
+      "columns": [
+        "id",
+        "business_id",
+        "label",
+        "address",
+        "lat",
+        "lng",
+        "contact_name",
+        "contact_phone",
+        "notes",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "deliveries": {
+      "columns": [
+        "id",
+        "business_id",
+        "pickup_location_id",
+        "pickup_address",
+        "pickup_lat",
+        "pickup_lng",
+        "destination_address",
+        "destination_lat",
+        "destination_lng",
+        "recipient_name",
+        "recipient_phone",
+        "package_description",
+        "service_level",
+        "distance_km",
+        "price",
+        "status",
+        "notes",
+        "image_url",
+        "scheduled_at",
+        "delivered_at",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "rates": {
+      "columns": [
+        "id",
+        "service_level",
+        "display_name_fr",
+        "display_name_en",
+        "base_price",
+        "price_per_km",
+        "cutoff_time",
+        "description_fr",
+        "description_en",
+        "image_url",
+        "active",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 3,
+      "sampleRows": [
+        {
+          "id": 1,
+          "service_level": "express",
+          "display_name_fr": "Express",
+          "display_name_en": "Express",
+          "base_price": 25,
+          "price_per_km": 3.5,
+          "cutoff_time": "14:00",
+          "description_fr": "Livraison en moins de 2 heures, peu importe l'heure de la commande avant 14h. Idéal pour les documents urgents et les pièces critiques.",
+          "description_en": "Delivered in under 2 hours when ordered before 2 PM. Perfect for urgent documents and critical parts.",
+          "image_url": null,
+          "active": 1,
+          "created_at": "2026-05-17T04:37:06.815Z",
+          "updated_at": "2026-05-17T04:37:06.815Z"
+        },
+        {
+          "id": 2,
+          "service_level": "same_day",
+          "display_name_fr": "Jour même",
+          "display_name_en": "Same Day",
+          "base_price": 15,
+          "price_per_km": 2.25,
+          "cutoff_time": "11:00",
+          "description_fr": "Ramassage et livraison le jour même pour les commandes passées avant 11h. Économique pour les envois non urgents qui doivent être livrés aujourd'hui.",
+          "description_en": "Pickup and delivery the same day for orders placed before 11 AM. Cost-effective for non-urgent shipments that must arrive today.",
+          "image_url": null,
+          "active": 1,
+          "created_at": "2026-05-17T04:37:06.823Z",
+          "updated_at": "2026-05-17T04:37:06.823Z"
+        },
+        {
+          "id": 3,
+          "service_level": "next_day",
+          "display_name_fr": "Jour suivant",
+          "display_name_en": "Next Day",
+          "base_price": 10,
+          "price_per_km": 1.5,
+          "cutoff_time": "17:00",
+          "description_fr": "Livraison le jour ouvrable suivant pour les commandes passées avant 17h. Notre option la plus économique.",
+          "description_en": "Delivery on the next business day for orders placed before 5 PM. Our most affordable option.",
+          "image_url": null,
+          "active": 1,
+          "created_at": "2026-05-17T04:37:06.830Z",
+          "updated_at": "2026-05-17T04:37:06.830Z"
+        }
+      ]
+    },
+    "form_submissions": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "phone",
+        "subject",
+        "message",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    }
+  }
+}

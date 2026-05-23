@@ -1,0 +1,73 @@
+{
+  "slug": "speedy-gonzales",
+  "displayName": "Speedy Gonzales",
+  "description": "# Project Title: Speedy Gonzales\nA website for a courier company.\n\n# Core Features\n- Business account creation with an approval process.\n- Businesses provide basic info, mailing address, and multiple pickup locations when signing up.\n- Customers submit delivery requests by selecting a pickup address and specifying destination via Google Maps.\n- Account-based billing (no online payments) with a billing history.\n- Pricing based on distance (kilometers) and service level (Express, Same Day, Next Day), each with distinct cut-off times.\n\n# Service Area\n- Greater Montreal area, including Laval and surroundings.\n\n# Design Vibe\n- Style: Modern and clean.\n- Primary Brand Colors: Red and blue.",
+  "status": "active",
+  "generationVersion": 1,
+  "primaryColor": "#6366f1",
+  "iconUrl": "https://res.cloudinary.com/duhp69meg/image/upload/v1778992657/tapavis_tenant_speedy-gonzales/icon_speedy-gonzales_1778992657867.png",
+  "enabledAuthMethods": [
+    "webauthn",
+    "sms",
+    "email"
+  ],
+  "notificationsEnabled": true,
+  "geolocationEnabled": true,
+  "customConfig": {
+    "language": "both",
+    "aiSummary": {
+      "en": {
+        "dashboard": "Your admin area is the control center for Speedy Gonzales.\n\nFrom the Admin section, you can manage the main parts of your app:\n- Businesses: review new business sign-ups, approve or update accounts, or remove them if needed.\n- Deliveries: view delivery requests, update their status, and check delivery details.\n- Rates: add, edit, or remove pricing rules for Express, Same Day, and Next Day service levels.\n- Pickup locations: manage the pickup addresses available to each business.\n- Posts: create, edit, or delete site updates or content items.\n- Submissions: review messages sent through your forms, like contact requests.\n\nTo add or change content, open the Admin area and choose the section you want. From there, you can create new entries, open an existing one to make changes, or delete items you no longer need.\n\nTo send notifications to users, go to the area related to that user action first. For example, when reviewing business sign-ups or delivery activity, use those sections to follow up with customers using your usual communication process. If you want automated notifications later, that can be added as a future improvement.\n\nTo change site settings, go to the main Admin area and review the general setup options available there. This is the best place to manage overall app behavior and business information.\n\nTo check app stats, open the Admin home page. There you can view summary information such as activity levels, incoming submissions, and overall usage.\n\nA good setup order is: update rates, review business sign-up flow, add pickup locations, then monitor deliveries and billing activity as orders come in.",
+        "variables": "Great news! Your app is ready to go — no extra setup required.\n\nSpeedy Gonzales is already set up to run with the built-in tools available on the platform. That means you do not need to connect any outside service before using it.\n\nYour site includes everything needed to get started: business sign-up, approval flow, pickup locations, delivery requests, billing history, contact form, and admin management tools.\n\nYou can start by reviewing your site, adding your delivery rates, checking your business information, and testing the sign-up and delivery request flow.\n\nIf you want, I can also help you prepare a simple launch checklist for your business."
+      },
+      "fr": {
+        "dashboard": "Votre tableau de bord admin est le centre de contrôle de Speedy Gonzales.\n\nDans la section Admin, vous pouvez gérer les éléments principaux de l’application :\n- Entreprises : voir les nouvelles inscriptions, approuver les comptes, modifier leurs informations ou les supprimer.\n- Livraisons : consulter les demandes, suivre les détails et mettre leur statut à jour.\n- Tarifs : ajouter, modifier ou supprimer vos prix selon le niveau de service, comme Express, Jour même et Lendemain.\n- Lieux de ramassage : gérer les adresses de ramassage associées aux entreprises.\n- Publications : ajouter, modifier ou supprimer du contenu ou des nouvelles sur le site.\n- Soumissions : consulter les messages reçus, par exemple via le formulaire de contact.\n\nPour ajouter ou modifier du contenu, allez dans Admin puis choisissez la section voulue. Vous pourrez créer un nouvel élément, ouvrir un élément existant pour le modifier, ou le supprimer s’il n’est plus utile.\n\nPour envoyer des notifications aux utilisateurs, passez d’abord par la section concernée. Par exemple, lors de l’approbation d’une entreprise ou du suivi d’une livraison, utilisez ces sections pour faire vos suivis avec votre méthode habituelle. Si vous souhaitez des notifications automatiques plus tard, ce sera une belle amélioration à ajouter.\n\nPour changer les réglages du site, commencez par la page principale de l’Admin. C’est l’endroit idéal pour gérer les paramètres généraux et les informations globales de votre entreprise.\n\nPour voir les statistiques, ouvrez la page d’accueil de l’Admin. Vous y trouverez un aperçu de l’activité, des nouvelles soumissions et de l’utilisation générale de l’application.\n\nBon ordre pour démarrer : entrez vos tarifs, validez le parcours d’inscription des entreprises, ajoutez les lieux de ramassage, puis surveillez les livraisons et la facturation au fur et à mesure.",
+        "variables": "Bonne nouvelle! Votre application est prête à être utilisée — aucune configuration supplémentaire n’est nécessaire.\n\nSpeedy Gonzales fonctionne déjà avec les outils intégrés à la plateforme. Autrement dit, vous n’avez aucun service externe à brancher avant de commencer.\n\nVotre site comprend déjà l’essentiel pour démarrer : inscription des entreprises, approbation des comptes, gestion de plusieurs lieux de ramassage, demandes de livraison, historique de facturation, formulaire de contact et espace d’administration.\n\nJe vous recommande de commencer par vérifier votre site, entrer vos tarifs de livraison, valider vos informations d’entreprise et tester le parcours d’inscription ainsi qu’une demande de livraison.\n\nSi vous voulez, je peux aussi vous préparer une petite liste de vérification pour le lancement."
+      }
+    },
+    "aiSummaryVersion": 1
+  },
+  "promptHistory": [
+    {
+      "prompt": "# Project Title: Speedy Gonzales\nA website for a courier company.\n\n# Core Features\n- Business account creation with an approval process.\n- Businesses provide basic info, mailing address, and multiple pickup locations when signing up.\n- Customers submit delivery requests by selecting a pickup address and specifying destination via Google Maps.\n- Account-based billing (no online payments) with a billing history.\n- Pricing based on distance (kilometers) and service level (Express, Same Day, Next Day), each with distinct cut-off times.\n\n# Service Area\n- Greater Montreal area, including Laval and surroundings.\n\n# Design Vibe\n- Style: Modern and clean.\n- Primary Brand Colors: Red and blue.",
+      "timestamp": "2026-05-17T04:37:46.923Z",
+      "changeNotes": "Initial build of Speedy Gonzales — a courier service PWA for the Greater Montreal area. Includes business account registration with approval workflow, multiple pickup locations per business, delivery request submission with Google Maps Places autocomplete and distance-based pricing across Express/Same Day/Next Day service tiers, account billing history (no online payment), bilingual FR/EN content, full admin dashboard for approving businesses, managing deliveries, rates, pickup locations, posts and form submissions.\n\nAdmin UX/UI enrichment: (1) Enhanced admin-shell.ejs with search/filter bar, sortable table, image previews, formatted columns, toast notifications, modal animations, confirmation dialogs for destructive actions, and full CRUD coverage of all editable fields. (2) Upgraded admin dashboard with quick-actions, recent submissions card, better stat grouping, and CTA shortcuts. (3) Improved admin-styles.css: better contrast, brand variable, accessible focus states, toast component, search input, sortable header, modal animations, mobile drawer sidebar. (4) Added filter/refresh affordances to admin module pages. (5) Preserved every {{IMG_*}} placeholder token byte-for-byte. (6) Preserved all functional admin endpoints and module field schemas — rates/services remain admin-manageable with price + cutoff. (7) Added SEO metadata for FR + EN with LocalBusiness schema.",
+      "generationId": 1145,
+      "filesModified": [
+        "manifest.json",
+        "public/css/admin-styles.css",
+        "public/css/styles.css",
+        "public/js/app.js",
+        "routes.js",
+        "schema.sql",
+        "seed.js",
+        "views/about.ejs",
+        "views/admin-businesses.ejs",
+        "views/admin-deliveries.ejs",
+        "views/admin-pickup-locations.ejs",
+        "views/admin-posts.ejs",
+        "views/admin-rates.ejs",
+        "views/admin-submissions.ejs",
+        "views/admin.ejs",
+        "views/billing.ejs",
+        "views/contact.ejs",
+        "views/dashboard.ejs",
+        "views/deliveries.ejs",
+        "views/delivery-detail.ejs",
+        "views/index.ejs",
+        "views/inscription.ejs",
+        "views/new-delivery.ejs",
+        "views/partials/admin-shell.ejs",
+        "views/partials/admin-sidebar.ejs",
+        "views/partials/footer.ejs",
+        "views/partials/header.ejs",
+        "views/pickup-locations.ejs",
+        "views/services.ejs"
+      ]
+    }
+  ],
+  "apiVariables": [],
+  "createdAt": "2026-05-17T04:01:49.865Z",
+  "updatedAt": "2026-05-17T04:38:27.039Z",
+  "exportedAt": "2026-05-23T02:48:10.535Z"
+}

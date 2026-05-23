@@ -1,0 +1,156 @@
+<%- include('partials/header') %>
+<div class="container page-head">
+<h1><%= t.new_delivery_title %></h1>
+</div>
+<section style="padding-top:1rem">
+<div class="container">
+<% if (typeof user === 'undefined' || !user) { %>
+<div class="form-card text-center"><h3><%= t.need_login_msg %></h3><a href="#" data-login-btn class="btn mt-2" style="background-color:#dc2626;color:#fff"><%= t.nav_login %></a></div>
+<% } else if (!business) { %>
+<div class="form-card text-center"><h3><%= lang==='en'?'Complete your business registration first':'Complétez votre inscription d\'entreprise d\'abord' %></h3><a href="inscription" class="btn mt-2" style="background-color:#dc2626;color:#fff"><%= t.signup_submit %></a></div>
+<% } else if (business.status !== 'approved') { %>
+<div class="alert alert-warning"><%= t.new_delivery_need_approved %></div>
+<% } else { %>
+<div class="form-card" style="max-width:800px">
+<div id="deliveryStatus"></div>
+<form id="deliveryForm">
+<h3><%= t.new_delivery_pickup_section %></h3>
+<% if (typeof locations !== 'undefined' && locations.length > 0) { %>
+<div><label><%= t.new_delivery_pickup_choose %></label>
+<select id="pickupLocSelect">
+<option value="">— <%= t.new_delivery_pickup_new %> —</option>
+<% locations.forEach(function(loc){ %><option value="<%= loc.id %>" data-address="<%= loc.address %>" data-lat="<%= loc.lat||'' %>" data-lng="<%= loc.lng||'' %>"><%= loc.label %> — <%= (loc.address||'').substring(0,40) %></option><% }); %>
+</select></div>
+<% } else { %>
+<p class="muted"><a href="lieux-ramassage">+ <%= t.pickup_add %></a></p>
+<% } %>
+<div><label><%= t.pickup_address %> *</label><input type="text" name="pickup_address" id="pickupAddr" required placeholder="<%= t.address_placeholder %>"></div>
+<input type="hidden" name="pickup_lat" id="pickupLat"><input type="hidden" name="pickup_lng" id="pickupLng">
+<input type="hidden" name="pickup_location_id" id="pickupLocId">
+<h3 class="mt-3"><%= t.new_delivery_destination_section %></h3>
+<div><label><%= t.new_delivery_destination_address %> *</label><input type="text" name="destination_address" id="destAddr" required placeholder="<%= t.address_placeholder %>"></div>
+<input type="hidden" name="dest_lat" id="destLat"><input type="hidden" name="dest_lng" id="destLng">
+<h3 class="mt-3"><%= t.new_delivery_details_section %></h3>
+<div class="form-row">
+<div><label><%= t.new_delivery_recipient_name %></label><input type="text" name="recipient_name"></div>
+<div><label><%= t.new_delivery_recipient_phone %></label><input type="tel" name="recipient_phone"></div>
+</div>
+<div><label><%= t.new_delivery_package %></label><textarea name="package_description" placeholder="<%= lang==='en'?'Size, weight, contents...':'Taille, poids, contenu...' %>"></textarea></div>
+<div><label><%= t.new_delivery_special_notes %></label><textarea name="notes"></textarea></div>
+<div><label><%= t.new_delivery_scheduled %></label><input type="datetime-local" name="scheduled_at"></div>
+<h3 class="mt-3"><%= t.new_delivery_service_section %></h3>
+<div id="serviceLevels" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.75rem">
+<% rates.forEach(function(r, i){ %>
+<label style="border:2px solid #e2e8f0;border-radius:8px;padding:.75rem;cursor:pointer;display:block" class="svc-opt" data-svc="<%= r.service_level %>">
+<input type="radio" name="service_level" value="<%= r.service_level %>" <%= i===0?'checked':'' %> style="margin-right:.5rem">
+<strong><%= lang==='en'?(r.display_name_en||r.service_level):(r.display_name_fr||r.service_level) %></strong>
+<div class="muted" style="font-size:.85rem"><%= formatPrice(r.base_price) %> + <%= formatPrice(r.price_per_km) %>/km</div>
+<div class="muted" style="font-size:.75rem"><%= t.services_cutoff %>: <%= r.cutoff_time || '—' %></div>
+</label>
+<% }); %>
+</div>
+<div id="quoteBox" class="quote-box" style="display:none">
+<div class="row"><span><%= t.new_delivery_quote_distance %></span><strong id="quoteDist">—</strong></div>
+<div class="row"><span><%= t.new_delivery_quote_price %></span><strong id="quotePrice">—</strong></div>
+</div>
+<input type="hidden" name="distance_km" id="distanceKmInput">
+<div class="mt-3" style="display:flex;gap:.5rem;flex-wrap:wrap">
+<button type="button" class="btn btn-secondary" id="quoteBtn"><%= t.new_delivery_quote %></button>
+<button type="submit" class="btn" style="background-color:#dc2626;color:#fff"><%= t.new_delivery_submit %></button>
+</div>
+</form>
+</div>
+<% } %>
+</div>
+</section>
+<% if (typeof user !== 'undefined' && user && business && business.status === 'approved') { %>
+<script src="https://maps.googleapis.com/maps/api/js?key=<%= googleApiKey %>&libraries=places&callback=initMaps" async defer></script>
+<script>
+function initMaps(){
+  var bounds = new google.maps.LatLngBounds(new google.maps.LatLng(45.30, -74.00), new google.maps.LatLng(45.85, -73.30));
+  var opts = { bounds: bounds, strictBounds: false, componentRestrictions: { country: 'ca' } };
+  var pickupInput = document.getElementById('pickupAddr');
+  var destInput = document.getElementById('destAddr');
+  var pa = new google.maps.places.Autocomplete(pickupInput, opts);
+  pa.addListener('place_changed', function(){
+    var p = pa.getPlace();
+    if (p.geometry && p.geometry.location) {
+      document.getElementById('pickupLat').value = p.geometry.location.lat();
+      document.getElementById('pickupLng').value = p.geometry.location.lng();
+      document.getElementById('pickupLocId').value = '';
+      document.getElementById('pickupLocSelect') && (document.getElementById('pickupLocSelect').value = '');
+    }
+  });
+  var da = new google.maps.places.Autocomplete(destInput, opts);
+  da.addListener('place_changed', function(){
+    var p = da.getPlace();
+    if (p.geometry && p.geometry.location) {
+      document.getElementById('destLat').value = p.geometry.location.lat();
+      document.getElementById('destLng').value = p.geometry.location.lng();
+    }
+  });
+}
+var sel = document.getElementById('pickupLocSelect');
+if (sel) sel.addEventListener('change', function(){
+  var opt = this.options[this.selectedIndex];
+  if (this.value) {
+    document.getElementById('pickupAddr').value = opt.dataset.address || '';
+    document.getElementById('pickupLat').value = opt.dataset.lat || '';
+    document.getElementById('pickupLng').value = opt.dataset.lng || '';
+    document.getElementById('pickupLocId').value = this.value;
+  }
+});
+document.querySelectorAll('.svc-opt').forEach(function(el){
+  el.addEventListener('click', function(){
+    document.querySelectorAll('.svc-opt').forEach(function(e){ e.style.borderColor = '#e2e8f0'; e.style.background='#fff'; });
+    el.style.borderColor = '#dc2626';
+    el.style.background = '#fee2e2';
+  });
+});
+document.querySelector('.svc-opt') && (function(){ var f = document.querySelector('.svc-opt'); f.style.borderColor = '#dc2626'; f.style.background='#fee2e2'; })();
+async function getQuote(){
+  var pLat = document.getElementById('pickupLat').value;
+  var pLng = document.getElementById('pickupLng').value;
+  var dLat = document.getElementById('destLat').value;
+  var dLng = document.getElementById('destLng').value;
+  var svc = document.querySelector('input[name=service_level]:checked');
+  if (!pLat || !dLat || !svc) { alert('<%- lang==="en"?"Please select valid addresses from the dropdown and a service level":"Sélectionnez des adresses valides dans la liste et un niveau de service" %>'); return; }
+  try {
+    var r = await TenantSDK.fetch('api/delivery-quote', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ pickup_lat: pLat, pickup_lng: pLng, dest_lat: dLat, dest_lng: dLng, service_level: svc.value }) });
+    var j = await r.json();
+    if (j.distance_km) {
+      document.getElementById('quoteBox').style.display = 'block';
+      document.getElementById('quoteDist').textContent = j.distance_km + ' km';
+      document.getElementById('quotePrice').textContent = j.price.toFixed(2) + ' $';
+      document.getElementById('distanceKmInput').value = j.distance_km;
+    } else {
+      alert(j.error || 'Error');
+    }
+  } catch(err) { alert('Connection error'); }
+}
+document.getElementById('quoteBtn').addEventListener('click', getQuote);
+document.getElementById('deliveryForm').addEventListener('submit', async function(e){
+  e.preventDefault();
+  var data = {};
+  new FormData(this).forEach(function(v,k){ data[k] = v; });
+  var btn = this.querySelector('button[type=submit]');
+  btn.disabled = true;
+  var status = document.getElementById('deliveryStatus');
+  try {
+    var r = await TenantSDK.fetch('api/deliveries', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) });
+    var j = await r.json();
+    if (j.success) {
+      status.innerHTML = '<div class="alert alert-success"><%- t.new_delivery_success %> (#' + j.id + ' · ' + j.price.toFixed(2) + ' $)</div>';
+      setTimeout(function(){ location.href = 'livraisons/' + j.id; }, 1500);
+    } else {
+      status.innerHTML = '<div class="alert alert-danger">' + (j.error || 'Error') + '</div>';
+      btn.disabled = false;
+    }
+  } catch(err) {
+    status.innerHTML = '<div class="alert alert-danger">Connection error</div>';
+    btn.disabled = false;
+  }
+});
+</script>
+<% } %>
+<%- include('partials/footer') %>

@@ -1,0 +1,36 @@
+<%- include('partials/header') %>
+<div class="container page-head">
+<div class="flex-between"><h1><%= t.deliveries_title %></h1><a href="nouvelle-livraison" class="btn btn-sm" style="background-color:#dc2626;color:#fff">+ <%= t.start_delivery %></a></div>
+</div>
+<section style="padding-top:1rem">
+<div class="container">
+<% if (typeof user === 'undefined' || !user) { %>
+<div class="form-card text-center"><h3><%= t.need_login_msg %></h3><a href="#" data-login-btn class="btn mt-2" style="background-color:#dc2626;color:#fff"><%= t.nav_login %></a></div>
+<% } else if (!business) { %>
+<div class="form-card text-center"><a href="inscription" class="btn" style="background-color:#dc2626;color:#fff"><%= t.signup_submit %></a></div>
+<% } else if (typeof deliveries !== 'undefined' && deliveries.length > 0) { %>
+<div style="overflow-x:auto">
+<table>
+<thead><tr><th>#</th><th><%= t.deliveries_date %></th><th><%= t.deliveries_from %></th><th><%= t.deliveries_to %></th><th><%= t.deliveries_service %></th><th><%= t.deliveries_status %></th><th><%= t.deliveries_price %></th><th></th></tr></thead>
+<tbody>
+<% deliveries.forEach(function(d){ %>
+<tr>
+<td>#<%= d.id %></td>
+<td><%= formatDate(d.created_at, lang) %></td>
+<td><%= (d.pickup_address||'').substring(0,50) %></td>
+<td><%= (d.destination_address||'').substring(0,50) %></td>
+<td><span class="badge badge-<%= d.service_level %>"><%= serviceLabel(d.service_level, lang, ratesMap) %></span></td>
+<td><span class="badge badge-<%= d.status %>"><%= statusLabel(d.status, t) %></span></td>
+<td><%= formatPrice(d.price) %></td>
+<td><a href="livraisons/<%= d.id %>" class="btn btn-sm btn-secondary"><%= t.view_details %></a></td>
+</tr>
+<% }); %>
+</tbody>
+</table>
+</div>
+<% } else { %>
+<div class="empty-state"><h3><%= t.no_deliveries %></h3><a href="nouvelle-livraison" class="btn mt-2" style="background-color:#dc2626;color:#fff"><%= t.start_delivery %></a></div>
+<% } %>
+</div>
+</section>
+<%- include('partials/footer') %>

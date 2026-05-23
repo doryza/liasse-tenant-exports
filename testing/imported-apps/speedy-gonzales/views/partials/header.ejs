@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title><%= typeof title !== 'undefined' && title ? title : t.brand %> · <%= t.brand %></title>
+<meta name="description" content="<%= t.tagline %>">
+<meta name="theme-color" content="#dc2626">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="<%= typeof appIconUrl !== 'undefined' && appIconUrl ? appIconUrl : '' %>">
+<link rel="apple-touch-icon" href="<%= typeof appIconUrl !== 'undefined' && appIconUrl ? appIconUrl : '' %>">
+<link rel="stylesheet" href="public/css/styles.css">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+</head>
+<body>
+<nav class="nav">
+<div class="nav-inner">
+<a href="." class="nav-brand"><img src="<%= (typeof settings!=='undefined' && settings._p_nav_logo_url) ? settings._p_nav_logo_url : (typeof appIconUrl !== 'undefined' && appIconUrl ? appIconUrl : '') %>" alt="Logo" class="nav-logo"><span><%= t.brand %></span></a>
+<button class="nav-toggle" id="navToggle" aria-label="Menu">☰</button>
+<div class="nav-menu" id="navMenu">
+<a href="."><%= t.nav_home %></a>
+<a href="services"><%= t.nav_services %></a>
+<a href="a-propos"><%= t.nav_about %></a>
+<a href="contact"><%= t.nav_contact %></a>
+<% if (typeof user !== 'undefined' && user) { %>
+<a href="tableau-bord"><%= t.nav_dashboard %></a>
+<a href="nouvelle-livraison"><%= t.nav_new_delivery %></a>
+<a href="livraisons"><%= t.nav_my_deliveries %></a>
+<a href="facturation"><%= t.nav_billing %></a>
+<a href="#" onclick="if(window.TenantSDK){TenantSDK.auth.logout();location.reload();}return false;"><%= t.nav_logout %></a>
+<% } else { %>
+<a href="#" data-login-btn class="btn-nav"><%= t.nav_login %></a>
+<a href="inscription" class="btn-nav btn-primary"><%= t.nav_signup %></a>
+<% } %>
+<span class="lang-toggle"><a href="<%= currentPath %>?lang=fr" class="<%= lang === 'fr' ? 'active' : '' %>">FR</a> | <a href="<%= currentPath %>?lang=en" class="<%= lang === 'en' ? 'active' : '' %>">EN</a></span>
+</div>
+</div>
+</nav>
+<main>

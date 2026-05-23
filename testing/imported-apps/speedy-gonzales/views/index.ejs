@@ -1,0 +1,103 @@
+<%- include('partials/header') %>
+<section class="hero">
+<img src="<%= (typeof settings!=='undefined' && settings._p_hero_image_url) ? settings._p_hero_image_url : 'https://res.cloudinary.com/duhp69meg/image/upload/v1778991712/tapavis_tenant_speedy-gonzales/build_speedy-gonzales_1778991712855.png' %>" alt="Hero" class="hero-img">
+<div class="hero-overlay">
+<div class="hero-content">
+<h1><%= (typeof settings!=='undefined' && settings['hero_title_'+lang]) || t.hero_title %></h1>
+<p><%= (typeof settings!=='undefined' && settings['hero_subtitle_'+lang]) || t.hero_subtitle %></p>
+<div class="btn-group">
+<a href="inscription" class="btn" style="background-color:#fff;color:#dc2626"><%= t.hero_cta_signup %></a>
+<a href="services" class="btn btn-outline"><%= t.hero_cta_services %></a>
+</div>
+</div>
+</div>
+</section>
+
+<section>
+<div class="container">
+<div class="section-head">
+<h2><%= t.home_how_title %></h2>
+<p><%= t.home_how_subtitle %></p>
+</div>
+<div class="grid grid-3">
+<div class="step"><div class="step-num">1</div><h3><%= t.step1_title %></h3><p><%= t.step1_text %></p></div>
+<div class="step"><div class="step-num">2</div><h3><%= t.step2_title %></h3><p><%= t.step2_text %></p></div>
+<div class="step"><div class="step-num">3</div><h3><%= t.step3_title %></h3><p><%= t.step3_text %></p></div>
+</div>
+</div>
+</section>
+
+<section class="section-alt">
+<div class="container">
+<div class="section-head">
+<h2><%= t.home_services_title %></h2>
+<p><%= t.home_services_subtitle %></p>
+</div>
+<% if (typeof rates !== 'undefined' && rates.length > 0) { %>
+<div class="grid grid-3">
+<% rates.forEach(function(r, i){ %>
+<div class="service-card <%= i===0 ? 'featured' : '' %>">
+<h3><%= lang === 'en' ? (r.display_name_en || r.service_level) : (r.display_name_fr || r.service_level) %></h3>
+<div class="price-base"><%= formatPrice(r.base_price) %><span> + <%= formatPrice(r.price_per_km) %>/km</span></div>
+<p class="muted"><%= lang === 'en' ? (r.description_en || '') : (r.description_fr || '') %></p>
+<ul class="features">
+<li><span><%= t.services_cutoff %></span><strong><%= r.cutoff_time || '—' %></strong></li>
+<li><span><%= t.services_base %></span><strong><%= formatPrice(r.base_price) %></strong></li>
+<li><span><%= t.services_per_km %></span><strong><%= formatPrice(r.price_per_km) %></strong></li>
+</ul>
+<a href="inscription" class="btn btn-outline" style="width:100%;text-align:center"><%= t.hero_cta_signup %></a>
+</div>
+<% }); %>
+</div>
+<% } else { %>
+<div class="empty-state"><p><%= t.coming_soon %></p></div>
+<% } %>
+</div>
+</section>
+
+<section>
+<div class="container">
+<div class="section-head">
+<h2><%= t.home_coverage_title %></h2>
+<p><%= t.home_coverage_subtitle %></p>
+</div>
+<div class="coverage-box">
+<h3>🗺️ <%= (typeof settings!=='undefined' && settings['service_area_'+lang]) || 'Grand Montréal · Laval · Rive-Sud · Rive-Nord' %></h3>
+<p><%= lang === 'en' ? 'From downtown Montreal to Laval, Longueuil, Brossard, Boisbriand and surrounding cities.' : 'Du centre-ville de Montréal jusqu\'à Laval, Longueuil, Brossard, Boisbriand et les villes environnantes.' %></p>
+</div>
+</div>
+</section>
+
+<% if (typeof posts !== 'undefined' && posts.length > 0) { %>
+<section class="section-alt">
+<div class="container">
+<div class="section-head">
+<h2><%= t.home_news_title %></h2>
+</div>
+<div class="grid grid-3">
+<% posts.forEach(function(p){ %>
+<article class="card">
+<% if (p.image_url) { %><img src="<%= p.image_url %>" alt="" class="card-img"><% } %>
+<div class="card-body">
+<% if (p.category) { %><span class="tag"><%= p.category %></span><% } %>
+<h3><%= p.title %></h3>
+<p><%= (p.content || '').substring(0, 140) %><%= (p.content && p.content.length > 140) ? '…' : '' %></p>
+<div class="card-meta"><span><%= formatDate(p.created_at, lang) %></span></div>
+</div>
+</article>
+<% }); %>
+</div>
+</div>
+</section>
+<% } %>
+
+<section>
+<div class="container">
+<div class="cta-banner">
+<h2><%= t.home_cta_title %></h2>
+<p><%= t.home_cta_subtitle %></p>
+<a href="inscription" class="btn"><%= t.hero_cta_signup %></a>
+</div>
+</div>
+</section>
+<%- include('partials/footer') %>

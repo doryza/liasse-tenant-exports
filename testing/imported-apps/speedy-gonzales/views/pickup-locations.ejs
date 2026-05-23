@@ -1,0 +1,106 @@
+<%- include('partials/header') %>
+<div class="container page-head">
+<h1><%= t.pickup_locations_title %></h1>
+</div>
+<section style="padding-top:1rem">
+<div class="container">
+<% if (typeof user === 'undefined' || !user) { %>
+<div class="form-card text-center"><h3><%= t.need_login_msg %></h3><a href="#" data-login-btn class="btn mt-2" style="background-color:#dc2626;color:#fff"><%= t.nav_login %></a></div>
+<% } else if (!business || business.status !== 'approved') { %>
+<div class="alert alert-warning"><%= t.new_delivery_need_approved %></div>
+<a href="inscription" class="btn" style="background-color:#dc2626;color:#fff"><%= t.signup_update %></a>
+<% } else { %>
+<div class="flex-between mb-3">
+<h2 style="margin:0"><%= lang==='en'?'Your saved pickup locations':'Vos lieux de ramassage enregistrés' %></h2>
+<button class="btn" id="addLocationBtn" style="background-color:#dc2626;color:#fff">+ <%= t.pickup_add %></button>
+</div>
+<div id="locationStatus"></div>
+<% if (typeof locations !== 'undefined' && locations.length > 0) { %>
+<div class="grid grid-2">
+<% locations.forEach(function(loc){ %>
+<div class="card"><div class="card-body">
+<h3><%= loc.label %></h3>
+<p><%= loc.address %></p>
+<% if (loc.contact_name) { %><p class="muted">👤 <%= loc.contact_name %> <% if (loc.contact_phone) { %>· <%= loc.contact_phone %><% } %></p><% } %>
+<% if (loc.notes) { %><p class="muted">📝 <%= loc.notes %></p><% } %>
+<button class="btn btn-sm btn-danger" onclick="deleteLocation(<%= loc.id %>)"><%= t.pickup_delete %></button>
+</div></div>
+<% }); %>
+</div>
+<% } else { %>
+<div class="empty-state"><h3><%= t.pickup_no_locations %></h3><p><%= lang==='en'?'Add your first pickup location to start submitting deliveries.':'Ajoutez votre premier lieu de ramassage pour commencer.' %></p></div>
+<% } %>
+<div id="addLocationModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:100;align-items:center;justify-content:center;padding:1rem">
+<div style="background:#fff;width:100%;max-width:560px;border-radius:12px;padding:1.5rem;max-height:90vh;overflow-y:auto">
+<h3><%= t.pickup_add %></h3>
+<div id="addLocationFormStatus"></div>
+<form id="addLocationForm">
+<div><label><%= t.pickup_label %> *</label><input type="text" name="label" required></div>
+<div><label><%= t.pickup_address %> *</label><input type="text" name="address" id="pickupAddressInput" required placeholder="<%= t.address_placeholder %>"></div>
+<input type="hidden" name="lat" id="pickupLatInput"><input type="hidden" name="lng" id="pickupLngInput">
+<div class="form-row">
+<div><label><%= t.pickup_contact_name %></label><input type="text" name="contact_name"></div>
+<div><label><%= t.pickup_contact_phone %></label><input type="tel" name="contact_phone"></div>
+</div>
+<div><label><%= t.pickup_notes %></label><textarea name="notes"></textarea></div>
+<div style="display:flex;gap:.5rem;justify-content:flex-end;margin-top:1rem">
+<button type="button" class="btn btn-secondary" onclick="closeModal()"><%= t.cancel %></button>
+<button type="submit" class="btn" style="background-color:#dc2626;color:#fff"><%= t.pickup_save %></button>
+</div>
+</form>
+</div>
+</div>
+<% } %>
+</div>
+</section>
+<% if (typeof user !== 'undefined' && user && business && business.status === 'approved') { %>
+<script src="https://maps.googleapis.com/maps/api/js?key=<%= googleApiKey %>&libraries=places" async defer></script>
+<script>
+var modal = document.getElementById('addLocationModal');
+document.getElementById('addLocationBtn').addEventListener('click', function(){
+  modal.style.display = 'flex';
+  setTimeout(initPickupAutocomplete, 100);
+});
+function closeModal(){ modal.style.display = 'none'; }
+var pickupAutocomplete = null;
+function initPickupAutocomplete(){
+  if (!window.google || !window.google.maps || pickupAutocomplete) return;
+  var input = document.getElementById('pickupAddressInput');
+  if (!input) return;
+  pickupAutocomplete = new google.maps.places.Autocomplete(input, {
+    bounds: new google.maps.LatLngBounds(new google.maps.LatLng(45.30, -74.00), new google.maps.LatLng(45.85, -73.30)),
+    strictBounds: false,
+    componentRestrictions: { country: 'ca' }
+  });
+  pickupAutocomplete.addListener('place_changed', function(){
+    var p = pickupAutocomplete.getPlace();
+    if (p.geometry && p.geometry.location) {
+      document.getElementById('pickupLatInput').value = p.geometry.location.lat();
+      document.getElementById('pickupLngInput').value = p.geometry.location.lng();
+    }
+  });
+}
+document.getElementById('addLocationForm').addEventListener('submit', async function(e){
+  e.preventDefault();
+  var data = {};
+  new FormData(this).forEach(function(v,k){ data[k] = v; });
+  var statusEl = document.getElementById('addLocationFormStatus');
+  try {
+    var r = await TenantSDK.fetch('api/pickup-locations', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) });
+    var j = await r.json();
+    if (j.success) location.reload();
+    else statusEl.innerHTML = '<div class="alert alert-danger">' + (j.error || 'Error') + '</div>';
+  } catch(err) {
+    statusEl.innerHTML = '<div class="alert alert-danger">Error</div>';
+  }
+});
+async function deleteLocation(id){
+  if (!confirm('<%- t.pickup_confirm_delete %>')) return;
+  try {
+    var r = await TenantSDK.fetch('api/pickup-locations/' + id, { method:'DELETE' });
+    if (r.ok) location.reload();
+  } catch(err) { alert('Error'); }
+}
+</script>
+<% } %>
+<%- include('partials/footer') %>
