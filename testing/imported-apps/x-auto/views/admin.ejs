@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tableau de bord — X-Auto Admin</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body>
+<div class="admin-layout">
+  <% var currentModule = 'dashboard'; %>
+  <%- include('partials/admin-sidebar', { currentModule: currentModule }) %>
+  <main class="admin-main">
+    <div class="admin-header">
+      <div>
+        <h1>Tableau de bord</h1>
+        <p class="admin-subtitle">Bonjour, <%= adminUser.name %> — Voici votre activité récente.</p>
+      </div>
+      <div class="header-actions">
+        <a href="." target="_blank" class="btn btn-secondary">🌐 Voir le site</a>
+        <a href="admin/vehicles" class="btn btn-primary">+ Ajouter un véhicule</a>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card stat-accent"><div class="label">🚗 En vente</div><div class="value"><%= stats.vehiclesForSale %></div><div class="sub">sur <%= stats.vehicleCount %> au total · <%= stats.vehiclesSold %> vendus</div></div>
+      <div class="stat-card"><div class="label">⭐ En vedette</div><div class="value"><%= stats.featuredVehicles %></div><div class="sub">véhicules mis en avant</div></div>
+      <div class="stat-card <%= stats.pendingAppointments > 0 ? 'stat-warn' : '' %>"><div class="label">📅 Rendez-vous</div><div class="value"><%= stats.appointmentCount %></div><div class="sub"><strong><%= stats.pendingAppointments %></strong> en attente</div></div>
+      <div class="stat-card"><div class="label">✉️ Messages</div><div class="value"><%= stats.submissionCount %></div><div class="sub">soumissions reçues</div></div>
+      <div class="stat-card"><div class="label">⭐ Témoignages</div><div class="value"><%= stats.testimonialCount %></div></div>
+      <div class="stat-card"><div class="label">📝 Articles</div><div class="value"><%= stats.postCount %></div></div>
+      <div class="stat-card"><div class="label">👀 Visites</div><div class="value"><%= stats.totalVisits %></div><div class="sub"><%= stats.recentVisits %> ces 7 derniers jours</div></div>
+      <div class="stat-card"><div class="label">🔔 Abonnés</div><div class="value"><%= stats.pushCount %></div><div class="sub"><%= stats.userCount %> comptes utilisateurs</div></div>
+    </div>
+
+    <div class="two-col">
+      <div class="panel">
+        <div class="panel-header">
+          <h2>📅 Derniers rendez-vous</h2>
+          <a href="admin/appointments" class="link-arrow">Tout voir →</a>
+        </div>
+        <% if (recentAppointments && recentAppointments.length > 0) { %>
+          <ul class="recent-list">
+            <% recentAppointments.forEach(function(a){ %>
+              <li>
+                <div class="recent-main"><div class="name"><%= a.name %></div><div class="meta">📞 <%= a.phone %> · <%= a.preferred_date || 'Date à confirmer' %></div></div>
+                <span class="badge badge-<%= a.status === 'pending' ? 'yellow' : (a.status === 'confirmed' ? 'blue' : (a.status === 'completed' ? 'green' : 'gray')) %>"><%= a.status %></span>
+              </li>
+            <% }); %>
+          </ul>
+        <% } else { %>
+          <div class="panel-empty">Aucun rendez-vous pour le moment.</div>
+        <% } %>
+      </div>
+      <div class="panel">
+        <div class="panel-header">
+          <h2>✉️ Derniers messages</h2>
+          <a href="admin/form_submissions" class="link-arrow">Tout voir →</a>
+        </div>
+        <% if (recentSubmissions && recentSubmissions.length > 0) { %>
+          <ul class="recent-list">
+            <% recentSubmissions.forEach(function(s){ %>
+              <li>
+                <div class="recent-main"><div class="name"><%= s.name || '—' %></div><div class="meta"><%= (s.message || '').substring(0, 70) %><%= (s.message || '').length > 70 ? '...' : '' %></div></div>
+                <span class="badge badge-gray"><%= s.type || 'contact' %></span>
+              </li>
+            <% }); %>
+          </ul>
+        <% } else { %>
+          <div class="panel-empty">Aucun message pour le moment.</div>
+        <% } %>
+      </div>
+    </div>
+
+    <h2 class="section-heading">Gérer le contenu</h2>
+    <div class="action-grid">
+      <a href="admin/vehicles" class="action-card"><div class="action-icon">🚗</div><div class="action-body"><div class="action-title">Véhicules</div><div class="action-desc">Gérer l'inventaire, ajouter et marquer comme vendu</div></div><div class="action-arrow">→</div></a>
+      <a href="admin/appointments" class="action-card"><div class="action-icon">📅</div><div class="action-body"><div class="action-title">Rendez-vous</div><div class="action-desc">Voir et confirmer les demandes de visite</div></div><div class="action-arrow">→</div></a>
+      <a href="admin/testimonials" class="action-card"><div class="action-icon">⭐</div><div class="action-body"><div class="action-title">Témoignages</div><div class="action-desc">Modérer et publier les avis clients</div></div><div class="action-arrow">→</div></a>
+      <a href="admin/posts" class="action-card"><div class="action-icon">📝</div><div class="action-body"><div class="action-title">Articles</div><div class="action-desc">Rédiger conseils et actualités</div></div><div class="action-arrow">→</div></a>
+    </div>
+  </main>
+</div>
+</body>
+</html>

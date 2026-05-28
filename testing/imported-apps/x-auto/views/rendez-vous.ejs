@@ -1,0 +1,68 @@
+<%- include('partials/header') %>
+<section class="section">
+  <div class="container">
+    <h1 class="section-title" style="text-align:center"><%= t.appointment_title %></h1>
+    <p class="section-subtitle" style="text-align:center"><%= t.appointment_subtitle %></p>
+    <div class="form-card">
+      <div id="form-msg" class="form-message"></div>
+      <% if (typeof selectedVehicle !== 'undefined' && selectedVehicle) { %>
+        <div style="background:var(--bg-3);border:1px solid var(--border);border-radius:8px;padding:1rem 1.25rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:1rem">
+          <% if (selectedVehicle.image_url) { %><img src="<%= selectedVehicle.image_url %>" alt="" style="width:80px;height:60px;object-fit:cover;border-radius:6px"><% } %>
+          <div>
+            <div style="font-size:.75rem;color:var(--brand-light);text-transform:uppercase;letter-spacing:.05em;font-weight:700"><%= t.form_vehicle %></div>
+            <div style="font-weight:600"><%= selectedVehicle.year %> <%= selectedVehicle.make %> <%= selectedVehicle.model %></div>
+            <div style="color:var(--silver);font-size:.9rem"><%= formatPrice(selectedVehicle.price) %></div>
+          </div>
+        </div>
+      <% } %>
+      <form id="appointment-form">
+        <div class="form-grid">
+          <div class="form-row"><label><%= t.form_name %> <span class="req">*</span></label><input type="text" name="name" required></div>
+          <div class="form-row"><label><%= t.form_phone %> <span class="req">*</span></label><input type="tel" name="phone" required></div>
+        </div>
+        <div class="form-row"><label><%= t.form_email %></label><input type="email" name="email"></div>
+        <div class="form-row">
+          <label><%= t.form_vehicle %></label>
+          <select name="vehicle_id">
+            <option value="">— <%= t.no_vehicle_selected %> —</option>
+            <% (vehicles || []).forEach(function(v){ %>
+              <option value="<%= v.id %>" <%= (vehicleId && String(vehicleId) === String(v.id)) ? 'selected' : '' %>><%= v.year %> <%= v.make %> <%= v.model %></option>
+            <% }); %>
+          </select>
+        </div>
+        <div class="form-row"><label><%= t.form_date %></label><input type="text" name="preferred_date" placeholder="<%= lang === 'fr' ? 'ex: 15 décembre 2024, 14h' : 'e.g. December 15, 2024 at 2pm' %>"></div>
+        <div class="form-row"><label><%= t.form_message %></label><textarea name="message" placeholder="<%= lang === 'fr' ? 'Questions, demandes spéciales...' : 'Questions, special requests...' %>"></textarea></div>
+        <button type="submit" class="btn btn-primary btn-block btn-lg" id="submit-btn" style="background-color:#6366f1;color:#fff"><%= t.form_submit %></button>
+      </form>
+    </div>
+  </div>
+</section>
+<script>
+document.getElementById('appointment-form').addEventListener('submit', async function(e){
+  e.preventDefault();
+  var form = e.target;
+  var btn = document.getElementById('submit-btn');
+  var msg = document.getElementById('form-msg');
+  var data = {};
+  new FormData(form).forEach(function(v,k){ data[k] = v; });
+  btn.disabled = true; btn.textContent = '<%- t.form_submitting %>';
+  msg.className = 'form-message';
+  try {
+    var res = await fetch('api/rendez-vous', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) });
+    if (res.ok) {
+      msg.className = 'form-message success';
+      msg.textContent = '<%- t.form_success_appointment %>';
+      form.reset();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      msg.className = 'form-message error';
+      msg.textContent = '<%- t.form_error %>';
+    }
+  } catch(err) {
+    msg.className = 'form-message error';
+    msg.textContent = '<%- t.form_error %>';
+  }
+  btn.disabled = false; btn.textContent = '<%- t.form_submit %>';
+});
+</script>
+<%- include('partials/footer') %>

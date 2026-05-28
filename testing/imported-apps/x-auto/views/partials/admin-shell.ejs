@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title><%= moduleLabel %> — X-Auto Admin</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body>
+<div class="admin-layout">
+  <% var currentModule = moduleKey; %>
+  <%- include('admin-sidebar', { currentModule: currentModule }) %>
+  <main class="admin-main">
+    <div class="admin-header">
+      <div>
+        <h1><%= moduleLabel %></h1>
+        <p class="admin-subtitle" id="module-subtitle">Chargement…</p>
+      </div>
+      <div id="header-actions" class="header-actions"></div>
+    </div>
+    <div class="toolbar">
+      <input type="search" id="search-input" class="search-input" placeholder="Rechercher…">
+      <span class="result-count" id="result-count"></span>
+    </div>
+    <div id="items-container"><div class="empty-state"><div class="empty-icon">⏳</div><div class="empty-title">Chargement…</div></div></div>
+  </main>
+</div>
+
+<div class="modal-backdrop" id="modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modal-title">—</h2>
+      <button class="modal-close" onclick="closeModal()" aria-label="Fermer">×</button>
+    </div>
+    <form id="item-form">
+      <div class="modal-body" id="modal-body"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Annuler</button>
+        <button type="submit" class="btn btn-primary" id="save-btn">Enregistrer</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+var MODULE_KEY = '<%- moduleKey %>';
+var MODULE_LABEL = '<%- moduleLabel %>';
+var moduleConfig = null;
+var items = [];
+var filteredItems = [];
+var searchTerm = '';
+
+function escHtml(s) {
+  if (s == null) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function escAttr(s) { return escHtml(s); }
+function prettyName(s){
+  if(!s) return '';
+  return String(s).replace(/_/g,' ').replace(/\b\w/g, function(c){ return c.toUpperCase(); });
+}
+function labelFor(f){ return f.label || prettyName(f.name); }
+
+function toast(msg, type){
+  var t = document.getElementById('toast');
+  t.className = '';
+  t.textContent = msg;
+  t.classList.add(type || 'info');
+  setTimeout(function(){ t.classList.add('show'); }, 10);
+  setTimeout(function(){ t.classList.remove('show'); }, 2800);
+}
+
+async function loadConfig() {
+  try {
+    var res = await fetch('api/admin/modules');
+    var data = await res.json();
+    moduleConfig = (data.modules || []).find(function(m){ return m.key === MODULE_KEY; });
+    if (!moduleConfig) { document.getElementById('items-container').innerHTML = '<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">Module introuvable</div></div>'; return false; }
+    document.getElementById('module-subtitle').textContent = moduleConfig.readOnly ? 'Lecture seule — ' + items.length + ' élément(s)' : 'Ajoutez, modifiez ou supprimez vos ' + MODULE_LABEL.toLowerCase();
+    if (!moduleConfig.readOnly) {
+      document.getElementById('header-actions').innerHTML = '<button class="btn btn-primary" onclick="openAddModal()">+ Ajouter</button>';
+    }
+    return true;
+  } catch(e){
+    document.getElementById('items-container').innerHTML = '<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">Erreur de chargement de la configuration</div></div>';
+    return false;
+  }
+}
+
+async function loadItems() {
+  try {
+    var res = await fetch('api/admin/' + MODULE_KEY);
+    var data = await res.json();
+    items = data[MODULE_KEY] || [];
+    applySearch();
+  } catch(e) {
+    document.getElementById('items-container').innerHTML = '<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">Erreur de chargement</div></div>';
+  }
+}
+
+function applySearch(){
+  if (!searchTerm) { filteredItems = items.slice(); }
+  else {
+    var q = searchTerm.toLowerCase();
+    filteredItems = items.filter(function(it){
+      return Object.keys(it).some(function(k){ var v = it[k]; return v != null && String(v).toLowerCase().indexOf(q) !== -1; });
+    });
+  }
+  renderTable();
+}
+
+document.getElementById('search-input').addEventListener('input', function(e){
+  searchTerm = e.target.value.trim();
+  applySearch();
+});
+
+function renderTable() {
+  var rc = document.getElementById('result-count');
+  if (!items.length) {
+    rc.textContent = '';
+    document.getElementById('items-container').innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">Aucun ' + MODULE_LABEL.toLowerCase() + ' pour le moment</div><div class="empty-desc">' + (moduleConfig.readOnly ? 'Les nouvelles entrées apparaîtront ici automatiquement.' : 'Cliquez sur « + Ajouter » pour créer la première entrée.') + '</div>' + (moduleConfig.readOnly ? '' : '<button class="btn btn-primary" onclick="openAddModal()">+ Ajouter maintenant</button>') + '</div>';
+    return;
+  }
+  if (!filteredItems.length) {
+    rc.textContent = '0 résultat pour « ' + searchTerm + ' »';
+    document.getElementById('items-container').innerHTML = '<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">Aucun résultat</div><div class="empty-desc">Aucun ' + MODULE_LABEL.toLowerCase() + ' ne correspond à « ' + escHtml(searchTerm) + ' ».</div></div>';
+    return;
+  }
+  rc.textContent = filteredItems.length + ' / ' + items.length + ' élément(s)';
+  var displayFields = moduleConfig.fields.filter(function(f){ return f.type !== 'textarea' && f.type !== 'image'; }).slice(0, 5);
+  var hasImage = moduleConfig.fields.some(function(f){ return f.type === 'image'; });
+  var head = '<tr>';
+  if (hasImage) head += '<th></th>';
+  displayFields.forEach(function(f){ head += '<th>' + escHtml(labelFor(f)) + '</th>'; });
+  head += '<th style="text-align:right">Actions</th></tr>';
+  var rows = filteredItems.map(function(it){
+    var origIdx = items.indexOf(it);
+    var r = '<tr>';
+    if (hasImage) {
+      var img = it.image_url;
+      r += '<td>' + (img ? '<img src="' + escAttr(img) + '" class="thumb" alt="">' : '<div class="thumb-placeholder">🖼️</div>') + '</td>';
+    }
+    displayFields.forEach(function(f){
+      var val = it[f.name];
+      var disp = '';
+      if (f.type === 'boolean') {
+        disp = val ? '<span class="badge badge-green">Oui</span>' : '<span class="badge badge-gray">Non</span>';
+      } else if (f.name === 'status') {
+        var cls = 'badge-gray'; var labelMap = { pending: 'En attente', confirmed: 'Confirmé', completed: 'Complété', cancelled: 'Annulé' };
+        if (val === 'pending') cls = 'badge-yellow';
+        else if (val === 'confirmed') cls = 'badge-blue';
+        else if (val === 'completed') cls = 'badge-green';
+        else if (val === 'cancelled') cls = 'badge-red';
+        disp = '<span class="badge ' + cls + '">' + escHtml(labelMap[val] || val || '') + '</span>';
+      } else if (f.name === 'price') {
+        disp = val != null ? '<strong>' + new Intl.NumberFormat('fr-CA', { style:'currency', currency:'CAD', maximumFractionDigits:0 }).format(val) + '</strong>' : '';
+      } else if (f.name === 'mileage') {
+        disp = val != null ? new Intl.NumberFormat('fr-CA').format(val) + ' km' : '';
+      } else if (f.name === 'rating') {
+        var n = parseInt(val || 5, 10);
+        var stars = ''; for (var i=0;i<n;i++) stars += '★'; for (var j=n;j<5;j++) stars += '☆';
+        disp = '<span style="color:#fbbf24;letter-spacing:.1em">' + stars + '</span>';
+      } else if (f.name === 'phone' && val) {
+        disp = '<a href="tel:' + escAttr(val) + '" style="color:#6366f1">' + escHtml(val) + '</a>';
+      } else if (f.name === 'email' && val) {
+        disp = '<a href="mailto:' + escAttr(val) + '" style="color:#6366f1">' + escHtml(val) + '</a>';
+      } else {
+        var s = val == null ? '<span style="color:#9ca3af">—</span>' : String(val);
+        if (val != null) disp = '<span class="truncate" title="' + escAttr(s) + '">' + escHtml(s.length > 60 ? s.substring(0,60) + '…' : s) + '</span>';
+        else disp = s;
+      }
+      r += '<td>' + disp + '</td>';
+    });
+    r += '<td class="actions">';
+    if (!moduleConfig.readOnly) r += '<button class="btn btn-secondary btn-sm" onclick="editItem(' + origIdx + ')">✏️ Modifier</button>';
+    r += '<button class="btn btn-danger btn-sm" onclick="deleteItem(' + it.id + ')">🗑️ Supprimer</button>';
+    r += '</td></tr>';
+    return r;
+  }).join('');
+  document.getElementById('items-container').innerHTML = '<div class="data-table-wrap"><table class="data-table"><thead>' + head + '</thead><tbody>' + rows + '</tbody></table></div>';
+}
+
+function renderForm(item) {
+  var html = '<div class="form-2col">';
+  moduleConfig.fields.forEach(function(f){
+    var val = item && item[f.name] != null ? item[f.name] : (f.default !== undefined ? f.default : '');
+    var fullCls = (f.type === 'textarea' || f.type === 'image' || f.name === 'description' || f.name === 'content' || f.name === 'message') ? ' full' : '';
+    html += '<div class="field' + fullCls + '">';
+    if (f.type === 'boolean') {
+      html += '<div class="checkbox"><input type="checkbox" id="f_' + f.name + '" name="' + f.name + '" ' + (val ? 'checked' : '') + '><label for="f_' + f.name + '">' + escHtml(labelFor(f)) + '</label></div>';
+      if (f.description) html += '<small>' + escHtml(f.description) + '</small>';
+    } else {
+      html += '<label for="f_' + f.name + '">' + escHtml(labelFor(f)) + (f.required ? ' <span class="req">*</span>' : '') + '</label>';
+      if (f.type === 'textarea') {
+        html += '<textarea id="f_' + f.name + '" name="' + f.name + '" ' + (f.required ? 'required' : '') + (f.placeholder ? ' placeholder="' + escAttr(f.placeholder) + '"' : '') + '>' + escHtml(val) + '</textarea>';
+      } else if (f.type === 'select') {
+        var labelMap = { pending: 'En attente', confirmed: 'Confirmé', completed: 'Complété', cancelled: 'Annulé' };
+        html += '<select id="f_' + f.name + '" name="' + f.name + '">';
+        if (!f.required) html += '<option value="">— Sélectionner —</option>';
+        (f.options || []).forEach(function(o){ var lbl = (f.name === 'status' && labelMap[o]) ? labelMap[o] : o; html += '<option value="' + escAttr(o) + '" ' + (String(val) === String(o) ? 'selected' : '') + '>' + escHtml(lbl) + '</option>'; });
+        html += '</select>';
+      } else if (f.type === 'image') {
+        html += '<input type="url" id="f_' + f.name + '" name="' + f.name + '" value="' + escAttr(val) + '" placeholder="https://… (URL de l\'image)">';
+        if (val) html += '<img src="' + escAttr(val) + '" class="image-preview" alt="Aperçu">';
+      } else if (f.type === 'number') {
+        html += '<input type="number" id="f_' + f.name + '" name="' + f.name + '" value="' + escAttr(val) + '" ' + (f.required ? 'required' : '') + (f.min != null ? ' min="' + f.min + '"' : '') + (f.max != null ? ' max="' + f.max + '"' : '') + (f.step != null ? ' step="' + f.step + '"' : '') + (f.placeholder ? ' placeholder="' + escAttr(f.placeholder) + '"' : '') + '>';
+      } else {
+        html += '<input type="text" id="f_' + f.name + '" name="' + f.name + '" value="' + escAttr(val) + '" ' + (f.required ? 'required' : '') + (f.maxLength ? ' maxlength="' + f.maxLength + '"' : '') + (f.placeholder ? ' placeholder="' + escAttr(f.placeholder) + '"' : '') + '>';
+      }
+      if (f.description) html += '<small>' + escHtml(f.description) + '</small>';
+    }
+    html += '</div>';
+  });
+  html += '</div><input type="hidden" name="_id" value="' + (item ? item.id : '') + '">';
+  return html;
+}
+
+function openAddModal() {
+  document.getElementById('modal-title').textContent = '+ Nouveau — ' + MODULE_LABEL;
+  document.getElementById('modal-body').innerHTML = renderForm(null);
+  document.getElementById('modal').classList.add('open');
+  bindImagePreview();
+}
+
+function editItem(idx) {
+  var item = items[idx];
+  document.getElementById('modal-title').textContent = '✏️ Modifier — ' + MODULE_LABEL;
+  document.getElementById('modal-body').innerHTML = renderForm(item);
+  document.getElementById('modal').classList.add('open');
+  bindImagePreview();
+}
+
+function bindImagePreview(){
+  moduleConfig.fields.forEach(function(f){
+    if (f.type !== 'image') return;
+    var input = document.getElementById('f_' + f.name);
+    if (!input) return;
+    input.addEventListener('input', function(){
+      var old = input.parentNode.querySelector('.image-preview');
+      if (old) old.remove();
+      if (input.value) {
+        var img = document.createElement('img');
+        img.src = input.value; img.className = 'image-preview';
+        input.parentNode.appendChild(img);
+      }
+    });
+  });
+}
+
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+
+document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeModal(); });
+
+document.getElementById('item-form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  var fd = new FormData(e.target);
+  var data = {};
+  moduleConfig.fields.forEach(function(f) {
+    if (f.type === 'boolean') {
+      data[f.name] = fd.get(f.name) ? 1 : 0;
+    } else if (f.type === 'number') {
+      var v = fd.get(f.name);
+      data[f.name] = v === '' || v == null ? null : Number(v);
+    } else {
+      var v = fd.get(f.name);
+      data[f.name] = v == null || v === '' ? null : v;
+    }
+  });
+  var id = fd.get('_id');
+  var url = 'api/admin/' + MODULE_KEY + (id ? '/' + id : '');
+  var method = id ? 'PUT' : 'POST';
+  var btn = document.getElementById('save-btn');
+  btn.disabled = true; btn.textContent = 'Enregistrement…';
+  try {
+    var res = await fetch(url, { method: method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+    if (res.ok) { closeModal(); await loadItems(); toast(id ? '✓ Modifié avec succès' : '✓ Ajouté avec succès', 'success'); }
+    else { var err = await res.json().catch(function(){ return {}; }); toast('Erreur : ' + (err.error || res.status), 'error'); }
+  } catch(err) { toast('Erreur : ' + err.message, 'error'); }
+  btn.disabled = false; btn.textContent = 'Enregistrer';
+});
+
+async function deleteItem(id) {
+  if (!confirm('Êtes-vous sûr de vouloir supprimer cet élément ? Cette action est irréversible.')) return;
+  try {
+    var res = await fetch('api/admin/' + MODULE_KEY + '/' + id, { method: 'DELETE' });
+    if (res.ok) { await loadItems(); toast('✓ Supprimé', 'success'); }
+    else toast('Erreur de suppression', 'error');
+  } catch(e) { toast('Erreur : ' + e.message, 'error'); }
+}
+
+(async function() { if (await loadConfig()) await loadItems(); })();
+</script>
+</body>
+</html>

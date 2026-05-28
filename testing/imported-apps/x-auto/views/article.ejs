@@ -1,0 +1,16 @@
+<%- include('partials/header') %>
+<div class="container"><div class="breadcrumb"><a href="articles">← <%= t.nav_articles %></a></div></div>
+<article class="section">
+  <div class="container" style="max-width:780px">
+    <% if (typeof post !== 'undefined' && post) { %>
+      <% if (post.category) { %><span class="post-category" style="color:var(--brand-light);font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;font-weight:700"><%= post.category %></span><% } %>
+      <h1 style="font-size:2.25rem;margin:.5rem 0;letter-spacing:-.02em"><%= post.title %></h1>
+      <p class="text-dim" style="font-size:.9rem;margin-bottom:1.5rem"><%= formatDate(post.created_at) %></p>
+      <% if (post.image_url) { %><img src="<%= post.image_url %>" alt="<%= post.title %>" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:12px;margin-bottom:2rem"><% } %>
+      <div style="font-size:1.05rem;line-height:1.8;color:var(--silver-3);white-space:pre-line"><%= post.content %></div>
+    <% } else { %>
+      <div class="empty-state"><%= t.no_posts %></div>
+    <% } %>
+  </div>
+</article>
+<%- include('partials/footer') %>

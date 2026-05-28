@@ -1,0 +1,25 @@
+<%- include('partials/header') %>
+<section class="section">
+  <div class="container">
+    <h1 class="section-title"><%= t.latest_news %></h1>
+    <p class="section-subtitle"><%= t.latest_news_subtitle %></p>
+    <% if (typeof posts !== 'undefined' && posts.length > 0) { %>
+      <div class="posts-grid">
+        <% posts.forEach(function(p){ %>
+          <a href="article/<%= p.id %>" class="post-card">
+            <div class="post-image"><img src="<%= p.image_url || 'https://placehold.co/800x450/1f1f1f/c0c0c0/png?text=' + encodeURIComponent(p.category || 'Article') %>" alt="<%= p.title %>"></div>
+            <div class="post-body">
+              <% if (p.category) { %><span class="post-category"><%= p.category %></span><% } %>
+              <h3><%= p.title %></h3>
+              <p><%= (p.content || '').substring(0, 140) %><%= (p.content || '').length > 140 ? '...' : '' %></p>
+              <span class="read-more"><%= t.read_more %> →</span>
+            </div>
+          </a>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <div class="empty-state"><%= t.no_posts %></div>
+    <% } %>
+  </div>
+</section>
+<%- include('partials/footer') %>

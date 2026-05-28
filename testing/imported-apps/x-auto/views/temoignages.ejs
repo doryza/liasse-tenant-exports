@@ -1,0 +1,35 @@
+<%- include('partials/header') %>
+<section class="section">
+  <div class="container">
+    <h1 class="section-title" style="text-align:center"><%= t.testimonials_title %></h1>
+    <p class="section-subtitle" style="text-align:center"><%= t.testimonials_subtitle %></p>
+    <% if (typeof testimonials !== 'undefined' && testimonials.length > 0) { %>
+      <div class="testimonial-grid">
+        <% testimonials.forEach(function(tm){ %>
+          <div class="testimonial">
+            <div class="stars"><% for (var i=0;i<(tm.rating||5);i++) { %>★<% } %></div>
+            <p class="testimonial-content"><%= tm.content %></p>
+            <div class="testimonial-author">
+              <div class="avatar"><% if (tm.image_url) { %><img src="<%= tm.image_url %>" alt="<%= tm.author %>"><% } else { %><%= tm.author.charAt(0) %><% } %></div>
+              <div>
+                <div class="name"><%= tm.author %></div>
+                <% if (tm.vehicle_purchased) { %><div class="vehicle"><%= tm.vehicle_purchased %></div><% } %>
+              </div>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <div class="empty-state"><%= t.no_testimonials %></div>
+    <% } %>
+    <div class="cta-band" style="margin-top:3rem">
+      <h2><%= t.cta_secondary %></h2>
+      <p><%= t.contact_us_phone %></p>
+      <div class="btns">
+        <a href="rendez-vous" class="btn btn-primary btn-lg" style="background-color:#6366f1;color:#fff"><%= t.book_appointment %></a>
+        <a href="inventaire" class="btn btn-outline btn-lg"><%= t.hero_cta_inventory %></a>
+      </div>
+    </div>
+  </div>
+</section>
+<%- include('partials/footer') %>

@@ -1,0 +1,15 @@
+<aside class="admin-sidebar">
+  <div class="sidebar-brand"><span class="accent">X</span>-Auto <span style="font-size:.7em;color:#94a3b8;font-weight:500">Admin</span></div>
+  <nav>
+    <a href="admin" class="<%= typeof currentModule !== 'undefined' && currentModule === 'dashboard' ? 'active' : '' %>">📊 Tableau de bord</a>
+    <a href="admin/vehicles" class="<%= typeof currentModule !== 'undefined' && currentModule === 'vehicles' ? 'active' : '' %>">🚗 Véhicules</a>
+    <a href="admin/appointments" class="<%= typeof currentModule !== 'undefined' && currentModule === 'appointments' ? 'active' : '' %>">📅 Rendez-vous</a>
+    <a href="admin/testimonials" class="<%= typeof currentModule !== 'undefined' && currentModule === 'testimonials' ? 'active' : '' %>">⭐ Témoignages</a>
+    <a href="admin/posts" class="<%= typeof currentModule !== 'undefined' && currentModule === 'posts' ? 'active' : '' %>">📝 Articles</a>
+    <a href="admin/form_submissions" class="<%= typeof currentModule !== 'undefined' && currentModule === 'form_submissions' ? 'active' : '' %>">✉️ Messages</a>
+  </nav>
+  <div class="sidebar-footer">
+    <a href="." target="_blank">🌐 Voir le site →</a>
+    <a href="admin/logout">🚪 Déconnexion</a>
+  </div>
+</aside>

@@ -1,0 +1,41 @@
+<%- include('partials/header') %>
+<section class="financing-hero container">
+  <div class="subtitle"><%= t.financing_subtitle %></div>
+  <h1><%= t.financing_title %></h1>
+  <p style="max-width:680px;margin:0 auto;color:var(--text-dim);font-size:1.1rem;line-height:1.7"><%= t.financing_desc %></p>
+</section>
+<section class="section">
+  <div class="container">
+    <div class="features-grid">
+      <div class="feature-card"><div class="feature-icon">2</div><h3><%= t.financing_feat1_title %></h3><p><%= t.financing_feat1_desc %></p></div>
+      <div class="feature-card"><div class="feature-icon">3</div><h3><%= t.financing_feat2_title %></h3><p><%= t.financing_feat2_desc %></p></div>
+      <div class="feature-card"><div class="feature-icon">⚡</div><h3><%= t.financing_feat3_title %></h3><p><%= t.financing_feat3_desc %></p></div>
+    </div>
+  </div>
+</section>
+<section class="section">
+  <div class="container">
+    <div class="financing-call-cta">
+      <h3><%= t.financing_cta_title %></h3>
+      <p><%= t.financing_cta %></p>
+      <% if (typeof settings !== 'undefined' && settings.contact_phone) { %>
+        <a href="tel:<%= settings.contact_phone %>" class="phone-big" style="color:#fff;background-color:rgba(0,0,0,.35)">📞 <%= settings.contact_phone %></a>
+      <% } else { %>
+        <a href="contact" class="phone-big" style="color:#fff;background-color:rgba(0,0,0,.35)"><%= t.financing_call %></a>
+      <% } %>
+    </div>
+  </div>
+</section>
+<section class="section section-bg-alt">
+  <div class="container">
+    <div class="about-grid">
+      <img src="<%= (typeof settings !== 'undefined' && settings._p_financing_image_url) ? settings._p_financing_image_url : 'https://placehold.co/800x600/1f1f1f/c0c0c0/png?text=Financement' %>" alt="Financing">
+      <div>
+        <h2 class="section-title" style="font-size:1.5rem"><%= t.financing_title %></h2>
+        <p style="color:var(--text-dim);line-height:1.8;margin-bottom:1.5rem"><%= t.financing_desc %></p>
+        <a href="inventaire" class="btn btn-primary" style="background-color:#6366f1;color:#fff"><%= t.hero_cta_inventory %></a>
+      </div>
+    </div>
+  </div>
+</section>
+<%- include('partials/footer') %>

@@ -1,0 +1,75 @@
+<%- include('partials/header') %>
+<section class="section">
+  <div class="container">
+    <h1 class="section-title"><%= t.contact_title %></h1>
+    <p class="section-subtitle"><%= t.contact_subtitle %></p>
+    <div class="contact-grid">
+      <div class="contact-info">
+        <div class="contact-info-item">
+          <h4><%= t.contact_phone %></h4>
+          <% if (typeof settings !== 'undefined' && settings.contact_phone) { %>
+            <p><a href="tel:<%= settings.contact_phone %>"><%= settings.contact_phone %></a></p>
+          <% } else { %>
+            <p class="text-dim">—</p>
+          <% } %>
+        </div>
+        <div class="contact-info-item">
+          <h4><%= t.contact_email %></h4>
+          <% if (typeof settings !== 'undefined' && settings.contact_email) { %>
+            <p><a href="mailto:<%= settings.contact_email %>"><%= settings.contact_email %></a></p>
+          <% } else { %>
+            <p class="text-dim">—</p>
+          <% } %>
+        </div>
+        <div class="contact-info-item">
+          <h4><%= t.contact_address %></h4>
+          <% if (typeof settings !== 'undefined' && settings.business_address) { %>
+            <p><%= settings.business_address %></p>
+          <% } else { %>
+            <p class="text-dim">—</p>
+          <% } %>
+        </div>
+        <div class="contact-info-item">
+          <h4><%= t.contact_hours %></h4>
+          <% var hours = (typeof settings !== 'undefined') ? settings['business_hours_' + lang] : null; %>
+          <p><%= hours || '' %></p>
+        </div>
+      </div>
+      <div>
+        <div class="form-card" style="max-width:none">
+          <div id="contact-msg" class="form-message"></div>
+          <form id="contact-form">
+            <div class="form-grid">
+              <div class="form-row"><label><%= t.form_name %> <span class="req">*</span></label><input type="text" name="name" required></div>
+              <div class="form-row"><label><%= t.form_phone %></label><input type="tel" name="phone"></div>
+            </div>
+            <div class="form-row"><label><%= t.form_email %></label><input type="email" name="email"></div>
+            <div class="form-row"><label><%= t.form_message %> <span class="req">*</span></label><textarea name="message" required></textarea></div>
+            <button type="submit" id="contact-submit" class="btn btn-primary btn-block btn-lg" style="background-color:#6366f1;color:#fff"><%= t.form_submit %></button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<script>
+document.getElementById('contact-form').addEventListener('submit', async function(e){
+  e.preventDefault();
+  var form = e.target;
+  var btn = document.getElementById('contact-submit');
+  var msg = document.getElementById('contact-msg');
+  var data = {};
+  new FormData(form).forEach(function(v,k){ data[k] = v; });
+  btn.disabled = true; btn.textContent = '<%- t.form_submitting %>';
+  try {
+    var res = await fetch('api/contact', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) });
+    if (res.ok) {
+      msg.className = 'form-message success'; msg.textContent = '<%- t.form_success_contact %>';
+      form.reset();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else { msg.className = 'form-message error'; msg.textContent = '<%- t.form_error %>'; }
+  } catch(err) { msg.className = 'form-message error'; msg.textContent = '<%- t.form_error %>'; }
+  btn.disabled = false; btn.textContent = '<%- t.form_submit %>';
+});
+</script>
+<%- include('partials/footer') %>

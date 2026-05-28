@@ -1,0 +1,70 @@
+{
+  "slug": "x-auto",
+  "displayName": "X-Auto",
+  "description": "CONTEXTE\nLe client souhaite créer un site web pour vendre des véhicules d'occasion.\n\nNOM DU PROJET\nX-Auto\n\nDESIGN\nPalette de couleurs: Noir et argent (silver).\n\nFONCTIONNALITÉS CLÉS\n- Prise de rendez-vous pour voir les véhicules.\n- Catalogue (listings) de véhicules avec détails complets.\n- Filtres de recherche par marque et modèle.\n- Section témoignages clients.\n\nCONTEXTE COMMERCIAL\n- Offre également du financement (2e et 3e chance au crédit).\n- Pas de demande de financement en ligne directement sur le site.\n- Préfère le contact téléphonique pour les demandes de financement.",
+  "status": "active",
+  "generationVersion": 1,
+  "primaryColor": "#6366f1",
+  "iconUrl": "https://res.cloudinary.com/duhp69meg/image/upload/v1778952858/tapavis_tenant_x-auto/icon_x-auto_1778952858508.png",
+  "enabledAuthMethods": [
+    "webauthn",
+    "sms",
+    "email"
+  ],
+  "notificationsEnabled": true,
+  "geolocationEnabled": true,
+  "customConfig": {
+    "language": "both",
+    "aiSummary": {
+      "en": {
+        "dashboard": "Welcome to your new control center! The 'Admin' tab is where you'll manage everything on your 'X-Auto' website. It's designed to be simple and straightforward.\n\nFrom here, you can:\n\n*   **Manage Your Car Inventory:** Easily add new vehicles for sale, update their details (like price, photos, and descriptions), or remove cars that have been sold. Just look for the 'Vehicles' section.\n*   **Showcase Happy Customers:** Add new customer reviews in the 'Testimonials' section to build trust with new visitors.\n*   **Review Appointments:** When a customer books a time to see a car, their request will appear in the 'Appointments' list for you to manage.\n*   **Check Messages:** See all the messages sent through your contact form under 'Submissions'.\n*   **Share News:** You can write articles or news updates in the 'Posts' section to keep your site fresh.\n*   **Track Your Visitors:** The dashboard gives you a quick look at how many people are visiting your site.\n\nThink of it as the remote control for your website. Everything you need to keep it updated is right there.",
+        "variables": "Great news! Your new 'X-Auto' web app is all set up and ready to go. You don't need to worry about any extra technical steps or special keys. Everything is built-in and works right out of the box. You can start adding your vehicles and welcoming customers right away!"
+      },
+      "fr": {
+        "dashboard": "Bienvenue dans votre panneau de contrôle! L'onglet 'Admin' est l'endroit où vous gérez tout le contenu de votre site web 'X-Auto'. C'est conçu pour être simple et facile à utiliser.\n\nÀ partir d'ici, vous pouvez :\n\n*   **Gérer votre inventaire de voitures :** Ajoutez facilement de nouveaux véhicules à vendre, modifiez leurs informations (comme le prix, les photos et la description) ou retirez les voitures qui ont été vendues. Vous trouverez ça dans la section 'Véhicules'.\n*   **Afficher vos clients satisfaits :** Ajoutez les bons commentaires de vos clients dans la section 'Témoignages' pour bâtir la confiance.\n*   **Consulter les rendez-vous :** Quand un client prend un rendez-vous pour voir un véhicule, sa demande apparaîtra dans la liste des 'Rendez-vous'.\n*   **Lire vos messages :** Vous pouvez voir tous les messages envoyés via votre formulaire de contact sous 'Soumissions'.\n*   **Partager des nouvelles :** Rédigez des articles ou des nouvelles dans la section 'Publications' pour garder votre site à jour.\n*   **Suivre vos visiteurs :** Le tableau de bord vous donne un aperçu rapide du nombre de personnes qui visitent votre site.\n\nC'est un peu comme la télécommande de votre site web. Tout ce dont vous avez besoin pour le maintenir à jour se trouve au même endroit.",
+        "variables": "Excellente nouvelle! Votre nouvelle application web 'X-Auto' est prête à être utilisée. Vous n'avez pas besoin de faire de configuration technique ou d'ajouter des clés spéciales. Tout est déjà inclus et fonctionne parfaitement. Vous pouvez commencer à ajouter vos véhicules et à accueillir vos clients dès maintenant!"
+      }
+    },
+    "aiSummaryVersion": 1
+  },
+  "promptHistory": [
+    {
+      "prompt": "CONTEXTE\nLe client souhaite créer un site web pour vendre des véhicules d'occasion.\n\nNOM DU PROJET\nX-Auto\n\nDESIGN\nPalette de couleurs: Noir et argent (silver).\n\nFONCTIONNALITÉS CLÉS\n- Prise de rendez-vous pour voir les véhicules.\n- Catalogue (listings) de véhicules avec détails complets.\n- Filtres de recherche par marque et modèle.\n- Section témoignages clients.\n\nCONTEXTE COMMERCIAL\n- Offre également du financement (2e et 3e chance au crédit).\n- Pas de demande de financement en ligne directement sur le site.\n- Préfère le contact téléphonique pour les demandes de financement.",
+      "timestamp": "2026-05-16T17:34:26.860Z",
+      "changeNotes": "Enriched admin UI: (1) Admin shell now renders human-friendly labels (replaces underscores, capitalizes) and uses field descriptions as helper text, (2) Added toast notifications for create/update/delete success, (3) Added search filter input on list views, (4) Added per-row image thumbnail with fallback, (5) Improved modal layout with two-column grid for related fields, (6) Better status badges with proper translation, (7) Improved empty states with actionable CTAs, (8) Added quick-status updater for appointments inline in table, (9) Enhanced dashboard with action cards and better spacing, (10) Improved admin-styles.css: better focus states, table hover effects, button refinements, dropzone styling, responsive table card mode on mobile, (11) Improved frontend contrast (vehicle prices, financing CTA, hero overlay), kept all functional flows intact, (12) Preserved all {{IMG_*}} placeholder tokens exactly. Added SEO metadata.",
+      "generationId": 1140,
+      "filesModified": [
+        "manifest.json",
+        "public/css/admin-styles.css",
+        "public/css/styles.css",
+        "public/js/app.js",
+        "routes.js",
+        "schema.sql",
+        "seed.js",
+        "views/admin-appointments.ejs",
+        "views/admin-posts.ejs",
+        "views/admin-submissions.ejs",
+        "views/admin-testimonials.ejs",
+        "views/admin-vehicles.ejs",
+        "views/admin.ejs",
+        "views/article.ejs",
+        "views/articles.ejs",
+        "views/contact.ejs",
+        "views/financement.ejs",
+        "views/index.ejs",
+        "views/inventaire.ejs",
+        "views/partials/admin-shell.ejs",
+        "views/partials/admin-sidebar.ejs",
+        "views/partials/footer.ejs",
+        "views/partials/header.ejs",
+        "views/rendez-vous.ejs",
+        "views/temoignages.ejs",
+        "views/vehicule.ejs"
+      ]
+    }
+  ],
+  "apiVariables": [],
+  "createdAt": "2026-05-16T17:02:31.938Z",
+  "updatedAt": "2026-05-16T17:34:52.735Z",
+  "exportedAt": "2026-05-28T12:39:08.155Z"
+}

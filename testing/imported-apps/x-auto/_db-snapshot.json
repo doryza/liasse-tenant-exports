@@ -1,0 +1,458 @@
+{
+  "exportedAt": "2026-05-28T12:39:08.183Z",
+  "tables": {
+    "admin_invites": {
+      "columns": [
+        "id",
+        "email",
+        "token",
+        "role",
+        "status",
+        "invited_by",
+        "expires_at",
+        "accepted_at",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_users": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "password_hash",
+        "display_name",
+        "role",
+        "active",
+        "activation_token",
+        "invited_by",
+        "invite_token",
+        "invite_expires_at",
+        "last_login_at",
+        "is_active",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_webauthn_credentials": {
+      "columns": [
+        "id",
+        "admin_user_id",
+        "credential_id",
+        "public_key",
+        "counter",
+        "device_name",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_settings": {
+      "columns": [
+        "key",
+        "value",
+        "updated_at"
+      ],
+      "totalRows": 45,
+      "sampleRows": [
+        {
+          "key": "tagline_fr",
+          "value": "Véhicules d'occasion de qualité",
+          "updated_at": "2026-05-16T17:34:05.245Z"
+        },
+        {
+          "key": "tagline_en",
+          "value": "Quality used vehicles",
+          "updated_at": "2026-05-16T17:34:05.253Z"
+        },
+        {
+          "key": "hero_title_fr",
+          "value": "Trouvez votre véhicule idéal",
+          "updated_at": "2026-05-16T17:34:05.261Z"
+        },
+        {
+          "key": "hero_title_en",
+          "value": "Find your perfect vehicle",
+          "updated_at": "2026-05-16T17:34:05.273Z"
+        },
+        {
+          "key": "hero_subtitle_fr",
+          "value": "Sélection rigoureuse de véhicules d'occasion certifiés. Financement disponible — 2e et 3e chance au crédit.",
+          "updated_at": "2026-05-16T17:34:05.285Z"
+        },
+        {
+          "key": "hero_subtitle_en",
+          "value": "Carefully selected certified used vehicles. Financing available — 2nd and 3rd chance credit.",
+          "updated_at": "2026-05-16T17:34:05.297Z"
+        },
+        {
+          "key": "about_title_fr",
+          "value": "À propos de X-Auto",
+          "updated_at": "2026-05-16T17:34:05.311Z"
+        },
+        {
+          "key": "about_title_en",
+          "value": "About X-Auto",
+          "updated_at": "2026-05-16T17:34:05.320Z"
+        },
+        {
+          "key": "about_text_fr",
+          "value": "Depuis notre fondation, X-Auto s'est imposé comme un concessionnaire de confiance pour des véhicules d'occasion de qualité. Chaque véhicule est minutieusement inspecté avant d'être mis en vente. Notre équipe passionnée vous accompagne à chaque étape, de la sélection au financement.",
+          "updated_at": "2026-05-16T17:34:05.332Z"
+        },
+        {
+          "key": "about_text_en",
+          "value": "Since our founding, X-Auto has established itself as a trusted dealer for quality used vehicles. Every vehicle is thoroughly inspected before being put up for sale. Our passionate team supports you every step of the way, from selection to financing.",
+          "updated_at": "2026-05-16T17:34:05.345Z"
+        }
+      ]
+    },
+    "site_visits": {
+      "columns": [
+        "id",
+        "path",
+        "visited_at"
+      ],
+      "totalRows": 46,
+      "sampleRows": [
+        {
+          "id": 1,
+          "path": "/",
+          "visited_at": "2026-05-16T17:45:59.236Z"
+        },
+        {
+          "id": 2,
+          "path": "/",
+          "visited_at": "2026-05-16T20:21:56.538Z"
+        },
+        {
+          "id": 3,
+          "path": "/articles",
+          "visited_at": "2026-05-16T21:40:57.096Z"
+        },
+        {
+          "id": 4,
+          "path": "/article/3",
+          "visited_at": "2026-05-16T21:40:59.250Z"
+        },
+        {
+          "id": 5,
+          "path": "/temoignages",
+          "visited_at": "2026-05-16T21:51:57.277Z"
+        },
+        {
+          "id": 6,
+          "path": "/article/1",
+          "visited_at": "2026-05-16T22:45:59.898Z"
+        },
+        {
+          "id": 7,
+          "path": "/article/4",
+          "visited_at": "2026-05-16T22:46:02.326Z"
+        },
+        {
+          "id": 8,
+          "path": "/article/2",
+          "visited_at": "2026-05-16T23:20:56.612Z"
+        },
+        {
+          "id": 9,
+          "path": "/article/1",
+          "visited_at": "2026-05-17T01:16:39.634Z"
+        },
+        {
+          "id": 10,
+          "path": "/",
+          "visited_at": "2026-05-17T01:28:11.904Z"
+        }
+      ]
+    },
+    "posts": {
+      "columns": [
+        "id",
+        "title",
+        "content",
+        "image_url",
+        "category",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Préparer votre véhicule pour l'hiver québécois",
+          "content": "L'hiver approche et il est temps de préparer votre véhicule. Voici nos conseils essentiels : pneus d'hiver de qualité, vérification de la batterie, antigel, et inspection des essuie-glaces. Une bonne préparation peut éviter bien des soucis sur la route.",
+          "image_url": null,
+          "category": "Conseils",
+          "published": 1,
+          "created_at": "2026-05-16T17:34:05.524Z",
+          "updated_at": "2026-05-16T17:34:05.524Z"
+        },
+        {
+          "id": 2,
+          "title": "Pourquoi acheter un véhicule d'occasion certifié?",
+          "content": "Acheter un véhicule d'occasion certifié offre plusieurs avantages : prix avantageux, inspection rigoureuse, historique d'entretien transparent et garantie. C'est un excellent moyen d'obtenir un véhicule de qualité sans payer le prix du neuf.",
+          "image_url": null,
+          "category": "Guides",
+          "published": 1,
+          "created_at": "2026-05-16T17:34:05.539Z",
+          "updated_at": "2026-05-16T17:34:05.539Z"
+        },
+        {
+          "id": 3,
+          "title": "Financement: comprendre la 2e et 3e chance au crédit",
+          "content": "Un mauvais crédit ne devrait pas vous empêcher d'avoir un véhicule fiable. Les programmes de 2e et 3e chance au crédit permettent à plus de gens d'accéder à la mobilité tout en reconstruisant leur cote de crédit. Parlez-nous de votre situation.",
+          "image_url": null,
+          "category": "Financement",
+          "published": 1,
+          "created_at": "2026-05-16T17:34:05.546Z",
+          "updated_at": "2026-05-16T17:34:05.546Z"
+        },
+        {
+          "id": 4,
+          "title": "Entretien préventif: les 5 indispensables",
+          "content": "Pour prolonger la durée de vie de votre véhicule, certains entretiens sont incontournables : changement d'huile régulier, rotation des pneus, vérification des freins, contrôle des liquides et inspection annuelle complète.",
+          "image_url": null,
+          "category": "Conseils",
+          "published": 1,
+          "created_at": "2026-05-16T17:34:05.558Z",
+          "updated_at": "2026-05-16T17:34:05.558Z"
+        }
+      ]
+    },
+    "vehicles": {
+      "columns": [
+        "id",
+        "make",
+        "model",
+        "year",
+        "price",
+        "mileage",
+        "transmission",
+        "fuel_type",
+        "body_type",
+        "color",
+        "vin",
+        "description",
+        "image_url",
+        "featured",
+        "sold",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 6,
+      "sampleRows": [
+        {
+          "id": 1,
+          "make": "Honda",
+          "model": "Civic",
+          "year": 2020,
+          "price": 18995,
+          "mileage": 62000,
+          "transmission": "Automatique",
+          "fuel_type": "Essence",
+          "body_type": "Berline",
+          "color": "Argent",
+          "vin": "2HGFC2F69LH123456",
+          "description": "Honda Civic 2020 en excellente condition. Faible kilométrage, un seul propriétaire, historique d'entretien complet. Sièges chauffants, écran tactile, caméra de recul, Apple CarPlay et Android Auto. Parfaite pour la ville comme pour les longs trajets.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778951719/tapavis_tenant_x-auto/build_x-auto_1778951719227.png",
+          "featured": 1,
+          "sold": 0,
+          "created_at": "2026-05-16T17:34:05.409Z",
+          "updated_at": "2026-05-16T17:34:05.409Z"
+        },
+        {
+          "id": 2,
+          "make": "Toyota",
+          "model": "RAV4",
+          "year": 2021,
+          "price": 28995,
+          "mileage": 48000,
+          "transmission": "Automatique",
+          "fuel_type": "Essence",
+          "body_type": "VUS",
+          "color": "Noir",
+          "vin": "2T3F1RFV6MW123456",
+          "description": "Toyota RAV4 2021 traction intégrale AWD. Toit ouvrant, sièges en cuir, démarreur à distance, système de sécurité Toyota Safety Sense. Idéal pour les familles actives qui veulent un VUS fiable et économique.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778951721/tapavis_tenant_x-auto/build_x-auto_1778951721894.png",
+          "featured": 1,
+          "sold": 0,
+          "created_at": "2026-05-16T17:34:05.422Z",
+          "updated_at": "2026-05-16T17:34:05.422Z"
+        },
+        {
+          "id": 3,
+          "make": "Ford",
+          "model": "F-150",
+          "year": 2019,
+          "price": 32995,
+          "mileage": 89000,
+          "transmission": "Automatique",
+          "fuel_type": "Essence",
+          "body_type": "Camionnette",
+          "color": "Gris",
+          "vin": "1FTFW1E59KFA12345",
+          "description": "Ford F-150 XLT 2019 cabine multiplace 4x4. Moteur V8 5.0L EcoBoost, boîte de chargement standard, marche-pieds, attache de remorque intégrée. Camionnette puissante et fiable pour le travail comme pour les loisirs.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778951729/tapavis_tenant_x-auto/build_x-auto_1778951729961.png",
+          "featured": 1,
+          "sold": 0,
+          "created_at": "2026-05-16T17:34:05.432Z",
+          "updated_at": "2026-05-16T17:34:05.432Z"
+        },
+        {
+          "id": 4,
+          "make": "Mazda",
+          "model": "CX-5",
+          "year": 2020,
+          "price": 24995,
+          "mileage": 71000,
+          "transmission": "Automatique",
+          "fuel_type": "Essence",
+          "body_type": "VUS",
+          "color": "Blanc",
+          "vin": "JM3KFBCM4L0123456",
+          "description": "Mazda CX-5 GS 2020 AWD. Design SKYACTIV, intérieur soigné, sièges chauffants, écran 10 pouces, système audio Bose. Conduite dynamique et raffinée, consommation très raisonnable.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778951716/tapavis_tenant_x-auto/build_x-auto_1778951716690.png",
+          "featured": 0,
+          "sold": 0,
+          "created_at": "2026-05-16T17:34:05.439Z",
+          "updated_at": "2026-05-16T17:34:05.439Z"
+        },
+        {
+          "id": 5,
+          "make": "Hyundai",
+          "model": "Elantra",
+          "year": 2018,
+          "price": 13495,
+          "mileage": 95000,
+          "transmission": "Automatique",
+          "fuel_type": "Essence",
+          "body_type": "Berline",
+          "color": "Rouge",
+          "vin": "KMHD84LF8JU123456",
+          "description": "Hyundai Elantra GLS 2018. Berline compacte économique et fiable. Bluetooth, sièges chauffants avant, caméra de recul. Excellent rapport qualité-prix, parfait premier véhicule ou véhicule pour étudiant.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778951721/tapavis_tenant_x-auto/build_x-auto_1778951721806.png",
+          "featured": 0,
+          "sold": 0,
+          "created_at": "2026-05-16T17:34:05.446Z",
+          "updated_at": "2026-05-16T17:34:05.446Z"
+        },
+        {
+          "id": 6,
+          "make": "Nissan",
+          "model": "Rogue",
+          "year": 2019,
+          "price": 21995,
+          "mileage": 78000,
+          "transmission": "CVT",
+          "fuel_type": "Essence",
+          "body_type": "VUS",
+          "color": "Argent",
+          "vin": "5N1AT2MV4KC123456",
+          "description": "Nissan Rogue SV 2019 AWD. VUS compact polyvalent, intérieur spacieux, toit panoramique, ProPILOT Assist. Parfait équilibre entre confort, sécurité et économie de carburant.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1778951730/tapavis_tenant_x-auto/build_x-auto_1778951730145.png",
+          "featured": 0,
+          "sold": 0,
+          "created_at": "2026-05-16T17:34:05.459Z",
+          "updated_at": "2026-05-16T17:34:05.459Z"
+        }
+      ]
+    },
+    "appointments": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "phone",
+        "vehicle_id",
+        "preferred_date",
+        "message",
+        "status",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "testimonials": {
+      "columns": [
+        "id",
+        "author",
+        "rating",
+        "content",
+        "image_url",
+        "vehicle_purchased",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "author": "Marie L.",
+          "rating": 5,
+          "content": "Service exceptionnel du début à la fin! L'équipe de X-Auto a pris le temps de bien comprendre mes besoins et m'a aidée à trouver le véhicule parfait. Je recommande à 100%.",
+          "image_url": null,
+          "vehicle_purchased": "Honda Civic 2019",
+          "published": 1,
+          "created_at": "2026-05-16T17:34:05.474Z",
+          "updated_at": "2026-05-16T17:34:05.474Z"
+        },
+        {
+          "id": 2,
+          "author": "Jean-François P.",
+          "rating": 5,
+          "content": "J'avais un crédit difficile, mais grâce à leur programme de 2e chance, j'ai pu obtenir un VUS fiable pour ma famille. Merci à toute l'équipe pour leur patience et leur professionnalisme.",
+          "image_url": null,
+          "vehicle_purchased": "Toyota RAV4 2018",
+          "published": 1,
+          "created_at": "2026-05-16T17:34:05.485Z",
+          "updated_at": "2026-05-16T17:34:05.485Z"
+        },
+        {
+          "id": 3,
+          "author": "Sophie B.",
+          "rating": 4,
+          "content": "Très bonne expérience d'achat. Le véhicule était propre, bien entretenu, exactement comme décrit. Le processus a été rapide et transparent. Je reviendrai pour mon prochain achat.",
+          "image_url": null,
+          "vehicle_purchased": "Mazda CX-5 2019",
+          "published": 1,
+          "created_at": "2026-05-16T17:34:05.494Z",
+          "updated_at": "2026-05-16T17:34:05.494Z"
+        },
+        {
+          "id": 4,
+          "author": "Alexandre T.",
+          "rating": 5,
+          "content": "Après avoir visité plusieurs concessionnaires, X-Auto m'a offert le meilleur prix et le meilleur service. Aucune pression, juste de bons conseils honnêtes. Très satisfait de mon F-150!",
+          "image_url": null,
+          "vehicle_purchased": "Ford F-150 2018",
+          "published": 1,
+          "created_at": "2026-05-16T17:34:05.503Z",
+          "updated_at": "2026-05-16T17:34:05.503Z"
+        }
+      ]
+    },
+    "form_submissions": {
+      "columns": [
+        "id",
+        "type",
+        "name",
+        "email",
+        "phone",
+        "message",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    }
+  }
+}

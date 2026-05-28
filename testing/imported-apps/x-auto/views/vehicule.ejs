@@ -1,0 +1,63 @@
+<%- include('partials/header') %>
+<div class="container">
+  <div class="breadcrumb"><a href="inventaire">← <%= t.nav_inventory %></a></div>
+</div>
+<section class="container">
+  <% if (typeof vehicle !== 'undefined' && vehicle) { %>
+    <div class="vehicle-detail">
+      <div>
+        <div class="vehicle-detail-image">
+          <% if (vehicle.featured) { %><span class="vehicle-badge" style="position:absolute;margin:1rem"><%= t.featured_badge %></span><% } %>
+          <img src="<%= vehicle.image_url || 'https://placehold.co/1200x900/1f1f1f/c0c0c0/png?text=' + encodeURIComponent(vehicle.make + ' ' + vehicle.model) %>" alt="<%= vehicle.make %> <%= vehicle.model %>">
+        </div>
+      </div>
+      <div>
+        <h1><%= vehicle.year %> <%= vehicle.make %> <%= vehicle.model %></h1>
+        <p class="text-dim"><%= vehicle.body_type || '' %> · <%= vehicle.color || '' %></p>
+        <div class="price-tag"><%= formatPrice(vehicle.price) %></div>
+        <div class="spec-grid">
+          <div><span class="spec-label"><%= t.year %></span><span class="spec-value"><%= vehicle.year %></span></div>
+          <div><span class="spec-label"><%= t.mileage %></span><span class="spec-value"><%= formatMileage(vehicle.mileage) %></span></div>
+          <div><span class="spec-label"><%= t.transmission %></span><span class="spec-value"><%= vehicle.transmission || '—' %></span></div>
+          <div><span class="spec-label"><%= t.fuel_type %></span><span class="spec-value"><%= vehicle.fuel_type || '—' %></span></div>
+          <div><span class="spec-label"><%= t.body_type %></span><span class="spec-value"><%= vehicle.body_type || '—' %></span></div>
+          <div><span class="spec-label"><%= t.color %></span><span class="spec-value"><%= vehicle.color || '—' %></span></div>
+          <% if (vehicle.vin) { %><div style="grid-column:1/-1"><span class="spec-label"><%= t.vin %></span><span class="spec-value" style="font-family:monospace;font-size:.85rem"><%= vehicle.vin %></span></div><% } %>
+        </div>
+        <% if (vehicle.description) { %>
+          <h3 style="margin:1.5rem 0 .75rem;font-size:1.1rem"><%= t.description %></h3>
+          <p style="color:var(--text-dim);line-height:1.7;white-space:pre-line"><%= vehicle.description %></p>
+        <% } %>
+        <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-top:2rem">
+          <a href="rendez-vous?vehicle=<%= vehicle.id %>" class="btn btn-primary btn-lg" style="background-color:#6366f1;color:#fff;flex:1"><%= t.book_appointment %></a>
+          <% if (typeof settings !== 'undefined' && settings.contact_phone) { %>
+            <a href="tel:<%= settings.contact_phone %>" class="btn btn-outline btn-lg">📞 <%= settings.contact_phone %></a>
+          <% } else { %>
+            <a href="contact" class="btn btn-outline btn-lg"><%= t.nav_contact %></a>
+          <% } %>
+        </div>
+      </div>
+    </div>
+    <% if (typeof similar !== 'undefined' && similar.length > 0) { %>
+      <section class="similar-section">
+        <h2 class="section-title" style="font-size:1.5rem"><%= t.featured_title %></h2>
+        <div class="vehicles-grid">
+          <% similar.forEach(function(v){ %>
+            <article class="vehicle-card">
+              <div class="vehicle-image"><img src="<%= v.image_url || 'https://placehold.co/600x450/1f1f1f/c0c0c0/png?text=' + encodeURIComponent(v.make + ' ' + v.model) %>" alt="<%= v.make %> <%= v.model %>"></div>
+              <div class="vehicle-body">
+                <h3 class="vehicle-title"><%= v.year %> <%= v.make %> <%= v.model %></h3>
+                <div class="vehicle-meta"><span><%= formatMileage(v.mileage) %></span> <span>· <%= v.transmission || '—' %></span></div>
+                <div class="vehicle-price"><%= formatPrice(v.price) %></div>
+                <a href="vehicule/<%= v.id %>" class="btn btn-silver" style="background-color:#c0c0c0;color:#000"><%= t.view_details %></a>
+              </div>
+            </article>
+          <% }); %>
+        </div>
+      </section>
+    <% } %>
+  <% } else { %>
+    <div class="empty-state" style="margin:3rem 0"><%= t.no_results %></div>
+  <% } %>
+</section>
+<%- include('partials/footer') %>

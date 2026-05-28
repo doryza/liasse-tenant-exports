@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0a0a0a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="description" content="<%= t.tagline %> - X-Auto">
+<title><%= typeof pageTitle !== 'undefined' ? pageTitle + ' — ' : '' %>X-Auto — <%= t.tagline %></title>
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="public/css/styles.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="nav">
+    <a href="." class="brand">
+      <% var navLogo = (typeof settings !== 'undefined' && settings._p_nav_logo_url) ? settings._p_nav_logo_url : (typeof appIconUrl !== 'undefined' ? appIconUrl : ''); %>
+      <% if (navLogo) { %><img src="<%= navLogo %>" alt="X-Auto"><% } %>
+      <span><span class="brand-x">X</span><span class="brand-auto">-Auto</span></span>
+    </a>
+    <nav class="nav-links" aria-label="Main">
+      <a href="."><%= t.nav_home %></a>
+      <a href="inventaire"><%= t.nav_inventory %></a>
+      <a href="financement"><%= t.nav_financing %></a>
+      <a href="temoignages"><%= t.nav_testimonials %></a>
+      <a href="articles"><%= t.nav_articles %></a>
+      <a href="contact"><%= t.nav_contact %></a>
+    </nav>
+    <div class="nav-actions">
+      <div class="lang-toggle desktop-only">
+        <a href="?lang=fr" class="<%= lang === 'fr' ? 'active' : '' %>">FR</a>
+        <span>|</span>
+        <a href="?lang=en" class="<%= lang === 'en' ? 'active' : '' %>">EN</a>
+      </div>
+      <a href="rendez-vous" class="btn btn-primary desktop-only" style="background-color:#6366f1;color:#fff;padding:.55rem 1rem;font-size:.85rem"><%= t.book_appointment %></a>
+      <button class="hamburger" aria-label="Menu" id="hamburger-btn"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+  <div class="mobile-menu" id="mobile-menu">
+    <a href="."><%= t.nav_home %></a>
+    <a href="inventaire"><%= t.nav_inventory %></a>
+    <a href="financement"><%= t.nav_financing %></a>
+    <a href="temoignages"><%= t.nav_testimonials %></a>
+    <a href="articles"><%= t.nav_articles %></a>
+    <a href="contact"><%= t.nav_contact %></a>
+    <div class="mobile-actions">
+      <a href="rendez-vous" class="btn btn-primary" style="background-color:#6366f1;color:#fff"><%= t.book_appointment %></a>
+      <a href="#" data-login-btn class="btn btn-outline"><%= t.nav_login %></a>
+      <button data-push-btn class="btn btn-outline"><%= t.enable_notifications %></button>
+      <div class="lang-toggle" style="justify-content:center;padding:.5rem 0">
+        <a href="?lang=fr" class="<%= lang === 'fr' ? 'active' : '' %>">FR</a>
+        <span>|</span>
+        <a href="?lang=en" class="<%= lang === 'en' ? 'active' : '' %>">EN</a>
+      </div>
+    </div>
+  </div>
+</header>
+<script>
+(function(){
+  var btn = document.getElementById('hamburger-btn');
+  var menu = document.getElementById('mobile-menu');
+  if (btn && menu) {
+    btn.addEventListener('click', function(){ menu.classList.toggle('open'); });
+  }
+})();
+</script>

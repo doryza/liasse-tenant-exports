@@ -1,0 +1,150 @@
+<%- include('partials/header') %>
+<section class="hero">
+  <img class="hero-bg" src="<%= (typeof settings !== 'undefined' && settings._p_hero_image_url) ? settings._p_hero_image_url : 'https://placehold.co/1600x900/0a0a0a/c0c0c0/png?text=X-Auto' %>" alt="X-Auto">
+  <div class="hero-overlay"></div>
+  <div class="hero-content container">
+    <h1><%= (typeof settings !== 'undefined' && settings['hero_title_' + lang]) ? settings['hero_title_' + lang] : t.hero_title %></h1>
+    <p><%= (typeof settings !== 'undefined' && settings['hero_subtitle_' + lang]) ? settings['hero_subtitle_' + lang] : t.hero_subtitle %></p>
+    <div class="hero-buttons">
+      <a href="inventaire" class="btn btn-primary btn-lg" style="background-color:#6366f1;color:#fff"><%= t.hero_cta_inventory %></a>
+      <a href="rendez-vous" class="btn btn-outline btn-lg"><%= t.hero_cta_appointment %></a>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <h2 class="section-title"><%= t.why_us_title %></h2>
+    <p class="section-subtitle"><%= t.tagline %></p>
+    <div class="features-grid">
+      <div class="feature-card"><div class="feature-icon">✓</div><h3><%= t.why1_title %></h3><p><%= t.why1_desc %></p></div>
+      <div class="feature-card"><div class="feature-icon">$</div><h3><%= t.why2_title %></h3><p><%= t.why2_desc %></p></div>
+      <div class="feature-card"><div class="feature-icon">★</div><h3><%= t.why3_title %></h3><p><%= t.why3_desc %></p></div>
+      <div class="feature-card"><div class="feature-icon">♥</div><h3><%= t.why4_title %></h3><p><%= t.why4_desc %></p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-bg-alt">
+  <div class="container">
+    <h2 class="section-title"><%= t.featured_title %></h2>
+    <p class="section-subtitle"><%= t.featured_subtitle %></p>
+    <% if (typeof vehicles !== 'undefined' && vehicles.length > 0) { %>
+      <div class="vehicles-grid">
+        <% vehicles.forEach(function(v){ %>
+          <article class="vehicle-card">
+            <div class="vehicle-image">
+              <% if (v.featured) { %><span class="vehicle-badge"><%= t.featured_badge %></span><% } %>
+              <img src="<%= v.image_url || 'https://placehold.co/600x450/1f1f1f/c0c0c0/png?text=' + encodeURIComponent(v.make + ' ' + v.model) %>" alt="<%= v.make %> <%= v.model %>">
+            </div>
+            <div class="vehicle-body">
+              <h3 class="vehicle-title"><%= v.year %> <%= v.make %> <%= v.model %></h3>
+              <div class="vehicle-meta">
+                <span><%= formatMileage(v.mileage) %></span>
+                <span>· <%= v.transmission || '—' %></span>
+                <% if (v.body_type) { %><span>· <%= v.body_type %></span><% } %>
+              </div>
+              <div class="vehicle-price"><%= formatPrice(v.price) %></div>
+              <a href="vehicule/<%= v.id %>" class="btn btn-silver" style="background-color:#c0c0c0;color:#000"><%= t.view_details %></a>
+            </div>
+          </article>
+        <% }); %>
+      </div>
+      <div style="text-align:center;margin-top:2.5rem">
+        <a href="inventaire" class="btn btn-outline btn-lg"><%= t.view_all %> →</a>
+      </div>
+    <% } else { %>
+      <div class="empty-state"><%= t.no_results %></div>
+    <% } %>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="about-grid">
+      <div>
+        <h2 class="section-title"><%= (typeof settings !== 'undefined' && settings['about_title_' + lang]) ? settings['about_title_' + lang] : t.about_title %></h2>
+        <p style="color:var(--text-dim);line-height:1.8;margin-bottom:1.5rem;white-space:pre-line"><%= (typeof settings !== 'undefined' && settings['about_text_' + lang]) ? settings['about_text_' + lang] : '' %></p>
+        <a href="contact" class="btn btn-primary" style="background-color:#6366f1;color:#fff"><%= t.nav_contact %></a>
+      </div>
+      <img src="<%= (typeof settings !== 'undefined' && settings._p_about_image_url) ? settings._p_about_image_url : 'https://placehold.co/800x600/1f1f1f/c0c0c0/png?text=Showroom' %>" alt="X-Auto Showroom">
+    </div>
+  </div>
+</section>
+
+<section class="section section-bg-alt">
+  <div class="container">
+    <h2 class="section-title"><%= t.financing_title %></h2>
+    <p class="section-subtitle"><%= t.financing_subtitle %></p>
+    <div class="features-grid">
+      <div class="feature-card"><h3><%= t.financing_feat1_title %></h3><p><%= t.financing_feat1_desc %></p></div>
+      <div class="feature-card"><h3><%= t.financing_feat2_title %></h3><p><%= t.financing_feat2_desc %></p></div>
+      <div class="feature-card"><h3><%= t.financing_feat3_title %></h3><p><%= t.financing_feat3_desc %></p></div>
+    </div>
+    <div style="text-align:center;margin-top:2.5rem">
+      <a href="financement" class="btn btn-primary btn-lg" style="background-color:#6366f1;color:#fff"><%= t.read_more %> →</a>
+    </div>
+  </div>
+</section>
+
+<% if (typeof testimonials !== 'undefined' && testimonials.length > 0) { %>
+<section class="section">
+  <div class="container">
+    <h2 class="section-title"><%= t.testimonials_title %></h2>
+    <p class="section-subtitle"><%= t.testimonials_subtitle %></p>
+    <div class="testimonial-grid">
+      <% testimonials.forEach(function(tm){ %>
+        <div class="testimonial">
+          <div class="stars"><% for (var i = 0; i < (tm.rating || 5); i++) { %>★<% } %></div>
+          <p class="testimonial-content"><%= tm.content %></p>
+          <div class="testimonial-author">
+            <div class="avatar"><% if (tm.image_url) { %><img src="<%= tm.image_url %>" alt="<%= tm.author %>"><% } else { %><%= tm.author.charAt(0) %><% } %></div>
+            <div>
+              <div class="name"><%= tm.author %></div>
+              <% if (tm.vehicle_purchased) { %><div class="vehicle"><%= tm.vehicle_purchased %></div><% } %>
+            </div>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+    <div style="text-align:center;margin-top:2rem"><a href="temoignages" class="btn btn-outline"><%= t.view_all %> →</a></div>
+  </div>
+</section>
+<% } %>
+
+<% if (typeof posts !== 'undefined' && posts.length > 0) { %>
+<section class="section section-bg-alt">
+  <div class="container">
+    <h2 class="section-title"><%= t.latest_news %></h2>
+    <p class="section-subtitle"><%= t.latest_news_subtitle %></p>
+    <div class="posts-grid">
+      <% posts.forEach(function(p){ %>
+        <a href="article/<%= p.id %>" class="post-card">
+          <div class="post-image"><img src="<%= p.image_url || 'https://placehold.co/800x450/1f1f1f/c0c0c0/png?text=' + encodeURIComponent(p.category || 'Article') %>" alt="<%= p.title %>"></div>
+          <div class="post-body">
+            <% if (p.category) { %><span class="post-category"><%= p.category %></span><% } %>
+            <h3><%= p.title %></h3>
+            <p><%= (p.content || '').substring(0, 110) %><%= (p.content || '').length > 110 ? '...' : '' %></p>
+            <span class="read-more"><%= t.read_more %> →</span>
+          </div>
+        </a>
+      <% }); %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<section class="section">
+  <div class="container">
+    <div class="cta-band">
+      <h2><%= t.cta_secondary %></h2>
+      <p><%= t.contact_us_phone %></p>
+      <div class="btns">
+        <a href="rendez-vous" class="btn btn-primary btn-lg" style="background-color:#6366f1;color:#fff"><%= t.book_appointment %></a>
+        <a href="contact" class="btn btn-outline btn-lg"><%= t.nav_contact %></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

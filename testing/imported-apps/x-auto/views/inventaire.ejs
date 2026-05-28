@@ -1,0 +1,59 @@
+<%- include('partials/header') %>
+<section class="section">
+  <div class="container">
+    <h1 class="section-title"><%= t.inventory_title %></h1>
+    <p class="section-subtitle"><%= t.inventory_subtitle %></p>
+    <form class="filters" method="get" action="inventaire">
+      <div>
+        <label><%= t.filter_make %></label>
+        <select name="make" onchange="this.form.submit()">
+          <option value=""><%= t.filter_all %></option>
+          <% (allMakes || []).forEach(function(m){ %><option value="<%= m %>" <%= selectedMake === m ? 'selected' : '' %>><%= m %></option><% }); %>
+        </select>
+      </div>
+      <div>
+        <label><%= t.filter_model %></label>
+        <select name="model">
+          <option value=""><%= t.filter_all %></option>
+          <% (allModels || []).forEach(function(m){ %><option value="<%= m %>" <%= selectedModel === m ? 'selected' : '' %>><%= m %></option><% }); %>
+        </select>
+      </div>
+      <div>
+        <label><%= t.body_type %></label>
+        <select name="body">
+          <option value=""><%= t.filter_all %></option>
+          <% (allBodies || []).forEach(function(b){ %><option value="<%= b %>" <%= selectedBody === b ? 'selected' : '' %>><%= b %></option><% }); %>
+        </select>
+      </div>
+      <div class="filter-actions">
+        <button type="submit" class="btn btn-primary" style="background-color:#6366f1;color:#fff"><%= t.filter_apply %></button>
+        <a href="inventaire" class="btn btn-outline"><%= t.filter_reset %></a>
+      </div>
+    </form>
+    <% if (typeof vehicles !== 'undefined' && vehicles.length > 0) { %>
+      <div class="vehicles-grid">
+        <% vehicles.forEach(function(v){ %>
+          <article class="vehicle-card">
+            <div class="vehicle-image">
+              <% if (v.featured) { %><span class="vehicle-badge"><%= t.featured_badge %></span><% } %>
+              <img src="<%= v.image_url || 'https://placehold.co/600x450/1f1f1f/c0c0c0/png?text=' + encodeURIComponent(v.make + ' ' + v.model) %>" alt="<%= v.make %> <%= v.model %>">
+            </div>
+            <div class="vehicle-body">
+              <h3 class="vehicle-title"><%= v.year %> <%= v.make %> <%= v.model %></h3>
+              <div class="vehicle-meta">
+                <span><%= formatMileage(v.mileage) %></span>
+                <span>· <%= v.transmission || '—' %></span>
+                <% if (v.body_type) { %><span>· <%= v.body_type %></span><% } %>
+              </div>
+              <div class="vehicle-price"><%= formatPrice(v.price) %></div>
+              <a href="vehicule/<%= v.id %>" class="btn btn-silver" style="background-color:#c0c0c0;color:#000"><%= t.view_details %></a>
+            </div>
+          </article>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <div class="empty-state"><p><%= t.no_results %></p><br><a href="inventaire" class="btn btn-outline"><%= t.filter_reset %></a></div>
+    <% } %>
+  </div>
+</section>
+<%- include('partials/footer') %>
