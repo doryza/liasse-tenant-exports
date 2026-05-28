@@ -40,7 +40,7 @@ header.site-header{position:sticky;top:0;z-index:100;background:rgba(10,10,10,.9
 .mobile-menu{display:none;background:var(--bg-2);border-bottom:1px solid var(--border);padding:1rem 1.25rem;flex-direction:column;gap:1rem}
 .mobile-menu a{color:var(--text);padding:.5rem 0;border-bottom:1px solid var(--border);font-weight:500}
 .mobile-menu .mobile-actions{display:flex;flex-direction:column;gap:.75rem;margin-top:.5rem}
-@media (max-width:880px){
+@media (max-width:1023px){
   .nav-links,.nav-actions .desktop-only{display:none}
   .hamburger{display:flex}
   .mobile-menu.open{display:flex}
@@ -203,6 +203,12 @@ footer.site-footer{background:#050505;border-top:1px solid var(--border);padding
   }
   .nav-links-vertical, .nav-actions-vertical {
     display: none;
+  }
+  .brand-container {
+    margin-bottom: 0;
+  }
+  .mobile-menu {
+    margin: 1rem -1.25rem -1rem;
   }
 }
 
