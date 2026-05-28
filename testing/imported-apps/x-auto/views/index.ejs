@@ -1,36 +1,53 @@
 <%- include('partials/header') %>
-<section class="hero">
-  <img class="hero-bg" src="<%= (typeof settings !== 'undefined' && settings._p_hero_image_url) ? settings._p_hero_image_url : 'https://placehold.co/1600x900/0a0a0a/c0c0c0/png?text=X-Auto' %>" alt="X-Auto">
-  <div class="hero-overlay"></div>
-  <div class="hero-content container">
-    <h1><%= (typeof settings !== 'undefined' && settings['hero_title_' + lang]) ? settings['hero_title_' + lang] : t.hero_title %></h1>
-    <p><%= (typeof settings !== 'undefined' && settings['hero_subtitle_' + lang]) ? settings['hero_subtitle_' + lang] : t.hero_subtitle %></p>
-    <div class="hero-buttons">
-      <a href="inventaire" class="btn btn-primary btn-lg" style="background-color:#6366f1;color:#fff"><%= t.hero_cta_inventory %></a>
-      <a href="rendez-vous" class="btn btn-outline btn-lg"><%= t.hero_cta_appointment %></a>
+<section class="hero-eccentric">
+  <div class="hero-eccentric-split">
+    <div class="hero-eccentric-text">
+      <div class="hero-badge">X-AUTO 2026</div>
+      <h1 class="hero-title-massive">
+        <% var title = (typeof settings !== 'undefined' && settings['hero_title_' + lang]) ? settings['hero_title_' + lang] : t.hero_title; %>
+        <% var words = title.split(' '); %>
+        <% words.forEach(function(w, i){ %>
+          <span class="word <%= i % 2 === 1 ? 'word-outline' : '' %>"><%= w %></span>
+        <% }); %>
+      </h1>
+      <p class="hero-subtitle-bold"><%= (typeof settings !== 'undefined' && settings['hero_subtitle_' + lang]) ? settings['hero_subtitle_' + lang] : t.hero_subtitle %></p>
+      <div class="hero-buttons-staggered">
+        <a href="inventaire" class="btn btn-primary btn-xl" style="background-color:#6366f1;color:#fff"><%= t.hero_cta_inventory %></a>
+        <a href="rendez-vous" class="btn btn-silver btn-xl"><%= t.hero_cta_appointment %></a>
+      </div>
+    </div>
+    <div class="hero-eccentric-visual">
+      <div class="visual-frame">
+        <img src="<%= (typeof settings !== 'undefined' && settings._p_hero_image_url) ? settings._p_hero_image_url : 'https://placehold.co/800x1200/0a0a0a/c0c0c0/png?text=X-Auto' %>" alt="X-Auto">
+        <div class="visual-accent-box"></div>
+      </div>
     </div>
   </div>
 </section>
 
-<section class="section">
+<section class="section section-staggered">
   <div class="container">
-    <h2 class="section-title"><%= t.why_us_title %></h2>
-    <p class="section-subtitle"><%= t.tagline %></p>
-    <div class="features-grid">
-      <div class="feature-card"><div class="feature-icon">✓</div><h3><%= t.why1_title %></h3><p><%= t.why1_desc %></p></div>
-      <div class="feature-card"><div class="feature-icon">$</div><h3><%= t.why2_title %></h3><p><%= t.why2_desc %></p></div>
-      <div class="feature-card"><div class="feature-icon">★</div><h3><%= t.why3_title %></h3><p><%= t.why3_desc %></p></div>
-      <div class="feature-card"><div class="feature-icon">♥</div><h3><%= t.why4_title %></h3><p><%= t.why4_desc %></p></div>
+    <div class="section-header-asymmetric">
+      <h2 class="section-title-huge"><%= t.why_us_title %></h2>
+      <p class="section-subtitle-block"><%= t.tagline %></p>
+    </div>
+    <div class="features-masonry">
+      <div class="feature-block fb-1"><div class="feature-icon-large">✓</div><h3><%= t.why1_title %></h3><p><%= t.why1_desc %></p></div>
+      <div class="feature-block fb-2"><div class="feature-icon-large">$</div><h3><%= t.why2_title %></h3><p><%= t.why2_desc %></p></div>
+      <div class="feature-block fb-3"><div class="feature-icon-large">★</div><h3><%= t.why3_title %></h3><p><%= t.why3_desc %></p></div>
+      <div class="feature-block fb-4"><div class="feature-icon-large">♥</div><h3><%= t.why4_title %></h3><p><%= t.why4_desc %></p></div>
     </div>
   </div>
 </section>
 
-<section class="section section-bg-alt">
-  <div class="container">
-    <h2 class="section-title"><%= t.featured_title %></h2>
-    <p class="section-subtitle"><%= t.featured_subtitle %></p>
+<section class="section section-darker">
+  <div class="container-fluid">
+    <div class="container">
+      <h2 class="section-title-huge text-right"><%= t.featured_title %></h2>
+      <p class="section-subtitle-block text-right"><%= t.featured_subtitle %></p>
+    </div>
     <% if (typeof vehicles !== 'undefined' && vehicles.length > 0) { %>
-      <div class="vehicles-grid">
+      <div class="vehicles-scroller">
         <% vehicles.forEach(function(v){ %>
           <article class="vehicle-card">
             <div class="vehicle-image">
@@ -72,17 +89,19 @@
   </div>
 </section>
 
-<section class="section section-bg-alt">
+<section class="section section-diagonal">
   <div class="container">
-    <h2 class="section-title"><%= t.financing_title %></h2>
-    <p class="section-subtitle"><%= t.financing_subtitle %></p>
-    <div class="features-grid">
-      <div class="feature-card"><h3><%= t.financing_feat1_title %></h3><p><%= t.financing_feat1_desc %></p></div>
-      <div class="feature-card"><h3><%= t.financing_feat2_title %></h3><p><%= t.financing_feat2_desc %></p></div>
-      <div class="feature-card"><h3><%= t.financing_feat3_title %></h3><p><%= t.financing_feat3_desc %></p></div>
-    </div>
-    <div style="text-align:center;margin-top:2.5rem">
-      <a href="financement" class="btn btn-primary btn-lg" style="background-color:#6366f1;color:#fff"><%= t.read_more %> →</a>
+    <div class="financing-split">
+      <div class="financing-text-block">
+        <h2 class="section-title-huge"><%= t.financing_title %></h2>
+        <p class="section-subtitle-block"><%= t.financing_subtitle %></p>
+        <a href="financement" class="btn btn-primary btn-xl" style="background-color:#6366f1;color:#fff;margin-top:2rem"><%= t.read_more %> →</a>
+      </div>
+      <div class="financing-cards-stacked">
+        <div class="fc-stack fc-1"><h3><%= t.financing_feat1_title %></h3><p><%= t.financing_feat1_desc %></p></div>
+        <div class="fc-stack fc-2"><h3><%= t.financing_feat2_title %></h3><p><%= t.financing_feat2_desc %></p></div>
+        <div class="fc-stack fc-3"><h3><%= t.financing_feat3_title %></h3><p><%= t.financing_feat3_desc %></p></div>
+      </div>
     </div>
   </div>
 </section>
