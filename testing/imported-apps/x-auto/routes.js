@@ -138,6 +138,8 @@ module.exports = function(services) {
     const t = applyTextOverrides(Object.assign({}, T[req.lang] || T.fr), settings, req.lang);
     return {
       lang: req.lang, t, settings, user: req.user || null,
+      mountPath: req.baseUrl || '',
+      currentPath: (req.path || '/').replace(/^\//, ''),
       formatPrice: function(v) { return formatPrice(v, req.lang); },
       formatMileage: function(km) { return formatMileage(km, req.lang); },
       formatDate: function(d) { return formatDate(d, req.lang); },
