@@ -2,6 +2,7 @@
 <html lang="<%= lang %>">
 <head>
 <meta charset="UTF-8">
+<base href="<%= (typeof mountPath !== 'undefined' ? mountPath : '') %>/">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0a0a0a">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -37,9 +38,9 @@
     <div class="nav-actions-vertical">
       <a href="rendez-vous" class="btn btn-primary btn-block" style="background-color:#6366f1;color:#fff;padding:.85rem 1rem;font-size:.95rem"><%= t.book_appointment %></a>
       <div class="lang-toggle-vertical desktop-only">
-        <a href="?lang=fr" class="<%= lang === 'fr' ? 'active' : '' %>">FR</a>
+        <a href="<%= currentPath %>?lang=fr" class="<%= lang === 'fr' ? 'active' : '' %>">FR</a>
         <span>|</span>
-        <a href="?lang=en" class="<%= lang === 'en' ? 'active' : '' %>">EN</a>
+        <a href="<%= currentPath %>?lang=en" class="<%= lang === 'en' ? 'active' : '' %>">EN</a>
       </div>
     </div>
   </div>
@@ -55,9 +56,9 @@
       <a href="#" data-login-btn class="btn btn-outline"><%= t.nav_login %></a>
       <button data-push-btn class="btn btn-outline"><%= t.enable_notifications %></button>
       <div class="lang-toggle" style="justify-content:center;padding:.5rem 0">
-        <a href="?lang=fr" class="<%= lang === 'fr' ? 'active' : '' %>">FR</a>
+        <a href="<%= currentPath %>?lang=fr" class="<%= lang === 'fr' ? 'active' : '' %>">FR</a>
         <span>|</span>
-        <a href="?lang=en" class="<%= lang === 'en' ? 'active' : '' %>">EN</a>
+        <a href="<%= currentPath %>?lang=en" class="<%= lang === 'en' ? 'active' : '' %>">EN</a>
       </div>
     </div>
   </div>
