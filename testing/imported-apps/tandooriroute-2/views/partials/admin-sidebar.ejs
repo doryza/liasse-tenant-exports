@@ -1,0 +1,15 @@
+<aside class="admin-sidebar" id="adminSidebar">
+  <div class="sb-brand">Tandoori Route</div>
+  <nav class="sb-nav">
+    <a href="admin" class="<%= (typeof active!=='undefined'&&active==='dashboard')?'active':'' %>">Tableau de bord</a>
+    <a href="admin/dishes" class="<%= (typeof active!=='undefined'&&active==='dishes')?'active':'' %>">Plats / Galerie</a>
+    <a href="admin/reviews" class="<%= (typeof active!=='undefined'&&active==='reviews')?'active':'' %>">Avis Google</a>
+    <a href="admin/posts" class="<%= (typeof active!=='undefined'&&active==='posts')?'active':'' %>">Nouvelles</a>
+    <a href="admin/hours" class="<%= (typeof active!=='undefined'&&active==='hours')?'active':'' %>">Heures</a>
+    <a href="admin/settings" class="<%= (typeof active!=='undefined'&&active==='settings')?'active':'' %>">Paramètres</a>
+  </nav>
+  <div class="sb-foot">
+    <a href="." target="_blank">Voir le site</a>
+    <a href="admin/logout">Déconnexion</a>
+  </div>
+</aside>

@@ -1,0 +1,10 @@
+<section class="cta-band">
+  <div class="container cta-inner">
+    <div>
+      <h2><%= t.order_cta_band_title %></h2>
+      <p><%= t.order_cta_band_text %></p>
+    </div>
+    <% var obx=/^https?:/i.test(orderUrl); %>
+    <a class="btn btn-light" href="<%= orderUrl %>" <%- obx?'target="_blank" rel="noopener"':'' %>><%= t.nav_order %></a>
+  </div>
+</section>

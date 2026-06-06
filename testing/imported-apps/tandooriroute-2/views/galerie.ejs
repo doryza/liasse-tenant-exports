@@ -1,0 +1,30 @@
+<%- include('partials/header') %>
+<section class="page-head section-dark">
+  <div class="container center">
+    <span class="eyebrow"><%= t.gallery_eyebrow %></span>
+    <h1><%= t.gallery_title %></h1>
+    <p class="lead"><%= t.gallery_intro %></p>
+  </div>
+</section>
+<section class="section">
+  <div class="container">
+    <% if(typeof dishes!=='undefined' && dishes.length){ %>
+    <div class="filters">
+      <button class="filter active" data-filter="all"><%= t.all %></button>
+      <% cats.forEach(function(c){ %><button class="filter" data-filter="<%= c %>"><%= c %></button><% }); %>
+    </div>
+    <div class="gallery-grid">
+      <% dishes.forEach(function(d){ %>
+      <figure class="gallery-item" data-gallery-item data-category="<%= d.category||'' %>">
+        <img src="<%= d.image_url || 'https://placehold.co/600x600/211710/F5843C/png?text=Plat' %>" alt="<%= d.name %>" loading="lazy">
+        <figcaption><% if(d.category){ %><span class="tag"><%= d.category %></span><% } %><h3><%= d.name %></h3><% if(d.description){ %><p><%= d.description %></p><% } %></figcaption>
+      </figure>
+      <% }); %>
+    </div>
+    <% } else { %>
+    <div class="empty-state"><p><%= t.gallery_empty %></p></div>
+    <% } %>
+  </div>
+</section>
+<%- include('partials/order-band') %>
+<%- include('partials/footer') %>

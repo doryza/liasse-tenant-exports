@@ -1,0 +1,28 @@
+<%- include('partials/header') %>
+<article class="section post-detail">
+  <div class="container narrow">
+    <a class="back" href="nouvelles">&larr; <%= t.back_news %></a>
+    <% if(post.category){ %><div class="mt"><span class="tag"><%= post.category %></span></div><% } %>
+    <h1><%= post.title %></h1>
+    <span class="date"><%= formatDate(post.created_at) %></span>
+    <% if(post.image_url){ %><div class="post-hero"><img src="<%= post.image_url %>" alt="<%= post.title %>"></div><% } %>
+    <div class="post-content"><%- renderText(post.content) %></div>
+  </div>
+</article>
+<% if(typeof more!=='undefined' && more.length){ %>
+<section class="section section-dark">
+  <div class="container">
+    <div class="section-head"><span class="eyebrow"><%= t.news_eyebrow %></span><h2><%= t.news_title %></h2></div>
+    <div class="news-grid">
+      <% more.forEach(function(p){ %>
+      <article class="news-card">
+        <a href="nouvelles/<%= p.id %>"><div class="news-media"><img src="<%= p.image_url || 'https://placehold.co/640x400/211710/F5843C/png?text=Nouvelle' %>" alt="<%= p.title %>" loading="lazy"></div></a>
+        <div class="news-body"><span class="date"><%= formatDate(p.created_at) %></span><h3><a href="nouvelles/<%= p.id %>"><%= p.title %></a></h3></div>
+      </article>
+      <% }); %>
+    </div>
+  </div>
+</section>
+<% } %>
+<%- include('partials/order-band') %>
+<%- include('partials/footer') %>

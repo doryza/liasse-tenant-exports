@@ -1,0 +1,41 @@
+</main>
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div class="f-brand">
+      <span class="brand-name"><%= t.site_name %></span>
+      <p><%= t.footer_tagline %></p>
+      <div class="social">
+        <% if(settings.facebook_url){ %><a href="<%= settings.facebook_url %>" target="_blank" rel="noopener">Facebook</a><% } %>
+        <% if(settings.instagram_url){ %><a href="<%= settings.instagram_url %>" target="_blank" rel="noopener">Instagram</a><% } %>
+        <% if(settings.tiktok_url){ %><a href="<%= settings.tiktok_url %>" target="_blank" rel="noopener">TikTok</a><% } %>
+      </div>
+    </div>
+    <div class="f-col">
+      <h4><%= t.footer_explore %></h4>
+      <a href="."><%= t.nav_home %></a>
+      <a href="galerie"><%= t.nav_gallery %></a>
+      <a href="nouvelles"><%= t.nav_news %></a>
+      <a href="contact"><%= t.nav_contact %></a>
+    </div>
+    <div class="f-col">
+      <h4><%= t.nav_contact %></h4>
+      <p><%= settings.business_address || 'Blainville, QC' %></p>
+      <% if(settings.contact_phone){ %><a href="tel:<%= settings.contact_phone %>"><%= settings.contact_phone %></a><% } %>
+      <% if(settings.contact_email){ %><a href="mailto:<%= settings.contact_email %>"><%= settings.contact_email %></a><% } %>
+    </div>
+    <div class="f-col f-cta">
+      <h4><%= t.nav_order %></h4>
+      <% var oext2=/^https?:/i.test(orderUrl); %>
+      <a class="btn btn-primary" href="<%= orderUrl %>" style="background-color:#E2581F;color:#fff" <%- oext2?'target="_blank" rel="noopener"':'' %>><%= t.nav_order %></a>
+      <button class="btn btn-ghost-light" data-push-btn><%= t.enable_notif %></button>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>&copy; <%= new Date().getFullYear() %> <%= t.site_name %>. <%= t.footer_rights %></span>
+    <span><%= t.made_blainville %></span>
+  </div>
+</footer>
+<script src="public/js/app.js"></script>
+<script>try{if(window.TenantSDK){TenantSDK.ui.showInstallBanner();setTimeout(function(){try{TenantSDK.ui.showPushPrompt();}catch(e){}},8000);}}catch(e){}</script>
+</body>
+</html>

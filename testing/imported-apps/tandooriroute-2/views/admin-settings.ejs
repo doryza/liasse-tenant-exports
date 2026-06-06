@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paramètres · Admin Tandoori Route</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700;9..144,900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body class="admin-body">
+<%- include('partials/admin-sidebar', { active: 'settings' }) %>
+<div class="admin-main">
+  <header class="admin-topbar">
+    <button class="sb-toggle" id="sbToggle" aria-label="Menu">&#9776;</button>
+    <h1>Paramètres</h1>
+    <button class="btn-primary" id="saveTop">Enregistrer</button>
+  </header>
+  <div class="admin-content">
+    <div class="card">
+      <p class="muted" style="margin-bottom:18px">Ces informations alimentent les boutons, liens et coordonnées affichés sur votre site public.</p>
+      <form id="settingsForm">
+        <%
+          var groups=[
+            {title:'Commande en ligne & avis Google', keys:['order_online_url','google_reviews_url']},
+            {title:'Réseaux sociaux', keys:['facebook_url','instagram_url','tiktok_url']},
+            {title:'Coordonnées', keys:['contact_phone','contact_email','business_address','map_query']}
+          ];
+          var byName={}; fields.forEach(function(f){ byName[f.name]=f; });
+          var used={};
+          var ordered=[];
+          groups.forEach(function(g){
+            var grp=[];
+            g.keys.forEach(function(k){ if(byName[k]){ used[k]=true; grp.push(byName[k]); } });
+            if(grp.length) ordered.push({title:g.title, fields:grp});
+          });
+          var rest=fields.filter(function(f){return !used[f.name];});
+          if(rest.length) ordered.push({title:'Autres', fields:rest});
+        %>
+        <% ordered.forEach(function(sec){ %>
+          <h3 class="set-group"><%= sec.title %></h3>
+          <% sec.fields.forEach(function(f){ %>
+          <div class="field">
+            <label class="lab" for="s_<%= f.name %>"><%= f.label %></label>
+            <input id="s_<%= f.name %>" name="<%= f.name %>" type="<%= f.type==='email'?'email':(f.type==='url'?'url':'text') %>" value="<%= settings[f.name] || '' %>">
+            <% if(f.desc){ %><small class="hint"><%= f.desc %></small><% } %>
+          </div>
+          <% }); %>
+        <% }); %>
+        <div id="setMsg" class="form-msg"></div>
+        <button type="submit" class="btn-primary">Enregistrer</button>
+      </form>
+    </div>
+  </div>
+</div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<script>
+function toast(msg,type){var el=document.getElementById('toast');el.textContent=msg;el.className='toast show '+(type||'');clearTimeout(window._tt);window._tt=setTimeout(function(){el.className='toast';},2600);}
+document.getElementById('sbToggle').addEventListener('click',function(){document.getElementById('adminSidebar').classList.toggle('open');});
+var form=document.getElementById('settingsForm');
+async function save(){
+ var inputs=form.querySelectorAll('input');
+ var msg=document.getElementById('setMsg');
+ var top=document.getElementById('saveTop');if(top)top.disabled=true;
+ try{
+  for(var k=0;k<inputs.length;k++){var inp=inputs[k];await fetch('api/admin/settings',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({key:inp.name,value:inp.value})});}
+  msg.textContent='Enregistré ✓';msg.className='form-msg success';toast('Paramètres enregistrés ✓','success');
+ }catch(err){msg.textContent='Une erreur est survenue.';msg.className='form-msg error';toast('Une erreur est survenue.','error');}
+ finally{if(top)top.disabled=false;}
+}
+form.addEventListener('submit',function(e){e.preventDefault();save();});
+document.getElementById('saveTop').addEventListener('click',function(){save();});
+</script>
+</body>
+</html>

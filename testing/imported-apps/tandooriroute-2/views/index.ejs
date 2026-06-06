@@ -1,0 +1,115 @@
+<%- include('partials/header') %>
+<section class="hero">
+  <img class="hero-img" src="<%= (settings._p_hero_image_url) ? settings._p_hero_image_url : 'https://placehold.co/1600x900/1A120B/E2581F/png?text=Tandoori+Route' %>" alt="<%= t.site_name %>">
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <span class="eyebrow"><%= t.hero_eyebrow %></span>
+    <h1 class="hero-title"><%= t.hero_title %></h1>
+    <p class="hero-sub"><%= t.hero_subtitle %></p>
+    <div class="hero-cta">
+      <% var oext=/^https?:/i.test(orderUrl); %>
+      <a class="btn btn-primary" href="<%= orderUrl %>" style="background-color:#E2581F;color:#fff" <%- oext?'target="_blank" rel="noopener"':'' %>><%= t.hero_cta %></a>
+      <a class="btn btn-outline-light" href="galerie"><%= t.hero_cta_secondary %></a>
+    </div>
+  </div>
+</section>
+
+<section class="section about">
+  <div class="container split">
+    <div class="about-media"><img src="<%= (settings._p_about_image_url) ? settings._p_about_image_url : 'https://placehold.co/800x600/1A120B/F5843C/png?text=Tandoori+Route' %>" alt="<%= t.intro_title %>"></div>
+    <div class="about-text">
+      <span class="eyebrow"><%= t.about_eyebrow %></span>
+      <h2><%= t.intro_title %></h2>
+      <p><%= t.intro_text %></p>
+      <p><%= t.intro_text2 %></p>
+      <% var ox=/^https?:/i.test(orderUrl); %>
+      <a class="btn btn-primary mt" href="<%= orderUrl %>" style="background-color:#E2581F;color:#fff" <%- ox?'target="_blank" rel="noopener"':'' %>><%= t.nav_order %></a>
+    </div>
+  </div>
+</section>
+
+<section class="section section-dark featured">
+  <div class="container">
+    <div class="section-head"><span class="eyebrow"><%= t.featured_subtitle %></span><h2><%= t.featured_title %></h2></div>
+    <% if(typeof dishes!=='undefined' && dishes.length){ %>
+    <div class="dish-grid">
+      <% dishes.forEach(function(d){ %>
+      <article class="dish-card">
+        <div class="dish-media"><img src="<%= d.image_url || 'https://placehold.co/600x450/211710/F5843C/png?text=Plat' %>" alt="<%= d.name %>" loading="lazy"></div>
+        <div class="dish-info"><% if(d.category){ %><span class="tag"><%= d.category %></span><% } %><h3><%= d.name %></h3><% if(d.description){ %><p><%= d.description %></p><% } %></div>
+      </article>
+      <% }); %>
+    </div>
+    <div class="center mt"><a class="btn btn-outline-light" href="galerie"><%= t.view_all_gallery %></a></div>
+    <% } else { %>
+    <p class="muted center"><%= t.gallery_empty %></p>
+    <% } %>
+  </div>
+</section>
+
+<%- include('partials/order-band') %>
+
+<section class="section reviews">
+  <div class="container">
+    <div class="section-head center">
+      <span class="eyebrow"><%= t.reviews_subtitle %></span>
+      <h2><%= t.reviews_title %></h2>
+      <% if(typeof avgRating!=='undefined' && avgRating>0){ %><div class="rating-line"><span class="stars"><%= stars(avgRating) %></span> <span><%= avgRating.toFixed(1) %>/5</span></div><% } %>
+    </div>
+    <% if(typeof reviews!=='undefined' && reviews.length){ %>
+    <div class="review-grid">
+      <% reviews.forEach(function(r){ %>
+      <article class="review-card">
+        <div class="stars"><%= stars(r.rating) %></div>
+        <p class="review-text">&ldquo;<%= r.content %>&rdquo;</p>
+        <div class="review-author"><% if(r.image_url){ %><img src="<%= r.image_url %>" alt="<%= r.author %>"><% } %><div><strong><%= r.author %></strong><% if(r.review_date){ %><span><%= r.review_date %></span><% } %></div></div>
+      </article>
+      <% }); %>
+    </div>
+    <% if(settings.google_reviews_url){ %><div class="center mt"><a class="btn btn-outline" href="<%= settings.google_reviews_url %>" target="_blank" rel="noopener"><%= t.read_more_google %></a></div><% } %>
+    <% } else { %>
+    <p class="muted center"><%= t.reviews_empty %></p>
+    <% } %>
+  </div>
+</section>
+
+<section class="section section-dark info-band">
+  <div class="container split">
+    <div>
+      <span class="eyebrow"><%= t.hours_eyebrow %></span>
+      <h2><%= t.hours_title %></h2>
+      <ul class="hours-list">
+        <% if(typeof hours!=='undefined' && hours.length){ hours.forEach(function(h){ %>
+        <li><span class="day"><%= lang==='en'?(h.day_en||h.day_fr):(h.day_fr||h.day_en) %></span><span class="time <%= h.closed==1?'closed':'' %>"><%= h.closed==1?t.closed:h.hours_text %></span></li>
+        <% }); } else { %>
+        <li><%= t.hours_soon %></li>
+        <% } %>
+      </ul>
+    </div>
+    <div>
+      <span class="eyebrow"><%= t.contact_eyebrow %></span>
+      <h2><%= t.contact_title %></h2>
+      <p class="contact-line"><strong><%= t.address_label %> :</strong> <%= settings.business_address || 'Blainville, QC' %></p>
+      <% if(settings.contact_phone){ %><p class="contact-line"><strong><%= t.phone_label %> :</strong> <a href="tel:<%= settings.contact_phone %>"><%= settings.contact_phone %></a></p><% } %>
+      <% if(settings.contact_email){ %><p class="contact-line"><strong><%= t.email_label %> :</strong> <a href="mailto:<%= settings.contact_email %>"><%= settings.contact_email %></a></p><% } %>
+      <a class="btn btn-outline-light mt" href="contact"><%= t.nav_contact %></a>
+    </div>
+  </div>
+</section>
+
+<% if(typeof posts!=='undefined' && posts.length){ %>
+<section class="section">
+  <div class="container">
+    <div class="section-head"><span class="eyebrow"><%= t.news_eyebrow %></span><h2><%= t.news_title %></h2></div>
+    <div class="news-grid">
+      <% posts.forEach(function(p){ %>
+      <article class="news-card">
+        <a href="nouvelles/<%= p.id %>"><div class="news-media"><img src="<%= p.image_url || 'https://placehold.co/640x400/211710/F5843C/png?text=Nouvelle' %>" alt="<%= p.title %>" loading="lazy"></div></a>
+        <div class="news-body"><% if(p.category){ %><span class="tag"><%= p.category %></span><% } %> <span class="date"><%= formatDate(p.created_at) %></span><h3><a href="nouvelles/<%= p.id %>"><%= p.title %></a></h3><a class="link-arrow" href="nouvelles/<%= p.id %>"><%= t.read_more %> &rarr;</a></div>
+      </article>
+      <% }); %>
+    </div>
+  </div>
+</section>
+<% } %>
+<%- include('partials/footer') %>
