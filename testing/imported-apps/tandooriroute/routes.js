@@ -464,7 +464,7 @@ module.exports = function(services) {
   router.get('/', async function(req, res) {
     try {
       const ctx = await renderCtx(req);
-      const menu = await db.all("SELECT m.* FROM menu_items m LEFT JOIN menu_categories c ON c.slug = m.category WHERE m.available = 1 ORDER BY m.featured DESC, COALESCE(c.id, 999999) ASC, m.position ASC, m.id ASC LIMIT 6").catch(function(){ return []; });
+      const menu = await db.all("SELECT m.* FROM menu_items m LEFT JOIN menu_categories c ON c.slug = m.category WHERE m.available = 1 ORDER BY m.featured DESC, COALESCE(c.id, 999999) ASC, m.position ASC, m.id ASC").catch(function(){ return []; });
       const platforms = await db.all('SELECT * FROM delivery_platforms WHERE active = 1 ORDER BY position ASC').catch(function(){ return []; });
       const posts = await db.all('SELECT * FROM posts WHERE published = 1 ORDER BY created_at DESC LIMIT 3').catch(function(){ return []; });
       const categories = await getMenuCategories();

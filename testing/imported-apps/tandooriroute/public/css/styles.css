@@ -80,7 +80,7 @@ img { max-width: 100%; display: block; }
 .mobile-lang { padding: 0.75rem 0.5rem; color: var(--muted); }
 .mobile-lang a { display: inline; padding: 0 0.4rem; border: 0; }
 .mobile-lang a.active { color: var(--brand); font-weight: 800; }
-@media (max-width: 1080px) { .desktop-nav { display: none; } .hamburger { display: block; } }
+.header-actions { gap: 0.9rem; }
 
 /* ============================================================
    HERO — smokey, flame-lit
@@ -440,3 +440,131 @@ textarea.form-control { resize: vertical; min-height: 120px; }
   .section-title { font-size: 1.85rem; }
   .cta-box h2 { font-size: 1.75rem; }
 }
+
+/* ============================================================
+   SQUEEZE PAGE — one-pager, compact vertical rhythm
+   ============================================================ */
+.squeeze .section { padding: 2.25rem 0; }
+.squeeze .section-title { margin-bottom: 0.35rem; }
+.squeeze .section-sub { margin-bottom: 1.4rem; }
+.squeeze .hero.hero-squeeze { min-height: 400px; }
+.squeeze .hero-squeeze .hero-inner { padding: 2.75rem 1rem 2.5rem; }
+.squeeze .hero-squeeze p { margin-bottom: 1.4rem; }
+.squeeze .site-footer { margin-top: 0; }
+@media (max-width: 720px) {
+  .squeeze .hero.hero-squeeze { min-height: 340px; }
+  .squeeze .hero-squeeze h1 { font-size: 2rem; }
+}
+
+.btn-order {
+  font-size: 1.05rem;
+  padding: 0.85rem 1.7rem;
+  box-shadow: 0 8px 26px rgba(255,111,26,0.35);
+}
+
+/* ---- Menu slider ---- */
+.menu-slider { position: relative; max-width: 1240px; margin: 0 auto; padding: 0 3rem; }
+.slider-track {
+  display: flex;
+  gap: 1.1rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  padding: 0.5rem 0.25rem 1rem;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.slider-track::-webkit-scrollbar { display: none; }
+.slide-card {
+  flex: 0 0 320px;
+  scroll-snap-align: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+}
+.slide-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(245,165,36,0.45);
+  box-shadow: 0 14px 40px rgba(0,0,0,0.5), 0 4px 18px rgba(255,111,26,0.12);
+}
+.slide-card-imgwrap { position: relative; aspect-ratio: 4 / 3; overflow: hidden; }
+.slide-card-imgwrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s; }
+.slide-card:hover .slide-card-imgwrap img { transform: scale(1.05); }
+.slide-card-placeholder {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 3rem; background: var(--surface-alt);
+}
+.slide-badge {
+  position: absolute; top: 0.7rem; left: 0.7rem;
+  background: linear-gradient(135deg, var(--brand) 0%, var(--flame) 100%);
+  color: #1a0e00; font-weight: 800; font-size: 0.72rem;
+  padding: 0.28rem 0.65rem; border-radius: 999px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.45);
+}
+.slide-cat {
+  position: absolute; bottom: 0.7rem; right: 0.7rem;
+  background: rgba(10,8,6,0.78); backdrop-filter: blur(6px);
+  color: var(--brand-light); font-size: 0.72rem; font-weight: 600;
+  padding: 0.25rem 0.6rem; border-radius: 999px;
+  border: 1px solid rgba(245,165,36,0.3);
+}
+.slide-card-body { padding: 0.9rem 1rem 1rem; display: flex; flex-direction: column; gap: 0.45rem; flex: 1; }
+.slide-card-top { display: flex; align-items: baseline; justify-content: space-between; gap: 0.6rem; }
+.slide-card-top h3 { margin: 0; font-size: 1.05rem; line-height: 1.3; }
+.slide-card-top .price { color: var(--brand); font-weight: 800; white-space: nowrap; }
+.slide-card-body .desc {
+  margin: 0; color: var(--muted); font-size: 0.86rem; line-height: 1.5;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+.btn-slide-order { margin-top: auto; text-align: center; font-size: 0.92rem; padding: 0.6rem 1rem; }
+
+.slider-arrow {
+  position: absolute; top: 42%; transform: translateY(-50%);
+  width: 44px; height: 44px; border-radius: 50%;
+  background: rgba(22,18,16,0.92); color: var(--brand);
+  border: 1px solid rgba(245,165,36,0.4);
+  font-size: 1.7rem; line-height: 1; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 2; transition: all 0.15s;
+  padding-bottom: 4px;
+}
+.slider-arrow:hover { background: var(--brand); color: #1a0e00; }
+.slider-prev { left: 0.25rem; }
+.slider-next { right: 0.25rem; }
+.slider-dots { display: flex; justify-content: center; gap: 0.45rem; margin-top: 0.25rem; }
+.slider-dot {
+  width: 9px; height: 9px; border-radius: 50%; border: 0; padding: 0;
+  background: #3a2f22; cursor: pointer; transition: all 0.2s;
+}
+.slider-dot.active { background: var(--brand); transform: scale(1.25); }
+@media (max-width: 720px) {
+  .menu-slider { padding: 0 0.5rem; }
+  .slider-arrow { display: none; }
+  .slide-card { flex-basis: 78vw; }
+}
+
+/* ---- Order band ---- */
+.order-band { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1rem; }
+.order-band-text h2 { margin: 0 0 0.4rem; font-size: 1.7rem; }
+.order-band-text p { margin: 0; color: var(--muted); }
+.order-band-platforms { display: flex; align-items: center; gap: 0.8rem; color: var(--muted); font-size: 0.85rem; }
+.order-band-platforms img { height: 26px; width: auto; border-radius: 6px; }
+.order-band-platforms a { display: inline-flex; opacity: 0.85; transition: opacity 0.15s; }
+.order-band-platforms a:hover { opacity: 1; }
+
+/* ---- Sticky mobile order CTA ---- */
+.sticky-order-cta {
+  display: none;
+  position: fixed; left: 50%; bottom: 1rem; transform: translateX(-50%);
+  background: linear-gradient(135deg, var(--brand) 0%, var(--flame) 100%);
+  color: #1a0e00; font-weight: 800; font-size: 1rem;
+  padding: 0.8rem 2rem; border-radius: 999px;
+  box-shadow: 0 10px 30px rgba(255,111,26,0.45), 0 4px 12px rgba(0,0,0,0.5);
+  z-index: 90; white-space: nowrap;
+}
+@media (max-width: 720px) { .sticky-order-cta { display: block; } }
