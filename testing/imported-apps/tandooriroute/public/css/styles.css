@@ -497,7 +497,10 @@ textarea.form-control { resize: vertical; min-height: 120px; }
 .slide-card-placeholder {
   width: 100%; height: 100%;
   display: flex; align-items: center; justify-content: center;
-  font-size: 3rem; background: var(--surface-alt);
+  font-size: 3.4rem;
+  background:
+    radial-gradient(ellipse 70% 60% at 50% 35%, rgba(255,111,26,0.14), transparent 70%),
+    var(--surface-alt);
 }
 .slide-badge {
   position: absolute; top: 0.7rem; left: 0.7rem;
@@ -536,12 +539,47 @@ textarea.form-control { resize: vertical; min-height: 120px; }
 .slider-arrow:hover { background: var(--brand); color: #1a0e00; }
 .slider-prev { left: 0.25rem; }
 .slider-next { right: 0.25rem; }
-.slider-dots { display: flex; justify-content: center; gap: 0.45rem; margin-top: 0.25rem; }
-.slider-dot {
-  width: 9px; height: 9px; border-radius: 50%; border: 0; padding: 0;
-  background: #3a2f22; cursor: pointer; transition: all 0.2s;
+.slider-progress {
+  height: 3px; max-width: 320px; margin: 0.4rem auto 0;
+  background: #241b12; border-radius: 99px; overflow: hidden;
 }
-.slider-dot.active { background: var(--brand); transform: scale(1.25); }
+.slider-progress span {
+  display: block; height: 100%; width: 0%;
+  background: linear-gradient(90deg, var(--brand), var(--flame));
+  border-radius: 99px; transition: width 0.15s linear;
+}
+
+/* ---- Category chips ---- */
+.menu-chips {
+  display: flex; gap: 0.5rem; overflow-x: auto;
+  padding: 0.25rem 0 1rem; scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.menu-chips::-webkit-scrollbar { display: none; }
+@media (min-width: 1100px) { .menu-chips { flex-wrap: wrap; justify-content: center; } }
+.chip {
+  flex: 0 0 auto; white-space: nowrap; cursor: pointer;
+  background: rgba(245,165,36,0.07);
+  border: 1px solid rgba(245,165,36,0.28);
+  color: var(--brand-light); font-family: inherit;
+  border-radius: 999px; padding: 0.42rem 0.95rem;
+  font-size: 0.85rem; font-weight: 700;
+  transition: all 0.15s;
+}
+.chip:hover { border-color: var(--brand); }
+.chip.active {
+  background: linear-gradient(135deg, var(--brand) 0%, var(--flame) 100%);
+  color: #1a0e00; border-color: transparent;
+  box-shadow: 0 6px 16px rgba(255,111,26,0.3);
+}
+.slide-card.chip-hidden { display: none; }
+.slide-note {
+  align-self: flex-start;
+  background: rgba(245,165,36,0.1);
+  border: 1px solid rgba(245,165,36,0.35);
+  color: var(--brand-light); font-size: 0.74rem; font-weight: 700;
+  padding: 0.2rem 0.55rem; border-radius: 999px;
+}
 @media (max-width: 720px) {
   .menu-slider { padding: 0 0.5rem; }
   .slider-arrow { display: none; }

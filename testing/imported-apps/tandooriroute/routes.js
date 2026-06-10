@@ -117,6 +117,362 @@ module.exports = function(services) {
   function formatDateTime(d, lang) { if (!d) return ''; try { return new Date(d).toLocaleString(lang === 'en' ? 'en-CA' : 'fr-CA', { year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'}); } catch(e) { return String(d); } }
   function pickLang(item, field, lang) { if (!item) return ''; return item[field + '_' + lang] || item[field + '_fr'] || item[field] || ''; }
 
+  // Static menu preview for the one-pager homepage slider. Baked from the
+  // Liasse Restaurants ordering-system export (Tandoori Route, 2026-06-10).
+  // The live source of truth for ordering is
+  // https://tandoori-route-blain.tapavis.com/order — the tenant menu_items
+  // table no longer feeds the homepage. Image URLs carry a Cloudinary
+  // w_640,h_480,c_fill transform so the 48-card slider stays light.
+  const MENU_PREVIEW = {
+    "categories": [
+      "Poulet",
+      "Agneau",
+      "Végétarien",
+      "À la carte",
+      "Poutine",
+      "Dessert",
+      "Chai / Boissons",
+      "Midi Special Thali",
+      "Wraps"
+    ],
+    "items": [
+      {
+        "id": "r8yke8rvi2",
+        "name": "Poulet au beurre / Butter Chicken",
+        "price": 15.99,
+        "category": "Poulet",
+        "description": "Poulet désossé dans une sauce crémeuse et onctueuse à la tomate, préparée avec beurre et épices traditionnelles",
+        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780759944/tapavis_menu/639/cqpmxhvxkyfas1oue0qw.jpg"
+      },
+      {
+        "id": "dzr6cha0svf",
+        "name": "Poulet Korma / Chicken Korma",
+        "price": 15.99,
+        "category": "Poulet",
+        "description": "Poulet braisé dans une sauce curry et crémeuse au yogourt, aux épices, riche et savoureuse"
+      },
+      {
+        "id": "kp1iwzqbygm",
+        "name": "Poulet Cari / Chicken Curry",
+        "price": 15.99,
+        "category": "Poulet",
+        "description": "Poulet mijoté dans une sauce curry savoureuse aux épices, riche et bien relevée",
+        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780844492/tapavis_menu/639/svxljnat31y2bwt4nrvi.jpg"
+      },
+      {
+        "id": "vi1sb65lvg",
+        "name": "Poulet Palak / Chicken Palak",
+        "price": 15.99,
+        "category": "Poulet",
+        "description": "Épinards et Poulet mijotés ensemble dans un curry savoureux"
+      },
+      {
+        "id": "7szghnhz8fg",
+        "name": "Poulet Tikka Masala",
+        "price": 16.99,
+        "category": "Poulet",
+        "description": "Morceaux de poulet marinés et grillés, servis dans une sauce tomate crémeuse et épicée.",
+        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780799740/tapavis_menu/639/jzeedqahj2k21d6oq50u.jpg"
+      },
+      {
+        "id": "33rapmwyg0i",
+        "name": "Karahi Poulet / Karahi Chicken",
+        "price": 17.99,
+        "category": "Poulet"
+      },
+      {
+        "id": "ulib4ukabye",
+        "name": "Tandoori Poulet / Tandoori Chicken",
+        "price": 7.99,
+        "category": "Poulet",
+        "description": "Cuisse de poulet marinée dans du yogourt, de l'ail, du gingembre et un mélange traditionnel d'épices indiennes."
+      },
+      {
+        "id": "0jz0ytrj9jet",
+        "name": "Agneau Korma / Lamb Korma",
+        "price": 17.99,
+        "category": "Agneau",
+        "description": "Agneau braisé dans une sauce curry et crémeuse au yogourt, aux épices, riche et savoureuse."
+      },
+      {
+        "id": "3f51t8g93e6",
+        "name": "Agneau Cari / Lamb Curry",
+        "price": 17.99,
+        "category": "Agneau",
+        "description": "Agneau mijoté dans une sauce curry savoureuse aux épices, riche et bien relevée."
+      },
+      {
+        "id": "1ur7rsgb6ckh",
+        "name": "Agneau Palak / Lamb Palak",
+        "price": 17.99,
+        "category": "Agneau",
+        "description": "Épinards et Agneau mijotés ensemble dans un curry savoureux.",
+        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780760423/tapavis_menu/639/tzi2onyi8uep4bxcgyui.jpg"
+      },
+      {
+        "id": "6qqo7dj8onm",
+        "name": "Karahi Agneau / Karahi Lamb",
+        "price": 21.99,
+        "category": "Agneau"
+      },
+      {
+        "id": "8lvb2pjwf9f",
+        "name": "Dal Makhni",
+        "price": 12.99,
+        "category": "Végétarien",
+        "description": "Lentilles noires crémeuses mijotées lentement avec beurre et épices.",
+        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780760237/tapavis_menu/639/khcsg7tx884iph5b6amd.jpg"
+      },
+      {
+        "id": "jdqcsxsvjp",
+        "name": "Kadhi Pakora",
+        "price": 14.99,
+        "category": "Végétarien",
+        "description": "Sauce au yogourt légèrement acidulée et épicée, garnie de beignets de légumes frits.",
+        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780799589/tapavis_menu/639/uy1gvywxcmo0hkduba7a.jpg"
+      },
+      {
+        "id": "2bweljiotrp",
+        "name": "Shahi Paneer",
+        "price": 15.99,
+        "category": "Végétarien",
+        "description": "Paneer cuit dans une sauce crémeuse et onctueuse à la tomate, préparée avec beurre et épices traditionnelles.",
+        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780760951/tapavis_menu/639/z7pqhgfn4mpxjd1rvq0r.jpg"
+      },
+      {
+        "id": "6bnw4lbyy9k",
+        "name": "Paneer Tikka Masala",
+        "price": 16.99,
+        "category": "Végétarien",
+        "description": "Morceaux de Paneer marinés et grillés, servis dans une sauce tomate crémeuse et épicée.",
+        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780844190/tapavis_menu/639/ucyfsongb9gmdessy241.jpg"
+      },
+      {
+        "id": "aqs0loi9dco",
+        "name": "Palak Paneer",
+        "price": 15.99,
+        "category": "Végétarien",
+        "description": "Épinards et paneer mijotés ensemble dans un curry savoureux.",
+        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780844300/tapavis_menu/639/uajvxmkccnzzssdfbw7p.jpg"
+      },
+      {
+        "id": "qffenokml2r",
+        "name": "Chana Masala",
+        "price": 11.99,
+        "category": "Végétarien",
+        "description": "Curry savoureux de pois chiches épicé avec des assaisonnements traditionnels.",
+        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780800108/tapavis_menu/639/d23drzv8c4fzsgp57mcp.jpg"
+      },
+      {
+        "id": "52zefiej7mv",
+        "name": "Chana Bhatura",
+        "price": 13.99,
+        "category": "Végétarien",
+        "description": "Pois Chiches épicés avec 2 bhaturas frits.",
+        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780760059/tapavis_menu/639/ase8aaw1x2qtvhl0loeo.jpg"
+      },
+      {
+        "id": "e94jzitgo2",
+        "name": "Samosa (2 mcx)",
+        "price": 3.99,
+        "category": "À la carte",
+        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780799156/tapavis_menu/639/fb9soufexvhdas2nlra4.jpg"
+      },
+      {
+        "id": "r9ktoxvpoyn",
+        "name": "Onion Bhaji",
+        "price": 6.99,
+        "category": "À la carte"
+      },
+      {
+        "id": "3inchgif5vd",
+        "name": "Rouleaux de printemps (5 mcx)",
+        "price": 4.99,
+        "category": "À la carte"
+      },
+      {
+        "id": "fegu0dhsxm",
+        "name": "Frites",
+        "price": 4.99,
+        "category": "À la carte"
+      },
+      {
+        "id": "svk9v5gqt9h",
+        "name": "Frites Masala",
+        "price": 6.99,
+        "category": "À la carte"
+      },
+      {
+        "id": "wx9e8kzrxe9",
+        "name": "Samosa Chaat",
+        "price": 8.99,
+        "category": "À la carte",
+        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780845248/tapavis_menu/639/g3o9y6iiia7dm5z3to7e.jpg"
+      },
+      {
+        "id": "20cxcou4g17",
+        "name": "Aloo Tiki Chaat",
+        "price": 8.99,
+        "category": "À la carte"
+      },
+      {
+        "id": "eg0q2rq9h4q",
+        "name": "Naan",
+        "price": 2.5,
+        "category": "À la carte"
+      },
+      {
+        "id": "dhvt27lc49",
+        "name": "Naan à l'ail",
+        "price": 3.5,
+        "category": "À la carte"
+      },
+      {
+        "id": "m748tc41fda",
+        "name": "Riz Basmati",
+        "price": 4.99,
+        "category": "À la carte",
+        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780799317/tapavis_menu/639/a8p9pilyxvbqobllyhgt.jpg"
+      },
+      {
+        "id": "zty70bf5xde",
+        "name": "Biryani au poulet",
+        "price": 14.99,
+        "category": "À la carte",
+        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780845042/tapavis_menu/639/na7eowzxdihnqm1zzhzz.jpg"
+      },
+      {
+        "id": "xewrmal5709",
+        "name": "Raita",
+        "price": 4.99,
+        "category": "À la carte",
+        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780799950/tapavis_menu/639/ejvhob27q0gpcsz0y6kk.jpg"
+      },
+      {
+        "id": "7yptnrxoqto",
+        "name": "Poutine Poulet au beurre",
+        "price": 12.99,
+        "category": "Poutine"
+      },
+      {
+        "id": "kwin3tgsx1t",
+        "name": "Poutine Shahi Paneer",
+        "price": 12.99,
+        "category": "Poutine"
+      },
+      {
+        "id": "2qlovg1pbks",
+        "name": "Rasmalai (2 pcs)",
+        "price": 4.5,
+        "category": "Dessert",
+        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780799455/tapavis_menu/639/xstkrezkvtqrgbzqnfoe.jpg"
+      },
+      {
+        "id": "f4b8lerwyaj",
+        "name": "Gulab Jamun (2 pcs)",
+        "price": 3.99,
+        "category": "Dessert",
+        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780844873/tapavis_menu/639/atplbdpwazfjqrtgggym.jpg"
+      },
+      {
+        "id": "iols3l2qffk",
+        "name": "Kulfi",
+        "price": 3.5,
+        "category": "Dessert"
+      },
+      {
+        "id": "3lv6epgs79t",
+        "name": "Cardamome Chai",
+        "price": 3.5,
+        "category": "Chai / Boissons"
+      },
+      {
+        "id": "vky9g6prjs",
+        "name": "Karak Chai",
+        "price": 3.5,
+        "category": "Chai / Boissons"
+      },
+      {
+        "id": "lavt502jug",
+        "name": "Kashmiri Chai",
+        "price": 3.5,
+        "category": "Chai / Boissons"
+      },
+      {
+        "id": "6db6a7pwtdk",
+        "name": "Mango Lassi",
+        "price": 4.99,
+        "category": "Chai / Boissons"
+      },
+      {
+        "id": "loql8b8aj5i",
+        "name": "Canette",
+        "price": 2.5,
+        "category": "Chai / Boissons"
+      },
+      {
+        "id": "d1ajzp103jt",
+        "name": "Eau",
+        "price": 1.99,
+        "category": "Chai / Boissons"
+      },
+      {
+        "id": "1y9uf0og85z",
+        "name": "Thali Non-Vég",
+        "price": 16.99,
+        "category": "Midi Special Thali",
+        "description": "Butter chicken servi avec channa masala, riz, naan, raita, salade fraîche et boisson en canette incluse. Sur place seulement / Dine-in only.",
+        "note": "Disponible de 11h30 à 15h00 (midi seulement)."
+      },
+      {
+        "id": "paxoxx63m8",
+        "name": "Thali Vég",
+        "price": 16.99,
+        "category": "Midi Special Thali",
+        "description": "Shahi paneer servi avec channa masala, riz, naan, raita, salade fraîche et boisson en canette incluse. Sur place seulement / Dine-in only.",
+        "note": "Disponible de 11h30 à 15h00 (midi seulement)."
+      },
+      {
+        "id": "zjh0y6bvvzf",
+        "name": "Wrap Poulet au beurre / Butter Chicken",
+        "price": 11.99,
+        "category": "Wraps",
+        "description": "Poulet au beurre dans un naan, garni de laitue, tomates et oignons.",
+        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780760707/tapavis_menu/639/psp34mviazjd0uedruoc.jpg"
+      },
+      {
+        "id": "8gx13hjpkp7",
+        "name": "Wrap Tandoori Poulet",
+        "price": 11.99,
+        "category": "Wraps",
+        "description": "Poulet tandoori dans un naan, garni de laitue, tomates et oignons, sauce maison et sauce tandoori."
+      },
+      {
+        "id": "tjm1dfd8mye",
+        "name": "Wrap Shahi Paneer",
+        "price": 11.99,
+        "category": "Wraps",
+        "description": "Shahi paneer dans un naan, garni de laitue, tomates et oignons.",
+        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780760876/tapavis_menu/639/mhdec8duxsnebrkct1p1.jpg"
+      },
+      {
+        "id": "ywvualiaa7l",
+        "name": "Wrap Kabab",
+        "price": 12.99,
+        "category": "Wraps",
+        "description": "Kabab dans un naan, garni de laitue, tomates et oignons, sauce maison et sauce tandoori."
+      },
+      {
+        "id": "o921zemjsss",
+        "name": "Faites un trio (Patates + Canette)",
+        "price": 4.99,
+        "category": "Wraps",
+        "description": "Ajoutez des frites et une canette à votre wrap."
+      }
+    ]
+  };
+  const MENU_PREVIEW_CAT_EN = { 'Poulet': 'Chicken', 'Agneau': 'Lamb', 'Végétarien': 'Vegetarian', 'À la carte': 'À la carte', 'Poutine': 'Poutine', 'Dessert': 'Desserts', 'Chai / Boissons': 'Chai / Drinks', 'Midi Special Thali': 'Lunch Thali Special', 'Wraps': 'Wraps' };
+
   // Short-code generation: 8 chars, no ambiguous (0/O, 1/I/L, U/V)
   const SHORT_CODE_ALPHABET = 'BCDFGHJKMNPQRSTWXYZ23456789';
   function generateShortCode() {
@@ -464,11 +820,8 @@ module.exports = function(services) {
   router.get('/', async function(req, res) {
     try {
       const ctx = await renderCtx(req);
-      const menu = await db.all("SELECT m.* FROM menu_items m LEFT JOIN menu_categories c ON c.slug = m.category WHERE m.available = 1 ORDER BY m.featured DESC, COALESCE(c.id, 999999) ASC, m.position ASC, m.id ASC").catch(function(){ return []; });
       const platforms = await db.all('SELECT * FROM delivery_platforms WHERE active = 1 ORDER BY position ASC').catch(function(){ return []; });
-      const posts = await db.all('SELECT * FROM posts WHERE published = 1 ORDER BY created_at DESC LIMIT 3').catch(function(){ return []; });
-      const categories = await getMenuCategories();
-      res.render('index', Object.assign(ctx, { menu: menu, platforms: platforms, posts: posts, categories: categories }));
+      res.render('index', Object.assign(ctx, { platforms: platforms, preview: MENU_PREVIEW, previewCatEn: MENU_PREVIEW_CAT_EN }));
     } catch(e) { res.status(500).send('Erreur'); }
   });
 

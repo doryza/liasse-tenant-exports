@@ -1,5 +1,6 @@
 <%- include('partials/header') %>
 <% var ORDER_URL = 'https://tandoori-route-blain.tapavis.com/order'; %>
+<% var CAT_EMOJI = { 'Poulet': '🍗', 'Agneau': '🍖', 'Végétarien': '🥬', 'À la carte': '🥟', 'Poutine': '🍟', 'Dessert': '🍮', 'Chai / Boissons': '☕', 'Midi Special Thali': '🍱', 'Wraps': '🌯' }; %>
 
 <section class="hero hero-squeeze">
   <img src="<%= (typeof settings!=='undefined' && settings._p_hero_image_url) ? settings._p_hero_image_url : 'https://placehold.co/1600x900/0a0806/F5A524/png?text=Tandoori+Route' %>" alt="<%= t.brand %>" class="hero-img">
@@ -20,43 +21,38 @@
     <h2 class="section-title"><%= t.menu_title %></h2>
     <p class="section-sub"><%= t.menu_subtitle %></p>
   </div>
-  <% if (typeof menu !== 'undefined' && menu && menu.length > 0) { %>
+  <% if (typeof preview !== 'undefined' && preview && preview.items && preview.items.length > 0) { %>
+  <div class="container">
+    <div class="menu-chips" id="menuChips">
+      <button class="chip active" data-cat="*"><%= lang === 'en' ? 'All' : 'Tout' %></button>
+      <% preview.categories.forEach(function(cat) { %>
+      <button class="chip" data-cat="<%= cat %>"><%= (CAT_EMOJI[cat] ? CAT_EMOJI[cat] + ' ' : '') %><%= (lang === 'en' && typeof previewCatEn !== 'undefined' && previewCatEn[cat]) ? previewCatEn[cat] : cat %></button>
+      <% }); %>
+    </div>
+  </div>
   <div class="menu-slider" id="menuSlider">
     <button class="slider-arrow slider-prev" id="sliderPrev" aria-label="<%= lang === 'en' ? 'Previous' : 'Précédent' %>">‹</button>
     <div class="slider-track" id="sliderTrack">
-      <% menu.forEach(function(m) {
-        var catName = '';
-        if (typeof categories !== 'undefined' && categories) {
-          var _c = categories.find(function(x){ return x.slug === m.category; });
-          if (_c) catName = (lang === 'en' && _c.name_en) ? _c.name_en : _c.name_fr;
-        }
-        var _sizes = (typeof parseSizes === 'function') ? parseSizes(m.sizes_json) : null;
-      %>
-      <article class="slide-card">
+      <% preview.items.forEach(function(m) { %>
+      <article class="slide-card" data-cat="<%= m.category %>">
         <div class="slide-card-imgwrap">
-          <% if (m.image_url) { %><img src="<%= m.image_url %>" alt="<%= pickLang(m,'name',lang) %>" loading="lazy"><% } else { %><div class="slide-card-placeholder">🔥</div><% } %>
-          <% if (m.featured) { %><span class="slide-badge">★ <%= lang === 'en' ? 'Favorite' : 'Coup de cœur' %></span><% } %>
-          <% if (catName) { %><span class="slide-cat"><%= catName %></span><% } %>
+          <% if (m.imageUrl) { %><img src="<%= m.imageUrl %>" alt="<%= m.name %>" loading="lazy"><% } else { %><div class="slide-card-placeholder"><%= CAT_EMOJI[m.category] || '🔥' %></div><% } %>
+          <span class="slide-cat"><%= (lang === 'en' && typeof previewCatEn !== 'undefined' && previewCatEn[m.category]) ? previewCatEn[m.category] : m.category %></span>
         </div>
         <div class="slide-card-body">
           <div class="slide-card-top">
-            <h3><%= pickLang(m, 'name', lang) %></h3>
-            <% if (_sizes && _sizes.length > 1) { %>
-              <span class="price"><%= lang === 'en' ? 'from' : 'dès' %> <%= formatPrice(Math.min.apply(null, _sizes.map(function(s){ return s.price == null ? Infinity : s.price; }))) %></span>
-            <% } else if (_sizes && _sizes.length === 1) { %>
-              <span class="price"><%= formatPrice(_sizes[0].price) %></span>
-            <% } else { %>
-              <span class="price"><%= formatPrice(m.price) %></span>
-            <% } %>
+            <h3><%= m.name %></h3>
+            <span class="price"><%= formatPrice(m.price) %></span>
           </div>
-          <p class="desc"><%= pickLang(m, 'description', lang) %></p>
+          <% if (m.note) { %><span class="slide-note">🕐 <%= lang === 'en' ? 'Lunch only · 11:30–15:00' : 'Midi seulement · 11h30–15h00' %></span><% } %>
+          <% if (m.description) { %><p class="desc"><%= m.description %></p><% } %>
           <a href="<%= ORDER_URL %>" class="btn btn-primary btn-slide-order"><%= lang === 'en' ? 'Order' : 'Commander' %> →</a>
         </div>
       </article>
       <% }); %>
     </div>
     <button class="slider-arrow slider-next" id="sliderNext" aria-label="<%= lang === 'en' ? 'Next' : 'Suivant' %>">›</button>
-    <div class="slider-dots" id="sliderDots"></div>
+    <div class="slider-progress"><span id="sliderBar"></span></div>
   </div>
   <% } else { %>
   <div class="container"><p class="empty-state"><%= t.no_menu %></p></div>
@@ -89,41 +85,50 @@
   if (!track) return;
   var prev = document.getElementById('sliderPrev');
   var next = document.getElementById('sliderNext');
-  var dotsWrap = document.getElementById('sliderDots');
-  var cards = track.querySelectorAll('.slide-card');
+  var bar = document.getElementById('sliderBar');
+  var chipsWrap = document.getElementById('menuChips');
+  var allCards = Array.prototype.slice.call(track.querySelectorAll('.slide-card'));
 
-  cards.forEach(function(_, i){
-    var d = document.createElement('button');
-    d.className = 'slider-dot';
-    d.setAttribute('aria-label', 'Slide ' + (i + 1));
-    d.addEventListener('click', function(){ goTo(i); pause(); });
-    dotsWrap.appendChild(d);
-  });
-  var dots = dotsWrap.querySelectorAll('.slider-dot');
-
+  function visibleCards(){
+    return allCards.filter(function(c){ return !c.classList.contains('chip-hidden'); });
+  }
   function cardStep(){
-    if (cards.length < 2) return cards[0] ? cards[0].offsetWidth : 0;
-    return cards[1].offsetLeft - cards[0].offsetLeft;
+    var v = visibleCards();
+    if (v.length < 2) return v[0] ? v[0].offsetWidth : 0;
+    return v[1].offsetLeft - v[0].offsetLeft;
   }
   function currentIndex(){
     var step = cardStep();
     return step ? Math.round(track.scrollLeft / step) : 0;
   }
   function goTo(i){
-    var max = cards.length - 1;
+    var max = visibleCards().length - 1;
+    if (max < 0) return;
     if (i < 0) i = max; else if (i > max) i = 0;
     track.scrollTo({ left: i * cardStep(), behavior: 'smooth' });
   }
-  function syncDots(){
-    var idx = Math.min(currentIndex(), dots.length - 1);
-    dots.forEach(function(d, i){ d.classList.toggle('active', i === idx); });
+  function syncBar(){
+    var maxScroll = track.scrollWidth - track.clientWidth;
+    bar.style.width = (maxScroll > 0 ? Math.min(100, Math.max(0, (track.scrollLeft / maxScroll) * 100)) : 100) + '%';
   }
-  syncDots();
-  var scrollT;
-  track.addEventListener('scroll', function(){ clearTimeout(scrollT); scrollT = setTimeout(syncDots, 80); }, { passive: true });
+  syncBar();
+  track.addEventListener('scroll', syncBar, { passive: true });
+  window.addEventListener('resize', syncBar);
 
   prev.addEventListener('click', function(){ goTo(currentIndex() - 1); pause(); });
   next.addEventListener('click', function(){ goTo(currentIndex() + 1); pause(); });
+
+  chipsWrap.addEventListener('click', function(ev){
+    var chip = ev.target.closest('.chip');
+    if (!chip) return;
+    var cat = chip.getAttribute('data-cat');
+    chipsWrap.querySelectorAll('.chip').forEach(function(c){ c.classList.toggle('active', c === chip); });
+    allCards.forEach(function(card){
+      card.classList.toggle('chip-hidden', cat !== '*' && card.getAttribute('data-cat') !== cat);
+    });
+    track.scrollTo({ left: 0, behavior: 'auto' });
+    syncBar();
+  });
 
   var timer = setInterval(function(){ goTo(currentIndex() + 1); }, 4500);
   function pause(){ if (timer) { clearInterval(timer); timer = null; } }
