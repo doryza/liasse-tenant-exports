@@ -5,7 +5,7 @@ module.exports = function(services) {
 
   const T = {
     fr: {
-      brand: 'PoutineFest',
+      brand: 'Le PoutineFest et Ramen',
       nav_home: 'Accueil', nav_menu: 'Menu', nav_delivery: 'Livraison', nav_about: 'À propos', nav_reserve: 'Réserver le camion',
       login: 'Connexion', enable_notif: 'Activer les notifications',
       hero_title: 'La poutine la plus authentique en ville',
@@ -68,7 +68,7 @@ module.exports = function(services) {
       no_my_offers: 'Vous n\'avez réservé aucune offre.'
     },
     en: {
-      brand: 'PoutineFest',
+      brand: 'Le PoutineFest et Ramen',
       nav_home: 'Home', nav_menu: 'Menu', nav_delivery: 'Delivery', nav_about: 'About', nav_reserve: 'Book the truck',
       login: 'Sign In', enable_notif: 'Enable notifications',
       hero_title: 'The most authentic poutine in town',
@@ -136,6 +136,92 @@ module.exports = function(services) {
   function formatDate(d, lang) { if (!d) return ''; try { return new Date(d).toLocaleDateString(lang === 'en' ? 'en-CA' : 'fr-CA', { year:'numeric', month:'long', day:'numeric'}); } catch(e) { return String(d); } }
   function formatDateTime(d, lang) { if (!d) return ''; try { return new Date(d).toLocaleString(lang === 'en' ? 'en-CA' : 'fr-CA', { year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'}); } catch(e) { return String(d); } }
   function pickLang(item, field, lang) { if (!item) return ''; return item[field + '_' + lang] || item[field + '_fr'] || item[field] || ''; }
+
+  // Static menu preview for the one-pager homepage slider. Baked from the
+  // Liasse Restaurants ordering-system export (Le PoutineFest et Ramen,
+  // 2026-06-11). The live source of truth for ordering is the /order page
+  // resolved by fetchOrderUrl() below — the tenant menu_items table no
+  // longer feeds the homepage. Image URLs carry a Cloudinary
+  // w_640,h_480,c_fill transform so the 62-card slider stays light.
+  // `from: true` marks items sold in multiple sizes (Petite/Grande…); the
+  // listed price is the smallest size. The ordering-system's "General"
+  // category (a per-poutine add-on line item, tag "extra") is intentionally
+  // excluded — it is not a dish.
+  const MENU_PREVIEW = {
+    "categories": [
+      "POUTINE",
+      "LES DELECTABLES / RAMEN",
+      "GUÉDILLES (SUBS)",
+      "AUTRES",
+      "MENU ENFANT",
+      "BREUVAGES"
+    ],
+    "items": [
+      { "id": "jywv5w4h1jg", "name": "La Fameuse Classique Ben Ordinaire", "price": 10.44, "category": "POUTINE", "from": true, "description": "Frites, fromage en grains et sauce brune. (Fries, cheese curds, and brown gravy).", "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1779826576/tapavis_menu/642/d7xrnorzoky778twziyb.jpg" },
+      { "id": "vaal1vtpqh", "name": "Bacon", "price": 13.05, "category": "POUTINE", "from": true, "description": "Frites, fromage en grains, sauce et bacon. (Fries, cheese curds, gravy, and bacon).", "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1779826576/tapavis_menu/642/rdzhd0jqxq7esgee3u2v.jpg" },
+      { "id": "05hty0jb9fja", "name": "Poulet", "price": 13.05, "category": "POUTINE", "from": true, "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1779826576/tapavis_menu/642/oueil44izatqmsvzar6h.jpg" },
+      { "id": "b1ehqxuxh68", "name": "Saucisse", "price": 13.05, "category": "POUTINE", "from": true, "description": "Italienne douce. (Mild Italian).", "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1779826576/tapavis_menu/642/evf3znocqafojjkgzp7m.jpg" },
+      { "id": "sjsc7p7wyod", "name": "Burger", "price": 13.05, "category": "POUTINE", "from": true, "description": "Viande hachée. (Ground beef).", "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1779826576/tapavis_menu/642/due5svfckqdwvqldxdx0.jpg" },
+      { "id": "mc2q7tyiy4", "name": "Choux", "price": 13.05, "category": "POUTINE", "from": true, "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1779826576/tapavis_menu/642/ifhsu4jwgcgboyd3pvz5.jpg" },
+      { "id": "utqugmbo9y", "name": "Légumes", "price": 13.05, "category": "POUTINE", "from": true, "description": "Oignons, champignons, piments, et olives. (Onions, mushrooms, peppers, and olives).", "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1779826576/tapavis_menu/642/urt0vnmtoh2bc8wbgwiv.jpg" },
+      { "id": "ejyeh9ewjtb", "name": "La Cochonne", "price": 21.74, "category": "POUTINE", "from": true, "description": "Bacon, saucisse italienne douce et porc effiloché. (Bacon, mild italian sausage and pulled pork).", "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1779826576/tapavis_menu/642/yfz6rv9urhyhncbprqmr.jpg" },
+      { "id": "vtme2qp0f8n", "name": "Inferno", "price": 14.79, "category": "POUTINE", "from": true, "description": "Sauce forte et variétés de piments forts. (Hot sauce, and a variety of hot peppers).", "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1779826576/tapavis_menu/642/zvjahvxhfwvc14nwk9fm.jpg" },
+      { "id": "b9zmoo4ykj", "name": "Galvaude", "price": 14.79, "category": "POUTINE", "from": true, "description": "Poulet et petit pois. (Chicken, and peas).", "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1779826576/tapavis_menu/642/u4dnrpjbpfl4lhpv6bjv.jpg" },
+      { "id": "t20z731eqc", "name": "Porky", "price": 17.4, "category": "POUTINE", "from": true, "description": "Porc effiloché et bacon. (Pulled pork, and bacon).", "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1779826576/tapavis_menu/642/h7tw4pq12dkwha9obheu.jpg" },
+      { "id": "gt2vvlzsup", "name": "Cabane", "price": 17.4, "category": "POUTINE", "from": true, "description": "Bacon, saucisse italienne douce et sirop d'érable. (Bacon, sausage, and maple syrup).", "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1779826576/tapavis_menu/642/yp83jnucw2kfktdtaxdn.jpg" },
+      { "id": "amxgvn3o2bw", "name": "Hamburger Steak", "price": 17.4, "category": "POUTINE", "from": true, "description": "Viande hachée, bacon, oignons et champignons. (Ground beef, bacon, onions, and mushrooms).", "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1779826576/tapavis_menu/642/s5vgjlnijmixzebgipfg.jpg" },
+      { "id": "85qep8mql6d", "name": "J'phil Steak", "price": 17.4, "category": "POUTINE", "from": true, "description": "Steak ribeye, piments, oignons, fromage et sauce poivre. (Ribeye steak, peppers, onions, cheese, and pepper sauce).", "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1779826576/tapavis_menu/642/nyxs5blfprtwaayivldk.jpg" },
+      { "id": "p87te20wyl8", "name": "Thaï", "price": 17.4, "category": "POUTINE", "from": true, "description": "Sauce thaï, graines de sésames et échalotes. (Thaï sauce, sesame seeds, and green onions).", "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1779827074/tapavis_menu/642/hpt7mvtqvq6mj5of4fhh.jpg" },
+      { "id": "yvefors88ll", "name": "Steak", "price": 14.79, "category": "POUTINE", "from": true, "description": "Steak ribeye et sauce poivre. (Ribeye steak, and pepper sauce).", "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1779827074/tapavis_menu/642/blwg1tfzosd2k8zjnwiw.jpg" },
+      { "id": "sst213cerq", "name": "Alldress", "price": 14.79, "category": "POUTINE", "from": true, "description": "Bacon, oignons, champignons et piments. (Bacon, onions, mushrooms, and peppers).", "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1779827074/tapavis_menu/642/vxw2vdxvk8qzikbnhj4j.jpg" },
+      { "id": "kyg4sxoq54f", "name": "Italienne", "price": 13.79, "category": "POUTINE", "from": true, "description": "Sauce spaghetti. (Spaghetti sauce).", "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1779827074/tapavis_menu/642/o7mhp5bgwt2tw8rgrod8.jpg" },
+      { "id": "2w13zkrjbno", "name": "Viande Fumée (Smoked Meat)", "price": 13.79, "category": "POUTINE", "from": true, "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1779827074/tapavis_menu/642/ld34uwwcbletltx13ghq.jpg" },
+      { "id": "71oq6270759", "name": "Poulet et Bacon", "price": 13.79, "category": "POUTINE", "from": true, "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1779827074/tapavis_menu/642/h4jpjdno5da9jc2k2naq.jpg" },
+      { "id": "koy8mhnztfc", "name": "Porc Effiloché (Pulled Pork)", "price": 13.79, "category": "POUTINE", "from": true, "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1779827074/tapavis_menu/642/bjv4famljqnzjbpfa1e4.jpg" },
+      { "id": "kt2ltbnksgo", "name": "Parasol", "price": 14.79, "category": "POUTINE", "from": true, "description": "Viande hachée, oignons et piments. (Ground beef, onions, and peppers).", "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1779827074/tapavis_menu/642/anmnsrkhbo7lit8fu8ui.jpg" },
+      { "id": "7z8cqfhr1w6", "name": "Classique", "price": 6.96, "category": "LES DELECTABLES / RAMEN", "description": "Nouilles et bouillon. (Noodles, and broth).", "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1779826808/tapavis_menu/642/a55mjlg0xveyqpeiltlw.jpg" },
+      { "id": "itfk1uu3qfp", "name": "Le Protéiné", "price": 11.3, "category": "LES DELECTABLES / RAMEN", "description": "Échalotes et choix de dumpling ou poulet popcorn ou 2 oeufs ou 2x tofu. (Green onions, and choice of dumpling or popcorn chicken or 2 eggs or 2x Tofu).", "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1779826808/tapavis_menu/642/oafaa2jbcgnbnmbbkdtc.jpg" },
+      { "id": "1c5cphl8a52", "name": "Ramagetti", "price": 12.18, "category": "LES DELECTABLES / RAMEN", "description": "Nouilles ramen, sauce spaghetti et fromage en grain. (Ramen noodles, spaghetti sauce and cheese curds).", "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1779826808/tapavis_menu/642/irlza17ccfo1povajj25.jpg" },
+      { "id": "bwo7xu5yiv", "name": "Tonkotsu", "price": 13.92, "category": "LES DELECTABLES / RAMEN", "description": "Poulet popcorn, échalotes, fèves germées et oeuf. (Popcorn chicken, green onions, bean sprouts, and egg).", "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1779826808/tapavis_menu/642/p4jneihocu228xop7ppu.jpg" },
+      { "id": "dahlc0qbh1", "name": "Veggie", "price": 13.92, "category": "LES DELECTABLES / RAMEN", "description": "Champignons, échalotes, fèves germées, carottes, maïs, tofu et feuille d'algue. (Mushrooms, green onions, bean sprouts, carrots, corn, tofu, and seaweed).", "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1779826808/tapavis_menu/642/vhoeoxv2lta85yl9pltm.jpg" },
+      { "id": "hzzfagjl39", "name": "Dumpling", "price": 13.92, "category": "LES DELECTABLES / RAMEN", "description": "Dumpling frit, fèves germées, échalotes, maïs et carottes. (Fried dumpling, bean sprouts, green onions, corn, and carrots).", "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1779826810/tapavis_menu/642/ygolrbk4svggddroaldb.jpg" },
+      { "id": "sq2g4934nh", "name": "Charsio", "price": 15.66, "category": "LES DELECTABLES / RAMEN", "description": "Porc effiloché, fèves germées, champignons, échalotes, feuille d'algue et oeuf. (Pulled pork, bean sprouts, mushrooms, green onions, seaweed, and egg).", "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1779826808/tapavis_menu/642/nceqlzhkggcbilebqiei.jpg" },
+      { "id": "fmbt6yisixw", "name": "Le Cochon", "price": 20, "category": "LES DELECTABLES / RAMEN", "description": "Poulet popcorn, porc effiloché, dumpling, oeuf, échalotes, fèves germées, carottes, maïs et champignon. (Popcorn chicken, pulled pork, dumplings, egg, green onions, bean sprouts, carrots, corn, and mushrooms).", "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1779826808/tapavis_menu/642/wrhj5sc7zq2o9cuds0p5.jpg" },
+      { "id": "of8uc9hxlbh", "name": "BLT", "price": 10, "category": "GUÉDILLES (SUBS)", "description": "Bacon, laitue, tomate et mayo. Servi avec frites. (Bacon, lettuce, tomato, and mayo). With fries.", "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1779827197/tapavis_menu/642/ptaqq4zw4vif3ez2urg0.jpg" },
+      { "id": "gh8bshyuix", "name": "Club", "price": 11.74, "category": "GUÉDILLES (SUBS)", "description": "Poulet, bacon, laitue, tomate et sauce maison. Servi avec frites. (Chicken, bacon, lettuce, tomato, and house dressing). With fries.", "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1779827197/tapavis_menu/642/skbsfme5f9gqnxw2ejws.jpg" },
+      { "id": "f96g28mdxwj", "name": "César", "price": 12.61, "category": "GUÉDILLES (SUBS)", "description": "Poulet, bacon, laitue, croûtons, fromage en grain et sauce césar maison. Servi avec frites. (Chicken, bacon, lettuce, croutons, cheese curds, and house caesar dressing). With fries.", "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1779827197/tapavis_menu/642/vslatw53zx0ckho3bjym.jpg" },
+      { "id": "vhthly674ve", "name": "Porc Effiloché", "price": 16.09, "category": "GUÉDILLES (SUBS)", "description": "Porc effiloché, oignons, fromage, choux et sauce bbq. Servi avec frites. (Pulled pork, onions, cheese, coleslaw, and bbq sauce). With fries.", "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1779827197/tapavis_menu/642/dwa4ihbkv9qtu7stumfa.jpg" },
+      { "id": "yfmshhsmld", "name": "Philly's Steak", "price": 16.09, "category": "GUÉDILLES (SUBS)", "description": "Émincé de ribeye, provolone, oignons, piments et sauce maison poivrée. Servi avec frites. (Ribeye steak, provolone, onions, peppers, and pepper house dressing). With fries.", "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1779827197/tapavis_menu/642/wtr2unt7niaddbbinohy.jpg" },
+      { "id": "qn01ju0r7o", "name": "Guédille Bacon", "price": 11.74, "category": "GUÉDILLES (SUBS)", "description": "Bacon, oignons, champignons, fromage en grain, choux, piments forts et mayo cajun. Servi avec frites. (Bacon, onions, mushrooms, curd cheese, cole slaw, hot peppers, cajun mayo). With fries.", "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1779827197/tapavis_menu/642/zduv5klp1t7uffrkri53.jpg" },
+      { "id": "wg6vdvi3fwc", "name": "Guédille Poulet et Bacon", "price": 12.61, "category": "GUÉDILLES (SUBS)", "description": "Poulet, bacon, oignons, piment, fromage en grain, choux et mayo cajun. Servi avec frites. (Chicken, bacon, onions, peppers, curd cheese, cole slaw, and cajun mayo). With fries.", "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1779827197/tapavis_menu/642/wr5bvudfehky9ieqqgbk.jpg" },
+      { "id": "3sok9y6q4mx", "name": "Batonnets de Fromage (6 mcx) (Cheese Sticks (6 pcs))", "price": 9.78, "category": "AUTRES", "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1779827074/tapavis_menu/642/ycvj0jqvadh3jrhc7ihx.jpg" },
+      { "id": "74gz21cxl9n", "name": "Rondelles D'oignon Rouge (Red Onion Rings)", "price": 6.96, "category": "AUTRES", "description": "Rondelles d'oignon rouge croustillantes, douces et légèrement sucrées. (Crispy-coated red onion rings, mild and slightly sweet).", "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1779827074/tapavis_menu/642/lowmwj2at3mphagaxrdc.jpg" },
+      { "id": "2gs7dhu8kcs", "name": "Pogo", "price": 3.04, "category": "AUTRES", "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1779827074/tapavis_menu/642/gmukalf4jikk0djdur6m.jpg" },
+      { "id": "lmjenpy4rkm", "name": "Ohh Des Beaux Pickles (Ooh Pretty Pickles)", "price": 9.78, "category": "AUTRES", "description": "Cornichons frits.", "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1779827074/tapavis_menu/642/xmbmi16hbmscaiwvrwhi.jpg" },
+      { "id": "pup5laannb8", "name": "Rouleaux de printemps (2 mcx) (Spring Rolls (2 pcs))", "price": 5.22, "category": "AUTRES", "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1779827074/tapavis_menu/642/qoplzwbhkcdy4gwqmcz2.jpg" },
+      { "id": "oir89g2mtwe", "name": "Soupe Aux Kleenex", "price": 5.22, "category": "AUTRES", "description": "Wonton.", "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1779827074/tapavis_menu/642/ptcnxxqcyorsqgmcmqgs.jpg" },
+      { "id": "gkvkyzpicg", "name": "Dumpling Frit au Poulet (4 mcx) (Chicken Fried Dumpling (4 pcs))", "price": 6.96, "category": "AUTRES", "description": "Dumpling au poulet, sauce thaï, echalotes et graines de sésames. (Chicken dumpling, Thaï sauce, green onions, and sesame seeds).", "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1779827074/tapavis_menu/642/prug5pdi3kbttacirhzd.jpg" },
+      { "id": "7lfyz1jg2wl", "name": "Poulet Popcorn à la Thaï", "price": 7.83, "category": "AUTRES", "description": "Poulet popcorn, sauce thaï, echalotes et graines de sésames. (Popcorn chicken, Thaï sauce, green onions, and sesame seeds).", "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1779827074/tapavis_menu/642/sbaaxzi7qxh1033nauyl.jpg" },
+      { "id": "re0o5qjjcz", "name": "Frite Sauce (Sauce, and Fries)", "price": 6.96, "category": "AUTRES", "from": true },
+      { "id": "e6x4imtyt5o", "name": "Frites (Fries)", "price": 6.09, "category": "AUTRES", "from": true },
+      { "id": "stz3wktq4rp", "name": "Mini Ramen Proteine", "price": 6.96, "category": "MENU ENFANT", "description": "Breuvage inclus. (Drink included)." },
+      { "id": "n9kvteajn0i", "name": "Mini Poutine Classique", "price": 6.96, "category": "MENU ENFANT", "description": "Breuvage inclus. (Drink included)." },
+      { "id": "p4t19namh7", "name": "Mini Ramagetti", "price": 6.96, "category": "MENU ENFANT", "description": "Breuvage inclus. (Drink included)." },
+      { "id": "5m85fkg4oz", "name": "Mini Frite et Une Pogo", "price": 6.96, "category": "MENU ENFANT", "description": "Breuvage inclus. (Drink included)." },
+      { "id": "9q4c5g9hs6u", "name": "Pepsi", "price": 2.61, "category": "BREUVAGES" },
+      { "id": "xevcsgsucqp", "name": "Fuze Tea", "price": 2.61, "category": "BREUVAGES" },
+      { "id": "g3vvdkquqzw", "name": "7Up", "price": 2.61, "category": "BREUVAGES" },
+      { "id": "ry5ydwf1btr", "name": "Canada Dry Ginger Ale", "price": 2.61, "category": "BREUVAGES" },
+      { "id": "khkodxgdb4l", "name": "A&W Root Beer", "price": 2.61, "category": "BREUVAGES" },
+      { "id": "rh8ne6l9en", "name": "Crush Orange", "price": 2.61, "category": "BREUVAGES" },
+      { "id": "ejla8jm3lm5", "name": "Gatorade", "price": 4.35, "category": "BREUVAGES" },
+      { "id": "nt6bnss0c9", "name": "Eau Embouteillée", "price": 2.61, "category": "BREUVAGES" },
+      { "id": "qyhvv41wr7i", "name": "Limonade en Bouteille", "price": 2.61, "category": "BREUVAGES" },
+      { "id": "vw55iu9afza", "name": "Eau Pétillante au Citron ESKA", "price": 2.61, "category": "BREUVAGES" },
+      { "id": "dvz6z80h66h", "name": "Bouteille de Jus Oasis", "price": 2.61, "category": "BREUVAGES" }
+    ]
+  };
+  const MENU_PREVIEW_CAT_EN = { 'POUTINE': 'Poutine', 'LES DELECTABLES / RAMEN': 'Ramen / Delectables', 'GUÉDILLES (SUBS)': 'Subs', 'AUTRES': 'Sides', 'MENU ENFANT': 'Kids Menu', 'BREUVAGES': 'Drinks' };
 
   // Short-code generation: 8 chars, no ambiguous (0/O, 1/I/L, U/V)
   const SHORT_CODE_ALPHABET = 'BCDFGHJKMNPQRSTWXYZ23456789';
@@ -461,6 +547,38 @@ module.exports = function(services) {
     }
   }
 
+  // Liasse Restaurants ordering page for this restaurant. business_id 642
+  // is the ordering-system business whose menu this app mirrors (the baked
+  // MENU_PREVIEW images live under tapavis_menu/642). The subdomain is read
+  // from the PLATFORM businesses table at request time — same shared-pool
+  // search_path trick as fetchAppGooglePlaceId — so the link survives a
+  // subdomain rename. Cached per process after the first successful lookup;
+  // when the lookup fails the homepage simply hides its order CTAs.
+  const ORDER_BUSINESS_ID = 642;
+  const ORDER_ROOT_DOMAIN = 'liasse.tech';
+  let orderUrlCache = null;
+  async function fetchOrderUrl() {
+    if (orderUrlCache) return orderUrlCache;
+    try {
+      const row = await db.get(
+        'SELECT subdomain FROM public.businesses WHERE id = $1',
+        [ORDER_BUSINESS_ID]
+      );
+      if (row && row.subdomain) {
+        orderUrlCache = 'https://' + row.subdomain + '.' + ORDER_ROOT_DOMAIN + '/order';
+        if (!fetchOrderUrl._loggedOnce) {
+          console.log('[order-url] resolved ' + orderUrlCache);
+          fetchOrderUrl._loggedOnce = true;
+        }
+        return orderUrlCache;
+      }
+      console.warn('[order-url] business ' + ORDER_BUSINESS_ID + ' not found — hiding order CTAs');
+    } catch (err) {
+      console.warn('[order-url] businesses lookup failed:', err && err.message);
+    }
+    return null;
+  }
+
   async function renderCtx(req) {
     const settings = await getSettings();
     const t = applyTextOverrides(Object.assign({}, T[req.lang] || T.fr), settings, req.lang);
@@ -484,11 +602,9 @@ module.exports = function(services) {
   router.get('/', async function(req, res) {
     try {
       const ctx = await renderCtx(req);
-      const menu = await db.all("SELECT m.* FROM menu_items m LEFT JOIN menu_categories c ON c.slug = m.category WHERE m.available = 1 ORDER BY m.featured DESC, COALESCE(c.id, 999999) ASC, m.position ASC, m.id ASC LIMIT 6").catch(function(){ return []; });
       const platforms = await db.all('SELECT * FROM delivery_platforms WHERE active = 1 ORDER BY position ASC').catch(function(){ return []; });
-      const posts = await db.all('SELECT * FROM posts WHERE published = 1 ORDER BY created_at DESC LIMIT 3').catch(function(){ return []; });
-      const categories = await getMenuCategories();
-      res.render('index', Object.assign(ctx, { menu: menu, platforms: platforms, posts: posts, categories: categories }));
+      const orderUrl = await fetchOrderUrl();
+      res.render('index', Object.assign(ctx, { platforms: platforms, preview: MENU_PREVIEW, previewCatEn: MENU_PREVIEW_CAT_EN, orderUrl: orderUrl }));
     } catch(e) { res.status(500).send('Erreur'); }
   });
 

@@ -1,106 +1,143 @@
 <%- include('partials/header') %>
-<section class="hero">
+<% var CAT_EMOJI = { 'POUTINE': '🍟', 'LES DELECTABLES / RAMEN': '🍜', 'GUÉDILLES (SUBS)': '🥪', 'AUTRES': '🧀', 'MENU ENFANT': '🧒', 'BREUVAGES': '🥤' }; %>
+
+<section class="hero hero-squeeze">
   <img src="<%= (typeof settings!=='undefined' && settings._p_hero_image_url) ? settings._p_hero_image_url : 'https://placehold.co/1600x900/0a0a0a/39FF14/png?text=PoutineFest' %>" alt="<%= t.brand %>" class="hero-img">
   <div class="hero-overlay"></div>
-  <div class="container hero-inner">
-    <h1><%= t.hero_title %></h1>
-    <p><%= t.hero_subtitle %></p>
-    <div class="hero-ctas">
-      <a href="menu" class="btn btn-primary" style="background-color:#39FF14;color:#000"><%= t.cta_menu %> →</a>
-      <a href="reserver" class="btn btn-secondary" style="border-color:#39FF14;color:#39FF14"><%= t.cta_reserve %></a>
+  <div class="hero-banner">
+    <div class="hero-banner-inner">
+      <img src="<%= (typeof settings!=='undefined' && settings._p_nav_logo_url) ? settings._p_nav_logo_url : (typeof appIconUrl !== 'undefined' ? appIconUrl : '') %>" alt="<%= t.brand %>" class="hero-banner-logo" onerror="this.style.display='none'">
+      <span class="hero-banner-divider"></span>
+      <span class="hero-banner-name"><%= settings.business_name || t.brand %></span>
     </div>
   </div>
+  <h1 class="hero-slogan"><%= t.hero_title %></h1>
 </section>
 
-<section class="section">
+<section class="section squeeze-section" id="menu">
   <div class="container">
     <h2 class="section-title"><%= t.menu_title %></h2>
     <p class="section-sub"><%= t.menu_subtitle %></p>
-    <% if (typeof menu !== 'undefined' && menu && menu.length > 0) { %>
-      <div class="menu-grid">
-        <% menu.forEach(function(m) {
-          var catName = '';
-          if (typeof categories !== 'undefined' && categories) {
-            var _c = categories.find(function(x){ return x.slug === m.category; });
-            if (_c) catName = (lang === 'en' && _c.name_en) ? _c.name_en : _c.name_fr;
-          }
-          var _sizes = (typeof parseSizes === 'function') ? parseSizes(m.sizes_json) : null;
-        %>
-        <div class="menu-card">
-          <% if (m.image_url) { %><img src="<%= m.image_url %>" alt="<%= pickLang(m,'name',lang) %>" class="menu-card-img"><% } else { %><div class="menu-card-img"></div><% } %>
-          <div class="menu-card-body">
-            <h3><%= pickLang(m, 'name', lang) %></h3>
-            <p class="desc"><%= pickLang(m, 'description', lang) %></p>
-            <div class="row">
-              <span class="cat-badge"><%= catName || m.category || '' %></span>
-              <% if (_sizes && _sizes.length > 1) { %>
-                <span class="price"><%= lang === 'en' ? 'from' : 'dès' %> <%= formatPrice(Math.min.apply(null, _sizes.map(function(s){ return s.price == null ? Infinity : s.price; }))) %></span>
-              <% } else if (_sizes && _sizes.length === 1) { %>
-                <span class="price"><%= formatPrice(_sizes[0].price) %></span>
-              <% } else { %>
-                <span class="price"><%= formatPrice(m.price) %></span>
-              <% } %>
-            </div>
+  </div>
+  <% if (typeof preview !== 'undefined' && preview && preview.items && preview.items.length > 0) { %>
+  <div class="container">
+    <div class="menu-chips" id="menuChips">
+      <button class="chip active" data-cat="*"><%= lang === 'en' ? 'All' : 'Tout' %></button>
+      <% preview.categories.forEach(function(cat) { %>
+      <button class="chip" data-cat="<%= cat %>"><%= (CAT_EMOJI[cat] ? CAT_EMOJI[cat] + ' ' : '') %><%= (lang === 'en' && typeof previewCatEn !== 'undefined' && previewCatEn[cat]) ? previewCatEn[cat] : cat %></button>
+      <% }); %>
+    </div>
+  </div>
+  <div class="menu-slider" id="menuSlider">
+    <button class="slider-arrow slider-prev" id="sliderPrev" aria-label="<%= lang === 'en' ? 'Previous' : 'Précédent' %>">‹</button>
+    <div class="slider-track" id="sliderTrack">
+      <% preview.items.forEach(function(m) { %>
+      <article class="slide-card" data-cat="<%= m.category %>">
+        <div class="slide-card-imgwrap">
+          <% if (m.imageUrl) { %><img src="<%= m.imageUrl %>" alt="<%= m.name %>" loading="lazy"><% } else { %><div class="slide-card-placeholder"><%= CAT_EMOJI[m.category] || '🍟' %></div><% } %>
+          <span class="slide-cat"><%= (lang === 'en' && typeof previewCatEn !== 'undefined' && previewCatEn[m.category]) ? previewCatEn[m.category] : m.category %></span>
+        </div>
+        <div class="slide-card-body">
+          <div class="slide-card-top">
+            <h3><%= m.name %></h3>
+            <span class="price"><%= m.from ? (lang === 'en' ? 'from ' : 'dès ') : '' %><%= formatPrice(m.price) %></span>
           </div>
+          <% if (m.description) { %><p class="desc"><%= m.description %></p><% } %>
         </div>
-        <% }); %>
-      </div>
-      <p style="text-align:center;margin-top:2.5rem"><a href="menu" class="btn btn-secondary" style="border-color:#39FF14;color:#39FF14"><%= t.view_full_menu %> →</a></p>
-    <% } else { %>
-      <p class="empty-state"><%= t.no_menu %></p>
-    <% } %>
+      </article>
+      <% }); %>
+    </div>
+    <button class="slider-arrow slider-next" id="sliderNext" aria-label="<%= lang === 'en' ? 'Next' : 'Suivant' %>">›</button>
+    <div class="slider-progress"><span id="sliderBar"></span></div>
   </div>
+  <% } else { %>
+  <div class="container"><p class="empty-state"><%= t.no_menu %></p></div>
+  <% } %>
 </section>
 
-<section class="section alt-section">
-  <div class="container">
-    <h2 class="section-title"><%= t.delivery_title %></h2>
-    <p class="section-sub"><%= t.delivery_subtitle %></p>
+<section class="section squeeze-section alt-section">
+  <div class="container order-band">
+    <div class="order-band-text">
+      <h2><%= lang === 'en' ? 'Craving a hot poutine? It only takes a minute.' : 'Une envie de poutine bien chaude? Ça prend une minute.' %></h2>
+      <p><%= lang === 'en' ? 'Order for pickup directly from the restaurant — squeaky cheese curds guaranteed.' : 'Commandez pour emporter directement du restaurant — fromage en grains couinant garanti.' %></p>
+    </div>
+    <div class="order-band-ctas">
+      <% if (typeof orderUrl !== 'undefined' && orderUrl) { %>
+      <a href="<%= orderUrl %>" target="_blank" rel="noopener" class="btn btn-primary btn-order"><%= lang === 'en' ? 'Order now' : 'Commander maintenant' %> →</a>
+      <% } %>
+      <a href="reserver" class="btn btn-secondary"><%= t.nav_reserve %></a>
+    </div>
     <% if (typeof platforms !== 'undefined' && platforms && platforms.length > 0) { %>
-      <div class="delivery-grid">
-        <% platforms.forEach(function(p) { %>
-        <div class="delivery-card">
-          <% if (p.logo_url) { %><img src="<%= p.logo_url %>" alt="<%= p.name %>"><% } else { %><div class="logo-placeholder">🚚</div><% } %>
-          <h3><%= p.name %></h3>
-          <a href="<%= p.link_url %>" target="_blank" rel="noopener" class="btn btn-primary" style="background-color:#39FF14;color:#000"><%= t.order_now %></a>
-        </div>
-        <% }); %>
-      </div>
-    <% } else { %>
-      <p class="empty-state"><%= t.no_platforms %></p>
+    <div class="order-band-platforms">
+      <span><%= lang === 'en' ? 'Also on' : 'Aussi sur' %></span>
+      <% platforms.forEach(function(p) { %>
+        <a href="<%= p.link_url %>" target="_blank" rel="noopener" title="<%= p.name %>"><% if (p.logo_url) { %><img src="<%= p.logo_url %>" alt="<%= p.name %>"><% } else { %><%= p.name %><% } %></a>
+      <% }); %>
+    </div>
     <% } %>
   </div>
 </section>
 
-<section class="section cta-section">
-  <div class="container">
-    <div class="cta-box">
-      <h2><%= t.reserve_title %></h2>
-      <p><%= t.reserve_subtitle %></p>
-      <a href="reserver" class="btn btn-primary" style="background-color:#39FF14;color:#000"><%= t.all_truck_cta %> →</a>
-    </div>
-  </div>
-</section>
-
-<% if (typeof posts !== 'undefined' && posts && posts.length > 0) { %>
-<section class="section alt-section">
-  <div class="container">
-    <h2 class="section-title"><%= t.latest_news %></h2>
-    <div class="posts-grid">
-    <% posts.forEach(function(p) { %>
-      <div class="post-card">
-        <% if (p.image_url) { %><img src="<%= p.image_url %>" alt="<%= p.title %>"><% } %>
-        <div class="post-card-body">
-          <% if (p.category) { %><span class="cat-badge"><%= p.category %></span><% } %>
-          <h3><%= p.title %></h3>
-          <p class="date"><%= formatDate(p.created_at, lang) %></p>
-          <% if (p.content) { %><p class="excerpt"><%= String(p.content).substring(0,160) %><%= String(p.content).length > 160 ? '...' : '' %></p><% } %>
-        </div>
-      </div>
-    <% }); %>
-    </div>
-  </div>
-</section>
+<% if (typeof orderUrl !== 'undefined' && orderUrl) { %>
+<a href="<%= orderUrl %>" target="_blank" rel="noopener" class="sticky-order-cta"><%= lang === 'en' ? 'Order now' : 'Commander' %> →</a>
 <% } %>
+
+<script>
+(function(){
+  var track = document.getElementById('sliderTrack');
+  if (!track) return;
+  var prev = document.getElementById('sliderPrev');
+  var next = document.getElementById('sliderNext');
+  var bar = document.getElementById('sliderBar');
+  var chipsWrap = document.getElementById('menuChips');
+  var allCards = Array.prototype.slice.call(track.querySelectorAll('.slide-card'));
+
+  function visibleCards(){
+    return allCards.filter(function(c){ return !c.classList.contains('chip-hidden'); });
+  }
+  function cardStep(){
+    var v = visibleCards();
+    if (v.length < 2) return v[0] ? v[0].offsetWidth : 0;
+    return v[1].offsetLeft - v[0].offsetLeft;
+  }
+  function currentIndex(){
+    var step = cardStep();
+    return step ? Math.round(track.scrollLeft / step) : 0;
+  }
+  function goTo(i){
+    var max = visibleCards().length - 1;
+    if (max < 0) return;
+    if (i < 0) i = max; else if (i > max) i = 0;
+    track.scrollTo({ left: i * cardStep(), behavior: 'smooth' });
+  }
+  function syncBar(){
+    var maxScroll = track.scrollWidth - track.clientWidth;
+    bar.style.width = (maxScroll > 0 ? Math.min(100, Math.max(0, (track.scrollLeft / maxScroll) * 100)) : 100) + '%';
+  }
+  syncBar();
+  track.addEventListener('scroll', syncBar, { passive: true });
+  window.addEventListener('resize', syncBar);
+
+  prev.addEventListener('click', function(){ goTo(currentIndex() - 1); pause(); });
+  next.addEventListener('click', function(){ goTo(currentIndex() + 1); pause(); });
+
+  chipsWrap.addEventListener('click', function(ev){
+    var chip = ev.target.closest('.chip');
+    if (!chip) return;
+    var cat = chip.getAttribute('data-cat');
+    chipsWrap.querySelectorAll('.chip').forEach(function(c){ c.classList.toggle('active', c === chip); });
+    allCards.forEach(function(card){
+      card.classList.toggle('chip-hidden', cat !== '*' && card.getAttribute('data-cat') !== cat);
+    });
+    track.scrollTo({ left: 0, behavior: 'auto' });
+    syncBar();
+  });
+
+  var timer = setInterval(function(){ goTo(currentIndex() + 1); }, 4500);
+  function pause(){ if (timer) { clearInterval(timer); timer = null; } }
+  track.addEventListener('pointerdown', pause, { passive: true });
+  track.addEventListener('wheel', pause, { passive: true });
+})();
+</script>
 
 <%- include('partials/footer') %>

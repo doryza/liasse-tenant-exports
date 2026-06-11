@@ -6,52 +6,17 @@
 <meta name="theme-color" content="#39FF14">
 <title><%= settings.business_name || t.brand %></title>
 <meta name="description" content="<%= settings.tagline || t.hero_subtitle %>">
+<% var __faviconUrl = (typeof appIconUrl !== 'undefined' && appIconUrl) ? appIconUrl : ((typeof settings !== 'undefined' && settings._p_nav_logo_url) ? settings._p_nav_logo_url : 'https://res.cloudinary.com/duhp69meg/image/upload/v1779217153/subscriber_pwa_icons/inaklcotzdjouhzm8ues.png'); %>
+<link rel="icon" type="image/png" href="<%= __faviconUrl %>">
+<link rel="apple-touch-icon" href="<%= __faviconUrl %>">
 <link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,500;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="public/css/styles.css">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="<%= t.brand %>">
 </head>
-<body>
-<header class="site-header">
-  <div class="container nav-row">
-    <a href="." class="brand">
-      <img src="<%= (typeof settings!=='undefined' && settings._p_nav_logo_url) ? settings._p_nav_logo_url : (typeof appIconUrl !== 'undefined' ? appIconUrl : '') %>" alt="<%= t.brand %>" class="brand-logo" onerror="this.style.display='none'">
-      <span class="brand-name"><%= t.brand %></span>
-    </a>
-    <nav class="desktop-nav">
-      <a href="."><%= t.nav_home %></a>
-      <a href="menu"><%= t.nav_menu %></a>
-      <a href="offres"><%= t.nav_offers %></a>
-      <a href="livraison"><%= t.nav_delivery %></a>
-      <a href="apropos"><%= t.nav_about %></a>
-      <a href="reserver" class="nav-cta" style="background-color:#39FF14;color:#000"><%= t.nav_reserve %></a>
-      <a href="#" data-login-btn class="nav-login"><%= t.login %></a>
-      <span class="lang-toggle">
-        <a href="?lang=fr" class="<%= lang==='fr'?'active':'' %>">FR</a><span>|</span><a href="?lang=en" class="<%= lang==='en'?'active':'' %>">EN</a>
-      </span>
-    </nav>
-    <button class="hamburger" aria-label="Menu" id="hamburgerBtn">
-      <span></span><span></span><span></span>
-    </button>
-  </div>
-  <div class="mobile-menu" id="mobileMenu">
-    <a href="."><%= t.nav_home %></a>
-    <a href="menu"><%= t.nav_menu %></a>
-    <a href="offres"><%= t.nav_offers %></a>
-    <a href="livraison"><%= t.nav_delivery %></a>
-    <a href="apropos"><%= t.nav_about %></a>
-    <a href="reserver"><%= t.nav_reserve %></a>
-    <a href="#" data-login-btn><%= t.login %></a>
-    <div class="mobile-lang">
-      <a href="?lang=fr" class="<%= lang==='fr'?'active':'' %>">FR</a><span>|</span><a href="?lang=en" class="<%= lang==='en'?'active':'' %>">EN</a>
-    </div>
-  </div>
-</header>
-<script>
-(function(){
-  var b = document.getElementById('hamburgerBtn');
-  var m = document.getElementById('mobileMenu');
-  if (b && m) b.addEventListener('click', function(){ m.classList.toggle('open'); });
-})();
-</script>
+<body class="squeeze">
+<a class="lang-switch" href="<%= lang === 'en' ? '?lang=fr' : '?lang=en' %>" aria-label="<%= lang === 'en' ? 'Passer au français' : 'Switch to English' %>"><%= lang === 'en' ? 'FR' : 'EN' %></a>
