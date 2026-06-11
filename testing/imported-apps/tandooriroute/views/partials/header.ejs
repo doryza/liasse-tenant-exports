@@ -6,6 +6,9 @@
 <meta name="theme-color" content="#F5A524">
 <title><%= settings.business_name || t.brand %></title>
 <meta name="description" content="<%= settings.tagline || t.hero_subtitle %>">
+<% var __faviconUrl = (typeof appIconUrl !== 'undefined' && appIconUrl) ? appIconUrl : ((typeof settings !== 'undefined' && settings._p_nav_logo_url) ? settings._p_nav_logo_url : 'https://res.cloudinary.com/duhp69meg/image/upload/v1779570823/subscriber_pwa_icons/zpejwdfs8wyfvhd54jyq.png'); %>
+<link rel="icon" type="image/png" href="<%= __faviconUrl %>">
+<link rel="apple-touch-icon" href="<%= __faviconUrl %>">
 <link rel="manifest" href="manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
