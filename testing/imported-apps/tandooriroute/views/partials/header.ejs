@@ -16,17 +16,4 @@
 <meta name="apple-mobile-web-app-title" content="<%= t.brand %>">
 </head>
 <body class="squeeze">
-<header class="site-header">
-  <div class="container nav-row">
-    <a href="." class="brand">
-      <img src="<%= (typeof settings!=='undefined' && settings._p_nav_logo_url) ? settings._p_nav_logo_url : (typeof appIconUrl !== 'undefined' ? appIconUrl : '') %>" alt="<%= t.brand %>" class="brand-logo" onerror="this.style.display='none'">
-      <span class="brand-name"><%= t.brand %></span>
-    </a>
-    <nav class="desktop-nav header-actions">
-      <span class="lang-toggle">
-        <a href="?lang=fr" class="<%= lang==='fr'?'active':'' %>">FR</a><span>|</span><a href="?lang=en" class="<%= lang==='en'?'active':'' %>">EN</a>
-      </span>
-      <a href="https://tandoori-route-blain.tapavis.com/order" class="nav-cta"><%= lang === 'en' ? 'Order now' : 'Commander' %></a>
-    </nav>
-  </div>
-</header>
+<a class="lang-switch" href="<%= lang === 'en' ? '?lang=fr' : '?lang=en' %>" aria-label="<%= lang === 'en' ? 'Passer au français' : 'Switch to English' %>"><%= lang === 'en' ? 'FR' : 'EN' %></a>
