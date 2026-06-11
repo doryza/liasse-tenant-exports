@@ -8,3 +8,18 @@ CREATE TABLE IF NOT EXISTS certifications (id SERIAL PRIMARY KEY, name TEXT NOT 
 CREATE TABLE IF NOT EXISTS quote_requests (id SERIAL PRIMARY KEY, name TEXT NOT NULL, email TEXT, phone TEXT, service_type TEXT, contact_method TEXT, address TEXT, details TEXT, extra_data TEXT, status TEXT DEFAULT 'new', admin_notes TEXT, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW());
 CREATE TABLE IF NOT EXISTS appointments (id SERIAL PRIMARY KEY, name TEXT NOT NULL, email TEXT, phone TEXT, service TEXT, appointment_date DATE, appointment_time TEXT, contact_method TEXT, address TEXT, message TEXT, status TEXT DEFAULT 'new', admin_notes TEXT, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW());
 CREATE TABLE IF NOT EXISTS contact_messages (id SERIAL PRIMARY KEY, name TEXT, email TEXT, phone TEXT, message TEXT, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW());
+
+-- === voice-module-v1 START ===
+CREATE TABLE IF NOT EXISTS voice_submissions (
+  id BIGSERIAL PRIMARY KEY,
+  user_id INTEGER,
+  fields JSONB NOT NULL,
+  language TEXT,
+  voice_session_id TEXT,
+  status TEXT DEFAULT 'new',
+  assigned_to_sales_id INTEGER,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_voice_submissions_status ON voice_submissions (status);
+CREATE INDEX IF NOT EXISTS idx_voice_submissions_created ON voice_submissions (created_at DESC);
+-- === voice-module-v1 END ===

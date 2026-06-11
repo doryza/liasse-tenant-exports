@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-06-11T05:07:45.481Z",
+  "exportedAt": "2026-06-11T05:08:14.771Z",
   "tables": {
     "admin_users": {
       "columns": [
@@ -115,7 +115,7 @@
         "path",
         "created_at"
       ],
-      "totalRows": 209,
+      "totalRows": 216,
       "sampleRows": [
         {
           "id": 1,
@@ -573,6 +573,20 @@
         "message",
         "created_at",
         "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "voice_submissions": {
+      "columns": [
+        "id",
+        "user_id",
+        "fields",
+        "language",
+        "voice_session_id",
+        "status",
+        "assigned_to_sales_id",
+        "created_at"
       ],
       "totalRows": 0,
       "sampleRows": []

@@ -30,5 +30,64 @@ router.delete('/api/admin/contact_messages/:id',requireAdmin,async function(req,
     res.redirect('./');
   });
 
+  // === voice-module-v1 START ===
+  router.get('/voice-assistant', services.auth.optionalAuth, function(req, res) {
+    res.render('voice-assistant', {
+      business: (services.config && services.config.business) || services.business || {},
+      tenantUser: req.tenantUser || null,
+    });
+  });
+
+  router.post('/voice-assistant/start', services.auth.optionalAuth, async function(req, res) {
+    try {
+      var endUserId = req.tenantUser ? req.tenantUser.id : null;
+      var result = await services.voiceTokenMint.mint({ endUserId: endUserId, ip: req.ip });
+      if (!result.ok) return res.status(result.status || 400).json({ error: result.error, reason: result.reason });
+      res.json({
+        token: result.token,
+        model: result.model,
+        expireTime: result.expireTime,
+        sessionId: result.sessionId,
+        maxSeconds: result.maxSeconds,
+      });
+    } catch (err) {
+      res.status(503).json({ error: 'voice_unavailable', detail: err.message });
+    }
+  });
+
+  router.post('/voice-assistant/finalize', services.auth.optionalAuth, async function(req, res) {
+    try {
+      var body = req.body || {};
+      var result = await services.voiceTokenMint.finalize({
+        sessionId: body.sessionId,
+        durationMs: body.durationMs,
+        inputTokens: body.inputTokens,
+        outputTokens: body.outputTokens,
+        abortReason: body.abortReason || null,
+      });
+      res.json(result);
+    } catch (err) {
+      res.status(500).json({ error: 'finalize_failed', detail: err.message });
+    }
+  });
+
+  router.post('/voice-assistant/submit', services.auth.optionalAuth, async function(req, res) {
+    try {
+      var fields = req.body || {};
+      await services.db.query(
+        'INSERT INTO voice_submissions (user_id, fields, language, status, created_at) VALUES ($1, $2, $3, $4, NOW())',
+        [(req.tenantUser && req.tenantUser.id) || null, JSON.stringify(fields), 'both', 'new']
+      );
+      var target = 'load@liasse.tech';
+      if (target && services.email && services.email.send) {
+        try { await services.email.send({ to: target, subject: 'New voice submission', text: JSON.stringify(fields, null, 2) }); } catch (_) { /* non-fatal */ }
+      }
+      res.redirect('/voice-assistant?submitted=1');
+    } catch (err) {
+      console.error('[voice-assistant submit]', err);
+      res.status(500).send('Submit failed');
+    }
+  });
+  // === voice-module-v1 END ===
 
 return router;};

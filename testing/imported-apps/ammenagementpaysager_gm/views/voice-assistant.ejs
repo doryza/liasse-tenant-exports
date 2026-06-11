@@ -1,0 +1,350 @@
+<!-- voice-module-v1 START -->
+<%
+  const voiceFields = [{"key":"name","label_fr":"Nom","label_en":"Name","type":"text","required":true,"custom":false},{"key":"email","label_fr":"Courriel","label_en":"Email","type":"email","required":true,"custom":false},{"key":"phone","label_fr":"Téléphone","label_en":"Phone","type":"phone","required":true,"custom":false},{"key":"address","label_fr":"Adresse","label_en":"Address","type":"text","required":false,"custom":false},{"key":"message","label_fr":"Détails","label_en":"Project description","type":"textarea","required":false,"custom":false}];
+  const voiceLanguage = 'both';
+  const voiceMaxSec = 300;
+%>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title><%= business.name || 'Voice Assistant' %></title>
+  <link rel="stylesheet" href="/styles.css">
+  <script type="importmap">{ "imports": { "@google/genai": "https://esm.sh/@google/genai@^1.0.0" } }</script>
+</head>
+<body>
+  <main style="max-width:42rem;margin:2rem auto;padding:1rem;font-family:system-ui,sans-serif">
+    <h1 style="font-size:1.5rem;font-weight:600">Voice Assistant</h1>
+    <p style="color:#666">Touchez le microphone ou remplissez le formulaire. · Tap the microphone or fill the form below.</p>
+
+    <div style="display:flex;align-items:center;gap:0.75rem;margin:1rem 0;flex-wrap:wrap">
+      <button id="va-mic" type="button" style="padding:0.75rem 1.25rem;border-radius:9999px;background:#2563eb;color:white;border:0;font-size:1rem;cursor:pointer">
+        Démarrer la voix · Start voice session
+      </button>
+      <button id="va-stop" type="button" style="display:none;padding:0.75rem 1.25rem;border-radius:9999px;background:#dc2626;color:white;border:0;font-size:1rem;cursor:pointer">
+        Arrêter · Stop
+      </button>
+      <span id="va-state" style="font-size:0.875rem;color:#6b7280"></span>
+    </div>
+    <p id="va-transcript" style="font-size:0.875rem;color:#9ca3af;min-height:1.25rem;margin:0 0 1rem 0;font-style:italic"></p>
+
+    <form id="va-form" method="POST" action="/voice-assistant/submit" style="display:grid;gap:0.75rem">
+      <% voiceFields.forEach(function(f) { %>
+        <label style="display:grid;gap:0.25rem">
+          <span style="font-size:0.875rem;color:#374151"><%= f.label_fr %> / <%= f.label_en %><%= f.required ? ' *' : '' %></span>
+          <% if (f.type === 'textarea') { %>
+            <textarea name="<%= f.key %>" <%= f.required ? 'required' : '' %> rows="3" style="border:1px solid #d1d5db;border-radius:0.375rem;padding:0.5rem"></textarea>
+          <% } else { %>
+            <input name="<%= f.key %>" type="<%= f.type === 'email' ? 'email' : f.type === 'phone' ? 'tel' : 'text' %>" <%= f.required ? 'required' : '' %> style="border:1px solid #d1d5db;border-radius:0.375rem;padding:0.5rem">
+          <% } %>
+        </label>
+      <% }); %>
+      <button type="submit" style="padding:0.625rem 1rem;background:#16a34a;color:white;border:0;border-radius:0.375rem;font-weight:500;cursor:pointer">
+        Envoyer · Submit
+      </button>
+    </form>
+
+    <div id="va-status" style="margin-top:1rem;font-size:0.875rem;color:#6b7280"></div>
+  </main>
+
+  <script type="module">
+  import { GoogleGenAI } from '@google/genai';
+
+  const VOICE_LANG = 'fr';
+  const I18N = VOICE_LANG === 'en' ? {
+    connecting: 'Connecting…', listening: 'Listening', speaking: 'Speaking…',
+    micDenied: 'Microphone permission denied.', audioFail: 'Audio not available on this device.',
+    voiceDown: 'Voice unavailable.', connectFail: 'Voice connection failed.',
+  } : {
+    connecting: 'Connexion…', listening: "À l'écoute", speaking: 'Réponse…',
+    micDenied: 'Microphone refusé.', audioFail: 'Audio indisponible sur cet appareil.',
+    voiceDown: 'Voix indisponible.', connectFail: 'Connexion vocale échouée.',
+  };
+
+  const LIVE_INPUT_SAMPLE_RATE = 16000;
+  const LIVE_OUTPUT_SAMPLE_RATE = 24000;
+
+  function base64Encode(bytes) {
+    let s = ''; const c = 0x8000;
+    for (let i = 0; i < bytes.length; i += c) s += String.fromCharCode.apply(null, Array.from(bytes.subarray(i, i + c)));
+    return btoa(s);
+  }
+  function base64Decode(b64) {
+    const b = atob(b64); const o = new Uint8Array(b.length);
+    for (let i = 0; i < b.length; i++) o[i] = b.charCodeAt(i);
+    return o;
+  }
+  function floatToPcm16Base64(f32) {
+    const o = new Int16Array(f32.length);
+    for (let i = 0; i < f32.length; i++) {
+      const s = Math.max(-1, Math.min(1, f32[i]));
+      o[i] = s < 0 ? s * 0x8000 : s * 0x7fff;
+    }
+    return base64Encode(new Uint8Array(o.buffer));
+  }
+  function pcm16Base64ToAudioBuffer(ctx, b64) {
+    const b = base64Decode(b64);
+    const i16 = new Int16Array(b.buffer, b.byteOffset, b.byteLength / 2);
+    const buf = ctx.createBuffer(1, i16.length, LIVE_OUTPUT_SAMPLE_RATE);
+    const ch = buf.getChannelData(0);
+    for (let i = 0; i < i16.length; i++) ch[i] = i16[i] / 0x8000;
+    return buf;
+  }
+
+  const micBtn = document.getElementById('va-mic');
+  const stopBtn = document.getElementById('va-stop');
+  const stateEl = document.getElementById('va-state');
+  const transcriptEl = document.getElementById('va-transcript');
+  const statusEl = document.getElementById('va-status');
+  const formEl = document.getElementById('va-form');
+
+  const formInputs = {};
+  formEl.querySelectorAll('[name]').forEach(function(el) { formInputs[el.name] = el; });
+  // Mark fields as user-typed so the voice tool doesn't overwrite manual entries
+  // (STT mishears emails / phone numbers — typed values are authoritative).
+  formEl.querySelectorAll('[name]').forEach(function(el) {
+    el.addEventListener('input', function() { if (el.value && el.value.trim()) el.dataset.userTyped = '1'; });
+  });
+
+  const state = {
+    session: null, inputCtx: null, outputCtx: null,
+    micStream: null, micSource: null, scriptProcessor: null,
+    playbackSources: new Set(), nextStart: 0,
+    activeSessionId: null, sessionStartedAt: 0, reported: false,
+    usage: { inputTokens: 0, outputTokens: 0 },
+    pendingAssistant: '',
+  };
+
+  function setStatus(t) { statusEl.textContent = t || ''; }
+  function setState(t) { stateEl.textContent = t || ''; }
+  function showRunning(running) {
+    micBtn.style.display = running ? 'none' : '';
+    stopBtn.style.display = running ? '' : 'none';
+  }
+
+  function reportSessionEnd(reason, usage) {
+    if (state.reported || !state.activeSessionId) return;
+    state.reported = true;
+    const u = usage || state.usage;
+    const payload = {
+      sessionId: state.activeSessionId,
+      durationMs: Math.max(0, Date.now() - state.sessionStartedAt),
+      inputTokens: u.inputTokens || 0,
+      outputTokens: u.outputTokens || 0,
+      abortReason: reason || null,
+    };
+    const body = new Blob([JSON.stringify(payload)], { type: 'application/json' });
+    try {
+      if (!(navigator.sendBeacon && navigator.sendBeacon('/voice-assistant/finalize', body))) {
+        fetch('/voice-assistant/finalize', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload), keepalive: true }).catch(function(){});
+      }
+    } catch (_) {}
+    state.activeSessionId = null;
+    state.sessionStartedAt = 0;
+  }
+
+  function stopPlayback() {
+    state.playbackSources.forEach(function(s) { try { s.stop(); } catch (_) {} });
+    state.playbackSources.clear();
+    state.nextStart = 0;
+  }
+
+  function enqueueAudio(b64) {
+    const ctx = state.outputCtx;
+    if (!ctx) return;
+    let buffer;
+    try { buffer = pcm16Base64ToAudioBuffer(ctx, b64); } catch (_) { return; }
+    const startAt = Math.max(state.nextStart, ctx.currentTime);
+    const src = ctx.createBufferSource();
+    src.buffer = buffer;
+    src.connect(ctx.destination);
+    src.addEventListener('ended', function() {
+      state.playbackSources.delete(src);
+      if (state.playbackSources.size === 0) setState(I18N.listening);
+    });
+    src.start(startAt);
+    state.nextStart = startAt + buffer.duration;
+    state.playbackSources.add(src);
+    setState(I18N.speaking);
+  }
+
+  function wireUpMic() {
+    const stream = state.micStream;
+    const ctx = state.inputCtx;
+    if (!stream || !ctx) return;
+    const source = ctx.createMediaStreamSource(stream);
+    state.micSource = source;
+    const proc = ctx.createScriptProcessor(2048, 1, 1);
+    state.scriptProcessor = proc;
+    proc.onaudioprocess = function(e) {
+      const session = state.session;
+      if (!session) return;
+      const data = e.inputBuffer.getChannelData(0);
+      const copy = new Float32Array(data.length);
+      copy.set(data);
+      try {
+        session.sendRealtimeInput({
+          audio: { data: floatToPcm16Base64(copy), mimeType: 'audio/pcm;rate=' + LIVE_INPUT_SAMPLE_RATE },
+        });
+      } catch (_) {}
+    };
+    source.connect(proc);
+    proc.connect(ctx.destination);
+  }
+
+  function handleToolCall(msg) {
+    const calls = (msg.toolCall && msg.toolCall.functionCalls) || [];
+    if (!calls.length) return;
+    const responses = [];
+    let allComplete = false;
+    for (const call of calls) {
+      try {
+        if (call.name === 'updateFormDraft') {
+          const args = call.args || {};
+          const key = String(args.key || '').trim();
+          const value = String(args.value || '').trim();
+          const complete = !!args.complete;
+          if (key && formInputs[key] && !formInputs[key].dataset.userTyped) {
+            formInputs[key].value = value;
+            formInputs[key].dispatchEvent(new Event('input', { bubbles: true }));
+          }
+          if (complete) allComplete = true;
+          responses.push({ id: call.id, name: call.name, response: { ok: true } });
+        } else {
+          responses.push({ id: call.id, name: call.name, response: { ok: false, reason: 'unknown_tool' } });
+        }
+      } catch (e) {
+        responses.push({ id: call.id, name: call.name, response: { ok: false, reason: 'exception' } });
+      }
+    }
+    if (responses.length) {
+      try { state.session && state.session.sendToolResponse({ functionResponses: responses }); } catch (_) {}
+    }
+    if (allComplete) setTimeout(function() { teardown('completed'); }, 1500);
+  }
+
+  function handleMessage(msg) {
+    if (msg.usageMetadata) {
+      const u = msg.usageMetadata;
+      // Gemini sometimes reports totalTokenCount as session-cumulative, sometimes
+      // emits per-turn deltas — same handling as the dashboard voice client.
+      if (u.totalTokenCount) {
+        state.usage.inputTokens = u.promptTokenCount || Math.round(u.totalTokenCount * 0.4);
+        state.usage.outputTokens = u.candidatesTokenCount || u.responseTokenCount || Math.round(u.totalTokenCount * 0.6);
+      } else {
+        state.usage.inputTokens += (u.promptTokenCount || 0);
+        state.usage.outputTokens += (u.candidatesTokenCount || u.responseTokenCount || 0);
+      }
+    }
+    const server = msg.serverContent;
+    if (server && server.interrupted) stopPlayback();
+    if (server && server.outputTranscription && server.outputTranscription.text) {
+      state.pendingAssistant += server.outputTranscription.text;
+      transcriptEl.textContent = state.pendingAssistant;
+    }
+    const parts = (server && server.modelTurn && server.modelTurn.parts) || [];
+    for (const part of parts) {
+      const inline = part && part.inlineData;
+      if (inline && inline.mimeType && inline.mimeType.indexOf('audio/pcm') === 0 && inline.data) {
+        enqueueAudio(inline.data);
+      }
+    }
+    if (server && (server.turnComplete || server.generationComplete)) state.pendingAssistant = '';
+    if (msg.toolCall) handleToolCall(msg);
+  }
+
+  async function connect() {
+    micBtn.disabled = true;
+    setStatus(I18N.connecting);
+    setState('');
+
+    const AC = window.AudioContext || window.webkitAudioContext;
+    try {
+      state.outputCtx = new AC({ sampleRate: LIVE_OUTPUT_SAMPLE_RATE });
+      state.inputCtx = new AC({ sampleRate: LIVE_INPUT_SAMPLE_RATE });
+    } catch (_) { setStatus(I18N.audioFail); micBtn.disabled = false; return; }
+
+    try {
+      state.micStream = await navigator.mediaDevices.getUserMedia({
+        audio: { channelCount: 1, echoCancellation: true, noiseSuppression: true, autoGainControl: true },
+      });
+    } catch (_) { setStatus(I18N.micDenied); micBtn.disabled = false; return; }
+
+    let tokenData;
+    try {
+      const resp = await fetch('/voice-assistant/start', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+      if (!resp.ok) { setStatus(I18N.voiceDown); micBtn.disabled = false; return; }
+      tokenData = await resp.json();
+    } catch (_) { setStatus(I18N.voiceDown); micBtn.disabled = false; return; }
+
+    state.activeSessionId = tokenData.sessionId || null;
+    state.sessionStartedAt = Date.now();
+    state.reported = false;
+    state.usage = { inputTokens: 0, outputTokens: 0 };
+
+    try {
+      const ai = new GoogleGenAI({ apiKey: tokenData.token, httpOptions: { apiVersion: 'v1alpha' } });
+      const sessionPromise = ai.live.connect({
+        model: tokenData.model,
+        config: { responseModalities: ['AUDIO'] },
+        callbacks: {
+          onopen: function() {
+            if (state.outputCtx && state.outputCtx.state === 'suspended') state.outputCtx.resume().catch(function(){});
+            if (state.inputCtx && state.inputCtx.state === 'suspended') state.inputCtx.resume().catch(function(){});
+            showRunning(true);
+            setStatus('');
+            setState(I18N.listening);
+            wireUpMic();
+          },
+          onmessage: handleMessage,
+          onerror: function(e) { console.warn('[voice] error', (e && e.message) || e); setStatus(I18N.connectFail); teardown('error'); },
+          onclose: function(e) { console.log('[voice] closed', e && e.code); if (state.session) teardown('disconnected'); },
+        },
+      });
+      state.session = await sessionPromise;
+    } catch (err) {
+      console.error('[voice] connect failed', err);
+      setStatus(I18N.connectFail);
+      teardown('connect_failed');
+    }
+  }
+
+  function teardown(reason) {
+    reportSessionEnd(reason);
+    try { state.session && state.session.close(); } catch (_) {}
+    state.session = null;
+    if (state.scriptProcessor) {
+      try { state.scriptProcessor.disconnect(); } catch (_) {}
+      state.scriptProcessor.onaudioprocess = null;
+      state.scriptProcessor = null;
+    }
+    if (state.micSource) { try { state.micSource.disconnect(); } catch (_) {} state.micSource = null; }
+    if (state.micStream) {
+      state.micStream.getTracks().forEach(function(t) { try { t.stop(); } catch (_) {} });
+      state.micStream = null;
+    }
+    stopPlayback();
+    if (state.inputCtx) { try { state.inputCtx.close(); } catch (_) {} state.inputCtx = null; }
+    if (state.outputCtx) { try { state.outputCtx.close(); } catch (_) {} state.outputCtx = null; }
+    state.pendingAssistant = '';
+    micBtn.disabled = false;
+    showRunning(false);
+    setState('');
+    transcriptEl.textContent = '';
+  }
+
+  micBtn.addEventListener('click', connect);
+  stopBtn.addEventListener('click', function() { teardown('user_stop'); });
+  window.addEventListener('pagehide', function() { reportSessionEnd('page_unload'); });
+  window.addEventListener('beforeunload', function() { reportSessionEnd('page_unload'); });
+  document.addEventListener('visibilitychange', function() {
+    if (document.visibilityState === 'hidden') reportSessionEnd('visibility_hidden');
+  });
+
+  // External hook for debug / tests; the audio pipeline calls this internally.
+  window.__voiceAssistantReportEnd = reportSessionEnd;
+  </script>
+</body>
+</html>
+<!-- voice-module-v1 END -->
