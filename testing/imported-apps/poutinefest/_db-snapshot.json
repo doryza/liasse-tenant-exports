@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-05-22T17:16:22.743Z",
+  "exportedAt": "2026-06-11T04:17:15.036Z",
   "tables": {
     "admin_invites": {
       "columns": [
@@ -13,7 +13,7 @@
         "accepted_at",
         "created_at"
       ],
-      "totalRows": 2,
+      "totalRows": 3,
       "sampleRows": [
         {
           "id": 1,
@@ -36,6 +36,17 @@
           "expires_at": "2026-05-29T14:29:55.318Z",
           "accepted_at": "2026-05-22T14:30:21.429Z",
           "created_at": "2026-05-22T14:29:55.323Z"
+        },
+        {
+          "id": 3,
+          "email": "lepoutinefest@hotmail.com",
+          "token": "5566266bfc4c4bd0bda84c00ca14ae05bf63fda38238fe64038093b999e4d13e",
+          "role": "admin",
+          "status": "accepted",
+          "invited_by": null,
+          "expires_at": "2026-06-02T18:24:08.392Z",
+          "accepted_at": "2026-05-29T17:57:47.080Z",
+          "created_at": "2026-05-26T18:24:08.400Z"
         }
       ]
     },
@@ -69,24 +80,8 @@
         "is_active",
         "created_at"
       ],
-      "totalRows": 2,
+      "totalRows": 3,
       "sampleRows": [
-        {
-          "id": 1,
-          "name": "Dory",
-          "email": "doryzawahry@gmail.com",
-          "password_hash": "$2b$10$LQIOZFQKCXIl4I/si84w0uPyXQahbWGKsNZWv6ExczBN8TP8gFT/y",
-          "display_name": null,
-          "role": "admin",
-          "active": 1,
-          "activation_token": null,
-          "invited_by": null,
-          "invite_token": null,
-          "invite_expires_at": null,
-          "last_login_at": "2026-05-22T05:35:14.140Z",
-          "is_active": true,
-          "created_at": "2026-05-21T04:01:18.660Z"
-        },
         {
           "id": 2,
           "name": "Dory",
@@ -102,6 +97,38 @@
           "last_login_at": "2026-05-22T14:34:58.159Z",
           "is_active": true,
           "created_at": "2026-05-22T14:30:21.420Z"
+        },
+        {
+          "id": 1,
+          "name": "Dory",
+          "email": "doryzawahry@gmail.com",
+          "password_hash": "$2b$10$LQIOZFQKCXIl4I/si84w0uPyXQahbWGKsNZWv6ExczBN8TP8gFT/y",
+          "display_name": null,
+          "role": "admin",
+          "active": 0,
+          "activation_token": null,
+          "invited_by": null,
+          "invite_token": null,
+          "invite_expires_at": null,
+          "last_login_at": "2026-05-22T05:35:14.140Z",
+          "is_active": true,
+          "created_at": "2026-05-21T04:01:18.660Z"
+        },
+        {
+          "id": 3,
+          "name": "Juliette",
+          "email": "lepoutinefest@hotmail.com",
+          "password_hash": "$2b$10$bXGf0fbLk6sgiZxqCfh2N.RTWMs68gYMAzCEau2RbiOSzBlfGIBDi",
+          "display_name": null,
+          "role": "admin",
+          "active": 1,
+          "activation_token": null,
+          "invited_by": null,
+          "invite_token": null,
+          "invite_expires_at": null,
+          "last_login_at": "2026-05-29T17:58:12.751Z",
+          "is_active": true,
+          "created_at": "2026-05-29T17:57:47.075Z"
         }
       ]
     },
@@ -144,24 +171,24 @@
           "updated_at": "2026-05-19T18:43:04.346Z"
         },
         {
-          "key": "_p_seo_title_fr",
-          "value": "PoutineFest — Poutine authentique & camion-restaurant",
-          "updated_at": "2026-05-19T18:43:04.549Z"
+          "key": "_p_seo_title_en",
+          "value": "PoutineFest — Authentic Poutine & Food Truck",
+          "updated_at": "2026-05-19T18:43:04.611Z"
         },
         {
-          "key": "_p_seo_source_title_fr",
+          "key": "_p_seo_source_title_en",
           "value": "ai",
-          "updated_at": "2026-05-19T18:43:04.556Z"
+          "updated_at": "2026-05-19T18:43:04.621Z"
         },
         {
-          "key": "_p_seo_description_fr",
-          "value": "PoutineFest sert la poutine la plus authentique en ville. Restaurant, livraison et camion-restaurant pour mariages, festivals et événements corpo.",
-          "updated_at": "2026-05-19T18:43:04.567Z"
+          "key": "_p_seo_description_en",
+          "value": "PoutineFest serves the most authentic poutine in town. Restaurant, delivery and food truck catering for weddings, festivals and corporate events.",
+          "updated_at": "2026-05-19T18:43:04.637Z"
         },
         {
-          "key": "_p_seo_source_description_fr",
+          "key": "_p_seo_source_description_en",
           "value": "ai",
-          "updated_at": "2026-05-19T18:43:04.573Z"
+          "updated_at": "2026-05-19T18:43:04.643Z"
         }
       ]
     },
@@ -171,7 +198,7 @@
         "path",
         "visited_at"
       ],
-      "totalRows": 1545,
+      "totalRows": 3344,
       "sampleRows": [
         {
           "id": 1,
@@ -297,7 +324,7 @@
         "updated_at",
         "sizes_json"
       ],
-      "totalRows": 9,
+      "totalRows": 8,
       "sampleRows": [
         {
           "id": 7,
@@ -426,22 +453,6 @@
           "created_at": "2026-05-19T18:43:04.172Z",
           "updated_at": "2026-05-21T14:13:58.066Z",
           "sizes_json": "[{\"label_fr\":\"Petite\",\"label_en\":\"Small\",\"price\":13.05},{\"label_fr\":\"Grande\",\"label_en\":\"Large\",\"price\":17.4}]"
-        },
-        {
-          "id": 9,
-          "name_fr": "Test",
-          "name_en": "Test",
-          "description_fr": "123",
-          "description_en": "123",
-          "price": 1,
-          "category": "signature",
-          "image_url": null,
-          "position": 9,
-          "featured": 1,
-          "available": 1,
-          "created_at": "2026-05-22T06:15:26.796Z",
-          "updated_at": "2026-05-22T06:17:58.132Z",
-          "sizes_json": null
         }
       ]
     },
@@ -537,8 +548,8 @@
           "id": 1,
           "title_fr": "Soupe Aux Kleenex (wonton) GRATUITE",
           "title_en": "Wonton soup FREE",
-          "description_fr": "Aucun achat requis. Qté limitée. 1 per customer.",
-          "description_en": "No purchase necessary. Ltd quantity. 1 par client.",
+          "description_fr": "Aucun achat requis. Qté limitée. 1 par client.",
+          "description_en": "No purchase necessary. Ltd quantity. 1 per customer.",
           "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1779429578/poutinefest/admin/pwyfa8pqnpwjhhz2trpq.jpg",
           "discount_label": "GRATUIT/FREE",
           "starts_at": null,
@@ -548,7 +559,7 @@
           "position": 0,
           "active": 1,
           "created_at": "2026-05-21T03:58:39.079Z",
-          "updated_at": "2026-05-22T05:59:45.505Z"
+          "updated_at": "2026-05-22T17:28:08.942Z"
         }
       ]
     },
@@ -563,7 +574,7 @@
         "redeemed_at",
         "redeemed_by_user_id"
       ],
-      "totalRows": 6,
+      "totalRows": 10,
       "sampleRows": [
         {
           "id": 1,
@@ -622,6 +633,46 @@
           "short_code": "KKN9FGF3",
           "status": "claimed",
           "claimed_at": "2026-05-22T16:50:07.536Z",
+          "redeemed_at": null,
+          "redeemed_by_user_id": null
+        },
+        {
+          "id": 7,
+          "offer_id": 1,
+          "user_id": 12,
+          "short_code": "K83ZQC3Q",
+          "status": "claimed",
+          "claimed_at": "2026-05-22T18:05:12.366Z",
+          "redeemed_at": null,
+          "redeemed_by_user_id": null
+        },
+        {
+          "id": 8,
+          "offer_id": 1,
+          "user_id": 16,
+          "short_code": "TCH37FZD",
+          "status": "claimed",
+          "claimed_at": "2026-05-22T18:26:07.071Z",
+          "redeemed_at": null,
+          "redeemed_by_user_id": null
+        },
+        {
+          "id": 9,
+          "offer_id": 1,
+          "user_id": 15,
+          "short_code": "THD7JQCC",
+          "status": "claimed",
+          "claimed_at": "2026-05-22T19:06:02.331Z",
+          "redeemed_at": null,
+          "redeemed_by_user_id": null
+        },
+        {
+          "id": 10,
+          "offer_id": 1,
+          "user_id": 22,
+          "short_code": "8WT8MCHN",
+          "status": "claimed",
+          "claimed_at": "2026-05-23T17:07:32.776Z",
           "redeemed_at": null,
           "redeemed_by_user_id": null
         }
@@ -688,15 +739,114 @@
         "email",
         "full_name",
         "keychain_id",
-        "otp_code",
-        "otp_expires_at",
-        "email_verified_at",
         "upsell_sent_at",
         "created_at",
-        "updated_at"
+        "updated_at",
+        "user_id"
       ],
-      "totalRows": 0,
-      "sampleRows": []
+      "totalRows": 12,
+      "sampleRows": [
+        {
+          "id": 1,
+          "email": "test12@liasse.tech",
+          "full_name": null,
+          "keychain_id": "TaoZhYAbmw3osRX1",
+          "upsell_sent_at": null,
+          "created_at": "2026-05-22T18:13:30.720Z",
+          "updated_at": "2026-05-22T18:13:30.720Z",
+          "user_id": 15
+        },
+        {
+          "id": 2,
+          "email": "test13@liasse.tech",
+          "full_name": null,
+          "keychain_id": "yxt7uMbA78D45jDH",
+          "upsell_sent_at": null,
+          "created_at": "2026-05-22T18:19:11.631Z",
+          "updated_at": "2026-05-22T18:19:11.631Z",
+          "user_id": 16
+        },
+        {
+          "id": 4,
+          "email": "test14@liasse.tech",
+          "full_name": null,
+          "keychain_id": "b1nl04erDbamURNJ",
+          "upsell_sent_at": "2026-05-22T18:27:53.733Z",
+          "created_at": "2026-05-22T18:27:53.685Z",
+          "updated_at": "2026-05-22T18:27:53.733Z",
+          "user_id": 17
+        },
+        {
+          "id": 7,
+          "email": "test15@liasse.tech",
+          "full_name": null,
+          "keychain_id": "5FgXmjFKo3oDAsQY",
+          "upsell_sent_at": "2026-05-22T19:07:08.069Z",
+          "created_at": "2026-05-22T19:07:07.876Z",
+          "updated_at": "2026-05-22T19:07:08.069Z",
+          "user_id": 18
+        },
+        {
+          "id": 8,
+          "email": "test15@liasse.tech",
+          "full_name": null,
+          "keychain_id": "fpTj7gOf-X1-2k2a",
+          "upsell_sent_at": "2026-05-22T19:11:14.500Z",
+          "created_at": "2026-05-22T19:11:14.428Z",
+          "updated_at": "2026-05-22T19:11:14.500Z",
+          "user_id": 18
+        },
+        {
+          "id": 9,
+          "email": "test16@liasse.tech",
+          "full_name": null,
+          "keychain_id": "JSVhG0b7qo_QyYgs",
+          "upsell_sent_at": "2026-05-22T19:15:14.081Z",
+          "created_at": "2026-05-22T19:15:13.951Z",
+          "updated_at": "2026-05-22T19:15:14.081Z",
+          "user_id": 19
+        },
+        {
+          "id": 10,
+          "email": "test16@liasse.tech",
+          "full_name": null,
+          "keychain_id": "TJyWk-Ao14EPEFmC",
+          "upsell_sent_at": "2026-05-22T19:27:29.365Z",
+          "created_at": "2026-05-22T19:27:29.234Z",
+          "updated_at": "2026-05-22T19:27:29.365Z",
+          "user_id": 19
+        },
+        {
+          "id": 11,
+          "email": "test17@liasse.tech",
+          "full_name": null,
+          "keychain_id": "RicN7t3v8CDMaTCW",
+          "upsell_sent_at": "2026-05-22T19:29:22.118Z",
+          "created_at": "2026-05-22T19:29:22.074Z",
+          "updated_at": "2026-05-22T19:29:22.118Z",
+          "user_id": 20
+        },
+        {
+          "id": 13,
+          "email": "test18@liasse.tech",
+          "full_name": null,
+          "keychain_id": "DRqANtACfBWRJfoq",
+          "upsell_sent_at": "2026-05-22T19:37:18.498Z",
+          "created_at": "2026-05-22T19:37:18.371Z",
+          "updated_at": "2026-05-22T19:37:18.498Z",
+          "user_id": 21
+        },
+        {
+          "id": 14,
+          "email": "test14@liasse.tech",
+          "full_name": null,
+          "keychain_id": "DRqANtACfBWRJfoq",
+          "upsell_sent_at": "2026-05-22T19:42:47.351Z",
+          "created_at": "2026-05-22T19:42:47.134Z",
+          "updated_at": "2026-05-22T19:42:47.351Z",
+          "user_id": 17
+        }
+      ]
     }
   }
 }
