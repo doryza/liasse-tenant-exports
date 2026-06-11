@@ -1,0 +1,39 @@
+<% var pageTitle='Contact'; %>
+<%- include('partials/header') %>
+<section style="background:linear-gradient(135deg,<%= seasonTheme.color %>,#16a34a);color:#fff;padding:3rem 0">
+<div class="container" style="text-align:center;max-width:760px">
+<h1 style="font-size:2.2rem;margin:0 0 .5rem;color:#fff">Nous joindre</h1>
+<p style="opacity:.95;margin:0">Une question? Un projet? Contactez-nous!</p>
+</div>
+</section>
+<section class="section with-sticky">
+<div class="container" style="max-width:1000px">
+<div class="grid grid-2">
+<div>
+<h2 style="margin:0 0 1rem">Coordonnées</h2>
+<% if (typeof settings!=='undefined' && settings.contact_phone) { %><p style="margin:.5rem 0">📞 <strong><%= settings.contact_phone %></strong></p><% } %>
+<% if (typeof settings!=='undefined' && settings.contact_email) { %><p style="margin:.5rem 0">✉️ <a href="mailto:<%= settings.contact_email %>" style="color:<%= seasonTheme.color %>"><%= settings.contact_email %></a></p><% } %>
+<% if (typeof settings!=='undefined' && settings.business_address) { %><p style="margin:.5rem 0">📍 <%= settings.business_address %></p><% } %>
+<h3 style="margin:2rem 0 1rem">Heures d'ouverture</h3>
+<p style="margin:.25rem 0">Lundi au vendredi : 7h00 — 18h00</p>
+<p style="margin:.25rem 0">Samedi : 8h00 — 16h00</p>
+<p style="margin:.25rem 0">Dimanche : sur rendez-vous</p>
+<p style="margin-top:1rem;color:var(--muted);font-size:.9rem">Service de déneigement disponible 24/7 durant la saison hivernale.</p>
+</div>
+<div>
+<h2 style="margin:0 0 1rem">Envoyez-nous un message</h2>
+<div id="alertBox"></div>
+<form id="contactForm" class="card" style="padding:1.5rem">
+<div class="form-group"><label>Nom *</label><input type="text" name="name" class="form-control" required></div>
+<div class="form-group"><label>Courriel</label><input type="email" name="email" class="form-control"></div>
+<div class="form-group"><label>Téléphone</label><input type="tel" name="phone" class="form-control"></div>
+<div class="form-group"><label>Message *</label><textarea name="message" class="form-control" required></textarea></div>
+<button type="submit" id="cBtn" class="btn btn-primary" style="background-color:<%= seasonTheme.color %>;color:#fff;width:100%">Envoyer</button>
+</form>
+</div>
+</div>
+</div>
+</section>
+<script>(function(){var form=document.getElementById('contactForm');var alertBox=document.getElementById('alertBox');var btn=document.getElementById('cBtn');form.addEventListener('submit',function(e){e.preventDefault();btn.disabled=true;btn.textContent='Envoi...';var fd=new FormData(form);var data={};fd.forEach(function(v,k){data[k]=v;});fetch('api/contact',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}).then(function(r){return r.json().then(function(j){return{ok:r.ok,j:j};});}).then(function(res){if(res.ok&&res.j.success){alertBox.innerHTML='<div class="alert alert-success">✅ Message envoyé. Nous vous répondrons sous peu.</div>';form.reset();}else{alertBox.innerHTML='<div class="alert alert-error">'+((res.j&&res.j.error)||'Erreur')+'</div>';}btn.disabled=false;btn.textContent='Envoyer';}).catch(function(){alertBox.innerHTML='<div class="alert alert-error">Erreur de connexion.</div>';btn.disabled=false;btn.textContent='Envoyer';});});})();</script>
+<a href="soumission" class="sticky-cta" style="background-color:<%= seasonTheme.color %>">📋 Soumission rapide gratuite</a>
+<%- include('partials/footer') %>

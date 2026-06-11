@@ -1,0 +1,48 @@
+<footer class="site-footer">
+<div class="container">
+<div class="footer-grid">
+<div>
+<h4><%= (typeof settings!=='undefined' && settings.business_name) || 'Les aménagements paysagers Godard Mario' %></h4>
+<p style="margin:0 0 1rem"><%= (typeof settings!=='undefined' && settings.footer_text) || 'Service professionnel d\'aménagement paysager, excavation et déneigement à Saint-Jérôme et dans les Laurentides.' %></p>
+<% if (typeof settings!=='undefined' && settings.contact_phone) { %><p style="margin:.25rem 0">📞 <%= settings.contact_phone %></p><% } %>
+<% if (typeof settings!=='undefined' && settings.contact_email) { %><p style="margin:.25rem 0">✉️ <%= settings.contact_email %></p><% } %>
+<% if (typeof settings!=='undefined' && settings.business_address) { %><p style="margin:.25rem 0">📍 <%= settings.business_address %></p><% } %>
+</div>
+<div>
+<h4>Services</h4>
+<a href="services">Tous nos services</a>
+<a href="galerie">Galerie de projets</a>
+<a href="soumission">Soumission rapide</a>
+<a href="rendez-vous">Prendre rendez-vous</a>
+</div>
+<div>
+<h4>Entreprise</h4>
+<a href=".">Accueil</a>
+<a href="contact">Nous joindre</a>
+<a href="#" data-login-btn>Connexion</a>
+<button data-push-btn class="btn btn-ghost" style="padding:.25rem 0;background:none;color:#cbd5e1;text-align:left">🔔 Activer les notifications</button>
+</div>
+<div>
+<h4>Certifications</h4>
+<% if (typeof certifications !== 'undefined' && certifications && certifications.length > 0) { %>
+<% certifications.forEach(function(c){ %>
+<div style="font-size:.85rem;margin:.5rem 0;color:#94a3b8"><%= c.name %><% if (c.description) { %><br><span style="font-size:.75rem"><%= c.description %></span><% } %></div>
+<% }); %>
+<% } else { %>
+<p style="font-size:.85rem;color:#94a3b8">Membre RBQ et CNESST</p>
+<% } %>
+</div>
+</div>
+<% if (typeof certifications !== 'undefined' && certifications && certifications.length > 0) { %>
+<div class="cert-row" style="background:#1e293b;margin-top:2rem;border-radius:1rem">
+<% certifications.forEach(function(c){ %>
+<div class="cert-badge" style="background:#334155;color:#e2e8f0"><% if (c.image_url) { %><img src="<%= c.image_url %>" alt="<%= c.name %>"><% } else { %><span style="font-size:1.4rem">🏅</span><% } %><span><strong><%= c.name %></strong><% if (c.description) { %><br><span style="font-size:.75rem;opacity:.8"><%= c.description %></span><% } %></span></div>
+<% }); %>
+</div>
+<% } %>
+<div class="footer-bottom">© <%= new Date().getFullYear() %> <%= (typeof settings!=='undefined' && settings.business_name) || 'Les aménagements paysagers Godard Mario' %>. Tous droits réservés.</div>
+</div>
+</footer>
+<script src="public/js/app.js"></script>
+</body>
+</html>

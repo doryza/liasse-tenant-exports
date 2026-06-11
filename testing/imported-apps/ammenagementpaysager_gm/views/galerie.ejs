@@ -1,0 +1,39 @@
+<% var pageTitle='Galerie'; %>
+<%- include('partials/header') %>
+<section style="background:linear-gradient(135deg,<%= seasonTheme.color %>,#16a34a);color:#fff;padding:3.5rem 0">
+<div class="container" style="text-align:center">
+<h1 style="font-size:2.4rem;margin:0 0 .5rem;color:#fff">Galerie avant / après</h1>
+<p style="opacity:.95;margin:0;font-size:1.1rem">Glissez le curseur pour voir la transformation de chaque projet.</p>
+</div>
+</section>
+<section class="section with-sticky">
+<div class="container">
+<% if (typeof gallery !== 'undefined' && gallery.length > 0) { %>
+<div class="gallery-grid">
+<% gallery.forEach(function(g){ %>
+<div>
+<div class="before-after">
+<img src="<%= g.before_image_url || g.image_url || 'https://placehold.co/800x600/cccccc/666666/png?text=Avant' %>" alt="Avant">
+<img class="ba-after" src="<%= g.after_image_url || g.image_url || 'https://placehold.co/800x600/22c55e/ffffff/png?text=Apr%C3%A8s' %>" alt="Après">
+<span class="ba-label before">AVANT</span>
+<span class="ba-label after">APRÈS</span>
+<div class="ba-handle"></div>
+</div>
+<div style="margin-top:1rem">
+<span class="badge badge-<%= g.category || 'paysagement' %>"><%= (g.category||'paysagement').charAt(0).toUpperCase()+(g.category||'paysagement').slice(1) %></span>
+<h3 style="margin:.5rem 0 .25rem"><%= g.title %></h3>
+<% if (g.description) { %><p style="color:var(--muted);margin:0"><%= g.description %></p><% } %>
+</div>
+</div>
+<% }); %>
+</div>
+<% } else { %>
+<p style="text-align:center;color:var(--muted)">La galerie sera mise à jour bientôt.</p>
+<% } %>
+<div style="text-align:center;margin-top:3rem">
+<a href="soumission" class="btn btn-primary" style="background-color:<%= seasonTheme.color %>;color:#fff">Demander un projet similaire</a>
+</div>
+</div>
+</section>
+<a href="soumission" class="sticky-cta" style="background-color:<%= seasonTheme.color %>">📋 Soumission rapide gratuite</a>
+<%- include('partials/footer') %>

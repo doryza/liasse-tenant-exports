@@ -1,0 +1,25 @@
+<% var pageTitle=svc.name; %>
+<%- include('partials/header') %>
+<section style="background:<%= svc.color || '#22c55e' %>;color:#fff;padding:3.5rem 0">
+<div class="container">
+<a href="services" style="color:#fff;opacity:.85;text-decoration:none">← Tous les services</a>
+<h1 style="font-size:2.4rem;margin:.75rem 0 .5rem;color:#fff"><%= svc.name %></h1>
+<p style="opacity:.95;margin:0;font-size:1.1rem;max-width:700px"><%= svc.short_description || '' %></p>
+</div>
+</section>
+<section class="section with-sticky">
+<div class="container" style="max-width:820px">
+<% if (svc.image_url) { %><img src="<%= svc.image_url %>" alt="<%= svc.name %>" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:1rem;margin-bottom:2rem"><% } %>
+<div style="font-size:1.05rem;line-height:1.8;color:#1f2937"><% (svc.description||'').split('\n').forEach(function(p){ if(p.trim()){ %><p><%= p %></p><% } }); %></div>
+<div style="margin-top:2.5rem;padding:2rem;background:#f0fdf4;border-radius:1rem;text-align:center">
+<h3 style="margin:0 0 .5rem">Intéressé par ce service?</h3>
+<p style="color:var(--muted);margin:0 0 1.5rem">Demandez votre soumission gratuite ou prenez rendez-vous.</p>
+<div style="display:flex;flex-wrap:wrap;gap:.75rem;justify-content:center">
+<a href="soumission?service=<%= encodeURIComponent(svc.name) %>" class="btn btn-primary" style="background-color:<%= svc.color || seasonTheme.color %>;color:#fff">Soumission gratuite</a>
+<a href="rendez-vous" class="btn btn-outline" style="color:<%= svc.color || seasonTheme.color %>;border-color:<%= svc.color || seasonTheme.color %>">Prendre rendez-vous</a>
+</div>
+</div>
+</div>
+</section>
+<a href="soumission?service=<%= encodeURIComponent(svc.name) %>" class="sticky-cta" style="background-color:<%= svc.color || seasonTheme.color %>">📋 Soumission pour ce service</a>
+<%- include('partials/footer') %>

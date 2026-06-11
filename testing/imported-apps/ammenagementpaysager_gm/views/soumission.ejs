@@ -1,0 +1,45 @@
+<% var pageTitle='Soumission'; %>
+<%- include('partials/header') %>
+<section style="background:linear-gradient(135deg,<%= seasonTheme.color %>,#16a34a);color:#fff;padding:3rem 0">
+<div class="container" style="text-align:center;max-width:760px">
+<h1 style="font-size:2.2rem;margin:0 0 .5rem;color:#fff">Soumission rapide gratuite</h1>
+<p style="opacity:.95;margin:0">Remplissez le formulaire — nous vous répondons sous 24h ouvrables.</p>
+</div>
+</section>
+<section class="section">
+<div class="container" style="max-width:760px">
+<div id="alertBox"></div>
+<form id="quoteForm" class="card" style="padding:2rem">
+<div class="form-group">
+<label>Type de service *</label>
+<select name="service_type" id="serviceType" class="form-control" required>
+<option value="">— Choisir un service —</option>
+<% if (typeof servicesList !== 'undefined') { servicesList.forEach(function(s){ %>
+<option value="<%= s.name %>" data-category="<%= s.category || 'paysagement' %>" <%= (preselect===s.name?'selected':'') %>><%= s.name %></option>
+<% }); } %>
+<option value="Autre">Autre / projet sur mesure</option>
+</select>
+</div>
+<div id="dynamicFields"></div>
+<div class="form-row row-2">
+<div class="form-group"><label>Nom complet *</label><input type="text" name="name" class="form-control" required></div>
+<div class="form-group"><label>Téléphone *</label><input type="tel" name="phone" class="form-control" required placeholder="(450) 555-1234"></div>
+</div>
+<div class="form-group"><label>Courriel</label><input type="email" name="email" class="form-control" placeholder="vous@exemple.com"></div>
+<div class="form-group"><label>Adresse du projet</label><input type="text" name="address" class="form-control" placeholder="123 rue Principale, Saint-Jérôme"></div>
+<div class="form-group"><label>Détails et description du projet</label><textarea name="details" class="form-control" placeholder="Décrivez votre projet, vos préférences, votre échéancier..."></textarea></div>
+<div class="form-group"><label>Photos du terrain (optionnel)</label><input type="file" name="photos" class="form-control" accept="image/*" multiple><small style="color:var(--muted)">Joignez des photos pour faciliter notre évaluation.</small></div>
+<div class="form-group">
+<label>Méthode de contact préférée *</label>
+<div class="radio-group">
+<div class="radio-option"><input type="radio" name="contact_method" value="email" id="cm-email" checked><label for="cm-email">📧 Courriel</label></div>
+<div class="radio-option"><input type="radio" name="contact_method" value="sms" id="cm-sms"><label for="cm-sms">💬 SMS</label></div>
+<div class="radio-option"><input type="radio" name="contact_method" value="phone" id="cm-phone"><label for="cm-phone">📞 Téléphone</label></div>
+</div>
+</div>
+<button type="submit" id="submitBtn" class="btn btn-primary" style="background-color:<%= seasonTheme.color %>;color:#fff;width:100%;padding:1rem;font-size:1.1rem">Envoyer ma demande</button>
+</form>
+</div>
+</section>
+<script>(function(){var sel=document.getElementById('serviceType');var dyn=document.getElementById('dynamicFields');var form=document.getElementById('quoteForm');var alertBox=document.getElementById('alertBox');var btn=document.getElementById('submitBtn');function renderDynamic(){var opt=sel.options[sel.selectedIndex];var cat=opt?opt.getAttribute('data-category'):null;var html='';if(cat==='paysagement'){html='<div class="form-row row-2"><div class="form-group"><label>Superficie approximative (pi²)</label><input type="number" name="area" class="form-control" placeholder="ex. 500"></div><div class="form-group"><label>Matériaux souhaités</label><select name="materials" class="form-control"><option value="">— Aucune préférence —</option><option>Pavé-uni</option><option>Dalle de béton</option><option>Pierre naturelle</option><option>Pelouse / végétation</option><option>Mélange / à discuter</option></select></div></div>';}else if(cat==='deneigement'){html='<div class="form-group"><label>Type de stationnement</label><select name="parking_type" class="form-control"><option value="">— Choisir —</option><option>Résidentiel — 1 véhicule</option><option>Résidentiel — 2 véhicules</option><option>Résidentiel — 3+ véhicules</option><option>Commercial</option><option>Multi-logement</option></select></div>';}else if(cat==='excavation'){html='<div class="form-group"><label>Type de projet d\'excavation</label><select name="project_type" class="form-control"><option value="">— Choisir —</option><option>Drain français</option><option>Fondation</option><option>Piscine creusée</option><option>Terrassement / nivellement</option><option>Autre</option></select></div>';}dyn.innerHTML=html;}sel.addEventListener('change',renderDynamic);renderDynamic();form.addEventListener('submit',function(e){e.preventDefault();btn.disabled=true;btn.textContent='Envoi en cours...';alertBox.innerHTML='';var fd=new FormData(form);var data={};fd.forEach(function(v,k){if(k!=='photos')data[k]=v;});fetch('api/quote-request',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}).then(function(r){return r.json().then(function(j){return{ok:r.ok,j:j};});}).then(function(res){if(res.ok&&res.j.success){alertBox.innerHTML='<div class="alert alert-success">✅ Votre demande a été envoyée avec succès. Nous vous contacterons sous peu.</div>';form.reset();renderDynamic();btn.disabled=false;btn.textContent='Envoyer ma demande';window.scrollTo({top:0,behavior:'smooth'});}else{alertBox.innerHTML='<div class="alert alert-error">'+((res.j&&res.j.error)||'Erreur lors de l\'envoi.')+'</div>';btn.disabled=false;btn.textContent='Envoyer ma demande';}}).catch(function(){alertBox.innerHTML='<div class="alert alert-error">Erreur de connexion. Veuillez réessayer.</div>';btn.disabled=false;btn.textContent='Envoyer ma demande';});});})();</script>
+<%- include('partials/footer') %>

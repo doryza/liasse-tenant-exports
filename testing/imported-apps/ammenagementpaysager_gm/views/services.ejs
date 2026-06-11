@@ -1,0 +1,33 @@
+<% var pageTitle='Services'; %>
+<%- include('partials/header') %>
+<section style="background:linear-gradient(135deg,<%= seasonTheme.color %>,#16a34a);color:#fff;padding:3.5rem 0">
+<div class="container" style="text-align:center">
+<h1 style="font-size:2.4rem;margin:0 0 .5rem;color:#fff">Nos services</h1>
+<p style="opacity:.95;margin:0;font-size:1.1rem">Aménagement paysager, excavation et déneigement avec un souci du détail incomparable.</p>
+</div>
+</section>
+<section class="section with-sticky">
+<div class="container">
+<% if (typeof servicesList !== 'undefined' && servicesList.length > 0) { %>
+<div class="grid grid-3">
+<% servicesList.forEach(function(s){ var icons={leaf:'🌿',shovel:'⛏️',snowflake:'❄️',tree:'🌳',flower:'🌸',truck:'🚛',tool:'🔨',home:'🏡'}; %>
+<a href="services/<%= s.id %>" class="service-card card" style="border-top-color:<%= s.color || '#22c55e' %>">
+<% if (s.image_url) { %><img src="<%= s.image_url %>" alt="<%= s.name %>" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:.75rem;margin-bottom:1rem"><% } %>
+<div class="service-icon" style="background:<%= s.color || '#22c55e' %>"><%= icons[s.icon] || '🌿' %></div>
+<span class="badge badge-<%= s.category || 'paysagement' %>"><%= (s.category || 'paysagement').charAt(0).toUpperCase() + (s.category || 'paysagement').slice(1) %></span>
+<h3 style="margin-top:.75rem"><%= s.name %></h3>
+<p><%= s.short_description || '' %></p>
+<div style="margin-top:1rem;color:<%= s.color || '#22c55e' %>;font-weight:600">Détails →</div>
+</a>
+<% }); %>
+</div>
+<% } else { %>
+<p style="text-align:center;color:var(--muted)">Les services seront affichés bientôt.</p>
+<% } %>
+<div style="text-align:center;margin-top:3rem">
+<a href="soumission" class="btn btn-primary" style="background-color:<%= seasonTheme.color %>;color:#fff">Demander une soumission</a>
+</div>
+</div>
+</section>
+<a href="soumission" class="sticky-cta" style="background-color:<%= seasonTheme.color %>">📋 Soumission rapide gratuite</a>
+<%- include('partials/footer') %>

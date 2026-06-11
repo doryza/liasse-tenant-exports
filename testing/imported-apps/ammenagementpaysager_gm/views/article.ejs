@@ -1,0 +1,14 @@
+<% var pageTitle=post.title; %>
+<%- include('partials/header') %>
+<section class="section with-sticky">
+<div class="container" style="max-width:780px">
+<a href="." style="color:var(--muted);text-decoration:none">← Accueil</a>
+<% if (post.category) { %><div style="margin:1rem 0"><span class="badge badge-paysagement"><%= post.category %></span></div><% } %>
+<h1 style="font-size:2.2rem;margin:.5rem 0 1rem"><%= post.title %></h1>
+<p style="color:var(--muted);font-size:.9rem"><%= fmtDate(post.created_at) %></p>
+<% if (post.image_url) { %><img src="<%= post.image_url %>" alt="<%= post.title %>" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:1rem;margin:1.5rem 0"><% } %>
+<div style="font-size:1.05rem;line-height:1.8"><% (post.content||'').split('\n').forEach(function(p){ if(p.trim()){ %><p><%= p %></p><% } }); %></div>
+</div>
+</section>
+<a href="soumission" class="sticky-cta" style="background-color:<%= seasonTheme.color %>">📋 Soumission rapide gratuite</a>
+<%- include('partials/footer') %>

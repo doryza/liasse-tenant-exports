@@ -1,0 +1,133 @@
+<% var pageTitle='Accueil'; %>
+<%- include('partials/header') %>
+<section class="hero">
+<img class="hero-bg" src="<%= (typeof settings!=='undefined'&&settings._p_hero_image_url)||'https://placehold.co/1600x700/22c55e/ffffff/png?text=Am%C3%A9nagement' %>" alt="Aménagement paysager">
+<div class="hero-overlay">
+<div class="container"><div class="hero-content">
+<h1><%= (typeof settings!=='undefined' && settings.hero_title) || 'Aménagement paysager, excavation et déneigement' %></h1>
+<p><%= (typeof settings!=='undefined' && settings.hero_subtitle) || 'Transformez votre terrain avec un travail soigné, durable et garanti.' %></p>
+<div class="hero-ctas">
+<a href="soumission" class="btn btn-primary" style="background-color:<%= seasonTheme.color %>;color:#fff">Soumission rapide</a>
+<a href="rendez-vous" class="btn btn-outline" style="background:#fff;color:<%= seasonTheme.color %>;border-color:#fff">Prendre rendez-vous</a>
+</div>
+</div></div>
+</div>
+</section>
+<section class="section with-sticky">
+<div class="container">
+<div style="text-align:center;max-width:760px;margin:0 auto 3rem">
+<h2 class="section-title">La précision et la qualité, de A à Z</h2>
+<p class="section-subtitle" style="margin-bottom:0"><%= (typeof settings!=='undefined' && settings.about_text) || 'Depuis plus de 25 ans, notre équipe certifiée transforme vos idées en espaces extérieurs durables, fonctionnels et magnifiques.' %></p>
+</div>
+<h3 style="text-align:center;font-size:1.5rem;margin-bottom:2rem">Nos services</h3>
+<% if (typeof servicesList !== 'undefined' && servicesList.length > 0) { %>
+<div class="grid grid-3">
+<% servicesList.forEach(function(s){ var icons={leaf:'🌿',shovel:'⛏️',snowflake:'❄️',tree:'🌳',flower:'🌸',truck:'🚛',tool:'🔨',home:'🏡'}; %>
+<a href="services/<%= s.id %>" class="service-card card" style="border-top-color:<%= s.color || '#22c55e' %>">
+<div class="service-icon" style="background:<%= s.color || '#22c55e' %>"><%= icons[s.icon] || '🌿' %></div>
+<span class="badge badge-<%= s.category || 'paysagement' %>"><%= (s.category || 'paysagement').charAt(0).toUpperCase() + (s.category || 'paysagement').slice(1) %></span>
+<h3 style="margin-top:.75rem"><%= s.name %></h3>
+<p><%= s.short_description || '' %></p>
+<div style="margin-top:1rem;color:<%= s.color || '#22c55e' %>;font-weight:600">En savoir plus →</div>
+</a>
+<% }); %>
+</div>
+<% } else { %>
+<p style="text-align:center;color:var(--muted)">Les services seront affichés bientôt.</p>
+<% } %>
+</div>
+</section>
+<section class="section" style="background:#fff">
+<div class="container">
+<div style="text-align:center;max-width:680px;margin:0 auto 2.5rem">
+<h2 class="section-title">Galerie avant / après</h2>
+<p class="section-subtitle" style="margin-bottom:0">Glissez le curseur pour voir la transformation.</p>
+</div>
+<% if (typeof gallery !== 'undefined' && gallery.length > 0) { %>
+<div class="gallery-grid">
+<% gallery.slice(0,2).forEach(function(g){ %>
+<div>
+<div class="before-after">
+<img src="<%= g.before_image_url || g.image_url || 'https://placehold.co/800x600/cccccc/666666/png?text=Avant' %>" alt="Avant">
+<img class="ba-after" src="<%= g.after_image_url || g.image_url || 'https://placehold.co/800x600/22c55e/ffffff/png?text=Apr%C3%A8s' %>" alt="Après">
+<span class="ba-label before">AVANT</span>
+<span class="ba-label after">APRÈS</span>
+<div class="ba-handle"></div>
+</div>
+<h4 style="margin:1rem 0 .25rem"><%= g.title %></h4>
+<p style="color:var(--muted);margin:0;font-size:.95rem"><%= (g.description || '').substring(0,120) %></p>
+</div>
+<% }); %>
+</div>
+<div style="text-align:center;margin-top:2rem"><a href="galerie" class="btn btn-outline">Voir toute la galerie</a></div>
+<% } else { %>
+<p style="text-align:center;color:var(--muted)">La galerie sera affichée bientôt.</p>
+<% } %>
+</div>
+</section>
+<section class="section">
+<div class="container">
+<div style="text-align:center;max-width:680px;margin:0 auto 2.5rem">
+<h2 class="section-title">Ce que disent nos clients</h2>
+<p class="section-subtitle" style="margin-bottom:0">Des témoignages de clients satisfaits dans la région des Laurentides.</p>
+</div>
+<% if (typeof testimonials !== 'undefined' && testimonials.length > 0) { %>
+<div class="grid grid-3">
+<% testimonials.forEach(function(t){ %>
+<div class="testimonial">
+<div class="testimonial-stars"><% for(var i=0;i<(t.rating||5);i++){ %>★<% } %></div>
+<div class="testimonial-content">« <%= t.content %> »</div>
+<div><div class="testimonial-author"><%= t.author %></div><% if (t.role) { %><div class="testimonial-role"><%= t.role %></div><% } %></div>
+</div>
+<% }); %>
+</div>
+<% } else { %>
+<p style="text-align:center;color:var(--muted)">Les témoignages seront ajoutés bientôt.</p>
+<% } %>
+</div>
+</section>
+<section class="section" style="background:#fff">
+<div class="container">
+<div style="text-align:center;max-width:680px;margin:0 auto 2.5rem">
+<h2 class="section-title"><%= (typeof settings!=='undefined' && settings.service_area_title) || 'Notre zone de service' %></h2>
+<p class="section-subtitle" style="margin-bottom:0"><%= (typeof settings!=='undefined' && settings.service_area_subtitle) || 'Saint-Jérôme et 50 km autour.' %></p>
+</div>
+<div class="map-container" id="serviceMap"></div>
+</div>
+</section>
+<% if (typeof posts !== 'undefined' && posts.length > 0) { %>
+<section class="section">
+<div class="container">
+<div style="text-align:center;max-width:680px;margin:0 auto 2.5rem">
+<h2 class="section-title">Conseils & actualités</h2>
+<p class="section-subtitle" style="margin-bottom:0">Astuces saisonnières et nouveautés de notre équipe.</p>
+</div>
+<div class="posts-grid">
+<% posts.forEach(function(p){ %>
+<a href="articles/<%= p.id %>" class="post-card">
+<img src="<%= p.image_url || 'https://placehold.co/600x400/22c55e/ffffff/png?text=Article' %>" alt="<%= p.title %>">
+<div class="post-card-body">
+<% if (p.category) { %><span class="badge badge-paysagement"><%= p.category %></span><% } %>
+<h3><%= p.title %></h3>
+<p><%= p.excerpt || (p.content ? p.content.substring(0,140)+'...' : '') %></p>
+</div>
+</a>
+<% }); %>
+</div>
+</div>
+</section>
+<% } %>
+<section class="section" style="background:linear-gradient(135deg,<%= seasonTheme.color %>,#16a34a);color:#fff">
+<div class="container" style="text-align:center">
+<h2 style="font-size:2rem;font-weight:800;margin:0 0 .75rem;color:#fff"><%= (typeof settings!=='undefined' && settings.cta_title) || 'Prêt à transformer votre terrain?' %></h2>
+<p style="opacity:.95;margin:0 0 1.75rem;font-size:1.1rem"><%= (typeof settings!=='undefined' && settings.cta_text) || 'Demandez votre soumission gratuite ou prenez rendez-vous en quelques clics.' %></p>
+<div style="display:flex;flex-wrap:wrap;gap:.75rem;justify-content:center">
+<a href="soumission" class="btn" style="background:#fff;color:<%= seasonTheme.color %>">Soumission gratuite</a>
+<a href="rendez-vous" class="btn" style="background:rgba(255,255,255,.2);color:#fff;border:2px solid #fff">Prendre rendez-vous</a>
+</div>
+</div>
+</section>
+<a href="soumission" class="sticky-cta" style="background-color:<%= seasonTheme.color %>">📋 Soumission rapide gratuite</a>
+<script>function initServiceMap(){var lat=parseFloat('<%- (typeof settings!=="undefined"&&settings.service_area_lat)||"45.7811" %>');var lng=parseFloat('<%- (typeof settings!=="undefined"&&settings.service_area_lng)||"-74.0050" %>');var radius=parseFloat('<%- (typeof settings!=="undefined"&&settings.service_area_radius)||"50" %>')*1000;var el=document.getElementById('serviceMap');if(!el||!window.google)return;var map=new google.maps.Map(el,{center:{lat:lat,lng:lng},zoom:9,styles:[{featureType:'poi',stylers:[{visibility:'simplified'}]}]});new google.maps.Marker({position:{lat:lat,lng:lng},map:map,title:'Saint-Jérôme'});new google.maps.Circle({strokeColor:'<%- seasonTheme.color %>',strokeOpacity:.8,strokeWeight:2,fillColor:'<%- seasonTheme.color %>',fillOpacity:.15,map:map,center:{lat:lat,lng:lng},radius:radius});}window.initServiceMap=initServiceMap;</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=<%= googleApiKey %>&callback=initServiceMap" async defer></script>
+<%- include('partials/footer') %>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tableau de bord — Admin</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body>
+<div class="admin-layout">
+<button class="sidebar-toggle" id="sidebarToggle" aria-label="Menu">☰</button>
+<aside class="admin-sidebar" id="adminSidebar">
+<div class="admin-sidebar-header"><h2>Administration</h2><p><%= adminUser.name %></p></div>
+<a href="admin" class="active"><span class="icon">📊</span><span class="label">Tableau de bord</span></a>
+<div class="admin-sidebar-section">Contenu</div>
+<a href="admin/services"><span class="icon">🛠️</span><span class="label">Services</span></a>
+<a href="admin/gallery"><span class="icon">📸</span><span class="label">Galerie</span></a>
+<a href="admin/testimonials"><span class="icon">⭐</span><span class="label">Témoignages</span></a>
+<a href="admin/posts"><span class="icon">📝</span><span class="label">Articles</span></a>
+<a href="admin/certifications"><span class="icon">🏅</span><span class="label">Certifications</span></a>
+<div class="admin-sidebar-section">Demandes</div>
+<a href="admin/quote-requests"><span class="icon">📋</span><span class="label">Soumissions</span><% if (stats.quotesNew>0) { %><span class="sidebar-pill"><%= stats.quotesNew %></span><% } %></a>
+<a href="admin/appointments"><span class="icon">📅</span><span class="label">Rendez-vous</span><% if (stats.appointmentsNew>0) { %><span class="sidebar-pill"><%= stats.appointmentsNew %></span><% } %></a>
+<a href="admin/messages"><span class="icon">✉️</span><span class="label">Messages</span></a>
+<div class="admin-sidebar-section">Compte</div>
+<a href="." target="_blank"><span class="icon">🌐</span><span class="label">Voir le site</span></a>
+<a href="admin/logout"><span class="icon">🚪</span><span class="label">Déconnexion</span></a>
+</aside>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<main class="admin-main">
+<div class="admin-topbar">
+<div><div class="breadcrumb">Administration</div><h1>Tableau de bord</h1></div>
+<div class="topbar-actions"><a href="." target="_blank" class="btn btn-secondary">🌐 Voir le site</a></div>
+</div>
+
+<% if (stats.quotesNew>0 || stats.appointmentsNew>0) { %>
+<div class="admin-alert"><strong>🔔 Nouvelles demandes</strong> — <% if (stats.quotesNew>0) { %><%= stats.quotesNew %> soumission<%= stats.quotesNew>1?'s':'' %> à traiter<% } %><% if (stats.quotesNew>0&&stats.appointmentsNew>0) { %> et <% } %><% if (stats.appointmentsNew>0) { %><%= stats.appointmentsNew %> rendez-vous à confirmer<% } %>.</div>
+<% } %>
+
+<h2 class="section-heading">Demandes</h2>
+<div class="stats-grid">
+<a href="admin/quote-requests" class="stat-card stat-link"><div class="stat-icon">📋</div><div class="stat-value"><%= stats.quotes %></div><div class="stat-label">Soumissions</div><% if (stats.quotesNew>0) { %><div class="stat-sub"><%= stats.quotesNew %> nouvelles</div><% } %></a>
+<a href="admin/appointments" class="stat-card stat-link"><div class="stat-icon">📅</div><div class="stat-value"><%= stats.appointments %></div><div class="stat-label">Rendez-vous</div><% if (stats.appointmentsNew>0) { %><div class="stat-sub"><%= stats.appointmentsNew %> à confirmer</div><% } %></a>
+<a href="admin/messages" class="stat-card stat-link"><div class="stat-icon">✉️</div><div class="stat-value"><%= stats.messages %></div><div class="stat-label">Messages</div></a>
+</div>
+
+<h2 class="section-heading">Contenu publié</h2>
+<div class="stats-grid">
+<a href="admin/services" class="stat-card stat-link"><div class="stat-icon">🛠️</div><div class="stat-value"><%= stats.services %></div><div class="stat-label">Services</div></a>
+<a href="admin/gallery" class="stat-card stat-link"><div class="stat-icon">📸</div><div class="stat-value"><%= stats.gallery %></div><div class="stat-label">Projets</div></a>
+<a href="admin/testimonials" class="stat-card stat-link"><div class="stat-icon">⭐</div><div class="stat-value"><%= stats.testimonials %></div><div class="stat-label">Témoignages</div></a>
+<a href="admin/posts" class="stat-card stat-link"><div class="stat-icon">📝</div><div class="stat-value"><%= stats.posts %></div><div class="stat-label">Articles</div></a>
+<a href="admin/certifications" class="stat-card stat-link"><div class="stat-icon">🏅</div><div class="stat-value"><%= stats.certifications %></div><div class="stat-label">Certifications</div></a>
+</div>
+
+<h2 class="section-heading">Audience</h2>
+<div class="stats-grid">
+<div class="stat-card"><div class="stat-icon">📈</div><div class="stat-value"><%= stats.visits7d %></div><div class="stat-label">Visites (7 jours)</div></div>
+<div class="stat-card"><div class="stat-icon">🌐</div><div class="stat-value"><%= stats.visitsTotal %></div><div class="stat-label">Visites totales</div></div>
+<div class="stat-card"><div class="stat-icon">👥</div><div class="stat-value"><%= stats.users %></div><div class="stat-label">Utilisateurs</div></div>
+<div class="stat-card"><div class="stat-icon">🔔</div><div class="stat-value"><%= stats.subscribers %></div><div class="stat-label">Abonnés notifications</div></div>
+</div>
+
+<h2 class="section-heading">Actions rapides</h2>
+<div class="quick-actions">
+<a href="admin/services" class="quick-action"><span class="qa-icon">➕</span><div><div class="qa-title">Ajouter un service</div><div class="qa-sub">Créer une nouvelle offre</div></div></a>
+<a href="admin/gallery" class="quick-action"><span class="qa-icon">📷</span><div><div class="qa-title">Publier un projet</div><div class="qa-sub">Galerie avant/après</div></div></a>
+<a href="admin/testimonials" class="quick-action"><span class="qa-icon">⭐</span><div><div class="qa-title">Ajouter un témoignage</div><div class="qa-sub">Améliorer la confiance</div></div></a>
+<a href="admin/posts" class="quick-action"><span class="qa-icon">✍️</span><div><div class="qa-title">Rédiger un article</div><div class="qa-sub">Conseils & actualités</div></div></a>
+</div>
+
+<div class="admin-card">
+<div class="card-header"><h2>Soumissions récentes</h2><a href="admin/quote-requests" class="btn btn-sm btn-secondary">Voir tout →</a></div>
+<% if (recentQuotes && recentQuotes.length > 0) { %>
+<div class="table-wrap"><table><thead><tr><th>Date</th><th>Nom</th><th>Service</th><th>Téléphone</th><th>État</th><th></th></tr></thead><tbody>
+<% recentQuotes.forEach(function(q){ %>
+<tr><td><%= fmtDateShort(q.created_at) %></td><td><strong><%= q.name %></strong></td><td><%= q.service_type %></td><td><a href="tel:<%= q.phone %>"><%= q.phone %></a></td><td><span class="badge-status badge-<%= q.status||'new' %>"><%= q.status||'new' %></span></td><td><a href="admin/quote-requests" class="btn btn-sm btn-secondary">Ouvrir</a></td></tr>
+<% }); %>
+</tbody></table></div>
+<% } else { %><div class="empty-state"><div class="empty-icon">📭</div><p>Aucune soumission pour le moment.</p></div><% } %>
+</div>
+
+<div class="admin-card">
+<div class="card-header"><h2>Rendez-vous récents</h2><a href="admin/appointments" class="btn btn-sm btn-secondary">Voir tout →</a></div>
+<% if (recentAppointments && recentAppointments.length > 0) { %>
+<div class="table-wrap"><table><thead><tr><th>Date demandée</th><th>Nom</th><th>Service</th><th>Téléphone</th><th>État</th><th></th></tr></thead><tbody>
+<% recentAppointments.forEach(function(a){ %>
+<tr><td><strong><%= fmtDateShort(a.appointment_date) %></strong><% if (a.appointment_time) { %><br><small style="color:#64748b"><%= a.appointment_time %></small><% } %></td><td><%= a.name %></td><td><%= a.service||'—' %></td><td><a href="tel:<%= a.phone %>"><%= a.phone %></a></td><td><span class="badge-status badge-<%= a.status||'new' %>"><%= a.status||'new' %></span></td><td><a href="admin/appointments" class="btn btn-sm btn-secondary">Ouvrir</a></td></tr>
+<% }); %>
+</tbody></table></div>
+<% } else { %><div class="empty-state"><div class="empty-icon">📅</div><p>Aucun rendez-vous pour le moment.</p></div><% } %>
+</div>
+</main>
+</div>
+<script>(function(){var t=document.getElementById('sidebarToggle');var s=document.getElementById('adminSidebar');var o=document.getElementById('sidebarOverlay');if(t&&s&&o){t.addEventListener('click',function(){s.classList.toggle('open');o.classList.toggle('show');});o.addEventListener('click',function(){s.classList.remove('open');o.classList.remove('show');});}})();</script>
+</body>
+</html>

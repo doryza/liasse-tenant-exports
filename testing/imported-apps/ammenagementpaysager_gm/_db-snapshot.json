@@ -1,0 +1,581 @@
+{
+  "exportedAt": "2026-06-11T05:07:45.481Z",
+  "tables": {
+    "admin_users": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "password_hash",
+        "display_name",
+        "role",
+        "active",
+        "activation_token",
+        "invited_by",
+        "invite_token",
+        "invite_expires_at",
+        "last_login_at",
+        "is_active",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_invites": {
+      "columns": [
+        "id",
+        "email",
+        "token",
+        "role",
+        "status",
+        "invited_by",
+        "expires_at",
+        "accepted_at",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_webauthn_credentials": {
+      "columns": [
+        "id",
+        "admin_user_id",
+        "credential_id",
+        "public_key",
+        "counter",
+        "device_name",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_settings": {
+      "columns": [
+        "key",
+        "value",
+        "updated_at"
+      ],
+      "totalRows": 34,
+      "sampleRows": [
+        {
+          "key": "business_name",
+          "value": "Les aménagements paysagers Godard Mario",
+          "updated_at": "2026-05-01T07:22:11.091Z"
+        },
+        {
+          "key": "contact_email",
+          "value": "",
+          "updated_at": "2026-05-01T07:22:11.101Z"
+        },
+        {
+          "key": "contact_phone",
+          "value": "",
+          "updated_at": "2026-05-01T07:22:11.108Z"
+        },
+        {
+          "key": "business_address",
+          "value": "Saint-Jérôme, QC",
+          "updated_at": "2026-05-01T07:22:11.120Z"
+        },
+        {
+          "key": "tagline",
+          "value": "Précision, qualité et passion depuis 1998",
+          "updated_at": "2026-05-01T07:22:11.128Z"
+        },
+        {
+          "key": "hero_title",
+          "value": "Aménagement paysager, excavation et déneigement",
+          "updated_at": "2026-05-01T07:22:11.135Z"
+        },
+        {
+          "key": "hero_subtitle",
+          "value": "Transformez votre terrain avec un travail soigné, durable et garanti. Service à Saint-Jérôme et dans toutes les Laurentides.",
+          "updated_at": "2026-05-01T07:22:11.143Z"
+        },
+        {
+          "key": "about_title",
+          "value": "À propos de notre entreprise",
+          "updated_at": "2026-05-01T07:22:11.151Z"
+        },
+        {
+          "key": "about_text",
+          "value": "Depuis plus de 25 ans, Les aménagements paysagers Godard Mario réalisent des projets d'aménagement, d'excavation et de déneigement avec un souci du détail incomparable. Notre équipe certifiée transforme vos idées en espaces extérieurs durables, fonctionnels et magnifiques.",
+          "updated_at": "2026-05-01T07:22:11.158Z"
+        },
+        {
+          "key": "service_area_title",
+          "value": "Notre zone de service",
+          "updated_at": "2026-05-01T07:22:11.167Z"
+        }
+      ]
+    },
+    "site_visits": {
+      "columns": [
+        "id",
+        "path",
+        "created_at"
+      ],
+      "totalRows": 209,
+      "sampleRows": [
+        {
+          "id": 1,
+          "path": "/",
+          "created_at": "2026-05-01T15:53:55.627Z"
+        },
+        {
+          "id": 2,
+          "path": "/%7B%7BIMG_POST2%7D%7D",
+          "created_at": "2026-05-01T15:53:56.687Z"
+        },
+        {
+          "id": 3,
+          "path": "/%7B%7BIMG_POST1%7D%7D",
+          "created_at": "2026-05-01T15:53:56.698Z"
+        },
+        {
+          "id": 4,
+          "path": "/",
+          "created_at": "2026-05-01T15:53:56.828Z"
+        },
+        {
+          "id": 5,
+          "path": "/",
+          "created_at": "2026-05-01T15:53:57.245Z"
+        },
+        {
+          "id": 6,
+          "path": "/",
+          "created_at": "2026-05-01T17:16:26.001Z"
+        },
+        {
+          "id": 7,
+          "path": "/%7B%7BIMG_POST2%7D%7D",
+          "created_at": "2026-05-01T17:16:26.671Z"
+        },
+        {
+          "id": 8,
+          "path": "/%7B%7BIMG_POST3%7D%7D",
+          "created_at": "2026-05-01T17:16:26.688Z"
+        },
+        {
+          "id": 9,
+          "path": "/%7B%7BIMG_POST1%7D%7D",
+          "created_at": "2026-05-01T17:16:26.945Z"
+        },
+        {
+          "id": 10,
+          "path": "/",
+          "created_at": "2026-05-01T17:16:26.994Z"
+        }
+      ]
+    },
+    "posts": {
+      "columns": [
+        "id",
+        "title",
+        "content",
+        "excerpt",
+        "image_url",
+        "category",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 3,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Préparer son terrain pour le printemps",
+          "content": "Le printemps est la saison idéale pour redonner vie à votre terrain. Voici nos conseils pour bien démarrer la saison.\n\nNettoyage des plates-bandes, taille des arbustes, fertilisation de la pelouse et inspection du système de drainage : autant d'étapes essentielles pour garantir un beau jardin tout l'été. Notre équipe peut vous accompagner à chaque étape.",
+          "excerpt": "Conseils pour bien démarrer votre saison de jardinage avec un terrain en santé.",
+          "image_url": "{{IMG_POST1}}",
+          "category": "Conseils",
+          "published": 1,
+          "created_at": "2026-05-01T07:22:11.456Z",
+          "updated_at": "2026-05-01T07:22:11.456Z"
+        },
+        {
+          "id": 2,
+          "title": "Pourquoi choisir le pavé-uni?",
+          "content": "Le pavé-uni offre une durabilité, une esthétique et une polyvalence inégalées pour vos entrées d'auto, terrasses et allées.\n\nContrairement à l'asphalte ou au béton coulé, le pavé-uni se répare facilement, résiste aux cycles de gel-dégel québécois et offre des possibilités décoratives infinies. Avec une installation professionnelle, votre pavé peut durer 30 ans et plus.",
+          "excerpt": "Découvrez les avantages du pavé-uni pour vos projets extérieurs.",
+          "image_url": "{{IMG_POST2}}",
+          "category": "Projets",
+          "published": 1,
+          "created_at": "2026-05-01T07:22:11.464Z",
+          "updated_at": "2026-05-01T07:22:11.464Z"
+        },
+        {
+          "id": 3,
+          "title": "Préparer son entrée pour l'hiver",
+          "content": "Avant les premières neiges, quelques préparatifs simples peuvent faire toute la différence pour un déneigement efficace.\n\nMarquez clairement les bordures de votre entrée avec des balises, dégagez les zones autour des bornes-fontaines et boîtes aux lettres, et vérifiez le drainage de votre terrain. Réservez votre forfait de déneigement avant le 15 octobre pour les meilleurs tarifs.",
+          "excerpt": "Conseils pratiques pour préparer votre entrée et votre terrain avant l'hiver.",
+          "image_url": "{{IMG_POST3}}",
+          "category": "Saison",
+          "published": 1,
+          "created_at": "2026-05-01T07:22:11.472Z",
+          "updated_at": "2026-05-01T07:22:11.472Z"
+        }
+      ]
+    },
+    "services": {
+      "columns": [
+        "id",
+        "name",
+        "short_description",
+        "description",
+        "icon",
+        "color",
+        "image_url",
+        "category",
+        "display_order",
+        "active",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 6,
+      "sampleRows": [
+        {
+          "id": 1,
+          "name": "Paysagement résidentiel",
+          "short_description": "Conception et réalisation de jardins, plates-bandes, terrasses et murets.",
+          "description": "Notre équipe transforme votre cour en un espace de vie extérieur unique. Conception personnalisée, choix de matériaux, plantation d'arbres et arbustes, installation de pavé-uni, murets, escaliers et plates-bandes décoratives. Garantie de 2 ans sur tous nos travaux.",
+          "icon": "leaf",
+          "color": "#22c55e",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777619133/tapavis_tenant_ammenagementpaysager_gm/build_ammenagementpaysager_gm_1777619133651.png",
+          "category": "paysagement",
+          "display_order": 1,
+          "active": 1,
+          "created_at": "2026-05-01T07:22:11.247Z",
+          "updated_at": "2026-05-01T07:22:11.247Z"
+        },
+        {
+          "id": 2,
+          "name": "Excavation",
+          "short_description": "Travaux d'excavation, terrassement, drainage et préparation de terrain.",
+          "description": "Excavation pour fondations, piscines, drains français, travaux de drainage, terrassement et nivellement. Équipement moderne et opérateurs certifiés pour des travaux précis et sécuritaires.",
+          "icon": "shovel",
+          "color": "#78716c",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777619136/tapavis_tenant_ammenagementpaysager_gm/build_ammenagementpaysager_gm_1777619136026.png",
+          "category": "excavation",
+          "display_order": 2,
+          "active": 1,
+          "created_at": "2026-05-01T07:22:11.256Z",
+          "updated_at": "2026-05-01T07:22:11.256Z"
+        },
+        {
+          "id": 3,
+          "name": "Déneigement résidentiel",
+          "short_description": "Service de déneigement saisonnier pour résidences et commerces.",
+          "description": "Forfait saisonnier complet : déneigement de l'entrée, dégagement de l'accès au garage, épandage de sel et abrasifs au besoin. Surveillance proactive lors des tempêtes.",
+          "icon": "snowflake",
+          "color": "#3b82f6",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777619132/tapavis_tenant_ammenagementpaysager_gm/build_ammenagementpaysager_gm_1777619132444.png",
+          "category": "deneigement",
+          "display_order": 3,
+          "active": 1,
+          "created_at": "2026-05-01T07:22:11.264Z",
+          "updated_at": "2026-05-01T07:22:11.264Z"
+        },
+        {
+          "id": 4,
+          "name": "Pavé-uni et dallage",
+          "short_description": "Installation de pavé-uni, dalles et patios pour entrées et terrasses.",
+          "description": "Création d'allées piétonnières, entrées d'auto et terrasses en pavé-uni. Pose professionnelle avec base concassée, géotextile et joint polymère pour une durabilité maximale.",
+          "icon": "tool",
+          "color": "#22c55e",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777619133/tapavis_tenant_ammenagementpaysager_gm/build_ammenagementpaysager_gm_1777619133155.png",
+          "category": "paysagement",
+          "display_order": 4,
+          "active": 1,
+          "created_at": "2026-05-01T07:22:11.278Z",
+          "updated_at": "2026-05-01T07:22:11.278Z"
+        },
+        {
+          "id": 5,
+          "name": "Murets et bordures",
+          "short_description": "Construction de murets décoratifs, bordures et escaliers extérieurs.",
+          "description": "Murets en blocs architecturaux, bordures de plates-bandes et escaliers extérieurs. Solutions esthétiques et durables pour structurer votre terrain.",
+          "icon": "home",
+          "color": "#22c55e",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777619133/tapavis_tenant_ammenagementpaysager_gm/build_ammenagementpaysager_gm_1777619133773.png",
+          "category": "paysagement",
+          "display_order": 5,
+          "active": 1,
+          "created_at": "2026-05-01T07:22:11.288Z",
+          "updated_at": "2026-05-01T07:22:11.288Z"
+        },
+        {
+          "id": 6,
+          "name": "Transport en vrac",
+          "short_description": "Livraison de terre, sable, gravier, paillis et pierre décorative.",
+          "description": "Service de livraison de matériaux en vrac : terre noire, terre à jardin, sable, gravier 0-3/4, pierre concassée, paillis de cèdre et pierre décorative. Camion-benne et minicharge disponibles.",
+          "icon": "truck",
+          "color": "#78716c",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777619138/tapavis_tenant_ammenagementpaysager_gm/build_ammenagementpaysager_gm_1777619138421.png",
+          "category": "excavation",
+          "display_order": 6,
+          "active": 1,
+          "created_at": "2026-05-01T07:22:11.295Z",
+          "updated_at": "2026-05-01T07:22:11.295Z"
+        }
+      ]
+    },
+    "testimonials": {
+      "columns": [
+        "id",
+        "author",
+        "role",
+        "content",
+        "rating",
+        "image_url",
+        "display_order",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 6,
+      "sampleRows": [
+        {
+          "id": 1,
+          "author": "Marie Tremblay",
+          "role": "Saint-Jérôme",
+          "content": "Travail impeccable du début à la fin. L'équipe a complètement transformé notre cour arrière en quelques jours. Très professionnels, ponctuels et minutieux. Je recommande sans hésiter!",
+          "rating": 5,
+          "image_url": null,
+          "display_order": 1,
+          "published": 1,
+          "created_at": "2026-05-01T07:22:11.309Z",
+          "updated_at": "2026-05-01T07:22:11.309Z"
+        },
+        {
+          "id": 2,
+          "author": "Pierre Lavoie",
+          "role": "Mirabel",
+          "content": "Mario et son équipe ont fait l'excavation pour notre piscine creusée. Travail précis, terrain bien restauré et excellent suivi. Vrai souci du détail.",
+          "rating": 5,
+          "image_url": null,
+          "display_order": 2,
+          "published": 1,
+          "created_at": "2026-05-01T07:22:11.317Z",
+          "updated_at": "2026-05-01T07:22:11.317Z"
+        },
+        {
+          "id": 3,
+          "author": "Sylvie Gagnon",
+          "role": "Sainte-Adèle",
+          "content": "Service de déneigement fiable depuis 4 hivers. Toujours là après chaque tempête, peu importe l'heure. Tranquillité d'esprit garantie.",
+          "rating": 5,
+          "image_url": null,
+          "display_order": 3,
+          "published": 1,
+          "created_at": "2026-05-01T07:22:11.326Z",
+          "updated_at": "2026-05-01T07:22:11.326Z"
+        },
+        {
+          "id": 4,
+          "author": "Jean-François Dubé",
+          "role": "Saint-Sauveur",
+          "content": "Magnifique muret en pierre et nouvelle terrasse en pavé-uni. Le résultat dépasse nos attentes. Prix très compétitif pour la qualité du travail.",
+          "rating": 5,
+          "image_url": null,
+          "display_order": 4,
+          "published": 1,
+          "created_at": "2026-05-01T07:22:11.333Z",
+          "updated_at": "2026-05-01T07:22:11.333Z"
+        },
+        {
+          "id": 5,
+          "author": "Caroline Bergeron",
+          "role": "Saint-Jérôme",
+          "content": "Aménagement complet de notre devanture avec plates-bandes et arbustes. L'équipe est passionnée et le résultat est superbe. Merci!",
+          "rating": 5,
+          "image_url": null,
+          "display_order": 5,
+          "published": 1,
+          "created_at": "2026-05-01T07:22:11.340Z",
+          "updated_at": "2026-05-01T07:22:11.340Z"
+        },
+        {
+          "id": 6,
+          "author": "Robert Caron",
+          "role": "Prévost",
+          "content": "Drain français installé avec professionnalisme. Aucune infiltration depuis. Service rapide et explications claires à chaque étape.",
+          "rating": 5,
+          "image_url": null,
+          "display_order": 6,
+          "published": 1,
+          "created_at": "2026-05-01T07:22:11.354Z",
+          "updated_at": "2026-05-01T07:22:11.354Z"
+        }
+      ]
+    },
+    "gallery": {
+      "columns": [
+        "id",
+        "title",
+        "description",
+        "before_image_url",
+        "after_image_url",
+        "image_url",
+        "category",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Aménagement complet — Cour arrière",
+          "description": "Transformation complète d'une cour arrière avec terrasse en pavé-uni, plates-bandes et muret décoratif.",
+          "before_image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777619137/tapavis_tenant_ammenagementpaysager_gm/build_ammenagementpaysager_gm_1777619137633.png",
+          "after_image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777619151/tapavis_tenant_ammenagementpaysager_gm/build_ammenagementpaysager_gm_1777619151277.png",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777619151/tapavis_tenant_ammenagementpaysager_gm/build_ammenagementpaysager_gm_1777619151277.png",
+          "category": "paysagement",
+          "published": 1,
+          "created_at": "2026-05-01T07:22:11.369Z",
+          "updated_at": "2026-05-01T07:22:11.369Z"
+        },
+        {
+          "id": 2,
+          "title": "Entrée d'auto en pavé-uni",
+          "description": "Remplacement d'une entrée d'asphalte par une entrée en pavé-uni avec bordure assortie.",
+          "before_image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777619141/tapavis_tenant_ammenagementpaysager_gm/build_ammenagementpaysager_gm_1777619141533.png",
+          "after_image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777619136/tapavis_tenant_ammenagementpaysager_gm/build_ammenagementpaysager_gm_1777619136064.png",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777619136/tapavis_tenant_ammenagementpaysager_gm/build_ammenagementpaysager_gm_1777619136064.png",
+          "category": "paysagement",
+          "published": 1,
+          "created_at": "2026-05-01T07:22:11.378Z",
+          "updated_at": "2026-05-01T07:22:11.378Z"
+        },
+        {
+          "id": 3,
+          "title": "Excavation pour piscine creusée",
+          "description": "Excavation, terrassement et préparation du site pour l'installation d'une piscine creusée.",
+          "before_image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777619133/tapavis_tenant_ammenagementpaysager_gm/build_ammenagementpaysager_gm_1777619133672.png",
+          "after_image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777619133/tapavis_tenant_ammenagementpaysager_gm/build_ammenagementpaysager_gm_1777619133093.png",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777619133/tapavis_tenant_ammenagementpaysager_gm/build_ammenagementpaysager_gm_1777619133093.png",
+          "category": "excavation",
+          "published": 1,
+          "created_at": "2026-05-01T07:22:11.386Z",
+          "updated_at": "2026-05-01T07:22:11.386Z"
+        },
+        {
+          "id": 4,
+          "title": "Plates-bandes et arbustes",
+          "description": "Création de plates-bandes structurées avec sélection d'arbustes ornementaux et paillis de cèdre.",
+          "before_image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777619139/tapavis_tenant_ammenagementpaysager_gm/build_ammenagementpaysager_gm_1777619139723.png",
+          "after_image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777619135/tapavis_tenant_ammenagementpaysager_gm/build_ammenagementpaysager_gm_1777619135725.png",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1777619135/tapavis_tenant_ammenagementpaysager_gm/build_ammenagementpaysager_gm_1777619135725.png",
+          "category": "paysagement",
+          "published": 1,
+          "created_at": "2026-05-01T07:22:11.397Z",
+          "updated_at": "2026-05-01T07:22:11.397Z"
+        }
+      ]
+    },
+    "certifications": {
+      "columns": [
+        "id",
+        "name",
+        "description",
+        "image_url",
+        "active",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "name": "RBQ — Régie du bâtiment du Québec",
+          "description": "Licence d'entrepreneur en construction",
+          "image_url": null,
+          "active": 1,
+          "created_at": "2026-05-01T07:22:11.411Z",
+          "updated_at": "2026-05-01T07:22:11.411Z"
+        },
+        {
+          "id": 2,
+          "name": "CNESST",
+          "description": "Conformité en santé et sécurité du travail",
+          "image_url": null,
+          "active": 1,
+          "created_at": "2026-05-01T07:22:11.419Z",
+          "updated_at": "2026-05-01T07:22:11.419Z"
+        },
+        {
+          "id": 3,
+          "name": "APPQ",
+          "description": "Membre de l'Association des paysagistes professionnels du Québec",
+          "image_url": null,
+          "active": 1,
+          "created_at": "2026-05-01T07:22:11.428Z",
+          "updated_at": "2026-05-01T07:22:11.428Z"
+        },
+        {
+          "id": 4,
+          "name": "Garantie écrite",
+          "description": "Garantie écrite de 2 ans sur tous nos travaux",
+          "image_url": null,
+          "active": 1,
+          "created_at": "2026-05-01T07:22:11.442Z",
+          "updated_at": "2026-05-01T07:22:11.442Z"
+        }
+      ]
+    },
+    "quote_requests": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "phone",
+        "service_type",
+        "contact_method",
+        "address",
+        "details",
+        "extra_data",
+        "status",
+        "admin_notes",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "appointments": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "phone",
+        "service",
+        "appointment_date",
+        "appointment_time",
+        "contact_method",
+        "address",
+        "message",
+        "status",
+        "admin_notes",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "contact_messages": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "phone",
+        "message",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    }
+  }
+}

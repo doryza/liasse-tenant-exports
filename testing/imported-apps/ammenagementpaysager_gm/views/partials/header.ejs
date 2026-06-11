@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="<%= seasonTheme.color %>">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="description" content="<%= (typeof settings!=='undefined'&&settings.tagline)||'Aménagement paysager, excavation et déneigement à Saint-Jérôme' %>">
+<title><%= (typeof pageTitle!=='undefined'?pageTitle+' — ':'') + ((typeof settings!=='undefined'&&settings.business_name)||'Les aménagements paysagers Godard Mario') %></title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="<%= (typeof appIconUrl!=='undefined'&&appIconUrl)||'icon-192.png' %>">
+<link rel="apple-touch-icon" href="<%= (typeof appIconUrl!=='undefined'&&appIconUrl)||'icon-192.png' %>">
+<link rel="stylesheet" href="public/css/styles.css">
+<style>:root{--brand:<%= seasonTheme.color %>}</style>
+</head>
+<body>
+<div class="season-banner" style="background:<%= seasonTheme.color %>">
+<%= seasonTheme.label %> — <%= seasonTheme.message %>
+</div>
+<header class="site-header">
+<div class="nav">
+<a href="." class="nav-brand">
+<img src="<%= (typeof settings!=='undefined' && settings._p_nav_logo_url) ? settings._p_nav_logo_url : (typeof appIconUrl!=='undefined' ? appIconUrl : '') %>" alt="Logo" onerror="this.style.display='none'">
+<span class="nav-brand-text">
+<span class="nb-1"><%= (typeof settings!=='undefined' && settings.business_name) || 'Godard Mario' %></span>
+<span class="nb-2">Aménagement • Excavation • Déneigement</span>
+</span>
+</a>
+<nav class="nav-links">
+<a href=".">Accueil</a>
+<a href="services">Services</a>
+<a href="galerie">Galerie</a>
+<a href="rendez-vous">Rendez-vous</a>
+<a href="contact">Contact</a>
+<a href="#" data-login-btn>Connexion</a>
+</nav>
+<a href="soumission" class="btn btn-primary nav-cta" style="background-color:<%= seasonTheme.color %>;color:#fff">Soumission rapide</a>
+<button class="hamburger" id="navToggle" aria-label="Menu"><span></span><span></span><span></span></button>
+</div>
+<div class="mobile-menu" id="mobileMenu">
+<a href=".">Accueil</a>
+<a href="services">Services</a>
+<a href="galerie">Galerie</a>
+<a href="soumission">Soumission rapide</a>
+<a href="rendez-vous">Prendre rendez-vous</a>
+<a href="contact">Contact</a>
+<a href="#" data-login-btn>Connexion</a>
+</div>
+</header>
+<script>(function(){var t=document.getElementById('navToggle');var m=document.getElementById('mobileMenu');if(t&&m)t.addEventListener('click',function(){m.classList.toggle('open');});})();</script>
+<aside class="side-rail" id="sideRail">
+<a href="." title="Accueil"><span class="icon">🏠</span><span>Accueil</span></a>
+<a href="services" title="Services"><span class="icon">🛠️</span><span>Services</span></a>
+<a href="galerie" title="Galerie"><span class="icon">📸</span><span>Galerie</span></a>
+<a href="soumission" title="Soumission"><span class="icon">📋</span><span>Soumission</span></a>
+<a href="rendez-vous" title="Rendez-vous"><span class="icon">📅</span><span>RDV</span></a>
+<a href="contact" title="Contact"><span class="icon">✉️</span><span>Contact</span></a>
+</aside>

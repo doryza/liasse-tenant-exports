@@ -1,0 +1,32 @@
+<% var pageTitle='Rendez-vous'; %>
+<%- include('partials/header') %>
+<section style="background:linear-gradient(135deg,<%= seasonTheme.color %>,#16a34a);color:#fff;padding:3rem 0">
+<div class="container" style="text-align:center;max-width:760px">
+<h1 style="font-size:2.2rem;margin:0 0 .5rem;color:#fff">Prendre rendez-vous</h1>
+<p style="opacity:.95;margin:0">Rencontrez notre équipe pour évaluer votre projet sur place.</p>
+</div>
+</section>
+<section class="section">
+<div class="container" style="max-width:760px">
+<div id="alertBox"></div>
+<form id="apptForm" class="card" style="padding:2rem">
+<div class="form-row row-2">
+<div class="form-group"><label>Nom complet *</label><input type="text" name="name" class="form-control" required></div>
+<div class="form-group"><label>Téléphone *</label><input type="tel" name="phone" class="form-control" required></div>
+</div>
+<div class="form-group"><label>Courriel</label><input type="email" name="email" class="form-control"></div>
+<div class="form-group"><label>Service souhaité</label><select name="service" class="form-control"><option value="">— Choisir —</option><% if (typeof servicesList !== 'undefined') { servicesList.forEach(function(s){ %><option value="<%= s.name %>"><%= s.name %></option><% }); } %><option>Autre</option></select></div>
+<div class="form-row row-2">
+<div class="form-group"><label>Date souhaitée *</label><input type="date" name="appointment_date" class="form-control" required min="<%= new Date().toISOString().split('T')[0] %>"></div>
+<div class="form-group"><label>Heure préférée</label><select name="appointment_time" class="form-control"><option value="">— À déterminer —</option><option>08h00 - 10h00</option><option>10h00 - 12h00</option><option>13h00 - 15h00</option><option>15h00 - 17h00</option></select></div>
+</div>
+<div class="form-group"><label>Adresse de la rencontre</label><input type="text" name="address" class="form-control" placeholder="Lieu du rendez-vous"></div>
+<div class="form-group"><label>Message ou précisions</label><textarea name="message" class="form-control" placeholder="Décrivez votre projet ou demande..."></textarea></div>
+<div class="form-group"><label>Méthode de contact préférée *</label><div class="radio-group"><div class="radio-option"><input type="radio" name="contact_method" value="email" id="acm-email" checked><label for="acm-email">📧 Courriel</label></div><div class="radio-option"><input type="radio" name="contact_method" value="sms" id="acm-sms"><label for="acm-sms">💬 SMS</label></div><div class="radio-option"><input type="radio" name="contact_method" value="phone" id="acm-phone"><label for="acm-phone">📞 Téléphone</label></div></div></div>
+<button type="submit" id="submitBtn" class="btn btn-primary" style="background-color:<%= seasonTheme.color %>;color:#fff;width:100%;padding:1rem;font-size:1.1rem">Confirmer le rendez-vous</button>
+</form>
+</div>
+</section>
+<script>(function(){var form=document.getElementById('apptForm');var alertBox=document.getElementById('alertBox');var btn=document.getElementById('submitBtn');form.addEventListener('submit',function(e){e.preventDefault();btn.disabled=true;btn.textContent='Envoi en cours...';alertBox.innerHTML='';var fd=new FormData(form);var data={};fd.forEach(function(v,k){data[k]=v;});fetch('api/appointment',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}).then(function(r){return r.json().then(function(j){return{ok:r.ok,j:j};});}).then(function(res){if(res.ok&&res.j.success){alertBox.innerHTML='<div class="alert alert-success">✅ Votre demande de rendez-vous a été envoyée. Nous vous confirmerons sous peu.</div>';form.reset();btn.disabled=false;btn.textContent='Confirmer le rendez-vous';window.scrollTo({top:0,behavior:'smooth'});}else{alertBox.innerHTML='<div class="alert alert-error">'+((res.j&&res.j.error)||'Erreur lors de l\'envoi.')+'</div>';btn.disabled=false;btn.textContent='Confirmer le rendez-vous';}}).catch(function(){alertBox.innerHTML='<div class="alert alert-error">Erreur de connexion. Veuillez réessayer.</div>';btn.disabled=false;btn.textContent='Confirmer le rendez-vous';});});})();</script>
+<a href="soumission" class="sticky-cta" style="background-color:<%= seasonTheme.color %>">📋 Soumission rapide gratuite</a>
+<%- include('partials/footer') %>
