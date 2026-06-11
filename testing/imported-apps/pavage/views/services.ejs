@@ -1,41 +1,84 @@
 <%- include('partials/header') %>
-<section class="py-16 bg-gradient-to-br from-dark-2 to-dark">
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-<h1 class="section-title gradient-text mb-4"><%= t.services_title %></h1>
-<p class="text-gray-400 text-xl max-w-2xl mx-auto"><%= t.services_subtitle %></p>
+<style>
+/* page-scoped: single-column stack for the horizontal service fiches */
+.pg-service-stack { display: grid; grid-template-columns: 1fr; gap: 1.75rem; }
+</style>
+<section class="course course--paper">
+<div class="container">
+<div class="sec-head">
+<span class="sec-index">01</span>
+<h1 style="font-size:clamp(1.6rem,3.5vw,2.4rem)"><%= t.services_title %></h1>
+<span class="dim-rule" aria-hidden="true"></span>
 </div>
-</section>
-<section class="py-16">
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<p class="sec-sub"><%= t.services_subtitle %></p>
 <% if (typeof serviceList !== 'undefined' && serviceList.length > 0) { %>
-<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="pg-service-stack">
 <% serviceList.forEach(function(s, idx){ %>
-<div class="card group flex flex-col md:flex-row">
-<% if (s.image_url) { %><div class="md:w-2/5 h-48 md:h-auto overflow-hidden"><img src="<%= s.image_url %>" alt="<%= s.name %>" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"></div><% } %>
-<div class="p-6 flex-1">
-<h3 class="text-2xl font-bold mb-3 gradient-text"><%= s.name %></h3>
-<p class="text-gray-400 mb-4"><%= s.description %></p>
-<% if (s.price_range) { %><div class="mb-4"><span class="text-xs text-gray-500 uppercase"><%= t.service_price %></span><div class="text-xl font-bold" style="color:#a78bfa"><%= s.price_range %></div></div><% } %>
-<a href="soumission" class="btn-primary text-sm" style="background:linear-gradient(135deg,#8b5cf6 0%,#ec4899 100%);color:#fff"><%= t.service_request %> →</a>
+<div class="fiche fiche--h fiche--spine spine-<%= (idx % 4) + 1 %>">
+<% if (s.image_url) { %><img class="fiche-img" src="<%= s.image_url %>" alt="<%= s.name %>" loading="lazy"><% } %>
+<div class="fiche-body">
+<h3 class="fiche-title"><%= s.name %></h3>
+<p class="fiche-desc"><%= s.description %></p>
+<% if (s.price_range) { %><div class="fiche-price"><span class="fiche-meta"><%= t.service_price %></span> · <%= s.price_range %></div><% } %>
+<a href="soumission" class="fiche-link"><%= t.service_request %> →</a>
 </div>
 </div>
 <% }) %>
 </div>
 <% } else { %>
-<p class="text-center text-gray-500"><%= t.empty_default %></p>
+<div class="empty-state"><%= t.empty_default %></div>
 <% } %>
 </div>
+<div class="chevron" style="--chev:#BCD7DA" aria-hidden="true"></div>
 </section>
-<section class="py-20 bg-dark-2">
-<div class="max-w-5xl mx-auto px-4 text-center">
-<h2 class="section-title gradient-text mb-4"><%= t.why_us %></h2>
-<p class="text-gray-400 mb-12"><%= t.why_us_sub %></p>
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-<div class="glass p-6 rounded-2xl"><div class="text-4xl mb-3">⭐</div><h3 class="font-bold mb-2"><%= t.feature1_title %></h3><p class="text-sm text-gray-400"><%= t.feature1_text %></p></div>
-<div class="glass p-6 rounded-2xl"><div class="text-4xl mb-3">🛡️</div><h3 class="font-bold mb-2"><%= t.feature2_title %></h3><p class="text-sm text-gray-400"><%= t.feature2_text %></p></div>
-<div class="glass p-6 rounded-2xl"><div class="text-4xl mb-3">👷</div><h3 class="font-bold mb-2"><%= t.feature3_title %></h3><p class="text-sm text-gray-400"><%= t.feature3_text %></p></div>
-<div class="glass p-6 rounded-2xl"><div class="text-4xl mb-3">🏠</div><h3 class="font-bold mb-2"><%= t.feature4_title %></h3><p class="text-sm text-gray-400"><%= t.feature4_text %></p></div>
+
+<section class="course course--glacier" style="padding-top:3.25rem">
+<div class="container">
+<div class="sec-head">
+<span class="sec-index sec-index--brique">02</span>
+<h2><%= t.why_us %></h2>
+<span class="dim-rule" aria-hidden="true"></span>
 </div>
+<p class="sec-sub"><%= t.why_us_sub %></p>
+<div class="feature-rows">
+<div class="feature-row">
+<span class="feature-num">01</span>
+<div>
+<h3><%= t.feature1_title %></h3>
+<p><%= t.feature1_text %></p>
+</div>
+</div>
+<div class="feature-row">
+<span class="feature-num">02</span>
+<div>
+<h3><%= t.feature2_title %></h3>
+<p><%= t.feature2_text %></p>
+</div>
+</div>
+<div class="feature-row">
+<span class="feature-num">03</span>
+<div>
+<h3><%= t.feature3_title %></h3>
+<p><%= t.feature3_text %></p>
+</div>
+</div>
+<div class="feature-row">
+<span class="feature-num">04</span>
+<div>
+<h3><%= t.feature4_title %></h3>
+<p><%= t.feature4_text %></p>
+</div>
+</div>
+</div>
+</div>
+<div class="chevron" style="--chev:#C2502D" aria-hidden="true"></div>
+</section>
+
+<section class="course course--brique cta-course" style="padding-top:3.25rem">
+<div class="container">
+<h2><%= settings['cta_title_' + lang] || t.featured_projects %></h2>
+<p class="sec-sub"><%= settings['cta_subtitle_' + lang] || '' %></p>
+<a href="soumission" class="btn" style="margin-top:0.5rem"><%= t.cta_btn %> →</a>
 </div>
 </section>
 <%- include('partials/footer') %>

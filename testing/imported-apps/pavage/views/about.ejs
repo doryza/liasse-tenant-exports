@@ -1,42 +1,68 @@
 <%- include('partials/header') %>
-<section class="py-16 bg-gradient-to-br from-dark-2 to-dark">
-<div class="max-w-7xl mx-auto px-4 text-center">
-<h1 class="section-title gradient-text mb-4"><%= t.about_title %></h1>
+<section class="course course--paper">
+<div class="container">
+<p class="kicker"><span class="line-disc line--walkway" aria-hidden="true"></span><%= t.nav_about %></p>
+<h1 class="h-bars wipe-in"><span class="bars"><%= settings['about_title_' + lang] || t.about_title %></span></h1>
+<% if (settings['about_text_' + lang]) { %><div class="ruled-paper" style="margin-top:2.25rem"><%= settings['about_text_' + lang] %></div><% } %>
 </div>
+<div class="chevron" style="--chev:#BCD7DA" aria-hidden="true"></div>
 </section>
-<section class="py-16">
-<div class="max-w-5xl mx-auto px-4">
-<div class="card p-8 md:p-12">
-<h2 class="text-3xl font-bold mb-6 gradient-text"><%= settings['about_title_' + lang] || t.about_title %></h2>
-<p class="text-gray-300 text-lg leading-relaxed whitespace-pre-line"><%= settings['about_text_' + lang] || '' %></p>
+
+<section class="course course--glacier" style="padding-top:3.25rem">
+<div class="container">
+<div class="sec-head">
+<span class="sec-index">01</span>
+<h2><%= t.why_us %></h2>
+<span class="dim-rule" aria-hidden="true"></span>
 </div>
-<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
-<div class="glass p-6 rounded-xl text-center"><div class="text-3xl font-bold gradient-text mb-1">20+</div><div class="text-xs text-gray-400"><%= settings['stat_years_' + lang] || '' %></div></div>
-<div class="glass p-6 rounded-xl text-center"><div class="text-3xl font-bold gradient-text mb-1">2500+</div><div class="text-xs text-gray-400"><%= settings['stat_projects_' + lang] || '' %></div></div>
-<div class="glass p-6 rounded-xl text-center"><div class="text-3xl font-bold gradient-text mb-1">10</div><div class="text-xs text-gray-400"><%= settings['stat_warranty_' + lang] || '' %></div></div>
-<div class="glass p-6 rounded-xl text-center"><div class="text-3xl font-bold gradient-text mb-1">98%</div><div class="text-xs text-gray-400"><%= settings['stat_satisfaction_' + lang] || '' %></div></div>
+<div class="fiche-technique" style="margin-top:1.75rem">
+<div class="stat-cell"><div class="stat-num">20+</div><div class="stat-label"><%= settings['stat_years_' + lang] || '' %></div></div>
+<div class="stat-cell"><div class="stat-num">2500+</div><div class="stat-label"><%= settings['stat_projects_' + lang] || '' %></div></div>
+<div class="stat-cell"><div class="stat-num">10</div><div class="stat-label"><%= settings['stat_warranty_' + lang] || '' %></div></div>
+<div class="stat-cell"><div class="stat-num">98%</div><div class="stat-label"><%= settings['stat_satisfaction_' + lang] || '' %></div></div>
 </div>
 </div>
+<div class="chevron" style="--chev:#0A4A45" aria-hidden="true"></div>
 </section>
-<section class="py-16 bg-dark-2">
-<div class="max-w-7xl mx-auto px-4">
-<h2 class="section-title gradient-text text-center mb-12"><%= t.testimonials_title %></h2>
+
+<section class="course course--sarcelle" style="padding-top:3.25rem">
+<div class="container">
+<div class="sec-head">
+<span class="sec-index sec-index--ocre">02</span>
+<h2><%= t.testimonials_title %></h2>
+<span class="dim-rule" aria-hidden="true"></span>
+</div>
+<p class="sec-sub"><%= t.testimonials_sub %></p>
 <% if (typeof testimonials !== 'undefined' && testimonials.length > 0) { %>
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-<% testimonials.forEach(function(tt){ %>
-<div class="card p-6">
-<div class="text-yellow-400 mb-3"><% for(var i=0;i<(tt.rating||5);i++){ %>★<% } %></div>
-<p class="text-gray-300 mb-4 italic">"<%= tt.content %>"</p>
-<div class="flex items-center gap-3">
-<div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center font-bold" style="background:linear-gradient(135deg,#8b5cf6 0%,#ec4899 100%);color:#fff"><%= (tt.author||'?').charAt(0) %></div>
-<div><div class="font-semibold"><%= tt.author %></div><div class="text-xs text-gray-400"><%= tt.location %></div></div>
+<div class="grid-3">
+<% testimonials.forEach(function(tt, i){ %>
+<div class="fiche carnet">
+<span class="quote-glyph" aria-hidden="true">«</span>
+<span class="pave-row" role="img" aria-label="<%= (tt.rating || 5) %>/5">
+<% for (var ri = 0; ri < (tt.rating || 5); ri++) { %><span class="pave-sq"></span><% } %>
+</span>
+<p class="carnet-text"><%= tt.content %></p>
+<div class="carnet-author">
+<span class="avatar-sq spine-<%= (i % 4) + 1 %>"><%= (tt.author || '?').charAt(0) %></span>
+<div>
+<div class="carnet-name"><%= tt.author %></div>
+<div class="carnet-loc"><%= tt.location %></div>
+</div>
 </div>
 </div>
 <% }) %>
 </div>
 <% } else { %>
-<p class="text-center text-gray-500"><%= t.empty_default %></p>
+<div class="empty-state" style="border-color:rgba(243,240,231,.4);color:rgba(243,240,231,.75)"><%= t.empty_default %></div>
 <% } %>
+</div>
+</section>
+
+<section class="course course--brique cta-course">
+<div class="container">
+<h2><%= settings['cta_title_' + lang] || t.featured_projects %></h2>
+<p class="sec-sub"><%= settings['cta_subtitle_' + lang] || '' %></p>
+<a href="soumission" class="btn" style="margin-top:0.5rem"><%= t.cta_btn %> →</a>
 </div>
 </section>
 <%- include('partials/footer') %>

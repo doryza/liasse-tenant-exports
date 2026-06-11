@@ -1,84 +1,72 @@
-<!DOCTYPE html>
+<%
+// `root` lets nested views (galerie/:id, blogue/:id) prefix shell links
+// with '../' so every URL stays relative to the app mount.
+var root = (typeof root !== 'undefined' && root) ? root : '';
+%><!DOCTYPE html>
 <html lang="<%= lang %>">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#8b5cf6">
+<meta name="theme-color" content="#0E6B63">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title><%= (typeof pageTitle !== 'undefined' && pageTitle) ? pageTitle + ' | ' : '' %><%= settings.business_name || t.brand %></title>
 <meta name="description" content="<%= settings['tagline_' + lang] || t.brand %>">
-<link rel="manifest" href="manifest.json">
-<script src="https://cdn.tailwindcss.com"></script>
-<script>tailwind.config={theme:{extend:{colors:{brand:'#8b5cf6','brand-dark':'#6d28d9','brand-light':'#a78bfa','accent':'#ec4899','dark':'#0f0a1f','dark-2':'#1a1330'}}}}</script>
-<style>
-html{scroll-behavior:smooth}
-body{font-family:'Inter',system-ui,sans-serif;background:#0f0a1f;color:#f5f3ff}
-.gradient-text{background:linear-gradient(135deg,#8b5cf6 0%,#ec4899 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;color:#a78bfa}
-.gradient-bg{background:linear-gradient(135deg,#8b5cf6 0%,#ec4899 100%)}
-.glass{background:rgba(26,19,48,.7);backdrop-filter:blur(12px);border:1px solid rgba(139,92,246,.2)}
-.btn-primary{background:linear-gradient(135deg,#8b5cf6 0%,#ec4899 100%);color:#fff;font-weight:600;padding:.75rem 1.5rem;border-radius:.75rem;transition:all .3s;display:inline-block;box-shadow:0 10px 30px -10px rgba(139,92,246,.5)}
-.btn-primary:hover{transform:translateY(-2px);box-shadow:0 15px 40px -10px rgba(139,92,246,.7)}
-.btn-secondary{background:rgba(139,92,246,.15);color:#fff;border:1px solid rgba(139,92,246,.5);font-weight:600;padding:.75rem 1.5rem;border-radius:.75rem;transition:all .3s;display:inline-block}
-.btn-secondary:hover{background:rgba(139,92,246,.3)}
-.card{background:linear-gradient(135deg,rgba(26,19,48,.95) 0%,rgba(26,19,48,.85) 100%);border:1px solid rgba(139,92,246,.2);border-radius:1.25rem;overflow:hidden;transition:all .3s}
-.card:hover{transform:translateY(-4px);border-color:rgba(139,92,246,.5);box-shadow:0 20px 50px -10px rgba(139,92,246,.3)}
-.section-title{font-size:2.5rem;font-weight:800;line-height:1.1}
-@media(min-width:768px){.section-title{font-size:3.5rem}}
-.input-field{width:100%;background:rgba(26,19,48,.6);border:1px solid rgba(139,92,246,.3);border-radius:.75rem;padding:.75rem 1rem;color:#fff;transition:all .3s}
-.input-field:focus{outline:none;border-color:#8b5cf6;box-shadow:0 0 0 3px rgba(139,92,246,.2)}
-.fade-in{animation:fadeIn .8s ease-out}
-@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-.float{animation:float 6s ease-in-out infinite}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
-.glow{box-shadow:0 0 60px rgba(139,92,246,.4)}
-:focus-visible{outline:2px solid #a78bfa;outline-offset:2px}
-</style>
+<link rel="manifest" href="<%= root %>manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="<%= root %>public/css/styles.css">
 </head>
-<body class="min-h-screen">
-<nav class="sticky top-0 z-40 glass border-b border-purple-500/20">
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-<div class="flex justify-between items-center h-16">
-<a href="." class="flex items-center gap-2 group">
-<img src="<%= (typeof settings!=='undefined' && settings._p_nav_logo_url) ? settings._p_nav_logo_url : (typeof appIconUrl!=='undefined' ? appIconUrl : '') %>" alt="Logo" class="w-9 h-9 rounded-lg" onerror="this.style.display='none'">
-<span class="font-bold text-lg gradient-text"><%= settings.business_name || t.brand %></span>
+<body>
+<header class="masthead">
+<div class="container masthead-utility">
+<% if (settings.contact_phone) { %><a href="tel:<%= settings.contact_phone %>"><%= settings.contact_phone %></a><% } %>
+<span class="lang-tabs" role="group" aria-label="Langue / Language">
+<a href="?lang=fr" class="lang-tab" <%- lang === 'fr' ? 'aria-current="true"' : '' %>>FR</a>
+<a href="?lang=en" class="lang-tab" <%- lang === 'en' ? 'aria-current="true"' : '' %>>EN</a>
+</span>
+<a href="#" data-login-btn><%= t.nav_login %></a>
+</div>
+<div class="container masthead-main">
+<a href="<%= root %>." class="wordmark">
+<img src="<%= (typeof settings!=='undefined' && settings._p_nav_logo_url) ? settings._p_nav_logo_url : (typeof appIconUrl!=='undefined' ? appIconUrl : '') %>" alt="Logo" onerror="this.style.display='none'">
+<span class="wordmark-name"><%= settings.business_name || t.brand %></span>
 </a>
-<div class="hidden md:flex items-center gap-1">
-<a href="." class="px-3 py-2 rounded-lg hover:bg-purple-500/10 transition"><%= t.nav_home %></a>
-<a href="services" class="px-3 py-2 rounded-lg hover:bg-purple-500/10 transition"><%= t.nav_services %></a>
-<a href="galerie" class="px-3 py-2 rounded-lg hover:bg-purple-500/10 transition"><%= t.nav_gallery %></a>
-<a href="a-propos" class="px-3 py-2 rounded-lg hover:bg-purple-500/10 transition"><%= t.nav_about %></a>
-<a href="blogue" class="px-3 py-2 rounded-lg hover:bg-purple-500/10 transition"><%= t.nav_blog %></a>
-<a href="soumission" class="btn-primary text-sm" style="background:linear-gradient(135deg,#8b5cf6 0%,#ec4899 100%);color:#fff"><%= t.btn_quote %></a>
-<div class="ml-3 flex items-center gap-1 text-sm border-l border-purple-500/30 pl-3">
-<a href="?lang=fr" class="<%= lang === 'fr' ? 'font-bold' : 'text-gray-400 hover:text-white' %>" <%= lang === 'fr' ? 'style="color:#a78bfa"' : '' %>>FR</a>
-<span class="text-gray-500">|</span>
-<a href="?lang=en" class="<%= lang === 'en' ? 'font-bold' : 'text-gray-400 hover:text-white' %>" <%= lang === 'en' ? 'style="color:#a78bfa"' : '' %>>EN</a>
-</div>
-<a href="#" data-login-btn class="ml-2 text-sm text-gray-300 hover:text-white"><%= t.nav_login %></a>
-</div>
-<button id="mobileMenuBtn" aria-label="Menu" class="md:hidden p-2 rounded-lg hover:bg-purple-500/20">
-<svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+<nav class="cad-nav" aria-label="Navigation principale">
+<a href="<%= root %>services" class="cad-link"><span class="cad-num">01</span><%= t.nav_services %></a>
+<a href="<%= root %>galerie" class="cad-link"><span class="cad-num">02</span><%= t.nav_gallery %></a>
+<a href="<%= root %>a-propos" class="cad-link"><span class="cad-num">03</span><%= t.nav_about %></a>
+<a href="<%= root %>blogue" class="cad-link"><span class="cad-num">04</span><%= t.nav_blog %></a>
+<a href="<%= root %>soumission" class="cad-cta"><%= t.btn_quote %></a>
+</nav>
+<button id="mobileMenuBtn" aria-label="Menu" aria-controls="mobileMenu" aria-expanded="false">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="3" y="3" width="8" height="8"/><rect x="13" y="3" width="8" height="8"/><rect x="3" y="13" width="8" height="8"/><rect x="13" y="13" width="8" height="8"/></svg>
 </button>
 </div>
+</header>
+<div id="mobileMenu" class="hidden">
+<a href="<%= root %>." class="mm-band mm-band--craie"><span class="cad-num">00</span><%= t.nav_home %></a>
+<a href="<%= root %>services" class="mm-band mm-band--sarcelle"><span class="cad-num">01</span><%= t.nav_services %></a>
+<a href="<%= root %>galerie" class="mm-band mm-band--glacier"><span class="cad-num">02</span><%= t.nav_gallery %></a>
+<a href="<%= root %>a-propos" class="mm-band mm-band--ocre"><span class="cad-num">03</span><%= t.nav_about %></a>
+<a href="<%= root %>blogue" class="mm-band mm-band--ink"><span class="cad-num">04</span><%= t.nav_blog %></a>
+<a href="<%= root %>soumission" class="mm-band mm-band--brique"><span class="cad-num">05</span><%= t.btn_quote %></a>
+<div class="mm-utility">
+<span class="lang-tabs">
+<a href="?lang=fr" class="lang-tab" <%- lang === 'fr' ? 'aria-current="true"' : '' %>>FR</a>
+<a href="?lang=en" class="lang-tab" <%- lang === 'en' ? 'aria-current="true"' : '' %>>EN</a>
+</span>
+<a href="#" data-login-btn><%= t.nav_login %></a>
 </div>
-<div id="mobileMenu" class="hidden md:hidden border-t border-purple-500/20 bg-dark-2">
-<div class="px-4 py-3 flex flex-col gap-1">
-<a href="." class="px-3 py-3 rounded-lg hover:bg-purple-500/10"><%= t.nav_home %></a>
-<a href="services" class="px-3 py-3 rounded-lg hover:bg-purple-500/10"><%= t.nav_services %></a>
-<a href="galerie" class="px-3 py-3 rounded-lg hover:bg-purple-500/10"><%= t.nav_gallery %></a>
-<a href="a-propos" class="px-3 py-3 rounded-lg hover:bg-purple-500/10"><%= t.nav_about %></a>
-<a href="blogue" class="px-3 py-3 rounded-lg hover:bg-purple-500/10"><%= t.nav_blog %></a>
-<a href="soumission" class="px-3 py-3 rounded-lg gradient-bg text-white font-bold text-center" style="background:linear-gradient(135deg,#8b5cf6 0%,#ec4899 100%);color:#fff"><%= t.btn_quote %></a>
-<div class="flex gap-3 px-3 py-2 border-t border-purple-500/20 mt-2">
-<a href="?lang=fr" class="<%= lang === 'fr' ? 'font-bold' : 'text-gray-400' %>" <%= lang === 'fr' ? 'style="color:#a78bfa"' : '' %>>FR</a>
-<span class="text-gray-500">|</span>
-<a href="?lang=en" class="<%= lang === 'en' ? 'font-bold' : 'text-gray-400' %>" <%= lang === 'en' ? 'style="color:#a78bfa"' : '' %>>EN</a>
 </div>
-<a href="#" data-login-btn class="px-3 py-3 text-gray-300"><%= t.nav_login %></a>
+<a href="<%= root %>soumission" class="devis-tab"><%= t.btn_quote %> →</a>
+<div class="tape-bar">
+<div class="tape-bar-inner">
+<% if (settings.contact_phone) { %><a href="tel:<%= settings.contact_phone %>" class="tape-tel"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg><%= settings.contact_phone %></a><% } else { %><span></span><% } %>
+<a href="<%= root %>soumission" class="tape-cta"><%= t.btn_quote %></a>
 </div>
 </div>
-</nav>
 <script>
-(function(){var b=document.getElementById('mobileMenuBtn'),m=document.getElementById('mobileMenu');if(b&&m){b.addEventListener('click',function(){m.classList.toggle('hidden')})}})();
+(function(){var b=document.getElementById('mobileMenuBtn'),m=document.getElementById('mobileMenu');if(b&&m){b.addEventListener('click',function(){m.classList.toggle('hidden');b.setAttribute('aria-expanded',m.classList.contains('hidden')?'false':'true')})}})();
 </script>

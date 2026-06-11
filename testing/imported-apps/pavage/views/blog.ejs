@@ -1,29 +1,36 @@
 <%- include('partials/header') %>
-<section class="py-16 bg-gradient-to-br from-dark-2 to-dark">
-<div class="max-w-7xl mx-auto px-4 text-center">
-<h1 class="section-title gradient-text mb-4"><%= t.blog_title %></h1>
-<p class="text-gray-400 text-xl"><%= t.blog_sub %></p>
+<section class="course course--paper">
+<div class="container">
+<div class="sec-head">
+<span class="sec-index sec-index--ink">04</span>
+<h1 style="font-size:clamp(1.6rem,3.5vw,2.4rem)"><%= t.blog_title %></h1>
+<span class="dim-rule" aria-hidden="true"></span>
 </div>
-</section>
-<section class="py-16">
-<div class="max-w-7xl mx-auto px-4">
+<p class="sec-sub"><%= t.blog_sub %></p>
 <% if (typeof posts !== 'undefined' && posts.length > 0) { %>
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<div class="ledger">
 <% posts.forEach(function(p){ %>
-<a href="blogue/<%= p.id %>" class="card group block">
-<% if (p.image_url) { %><div class="h-56 overflow-hidden"><img src="<%= p.image_url %>" alt="<%= p.title %>" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"></div><% } %>
-<div class="p-6">
-<% if (p.category) { %><div class="text-xs text-brand-light font-semibold uppercase mb-2"><%= p.category %></div><% } %>
-<h3 class="font-bold text-xl mb-2"><%= p.title %></h3>
-<p class="text-gray-400 text-sm mb-4 line-clamp-3"><%= (p.content || '').substring(0, 150) %>...</p>
-<div class="text-xs text-gray-500"><%= formatDate(p.created_at, lang) %></div>
-</div>
+<a href="blogue/<%= p.id %>" class="ledger-row">
+<span class="ledger-date"><%= formatDate(p.created_at, lang) %><% if (p.category) { %><span class="line-tag" style="display:flex;margin-top:0.45rem"><span class="line-disc line--default" aria-hidden="true"></span><%= p.category %></span><% } %></span>
+<span>
+<span class="ledger-title"><%= p.title %></span>
+<p class="ledger-excerpt"><%= (p.content || '').substring(0, 150) %>…</p>
+</span>
+<span class="back-link" aria-hidden="true">→</span>
 </a>
 <% }) %>
 </div>
 <% } else { %>
-<p class="text-center text-gray-500"><%= t.empty_default %></p>
+<div class="empty-state"><%= t.empty_default %></div>
 <% } %>
+</div>
+<div class="chevron" style="--chev:#C2502D" aria-hidden="true"></div>
+</section>
+<section class="course course--brique cta-course">
+<div class="container">
+<h2><%= settings['cta_title_' + lang] || t.featured_projects %></h2>
+<p class="sec-sub"><%= settings['cta_subtitle_' + lang] || '' %></p>
+<a href="soumission" class="btn" style="margin-top:0.5rem"><%= t.cta_btn %> →</a>
 </div>
 </section>
 <%- include('partials/footer') %>

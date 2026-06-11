@@ -1,29 +1,45 @@
-<%- include('partials/header') %>
-<section class="py-12">
-<div class="max-w-3xl mx-auto px-4">
-<a href="blogue" class="mb-6 inline-block" style="color:#a78bfa"><%= t.blog_back %></a>
-<article class="card p-8 md:p-12">
-<% if (post.category) { %><div class="text-xs font-semibold uppercase mb-3" style="color:#a78bfa"><%= post.category %></div><% } %>
-<h1 class="text-3xl md:text-5xl font-bold mb-4 gradient-text"><%= post.title %></h1>
-<div class="text-sm text-gray-500 mb-6"><%= t.published %> <%= formatDate(post.created_at, lang) %></div>
-<% if (post.image_url) { %><img src="<%= post.image_url %>" alt="<%= post.title %>" class="w-full h-64 md:h-96 object-cover rounded-xl mb-8"><% } %>
-<div class="prose prose-invert max-w-none text-gray-300 text-lg leading-relaxed whitespace-pre-line"><%= post.content %></div>
+<%- include('partials/header', {root: '../'}) %>
+<%
+var IMG_FALLBACK = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 3'%3E%3Crect width='4' height='3' fill='%23BCD7DA'/%3E%3C/svg%3E";
+%>
+<section class="course course--paper">
+<div class="container" style="max-width:880px">
+<div style="margin-bottom:2.25rem"><a href="../blogue" class="back-link"><%= t.blog_back %></a></div>
+<article>
+<% if (post.category) { %><div class="line-tag" style="margin-bottom:0.9rem"><span class="line-disc line--default" aria-hidden="true"></span><%= post.category %></div><% } %>
+<h1 class="h-bars wipe-in"><span class="bars"><%= post.title %></span></h1>
+<div class="fiche-meta" style="margin-top:1.1rem"><%= t.published %> <%= formatDate(post.created_at, lang) %></div>
+<% if (post.image_url) { %>
+<div class="specimen-frame" style="margin-top:2rem">
+<img src="<%= post.image_url %>" alt="<%= post.title %>" style="aspect-ratio:16 / 9">
+</div>
+<% } %>
+<% if (post.content) { %><div class="ruled-paper" style="margin-top:2rem"><%= post.content %></div><% } %>
 </article>
 </div>
+<% if (typeof others !== 'undefined' && others.length > 0) { %>
+<div class="chevron" style="--chev:#BCD7DA" aria-hidden="true"></div>
+<% } %>
 </section>
 <% if (typeof others !== 'undefined' && others.length > 0) { %>
-<section class="py-16 bg-dark-2">
-<div class="max-w-7xl mx-auto px-4">
-<h2 class="text-2xl font-bold mb-8 text-center"><%= t.blog_title %></h2>
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<section class="course course--glacier" style="padding-top:3.25rem">
+<div class="container">
+<div class="sec-head">
+<span class="sec-index sec-index--ink">01</span>
+<h2><%= t.blog_title %></h2>
+<span class="dim-rule" aria-hidden="true"></span>
+</div>
+<div class="grid-3" style="margin-top:1.75rem">
 <% others.forEach(function(p){ %>
-<a href="<%= p.id %>" class="card group block">
-<% if (p.image_url) { %><div class="h-40 overflow-hidden"><img src="<%= p.image_url %>" alt="<%= p.title %>" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"></div><% } %>
-<div class="p-4"><h3 class="font-bold"><%= p.title %></h3></div>
+<a href="<%= p.id %>" class="fiche">
+<% if (p.image_url) { %><img class="fiche-img" src="<%= p.image_url || IMG_FALLBACK %>" alt="<%= p.title %>" loading="lazy"><% } %>
+<div class="fiche-body">
+<h3 class="fiche-title"><%= p.title %></h3>
+</div>
 </a>
 <% }) %>
 </div>
 </div>
 </section>
 <% } %>
-<%- include('partials/footer') %>
+<%- include('partials/footer', {root: '../'}) %>

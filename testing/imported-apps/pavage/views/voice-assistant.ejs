@@ -30,151 +30,68 @@
 <%- include('partials/header', __vaPartialLocals) %>
 
 <style>
-  /* Voice page — pulsing mic hero + chat modal. Inline so a missing
-     tenant stylesheet can't strip the design. */
-  .va-stage { perspective: 600px; }
-  .va-mic-btn {
-    position: relative; background: transparent; border: 0; padding: 0;
-    cursor: pointer; display: inline-flex; align-items: center;
-    justify-content: center; width: 9rem; height: 9rem;
-    border-radius: 9999px;
-    background: linear-gradient(135deg, <%= vaBrandLight %>, <%= vaBrandColor %>);
-    color: #fff;
-    transition: transform 200ms ease;
-  }
-  @media (min-width: 768px) {
-    .va-mic-btn { width: 11rem; height: 11rem; }
-  }
-  .va-mic-btn:hover { transform: scale(1.05); }
-  .va-mic-btn:active { transform: scale(0.95); }
-  .va-mic-btn:disabled { opacity: 0.55; cursor: not-allowed; }
-  .va-mic-btn::before, .va-mic-btn::after {
-    content: ''; position: absolute; inset: 0; border-radius: 9999px;
-    pointer-events: none;
-    background: <%= vaBrandColor %>; opacity: 0.45;
-    z-index: -1;
-    animation: va-pulse 2.2s cubic-bezier(0,0,0.2,1) infinite;
-  }
-  .va-mic-btn::after { animation-delay: 1.1s; }
-  @keyframes va-pulse {
-    0%   { transform: scale(1);    opacity: 0.55; }
-    100% { transform: scale(2.1);  opacity: 0;    }
-  }
-  @keyframes va-breathe {
-    0%, 100% { box-shadow: 0 22px 48px -12px rgba(139,92,246,0.6), 0 0 0 0 rgba(139,92,246,0.35); }
-    50%      { box-shadow: 0 28px 58px -12px rgba(139,92,246,0.75), 0 0 0 18px rgba(139,92,246,0); }
-  }
-  .va-mic-btn { animation: va-breathe 2.6s ease-in-out infinite; }
-  @media (prefers-reduced-motion: reduce) {
-    .va-mic-btn, .va-mic-btn::before, .va-mic-btn::after { animation: none !important; }
-  }
-
-  /* Chat modal */
-  .va-overlay {
-    position: fixed; inset: 0; z-index: 60;
-    background: rgba(15, 23, 42, 0.55);
-    backdrop-filter: blur(4px);
-    display: none; align-items: flex-end; justify-content: center; padding: 0;
-  }
-  @media (min-width: 640px) {
-    .va-overlay { align-items: center; padding: 1rem; }
-  }
-  .va-overlay.va-open { display: flex; }
-  .va-modal {
-    position: relative; width: 100%; max-width: 36rem;
-    background: #fff; border-radius: 1rem 1rem 0 0;
-    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
-    display: flex; flex-direction: column;
-    max-height: 92vh; overflow: hidden;
-  }
-  @media (min-width: 640px) { .va-modal { border-radius: 1rem; max-height: 85vh; } }
-  .va-msg { padding: 0.6rem 0.85rem; border-radius: 0.85rem; max-width: 80%; word-wrap: break-word; }
-  .va-msg-ai   { background: #f3f4f6; color: #111827; align-self: flex-start; border-top-left-radius: 0.25rem; }
-  .va-msg-user { background: <%= vaBrandColor %>; color: #fff; align-self: flex-end; border-top-right-radius: 0.25rem; }
+/* APPAREIL voice chrome — the design system already ships .va-mic-disc,
+.va-tick-ring, .va-stop-btn, .va-state-chip and .va-transcript; the pg- rules
+below cover page-only layout plus the mic disc's disabled (connecting) state. */
+.pg-va-stage { display: flex; flex-direction: column; align-items: center; gap: 1.1rem; margin-top: 2.5rem; }
+.pg-va-divider { display: flex; align-items: center; gap: 1rem; max-width: 36rem; margin: 2.75rem auto; }
+.pg-va-form { max-width: 40rem; margin: 0 auto; text-align: left; }
+.va-mic-disc[disabled] { opacity: 0.55; cursor: not-allowed; }
 </style>
 
-<main class="bg-gray-50 min-h-screen" style="background:#f9fafb">
-  <!-- Voice-first hero -->
-  <section class="max-w-3xl mx-auto px-4 py-12 md:py-16 text-center" style="max-width:48rem;margin-left:auto;margin-right:auto;padding:3rem 1rem;text-align:center">
-    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-5 border" style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.375rem 1rem;border-radius:9999px;font-size:0.75rem;font-weight:bold;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:1.25rem;border:1px solid <%= vaBrandColor %>33;color:<%= vaBrandColor %>;background:<%= vaBrandColor %>14">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
-      <%= __vaUiLang === 'en' ? 'AI Voice Assistant' : 'Assistant vocal IA' %>
-    </div>
-
-    <h1 style="font-size:2.25rem;font-weight:800;letter-spacing:-0.025em;line-height:1.1;color:#111827;margin:0">
-      <%= __vaUiLang === 'en' ? 'Talk to us about your needs.' : 'Parlez-nous de vos besoins.' %>
-    </h1>
-    <p style="margin-top:1rem;color:#6b7280;max-width:32rem;margin-left:auto;margin-right:auto;font-size:1.125rem">
-      <%= __vaUiLang === 'en' ? 'Tap the mic, ask anything, or share your details — our AI assistant listens and helps.' : 'Touchez le micro, posez vos questions ou partagez vos coordonnées — notre assistant IA vous écoute et vous aide.' %>
-    </p>
-
-    <div class="va-stage" style="margin-top:2.5rem;display:flex;flex-direction:column;align-items:center;gap:1.25rem">
-      <button id="va-mic" type="button" class="va-mic-btn" aria-label="Start voice session">
-        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
-          <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-          <line x1="12" x2="12" y1="19" y2="22"/>
-        </svg>
-      </button>
-
-      <p style="font-size:1rem;font-weight:700;color:#111827;margin:0">
-        <%= __vaUiLang === 'en' ? 'Tap to talk' : 'Touchez pour parler' %>
-      </p>
-
-      <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:0.5rem 1.75rem;font-size:0.75rem;color:#6b7280;font-weight:500">
-        <span style="display:inline-flex;align-items:center;gap:0.375rem">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="<%= vaBrandColor %>" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          <%= __vaUiLang === 'en' ? '~3 minutes' : '~3 minutes' %>
-        </span>
-        <span style="display:inline-flex;align-items:center;gap:0.375rem">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="<%= vaBrandColor %>" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          <%= __vaUiLang === 'en' ? 'No commitment' : 'Sans engagement' %>
-        </span>
-        <span style="display:inline-flex;align-items:center;gap:0.375rem">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="<%= vaBrandColor %>" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-          <%= __vaUiLang === 'en' ? 'Quick reply' : 'Réponse rapide' %>
-        </span>
-      </div>
-
-      <button id="va-stop" type="button" style="display:none;padding:0.5rem 1.25rem;border-radius:9999px;background:#fff;color:#dc2626;border:1px solid #fecaca;font-size:0.875rem;font-weight:600;cursor:pointer">
-        <%= __vaUiLang === 'en' ? 'End session' : 'Terminer' %>
-      </button>
-      <span id="va-state" style="font-size:0.875rem;color:#6b7280;min-height:1.25rem"></span>
-      <p id="va-transcript" style="font-size:0.875rem;color:#9ca3af;min-height:1.25rem;font-style:italic;max-width:30rem;margin:0"></p>
-    </div>
-
-    <div style="position:relative;margin:2.5rem 0">
-      <div style="position:absolute;inset:0;display:flex;align-items:center"><div style="width:100%;border-top:1px solid #e5e7eb"></div></div>
-      <div style="position:relative;display:flex;justify-content:center">
-        <span style="background:#f9fafb;padding:0 0.75rem;font-size:0.6875rem;text-transform:uppercase;letter-spacing:0.05em;color:#9ca3af">
-          <%= __vaUiLang === 'en' ? 'or fill the form by hand' : 'ou remplissez le formulaire à la main' %>
-        </span>
-      </div>
-    </div>
-  </section>
-
-  <!-- Form (auto-fills from voice when conversation completes) -->
-  <section style="max-width:48rem;margin-left:auto;margin-right:auto;padding:0 1rem 4rem">
-    <form id="va-form" method="POST" action="voice-assistant/submit" style="background:#fff;border-radius:1rem;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1),0 2px 4px -2px rgba(0,0,0,0.1);border:1px solid #f3f4f6;padding:1.5rem;display:grid;gap:1.25rem">
-      <% voiceFields.forEach(function(f) { %>
-        <label style="display:grid;gap:0.25rem">
-          <span style="font-size:0.875rem;font-weight:600;color:#374151"><%= __vaUiLang === 'en' ? f.label_en : f.label_fr %><% if (f.required) { %> <span style="color:<%= vaBrandColor %>">*</span><% } %></span>
-          <% if (f.type === 'textarea') { %>
-            <textarea name="<%= f.key %>" <%= f.required ? 'required' : '' %> rows="4" style="border:1px solid #d1d5db;border-radius:0.5rem;padding:0.625rem 1rem;font-family:inherit;font-size:0.9375rem;outline:none;resize:vertical"></textarea>
-          <% } else { %>
-            <input name="<%= f.key %>" type="<%= f.type === 'email' ? 'email' : f.type === 'phone' ? 'tel' : 'text' %>" <%= f.required ? 'required' : '' %> style="border:1px solid #d1d5db;border-radius:0.5rem;padding:0.625rem 1rem;font-size:0.9375rem;outline:none">
-          <% } %>
-        </label>
-      <% }); %>
-
-      <div style="display:flex;align-items:center;justify-content:flex-end;gap:0.75rem;padding-top:0.25rem">
-        <button type="submit" style="padding:0.875rem 2rem;background:<%= vaBrandColor %>;color:#fff;font-weight:700;text-transform:uppercase;letter-spacing:0.025em;border-radius:0.5rem;border:0;cursor:pointer;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1)">
-          <%= __vaUiLang === 'en' ? 'Submit →' : 'Envoyer →' %>
-        </button>
-      </div>
-    </form>
-    <div id="va-status" style="margin-top:1rem;font-size:0.875rem;color:#6b7280;text-align:center"></div>
-  </section>
+<main>
+<section class="course course--paper">
+<div class="container" style="max-width:880px;text-align:center">
+<p class="kicker" style="justify-content:center">
+<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+<%= __vaUiLang === 'en' ? 'AI Voice Assistant' : 'Assistant vocal IA' %>
+</p>
+<h1 class="h-bars" style="margin-bottom:1rem;font-size:clamp(1.9rem,4.5vw,3rem)"><span class="bars"><%= __vaUiLang === 'en' ? 'Talk to us about your needs.' : 'Parlez-nous de vos besoins.' %></span></h1>
+<p class="sec-sub" style="margin:0 auto;max-width:34rem"><%= __vaUiLang === 'en' ? 'Tap the mic, ask anything, or share your details — our AI assistant listens and helps.' : 'Touchez le micro, posez vos questions ou partagez vos coordonnées — notre assistant IA vous écoute et vous aide.' %></p>
+<div class="pg-va-stage">
+<span class="va-tick-ring">
+<button id="va-mic" type="button" class="va-mic-disc" aria-label="Start voice session">
+<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+</button>
+<button id="va-stop" type="button" class="va-stop-btn" style="display:none">
+<%= __vaUiLang === 'en' ? 'End session' : 'Terminer' %>
+</button>
+</span>
+<p style="font-weight:700;margin:0"><%= __vaUiLang === 'en' ? 'Tap to talk' : 'Touchez pour parler' %></p>
+<div class="spec-line" style="justify-content:center">
+<span><%= __vaUiLang === 'en' ? '~3 minutes' : '~3 minutes' %></span>
+<span><%= __vaUiLang === 'en' ? 'No commitment' : 'Sans engagement' %></span>
+<span><%= __vaUiLang === 'en' ? 'Quick reply' : 'Réponse rapide' %></span>
+</div>
+<span id="va-state" class="va-state-chip"></span>
+<p id="va-transcript" class="va-transcript"></p>
+</div>
+<div class="pg-va-divider">
+<span class="dim-rule" aria-hidden="true"></span>
+<span class="form-label"><%= __vaUiLang === 'en' ? 'or fill the form by hand' : 'ou remplissez le formulaire à la main' %></span>
+<span class="dim-rule" aria-hidden="true"></span>
+</div>
+<div class="pg-va-form">
+<form id="va-form" method="POST" action="voice-assistant/submit" class="bordereau">
+<div class="bordereau-head"><%= __vaUiLang === 'en' ? 'Request form — voice assistant' : 'Formulaire de demande — assistant vocal' %></div>
+<div class="bordereau-body">
+<% voiceFields.forEach(function(f) { %>
+<label class="form-group">
+<span class="form-label"><%= __vaUiLang === 'en' ? f.label_en : f.label_fr %><% if (f.required) { %> <span class="req">*</span><% } %></span>
+<% if (f.type === 'textarea') { %>
+<textarea name="<%= f.key %>" <%= f.required ? 'required' : '' %> rows="4" class="form-control"></textarea>
+<% } else { %>
+<input name="<%= f.key %>" type="<%= f.type === 'email' ? 'email' : f.type === 'phone' ? 'tel' : 'text' %>" <%= f.required ? 'required' : '' %> class="form-control">
+<% } %>
+</label>
+<% }); %>
+<button type="submit" class="btn btn--primary btn--block"><%= __vaUiLang === 'en' ? 'Submit →' : 'Envoyer →' %></button>
+</div>
+</form>
+<div id="va-status" style="margin-top:1rem;text-align:center;font-weight:600;color:var(--ink-soft)"></div>
+</div>
+</div>
+</section>
 </main>
 
 <!-- Importmap so the module script below can import @google/genai from a CDN -->

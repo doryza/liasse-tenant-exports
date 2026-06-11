@@ -1,40 +1,43 @@
 <%- include('partials/header') %>
-<section class="py-16 bg-gradient-to-br from-dark-2 to-dark">
-<div class="max-w-7xl mx-auto px-4 text-center">
-<h1 class="section-title gradient-text mb-4"><%= t.gallery_title %></h1>
-<p class="text-gray-400 text-xl"><%= t.gallery_subtitle %></p>
+<%
+var IMG_FALLBACK = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 3'%3E%3Crect width='4' height='3' fill='%23BCD7DA'/%3E%3C/svg%3E";
+var LINE_CLASS = { driveway: 'line--driveway', patio: 'line--patio', walkway: 'line--walkway', asphalt: 'line--asphalt' };
+%>
+<section class="course course--paper">
+<div class="container">
+<div class="sec-head">
+<span class="sec-index sec-index--brique">01</span>
+<h1 style="font-size:clamp(1.6rem,3.5vw,2.4rem)"><%= t.gallery_title %></h1>
+<span class="dim-rule" aria-hidden="true"></span>
 </div>
-</section>
-<section class="py-12">
-<div class="max-w-7xl mx-auto px-4">
-<div class="flex flex-wrap gap-2 justify-center mb-12">
-<a href="galerie" class="<%= !category ? 'btn-primary' : 'btn-secondary' %>" <%= !category ? 'style="background:linear-gradient(135deg,#8b5cf6 0%,#ec4899 100%);color:#fff"' : '' %>><%= t.filter_all %></a>
-<a href="?cat=driveway" class="<%= category==='driveway' ? 'btn-primary' : 'btn-secondary' %>" <%= category==='driveway' ? 'style="background:linear-gradient(135deg,#8b5cf6 0%,#ec4899 100%);color:#fff"' : '' %>><%= t.filter_driveway %></a>
-<a href="?cat=patio" class="<%= category==='patio' ? 'btn-primary' : 'btn-secondary' %>" <%= category==='patio' ? 'style="background:linear-gradient(135deg,#8b5cf6 0%,#ec4899 100%);color:#fff"' : '' %>><%= t.filter_patio %></a>
-<a href="?cat=walkway" class="<%= category==='walkway' ? 'btn-primary' : 'btn-secondary' %>" <%= category==='walkway' ? 'style="background:linear-gradient(135deg,#8b5cf6 0%,#ec4899 100%);color:#fff"' : '' %>><%= t.filter_walkway %></a>
-<a href="?cat=asphalt" class="<%= category==='asphalt' ? 'btn-primary' : 'btn-secondary' %>" <%= category==='asphalt' ? 'style="background:linear-gradient(135deg,#8b5cf6 0%,#ec4899 100%);color:#fff"' : '' %>><%= t.filter_asphalt %></a>
-</div>
+<p class="sec-sub"><%= t.gallery_subtitle %></p>
+<nav class="filter-tabs" aria-label="<%= lang === 'fr' ? 'Filtres de la galerie' : 'Gallery filters' %>">
+<a href="galerie" class="filter-tab<%= !category ? ' is-active' : '' %>"<%- !category ? ' aria-current="true"' : '' %>><span class="line-disc line--default" aria-hidden="true"></span><%= t.filter_all %></a>
+<a href="?cat=driveway" class="filter-tab<%= category === 'driveway' ? ' is-active line--driveway' : '' %>"<%- category === 'driveway' ? ' aria-current="true"' : '' %>><span class="line-disc line--driveway" aria-hidden="true"></span><%= t.filter_driveway %></a>
+<a href="?cat=patio" class="filter-tab<%= category === 'patio' ? ' is-active line--patio' : '' %>"<%- category === 'patio' ? ' aria-current="true"' : '' %>><span class="line-disc line--patio" aria-hidden="true"></span><%= t.filter_patio %></a>
+<a href="?cat=walkway" class="filter-tab<%= category === 'walkway' ? ' is-active line--walkway' : '' %>"<%- category === 'walkway' ? ' aria-current="true"' : '' %>><span class="line-disc line--walkway" aria-hidden="true"></span><%= t.filter_walkway %></a>
+<a href="?cat=asphalt" class="filter-tab<%= category === 'asphalt' ? ' is-active line--asphalt' : '' %>"<%- category === 'asphalt' ? ' aria-current="true"' : '' %>><span class="line-disc line--asphalt" aria-hidden="true"></span><%= t.filter_asphalt %></a>
+</nav>
 <% if (typeof projects !== 'undefined' && projects.length > 0) { %>
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<div class="bond-grid">
 <% projects.forEach(function(p){ %>
-<a href="galerie/<%= p.id %>" class="card group block">
-<div class="h-72 overflow-hidden relative">
-<img src="<%= p.image_url || 'https://placehold.co/600x400/8b5cf6/ffffff/png' %>" alt="<%= p.title %>" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-<div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition flex items-end p-5"><span class="text-white font-semibold"><%= t.btn_view_project %> →</span></div>
-<div class="absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-semibold uppercase" style="background:rgba(139,92,246,.9);color:#fff"><%= p.category %></div>
-</div>
-<div class="p-5">
-<h3 class="font-bold text-lg mb-1"><%= p.title %></h3>
-<div class="flex justify-between text-xs text-gray-400">
-<span>📍 <%= p.location %></span>
-<% if (p.completed_date) { %><span><%= formatDate(p.completed_date, lang) %></span><% } %>
-</div>
+<a href="galerie/<%= p.id %>" class="fiche fiche--spine <%= LINE_CLASS[p.category] || 'line--default' %>">
+<img class="fiche-img" src="<%= p.image_url || IMG_FALLBACK %>" alt="<%= p.title %>" loading="lazy">
+<div class="fiche-body">
+<span class="line-tag"><span class="line-disc <%= LINE_CLASS[p.category] || 'line--default' %>" aria-hidden="true"></span><%= p.category %></span>
+<h3 class="fiche-title"><%= p.title %></h3>
+<div class="fiche-meta"><%= p.location %></div>
+<% if (p.completed_date) { %><div class="fiche-meta"><%= formatDate(p.completed_date, lang) %></div><% } %>
+<span class="fiche-link"><%= t.btn_view_project %> →</span>
 </div>
 </a>
 <% }) %>
 </div>
 <% } else { %>
-<div class="text-center py-20"><p class="text-gray-500 text-lg"><%= t.no_projects %></p><a href="galerie" class="btn-secondary mt-4 inline-block"><%= t.filter_all %></a></div>
+<div class="empty-state">
+<p><%= t.no_projects %></p>
+<a href="galerie" class="btn"><%= t.filter_all %></a>
+</div>
 <% } %>
 </div>
 </section>

@@ -1,0 +1,768 @@
+/* ============================================================
+   APPAREIL — Québec transit-modernism for Pavage Pro Québec
+   Flat color "courses" (bands) laid like paver coursework,
+   joined by chevron mortar-line dividers. Color is taxonomy:
+   driveway=sarcelle · patio=brique · walkway=ocre · asphalt=ink.
+   No gradients, no blurs, no glass, no photo overlays.
+   ============================================================ */
+
+:root {
+  --paper: #F3F0E7;
+  --ink: #1E2421;
+  --ink-soft: #4A524D;
+  --sarcelle: #0E6B63;
+  --sarcelle-deep: #0A4A45;
+  --brique: #C2502D;
+  --brique-deep: #9E3D1F;
+  --ocre: #E8A33D;
+  --glacier: #BCD7DA;
+  --glacier-soft: #D7E6E8;
+  --craie: #FFFFFF;
+  --hairline: rgba(30, 36, 33, 0.25);
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+  --shadow-hard: 4px 4px 0 var(--ink);
+  --tape-h: 58px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Archivo', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+img { max-width: 100%; display: block; }
+a { color: var(--sarcelle); text-decoration: none; }
+a:hover { color: var(--sarcelle-deep); }
+
+/* Tailwind is gone — these two utilities are load-bearing for the
+   mobile-menu toggle and the quote-form feedback reveal. */
+.hidden { display: none !important; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+.course--sarcelle :focus-visible, .course--ink :focus-visible, .course--brique :focus-visible,
+.site-footer :focus-visible, .tape-bar :focus-visible,
+.mm-band--sarcelle:focus-visible, .mm-band--brique:focus-visible, .mm-band--ink:focus-visible,
+.devis-tab:focus-visible { outline-color: var(--ocre); }
+
+.container { max-width: 1180px; margin: 0 auto; padding: 0 1.25rem; }
+.mono { font-family: var(--mono); }
+
+/* ============================================================
+   COURSES — full-bleed flat color bands; content laid into them
+   ============================================================ */
+.course { padding: 4.25rem 0; position: relative; }
+.course--tight { padding: 2.75rem 0; }
+.course--paper { background: var(--paper); color: var(--ink); }
+.course--glacier { background: var(--glacier); color: var(--ink); }
+.course--glacier-soft { background: var(--glacier-soft); color: var(--ink); }
+.course--craie { background: var(--craie); color: var(--ink); }
+.course--sarcelle { background: var(--sarcelle-deep); color: var(--craie); }
+.course--brique { background: var(--brique); color: var(--craie); }
+.course--ink { background: var(--ink); color: var(--paper); }
+
+/* Chevron mortar-line divider: zigzag teeth of the NEXT course bite
+   up into the current one. Set --chev to the next course's color.
+   Use sparingly — 2-3 joins per page. Never ocre-on-ink. */
+.chevron {
+  height: 18px;
+  background-image:
+    linear-gradient(135deg, var(--chev, var(--glacier)) 25%, transparent 25%),
+    linear-gradient(225deg, var(--chev, var(--glacier)) 25%, transparent 25%);
+  background-position: -14px 0, -14px 0;
+  background-size: 28px 18px;
+  background-repeat: repeat-x;
+}
+/* Inside a course the chevron pins to the actual course boundary,
+   overlaying the bottom padding — never floating above the join. */
+.course > .chevron { position: absolute; bottom: 0; left: 0; right: 0; margin: 0; }
+.chevron--flush { margin-top: 0; }
+
+/* ============================================================
+   TYPE — Archivo signage + mono spec voice
+   ============================================================ */
+h1, h2, h3, h4 { margin: 0; line-height: 1.15; letter-spacing: -0.01em; }
+h1 { font-size: clamp(2.4rem, 6.5vw, 4.4rem); font-weight: 800; }
+h2 { font-size: clamp(1.6rem, 3.5vw, 2.4rem); font-weight: 800; }
+h3 { font-size: 1.15rem; font-weight: 700; }
+p { margin: 0 0 1rem; }
+
+.kicker {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Highlight bars: each wrapped line of the heading sits on its own
+   flat colored bar (surveyor tape). Pure CSS via box-decoration-break,
+   robust to any admin-edited bilingual string. Glacier by default;
+   ocre at most once per page. */
+.bars {
+  display: inline;
+  background: var(--bar, var(--glacier));
+  color: var(--ink);
+  padding: 0.08em 0.22em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+.bars--ocre { --bar: var(--ocre); }
+.bars--craie { --bar: var(--craie); }
+.h-bars { line-height: 1.32; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .wipe-in { animation: wipeIn 0.42s cubic-bezier(0.25, 0.8, 0.3, 1) both; }
+  @keyframes wipeIn {
+    from { clip-path: inset(0 100% 0 0); }
+    to { clip-path: inset(0 0 0 0); }
+  }
+}
+
+/* Mono spec-line: "20+ ANS · 2500+ PROJETS · 4.9/5" */
+.spec-line {
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-top: 1px solid var(--hairline);
+  border-bottom: 1px solid var(--hairline);
+  padding: 0.7rem 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.6rem;
+}
+
+/* ============================================================
+   SECTION HEADS — left-aligned, mono index square + dimension rule
+   ============================================================ */
+.sec-head {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  margin-bottom: 0.6rem;
+}
+.sec-index {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--craie);
+  background: var(--sarcelle);
+  width: 2rem;
+  height: 2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+.sec-index--brique { background: var(--brique-deep); }
+.sec-index--ink { background: var(--ink); }
+.sec-index--ocre { background: var(--ocre); color: var(--ink); }
+.dim-rule { flex: 1; height: 1px; background: var(--hairline); position: relative; min-width: 3rem; }
+.dim-rule::before, .dim-rule::after {
+  content: '';
+  position: absolute;
+  top: -4px;
+  width: 1px;
+  height: 9px;
+  background: var(--hairline);
+}
+.dim-rule::before { left: 0; }
+.dim-rule::after { right: 0; }
+.course--sarcelle .dim-rule, .course--ink .dim-rule { background: rgba(243, 240, 231, 0.4); }
+.course--sarcelle .dim-rule::before, .course--sarcelle .dim-rule::after,
+.course--ink .dim-rule::before, .course--ink .dim-rule::after { background: rgba(243, 240, 231, 0.4); }
+.sec-sub { color: var(--ink-soft); max-width: 620px; margin-bottom: 2.25rem; }
+.course--sarcelle .sec-sub, .course--ink .sec-sub { color: rgba(243, 240, 231, 0.78); }
+
+/* ============================================================
+   BUTTONS — flat signage tabs. Hard offset shadow, no hover lift
+   (press-flush on :active only). 2px radius, 2px ink border.
+   ============================================================ */
+.btn {
+  display: inline-block;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-align: center;
+  padding: 0.8rem 1.5rem;
+  border: 2px solid var(--ink);
+  border-radius: 2px;
+  background: var(--craie);
+  color: var(--ink);
+  cursor: pointer;
+  box-shadow: var(--shadow-hard);
+  transition: background 0.12s, color 0.12s;
+}
+.btn:hover { background: var(--paper); color: var(--ink); }
+.btn:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--ink); }
+.btn--primary { background: var(--sarcelle); color: var(--craie); }
+.btn--primary:hover { background: var(--sarcelle-deep); color: var(--craie); }
+.btn--brique { background: var(--brique-deep); color: var(--craie); }
+.btn--brique:hover { background: var(--brique); color: var(--craie); }
+.btn--ondark { background: transparent; color: var(--paper); border-color: var(--paper); box-shadow: 4px 4px 0 rgba(243, 240, 231, 0.35); }
+.btn--ondark:hover { background: var(--paper); color: var(--ink); }
+.btn--ondark:active { box-shadow: 2px 2px 0 rgba(243, 240, 231, 0.35); }
+.btn--block { display: block; width: 100%; }
+.btn[disabled] { opacity: 0.55; cursor: not-allowed; }
+
+/* ============================================================
+   METRO-LINE TAXONOMY — color is navigation, never decoration.
+   Categories: driveway=sarcelle · patio=brique · walkway=ocre ·
+   asphalt=ink. Unknown/free-text categories → default (ink-soft).
+   Always paired with a text label (color never sole carrier).
+   ============================================================ */
+.line-disc {
+  width: 14px;
+  height: 14px;
+  flex: none;
+  display: inline-block;
+  background: var(--line, var(--ink-soft));
+  border: 1px solid var(--ink);
+}
+.line--driveway { --line: var(--sarcelle); }
+.line--patio { --line: var(--brique); }
+.line--walkway { --line: var(--ocre); }
+.line--asphalt { --line: var(--ink); }
+.line--default { --line: var(--ink-soft); }
+.line-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: inherit;
+}
+
+/* Spines — 6px category-colored left edge on fiches.
+   Services have no category column: cycle .spine-1..4 by index. */
+.fiche--spine { border-left-width: 7px; border-left-color: var(--line, var(--ink-soft)); }
+.spine-1 { --line: var(--sarcelle); }
+.spine-2 { --line: var(--brique); }
+.spine-3 { --line: var(--ocre); }
+.spine-4 { --line: var(--ink); }
+
+/* ============================================================
+   FICHES — white sheets on colored courses
+   ============================================================ */
+.fiche {
+  background: var(--craie);
+  color: var(--ink);
+  border: 1px solid var(--ink);
+  border-radius: 2px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+a.fiche { color: var(--ink); }
+a.fiche:hover, .fiche--hover:hover { transform: translate(-2px, -2px); box-shadow: var(--shadow-hard); }
+@media (prefers-reduced-motion: no-preference) {
+  a.fiche, .fiche--hover { transition: transform 0.15s, box-shadow 0.15s; }
+}
+.fiche-img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-bottom: 1px solid var(--ink); background: var(--glacier-soft); }
+.fiche-img--wide { aspect-ratio: 16 / 9; }
+.fiche-body { padding: 1.15rem 1.25rem 1.3rem; display: flex; flex-direction: column; gap: 0.5rem; flex: 1; }
+.fiche-title { font-size: 1.1rem; font-weight: 700; }
+.fiche-meta { font-family: var(--mono); font-size: 0.74rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--ink-soft); }
+.fiche-desc { font-size: 0.92rem; color: var(--ink-soft); margin: 0; }
+.fiche-price { font-family: var(--mono); font-size: 0.82rem; font-weight: 700; color: var(--sarcelle); }
+.fiche-link { font-weight: 700; font-size: 0.9rem; margin-top: auto; }
+
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.75rem; }
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.75rem; }
+
+/* Horizontal fiche (services page) — image left third */
+.fiche--h { flex-direction: row; align-items: stretch; }
+.fiche--h .fiche-img { width: 33%; min-width: 220px; aspect-ratio: auto; border-bottom: 0; border-right: 1px solid var(--ink); }
+.fiche--h .fiche-body { padding: 1.5rem 1.75rem; }
+
+/* ============================================================
+   HERO — photo demoted to framed annotated specimen
+   ============================================================ */
+.hero-course { padding: 3.5rem 0 4rem; }
+.hero-grid { display: grid; grid-template-columns: 11fr 9fr; gap: 3rem; align-items: center; }
+.hero-sub { font-size: 1.15rem; color: var(--ink-soft); max-width: 540px; margin: 1.5rem 0 2rem; }
+.hero-ctas { display: flex; flex-wrap: wrap; gap: 1.1rem; margin-bottom: 2.5rem; }
+
+.specimen { position: relative; padding: 0 1.4rem 1.4rem 0; }
+.specimen-frame {
+  border: 2px solid var(--ink);
+  border-radius: 2px;
+  box-shadow: var(--shadow-hard);
+  background: var(--glacier-soft);
+}
+.specimen-frame img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+/* CSS-drawn dimension annotation along the frame's right margin */
+.annot {
+  position: absolute;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+}
+.annot--right { top: 0; right: 0; bottom: 1.4rem; width: 1.4rem; display: flex; align-items: center; justify-content: center; }
+.annot--right::before { content: ''; position: absolute; top: 0; bottom: 0; left: 50%; width: 1px; background: var(--hairline); }
+.annot--right span { background: var(--paper); padding: 0.3rem 0; writing-mode: vertical-rl; position: relative; }
+.annot--bottom { left: 0; right: 1.4rem; bottom: 0; height: 1.4rem; display: flex; align-items: center; justify-content: center; }
+.annot--bottom::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: var(--hairline); }
+.annot--bottom span { background: var(--paper); padding: 0 0.5rem; position: relative; }
+
+/* ============================================================
+   MASTHEAD — static editorial cadastre header (desktop)
+   ============================================================ */
+.masthead { background: var(--paper); border-bottom: 2px solid var(--ink); }
+.masthead-utility {
+  display: flex;
+  justify-content: flex-end;
+  align-items: stretch;
+  gap: 1.4rem;
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--hairline);
+  padding-top: 0.35rem;
+  padding-bottom: 0.35rem;
+}
+.masthead-utility a { color: var(--ink-soft); display: inline-flex; align-items: center; }
+.masthead-utility a:hover { color: var(--ink); }
+.lang-tabs { display: inline-flex; border: 1px solid var(--ink); }
+.lang-tab { padding: 0.1rem 0.55rem; color: var(--ink-soft); }
+.lang-tab[aria-current="true"] { background: var(--sarcelle); color: var(--craie); font-weight: 700; }
+.masthead-main { display: flex; align-items: center; justify-content: space-between; gap: 2rem; padding-top: 1rem; padding-bottom: 1rem; }
+.wordmark { display: inline-flex; align-items: center; gap: 0.7rem; color: var(--ink); }
+.wordmark img { width: 38px; height: 38px; object-fit: cover; border: 1px solid var(--ink); border-radius: 2px; }
+.wordmark-name { font-size: 1.25rem; font-weight: 800; letter-spacing: -0.01em; }
+.cad-nav { display: flex; align-items: center; gap: 1.5rem; }
+.cad-link { display: inline-flex; align-items: baseline; gap: 0.4rem; color: var(--ink); font-weight: 600; font-size: 0.95rem; }
+.cad-link:hover { color: var(--sarcelle); }
+.cad-num { font-family: var(--mono); font-size: 0.68rem; font-weight: 700; color: var(--ink-soft); }
+.cad-cta {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--craie);
+  background: var(--brique-deep);
+  border: 2px solid var(--ink);
+  border-radius: 2px;
+  padding: 0.5rem 1.1rem;
+  box-shadow: 3px 3px 0 var(--ink);
+}
+.cad-cta:hover { background: var(--brique); color: var(--craie); }
+.cad-cta:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
+
+/* Mobile menu button — paver-grid icon, same #mobileMenuBtn contract */
+#mobileMenuBtn { display: none; background: none; border: 2px solid var(--ink); border-radius: 2px; padding: 0.45rem; cursor: pointer; color: var(--ink); }
+
+/* Mobile menu — full coursework panel: each link is a color band */
+#mobileMenu { border-bottom: 2px solid var(--ink); }
+.mm-band {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 1rem 1.25rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--craie);
+}
+.mm-band .cad-num { color: inherit; opacity: 0.75; }
+.mm-band--sarcelle { background: var(--sarcelle); }
+.mm-band--brique { background: var(--brique-deep); }
+.mm-band--ocre { background: var(--ocre); color: var(--ink); }
+.mm-band--ink { background: var(--ink); }
+.mm-band--glacier { background: var(--glacier); color: var(--ink); }
+.mm-band--craie { background: var(--craie); color: var(--ink); }
+.mm-utility { display: flex; align-items: center; justify-content: space-between; padding: 0.9rem 1.25rem; background: var(--paper); font-family: var(--mono); font-size: 0.8rem; }
+.mm-utility a { color: var(--ink); font-weight: 600; }
+@media (min-width: 881px) { #mobileMenu { display: none !important; } }
+
+/* ============================================================
+   DEVIS TAB (desktop) + TAPE-MEASURE BAR (mobile) — the
+   persistent conversion surface as a measuring instrument
+   ============================================================ */
+.devis-tab {
+  position: fixed;
+  right: 0;
+  top: 46%;
+  z-index: 80;
+  writing-mode: vertical-rl;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--craie);
+  background: var(--brique-deep);
+  border: 2px solid var(--ink);
+  border-right: 0;
+  border-radius: 2px 0 0 2px;
+  padding: 1rem 0.5rem;
+}
+.devis-tab:hover { background: var(--brique); color: var(--craie); }
+
+.tape-bar {
+  display: none;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 90;
+  height: calc(var(--tape-h) + env(safe-area-inset-bottom));
+  padding-bottom: env(safe-area-inset-bottom);
+  background: var(--ink);
+  border-top: 3px solid var(--ocre);
+  background-image: repeating-linear-gradient(90deg, var(--ocre) 0 1px, transparent 1px 8px);
+  background-size: 100% 7px;
+  background-repeat: no-repeat;
+  background-position: top;
+}
+.tape-bar-inner { display: flex; align-items: center; justify-content: space-between; gap: 0.8rem; height: var(--tape-h); padding: 0 1rem; }
+.tape-tel { color: var(--paper); font-family: var(--mono); font-size: 0.82rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.45rem; }
+.tape-cta {
+  flex: none;
+  background: var(--brique-deep);
+  color: var(--craie);
+  font-weight: 700;
+  font-size: 0.9rem;
+  border: 2px solid var(--ocre);
+  border-radius: 2px;
+  padding: 0.5rem 1.1rem;
+}
+.tape-cta:hover { background: var(--brique); color: var(--craie); }
+
+/* ============================================================
+   GALLERY — metro-line filter tabs + running-bond grid
+   ============================================================ */
+.filter-tabs { display: flex; flex-wrap: wrap; gap: 0.7rem; margin: 2rem 0 2.75rem; }
+.filter-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--ink);
+  background: var(--craie);
+  border: 1px solid var(--ink);
+  border-radius: 2px;
+  padding: 0.45rem 0.9rem;
+  transition: background 0.12s, color 0.12s;
+}
+.filter-tab:hover { background: var(--glacier-soft); color: var(--ink); }
+.filter-tab.is-active { background: var(--line, var(--ink)); color: var(--craie); }
+.filter-tab.is-active.line--walkway { color: var(--ink); }
+.filter-tab.is-active .line-disc { background: var(--craie); }
+.filter-tab.is-active.line--walkway .line-disc { background: var(--ink); }
+
+/* Running bond: 2-col half-drop — right column offset like brick
+   coursework. Defined for any count incl. the seeded 6; collapses
+   to a single straight column on mobile. */
+.bond-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.9rem; padding-bottom: 3rem; }
+@media (min-width: 881px) {
+  .bond-grid > *:nth-child(even) { transform: translateY(3rem); }
+  /* hover lift must compose with the half-drop, not replace it */
+  .bond-grid > a.fiche:nth-child(even):hover { transform: translateY(3rem) translate(-2px, -2px); }
+}
+
+/* ============================================================
+   FORMS — the "bordereau" work order
+   ============================================================ */
+.bordereau { background: var(--craie); border: 2px solid var(--ink); border-radius: 2px; box-shadow: var(--shadow-hard); }
+.bordereau-head {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  background: var(--glacier);
+  color: var(--ink);
+  border-bottom: 2px solid var(--ink);
+  padding: 0.7rem 1.5rem;
+}
+.bordereau-body { padding: 1.75rem 1.5rem; display: grid; gap: 1.4rem; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.4rem; }
+.form-group { display: flex; flex-direction: column; gap: 0.45rem; }
+.form-label {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-soft);
+}
+.req { color: var(--brique-deep); }
+.form-control {
+  width: 100%;
+  font-family: inherit;
+  font-size: 1rem;
+  color: var(--ink);
+  background: var(--craie);
+  border: 0;
+  border-bottom: 2px solid var(--ink);
+  border-radius: 0;
+  padding: 0.6rem 0.2rem;
+  transition: border-color 0.12s, box-shadow 0.12s;
+}
+.form-control:focus { outline: none; border-color: var(--sarcelle); box-shadow: 0 0 0 3px rgba(14, 107, 99, 0.25); }
+textarea.form-control { resize: vertical; min-height: 7rem; }
+select.form-control { appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--ink) 50%), linear-gradient(135deg, var(--ink) 50%, transparent 50%); background-position: calc(100% - 16px) 55%, calc(100% - 10px) 55%; background-size: 6px 6px; background-repeat: no-repeat; }
+
+/* Feedback notes — the quote-form JS sets these class names */
+.form-note { border: 2px solid; border-radius: 2px; padding: 0.9rem 1.1rem; font-weight: 600; font-size: 0.95rem; }
+.form-note--ok { border-color: var(--sarcelle); color: var(--sarcelle-deep); background: rgba(14, 107, 99, 0.08); border-left-width: 8px; }
+.form-note--err { border-color: var(--brique-deep); color: var(--brique-deep); background: rgba(194, 80, 45, 0.08); border-left-width: 8px; }
+
+/* Contact sidebar fiche */
+.coord-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.9rem; }
+.coord-list li { display: flex; flex-wrap: wrap; gap: 0.3rem 0.7rem; align-items: baseline; font-size: 0.95rem; }
+.coord-list .coord-k { font-family: var(--mono); font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); min-width: 5.5rem; flex: none; }
+
+/* ============================================================
+   TESTIMONIALS — carnet de chantier
+   ============================================================ */
+.carnet { position: relative; padding: 1.5rem 1.4rem 1.4rem; }
+.quote-glyph { font-size: 3.2rem; font-weight: 800; line-height: 0.6; color: var(--glacier); display: block; margin-bottom: 0.8rem; }
+.pave-row { display: inline-flex; gap: 4px; margin-bottom: 0.8rem; }
+.pave-sq { width: 11px; height: 11px; background: var(--sarcelle); display: inline-block; }
+.carnet-text { font-size: 0.97rem; color: var(--ink-soft); margin-bottom: 1.1rem; }
+.carnet-author { display: flex; align-items: center; gap: 0.75rem; }
+.avatar-sq {
+  width: 38px;
+  height: 38px;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  color: var(--craie);
+  background: var(--line, var(--sarcelle));
+  border: 1px solid var(--ink);
+}
+.avatar-sq.spine-3 { color: var(--ink); } /* ocre never carries white text */
+.carnet-name { font-weight: 700; font-size: 0.95rem; line-height: 1.25; }
+.carnet-loc { font-family: var(--mono); font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--ink-soft); }
+
+/* ============================================================
+   BLOG — ledger rows + ruled paper detail
+   ============================================================ */
+.ledger { border-top: 1px solid var(--hairline); }
+.ledger-row {
+  display: grid;
+  grid-template-columns: 10rem 1fr auto;
+  gap: 1.5rem;
+  align-items: baseline;
+  padding: 1.4rem 0.25rem;
+  border-bottom: 1px solid var(--hairline);
+  color: var(--ink);
+}
+.ledger-row:hover { background: var(--glacier-soft); color: var(--ink); }
+.ledger-date { font-family: var(--mono); font-size: 0.76rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-soft); }
+.ledger-row > span:nth-child(2) { display: block; min-width: 0; }
+.ledger-title, .ledger-excerpt { overflow-wrap: anywhere; }
+.ledger-title { font-size: 1.15rem; font-weight: 700; }
+.ledger-excerpt { font-size: 0.9rem; color: var(--ink-soft); margin: 0.3rem 0 0; }
+
+.ruled-paper {
+  background: var(--craie);
+  background-image: repeating-linear-gradient(180deg, transparent 0 1.95em, rgba(30, 36, 33, 0.07) 1.95em 2em);
+  border: 1px solid var(--ink);
+  border-radius: 2px;
+  padding: 2em 2.25rem; /* top padding in em keeps line registration with the 2em rule grid */
+  line-height: 2em;
+  white-space: pre-line;
+  overflow-wrap: break-word;
+}
+
+/* Spec table — fiche de chantier dimension rows */
+.spec-table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+.spec-table th, .spec-table td { text-align: left; padding: 0.7rem 0.5rem; border-bottom: 1px solid var(--hairline); }
+.spec-table th { font-family: var(--mono); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-soft); width: 11rem; }
+
+/* ============================================================
+   FEATURES (why-us) — mono-numbered rows with tick rules
+   ============================================================ */
+.feature-rows { display: grid; gap: 0; border-top: 1px solid var(--hairline); }
+.feature-row { display: grid; grid-template-columns: 3.5rem 1fr; gap: 1.25rem; padding: 1.5rem 0.25rem; border-bottom: 1px solid var(--hairline); align-items: start; }
+.feature-num { font-family: var(--mono); font-size: 1.1rem; font-weight: 700; color: var(--sarcelle); }
+.feature-row h3 { margin-bottom: 0.35rem; }
+.feature-row p { margin: 0; color: var(--ink-soft); font-size: 0.95rem; }
+
+/* Stats — fiche technique */
+.fiche-technique { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
+.stat-cell { border-top: 3px solid var(--sarcelle); padding-top: 0.8rem; }
+.stat-cell:nth-child(2) { border-top-color: var(--brique); }
+.stat-cell:nth-child(3) { border-top-color: var(--ocre); }
+.stat-cell:nth-child(4) { border-top-color: var(--ink); }
+.stat-num { font-family: var(--mono); font-size: 2rem; font-weight: 700; line-height: 1.1; }
+.stat-label { font-size: 0.85rem; color: var(--ink-soft); margin-top: 0.2rem; }
+.course--sarcelle .stat-label, .course--ink .stat-label { color: rgba(243, 240, 231, 0.75); }
+
+/* ============================================================
+   CTA COURSE — full-bleed brique color-block
+   ============================================================ */
+.cta-course { text-align: left; }
+.cta-course h2 { font-size: clamp(1.9rem, 4.5vw, 3.1rem); max-width: 18em; }
+.cta-course .sec-sub { color: #FFFFFF; margin-top: 0.9rem; }
+
+/* ============================================================
+   FOOTER — ink course
+   ============================================================ */
+.site-footer { background: var(--ink); color: var(--paper); padding: 3.5rem 0 2rem; }
+.foot-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2.25rem; }
+.foot-brand { font-size: 1.2rem; font-weight: 800; margin-bottom: 0.6rem; }
+.foot-tagline { color: rgba(243, 240, 231, 0.65); font-size: 0.9rem; }
+.foot-col h4 { font-family: var(--mono); font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--ocre); margin-bottom: 1rem; }
+.foot-col ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.55rem; font-size: 0.92rem; }
+.foot-col a { color: rgba(243, 240, 231, 0.8); }
+.foot-col a:hover { color: var(--craie); }
+.social-row { display: flex; gap: 0.7rem; margin-bottom: 1.2rem; }
+.social-sq {
+  width: 38px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(243, 240, 231, 0.5);
+  border-radius: 2px;
+  color: var(--paper);
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+.social-sq:hover { border-color: var(--ocre); color: var(--ocre); }
+.push-btn { background: none; border: 1px solid var(--ocre); border-radius: 2px; color: var(--ocre); font-family: var(--mono); font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.5rem 0.9rem; cursor: pointer; }
+.push-btn:hover { background: var(--ocre); color: var(--ink); }
+.foot-base { margin-top: 2.5rem; padding-top: 1.4rem; border-top: 1px solid rgba(243, 240, 231, 0.2); font-family: var(--mono); font-size: 0.74rem; color: rgba(243, 240, 231, 0.55); display: flex; flex-wrap: wrap; gap: 0.5rem 2rem; justify-content: space-between; }
+
+/* ============================================================
+   VOICE ASSISTANT — paper course chrome (JS contract untouched:
+   the module script only flips style.display on #va-mic/#va-stop)
+   ============================================================ */
+.va-mic-disc {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: var(--sarcelle);
+  color: var(--craie);
+  border: 2px solid var(--ink);
+  box-shadow: var(--shadow-hard);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.va-mic-disc:hover { background: var(--sarcelle-deep); }
+.va-mic-disc:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--ink); }
+.va-tick-ring { position: relative; width: 132px; height: 132px; display: inline-flex; align-items: center; justify-content: center; }
+.va-tick-ring::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background:
+    repeating-conic-gradient(var(--ink-soft) 0deg 1.6deg, transparent 1.6deg 12deg);
+  -webkit-mask: radial-gradient(circle, transparent 58px, #000 59px);
+  mask: radial-gradient(circle, transparent 58px, #000 59px);
+  opacity: 0.5;
+}
+.va-stop-btn {
+  padding: 0.55rem 1.3rem;
+  border: 2px solid var(--brique-deep);
+  border-radius: 2px;
+  background: var(--craie);
+  color: var(--brique-deep);
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+}
+.va-stop-btn:hover { background: var(--brique-deep); color: var(--craie); }
+@media (prefers-reduced-motion: no-preference) {
+  .va-stop-btn { animation: vaPulse 1.8s ease-in-out infinite; }
+  @keyframes vaPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(158, 61, 31, 0.35); } 50% { box-shadow: 0 0 0 8px rgba(158, 61, 31, 0); } }
+}
+.va-state-chip { font-family: var(--mono); font-size: 0.78rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); min-height: 1.25rem; }
+.va-transcript { font-size: 0.92rem; color: var(--ink-soft); font-style: italic; min-height: 1.4rem; max-width: 32rem; margin: 0; }
+
+/* ============================================================
+   MISC
+   ============================================================ */
+.empty-state { border: 1px dashed var(--hairline); border-radius: 2px; padding: 3rem 1.5rem; text-align: center; color: var(--ink-soft); }
+.back-link { font-family: var(--mono); font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
+.view-all-row { margin-top: 2.25rem; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 1080px) {
+  .cad-nav { gap: 1rem; }
+}
+@media (max-width: 880px) {
+  body { padding-bottom: calc(var(--tape-h) + env(safe-area-inset-bottom)); }
+  .masthead { position: sticky; top: 0; z-index: 100; }
+  .masthead-utility { display: none; }
+  .masthead-main { height: 58px; padding-top: 0; padding-bottom: 0; }
+  .cad-nav { display: none; }
+  #mobileMenuBtn { display: inline-flex; }
+  /* full-screen coursework panel pinned under the 58px strip (+2px border)
+     so the open menu never scrolls away beneath the sticky masthead */
+  #mobileMenu {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 99;
+    overflow-y: auto;
+    background: var(--paper);
+    padding-bottom: calc(var(--tape-h) + env(safe-area-inset-bottom));
+  }
+  .ledger-row > .back-link { display: none; }
+  .devis-tab { display: none; }
+  .tape-bar { display: block; }
+  .hero-grid { grid-template-columns: 1fr; gap: 2.25rem; }
+  .grid-3, .grid-2 { grid-template-columns: 1fr; }
+  .bond-grid { grid-template-columns: 1fr; padding-bottom: 0; }
+  .fiche--h { flex-direction: column; }
+  .fiche--h .fiche-img { width: 100%; aspect-ratio: 16 / 9; border-right: 0; border-bottom: 1px solid var(--ink); }
+  .form-row { grid-template-columns: 1fr; }
+  .fiche-technique { grid-template-columns: repeat(2, 1fr); }
+  .ledger-row { grid-template-columns: 1fr; gap: 0.3rem; }
+  .foot-grid { grid-template-columns: 1fr 1fr; }
+  .course { padding: 3rem 0; }
+  .ruled-paper { padding: 2em 1.25rem; }
+}
+
+/* The fixed devis-tab needs a right gutter on viewports where the
+   container would otherwise reach under it (tablet/small laptop). */
+@media (min-width: 881px) and (max-width: 1259px) {
+  .container { padding-right: 3.5rem; }
+}
+
+@media print {
+  .devis-tab, .tape-bar, #mobileMenu, #mobileMenuBtn { display: none !important; }
+  body { padding-bottom: 0; }
+  .masthead { position: static; }
+  .masthead-utility { display: flex; }
+}
+@media (max-width: 540px) {
+  .foot-grid { grid-template-columns: 1fr; }
+  .fiche-technique { grid-template-columns: 1fr; gap: 1.1rem; }
+  .hero-ctas .btn { width: 100%; }
+}

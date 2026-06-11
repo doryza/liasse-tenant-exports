@@ -1,42 +1,67 @@
-<%- include('partials/header') %>
-<section class="py-12">
-<div class="max-w-5xl mx-auto px-4">
-<a href="galerie" class="mb-6 inline-block" style="color:#a78bfa">← <%= t.nav_gallery %></a>
-<div class="card overflow-hidden">
-<img src="<%= project.image_url || 'https://placehold.co/1200x675/8b5cf6/ffffff/png' %>" alt="<%= project.title %>" class="w-full h-64 md:h-96 object-cover">
-<div class="p-8">
-<div class="flex flex-wrap gap-3 mb-4">
-<span class="px-3 py-1 rounded-full text-sm font-semibold uppercase" style="background:rgba(139,92,246,.2);color:#a78bfa"><%= project.category %></span>
+<%- include('partials/header', {root: '../'}) %>
+<%
+var IMG_FALLBACK = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 3'%3E%3Crect width='4' height='3' fill='%23BCD7DA'/%3E%3C/svg%3E";
+var LINE_CLASS = { driveway: 'line--driveway', patio: 'line--patio', walkway: 'line--walkway', asphalt: 'line--asphalt' };
+%>
+<section class="course course--paper">
+<div class="container">
+<p style="margin:0 0 1.5rem"><a href="../galerie" class="back-link">← <%= t.nav_gallery %></a></p>
+<div style="margin-bottom:0.8rem"><span class="line-tag"><span class="line-disc <%= LINE_CLASS[project.category] || 'line--default' %>" aria-hidden="true"></span><%= project.category %></span></div>
+<h1 class="h-bars wipe-in"><span class="bars"><%= project.title %></span></h1>
+<div class="specimen" style="margin-top:2.5rem">
+<div class="specimen-frame">
+<img src="<%= project.image_url || IMG_FALLBACK %>" alt="<%= project.title %>" style="aspect-ratio:16/9">
 </div>
-<h1 class="text-3xl md:text-5xl font-bold mb-6 gradient-text"><%= project.title %></h1>
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 pb-8 border-b border-purple-500/20">
-<div><div class="text-xs text-gray-500 uppercase"><%= t.project_loc %></div><div class="font-semibold">📍 <%= project.location || '—' %></div></div>
-<div><div class="text-xs text-gray-500 uppercase"><%= t.project_date %></div><div class="font-semibold"><%= project.completed_date ? formatDate(project.completed_date, lang) : '—' %></div></div>
-<div><div class="text-xs text-gray-500 uppercase"><%= t.project_cat %></div><div class="font-semibold capitalize"><%= project.category %></div></div>
-</div>
-<div class="prose prose-invert max-w-none">
-<p class="text-gray-300 text-lg leading-relaxed whitespace-pre-line"><%= project.description %></p>
-</div>
-<div class="mt-8 pt-8 border-t border-purple-500/20 text-center">
-<a href="soumission" class="btn-primary" style="background:linear-gradient(135deg,#8b5cf6 0%,#ec4899 100%);color:#fff"><%= t.cta_btn %> →</a>
+<div class="annot annot--right" aria-hidden="true"><span><%= (project.category || '').toUpperCase() %></span></div>
+<div class="annot annot--bottom" aria-hidden="true"><span><%= project.location || 'QUÉBEC · CA' %></span></div>
 </div>
 </div>
+<div class="chevron" style="--chev:#FFFFFF" aria-hidden="true"></div>
+</section>
+
+<section class="course course--craie" style="padding-top:3.25rem">
+<div class="container" style="max-width:880px">
+<table class="spec-table">
+<tbody>
+<tr><th scope="row"><%= t.project_loc %></th><td><%= project.location || '—' %></td></tr>
+<tr><th scope="row"><%= t.project_date %></th><td><%= project.completed_date ? formatDate(project.completed_date, lang) : '—' %></td></tr>
+<tr><th scope="row"><%= t.project_cat %></th><td><%= project.category %></td></tr>
+</tbody>
+</table>
+<% if (project.description) { %><div class="ruled-paper" style="margin-top:2.25rem"><%= project.description %></div><% } %>
 </div>
+<div class="chevron" style="--chev:#C2502D" aria-hidden="true"></div>
+</section>
+
+<section class="course course--brique cta-course" style="padding-top:3.25rem">
+<div class="container">
+<h2><%= settings['cta_title_' + lang] || t.featured_projects %></h2>
+<p class="sec-sub"><%= settings['cta_subtitle_' + lang] || '' %></p>
+<a href="../soumission" class="btn" style="margin-top:0.5rem"><%= t.cta_btn %> →</a>
 </div>
 </section>
+
 <% if (typeof others !== 'undefined' && others.length > 0) { %>
-<section class="py-16 bg-dark-2">
-<div class="max-w-7xl mx-auto px-4">
-<h2 class="text-2xl font-bold mb-8 text-center"><%= t.featured_projects %></h2>
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<section class="course course--glacier">
+<div class="container">
+<div class="sec-head">
+<span class="sec-index">01</span>
+<h2><%= t.featured_projects %></h2>
+<span class="dim-rule" aria-hidden="true"></span>
+</div>
+<p class="sec-sub"><%= t.featured_projects_sub %></p>
+<div class="grid-3">
 <% others.forEach(function(p){ %>
-<a href="<%= p.id %>" class="card group block">
-<div class="h-48 overflow-hidden"><img src="<%= p.image_url || 'https://placehold.co/600x400/8b5cf6/ffffff/png' %>" alt="<%= p.title %>" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"></div>
-<div class="p-4"><h3 class="font-bold"><%= p.title %></h3><p class="text-xs text-gray-400 mt-1">📍 <%= p.location %></p></div>
+<a href="<%= p.id %>" class="fiche">
+<img class="fiche-img" src="<%= p.image_url || IMG_FALLBACK %>" alt="<%= p.title %>" loading="lazy">
+<div class="fiche-body">
+<h3 class="fiche-title"><%= p.title %></h3>
+<div class="fiche-meta"><%= p.location %></div>
+</div>
 </a>
 <% }) %>
 </div>
 </div>
 </section>
 <% } %>
-<%- include('partials/footer') %>
+<%- include('partials/footer', {root: '../'}) %>
