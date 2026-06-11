@@ -1,0 +1,83 @@
+{
+  "slug": "epoxy",
+  "displayName": "Epoxy",
+  "description": "Type de projet : Site web\nPour qui : Compagnie d'époxy\nBut : Obtenir des clients et montrer les réalisations\n\nFonctionnalités clés :\n- Galerie de photos (réalisations)\n- Formulaire de demande de soumission\n- Prise de rendez-vous en ligne\n- Bouton d'appel direct\n\nDesign & marque :\n- Couleurs : Jaune, rouge et blanc",
+  "status": "active",
+  "generationVersion": 1,
+  "primaryColor": "#6366f1",
+  "iconUrl": "https://res.cloudinary.com/duhp69meg/image/upload/v1781205047/tapavis_tenant_epoxy/icon_epoxy_1781205047336.png",
+  "enabledAuthMethods": [
+    "webauthn",
+    "sms",
+    "email"
+  ],
+  "notificationsEnabled": true,
+  "geolocationEnabled": true,
+  "customConfig": {
+    "language": "both",
+    "designManifest": {
+      "concept": "Plancher témoin",
+      "elements": {
+        "blogSurfaced": false,
+        "pages": [
+          "accueil",
+          "realisations",
+          "services",
+          "soumission",
+          "rendez-vous"
+        ],
+        "userLogin": false
+      },
+      "iconDirection": "Flat emblem of a single glossy epoxy sample chip — a rounded indigo square with a diagonal white gloss highlight and small yellow and red corner notches, on a clean white ground.",
+      "palette": {
+        "accents": [
+          "#fbbf24",
+          "#e23636"
+        ],
+        "ground": "#ffffff",
+        "ink": "#15161c",
+        "primary": "#6366f1"
+      },
+      "signatureMove": "An epoxy sample-chip system — glossy color chips tag every project card, double as the gallery's filter rail, and a tri-color yellow/red/indigo 'pour seam' line frames header and footer; the call CTA is signal red, distinct from the indigo primary.",
+      "summary": "The site behaves like a polished white showroom floor: projects are presented as physical epoxy sample boards, each tagged with the actual poured-color chip, on a bright white-gloss ground.",
+      "typography": "Sora display (600–800) + Public Sans body"
+    }
+  },
+  "promptHistory": [
+    {
+      "prompt": "Type de projet : Site web\nPour qui : Compagnie d'époxy\nBut : Obtenir des clients et montrer les réalisations\n\nFonctionnalités clés :\n- Galerie de photos (réalisations)\n- Formulaire de demande de soumission\n- Prise de rendez-vous en ligne\n- Bouton d'appel direct\n\nDesign & marque :\n- Couleurs : Jaune, rouge et blanc",
+      "timestamp": "2026-06-11T19:10:56.767Z",
+      "changeNotes": "Initial build of a bilingual (FR/EN) epoxy contractor site under the 'Plancher témoin' identity: split hero with editable image, sample-chip finish rail filtering the gallery, services, online quote form, appointment booking with real slot-availability checking, red click-to-call button in the header plus a mobile call FAB. Full admin backend included (dashboard + CRUD for projects, services, testimonials, posts, quote requests and appointments) with generic shell pages and module discovery. Honored the platform primary #6366f1 as the main accent while expressing the owner's yellow/red/white palette through the pour-seam, chips and call CTA.\n\nAdmin enrichment: (1) Added a full Réglages (settings) admin page (views/admin-settings.ejs) + route /admin/settings + sidebar link, wiring business name/phone/email/address/hours to the existing GET/PUT /api/admin/settings endpoints with toast feedback. (2) Rebuilt admin dashboard (admin.ejs) with accent-colored stat cards, per-card quick links, a labelled quick-management grid (incl. Réglages), subtitle and clearer empty cells. (3) Upgraded admin-shell CRUD UX: added toast notifications (replacing blunt alerts), a count pill, a status filter dropdown that auto-populates from status field options, Escape-to-close, hover rows, and contextual empty-state copy — full create/edit/delete remains intact for every module. (4) Enriched admin-styles.css: toast component, status filter, count pill, stat-card accents, quick-grid icons/hover, color-input sizing, focus-visible accessibility outlines, table hover. (5) Front-end: improved contrast on footer text and ghost-light buttons, added focus-visible outlines in styles.css, and added Open Graph / Twitter card meta tags to header.ejs (guarded). All placeholder {{IMG_*}} tokens preserved byte-for-byte. No functional routes/data flows removed; services already admin-manageable with pricing fields. Added _seoMetadata (bilingual FR/EN, ProfessionalService schema).",
+      "generationId": 1301,
+      "filesModified": [
+        "manifest.json",
+        "public/css/admin-styles.css",
+        "public/css/styles.css",
+        "routes.js",
+        "schema.sql",
+        "seed.js",
+        "views/admin-appointments.ejs",
+        "views/admin-posts.ejs",
+        "views/admin-projects.ejs",
+        "views/admin-quote_requests.ejs",
+        "views/admin-services.ejs",
+        "views/admin-settings.ejs",
+        "views/admin-testimonials.ejs",
+        "views/admin.ejs",
+        "views/index.ejs",
+        "views/partials/admin-shell.ejs",
+        "views/partials/admin-sidebar.ejs",
+        "views/partials/footer.ejs",
+        "views/partials/header.ejs",
+        "views/realisations.ejs",
+        "views/rendezvous.ejs",
+        "views/services.ejs",
+        "views/soumission.ejs"
+      ]
+    }
+  ],
+  "apiVariables": [],
+  "createdAt": "2026-06-11T18:17:51.786Z",
+  "updatedAt": "2026-06-11T19:11:03.093Z",
+  "exportedAt": "2026-06-11T19:11:03.340Z"
+}

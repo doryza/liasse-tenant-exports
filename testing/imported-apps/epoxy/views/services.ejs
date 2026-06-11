@@ -1,0 +1,26 @@
+<%- include('partials/header') %>
+<main id="main">
+<section class="page-head wrap"><h1><%= t.services_title %></h1><p><%= t.services_sub %></p></section>
+<section class="wrap" style="padding-bottom:3rem">
+<% if (svcItems && svcItems.length) { %>
+<% svcItems.forEach(function(s){ %>
+<div class="svc-row">
+<img src="<%= s.image_url||'https://placehold.co/800x600/eef0fe/6366f1/png?text=Service' %>" alt="<%= s.name %>" loading="lazy">
+<div>
+<h2><%= s.name %></h2>
+<p style="color:var(--mut)"><%= s.description||'' %></p>
+<% if (s.price_from) { %><p class="price"><%= t.from_price %> <strong><%= s.price_from %></strong></p><% } %>
+<div class="cta-row"><a href="soumission" class="btn btn-primary" style="background-color:#6366f1;color:#fff"><%= t.ask_quote %></a><a href="rendez-vous" class="btn btn-ghost"><%= t.cta_book %></a></div>
+</div>
+</div>
+<% }); %>
+<% } else { %><p class="empty"><%= t.empty_services %></p><% } %>
+</section>
+<section class="cta-band">
+<div class="wrap">
+<h2><%= t.cta_title %></h2><p><%= t.cta_sub %></p>
+<div class="cta-row"><a href="soumission" class="btn btn-light"><%= t.cta_quote %></a><a href="rendez-vous" class="btn btn-ghost-light"><%= t.cta_book %></a></div>
+</div>
+</section>
+</main>
+<%- include('partials/footer') %>

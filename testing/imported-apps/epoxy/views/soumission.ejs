@@ -1,0 +1,64 @@
+<%- include('partials/header') %>
+<main id="main">
+<section class="page-head wrap"><h1><%= t.quote_title %></h1><p><%= t.quote_sub %></p></section>
+<section class="wrap form-grid">
+<div>
+<div class="form-card" id="quoteCard">
+<div id="qErr" class="form-err" style="display:none"></div>
+<form id="quoteForm" novalidate>
+<div class="f-row">
+<div class="f-group"><label class="f-label"><%= t.f_name %> *</label><input type="text" name="name" required></div>
+<div class="f-group"><label class="f-label"><%= t.f_phone %> *</label><input type="tel" name="phone" required></div>
+</div>
+<div class="f-row">
+<div class="f-group"><label class="f-label"><%= t.f_email %></label><input type="email" name="email"></div>
+<div class="f-group"><label class="f-label"><%= t.f_type %></label><select name="project_type"><option value=""><%= t.opt_select %></option><option><%= t.type_garage %></option><option><%= t.type_basement %></option><option><%= t.type_commercial %></option><option><%= t.type_metallic %></option><option><%= t.type_other %></option></select></div>
+</div>
+<div class="f-group"><label class="f-label"><%= t.f_surface %></label><input type="text" name="surface" placeholder="600"></div>
+<div class="f-group"><label class="f-label"><%= t.f_message %></label><textarea name="message" rows="5"></textarea></div>
+<button type="submit" id="qSubmit" class="btn btn-primary" style="background-color:#6366f1;color:#fff;width:100%"><%= t.btn_send %></button>
+</form>
+</div>
+<div class="success-card" id="qSuccess" style="display:none">
+<div class="ok"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#6366f1" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+<h2><%= t.q_success_t %></h2><p><%= t.q_success_m %></p>
+<a href="." class="btn btn-primary" style="background-color:#6366f1;color:#fff"><%= t.back_home %></a>
+</div>
+</div>
+<aside>
+<div class="side-card"><h3><%= t.next_title %></h3>
+<ul class="next-list">
+<li><span class="n-num">1</span><span><%= t.n1 %></span></li>
+<li><span class="n-num">2</span><span><%= t.n2 %></span></li>
+<li><span class="n-num">3</span><span><%= t.n3 %></span></li>
+</ul>
+</div>
+<div class="side-card"><h3><%= t.direct_title %></h3>
+<% if (settings.contact_phone) { %><a class="btn btn-call" style="background-color:#e23636;color:#fff;width:100%;margin-bottom:.7rem" href="tel:<%= String(settings.contact_phone).replace(/[^0-9+]/g,'') %>"><%= settings.contact_phone %></a><% } %>
+<% if (settings.contact_email) { %><a class="btn btn-ghost" style="width:100%" href="mailto:<%= settings.contact_email %>"><%= settings.contact_email %></a><% } %>
+<% if (!settings.contact_phone && !settings.contact_email) { %><p><a href="rendez-vous" class="link-arrow"><%= t.cta_book %> →</a></p><% } %>
+</div>
+</aside>
+</section>
+</main>
+<script>
+(function(){
+var f=document.getElementById('quoteForm');
+if(!f)return;
+f.addEventListener('submit',async function(e){
+e.preventDefault();
+var err=document.getElementById('qErr');
+err.style.display='none';
+var body={name:f.elements['name'].value.trim(),phone:f.elements['phone'].value.trim(),email:f.elements['email'].value.trim(),project_type:f.elements['project_type'].value,surface:f.elements['surface'].value.trim(),message:f.elements['message'].value.trim()};
+if(!body.name||!body.phone){err.textContent=<%- JSON.stringify(t.err_required) %>;err.style.display='block';return;}
+var btn=document.getElementById('qSubmit');btn.disabled=true;
+try{
+var res=await fetch('api/soumission',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+if(res.ok){document.getElementById('quoteCard').style.display='none';document.getElementById('qSuccess').style.display='block';window.scrollTo({top:0,behavior:'smooth'});}
+else{err.textContent=<%- JSON.stringify(t.err_generic) %>;err.style.display='block';}
+}catch(e2){err.textContent=<%- JSON.stringify(t.err_generic) %>;err.style.display='block';}
+btn.disabled=false;
+});
+})();
+</script>
+<%- include('partials/footer') %>

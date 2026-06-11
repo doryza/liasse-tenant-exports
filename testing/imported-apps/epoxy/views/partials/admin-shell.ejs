@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title><%= pageTitle %> — Admin</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body class="admin-body">
+<%- include('admin-sidebar') %>
+<main class="admin-main">
+<header class="admin-topbar"><button id="sbToggle" class="sb-toggle" aria-label="Menu">☰</button><div class="topbar-title"><h1><%= pageTitle %></h1></div><span id="countPill" class="count-pill"></span><button class="btn btn-add" id="btnNew">+ <%= moduleLabel %></button></header>
+<div class="admin-toolbar"><input id="searchBox" type="search" placeholder="Rechercher…" aria-label="Rechercher"><select id="statusFilter" class="status-filter" style="display:none" aria-label="Filtrer par statut"><option value="">Tous les statuts</option></select></div>
+<div class="table-wrap"><table class="admin-table"><thead id="thead"></thead><tbody id="tbody"><tr><td>Chargement…</td></tr></tbody></table></div>
+<div id="emptyState" class="empty-state" style="display:none">Aucun élément pour le moment. Cliquez sur « + <%= moduleLabel %> » pour en créer un.</div>
+</main>
+<div id="modal" class="modal-overlay" style="display:none">
+<div class="modal">
+<div class="modal-head"><h2 id="modalTitle"></h2><button class="modal-close" id="modalClose" aria-label="Fermer">&times;</button></div>
+<form id="modalForm"></form>
+<div class="modal-foot"><button class="btn btn-ghost" id="btnCancel" type="button">Annuler</button><button class="btn btn-add" id="btnSave" type="button">Enregistrer</button></div>
+</div>
+</div>
+<div class="toast-wrap" id="toastWrap"></div>
+<script>
+var MODULE_KEY='<%- moduleKey %>';
+var MODULE_LABEL='<%- moduleLabel %>';
+var FIELDS=[];
+var ITEMS=[];
+var editingId=null;
+function el(id){return document.getElementById(id);}
+function escH(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return c==='&'?'&amp;':c==='<'?'&lt;':c==='>'?'&gt;':c==='"'?'&quot;':'&#39;';});}
+function toast(msg,kind){var w=el('toastWrap');if(!w)return;var t=document.createElement('div');t.className='toast'+(kind?(' '+kind):'');t.textContent=msg;w.appendChild(t);setTimeout(function(){t.style.opacity='0';t.style.transform='translateY(8px)';setTimeout(function(){if(t.parentNode)t.parentNode.removeChild(t);},250);},2800);}
+async function load(){
+try{
+var mres=await fetch('api/admin/modules');
+var mdata=await mres.json();
+var mod=(mdata.modules||[]).filter(function(m){return m.key===MODULE_KEY;})[0];
+FIELDS=mod?mod.fields:[];
+setupStatusFilter();
+var res=await fetch('api/admin/'+MODULE_KEY);
+var data=await res.json();
+ITEMS=data[MODULE_KEY]||[];
+render();
+}catch(e){el('tbody').innerHTML='<tr><td>Erreur de chargement</td></tr>';}
+}
+function setupStatusFilter(){
+var sf=FIELDS.filter(function(f){return f.name==='status'&&f.options;})[0];
+var sel=el('statusFilter');
+if(!sel)return;
+if(sf){sel.innerHTML='<option value="">Tous les statuts</option>'+sf.options.map(function(o){return '<option value="'+escH(o)+'">'+escH(o)+'</option>';}).join('');sel.style.display='';sel.onchange=render;}
+}
+function listCols(){
+var base=FIELDS.filter(function(f){return f.type!=='textarea'&&f.type!=='json';});
+var cols=base.slice(0,5);
+var st=base.filter(function(f){return f.name==='status';})[0];
+if(st&&cols.indexOf(st)===-1){cols=cols.slice(0,4);cols.push(st);}
+return cols;
+}
+function cellVal(item,f){
+var v=item[f.name];
+if(f.type==='image')return v?('<img src="'+escH(v)+'" class="thumb">'):'—';
+if(f.type==='boolean')return (v==1||v===true)?'<span class="badge badge-on">Oui</span>':'<span class="badge">Non</span>';
+if(f.type==='select')return '<span class="badge badge-st">'+escH(v||'')+'</span>';
+if(f.type==='color')return '<span class="chip-dot" style="background:'+escH(v||'#ccc')+'"></span> '+escH(v||'');
+var s=String(v==null?'':v);
+if(s.length>60)s=s.slice(0,60)+'…';
+return escH(s);
+}
+function render(){
+var q=(el('searchBox').value||'').toLowerCase();
+var sfVal=el('statusFilter')?el('statusFilter').value:'';
+var cols=listCols();
+el('thead').innerHTML='<tr>'+cols.map(function(f){return '<th>'+escH(f.label||f.name)+'</th>';}).join('')+'<th></th></tr>';
+var rows=ITEMS.filter(function(it){
+if(sfVal&&String(it.status||'')!==sfVal)return false;
+if(!q)return true;
+return JSON.stringify(it).toLowerCase().indexOf(q)>=0;
+});
+el('countPill').textContent=ITEMS.length+(ITEMS.length>1?' éléments':' élément');
+if(!rows.length){el('tbody').innerHTML='';var es=el('emptyState');es.style.display='block';es.textContent=ITEMS.length?'Aucun résultat pour ce filtre.':('Aucun élément pour le moment. Cliquez sur « + '+MODULE_LABEL+' » pour en créer un.');return;}
+el('emptyState').style.display='none';
+el('tbody').innerHTML=rows.map(function(it){
+return '<tr>'+cols.map(function(f){return '<td>'+cellVal(it,f)+'</td>';}).join('')+'<td class="row-actions"><button class="btn-sm" onclick="openEdit('+it.id+')">Modifier</button><button class="btn-sm btn-danger" onclick="delItem('+it.id+')">Supprimer</button></td></tr>';
+}).join('');
+}
+function fieldInput(f,val){
+var v=val==null?'':val;
+var help=f.description?('<p class="field-help">'+escH(f.description)+'</p>'):'';
+var ph=f.placeholder?(' placeholder="'+escH(f.placeholder)+'"'):'';
+var inner='';
+if(f.type==='textarea')inner='<textarea name="'+f.name+'" rows="4"'+ph+'>'+escH(v)+'</textarea>';
+else if(f.type==='boolean')inner='<label class="check-line"><input type="checkbox" name="'+f.name+'"'+((v==1||v===true)?' checked':'')+'> Activé</label>';
+else if(f.type==='select')inner='<select name="'+f.name+'">'+(f.options||[]).map(function(o){return '<option value="'+escH(o)+'"'+(o==v?' selected':'')+'>'+escH(o)+'</option>';}).join('')+'</select>';
+else if(f.type==='number')inner='<input type="number" name="'+f.name+'" value="'+escH(v)+'"'+(f.min!=null?(' min="'+f.min+'"'):'')+(f.max!=null?(' max="'+f.max+'"'):'')+(f.step!=null?(' step="'+f.step+'"'):'')+ph+'>';
+else if(f.type==='date')inner='<input type="date" name="'+f.name+'" value="'+escH(v)+'">';
+else if(f.type==='color')inner='<input type="color" name="'+f.name+'" value="'+escH(v||'#6366f1')+'">';
+else if(f.type==='image')inner='<input type="url" name="'+f.name+'" value="'+escH(v)+'"'+ph+'>'+(v?('<img src="'+escH(v)+'" class="preview">'):'');
+else inner='<input type="text" name="'+f.name+'" value="'+escH(v)+'"'+ph+'>';
+return '<div class="field"><label>'+escH(f.label||f.name)+(f.required?' *':'')+'</label>'+inner+help+'</div>';
+}
+function openCreate(){
+editingId=null;
+el('modalTitle').textContent='Nouveau — '+MODULE_LABEL;
+el('modalForm').innerHTML=FIELDS.map(function(f){return fieldInput(f,f.default!=null?f.default:null);}).join('');
+el('modal').style.display='flex';
+}
+function openEdit(id){
+var it=ITEMS.filter(function(x){return x.id===id;})[0];
+if(!it)return;
+editingId=id;
+el('modalTitle').textContent='Modifier — '+MODULE_LABEL+' #'+id;
+el('modalForm').innerHTML=FIELDS.map(function(f){return fieldInput(f,it[f.name]);}).join('');
+el('modal').style.display='flex';
+}
+function closeModal(){el('modal').style.display='none';}
+async function saveItem(){
+var body={};
+var ok=true;
+FIELDS.forEach(function(f){
+var input=document.querySelector('#modalForm [name="'+f.name+'"]');
+if(!input)return;
+var v;
+if(f.type==='boolean')v=input.checked?1:0;
+else if(f.type==='number')v=input.value===''?null:Number(input.value);
+else v=input.value;
+if(f.required&&(v===''||v==null)){ok=false;input.classList.add('err');}else{input.classList.remove('err');}
+body[f.name]=v;
+});
+if(!ok){toast('Veuillez remplir les champs requis.','err');return;}
+var btn=el('btnSave');
+btn.disabled=true;
+btn.textContent='Enregistrement…';
+try{
+var url='api/admin/'+MODULE_KEY+(editingId?('/'+editingId):'');
+var res=await fetch(url,{method:editingId?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+var data=await res.json();
+if(!res.ok){toast(data.error||'Erreur','err');}else{closeModal();toast(editingId?'Modifié avec succès':'Créé avec succès','ok');await load();}
+}catch(e){toast('Erreur de connexion','err');}
+btn.disabled=false;
+btn.textContent='Enregistrer';
+}
+async function delItem(id){
+if(!confirm('Supprimer cet élément ? Cette action est irréversible.'))return;
+try{
+var res=await fetch('api/admin/'+MODULE_KEY+'/'+id,{method:'DELETE'});
+if(res.ok){toast('Élément supprimé','ok');await load();}else{var d=await res.json();toast(d.error||'Erreur','err');}
+}catch(e){toast('Erreur de connexion','err');}
+}
+el('btnNew').onclick=openCreate;
+el('btnCancel').onclick=closeModal;
+el('modalClose').onclick=closeModal;
+el('btnSave').onclick=saveItem;
+el('searchBox').addEventListener('input',render);
+el('modal').addEventListener('click',function(e){if(e.target===el('modal'))closeModal();});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&el('modal').style.display==='flex')closeModal();});
+load();
+</script>
+<script>
+var sb=document.getElementById('sbToggle');
+if(sb){sb.addEventListener('click',function(){document.body.classList.toggle('sb-open');});}
+var path=location.pathname.replace(/\/+$/,'').split('/').pop();
+document.querySelectorAll('.sb-nav a').forEach(function(a){if(a.getAttribute('href').split('/').pop()===path)a.classList.add('on');});
+</script>
+</body>
+</html>

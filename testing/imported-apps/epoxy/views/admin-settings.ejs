@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Réglages — Admin</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body class="admin-body">
+<%- include('partials/admin-sidebar') %>
+<main class="admin-main">
+<header class="admin-topbar"><button id="sbToggle" class="sb-toggle" aria-label="Menu">☰</button><div class="topbar-title"><h1>Réglages</h1><p class="topbar-sub">Coordonnées et informations affichées sur le site</p></div><a href="." target="_blank" class="btn btn-ghost">Voir le site ↗</a></header>
+<div class="panel">
+<h2>Informations de l’entreprise</h2>
+<form id="settingsForm" style="padding:1.4rem"><p class="field-help">Chargement…</p></form>
+</div>
+</main>
+<div class="toast-wrap" id="toastWrap"></div>
+<script>
+var FIELDS=<%- JSON.stringify(settingsFields||[]) %>;
+function el(id){return document.getElementById(id);}
+function escH(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return c==='&'?'&amp;':c==='<'?'&lt;':c==='>'?'&gt;':c==='"'?'&quot;':'&#39;';});}
+function toast(msg,kind){var w=el('toastWrap');if(!w)return;var t=document.createElement('div');t.className='toast'+(kind?(' '+kind):'');t.textContent=msg;w.appendChild(t);setTimeout(function(){t.style.opacity='0';t.style.transform='translateY(8px)';setTimeout(function(){if(t.parentNode)t.parentNode.removeChild(t);},250);},2800);}
+async function loadSettings(){
+try{
+var res=await fetch('api/admin/settings');
+var data=await res.json();
+var s=data.settings||{};
+el('settingsForm').innerHTML=FIELDS.map(function(f){
+var v=s[f.name]||'';
+var help=f.description?('<p class="field-help">'+escH(f.description)+'</p>'):'';
+var input=(f.type==='email')?('<input type="email" name="'+f.name+'" value="'+escH(v)+'">'):('<input type="text" name="'+f.name+'" value="'+escH(v)+'">');
+return '<div class="field"><label>'+escH(f.label||f.name)+'</label>'+input+help+'</div>';
+}).join('')+'<div style="margin-top:.6rem"><button type="button" class="btn btn-add" id="saveBtn">Enregistrer les réglages</button></div>';
+el('saveBtn').onclick=saveSettings;
+}catch(e){el('settingsForm').innerHTML='<p class="field-help">Erreur de chargement.</p>';}
+}
+async function saveSettings(){
+var body={};
+FIELDS.forEach(function(f){var i=document.querySelector('#settingsForm [name="'+f.name+'"]');if(i)body[f.name]=i.value;});
+var btn=el('saveBtn');btn.disabled=true;btn.textContent='Enregistrement…';
+try{
+var res=await fetch('api/admin/settings',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+if(res.ok)toast('Réglages enregistrés','ok');else toast('Erreur lors de l’enregistrement','err');
+}catch(e){toast('Erreur de connexion','err');}
+btn.disabled=false;btn.textContent='Enregistrer les réglages';
+}
+loadSettings();
+</script>
+<script>
+var sb=document.getElementById('sbToggle');
+if(sb){sb.addEventListener('click',function(){document.body.classList.toggle('sb-open');});}
+var path=location.pathname.replace(/\/+$/,'').split('/').pop();
+document.querySelectorAll('.sb-nav a').forEach(function(a){if(a.getAttribute('href').split('/').pop()===path)a.classList.add('on');});
+</script>
+</body>
+</html>

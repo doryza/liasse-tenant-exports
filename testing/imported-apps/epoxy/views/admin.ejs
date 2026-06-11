@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tableau de bord — Admin</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body class="admin-body">
+<%- include('partials/admin-sidebar') %>
+<main class="admin-main">
+<header class="admin-topbar"><button id="sbToggle" class="sb-toggle" aria-label="Menu">☰</button><div class="topbar-title"><h1>Tableau de bord</h1><p class="topbar-sub">Vue d’ensemble de votre activité</p></div><a href="." target="_blank" class="btn btn-ghost">Voir le site ↗</a></header>
+<div class="stat-grid">
+<div class="stat-card accent-red"><div class="num"><%= stats.quotesNew %></div><div class="lbl">Soumissions à traiter</div><a href="admin/quote_requests" class="stat-link">Voir les soumissions →</a></div>
+<div class="stat-card accent-yellow"><div class="num"><%= stats.appts %></div><div class="lbl">Rendez-vous en attente</div><a href="admin/appointments" class="stat-link">Voir les rendez-vous →</a></div>
+<div class="stat-card accent-brand"><div class="num"><%= stats.visits7 %></div><div class="lbl">Visites (7 jours)</div><span class="stat-sub"><%= stats.visitsTotal %> visites au total</span></div>
+<div class="stat-card accent-brand"><div class="num"><%= stats.projects %></div><div class="lbl">Réalisations publiées</div><a href="admin/projects" class="stat-link">Gérer la galerie →</a></div>
+</div>
+<h2 class="section-label">Gestion rapide</h2>
+<div class="quick-grid">
+<a href="admin/projects"><span><span class="q-ico">🖼️</span>Réalisations</span><span class="q-arr">→</span></a>
+<a href="admin/services"><span><span class="q-ico">🧰</span>Services</span><span class="q-arr">→</span></a>
+<a href="admin/testimonials"><span><span class="q-ico">⭐</span>Témoignages</span><span class="q-arr">→</span></a>
+<a href="admin/posts"><span><span class="q-ico">✏️</span>Articles</span><span class="q-arr">→</span></a>
+<a href="admin/settings"><span><span class="q-ico">⚙️</span>Réglages</span><span class="q-arr">→</span></a>
+</div>
+<div class="panel"><h2>Dernières soumissions <a href="admin/quote_requests">Tout voir</a></h2>
+<div class="table-wrap" style="border:0;border-radius:0">
+<table class="admin-table"><thead><tr><th>Nom</th><th>Téléphone</th><th>Type</th><th>Statut</th><th>Reçue le</th></tr></thead><tbody>
+<% if (recentQuotes && recentQuotes.length) { recentQuotes.forEach(function(q){ %>
+<tr><td><%= q.name %></td><td><%= q.phone||'' %></td><td><%= q.project_type||'' %></td><td><span class="badge badge-st"><%= q.status %></span></td><td><%= new Date(q.created_at).toLocaleDateString('fr-CA') %></td></tr>
+<% }); } else { %><tr><td colspan="5" class="td-empty">Aucune soumission pour le moment.</td></tr><% } %>
+</tbody></table></div></div>
+<div class="panel"><h2>Rendez-vous à venir <a href="admin/appointments">Tout voir</a></h2>
+<div class="table-wrap" style="border:0;border-radius:0">
+<table class="admin-table"><thead><tr><th>Nom</th><th>Téléphone</th><th>Date</th><th>Heure</th><th>Statut</th></tr></thead><tbody>
+<% if (recentAppts && recentAppts.length) { recentAppts.forEach(function(a){ %>
+<tr><td><%= a.name %></td><td><%= a.phone||'' %></td><td><%= a.date||'' %></td><td><%= a.time_slot||'' %></td><td><span class="badge badge-st"><%= a.status %></span></td></tr>
+<% }); } else { %><tr><td colspan="5" class="td-empty">Aucun rendez-vous pour le moment.</td></tr><% } %>
+</tbody></table></div></div>
+</main>
+<script>
+var sb=document.getElementById('sbToggle');
+if(sb){sb.addEventListener('click',function(){document.body.classList.toggle('sb-open');});}
+var path=location.pathname.replace(/\/+$/,'').split('/').pop();
+document.querySelectorAll('.sb-nav a').forEach(function(a){if(a.getAttribute('href').split('/').pop()===path)a.classList.add('on');});
+</script>
+</body>
+</html>

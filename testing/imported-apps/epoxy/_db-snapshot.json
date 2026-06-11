@@ -1,0 +1,435 @@
+{
+  "exportedAt": "2026-06-11T19:11:03.355Z",
+  "tables": {
+    "admin_invites": {
+      "columns": [
+        "id",
+        "email",
+        "token",
+        "role",
+        "status",
+        "invited_by",
+        "expires_at",
+        "accepted_at",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_webauthn_credentials": {
+      "columns": [
+        "id",
+        "admin_user_id",
+        "credential_id",
+        "public_key",
+        "counter",
+        "device_name",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_users": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "password_hash",
+        "display_name",
+        "role",
+        "active",
+        "activation_token",
+        "invited_by",
+        "invite_token",
+        "invite_expires_at",
+        "last_login_at",
+        "is_active",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_settings": {
+      "columns": [
+        "key",
+        "value",
+        "updated_at"
+      ],
+      "totalRows": 34,
+      "sampleRows": [
+        {
+          "key": "business_name",
+          "value": "Surface Époxy",
+          "updated_at": "2026-06-11T19:10:36.737Z"
+        },
+        {
+          "key": "business_hours",
+          "value": "Lun–Ven : 7 h – 18 h • Sam : 8 h – 12 h",
+          "updated_at": "2026-06-11T19:10:36.755Z"
+        },
+        {
+          "key": "_p_hero_image_url",
+          "value": "https://res.cloudinary.com/duhp69meg/image/upload/v1781203515/tapavis_tenant_epoxy/build_epoxy_1781203515202.png",
+          "updated_at": "2026-06-11T19:10:36.768Z"
+        },
+        {
+          "key": "_p_about_image_url",
+          "value": "https://res.cloudinary.com/duhp69meg/image/upload/v1781203517/tapavis_tenant_epoxy/build_epoxy_1781203516961.png",
+          "updated_at": "2026-06-11T19:10:36.781Z"
+        },
+        {
+          "key": "_seed_version",
+          "value": "9ae9a922d4cf",
+          "updated_at": "2026-06-11T19:10:37.310Z"
+        },
+        {
+          "key": "_seeded_at",
+          "value": "2026-06-11 19:10:37.32405+00",
+          "updated_at": "2026-06-11T19:10:37.324Z"
+        },
+        {
+          "key": "_p_seo_title_fr",
+          "value": "Surface Époxy — Planchers d'époxy résidentiel & commercial",
+          "updated_at": "2026-06-11T19:10:37.493Z"
+        },
+        {
+          "key": "_p_seo_source_title_fr",
+          "value": "ai",
+          "updated_at": "2026-06-11T19:10:37.506Z"
+        },
+        {
+          "key": "_p_seo_description_fr",
+          "value": "Planchers d'époxy durables et éclatants pour garage, sous-sol et commerce. Soumission gratuite en 24 h, garantie écrite. Voyez nos réalisations.",
+          "updated_at": "2026-06-11T19:10:37.530Z"
+        },
+        {
+          "key": "_p_seo_source_description_fr",
+          "value": "ai",
+          "updated_at": "2026-06-11T19:10:37.541Z"
+        }
+      ]
+    },
+    "site_visits": {
+      "columns": [
+        "id",
+        "path",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "posts": {
+      "columns": [
+        "id",
+        "title",
+        "content",
+        "image_url",
+        "category",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Combien de temps dure un plancher d’époxy ?",
+          "content": "Un système époxy posé sur un béton bien préparé dure de 15 à 20 ans en résidentiel. La clé : le meulage diamanté, qui ouvre les pores du béton et garantit l’adhérence. C’est pourquoi nous offrons une garantie écrite de 5 ans contre le pelage.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781203512/tapavis_tenant_epoxy/build_epoxy_1781203512662.png",
+          "category": "Conseils",
+          "published": 1,
+          "created_at": "2026-06-11T19:10:37.039Z",
+          "updated_at": "2026-06-11T19:10:37.039Z"
+        },
+        {
+          "id": 2,
+          "title": "Flocons ou métallique : quel fini choisir ?",
+          "content": "Les flocons offrent une surface texturée, antidérapante et très tolérante aux marques — idéale pour les garages. Le métallique crée un effet marbré spectaculaire, parfait pour les espaces de vie et les commerces. Notre équipe apporte des échantillons des deux lors de l’évaluation.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781203513/tapavis_tenant_epoxy/build_epoxy_1781203513057.png",
+          "category": "Guides",
+          "published": 1,
+          "created_at": "2026-06-11T19:10:37.054Z",
+          "updated_at": "2026-06-11T19:10:37.054Z"
+        },
+        {
+          "id": 3,
+          "title": "Préparer son garage avant la pose",
+          "content": "Videz le garage, et nous nous occupons du reste : meulage, réparation des fissures et dépoussiérage industriel. Prévoyez 24 h sans marcher sur la surface et 72 h avant d’y stationner un véhicule.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781203513/tapavis_tenant_epoxy/build_epoxy_1781203513110.png",
+          "category": "Conseils",
+          "published": 1,
+          "created_at": "2026-06-11T19:10:37.069Z",
+          "updated_at": "2026-06-11T19:10:37.069Z"
+        },
+        {
+          "id": 4,
+          "title": "L’entretien d’un plancher d’époxy en hiver",
+          "content": "Le calcium et la gadoue ne pénètrent pas l’époxy : un coup de raclette et c’est sec. Évitez simplement les abrasifs agressifs et rincez à l’eau tiède au printemps pour retrouver le lustre d’origine.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781203512/tapavis_tenant_epoxy/build_epoxy_1781203512760.png",
+          "category": "Conseils",
+          "published": 1,
+          "created_at": "2026-06-11T19:10:37.082Z",
+          "updated_at": "2026-06-11T19:10:37.082Z"
+        }
+      ]
+    },
+    "projects": {
+      "columns": [
+        "id",
+        "title",
+        "description",
+        "image_url",
+        "category",
+        "color_name",
+        "color_hex",
+        "location",
+        "surface",
+        "featured",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 6,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Garage double — flocons granit",
+          "description": "Meulage diamanté, réparation des fissures et système époxy 3 couches avec flocons de vinyle pleine couverture. Posé en deux jours, prêt à rouler en 72 heures.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781203512/tapavis_tenant_epoxy/build_epoxy_1781203512662.png",
+          "category": "garage",
+          "color_name": "Granit poivre et sel",
+          "color_hex": "#8a8f98",
+          "location": "Laval",
+          "surface": "550 pi²",
+          "featured": 1,
+          "created_at": "2026-06-11T19:10:36.806Z",
+          "updated_at": "2026-06-11T19:10:36.806Z"
+        },
+        {
+          "id": 2,
+          "title": "Plancher métallique cobalt",
+          "description": "Époxy métallique à effet marbré, coulé en une seule pièce sans joints. Scellant polyaspartique haute brillance résistant aux UV.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781203513/tapavis_tenant_epoxy/build_epoxy_1781203513057.png",
+          "category": "metallique",
+          "color_name": "Cobalt nacré",
+          "color_hex": "#4549c0",
+          "location": "Montréal",
+          "surface": "480 pi²",
+          "featured": 1,
+          "created_at": "2026-06-11T19:10:36.822Z",
+          "updated_at": "2026-06-11T19:10:36.822Z"
+        },
+        {
+          "id": 3,
+          "title": "Entrepôt logistique",
+          "description": "Revêtement époxy industriel haute résistance pour circulation de chariots élévateurs, avec lignes de démarcation de sécurité jaunes.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781203512/tapavis_tenant_epoxy/build_epoxy_1781203512760.png",
+          "category": "commercial",
+          "color_name": "Charbon satiné",
+          "color_hex": "#3a3d44",
+          "location": "Longueuil",
+          "surface": "8 200 pi²",
+          "featured": 1,
+          "created_at": "2026-06-11T19:10:36.834Z",
+          "updated_at": "2026-06-11T19:10:36.834Z"
+        },
+        {
+          "id": 4,
+          "title": "Sous-sol familial",
+          "description": "Fini blanc perle lumineux qui agrandit la pièce. Surface lavable, sans poussière de béton, idéale pour une salle de jeux.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781203513/tapavis_tenant_epoxy/build_epoxy_1781203513532.png",
+          "category": "residentiel",
+          "color_name": "Blanc perle",
+          "color_hex": "#e9e7e0",
+          "location": "Brossard",
+          "surface": "720 pi²",
+          "featured": 1,
+          "created_at": "2026-06-11T19:10:36.846Z",
+          "updated_at": "2026-06-11T19:10:36.846Z"
+        },
+        {
+          "id": 5,
+          "title": "Salle de montre — cuivre fondu",
+          "description": "Époxy métallique cuivré avec reflets profonds pour une salle de montre automobile. Un plancher qui vend autant que les produits.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781203514/tapavis_tenant_epoxy/build_epoxy_1781203514278.png",
+          "category": "metallique",
+          "color_name": "Cuivre fondu",
+          "color_hex": "#b06a3b",
+          "location": "Terrebonne",
+          "surface": "1 150 pi²",
+          "featured": 1,
+          "created_at": "2026-06-11T19:10:36.858Z",
+          "updated_at": "2026-06-11T19:10:36.858Z"
+        },
+        {
+          "id": 6,
+          "title": "Atelier mécanique",
+          "description": "Système époxy résistant aux huiles, aux solvants et aux impacts. Nettoyage à la raclette en quelques minutes.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781203513/tapavis_tenant_epoxy/build_epoxy_1781203513110.png",
+          "category": "garage",
+          "color_name": "Charbon moucheté",
+          "color_hex": "#4a4e57",
+          "location": "Saint-Jérôme",
+          "surface": "1 400 pi²",
+          "featured": 1,
+          "created_at": "2026-06-11T19:10:36.869Z",
+          "updated_at": "2026-06-11T19:10:36.869Z"
+        }
+      ]
+    },
+    "services": {
+      "columns": [
+        "id",
+        "name",
+        "description",
+        "price_from",
+        "image_url",
+        "featured",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 5,
+      "sampleRows": [
+        {
+          "id": 1,
+          "name": "Époxy de garage à flocons",
+          "description": "Notre système le plus populaire : base époxy teintée, flocons décoratifs pleine couverture et scellant transparent ultra-résistant. Antidérapant, lavable et garanti contre le pelage.",
+          "price_from": "À partir de 5 $/pi²",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781203512/tapavis_tenant_epoxy/build_epoxy_1781203512662.png",
+          "featured": 1,
+          "created_at": "2026-06-11T19:10:36.893Z",
+          "updated_at": "2026-06-11T19:10:36.893Z"
+        },
+        {
+          "id": 2,
+          "name": "Époxy métallique 3D",
+          "description": "Des pigments métalliques coulés à la main pour un effet marbré unique — aucun plancher n’est identique. Parfait pour les sous-sols, salles de montre et commerces.",
+          "price_from": "À partir de 8 $/pi²",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781203513/tapavis_tenant_epoxy/build_epoxy_1781203513057.png",
+          "featured": 1,
+          "created_at": "2026-06-11T19:10:36.906Z",
+          "updated_at": "2026-06-11T19:10:36.906Z"
+        },
+        {
+          "id": 3,
+          "name": "Planchers commerciaux et industriels",
+          "description": "Systèmes haute performance pour entrepôts, cuisines, ateliers et commerces : résistance chimique, circulation lourde et lignes de sécurité intégrées.",
+          "price_from": "À partir de 4,50 $/pi²",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781203512/tapavis_tenant_epoxy/build_epoxy_1781203512760.png",
+          "featured": 1,
+          "created_at": "2026-06-11T19:10:36.920Z",
+          "updated_at": "2026-06-11T19:10:36.920Z"
+        },
+        {
+          "id": 4,
+          "name": "Sous-sols et intérieurs résidentiels",
+          "description": "Un fini continu, sans joints et sans poussière qui transforme un sous-sol en véritable espace de vie. Plusieurs couleurs et niveaux de lustre offerts.",
+          "price_from": "À partir de 6 $/pi²",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781203513/tapavis_tenant_epoxy/build_epoxy_1781203513532.png",
+          "featured": 0,
+          "created_at": "2026-06-11T19:10:36.935Z",
+          "updated_at": "2026-06-11T19:10:36.935Z"
+        },
+        {
+          "id": 5,
+          "name": "Préparation, meulage et réparation de béton",
+          "description": "Meulage diamanté, réparation de fissures, ragréage et nivellement — la fondation de tout plancher durable, aussi offerte seule.",
+          "price_from": "Sur évaluation",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781203513/tapavis_tenant_epoxy/build_epoxy_1781203513110.png",
+          "featured": 0,
+          "created_at": "2026-06-11T19:10:36.948Z",
+          "updated_at": "2026-06-11T19:10:36.948Z"
+        }
+      ]
+    },
+    "testimonials": {
+      "columns": [
+        "id",
+        "author",
+        "location",
+        "content",
+        "rating",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "author": "Marie-Claude G.",
+          "location": "Laval",
+          "content": "Notre garage est devenu la plus belle pièce de la maison. Travail propre, équipe ponctuelle et le résultat dépasse les photos.",
+          "rating": 5,
+          "image_url": null,
+          "created_at": "2026-06-11T19:10:36.975Z",
+          "updated_at": "2026-06-11T19:10:36.975Z"
+        },
+        {
+          "id": 2,
+          "author": "Jonathan R.",
+          "location": "Montréal",
+          "content": "Le fini métallique de notre sous-sol est spectaculaire. On nous demande chaque fois qui a fait le plancher.",
+          "rating": 5,
+          "image_url": null,
+          "created_at": "2026-06-11T19:10:36.989Z",
+          "updated_at": "2026-06-11T19:10:36.989Z"
+        },
+        {
+          "id": 3,
+          "author": "Caroline et Éric",
+          "location": "Brossard",
+          "content": "Soumission claire, prix respecté, aucune surprise. Trois ans plus tard, le plancher est encore comme neuf.",
+          "rating": 5,
+          "image_url": null,
+          "created_at": "2026-06-11T19:10:37.001Z",
+          "updated_at": "2026-06-11T19:10:37.001Z"
+        },
+        {
+          "id": 4,
+          "author": "Gestion Delisle inc.",
+          "location": "Longueuil",
+          "content": "Nos 8 000 pi² d’entrepôt ont été faits en fin de semaine pour ne pas arrêter nos opérations. Très professionnel.",
+          "rating": 5,
+          "image_url": null,
+          "created_at": "2026-06-11T19:10:37.016Z",
+          "updated_at": "2026-06-11T19:10:37.016Z"
+        }
+      ]
+    },
+    "quote_requests": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "phone",
+        "project_type",
+        "surface",
+        "message",
+        "status",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "appointments": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "phone",
+        "service_type",
+        "date",
+        "time_slot",
+        "message",
+        "status",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    }
+  }
+}

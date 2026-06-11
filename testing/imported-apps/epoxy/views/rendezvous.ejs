@@ -1,0 +1,90 @@
+<%- include('partials/header') %>
+<main id="main">
+<section class="page-head wrap"><h1><%= t.booking_title %></h1><p><%= t.booking_sub %></p></section>
+<section class="wrap form-grid">
+<div>
+<div class="form-card" id="bookCard">
+<div class="note"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span><%= t.booking_note %></span></div>
+<div id="bErr" class="form-err" style="display:none"></div>
+<form id="bookForm" novalidate>
+<div class="f-row">
+<div class="f-group"><label class="f-label"><%= t.f_name %> *</label><input type="text" name="name" required></div>
+<div class="f-group"><label class="f-label"><%= t.f_phone %> *</label><input type="tel" name="phone" required></div>
+</div>
+<div class="f-row">
+<div class="f-group"><label class="f-label"><%= t.f_email %></label><input type="email" name="email"></div>
+<div class="f-group"><label class="f-label"><%= t.f_service %></label><select name="service_type"><option value=""><%= t.opt_select %></option><% if (svcItems && svcItems.length) { svcItems.forEach(function(s){ %><option><%= s.name %></option><% }); } %><option><%= t.type_other %></option></select></div>
+</div>
+<div class="f-row">
+<div class="f-group"><label class="f-label"><%= t.f_date %> *</label><input type="date" name="date" required></div>
+<div class="f-group"><label class="f-label"><%= t.f_time %> *</label><select name="time_slot" required><option value=""><%= t.opt_select %></option><% slots.forEach(function(s){ %><option value="<%= s %>"><%= s %></option><% }); %></select></div>
+</div>
+<div class="f-group"><label class="f-label"><%= t.f_message %></label><textarea name="message" rows="4"></textarea></div>
+<button type="submit" id="bSubmit" class="btn btn-primary" style="background-color:#6366f1;color:#fff;width:100%"><%= t.btn_book %></button>
+</form>
+</div>
+<div class="success-card" id="bSuccess" style="display:none">
+<div class="ok"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#6366f1" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+<h2><%= t.b_success_t %></h2><p><%= t.b_success_m %></p>
+<p style="font-weight:700;margin-bottom:1.4rem"><%= t.b_when %> <span id="bsWhen"></span></p>
+<a href="." class="btn btn-primary" style="background-color:#6366f1;color:#fff"><%= t.back_home %></a>
+</div>
+</div>
+<aside>
+<div class="side-card"><h3><%= t.next_title %></h3>
+<ul class="next-list">
+<li><span class="n-num">1</span><span><%= t.n1 %></span></li>
+<li><span class="n-num">2</span><span><%= t.n2 %></span></li>
+<li><span class="n-num">3</span><span><%= t.n3 %></span></li>
+</ul>
+</div>
+<div class="side-card"><h3><%= t.direct_title %></h3>
+<% if (settings.contact_phone) { %><a class="btn btn-call" style="background-color:#e23636;color:#fff;width:100%" href="tel:<%= String(settings.contact_phone).replace(/[^0-9+]/g,'') %>"><%= settings.contact_phone %></a><% } else { %><p><a href="soumission" class="link-arrow"><%= t.cta_quote %> →</a></p><% } %>
+<% if (settings.business_hours) { %><p style="margin-top:1rem;font-size:.9rem;color:var(--mut)"><%= settings.business_hours %></p><% } %>
+</div>
+</aside>
+</section>
+</main>
+<script>
+(function(){
+var f=document.getElementById('bookForm');
+if(!f)return;
+var dateIn=f.elements['date'];
+var slotSel=f.elements['time_slot'];
+var now=new Date();
+dateIn.min=new Date(now.getTime()-now.getTimezoneOffset()*60000).toISOString().split('T')[0];
+var SLOT_TAKEN=<%- JSON.stringify(t.slot_taken) %>;
+async function refreshSlots(){
+var d=dateIn.value;
+for(var i=0;i<slotSel.options.length;i++){var o=slotSel.options[i];if(!o.value)continue;o.disabled=false;o.textContent=o.value;}
+if(!d)return;
+try{
+var res=await fetch('api/rendez-vous/slots?date='+encodeURIComponent(d));
+var data=await res.json();
+(data.taken||[]).forEach(function(ts){for(var i=0;i<slotSel.options.length;i++){var o=slotSel.options[i];if(o.value===ts){o.disabled=true;o.textContent=ts+' '+SLOT_TAKEN;if(o.selected)slotSel.value='';}}});
+}catch(e){}
+}
+dateIn.addEventListener('change',refreshSlots);
+f.addEventListener('submit',async function(e){
+e.preventDefault();
+var err=document.getElementById('bErr');
+err.style.display='none';
+var body={name:f.elements['name'].value.trim(),phone:f.elements['phone'].value.trim(),email:f.elements['email'].value.trim(),service_type:f.elements['service_type'].value,date:dateIn.value,time_slot:slotSel.value,message:f.elements['message'].value.trim()};
+if(!body.name||!body.phone||!body.date||!body.time_slot){err.textContent=<%- JSON.stringify(t.err_required) %>;err.style.display='block';return;}
+var btn=document.getElementById('bSubmit');btn.disabled=true;
+try{
+var res=await fetch('api/rendez-vous',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+if(res.ok){document.getElementById('bookCard').style.display='none';document.getElementById('bsWhen').textContent=body.date+' — '+body.time_slot;document.getElementById('bSuccess').style.display='block';window.scrollTo({top:0,behavior:'smooth'});}
+else{
+var d2=null;
+try{d2=await res.json();}catch(e3){}
+if(d2&&d2.error==='slot'){err.textContent=<%- JSON.stringify(t.err_slot) %>;refreshSlots();}
+else{err.textContent=<%- JSON.stringify(t.err_generic) %>;}
+err.style.display='block';
+}
+}catch(e2){err.textContent=<%- JSON.stringify(t.err_generic) %>;err.style.display='block';}
+btn.disabled=false;
+});
+})();
+</script>
+<%- include('partials/footer') %>

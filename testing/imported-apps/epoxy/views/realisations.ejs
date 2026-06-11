@@ -1,0 +1,28 @@
+<%- include('partials/header') %>
+<main id="main">
+<section class="page-head wrap"><h1><%= t.gallery_title %></h1><p><%= t.gallery_sub %></p></section>
+<section class="wrap filter-rail">
+<a href="realisations" class="filter-chip <%= !cat?'on':'' %>"><span class="chip chip-sm" style="background:linear-gradient(135deg,#fbbf24,#e23636 50%,#6366f1)"></span><%= t.filter_all %></a>
+<% cats.forEach(function(c){ %><a href="realisations?cat=<%= c.key %>" class="filter-chip <%= cat===c.key?'on':'' %>"><span class="chip chip-sm" style="background:<%= c.hex %>"></span><%= t['cat_'+c.key] %></a><% }); %>
+</section>
+<section class="wrap band-pad">
+<% if (projects && projects.length) { %>
+<div class="grid grid-3">
+<% projects.forEach(function(p){ %>
+<article class="sample-card">
+<div class="card-img"><img src="<%= p.image_url||'https://placehold.co/800x600/eef0fe/6366f1/png?text=Projet' %>" alt="<%= p.title %>" loading="lazy"></div>
+<div class="card-meta"><span class="chip" style="background:<%= p.color_hex||'#6366f1' %>" title="<%= p.color_name||'' %>"></span><div><h3><%= p.title %></h3><p class="meta-line"><%= p.location||'' %><% if (p.surface) { %> • <%= p.surface %><% } %><% if (p.color_name) { %> • <%= p.color_name %><% } %></p></div><span class="tag"><%= t['cat_'+p.category]||p.category %></span></div>
+<% if (p.description) { %><p class="card-desc"><%= p.description %></p><% } %>
+</article>
+<% }); %>
+</div>
+<% } else { %><p class="empty"><%= t.empty_projects %></p><% } %>
+</section>
+<section class="cta-band">
+<div class="wrap">
+<h2><%= t.cta_title %></h2><p><%= t.cta_sub %></p>
+<div class="cta-row"><a href="soumission" class="btn btn-light"><%= t.cta_quote %></a><a href="rendez-vous" class="btn btn-ghost-light"><%= t.cta_book %></a></div>
+</div>
+</section>
+</main>
+<%- include('partials/footer') %>
