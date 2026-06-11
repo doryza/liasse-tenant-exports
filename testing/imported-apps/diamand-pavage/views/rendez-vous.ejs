@@ -1,0 +1,27 @@
+<%- include('partials/header') %>
+<section class="page-head">
+<div class="wrap"><h1><%= t.book_title %></h1><p class="sec-sub"><%= t.book_sub %></p></div>
+</section>
+<section class="sec sec-light">
+<div class="wrap narrow">
+<% if (sent) { %><div class="flash ok"><%= t.book_success %></div><% } %>
+<% if (err) { %><div class="flash bad"><%= t.book_error %></div><% } %>
+<form class="form-card" action="rendez-vous" method="POST">
+<div class="form-grid">
+<div class="ffield"><label for="bname"><%= t.f_name %> *</label><input id="bname" name="name" type="text" required placeholder="<%= t.f_name_ph %>"></div>
+<div class="ffield"><label for="bphone"><%= t.f_phone %> *</label><input id="bphone" name="phone" type="tel" required placeholder="<%= t.f_phone_ph %>"></div>
+<div class="ffield"><label for="bemail"><%= t.f_email %></label><input id="bemail" name="email" type="email" placeholder="<%= t.f_email_ph %>"></div>
+<div class="ffield"><label for="bsvc"><%= t.f_service %></label><select id="bsvc" name="service">
+<option value=""><%= t.f_service_ph %></option>
+<% if (typeof svcList !== 'undefined' && svcList.length > 0) { svcList.forEach(function(s) { %><option value="<%= s.name %>"><%= s.name %></option><% }); } %>
+<option value="<%= t.f_other %>"><%= t.f_other %></option>
+</select></div>
+<div class="ffield"><label for="bdate"><%= t.f_date %></label><input id="bdate" name="preferred_date" type="date"></div>
+<div class="ffield ffull"><label for="bmsg"><%= t.f_message %></label><textarea id="bmsg" name="message" rows="5" placeholder="<%= t.f_message_ph %>"></textarea></div>
+</div>
+<div class="form-actions"><button type="submit" class="btn btn-primary" style="background-color:#6366f1;color:#fff"><%= t.f_send %></button></div>
+</form>
+<p class="form-note"><%= t.book_note %></p>
+</div>
+</section>
+<%- include('partials/footer') %>

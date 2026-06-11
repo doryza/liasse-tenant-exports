@@ -1,0 +1,28 @@
+<%- include('partials/header') %>
+<section class="page-head">
+<div class="wrap"><h1><%= t.pricing_title %></h1><p class="sec-sub"><%= t.pricing_sub %></p></div>
+</section>
+<section class="sec sec-light">
+<div class="wrap">
+<% if (typeof packages !== 'undefined' && packages.length > 0) { %>
+<div class="price-grid">
+<% packages.forEach(function(p) { %>
+<article class="price-card <%= p.popular ? 'popular' : '' %>">
+<% if (p.popular) { %><span class="pop-badge"><%= t.pricing_popular %></span><% } %>
+<% if (p.category) { %><span class="price-cat"><%= p.category %></span><% } %>
+<h3><%= p.name %></h3>
+<span class="price"><%= p.price %></span>
+<% if (p.description) { %><p><%= p.description %></p><% } %>
+<% if (p.features) { %>
+<ul class="feat-list"><% String(p.features).split('\n').forEach(function(f) { if (f.trim()) { %><li><%= f.trim() %></li><% } }); %></ul>
+<% } %>
+<a class="btn btn-primary" href="rendez-vous" style="background-color:#6366f1;color:#fff"><%= t.cta_book %></a>
+</article>
+<% }); %>
+</div>
+<% } else { %><p class="empty"><%= t.pricing_empty %></p><% } %>
+<div class="note"><%= t.pricing_note %></div>
+<div class="center"><a class="btn btn-dark" href="rendez-vous"><%= t.pricing_cta %></a></div>
+</div>
+</section>
+<%- include('partials/footer') %>

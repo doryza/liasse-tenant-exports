@@ -1,0 +1,29 @@
+<%- include('partials/header') %>
+<section class="page-head">
+<div class="wrap"><h1><%= t.contact_title %></h1><p class="sec-sub"><%= t.contact_sub %></p></div>
+</section>
+<section class="sec sec-light">
+<div class="wrap">
+<div class="info-grid">
+<% if (settings.contact_phone) { %><div class="info-card"><h3><%= t.c_phone %></h3><a href="tel:<%= settings.contact_phone %>"><%= formatPhone(settings.contact_phone) %></a></div><% } %>
+<% if (settings.contact_email) { %><div class="info-card"><h3><%= t.c_email %></h3><a href="mailto:<%= settings.contact_email %>"><%= settings.contact_email %></a></div><% } %>
+<% if (settings.business_address) { %><div class="info-card"><h3><%= t.c_address %></h3><p><%= settings.business_address %></p></div><% } else { %><div class="info-card"><h3><%= t.c_area %></h3><p><%= settings.service_area || 'Laurentides, QC' %></p></div><% } %>
+<% if (settings.hours) { %><div class="info-card"><h3><%= t.c_hours %></h3><p><%= settings.hours %></p></div><% } %>
+</div>
+<div class="narrow" style="margin-left:0">
+<h2 class="disp" style="font-size:30px;margin-bottom:18px;color:#16181d"><%= t.contact_form_title %></h2>
+<% if (sent) { %><div class="flash ok"><%= t.contact_success %></div><% } %>
+<% if (err) { %><div class="flash bad"><%= t.contact_error %></div><% } %>
+<form class="form-card" action="contact" method="POST">
+<div class="form-grid">
+<div class="ffield"><label for="cname"><%= t.f_name %> *</label><input id="cname" name="name" type="text" required placeholder="<%= t.f_name_ph %>"></div>
+<div class="ffield"><label for="cemail"><%= t.f_email %></label><input id="cemail" name="email" type="email" placeholder="<%= t.f_email_ph %>"></div>
+<div class="ffield"><label for="cphone"><%= t.f_phone %></label><input id="cphone" name="phone" type="tel" placeholder="<%= t.f_phone_ph %>"></div>
+<div class="ffield ffull"><label for="cmsg"><%= t.f_message %> *</label><textarea id="cmsg" name="message" rows="5" required placeholder="<%= t.f_message_ph %>"></textarea></div>
+</div>
+<div class="form-actions"><button type="submit" class="btn btn-primary" style="background-color:#6366f1;color:#fff"><%= t.f_send %></button></div>
+</form>
+</div>
+</div>
+</section>
+<%- include('partials/footer') %>

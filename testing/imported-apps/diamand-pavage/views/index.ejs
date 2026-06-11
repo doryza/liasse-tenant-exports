@@ -1,0 +1,106 @@
+<%- include('partials/header') %>
+<section class="hero">
+<img class="hero-img" src="<%= (typeof settings !== 'undefined' && settings._p_hero_image_url) ? settings._p_hero_image_url : 'https://placehold.co/1600x900/16181d/9aa3b2/png?text=Pavage' %>" alt="<%= t.hero_title %>">
+<div class="hero-veil"></div>
+<div class="wrap hero-body">
+<p class="hero-eyebrow"><%= t.hero_eyebrow %></p>
+<h1 class="hero-title"><%= t.hero_title %></h1>
+<p class="hero-sub"><%= t.hero_sub %></p>
+<div class="hero-ctas">
+<a class="btn btn-primary" href="rendez-vous" style="background-color:#6366f1;color:#fff"><%= t.cta_book %></a>
+<% if (settings.contact_phone) { %><a class="btn btn-ghost" href="tel:<%= settings.contact_phone %>"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg> <%= formatPhone(settings.contact_phone) %></a><% } else { %><a class="btn btn-ghost" href="contact"><%= t.nav_contact %></a><% } %>
+</div>
+</div>
+</section>
+<div class="stripe-band"></div>
+<section class="stats">
+<div class="wrap stats-grid">
+<div><strong><%= t.stat1_n %></strong><span><%= t.stat1_l %></span></div>
+<div><strong><%= t.stat2_n %></strong><span><%= t.stat2_l %></span></div>
+<div><strong><%= t.stat3_n %></strong><span><%= t.stat3_l %></span></div>
+</div>
+</section>
+<section class="sec sec-light" id="services">
+<div class="wrap">
+<div class="sec-head"><span class="sec-num">01</span><div><h2><%= t.sec_services_title %></h2><p class="sec-sub"><%= t.sec_services_sub %></p></div></div>
+<% if (typeof svcList !== 'undefined' && svcList.length > 0) { %>
+<div class="svc-grid">
+<% svcList.forEach(function(s) { %>
+<article class="svc-card <%= s.featured ? 'feat' : '' %>">
+<img src="<%= s.image_url || 'https://placehold.co/800x600/1f232b/9aa3b2/png?text=Service' %>" alt="<%= s.name %>" loading="lazy">
+<div class="svc-body">
+<h3><%= s.name %></h3>
+<p><%= s.description %></p>
+<div class="svc-foot">
+<span class="svc-price"><%= s.price_from %></span>
+<a href="rendez-vous" class="svc-link"><%= t.svc_cta %> →</a>
+</div>
+</div>
+</article>
+<% }); %>
+</div>
+<% } else { %><p class="empty"><%= t.empty_services %></p><% } %>
+</div>
+</section>
+<section class="sec">
+<div class="wrap">
+<div class="sec-head"><span class="sec-num">02</span><div><h2><%= t.sec_process_title %></h2><p class="sec-sub"><%= t.sec_process_sub %></p></div></div>
+<div class="proc-grid">
+<% [1, 2, 3, 4].forEach(function(i) { %>
+<div class="proc-step"><span class="proc-num">0<%= i %></span><h3><%= t['p' + i + '_t'] %></h3><p><%= t['p' + i + '_d'] %></p></div>
+<% }); %>
+</div>
+</div>
+</section>
+<section class="sec sec-light">
+<div class="wrap">
+<div class="sec-head"><span class="sec-num">03</span><div><h2><%= t.sec_team_title %></h2><p class="sec-sub"><%= t.sec_team_sub %></p></div></div>
+<div class="team-wrap">
+<figure class="team-photo">
+<img src="<%= (typeof settings !== 'undefined' && settings._p_team_image_url) ? settings._p_team_image_url : 'https://placehold.co/900x675/1f232b/9aa3b2/png?text=Equipe' %>" alt="<%= t.sec_team_title %>">
+<figcaption><%= t.team_caption %></figcaption>
+</figure>
+<% if (typeof team !== 'undefined' && team.length > 0) { %>
+<div class="team-grid">
+<% team.forEach(function(m) { var ini = String(m.name || '').split(' ').map(function(w) { return w.charAt(0); }).slice(0, 2).join(''); %>
+<div class="team-card">
+<% if (m.image_url) { %><img class="team-ava" src="<%= m.image_url %>" alt="<%= m.name %>"><% } else { %><span class="team-ini"><%= ini %></span><% } %>
+<h3><%= m.name %></h3>
+<p class="team-role"><%= m.role %></p>
+<p class="team-bio"><%= m.bio %></p>
+</div>
+<% }); %>
+</div>
+<% } else { %><p class="empty"><%= t.empty_team %></p><% } %>
+</div>
+</div>
+</section>
+<section class="sec">
+<div class="wrap">
+<div class="sec-head"><span class="sec-num">04</span><div><h2><%= t.sec_gallery_title %></h2><p class="sec-sub"><%= t.sec_gallery_sub %></p></div></div>
+<% if (typeof galleryItems !== 'undefined' && galleryItems.length > 0) { %>
+<div class="gal-grid">
+<% galleryItems.forEach(function(g) { %>
+<figure class="gal-card">
+<img src="<%= g.image_url || 'https://placehold.co/800x600/1f232b/9aa3b2/png?text=Photo' %>" alt="<%= g.title %>" loading="lazy">
+<figcaption><strong><%= g.title %></strong><% if (g.category) { %><span><%= g.category %></span><% } %></figcaption>
+</figure>
+<% }); %>
+</div>
+<% } else { %><p class="empty"><%= t.gallery_empty %></p><% } %>
+<div class="center"><a class="btn btn-outline" href="galerie"><%= t.view_gallery %></a></div>
+</div>
+</section>
+<section class="cta-band">
+<div class="stripe-dark"></div>
+<div class="wrap cta-inner">
+<h2><%= t.cta_band_title %></h2>
+<p><%= t.cta_band_sub %></p>
+<div class="hero-ctas" style="justify-content:center">
+<% if (settings.contact_phone) { %><a class="btn btn-ghost" href="tel:<%= settings.contact_phone %>"><%= t.cta_call %> · <%= formatPhone(settings.contact_phone) %></a><% } else { %><a class="btn btn-ghost" href="contact"><%= t.nav_contact %></a><% } %>
+<a class="btn btn-primary" href="rendez-vous" style="background-color:#16181d;color:#fff"><%= t.cta_book %></a>
+</div>
+</div>
+<div class="stripe-dark"></div>
+</section>
+<%- include('partials/footer') %>

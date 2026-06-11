@@ -1,0 +1,466 @@
+{
+  "exportedAt": "2026-06-11T16:31:12.547Z",
+  "tables": {
+    "admin_invites": {
+      "columns": [
+        "id",
+        "email",
+        "token",
+        "role",
+        "status",
+        "invited_by",
+        "expires_at",
+        "accepted_at",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_webauthn_credentials": {
+      "columns": [
+        "id",
+        "admin_user_id",
+        "credential_id",
+        "public_key",
+        "counter",
+        "device_name",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_users": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "password_hash",
+        "display_name",
+        "role",
+        "active",
+        "activation_token",
+        "invited_by",
+        "invite_token",
+        "invite_expires_at",
+        "last_login_at",
+        "is_active",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_settings": {
+      "columns": [
+        "key",
+        "value",
+        "updated_at"
+      ],
+      "totalRows": 37,
+      "sampleRows": [
+        {
+          "key": "business_name",
+          "value": "Pavage Diamand",
+          "updated_at": "2026-06-11T16:30:46.280Z"
+        },
+        {
+          "key": "contact_phone",
+          "value": "4384356829",
+          "updated_at": "2026-06-11T16:30:46.293Z"
+        },
+        {
+          "key": "contact_email",
+          "value": "dory@liasse.tech",
+          "updated_at": "2026-06-11T16:30:46.305Z"
+        },
+        {
+          "key": "hours",
+          "value": "Lun – Sam : 7 h à 18 h",
+          "updated_at": "2026-06-11T16:30:46.317Z"
+        },
+        {
+          "key": "service_area",
+          "value": "Laurentides, QC",
+          "updated_at": "2026-06-11T16:30:46.330Z"
+        },
+        {
+          "key": "_p_hero_image_url",
+          "value": "https://res.cloudinary.com/duhp69meg/image/upload/v1781194221/tapavis_tenant_diamand-pavage/build_diamand-pavage_1781194221622.png",
+          "updated_at": "2026-06-11T16:30:46.343Z"
+        },
+        {
+          "key": "_p_team_image_url",
+          "value": "https://res.cloudinary.com/duhp69meg/image/upload/v1781194221/tapavis_tenant_diamand-pavage/build_diamand-pavage_1781194221270.png",
+          "updated_at": "2026-06-11T16:30:46.355Z"
+        },
+        {
+          "key": "_seed_version",
+          "value": "555db8ebf5ed",
+          "updated_at": "2026-06-11T16:30:46.934Z"
+        },
+        {
+          "key": "_seeded_at",
+          "value": "2026-06-11 16:30:46.952441+00",
+          "updated_at": "2026-06-11T16:30:46.952Z"
+        },
+        {
+          "key": "_p_seo_title_fr",
+          "value": "Pavage Diamand — Pavage, scellant & nettoyage Laurentides",
+          "updated_at": "2026-06-11T16:30:47.145Z"
+        }
+      ]
+    },
+    "site_visits": {
+      "columns": [
+        "id",
+        "path",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "posts": {
+      "columns": [
+        "id",
+        "title",
+        "content",
+        "image_url",
+        "category",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Quand appliquer un scellant d’asphalte ?",
+          "content": "Le meilleur moment pour sceller votre asphalte est entre la fin mai et la mi-septembre, quand les nuits restent au-dessus de 10 °C. Un asphalte neuf doit d’abord durcir de 12 à 18 mois avant la première application. Ensuite, un scellant aux 2 à 3 ans suffit pour garder une surface noire, souple et protégée contre le calcium.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781194221/tapavis_tenant_diamand-pavage/build_diamand-pavage_1781194221677.png",
+          "category": "Conseils",
+          "published": 1,
+          "created_at": "2026-06-11T16:30:46.687Z",
+          "updated_at": "2026-06-11T16:30:46.687Z"
+        },
+        {
+          "id": 2,
+          "title": "5 signes que votre entrée a besoin d’un resurfaçage",
+          "content": "Des fissures en toile d’araignée, des flaques qui restent après la pluie, des bords qui s’effritent, une surface grise et poreuse ou des nids-de-poule : si vous cochez deux de ces cases ou plus, une réparation locale ne suffira probablement pas. Un resurfaçage redonne une base solide pour 15 à 20 ans.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781194221/tapavis_tenant_diamand-pavage/build_diamand-pavage_1781194221339.png",
+          "category": "Conseils",
+          "published": 1,
+          "created_at": "2026-06-11T16:30:46.700Z",
+          "updated_at": "2026-06-11T16:30:46.700Z"
+        },
+        {
+          "id": 3,
+          "title": "Préparer son asphalte pour l’hiver des Laurentides",
+          "content": "Avant les premières gelées : colmatez les fissures pour empêcher l’eau de s’y infiltrer et de faire éclater la surface au gel. Évitez le calcium pur sur un asphalte non scellé et privilégiez le sable ou un déglaçant doux. Au printemps, un bon lavage à pression révèle l’état réel de la surface.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781194222/tapavis_tenant_diamand-pavage/build_diamand-pavage_1781194222021.png",
+          "category": "Conseils",
+          "published": 1,
+          "created_at": "2026-06-11T16:30:46.717Z",
+          "updated_at": "2026-06-11T16:30:46.717Z"
+        },
+        {
+          "id": 4,
+          "title": "Pourquoi laver à pression avant de sceller ?",
+          "content": "Un scellant appliqué sur une surface sale n’adhère pas : il pèle en quelques mois. Le lavage haute pression retire la poussière, la mousse et les résidus d’huile pour que le scellant pénètre dans les pores de l’asphalte. C’est l’étape qui fait la différence entre un fini d’un an et un fini de trois ans.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781194221/tapavis_tenant_diamand-pavage/build_diamand-pavage_1781194221807.png",
+          "category": "Conseils",
+          "published": 1,
+          "created_at": "2026-06-11T16:30:46.730Z",
+          "updated_at": "2026-06-11T16:30:46.730Z"
+        }
+      ]
+    },
+    "services": {
+      "columns": [
+        "id",
+        "name",
+        "description",
+        "price_from",
+        "image_url",
+        "featured",
+        "sort_order",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "name": "Pavage d’asphalte",
+          "description": "Entrées de cour, agrandissements et resurfaçage. Asphalte étendu et compacté à la machine pour une surface uniforme qui résiste aux hivers des Laurentides.",
+          "price_from": "Soumission gratuite sur place",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781194219/tapavis_tenant_diamand-pavage/build_diamand-pavage_1781194219232.png",
+          "featured": 1,
+          "sort_order": 1,
+          "created_at": "2026-06-11T16:30:46.381Z",
+          "updated_at": "2026-06-11T16:30:46.381Z"
+        },
+        {
+          "id": 2,
+          "name": "Nettoyage à pression",
+          "description": "Lavage haute pression d’entrées, trottoirs, murets et surfaces de béton. Élimine la mousse, les taches d’huile et les saletés incrustées.",
+          "price_from": "À partir de 149 $",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781194221/tapavis_tenant_diamand-pavage/build_diamand-pavage_1781194221807.png",
+          "featured": 0,
+          "sort_order": 2,
+          "created_at": "2026-06-11T16:30:46.397Z",
+          "updated_at": "2026-06-11T16:30:46.397Z"
+        },
+        {
+          "id": 3,
+          "name": "Scellant d’asphalte",
+          "description": "Application de scellant de calibre commercial qui protège contre l’eau, les UV et le calcium. Prolonge la vie de votre asphalte de plusieurs années.",
+          "price_from": "À partir de 0,25 $ / pi²",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781194221/tapavis_tenant_diamand-pavage/build_diamand-pavage_1781194221677.png",
+          "featured": 1,
+          "sort_order": 3,
+          "created_at": "2026-06-11T16:30:46.410Z",
+          "updated_at": "2026-06-11T16:30:46.410Z"
+        },
+        {
+          "id": 4,
+          "name": "Réparation de fissures",
+          "description": "Colmatage des fissures au caoutchouc liquide appliqué à chaud avant le scellant, pour empêcher l’infiltration d’eau et le gel.",
+          "price_from": "À partir de 89 $",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781194222/tapavis_tenant_diamand-pavage/build_diamand-pavage_1781194222021.png",
+          "featured": 0,
+          "sort_order": 4,
+          "created_at": "2026-06-11T16:30:46.424Z",
+          "updated_at": "2026-06-11T16:30:46.424Z"
+        }
+      ]
+    },
+    "gallery": {
+      "columns": [
+        "id",
+        "title",
+        "description",
+        "category",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 5,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Entrée résidentielle — Saint-Sauveur",
+          "description": "Pavage neuf, environ 950 pi².",
+          "category": "Pavage",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781194219/tapavis_tenant_diamand-pavage/build_diamand-pavage_1781194219909.png",
+          "created_at": "2026-06-11T16:30:46.448Z",
+          "updated_at": "2026-06-11T16:30:46.448Z"
+        },
+        {
+          "id": 2,
+          "title": "Scellant fraîchement appliqué — Blainville",
+          "description": "Deux couches de scellant, fini lustré.",
+          "category": "Scellant",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781194220/tapavis_tenant_diamand-pavage/build_diamand-pavage_1781194219972.png",
+          "created_at": "2026-06-11T16:30:46.462Z",
+          "updated_at": "2026-06-11T16:30:46.462Z"
+        },
+        {
+          "id": 3,
+          "title": "Nettoyage haute pression — Sainte-Adèle",
+          "description": "Avant / après sur dalle de béton.",
+          "category": "Nettoyage à pression",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781194221/tapavis_tenant_diamand-pavage/build_diamand-pavage_1781194221328.png",
+          "created_at": "2026-06-11T16:30:46.475Z",
+          "updated_at": "2026-06-11T16:30:46.475Z"
+        },
+        {
+          "id": 4,
+          "title": "Resurfaçage complet — Saint-Jérôme",
+          "description": "Ancienne surface arrachée et repavée.",
+          "category": "Pavage",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781194221/tapavis_tenant_diamand-pavage/build_diamand-pavage_1781194221339.png",
+          "created_at": "2026-06-11T16:30:46.489Z",
+          "updated_at": "2026-06-11T16:30:46.489Z"
+        },
+        {
+          "id": 5,
+          "title": "Allée double avec bordures — Mirabel",
+          "description": "Pavage double largeur, bordures nettes.",
+          "category": "Pavage",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781194221/tapavis_tenant_diamand-pavage/build_diamand-pavage_1781194221102.png",
+          "created_at": "2026-06-11T16:30:46.503Z",
+          "updated_at": "2026-06-11T16:30:46.503Z"
+        }
+      ]
+    },
+    "pricing_packages": {
+      "columns": [
+        "id",
+        "name",
+        "description",
+        "price",
+        "features",
+        "category",
+        "popular",
+        "sort_order",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 5,
+      "sampleRows": [
+        {
+          "id": 1,
+          "name": "Scellant — Entrée simple",
+          "description": "Idéal pour une entrée jusqu’à 600 pi².",
+          "price": "À partir de 249 $",
+          "features": "Nettoyage haute pression inclus\nColmatage des fissures mineures\nScellant commercial, 1 couche\nSéchage en 24 à 48 h",
+          "category": "Scellant",
+          "popular": 0,
+          "sort_order": 1,
+          "image_url": null,
+          "created_at": "2026-06-11T16:30:46.528Z",
+          "updated_at": "2026-06-11T16:30:46.528Z"
+        },
+        {
+          "id": 2,
+          "name": "Scellant — Entrée double",
+          "description": "Pour une entrée double jusqu’à 1 200 pi².",
+          "price": "À partir de 349 $",
+          "features": "Nettoyage haute pression inclus\nColmatage des fissures\nScellant commercial, 2 couches\nFini lustré uniforme",
+          "category": "Scellant",
+          "popular": 1,
+          "sort_order": 2,
+          "image_url": null,
+          "created_at": "2026-06-11T16:30:46.556Z",
+          "updated_at": "2026-06-11T16:30:46.556Z"
+        },
+        {
+          "id": 3,
+          "name": "Nettoyage — Entrée et trottoir",
+          "description": "Lavage en profondeur des surfaces extérieures.",
+          "price": "À partir de 179 $",
+          "features": "Entrée d’auto complète\nTrottoirs et marches\nDégraissage des taches d’huile\nRinçage final",
+          "category": "Nettoyage à pression",
+          "popular": 0,
+          "sort_order": 3,
+          "image_url": null,
+          "created_at": "2026-06-11T16:30:46.571Z",
+          "updated_at": "2026-06-11T16:30:46.571Z"
+        },
+        {
+          "id": 4,
+          "name": "Forfait Protection complète",
+          "description": "Le traitement complet : laver, réparer, sceller.",
+          "price": "Soumission sur mesure",
+          "features": "Nettoyage haute pression\nRéparation des fissures à chaud\nScellant 2 couches\nGarantie écrite sur le travail",
+          "category": "Forfait",
+          "popular": 0,
+          "sort_order": 4,
+          "image_url": null,
+          "created_at": "2026-06-11T16:30:46.584Z",
+          "updated_at": "2026-06-11T16:30:46.584Z"
+        },
+        {
+          "id": 5,
+          "name": "Pavage neuf / resurfaçage",
+          "description": "Entrée neuve ou surface repavée au complet.",
+          "price": "Sur soumission",
+          "features": "Excavation et fondation au besoin\nAsphalte compacté à la machine\nBordures droites et nettes\nGarantie sur la pose",
+          "category": "Pavage",
+          "popular": 0,
+          "sort_order": 5,
+          "image_url": null,
+          "created_at": "2026-06-11T16:30:46.596Z",
+          "updated_at": "2026-06-11T16:30:46.596Z"
+        }
+      ]
+    },
+    "team_members": {
+      "columns": [
+        "id",
+        "name",
+        "role",
+        "bio",
+        "image_url",
+        "sort_order",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "name": "Marc Diamand",
+          "role": "Fondateur & chef d’équipe",
+          "bio": "Plus de 15 ans de pavage résidentiel dans les Laurentides. C’est lui qui fait chaque évaluation sur place.",
+          "image_url": "",
+          "sort_order": 1,
+          "created_at": "2026-06-11T16:30:46.621Z",
+          "updated_at": "2026-06-11T16:30:46.621Z"
+        },
+        {
+          "id": 2,
+          "name": "Antoine Lacroix",
+          "role": "Opérateur — pavage",
+          "bio": "Spécialiste du rouleau compacteur et de la finition des bordures. Un œil de lynx pour les pentes de drainage.",
+          "image_url": "",
+          "sort_order": 2,
+          "created_at": "2026-06-11T16:30:46.634Z",
+          "updated_at": "2026-06-11T16:30:46.634Z"
+        },
+        {
+          "id": 3,
+          "name": "Samuel Bergeron",
+          "role": "Spécialiste scellant & nettoyage",
+          "bio": "Responsable du lavage haute pression et de l’application du scellant. Méthodique, propre, efficace.",
+          "image_url": "",
+          "sort_order": 3,
+          "created_at": "2026-06-11T16:30:46.646Z",
+          "updated_at": "2026-06-11T16:30:46.646Z"
+        },
+        {
+          "id": 4,
+          "name": "Karine Dubois",
+          "role": "Coordination & service client",
+          "bio": "Elle planifie les chantiers et vous rappelle dans les 24 h ouvrables. Votre premier contact chez Diamand.",
+          "image_url": "",
+          "sort_order": 4,
+          "created_at": "2026-06-11T16:30:46.659Z",
+          "updated_at": "2026-06-11T16:30:46.659Z"
+        }
+      ]
+    },
+    "bookings": {
+      "columns": [
+        "id",
+        "name",
+        "phone",
+        "email",
+        "service",
+        "preferred_date",
+        "message",
+        "status",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "contact_messages": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "phone",
+        "message",
+        "status",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    }
+  }
+}

@@ -1,0 +1,26 @@
+<%- include('partials/header') %>
+<section class="page-head">
+<div class="wrap"><h1><%= t.gallery_title %></h1><p class="sec-sub"><%= t.gallery_sub %></p></div>
+</section>
+<section class="sec sec-light">
+<div class="wrap">
+<div class="chips">
+<a href="galerie" class="chip <%= !activeCat ? 'on' : '' %>"><%= t.gallery_all %></a>
+<% if (typeof cats !== 'undefined' && cats.length > 0) { cats.forEach(function(c) { %>
+<a href="galerie?cat=<%= encodeURIComponent(c) %>" class="chip <%= activeCat === c ? 'on' : '' %>"><%= c %></a>
+<% }); } %>
+</div>
+<% if (typeof items !== 'undefined' && items.length > 0) { %>
+<div class="gal-grid">
+<% items.forEach(function(g) { %>
+<figure class="gal-card">
+<img src="<%= g.image_url || 'https://placehold.co/800x600/1f232b/9aa3b2/png?text=Photo' %>" alt="<%= g.title %>" loading="lazy">
+<figcaption><strong><%= g.title %></strong><% if (g.category) { %><span><%= g.category %></span><% } %></figcaption>
+</figure>
+<% }); %>
+</div>
+<% } else { %><p class="empty"><%= t.gallery_empty %></p><% } %>
+<div class="center"><a class="btn btn-primary" href="rendez-vous" style="background-color:#6366f1;color:#fff"><%= t.cta_book %></a></div>
+</div>
+</section>
+<%- include('partials/footer') %>

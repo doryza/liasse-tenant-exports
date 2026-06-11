@@ -1,0 +1,85 @@
+{
+  "slug": "diamand-pavage",
+  "displayName": "Diamand Pavage",
+  "description": "Type de projet: Site Web\nClient: Pavage Diamand, nettoyage à pression et scellant d'asphalte.\n\nBut: Présenter les services de l'entreprise.\nPublic cible: Particuliers.\n\nFonctionnalités clés:\n- Galerie de photos\n- Tarifs et forfaits\n- Coordonnées de contact\n- Présentation de l'équipe et de la méthode de travail",
+  "status": "active",
+  "generationVersion": 1,
+  "primaryColor": "#6366f1",
+  "iconUrl": "https://res.cloudinary.com/duhp69meg/image/upload/v1781195457/tapavis_tenant_diamand-pavage/icon_diamand-pavage_1781195457740.png",
+  "enabledAuthMethods": [
+    "webauthn",
+    "sms",
+    "email"
+  ],
+  "notificationsEnabled": true,
+  "geolocationEnabled": true,
+  "customConfig": {
+    "language": "both",
+    "designManifest": {
+      "concept": "Ligne de chantier",
+      "elements": {
+        "blogSurfaced": false,
+        "pages": [
+          "accueil",
+          "galerie",
+          "tarifs",
+          "rendez-vous",
+          "contact",
+          "admin"
+        ],
+        "userLogin": false
+      },
+      "iconDirection": "Flat geometric diamond/lozenge mark evoking a freshly striped asphalt surface — anthracite field with a single diagonal indigo stripe cutting through and a crisp white edge highlight, emblem style.",
+      "palette": {
+        "accents": [
+          "#1f232b",
+          "#aab0ff",
+          "#9aa3b2"
+        ],
+        "ground": "#16181d",
+        "ink": "#eef0f4",
+        "primary": "#6366f1"
+      },
+      "signatureMove": "Numbered job-spec sections with repeating indigo stripe bands as dividers, plus an omnipresent fixed bottom call-bar (click-to-call + booking) on mobile so the CTA never leaves the screen.",
+      "summary": "The site is structured like a freshly striped job sheet on new asphalt — anthracite ground, numbered spec sections (01–04), and painted indigo hazard-stripe bands doing the dividing and wayfinding work.",
+      "typography": "Barlow Condensed heavy uppercase display + Barlow body — a trades-grade, signage-like voice"
+    }
+  },
+  "promptHistory": [
+    {
+      "prompt": "Type de projet: Site Web\nClient: Pavage Diamand, nettoyage à pression et scellant d'asphalte.\n\nBut: Présenter les services de l'entreprise.\nPublic cible: Particuliers.\n\nFonctionnalités clés:\n- Galerie de photos\n- Tarifs et forfaits\n- Coordonnées de contact\n- Présentation de l'équipe et de la méthode de travail",
+      "timestamp": "2026-06-11T16:31:07.648Z",
+      "changeNotes": "Built the full Pavage Diamand PWA: bilingual FR/EN site with hero, numbered services/process/team/gallery sections, pricing packages, photo gallery with category filters, booking and contact forms (stored in DB with email notification fallback), an omnipresent click-to-call bar on mobile, and a complete admin backend (dashboard + CRUD modules for bookings, messages, services, packages, gallery, team and posts). Assumed standard business hours and seeded the owner's contact info as editable settings.\n\nAdmin enrichment: (1) Rebuilt the admin sidebar with sectioned navigation and inline SVG icons for every module. (2) Upgraded the dashboard with icon-driven stat cards, richer module cards (count + label + 'Gérer →'), panel headers with quick-view links, and a new functional 'Coordonnées & réglages' editor that writes to /api/admin/settings (business name, phone, email, service area, address, hours) with toast feedback. (3) Enhanced the shared admin CRUD shell (admin-shell.ejs): result count pill, polished empty-state with first-item CTA, live image preview on URL input, modal subtitle, Escape-to-close, and success/error toast notifications on create/update/delete. (4) Overhauled admin-styles.css for stronger contrast, rounded cards, visible focus-visible states, hover rows, toast component, and responsive settings grid. (5) Added focus-visible outlines to the public stylesheet for accessibility. Functional admin data (services, pricing packages with prices, gallery, team, posts, bookings, messages) remains fully create/edit/delete-able from each module page. All {{IMG_*}} placeholder tokens preserved byte-for-byte; routes/data flows and bilingual content untouched except passing settings to the dashboard view.",
+      "generationId": 1300,
+      "filesModified": [
+        "manifest.json",
+        "public/css/admin-styles.css",
+        "public/css/styles.css",
+        "routes.js",
+        "schema.sql",
+        "seed.js",
+        "views/admin-bookings.ejs",
+        "views/admin-contact_messages.ejs",
+        "views/admin-gallery.ejs",
+        "views/admin-posts.ejs",
+        "views/admin-pricing_packages.ejs",
+        "views/admin-services.ejs",
+        "views/admin-team_members.ejs",
+        "views/admin.ejs",
+        "views/contact.ejs",
+        "views/galerie.ejs",
+        "views/index.ejs",
+        "views/partials/admin-shell.ejs",
+        "views/partials/admin-sidebar.ejs",
+        "views/partials/footer.ejs",
+        "views/partials/header.ejs",
+        "views/rendez-vous.ejs",
+        "views/tarifs.ejs"
+      ]
+    }
+  ],
+  "apiVariables": [],
+  "createdAt": "2026-06-11T15:48:17.274Z",
+  "updatedAt": "2026-06-11T16:31:12.260Z",
+  "exportedAt": "2026-06-11T16:31:12.536Z"
+}

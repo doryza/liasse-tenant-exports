@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title><%= moduleLabel %> — Admin</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body class="admin-body">
+<%- include('admin-sidebar') %>
+<main class="admin-main">
+<header class="admin-topbar">
+<button class="sidebar-toggle" id="sbToggle" aria-label="Menu"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+<h1><%= moduleLabel %></h1>
+<a class="btn" href="." target="_blank">↗ Site</a>
+<button class="btn btn-primary" id="btnNew" type="button" style="background-color:#6366f1;color:#fff">+ Nouveau</button>
+</header>
+<div class="admin-content">
+<div class="list-meta">
+<input type="search" id="searchBox" class="admin-search" placeholder="Rechercher…">
+<span class="count-pill" id="countPill"></span>
+</div>
+<div class="table-wrap panel">
+<table class="admin-table"><thead id="thead"></thead><tbody id="tbody"></tbody></table>
+<div id="emptyMsg" class="empty-state" style="display:none">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 8v8M8 12h8"/></svg>
+<p>Aucun élément pour l’instant.</p>
+<button class="btn btn-primary" id="emptyNew" type="button" style="background-color:#6366f1;color:#fff">+ Ajouter le premier</button>
+</div>
+</div>
+</div>
+</main>
+<div class="modal-overlay" id="modal" style="display:none">
+<div class="modal">
+<h2 id="modalTitle">Élément</h2>
+<p class="modal-sub" id="modalSub">Remplissez les champs ci-dessous, puis enregistrez.</p>
+<form id="itemForm" onsubmit="return false"></form>
+<p class="form-err" id="formErr" style="display:none"></p>
+<div class="modal-actions"><button type="button" class="btn" id="btnCancel">Annuler</button><button type="button" class="btn btn-primary" id="btnSave" style="background-color:#6366f1;color:#fff">Enregistrer</button></div>
+</div>
+</div>
+<div class="toast-wrap" id="toastWrap"></div>
+<script>
+(function() {
+  var tg = document.getElementById('sbToggle');
+  var sb = document.getElementById('adminSidebar');
+  if (tg && sb) tg.addEventListener('click', function() { sb.classList.toggle('open'); });
+})();
+</script>
+<script>
+var MODULE_KEY = '<%- moduleKey %>';
+var FIELDS = <%- JSON.stringify(fields) %>;
+var ITEMS = <%- JSON.stringify(items) %>;
+var editingId = null;
+function esc(v) { return String(v === null || v === undefined ? '' : v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+function showToast(msg, isErr) {
+  var w = document.getElementById('toastWrap'); if (!w) return;
+  var t = document.createElement('div'); t.className = 'toast' + (isErr ? ' err' : ''); t.textContent = msg;
+  w.appendChild(t);
+  setTimeout(function() { t.style.opacity = '0'; setTimeout(function() { if (t.parentNode) t.parentNode.removeChild(t); }, 320); }, 2600);
+}
+var listCols = [];
+FIELDS.forEach(function(f) { if (listCols.length < 4 && f.type !== 'textarea' && f.type !== 'image') listCols.push(f); });
+var imgField = null;
+FIELDS.forEach(function(f) { if (!imgField && f.type === 'image') imgField = f; });
+function renderHead() {
+  var h = '<tr>';
+  if (imgField) h += '<th></th>';
+  listCols.forEach(function(f) { h += '<th>' + esc(f.label || f.name) + '</th>'; });
+  h += '<th class="ta-r">Actions</th></tr>';
+  document.getElementById('thead').innerHTML = h;
+}
+function cellVal(it, f) {
+  var v = it[f.name];
+  if (f.type === 'boolean') return (v === 1 || v === true || v === '1') ? '<span class="badge b-on">Oui</span>' : '<span class="badge">Non</span>';
+  if (v === null || v === undefined || v === '') return '<span class="mut">—</span>';
+  if (f.name === 'status') return '<span class="badge b-' + esc(v) + '">' + esc(v) + '</span>';
+  var s = String(v);
+  if (s.length > 48) s = s.slice(0, 48) + '…';
+  return esc(s);
+}
+function renderTable() {
+  var q = (document.getElementById('searchBox').value || '').toLowerCase();
+  var rows = ITEMS.filter(function(it) { return !q || JSON.stringify(it).toLowerCase().indexOf(q) !== -1; });
+  var html = '';
+  rows.forEach(function(it) {
+    html += '<tr>';
+    if (imgField) html += '<td>' + (it[imgField.name] ? '<img class="thumb" src="' + esc(it[imgField.name]) + '" alt="">' : '<span class="thumb thumb-empty"></span>') + '</td>';
+    listCols.forEach(function(f) { html += '<td>' + cellVal(it, f) + '</td>'; });
+    html += '<td class="ta-r"><button type="button" class="btn btn-sm" data-act="edit" data-id="' + it.id + '">Modifier</button> <button type="button" class="btn btn-sm btn-danger" data-act="del" data-id="' + it.id + '">Supprimer</button></td></tr>';
+  });
+  document.getElementById('tbody').innerHTML = html;
+  document.getElementById('emptyMsg').style.display = rows.length ? 'none' : 'block';
+  var cp = document.getElementById('countPill');
+  if (cp) cp.textContent = (q && rows.length !== ITEMS.length) ? (rows.length + ' sur ' + ITEMS.length + ' élément(s)') : (ITEMS.length + ' élément(s)');
+}
+function fieldInput(f, v) {
+  var val = (v === null || v === undefined) ? '' : v;
+  var ph = f.placeholder ? ' placeholder="' + esc(f.placeholder) + '"' : '';
+  if (f.type === 'textarea') return '<textarea name="' + f.name + '" rows="4"' + ph + '>' + esc(val) + '</textarea>';
+  if (f.type === 'boolean') { var on = (val === 1 || val === true || val === '1'); return '<label class="chk"><input type="checkbox" name="' + f.name + '"' + (on ? ' checked' : '') + '> Oui</label>'; }
+  if (f.type === 'select') { var o = '<select name="' + f.name + '">'; (f.options || []).forEach(function(op) { o += '<option value="' + esc(op) + '"' + (String(val) === String(op) ? ' selected' : '') + '>' + esc(op) + '</option>'; }); o += '</select>'; return o; }
+  if (f.type === 'number') return '<input type="number" name="' + f.name + '" value="' + esc(val) + '"' + (f.min !== undefined ? ' min="' + f.min + '"' : '') + (f.step !== undefined ? ' step="' + f.step + '"' : '') + ph + '>';
+  if (f.type === 'date') return '<input type="date" name="' + f.name + '" value="' + esc(val) + '">';
+  if (f.type === 'image') return '<input type="url" name="' + f.name + '" value="' + esc(val) + '" placeholder="https://…" oninput="var p=this.parentNode.querySelector(\'.img-prev\'); if(p){ if(this.value){p.src=this.value;p.style.display=\'block\';}else{p.style.display=\'none\';} }">' + '<img class="img-prev" src="' + esc(val) + '" alt="" style="' + (val ? '' : 'display:none') + '">';
+  if (f.type === 'email') return '<input type="email" name="' + f.name + '" value="' + esc(val) + '"' + ph + '>';
+  return '<input type="text" name="' + f.name + '" value="' + esc(val) + '"' + ph + (f.maxLength ? ' maxlength="' + f.maxLength + '"' : '') + '>';
+}
+function openModal(item) {
+  editingId = item ? item.id : null;
+  document.getElementById('modalTitle').textContent = item ? 'Modifier l’élément' : 'Nouvel élément';
+  document.getElementById('modalSub').textContent = item ? 'Modifiez les champs ci-dessous, puis enregistrez.' : 'Remplissez les champs ci-dessous, puis enregistrez.';
+  var html = '';
+  FIELDS.forEach(function(f) {
+    var dv = item ? item[f.name] : (f.default !== undefined ? f.default : '');
+    html += '<div class="ffield"><label>' + esc(f.label || f.name) + (f.required ? ' *' : '') + '</label>' + fieldInput(f, dv) + (f.description ? '<small>' + esc(f.description) + '</small>' : '') + '</div>';
+  });
+  document.getElementById('itemForm').innerHTML = html;
+  document.getElementById('formErr').style.display = 'none';
+  document.getElementById('modal').style.display = 'flex';
+}
+function closeModal() { document.getElementById('modal').style.display = 'none'; editingId = null; }
+async function reload() {
+  try {
+    var r = await fetch('api/admin/' + MODULE_KEY);
+    var d = await r.json();
+    if (d && d[MODULE_KEY]) { ITEMS = d[MODULE_KEY]; renderTable(); }
+  } catch (e) {}
+}
+async function save() {
+  var form = document.getElementById('itemForm');
+  var data = {};
+  var missing = null;
+  FIELDS.forEach(function(f) {
+    var el = form.elements[f.name];
+    if (!el) return;
+    if (f.type === 'boolean') data[f.name] = el.checked;
+    else data[f.name] = el.value;
+    if (f.required && !String(data[f.name] === true ? 'x' : (data[f.name] || '')).trim()) missing = f.label || f.name;
+  });
+  var errEl = document.getElementById('formErr');
+  if (missing) { errEl.textContent = 'Champ requis : ' + missing; errEl.style.display = 'block'; return; }
+  var btn = document.getElementById('btnSave');
+  btn.disabled = true;
+  try {
+    var url = 'api/admin/' + MODULE_KEY + (editingId ? '/' + editingId : '');
+    var wasEditing = !!editingId;
+    var r = await fetch(url, { method: editingId ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+    var d = await r.json();
+    if (!r.ok) { errEl.textContent = d.error || 'Erreur lors de l’enregistrement'; errEl.style.display = 'block'; btn.disabled = false; return; }
+    closeModal();
+    await reload();
+    showToast(wasEditing ? 'Modifications enregistrées ✓' : 'Élément ajouté ✓');
+  } catch (e) { errEl.textContent = 'Erreur de connexion'; errEl.style.display = 'block'; }
+  btn.disabled = false;
+}
+async function del(id) {
+  if (!confirm('Supprimer cet élément ? Cette action est irréversible.')) return;
+  try {
+    var r = await fetch('api/admin/' + MODULE_KEY + '/' + id, { method: 'DELETE' });
+    if (r.ok) { await reload(); showToast('Élément supprimé'); }
+    else showToast('Suppression impossible', true);
+  } catch (e) { showToast('Erreur de connexion', true); }
+}
+document.getElementById('btnNew').addEventListener('click', function() { openModal(null); });
+var emptyNewBtn = document.getElementById('emptyNew');
+if (emptyNewBtn) emptyNewBtn.addEventListener('click', function() { openModal(null); });
+document.getElementById('btnCancel').addEventListener('click', closeModal);
+document.getElementById('btnSave').addEventListener('click', save);
+document.getElementById('searchBox').addEventListener('input', renderTable);
+document.getElementById('tbody').addEventListener('click', function(ev) {
+  var b = ev.target.closest('button[data-act]');
+  if (!b) return;
+  var id = Number(b.getAttribute('data-id'));
+  if (b.getAttribute('data-act') === 'edit') {
+    var it = null;
+    ITEMS.forEach(function(x) { if (x.id === id) it = x; });
+    if (it) openModal(it);
+  } else { del(id); }
+});
+document.getElementById('modal').addEventListener('click', function(ev) { if (ev.target === this) closeModal(); });
+document.addEventListener('keydown', function(ev) { if (ev.key === 'Escape') closeModal(); });
+renderHead();
+renderTable();
+</script>
+</body>
+</html>
