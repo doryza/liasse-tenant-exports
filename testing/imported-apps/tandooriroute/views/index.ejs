@@ -45,7 +45,6 @@
           </div>
           <% if (m.note) { %><span class="slide-note">🕐 <%= lang === 'en' ? 'Lunch only · 11:30–15:00' : 'Midi seulement · 11h30–15h00' %></span><% } %>
           <% if (m.description) { %><p class="desc"><%= m.description %></p><% } %>
-          <a href="<%= ORDER_URL %>" class="btn btn-primary btn-slide-order"><%= lang === 'en' ? 'Order' : 'Commander' %> →</a>
         </div>
       </article>
       <% }); %>
@@ -64,7 +63,7 @@
       <h2><%= lang === 'en' ? 'Hungry? It only takes a minute.' : 'Une faim de tandoor? Ça prend une minute.' %></h2>
       <p><%= lang === 'en' ? 'Order for pickup directly from the restaurant — fresh from the tandoor.' : 'Commandez pour emporter directement du restaurant — tout droit sorti du tandoor.' %></p>
     </div>
-    <a href="<%= ORDER_URL %>" class="btn btn-primary btn-order"><%= lang === 'en' ? 'Order now' : 'Commander maintenant' %> →</a>
+    <a href="<%= ORDER_URL %>" target="_blank" rel="noopener" class="btn btn-primary btn-order"><%= lang === 'en' ? 'Order now' : 'Commander maintenant' %> →</a>
     <% if (typeof platforms !== 'undefined' && platforms && platforms.length > 0) { %>
     <div class="order-band-platforms">
       <span><%= lang === 'en' ? 'Also on' : 'Aussi sur' %></span>
@@ -76,7 +75,7 @@
   </div>
 </section>
 
-<a href="<%= ORDER_URL %>" class="sticky-order-cta"><%= lang === 'en' ? 'Order now' : 'Commander' %> →</a>
+<a href="<%= ORDER_URL %>" target="_blank" rel="noopener" class="sticky-order-cta"><%= lang === 'en' ? 'Order now' : 'Commander' %> →</a>
 
 <script>
 (function(){
