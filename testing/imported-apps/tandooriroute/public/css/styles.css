@@ -447,13 +447,10 @@ textarea.form-control { resize: vertical; min-height: 120px; }
 .squeeze .section { padding: 2.25rem 0; }
 .squeeze .section-title { margin-bottom: 0.35rem; }
 .squeeze .section-sub { margin-bottom: 1.4rem; }
-.squeeze .hero.hero-squeeze { min-height: 400px; }
-.squeeze .hero-squeeze .hero-inner { padding: 2.75rem 1rem 2.5rem; }
-.squeeze .hero-squeeze p { margin-bottom: 1.4rem; }
+.squeeze .hero.hero-squeeze { min-height: 420px; align-items: flex-end; }
 .squeeze .site-footer { margin-top: 0; }
 @media (max-width: 720px) {
-  .squeeze .hero.hero-squeeze { min-height: 340px; }
-  .squeeze .hero-squeeze h1 { font-size: 2rem; }
+  .squeeze .hero.hero-squeeze { min-height: 390px; }
 }
 
 .btn-order {
@@ -462,13 +459,65 @@ textarea.form-control { resize: vertical; min-height: 120px; }
   box-shadow: 0 8px 26px rgba(255,111,26,0.35);
 }
 
-/* ---- Hero slogan — the only text over the image ---- */
+/* ---- Hero banner — hanging pennant with logo + name ---- */
+.hero-banner {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  padding: 2px;
+  background: linear-gradient(180deg, rgba(245,165,36,0.9) 0%, rgba(255,111,26,0.6) 100%);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 26px), 50% 100%, 0 calc(100% - 26px));
+  filter: drop-shadow(0 12px 28px rgba(0,0,0,0.55));
+  animation: banner-drop 0.9s cubic-bezier(0.2, 0.9, 0.3, 1.12) both;
+}
+.hero-banner-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.65rem;
+  min-width: 218px;
+  padding: 1.5rem 1.9rem 2.6rem;
+  background: linear-gradient(180deg, rgba(14,10,7,0.97) 0%, rgba(26,17,9,0.96) 100%);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 25px), 50% calc(100% - 1px), 0 calc(100% - 25px));
+}
+.hero-banner-logo { width: 64px; height: 64px; object-fit: contain; border-radius: 12px; }
+.hero-banner-divider {
+  width: 46px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--brand), transparent);
+}
+.hero-banner-name {
+  font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  font-style: italic;
+  font-weight: 600;
+  font-size: 1.18rem;
+  line-height: 1.2;
+  text-align: center;
+  max-width: 210px;
+  background: linear-gradient(135deg, #fff8ec 0%, var(--brand-light) 50%, var(--brand) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+@keyframes banner-drop {
+  from { opacity: 0; transform: translateX(-50%) translateY(-32px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+@media (max-width: 720px) {
+  .hero-banner-inner { min-width: 178px; padding: 1.1rem 1.3rem 2.2rem; }
+  .hero-banner-logo { width: 52px; height: 52px; }
+  .hero-banner-name { font-size: 1.02rem; }
+}
+
+/* ---- Hero slogan — lowered, the only text over the image ---- */
 .hero-slogan {
   position: relative;
   z-index: 1;
   width: 100%;
   margin: 0;
-  padding: 0 1rem;
+  padding: 0 1rem 2.2rem;
   text-align: center;
   font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
   font-style: italic;
