@@ -10,7 +10,7 @@
 -- upsert would silently clobber operator overrides on every re-render.
 
 -- admin_settings (seed-only — preserve operator overrides on re-runs)
-INSERT INTO admin_settings (key, value) VALUES ('_p_hero_image_url', 'https://res.cloudinary.com/duhp69meg/image/upload/v1781231945/Generated_Image_June_11_2026_-_10_38PM_uj62i1.jpg')
+INSERT INTO admin_settings (key, value) VALUES ('_p_hero_image_url', 'https://res.cloudinary.com/duhp69meg/image/upload/f_auto,q_auto,w_1280,c_limit/v1781231945/Generated_Image_June_11_2026_-_10_38PM_uj62i1.jpg')
   ON CONFLICT (key) DO NOTHING;
 INSERT INTO admin_settings (key, value) VALUES ('_p_about_image_url', 'https://res.cloudinary.com/duhp69meg/image/upload/v1779561488/tandooriroute/site/about_1779561488090.png')
   ON CONFLICT (key) DO NOTHING;
@@ -38,9 +38,21 @@ UPDATE posts SET image_url = 'https://res.cloudinary.com/duhp69meg/image/upload/
 -- authentic Indian & Pakistani cuisine + new hero image. UPDATEs are
 -- guarded by the OLD value so this whole file stays idempotent on
 -- re-materialization and never clobbers later operator overrides.
-UPDATE admin_settings SET value = 'https://res.cloudinary.com/duhp69meg/image/upload/v1781231945/Generated_Image_June_11_2026_-_10_38PM_uj62i1.jpg'
+UPDATE admin_settings SET value = 'https://res.cloudinary.com/duhp69meg/image/upload/f_auto,q_auto,w_1280,c_limit/v1781231945/Generated_Image_June_11_2026_-_10_38PM_uj62i1.jpg'
   WHERE key = '_p_hero_image_url' AND value = 'https://res.cloudinary.com/duhp69meg/image/upload/v1779561489/tandooriroute/site/hero_1779561488508.png';
+-- 2026-06-12: the live row actually held a later platform-set hero (verified
+-- on the live page), so the guard above missed — match that value too.
+UPDATE admin_settings SET value = 'https://res.cloudinary.com/duhp69meg/image/upload/f_auto,q_auto,w_1280,c_limit/v1781231945/Generated_Image_June_11_2026_-_10_38PM_uj62i1.jpg'
+  WHERE key = '_p_hero_image_url' AND value = 'https://res.cloudinary.com/duhp69meg/image/upload/f_auto,q_auto,w_1280,c_limit/v1781139896/subscriber_pwa_content/tandooriroute/hweqemxaitoaolkacjcc.jpg';
 UPDATE admin_settings SET value = 'Cuisine indienne et pakistanaise authentique à Blainville. Recettes traditionnelles, ingrédients de qualité et plats préparés à la commande.'
   WHERE key = 'footer_intro_fr' AND value = 'Votre route vers la saveur. Cuisine indienne authentique, tandoor au feu de bois et épices fraîches — au cœur de Blainville.';
 UPDATE admin_settings SET value = 'Authentic Indian and Pakistani cuisine in Blainville. Traditional recipes, quality ingredients and made-to-order dishes.'
   WHERE key = 'footer_intro_en' AND value = 'Your route to flavor. Authentic Indian cuisine, wood-fired tandoor and fresh spices — in the heart of Blainville.';
+-- 2026-06-12: live footer renders the t.hero_subtitle fallback, i.e. the
+-- footer_intro_* rows never existed in the live DB (seed.js only runs on
+-- first install). Insert them with the new copy; DO NOTHING keeps any
+-- future operator-set value safe on re-runs.
+INSERT INTO admin_settings (key, value) VALUES ('footer_intro_fr', 'Cuisine indienne et pakistanaise authentique à Blainville. Recettes traditionnelles, ingrédients de qualité et plats préparés à la commande.')
+  ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('footer_intro_en', 'Authentic Indian and Pakistani cuisine in Blainville. Traditional recipes, quality ingredients and made-to-order dishes.')
+  ON CONFLICT (key) DO NOTHING;
