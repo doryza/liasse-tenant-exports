@@ -441,7 +441,7 @@ textarea.form-control { resize: vertical; min-height: 120px; }
   transform: translateX(-50%);
   z-index: 2;
   padding: 2px;
-  background: linear-gradient(180deg, rgba(245,165,36,0.9) 0%, rgba(255,111,26,0.6) 100%);
+  background: linear-gradient(180deg, rgba(245,165,36,0.9) 0%, rgba(255,111,26,0) 100%);
   clip-path: polygon(0 0, 100% 0, 100% calc(100% - 26px), 50% 100%, 0 calc(100% - 26px));
   filter: drop-shadow(0 12px 28px rgba(0,0,0,0.55));
   animation: banner-drop 0.9s cubic-bezier(0.2, 0.9, 0.3, 1.12) both;
@@ -453,7 +453,7 @@ textarea.form-control { resize: vertical; min-height: 120px; }
   gap: 0.65rem;
   min-width: 218px;
   padding: 1.5rem 1.9rem 2.6rem;
-  background: linear-gradient(180deg, rgba(14,10,7,0.97) 0%, rgba(26,17,9,0.96) 100%);
+  background: linear-gradient(180deg, #000 0%, rgba(0,0,0,0.55) 60%, rgba(0,0,0,0) 100%);
   clip-path: polygon(0 0, 100% 0, 100% calc(100% - 25px), 50% calc(100% - 1px), 0 calc(100% - 25px));
 }
 .hero-banner-logo { width: 64px; height: 64px; object-fit: contain; border-radius: 12px; }
