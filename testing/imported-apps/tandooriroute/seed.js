@@ -11,8 +11,8 @@ module.exports = async function(db, services) {
     ['hours', 'Mar-Jeu : 11h30 - 21h\nVen-Sam : 11h30 - 22h\nDim : 12h - 21h\nLun : Fermé'],
     ['about_text_fr', "Tandoori Route, c'est l'aventure d'une famille passionnée qui a choisi Blainville pour faire découvrir aux Basses-Laurentides les saveurs authentiques de la cuisine indienne. Nos plats sortent tout droit du tandoor — ce four d'argile traditionnel qui cuit à 480°C et donne à nos viandes leur croûte fumée et leur tendreté incomparable. Du Biryani au poulet mariné 24 heures aux currys mijotés avec nos mélanges d'épices maison, chaque plat est une étape sur votre route vers la saveur. Premier restaurant indien de la région — venez découvrir."],
     ['about_text_en', "Tandoori Route is the story of a passionate family who chose Blainville to bring authentic Indian flavors to the Basses-Laurentides. Our dishes come straight out of the tandoor — the traditional clay oven that roars at 480°C and gives our meats their smoky crust and unmatched tenderness. From 24-hour marinated Chicken Biryani to curries simmered with our house spice blends, every plate is a stop on your route to flavor. The first Indian restaurant in the area — come and discover."],
-    ['footer_intro_fr', "Votre route vers la saveur. Cuisine indienne authentique, tandoor au feu de bois et épices fraîches — au cœur de Blainville."],
-    ['footer_intro_en', "Your route to flavor. Authentic Indian cuisine, wood-fired tandoor and fresh spices — in the heart of Blainville."]
+    ['footer_intro_fr', "Cuisine indienne et pakistanaise authentique à Blainville. Recettes traditionnelles, ingrédients de qualité et plats préparés à la commande."],
+    ['footer_intro_en', "Authentic Indian and Pakistani cuisine in Blainville. Traditional recipes, quality ingredients and made-to-order dishes."]
   ];
   for (const [k, v] of settingsDefault) {
     await db.run('INSERT INTO admin_settings (key, value) VALUES ($1, $2) ON CONFLICT (key) DO NOTHING', [k, v]);

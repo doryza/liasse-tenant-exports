@@ -10,7 +10,7 @@
 -- upsert would silently clobber operator overrides on every re-render.
 
 -- admin_settings (seed-only — preserve operator overrides on re-runs)
-INSERT INTO admin_settings (key, value) VALUES ('_p_hero_image_url', 'https://res.cloudinary.com/duhp69meg/image/upload/v1779561489/tandooriroute/site/hero_1779561488508.png')
+INSERT INTO admin_settings (key, value) VALUES ('_p_hero_image_url', 'https://res.cloudinary.com/duhp69meg/image/upload/v1781231945/Generated_Image_June_11_2026_-_10_38PM_uj62i1.jpg')
   ON CONFLICT (key) DO NOTHING;
 INSERT INTO admin_settings (key, value) VALUES ('_p_about_image_url', 'https://res.cloudinary.com/duhp69meg/image/upload/v1779561488/tandooriroute/site/about_1779561488090.png')
   ON CONFLICT (key) DO NOTHING;
@@ -33,3 +33,14 @@ UPDATE menu_items SET image_url = 'https://res.cloudinary.com/duhp69meg/image/up
 UPDATE posts SET image_url = 'https://res.cloudinary.com/duhp69meg/image/upload/v1779561532/tandooriroute/posts/post_opening_1779561532294.png' WHERE title = 'Tandoori Route ouvre ses portes à Blainville !';
 UPDATE posts SET image_url = 'https://res.cloudinary.com/duhp69meg/image/upload/v1779561537/tandooriroute/posts/post_marinade_1779561537213.png' WHERE title = 'Notre Biryani au poulet : 24 heures de patience';
 UPDATE posts SET image_url = 'https://res.cloudinary.com/duhp69meg/image/upload/v1779561534/tandooriroute/posts/post_social_1779561533584.png' WHERE title = 'Suivez-nous sur Facebook et Instagram';
+
+-- 2026-06-11 copy refresh: move away from tandoor-focused wording toward
+-- authentic Indian & Pakistani cuisine + new hero image. UPDATEs are
+-- guarded by the OLD value so this whole file stays idempotent on
+-- re-materialization and never clobbers later operator overrides.
+UPDATE admin_settings SET value = 'https://res.cloudinary.com/duhp69meg/image/upload/v1781231945/Generated_Image_June_11_2026_-_10_38PM_uj62i1.jpg'
+  WHERE key = '_p_hero_image_url' AND value = 'https://res.cloudinary.com/duhp69meg/image/upload/v1779561489/tandooriroute/site/hero_1779561488508.png';
+UPDATE admin_settings SET value = 'Cuisine indienne et pakistanaise authentique à Blainville. Recettes traditionnelles, ingrédients de qualité et plats préparés à la commande.'
+  WHERE key = 'footer_intro_fr' AND value = 'Votre route vers la saveur. Cuisine indienne authentique, tandoor au feu de bois et épices fraîches — au cœur de Blainville.';
+UPDATE admin_settings SET value = 'Authentic Indian and Pakistani cuisine in Blainville. Traditional recipes, quality ingredients and made-to-order dishes.'
+  WHERE key = 'footer_intro_en' AND value = 'Your route to flavor. Authentic Indian cuisine, wood-fired tandoor and fresh spices — in the heart of Blainville.';

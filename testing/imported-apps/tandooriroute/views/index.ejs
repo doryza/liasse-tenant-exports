@@ -1,6 +1,80 @@
 <%- include('partials/header') %>
 <% var ORDER_URL = 'https://tandoori-route-blain.tapavis.com/order'; %>
 <% var CAT_EMOJI = { 'Poulet': '🍗', 'Agneau': '🍖', 'Végétarien': '🥬', 'À la carte': '🥟', 'Poutine': '🍟', 'Dessert': '🍮', 'Chai / Boissons': '☕', 'Midi Special Thali': '🍱', 'Wraps': '🌯' }; %>
+<% var SPLASH_LOGO = (typeof settings!=='undefined' && settings._p_nav_logo_url) ? settings._p_nav_logo_url : (typeof appIconUrl !== 'undefined' ? appIconUrl : ''); %>
+
+<% if (SPLASH_LOGO) { %>
+<style>
+  #logoSplash {
+    position: fixed; inset: 0; z-index: 9999;
+    display: flex; align-items: center; justify-content: center;
+    background: #0a0806;
+    transition: background 0.55s ease, opacity 0.45s ease;
+  }
+  #logoSplash img {
+    width: 112px; height: 112px; object-fit: contain; border-radius: 12px;
+    will-change: transform;
+    animation: splash-pulse 1.5s ease-in-out infinite;
+  }
+  #logoSplash.splash-flying { background: transparent; }
+  #logoSplash.splash-flying img {
+    animation: none;
+    transition: transform 0.8s cubic-bezier(0.25, 0.8, 0.3, 1.05);
+  }
+  #logoSplash.splash-fade { opacity: 0; pointer-events: none; }
+  body.splash-active .hero-banner-logo { visibility: hidden; }
+  @keyframes splash-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.07); } }
+  @media (prefers-reduced-motion: reduce) { #logoSplash img { animation: none; } }
+</style>
+<div id="logoSplash" aria-hidden="true"><img src="<%= SPLASH_LOGO %>" alt=""></div>
+<script>
+(function(){
+  var splash = document.getElementById('logoSplash');
+  if (!splash) return;
+  document.body.classList.add('splash-active');
+  var img = splash.querySelector('img');
+  var started = Date.now();
+  var done = false;
+  var MIN_SHOW = 700;   // never flash the splash for less than this
+  var LOAD_CAP = 2500;  // fly even if window load is still pending
+
+  function cleanup() {
+    document.body.classList.remove('splash-active');
+    if (splash.parentNode) splash.parentNode.removeChild(splash);
+  }
+  // No-animation exit: fade the whole overlay, then reveal the real logo.
+  function finish() {
+    if (done) return; done = true;
+    splash.classList.add('splash-fade');
+    setTimeout(cleanup, 500);
+  }
+  function fly() {
+    if (done) return;
+    var target = document.querySelector('.hero-banner-logo');
+    var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    // Target can be display:none (banner logo onerror) — fall back to a plain fade.
+    if (reduced || !target || target.offsetParent === null) { finish(); return; }
+    done = true;
+    var tr = target.getBoundingClientRect();
+    var ir = img.getBoundingClientRect();
+    var dx = (tr.left + tr.width / 2) - (ir.left + ir.width / 2);
+    var dy = (tr.top + tr.height / 2) - (ir.top + ir.height / 2);
+    var scale = tr.width / ir.width;
+    splash.classList.add('splash-flying');
+    void img.offsetWidth;
+    img.style.transform = 'translate(' + dx + 'px,' + dy + 'px) scale(' + scale + ')';
+    setTimeout(cleanup, 850);
+  }
+  function schedule() {
+    setTimeout(fly, Math.max(0, MIN_SHOW - (Date.now() - started)));
+  }
+  img.addEventListener('error', finish);
+  if (document.readyState === 'complete') schedule();
+  else { window.addEventListener('load', schedule); setTimeout(fly, LOAD_CAP); }
+  setTimeout(finish, 4000); // hard safety net — never trap the page behind the splash
+})();
+</script>
+<% } %>
 
 <section class="hero hero-squeeze">
   <img src="<%= (typeof settings!=='undefined' && settings._p_hero_image_url) ? settings._p_hero_image_url : 'https://placehold.co/1600x900/0a0806/F5A524/png?text=Tandoori+Route' %>" alt="<%= t.brand %>" class="hero-img">
@@ -12,7 +86,7 @@
       <span class="hero-banner-name"><%= settings.business_name || t.brand %></span>
     </div>
   </div>
-  <h1 class="hero-slogan"><%= lang === 'en' ? 'The route to flavor' : 'La route vers la saveur' %></h1>
+  <h1 class="hero-slogan"><%= lang === 'en' ? 'Your Route to Flavor' : 'Votre route vers les saveurs' %></h1>
 </section>
 
 <section class="section squeeze-section" id="menu">
@@ -60,8 +134,8 @@
 <section class="section squeeze-section alt-section">
   <div class="container order-band">
     <div class="order-band-text">
-      <h2><%= lang === 'en' ? 'Hungry? It only takes a minute.' : 'Une faim de tandoor? Ça prend une minute.' %></h2>
-      <p><%= lang === 'en' ? 'Order for pickup directly from the restaurant — fresh from the tandoor.' : 'Commandez pour emporter directement du restaurant — tout droit sorti du tandoor.' %></p>
+      <h2><%= lang === 'en' ? 'Your next meal is waiting.' : 'Votre prochain repas vous attend.' %></h2>
+      <p><%= lang === 'en' ? 'Flavor-rich curries, fresh naan and traditional recipes made with passion.' : 'Currys riches en saveurs, naan frais et recettes traditionnelles préparés avec passion.' %></p>
     </div>
     <a href="<%= ORDER_URL %>" target="_blank" rel="noopener" class="btn btn-primary btn-order"><%= lang === 'en' ? 'Order now' : 'Commander maintenant' %> →</a>
     <% if (typeof platforms !== 'undefined' && platforms && platforms.length > 0) { %>
