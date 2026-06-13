@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#256B42">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title><%= typeof pageTitle!=='undefined'?pageTitle:settings.business_name %> · Mauricie</title>
+<meta name="description" content="<%= typeof pageDesc!=='undefined'?pageDesc:(settings.tagline||'') %>">
+<meta property="og:type" content="website">
+<meta property="og:title" content="<%= settings.business_name %>">
+<meta property="og:description" content="<%= settings.tagline||'' %>">
+<% if(settings._p_hero_image_url){ %><meta property="og:image" content="<%= settings._p_hero_image_url %>"><% } %>
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;600;700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="public/css/styles.css">
+</head>
+<body>
+<div class="seasonbar">
+<a class="seg ete <%= season.key==='ete'?'active':'' %>" href="services">Pelouse · Belle saison</a>
+<a class="seg automne <%= season.key==='automne'?'active':'' %>" href="services">Feuilles · Automne</a>
+<a class="seg hiver <%= season.key==='hiver'?'active':'' %>" href="services">Neige · Hiver</a>
+</div>
+<header class="topbar">
+<div class="container nav">
+<a class="brand" href=".">
+<img class="brand-mark" src="<%= (settings._p_nav_logo_url)?settings._p_nav_logo_url:((typeof appIconUrl!=='undefined'&&appIconUrl)?appIconUrl:'') %>" alt="<%= settings.business_name %>" onerror="this.style.display='none'">
+<span class="brand-name"><%= settings.business_name %></span>
+</a>
+<nav class="nav-links">
+<a href="."><%= t.nav_home %></a>
+<a href="services"><%= t.nav_services %></a>
+<a href="boutique"><%= t.nav_shop %></a>
+<a href="conseils"><%= t.nav_tips %></a>
+<a href="contact"><%= t.nav_contact %></a>
+</nav>
+<div class="nav-actions">
+<a class="cart-link" href="panier" aria-label="Panier">
+<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 6h15l-1.5 9h-12z"/><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M6 6 5 3H2"/></svg>
+<span class="cart-badge" data-cart-count style="display:none">0</span>
+</a>
+<a href="#" class="ghost-link" data-login-btn><%= t.login %></a>
+<a href="mes-commandes" class="ghost-link" data-auth-only style="display:none"><%= t.nav_orders %></a>
+<a href="soumission" class="btn btn-orange nav-quote" style="background-color:#E2701E;color:#fff"><%= t.nav_quote %></a>
+<button id="burger" class="burger" aria-label="Menu"><span></span><span></span><span></span></button>
+</div>
+</div>
+<div id="mobileMenu" class="mobile-menu">
+<a href="."><%= t.nav_home %></a>
+<a href="services"><%= t.nav_services %></a>
+<a href="boutique"><%= t.nav_shop %></a>
+<a href="conseils"><%= t.nav_tips %></a>
+<a href="rendez-vous"><%= t.nav_booking %></a>
+<a href="soumission"><%= t.nav_quote %></a>
+<a href="contact"><%= t.nav_contact %></a>
+<a href="panier"><%= t.nav_cart %></a>
+<a href="#" data-login-btn><%= t.login %></a>
+<a href="mes-commandes" data-auth-only style="display:none"><%= t.nav_orders %></a>
+</div>
+</header>
+<main>

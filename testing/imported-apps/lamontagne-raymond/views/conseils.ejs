@@ -1,0 +1,12 @@
+<%- include('partials/header') %>
+<section class="page-head"><div class="container"><span class="eyebrow">Conseils saisonniers</span><h1 class="display">Astuces d'entretien pour la Mauricie</h1></div></section>
+<section class="section" style="padding-top:20px"><div class="container">
+<% if(typeof posts!=='undefined' && posts.length){ %>
+<div class="tips-grid">
+<% posts.forEach(function(p){ %>
+<article class="tip-card"><a href="conseils/<%= p.id %>"><img src="<%= p.image_url||'https://placehold.co/800x500/e4efe7/256b42/png?text=Conseil' %>" alt="<%= p.title %>"></a><div class="tip-body"><span class="meta"><%= p.category||'Conseil' %><% if(p.season){ %> · <%= p.season %><% } %></span><h3><a href="conseils/<%= p.id %>"><%= p.title %></a></h3><p class="muted" style="font-size:.92rem"><%= truncate(p.content,110) %></p><a class="more" href="conseils/<%= p.id %>">Lire l'article →</a></div></article>
+<% }); %>
+</div>
+<% } else { %><div class="empty"><p>Aucun conseil publié pour l'instant.</p></div><% } %>
+</div></section>
+<%- include('partials/footer') %>

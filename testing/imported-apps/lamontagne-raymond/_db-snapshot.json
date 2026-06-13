@@ -1,0 +1,321 @@
+{
+  "exportedAt": "2026-06-13T04:21:13.679Z",
+  "tables": {
+    "admin_invites": {
+      "columns": [
+        "id",
+        "email",
+        "token",
+        "role",
+        "status",
+        "invited_by",
+        "expires_at",
+        "accepted_at",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_users": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "password_hash",
+        "display_name",
+        "role",
+        "active",
+        "activation_token",
+        "invited_by",
+        "invite_token",
+        "invite_expires_at",
+        "last_login_at",
+        "is_active",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_webauthn_credentials": {
+      "columns": [
+        "id",
+        "admin_user_id",
+        "credential_id",
+        "public_key",
+        "counter",
+        "device_name",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_settings": {
+      "columns": [
+        "key",
+        "value",
+        "updated_at"
+      ],
+      "totalRows": 37,
+      "sampleRows": [
+        {
+          "key": "tagline",
+          "value": "Entretien de terrain en Mauricie, à chaque saison.",
+          "updated_at": "2026-06-13T04:20:11.417Z"
+        },
+        {
+          "key": "hero_eyebrow",
+          "value": "Entreprise locale · Mauricie",
+          "updated_at": "2026-06-13T04:20:11.422Z"
+        },
+        {
+          "key": "hero_title",
+          "value": "Votre terrain impeccable, en toute saison",
+          "updated_at": "2026-06-13T04:20:11.426Z"
+        },
+        {
+          "key": "hero_subtitle",
+          "value": "Pelouse, feuilles et déneigement — un seul partenaire local, fiable et abordable, pour Shawinigan, Grand-Mère, Trois-Rivières et Nicolet.",
+          "updated_at": "2026-06-13T04:20:11.430Z"
+        },
+        {
+          "key": "about_title",
+          "value": "Une équipe d'ici, du printemps à l'hiver",
+          "updated_at": "2026-06-13T04:20:11.434Z"
+        },
+        {
+          "key": "about_text",
+          "value": "Lamontagne Raymond est une jeune entreprise mauricienne fondée sur une idée simple : offrir un entretien de terrain fiable, soigné et abordable, du premier gazon du printemps à la dernière bordée de neige. Nous habitons la région, nous connaissons son climat, et nous traitons chaque propriété comme la nôtre.",
+          "updated_at": "2026-06-13T04:20:11.439Z"
+        },
+        {
+          "key": "cta_title",
+          "value": "Obtenez votre soumission gratuite",
+          "updated_at": "2026-06-13T04:20:11.443Z"
+        },
+        {
+          "key": "cta_text",
+          "value": "Décrivez votre terrain et recevez une estimation sans engagement en moins de 24 heures.",
+          "updated_at": "2026-06-13T04:20:11.447Z"
+        },
+        {
+          "key": "service_area_note",
+          "value": "Desservant Shawinigan, Grand-Mère, Trois-Rivières et Nicolet.",
+          "updated_at": "2026-06-13T04:20:11.452Z"
+        },
+        {
+          "key": "business_hours",
+          "value": "Lun au ven 7h à 18h · Sam 8h à 14h",
+          "updated_at": "2026-06-13T04:20:11.456Z"
+        }
+      ]
+    },
+    "site_visits": {
+      "columns": [
+        "id",
+        "path",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "posts": {
+      "columns": [
+        "id",
+        "title",
+        "content",
+        "image_url",
+        "category",
+        "season",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "services": {
+      "columns": [
+        "id",
+        "name",
+        "description",
+        "price",
+        "price_unit",
+        "season",
+        "image_url",
+        "featured",
+        "sort_order",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 6,
+      "sampleRows": [
+        {
+          "id": 1,
+          "name": "Tonte de pelouse",
+          "description": "Tonte hebdomadaire ou aux deux semaines, bordures et coupe-herbe inclus. Un gazon propre et nivelé à chaque visite.",
+          "price": 35,
+          "price_unit": "par visite",
+          "season": "Été",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781322916/tapavis_tenant_lamontagne-raymond/build_lamontagne-raymond_1781322916813.png",
+          "featured": 1,
+          "sort_order": 1,
+          "created_at": "2026-06-13T04:20:11.490Z",
+          "updated_at": "2026-06-13T04:20:11.490Z"
+        },
+        {
+          "id": 2,
+          "name": "Entretien complet et fertilisation",
+          "description": "Programme saisonnier complet : fertilisation, contrôle des mauvaises herbes et aération pour un gazon dense et bien vert toute la saison.",
+          "price": null,
+          "price_unit": "sur soumission",
+          "season": "Toutes saisons",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781322916/tapavis_tenant_lamontagne-raymond/build_lamontagne-raymond_1781322916813.png",
+          "featured": 1,
+          "sort_order": 2,
+          "created_at": "2026-06-13T04:20:11.496Z",
+          "updated_at": "2026-06-13T04:20:11.496Z"
+        },
+        {
+          "id": 3,
+          "name": "Ramassage de feuilles",
+          "description": "Ramassage, soufflage et disposition des feuilles à l'automne. On laisse votre terrain net et prêt pour l'hiver.",
+          "price": 89,
+          "price_unit": "à partir de",
+          "season": "Automne",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781322913/tapavis_tenant_lamontagne-raymond/build_lamontagne-raymond_1781322913648.png",
+          "featured": 1,
+          "sort_order": 3,
+          "created_at": "2026-06-13T04:20:11.500Z",
+          "updated_at": "2026-06-13T04:20:11.500Z"
+        },
+        {
+          "id": 4,
+          "name": "Déneigement résidentiel",
+          "description": "Déneigement d'entrée pour la saison complète, avec passage prioritaire après chaque bordée de neige.",
+          "price": null,
+          "price_unit": "forfait saisonnier",
+          "season": "Hiver",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781322916/tapavis_tenant_lamontagne-raymond/build_lamontagne-raymond_1781322916569.png",
+          "featured": 1,
+          "sort_order": 4,
+          "created_at": "2026-06-13T04:20:11.504Z",
+          "updated_at": "2026-06-13T04:20:11.504Z"
+        },
+        {
+          "id": 5,
+          "name": "Déneigement commercial",
+          "description": "Stationnements et accès commerciaux dégagés tôt le matin, épandage d'abrasif inclus pour la sécurité de vos clients.",
+          "price": null,
+          "price_unit": "sur soumission",
+          "season": "Hiver",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781322916/tapavis_tenant_lamontagne-raymond/build_lamontagne-raymond_1781322916569.png",
+          "featured": 0,
+          "sort_order": 5,
+          "created_at": "2026-06-13T04:20:11.509Z",
+          "updated_at": "2026-06-13T04:20:11.509Z"
+        },
+        {
+          "id": 6,
+          "name": "Aération et terreautage",
+          "description": "Aération mécanique et terreautage pour décompacter le sol et favoriser des racines saines et profondes.",
+          "price": 120,
+          "price_unit": "à partir de",
+          "season": "Été",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781322916/tapavis_tenant_lamontagne-raymond/build_lamontagne-raymond_1781322916242.png",
+          "featured": 0,
+          "sort_order": 6,
+          "created_at": "2026-06-13T04:20:11.513Z",
+          "updated_at": "2026-06-13T04:20:11.513Z"
+        }
+      ]
+    },
+    "products": {
+      "columns": [
+        "id",
+        "name",
+        "description",
+        "price",
+        "unit",
+        "category",
+        "image_url",
+        "in_stock",
+        "featured",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "testimonials": {
+      "columns": [
+        "id",
+        "author",
+        "location",
+        "content",
+        "rating",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "bookings": {
+      "columns": [
+        "id",
+        "customer_name",
+        "email",
+        "phone",
+        "address",
+        "service",
+        "preferred_date",
+        "preferred_time",
+        "message",
+        "status",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "quotes": {
+      "columns": [
+        "id",
+        "customer_name",
+        "email",
+        "phone",
+        "address",
+        "service_type",
+        "property_size",
+        "message",
+        "source",
+        "status",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "orders": {
+      "columns": [
+        "id",
+        "user_id",
+        "customer_name",
+        "email",
+        "phone",
+        "address",
+        "items",
+        "total",
+        "status",
+        "notes",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    }
+  }
+}

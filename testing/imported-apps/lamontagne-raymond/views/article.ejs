@@ -1,0 +1,11 @@
+<%- include('partials/header') %>
+<section class="section"><div class="container article">
+<a href="conseils" style="color:#256B42;font-weight:600">← Tous les conseils</a>
+<span class="eyebrow" style="margin-top:14px"><%= post.category||'Conseil' %><% if(post.season){ %> · <%= post.season %><% } %></span>
+<h1 class="display" style="margin-bottom:10px"><%= post.title %></h1>
+<p class="muted" style="margin-bottom:22px"><%= formatDate(post.created_at) %></p>
+<% if(post.image_url){ %><img class="cover" src="<%= post.image_url %>" alt="<%= post.title %>"><% } %>
+<div class="prose"><% (post.content||'').split('\n').forEach(function(par){ if(par.trim()){ %><p><%= par %></p><% } }); %></div>
+<div class="cta-band" style="margin-top:40px"><h2>Besoin d'un coup de main ?</h2><p>Demandez votre soumission gratuite, on s'occupe du reste.</p><div class="cta-row"><a class="btn btn-orange" style="background:#E2701E;color:#fff" href="soumission">Soumission gratuite</a></div></div>
+</div></section>
+<%- include('partials/footer') %>

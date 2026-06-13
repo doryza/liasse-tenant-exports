@@ -1,0 +1,9 @@
+(function(){
+function getCart(){ try{ return JSON.parse(localStorage.getItem('lr_cart')||'[]'); }catch(e){ return []; } }
+function setCart(c){ localStorage.setItem('lr_cart',JSON.stringify(c)); updateBadge(); }
+function updateBadge(){ var n=getCart().reduce(function(s,i){ return s+(i.qty||0); },0); var els=document.querySelectorAll('[data-cart-count]'); for(var i=0;i<els.length;i++){ els[i].textContent=n; els[i].style.display=n>0?'inline-flex':'none'; } }
+function addToCart(p){ var c=getCart(); var ex=null; for(var i=0;i<c.length;i++){ if(c[i].id===p.id){ ex=c[i]; break; } } if(ex) ex.qty+=(p.qty||1); else c.push({id:p.id,name:p.name,price:p.price,unit:p.unit||'',image:p.image||'',qty:p.qty||1}); setCart(c); }
+function fmt(v){ return Number(v||0).toFixed(2).replace('.',',')+' $'; }
+window.LRCart={ get:getCart, set:setCart, add:addToCart, badge:updateBadge, format:fmt };
+document.addEventListener('DOMContentLoaded',function(){ updateBadge(); var btns=document.querySelectorAll('.add-cart'); for(var i=0;i<btns.length;i++){ btns[i].addEventListener('click',function(){ var b=this; addToCart({id:parseInt(b.dataset.id),name:b.dataset.name,price:parseFloat(b.dataset.price),unit:b.dataset.unit||'',image:b.dataset.image||'',qty:1}); var tt=document.getElementById('toast'); if(tt){ tt.textContent='Ajouté au panier'; tt.classList.add('show'); setTimeout(function(){ tt.classList.remove('show'); },1700); } }); } var burger=document.getElementById('burger'); var menu=document.getElementById('mobileMenu'); if(burger&&menu){ burger.addEventListener('click',function(){ menu.classList.toggle('open'); }); } });
+})();

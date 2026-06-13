@@ -1,0 +1,42 @@
+</main>
+<footer class="footer">
+<div class="container foot-grid">
+<div class="foot-col">
+<div class="foot-seal"><%= settings.business_name %></div>
+<p class="foot-tag"><%= settings.tagline %></p>
+<button class="btn btn-line" data-push-btn>Activer les notifications</button>
+</div>
+<div class="foot-col">
+<h4>Services</h4>
+<a href="services">Entretien de pelouse</a>
+<a href="services">Ramassage de feuilles</a>
+<a href="services">Déneigement</a>
+<a href="boutique">Boutique</a>
+</div>
+<div class="foot-col">
+<h4>Entreprise</h4>
+<a href="conseils">Conseils</a>
+<a href="soumission">Soumission gratuite</a>
+<a href="rendez-vous">Rendez-vous</a>
+<a href="contact">Contact</a>
+</div>
+<div class="foot-col">
+<h4>Joindre</h4>
+<% if(settings.contact_phone){ %><a href="tel:<%= settings.contact_phone %>"><%= settings.contact_phone %></a><% } %>
+<% if(settings.contact_email){ %><a href="mailto:<%= settings.contact_email %>"><%= settings.contact_email %></a><% } %>
+<p class="muted" style="margin-top:8px"><%= settings.business_hours %></p>
+<p class="muted"><%= settings.service_area_note %></p>
+</div>
+</div>
+<div class="foot-bottom container">
+<span>© <%= new Date().getFullYear() %> <%= settings.business_name %>. <%= t.foot_rights %></span>
+<a href="admin">Espace administrateur</a>
+</div>
+</footer>
+<div id="toast" class="toast"></div>
+<script src="public/js/app.js"></script>
+<script>
+try{ if(window.TenantSDK){ TenantSDK.ui.showInstallBanner(); setTimeout(function(){ try{ TenantSDK.ui.showPushPrompt(); }catch(e){} }, 9000); } }catch(e){}
+</script>
+</body>
+</html>

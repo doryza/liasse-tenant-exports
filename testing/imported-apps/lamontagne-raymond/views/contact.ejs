@@ -1,0 +1,22 @@
+<%- include('partials/header') %>
+<section class="page-head"><div class="container"><span class="eyebrow">Contact</span><h1 class="display">Parlons de votre terrain</h1></div></section>
+<section class="section" style="padding-top:20px"><div class="container"><div class="cart-grid">
+<div id="formWrap"><div class="form-card"><div id="formErr" class="alert err" style="display:none"></div>
+<form id="cform">
+<div class="grid2"><div class="field"><label>Nom *</label><input name="customer_name" required></div><div class="field"><label>Téléphone</label><input name="phone"></div></div>
+<div class="field"><label>Courriel *</label><input type="email" name="email" required></div>
+<div class="field"><label>Message *</label><textarea name="message" required placeholder="Comment pouvons-nous vous aider ?"></textarea></div>
+<button type="submit" class="btn btn-primary btn-block" style="background:#256B42;color:#fff">Envoyer le message</button>
+</form></div></div>
+<div><div class="cart-summary">
+<h3 style="font-family:'Zilla Slab';margin:0 0 14px">Coordonnées</h3>
+<% if(settings.contact_phone){ %><p style="margin:0 0 12px"><strong>Téléphone</strong><br><a href="tel:<%= settings.contact_phone %>" style="color:#256B42"><%= settings.contact_phone %></a></p><% } %>
+<% if(settings.contact_email){ %><p style="margin:0 0 12px"><strong>Courriel</strong><br><a href="mailto:<%= settings.contact_email %>" style="color:#256B42"><%= settings.contact_email %></a></p><% } %>
+<p style="margin:0 0 12px"><strong>Heures</strong><br><%= settings.business_hours %></p>
+<p style="margin:0"><strong>Territoire</strong><br><%= settings.service_area_note %></p>
+</div></div>
+</div></div></section>
+<script>
+document.getElementById('cform').addEventListener('submit',function(e){ e.preventDefault(); var btn=this.querySelector('button[type=submit]'); btn.disabled=true; btn.textContent='Envoi…'; var data={}; new FormData(this).forEach(function(v,k){ data[k]=v; }); fetch('api/contact',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}).then(function(r){ return r.json(); }).then(function(d){ if(d.success){ document.getElementById('formWrap').innerHTML='<div class="form-card"><div class="success-card"><div class="ic">✓</div><h2>Message envoyé !</h2><p class="muted">Merci, nous vous répondrons dès que possible.</p></div></div>'; } else { var er=document.getElementById('formErr'); er.textContent=d.error||'Une erreur est survenue.'; er.style.display='block'; btn.disabled=false; btn.textContent='Envoyer le message'; } }).catch(function(){ var er=document.getElementById('formErr'); er.textContent='Erreur de connexion.'; er.style.display='block'; btn.disabled=false; btn.textContent='Envoyer le message'; }); });
+</script>
+<%- include('partials/footer') %>

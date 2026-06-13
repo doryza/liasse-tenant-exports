@@ -1,0 +1,22 @@
+<%- include('partials/header') %>
+<section class="page-head"><div class="container"><span class="eyebrow">Rendez-vous</span><h1 class="display">Réservez une visite</h1><p class="lead">Choisissez le service et une date qui vous convient. On confirme rapidement par téléphone ou courriel.</p></div></section>
+<section class="section" style="padding-top:20px"><div class="container">
+<div id="formWrap">
+<div class="form-card">
+<div id="formErr" class="alert err" style="display:none"></div>
+<form id="bform">
+<div class="grid2"><div class="field"><label>Nom complet *</label><input name="customer_name" required></div><div class="field"><label>Téléphone *</label><input name="phone" required></div></div>
+<div class="field"><label>Courriel</label><input type="email" name="email"></div>
+<div class="field"><label>Adresse du terrain</label><input name="address" placeholder="Rue, ville"></div>
+<div class="field"><label>Service souhaité</label><select name="service"><% if(typeof services!=='undefined'){ services.forEach(function(s){ %><option><%= s.name %></option><% }); } %><option>Autre</option></select></div>
+<div class="grid2"><div class="field"><label>Date souhaitée</label><input type="date" name="preferred_date"></div><div class="field"><label>Moment</label><select name="preferred_time"><option>Avant-midi</option><option>Après-midi</option><option>Soirée</option><option>Flexible</option></select></div></div>
+<div class="field"><label>Détails (optionnel)</label><textarea name="message" placeholder="Décrivez votre besoin…"></textarea></div>
+<button type="submit" class="btn btn-primary btn-block" style="background:#256B42;color:#fff">Demander le rendez-vous</button>
+</form>
+</div>
+</div>
+</div></section>
+<script>
+document.getElementById('bform').addEventListener('submit',function(e){ e.preventDefault(); var btn=this.querySelector('button[type=submit]'); btn.disabled=true; btn.textContent='Envoi…'; var data={}; new FormData(this).forEach(function(v,k){ data[k]=v; }); fetch('api/rendez-vous',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}).then(function(r){ return r.json(); }).then(function(d){ if(d.success){ document.getElementById('formWrap').innerHTML='<div class="form-card"><div class="success-card"><div class="ic">✓</div><h2>Demande reçue !</h2><p class="muted">Merci, nous vous contacterons sous peu pour confirmer votre rendez-vous.</p><a class="btn btn-primary" style="background:#256B42;color:#fff" href=".">Retour à l accueil</a></div></div>'; } else { var er=document.getElementById('formErr'); er.textContent=d.error||'Une erreur est survenue.'; er.style.display='block'; btn.disabled=false; btn.textContent='Demander le rendez-vous'; } }).catch(function(){ var er=document.getElementById('formErr'); er.textContent='Erreur de connexion. Réessayez.'; er.style.display='block'; btn.disabled=false; btn.textContent='Demander le rendez-vous'; }); });
+</script>
+<%- include('partials/footer') %>

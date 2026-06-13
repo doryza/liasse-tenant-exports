@@ -1,0 +1,16 @@
+<%- include('partials/header') %>
+<section class="page-head"><div class="container"><span class="eyebrow">Boutique</span><h1 class="display">Produits pour votre terrain</h1><p class="lead">Engrais, semences, déglaçant et outils — à ramasser ou livrés dans la région.</p></div></section>
+<section class="section" style="padding-top:20px"><div class="container">
+<div class="filters">
+<a href="boutique" class="<%= !activeCat?'active':'' %>">Tous</a>
+<% if(typeof categories!=='undefined'){ categories.forEach(function(c){ %><a href="?cat=<%= encodeURIComponent(c) %>" class="<%= activeCat===c?'active':'' %>"><%= c %></a><% }); } %>
+</div>
+<% if(typeof products!=='undefined' && products.length){ %>
+<div class="prod-grid">
+<% products.forEach(function(p){ %>
+<article class="prod-card"><a class="pm" href="boutique/<%= p.id %>"><img src="<%= p.image_url||'https://placehold.co/600x600/e4efe7/256b42/png?text=Produit' %>" alt="<%= p.name %>"></a><div class="prod-info"><span class="prod-cat"><%= p.category||'' %></span><h3><a href="boutique/<%= p.id %>"><%= p.name %></a></h3><div class="prod-price"><%= formatPrice(p.price) %> <% if(p.unit){ %><small><%= p.unit %></small><% } %></div><% if(p.in_stock){ %><button class="btn btn-primary add-cart" style="background-color:#256B42;color:#fff" data-id="<%= p.id %>" data-name="<%= p.name %>" data-price="<%= p.price %>" data-unit="<%= p.unit||'' %>" data-image="<%= p.image_url||'' %>"><%= t.add_cart %></button><% } else { %><span class="out-stock">Rupture de stock</span><% } %></div></article>
+<% }); %>
+</div>
+<% } else { %><div class="empty"><p>Aucun produit dans cette catégorie pour l'instant.</p></div><% } %>
+</div></section>
+<%- include('partials/footer') %>

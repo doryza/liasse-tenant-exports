@@ -1,0 +1,16 @@
+<%- include('partials/header') %>
+<section class="page-head"><div class="container"><span class="eyebrow">Panier</span><h1 class="display">Votre panier</h1></div></section>
+<section class="section" style="padding-top:20px"><div class="container">
+<div id="cartEmpty" class="empty" style="display:none"><p>Votre panier est vide.</p><a class="btn btn-primary" style="background:#256B42;color:#fff" href="boutique">Voir la boutique</a></div>
+<div id="cartGrid" class="cart-grid" style="display:none">
+<div id="cartItems"></div>
+<div><div class="cart-summary"><h3 style="font-family:'Zilla Slab';margin:0 0 14px">Total</h3><div class="sum-total" style="border:0;padding:0;margin:0"><span>Sous-total</span><span id="cartTotal">0,00 $</span></div><a class="btn btn-primary btn-block" style="background:#256B42;color:#fff;margin-top:16px" href="paiement">Passer à la caisse</a><a class="btn btn-line btn-block" href="boutique" style="margin-top:10px">Continuer mes achats</a></div></div>
+</div>
+</div></section>
+<script>
+(function(){
+function render(){ var cart=window.LRCart?LRCart.get():[]; if(!cart.length){ document.getElementById('cartEmpty').style.display='block'; document.getElementById('cartGrid').style.display='none'; return; } document.getElementById('cartEmpty').style.display='none'; document.getElementById('cartGrid').style.display='grid'; var total=0, html=''; cart.forEach(function(i,idx){ total+=i.price*i.qty; html+='<div class="cart-row"><img src="'+(i.image||'https://placehold.co/120x120/e4efe7/256b42/png?text=+')+'"><div class="ci-info"><strong>'+i.name+'</strong><div class="muted" style="font-size:.85rem">'+LRCart.format(i.price)+' '+(i.unit||'')+'</div><button class="link-remove" data-rm="'+idx+'">Retirer</button></div><div class="qty"><button data-dec="'+idx+'">−</button><span>'+i.qty+'</span><button data-inc="'+idx+'">+</button></div><div style="font-weight:700;min-width:80px;text-align:right">'+LRCart.format(i.price*i.qty)+'</div></div>'; }); document.getElementById('cartItems').innerHTML=html; document.getElementById('cartTotal').textContent=LRCart.format(total); document.querySelectorAll('[data-inc]').forEach(function(b){ b.onclick=function(){ var c=LRCart.get(); c[b.dataset.inc].qty++; LRCart.set(c); render(); }; }); document.querySelectorAll('[data-dec]').forEach(function(b){ b.onclick=function(){ var c=LRCart.get(); var idx=parseInt(b.dataset.dec); c[idx].qty--; if(c[idx].qty<1) c.splice(idx,1); LRCart.set(c); render(); }; }); document.querySelectorAll('[data-rm]').forEach(function(b){ b.onclick=function(){ var c=LRCart.get(); c.splice(parseInt(b.dataset.rm),1); LRCart.set(c); render(); }; }); }
+render();
+})();
+</script>
+<%- include('partials/footer') %>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Réglages · Administration</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@600;700&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body class="admin-body">
+<%- include('partials/admin-sidebar') %>
+<main class="admin-main">
+<header class="admin-topbar"><button class="admin-burger" onclick="document.body.classList.toggle('sidebar-open')" aria-label="Menu">☰</button><h1>Réglages du site</h1><a class="btn-ghost" href="." target="_blank">Voir le site</a></header>
+<div id="alert" class="admin-alert" style="display:none"></div>
+<div class="admin-content">
+<div class="admin-card"><p class="muted" style="margin-top:0">Modifiez les textes, coordonnées et instructions affichés sur le site public. Chaque champ est enregistré automatiquement lorsque vous le quittez.</p>
+<form id="setForm" onsubmit="return false"><div id="setFields"><p class="muted">Chargement…</p></div></form>
+</div>
+</div>
+</main>
+<script>
+var SF=<%- (typeof settingsFields!=='undefined') ? JSON.stringify(settingsFields) : '[]' %>;
+var values={};
+function esc(s){ if(s===null||s===undefined) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function showAlert(m){ var a=document.getElementById('alert'); a.textContent=m; a.style.display='block'; setTimeout(function(){ a.style.display='none'; },2200); }
+function fieldHtml(f){ var v=values[f.name]||''; var id='s_'+f.name; var inner; if(f.type==='textarea'){ inner='<textarea id="'+id+'">'+esc(v)+'</textarea>'; } else { var ty=f.type==='email'?'email':'text'; inner='<input type="'+ty+'" id="'+id+'" value="'+esc(v)+'">'; } var hint=f.description?('<div class="hint">'+esc(f.description)+'</div>'):''; return '<div class="ff set-row"><label for="'+id+'">'+esc(f.label||f.name)+'</label>'+inner+hint+'<span class="save-state" id="st_'+f.name+'"></span></div>'; }
+function render(){ document.getElementById('setFields').innerHTML=SF.map(fieldHtml).join(''); SF.forEach(function(f){ var el=document.getElementById('s_'+f.name); if(el){ el.addEventListener('change',function(){ save(f.name,el.value); }); } }); }
+function save(name,val){ var st=document.getElementById('st_'+name); if(st){ st.textContent='Enregistrement…'; st.className='save-state'; } fetch('api/admin/settings',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({key:name,value:val})}).then(function(r){ return r.json(); }).then(function(d){ if(st){ if(d.success){ st.textContent='✓ Enregistré'; st.className='save-state ok'; setTimeout(function(){ st.textContent=''; },2200); } else { st.textContent='Erreur'; st.className='save-state err'; } } }).catch(function(){ if(st){ st.textContent='Erreur'; st.className='save-state err'; } }); }
+function load(){ fetch('api/admin/settings').then(function(r){ return r.json(); }).then(function(d){ values=d||{}; render(); }).catch(function(){ document.getElementById('setFields').innerHTML='<p class="muted">Erreur de chargement.</p>'; }); }
+load();
+</script>
+</body>
+</html>

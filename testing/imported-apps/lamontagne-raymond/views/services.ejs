@@ -1,0 +1,13 @@
+<%- include('partials/header') %>
+<section class="page-head"><div class="container"><span class="eyebrow">Nos services</span><h1 class="display">Un terrain entretenu, à chaque saison</h1><p class="lead"><%= settings.service_area_note %></p></div></section>
+<section class="section" style="padding-top:20px"><div class="container">
+<% if(typeof services!=='undefined' && services.length){ %>
+<div class="svc-grid">
+<% services.forEach(function(s){ var sc=s.season==='Hiver'?'hiver':(s.season==='Automne'?'automne':(s.season==='Toutes saisons'?'toutes':'ete')); %>
+<article class="svc-card"><div class="svc-media"><img src="<%= s.image_url||'https://placehold.co/800x600/e4efe7/256b42/png?text=Service' %>" alt="<%= s.name %>"><span class="svc-tab tab-<%= sc %>"><%= s.season||'Service' %></span></div><div class="svc-body"><h3><%= s.name %></h3><p><%= s.description %></p><div class="svc-price"><% if(s.price){ %><%= s.price_unit||'' %> <%= formatPrice(s.price) %><% } else { %>Sur soumission<% } %></div><div class="svc-foot"><a class="btn btn-primary" style="background-color:#256B42;color:#fff" href="soumission">Soumission</a><a class="btn btn-ghost" href="rendez-vous">Rendez-vous</a></div></div></article>
+<% }); %>
+</div>
+<% } else { %><div class="empty"><p>Les services seront bientôt disponibles.</p></div><% } %>
+</div></section>
+<section class="section alt"><div class="container"><div class="cta-band"><h2><%= settings.cta_title %></h2><p><%= settings.cta_text %></p><div class="cta-row"><a class="btn btn-orange" style="background:#E2701E;color:#fff" href="soumission">Soumission gratuite</a><% if(settings.contact_phone){ %><a class="btn btn-ghost" href="tel:<%= settings.contact_phone %>">Appeler</a><% } %></div></div></div></section>
+<%- include('partials/footer') %>

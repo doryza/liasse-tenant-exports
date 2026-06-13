@@ -1,0 +1,15 @@
+<%- include('partials/header') %>
+<section class="section"><div class="container" style="max-width:760px">
+<div class="success-card"><div class="ic">✓</div><h2>Merci pour votre commande !</h2><p class="muted">Commande #<%= order.id %> · <%= formatPrice(order.total) %></p></div>
+<div class="form-card" style="margin:20px auto 0">
+<h3 style="font-family:'Zilla Slab'">Articles</h3>
+<% if(typeof orderItems!=='undefined' && orderItems.length){ orderItems.forEach(function(l){ %><div class="sum-line"><span><%= l.qty %> × <%= l.name %></span><span><%= formatPrice(l.price*l.qty) %></span></div><% }); } else { %><p class="muted">Détails de commande indisponibles.</p><% } %>
+<div class="sum-total"><span>Total</span><span><%= formatPrice(order.total) %></span></div>
+<h3 style="font-family:'Zilla Slab';margin-top:24px">Paiement</h3>
+<p><%= settings.payment_instructions %></p>
+<% var etr=settings.etransfer_email||settings.contact_email; if(etr){ %><p>Virement Interac à : <strong><%= etr %></strong></p><% } %>
+<a class="btn btn-primary" style="background:#256B42;color:#fff;margin-top:8px" href=".">Retour à l'accueil</a>
+</div>
+</div></section>
+<script>try{ if(window.LRCart) LRCart.set([]); }catch(e){}</script>
+<%- include('partials/footer') %>

@@ -1,0 +1,15 @@
+<%- include('partials/header') %>
+<section class="page-head"><div class="container"><span class="eyebrow">Mon compte</span><h1 class="display">Mes commandes</h1></div></section>
+<section class="section" style="padding-top:20px"><div class="container">
+<% if(user){ %>
+<div data-auth-only style="display:block"><div id="ordersList"><p class="muted">Chargement…</p></div></div>
+<% } else { %>
+<div class="empty"><p>Connectez-vous pour voir l'historique de vos commandes.</p><a href="#" class="btn btn-primary" style="background:#256B42;color:#fff" data-login-btn>Connexion</a></div>
+<% } %>
+</div></section>
+<% if(user){ %>
+<script>
+(function(){ var f=(window.TenantSDK&&TenantSDK.fetch)?TenantSDK.fetch.bind(TenantSDK):fetch; f('api/my-orders').then(function(r){ return r.json(); }).then(function(d){ var o=(d.orders||[]); var el=document.getElementById('ordersList'); if(!o.length){ el.innerHTML='<div class="empty"><p>Vous n avez pas encore de commande.</p><a class="btn btn-primary" style="background:#256B42;color:#fff" href="boutique">Magasiner</a></div>'; return; } el.innerHTML=o.map(function(x){ var its=''; try{ its=JSON.parse(x.items||'[]').map(function(l){ return l.qty+' × '+l.name; }).join(', '); }catch(e){} return '<div class="form-card" style="margin-bottom:16px"><div style="display:flex;justify-content:space-between;align-items:center"><strong>Commande #'+x.id+'</strong><span style="background:#fbe7d6;color:#9a3d05;padding:3px 10px;border-radius:999px;font-size:.78rem;font-weight:700">'+x.status+'</span></div><p class="muted" style="margin:8px 0">'+its+'</p><strong>'+Number(x.total).toFixed(2).replace(".",",")+' $</strong></div>'; }).join(''); }).catch(function(){ document.getElementById('ordersList').innerHTML='<p class="muted">Impossible de charger vos commandes.</p>'; }); })();
+</script>
+<% } %>
+<%- include('partials/footer') %>

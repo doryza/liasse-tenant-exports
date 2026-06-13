@@ -1,0 +1,19 @@
+<aside class="admin-sidebar">
+<div class="admin-brand"><%= (typeof settings!=='undefined'&&settings.business_name)?settings.business_name:'Lamontagne Raymond' %><small>Administration</small></div>
+<nav class="admin-nav">
+<a href="admin" class="<%= (typeof active!=='undefined'&&active==='dashboard')?'active':'' %>">Tableau de bord</a>
+<div class="sep"></div>
+<a href="admin/services" class="<%= (typeof active!=='undefined'&&active==='services')?'active':'' %>">Services</a>
+<a href="admin/products" class="<%= (typeof active!=='undefined'&&active==='products')?'active':'' %>">Boutique</a>
+<a href="admin/posts" class="<%= (typeof active!=='undefined'&&active==='posts')?'active':'' %>">Conseils</a>
+<a href="admin/testimonials" class="<%= (typeof active!=='undefined'&&active==='testimonials')?'active':'' %>">Témoignages</a>
+<div class="sep"></div>
+<a href="admin/quotes" class="<%= (typeof active!=='undefined'&&active==='quotes')?'active':'' %>">Soumissions</a>
+<a href="admin/bookings" class="<%= (typeof active!=='undefined'&&active==='bookings')?'active':'' %>">Rendez-vous</a>
+<a href="admin/orders" class="<%= (typeof active!=='undefined'&&active==='orders')?'active':'' %>">Commandes</a>
+<div class="sep"></div>
+<a href="admin/settings" class="<%= (typeof active!=='undefined'&&active==='settings')?'active':'' %>">Réglages</a>
+<a href="." target="_blank">Voir le site</a>
+<a href="admin/logout">Déconnexion</a>
+</nav>
+</aside>

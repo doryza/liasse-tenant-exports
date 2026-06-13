@@ -1,0 +1,26 @@
+<%- include('partials/header') %>
+<section class="page-head"><div class="container"><span class="eyebrow">Commande</span><h1 class="display">Finaliser la commande</h1></div></section>
+<section class="section" style="padding-top:20px"><div class="container">
+<div id="emptyMsg" class="empty" style="display:none"><p>Votre panier est vide.</p><a class="btn btn-primary" style="background:#256B42;color:#fff" href="boutique">Voir la boutique</a></div>
+<div id="checkoutGrid" class="cart-grid">
+<div class="form-card">
+<div id="formErr" class="alert err" style="display:none"></div>
+<% if(user){ %><p class="form-note">Connecté en tant que <%= user.display_name||user.email||user.phone %>. Votre commande sera ajoutée à votre compte.</p><% } else { %><p class="form-note">Vous avez un compte ? <a href="#" data-login-btn style="color:#256B42;font-weight:600">Connectez-vous</a> pour suivre vos commandes.</p><% } %>
+<form id="payform">
+<div class="grid2"><div class="field"><label>Nom complet *</label><input name="customer_name" required value="<%= user?(user.display_name||''):'' %>"></div><div class="field"><label>Téléphone *</label><input name="phone" required value="<%= (user&&user.phone)?user.phone:'' %>"></div></div>
+<div class="field"><label>Courriel *</label><input type="email" name="email" required value="<%= (user&&user.email)?user.email:'' %>"></div>
+<div class="field"><label>Adresse de livraison</label><input name="address" placeholder="Rue, ville"></div>
+<div class="field"><label>Note (optionnel)</label><textarea name="notes"></textarea></div>
+<button type="submit" class="btn btn-primary btn-block" style="background:#256B42;color:#fff">Passer la commande</button>
+<p class="form-note"><%= settings.payment_instructions %></p>
+</form>
+</div>
+<div><div class="cart-summary"><h3 style="font-family:'Zilla Slab';margin:0 0 14px">Récapitulatif</h3><div id="sumItems"></div><div class="sum-total"><span>Total</span><span id="sumTotal">0,00 $</span></div></div></div>
+</div>
+</div></section>
+<script>
+(function(){ var cart=window.LRCart?LRCart.get():[]; if(!cart.length){ document.getElementById('checkoutGrid').style.display='none'; document.getElementById('emptyMsg').style.display='block'; return; } var total=0, html=''; cart.forEach(function(i){ var lt=i.price*i.qty; total+=lt; html+='<div class="sum-line"><span>'+i.qty+' × '+i.name+'</span><span>'+LRCart.format(lt)+'</span></div>'; }); document.getElementById('sumItems').innerHTML=html; document.getElementById('sumTotal').textContent=LRCart.format(total);
+document.getElementById('payform').addEventListener('submit',function(e){ e.preventDefault(); var btn=this.querySelector('button[type=submit]'); btn.disabled=true; btn.textContent='Traitement…'; var data={}; new FormData(this).forEach(function(v,k){ data[k]=v; }); data.items=cart.map(function(i){ return {id:i.id,qty:i.qty}; }); var f=(window.TenantSDK&&TenantSDK.fetch)?TenantSDK.fetch.bind(TenantSDK):fetch; f('api/order',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}).then(function(r){ return r.json(); }).then(function(d){ if(d.success){ LRCart.set([]); window.location.href='confirmation/'+d.orderId; } else { var er=document.getElementById('formErr'); er.textContent=d.error||'Une erreur est survenue.'; er.style.display='block'; btn.disabled=false; btn.textContent='Passer la commande'; } }).catch(function(){ var er=document.getElementById('formErr'); er.textContent='Erreur de connexion. Réessayez.'; er.style.display='block'; btn.disabled=false; btn.textContent='Passer la commande'; }); });
+})();
+</script>
+<%- include('partials/footer') %>

@@ -1,0 +1,95 @@
+{
+  "slug": "lamontagne-raymond",
+  "displayName": "Lamontagne &Raymond",
+  "description": "Type de projet: Site web pour une nouvelle entreprise.\n\nObjectifs et fonctionnalités:\n- Présentation des services (entretien de pelouse, déneigement, ramassage de feuilles)\n- Prise de rendez-vous en ligne\n- Boutique avec paiement en ligne\n- Formulaire de demande de soumission gratuite\n\nDesign et marque:\n- Palette de couleurs: Vert et orange.\n\nTerritoire desservi:\n- Shawinigan, Grand-Mère, Trois-Rivières, Nicolet (Mauricie)",
+  "status": "active",
+  "generationVersion": 1,
+  "primaryColor": "#6366f1",
+  "iconUrl": "https://res.cloudinary.com/duhp69meg/image/upload/v1781324457/tapavis_tenant_lamontagne-raymond/icon_lamontagne-raymond_1781324457468.png",
+  "enabledAuthMethods": [
+    "webauthn",
+    "sms",
+    "email"
+  ],
+  "notificationsEnabled": true,
+  "geolocationEnabled": true,
+  "customConfig": {
+    "language": "fr",
+    "designManifest": {
+      "concept": "L'almanach des saisons",
+      "elements": {
+        "blogSurfaced": true,
+        "pages": [
+          "accueil",
+          "services",
+          "boutique",
+          "produit",
+          "conseils",
+          "article",
+          "rendez-vous",
+          "soumission",
+          "contact",
+          "panier",
+          "paiement",
+          "confirmation",
+          "mes-commandes"
+        ],
+        "userLogin": true
+      },
+      "iconDirection": "A flat emblem badge: a stylized maple-leaf-meets-blade-of-grass mark split into a green half and an orange half on cream, almanac-seal feel, no text.",
+      "palette": {
+        "accents": [
+          "#E2701E",
+          "#3E6E8E"
+        ],
+        "ground": "#F7F4EC",
+        "ink": "#1C2B22",
+        "primary": "#256B42"
+      },
+      "signatureMove": "A persistent three-segment season ribbon at the top of every page (Pelouse / Feuilles / Neige) that highlights the live season computed server-side, echoed by clipped season tabs on each service card and a 'saison en cours' caption on the framed hero plate.",
+      "summary": "The site reads like a Mauricie farmer's almanac turned into a job ledger — services and content are filed by the turning of the seasons, with a tri-season color code (grass green, harvest orange, steel-blue snow) doing the wayfinding and a slab-serif printed-ledger voice.",
+      "typography": "Zilla Slab (printed-ledger display, 500-700) paired with Work Sans (humanist body)"
+    }
+  },
+  "promptHistory": [
+    {
+      "prompt": "Type de projet: Site web pour une nouvelle entreprise.\n\nObjectifs et fonctionnalités:\n- Présentation des services (entretien de pelouse, déneigement, ramassage de feuilles)\n- Prise de rendez-vous en ligne\n- Boutique avec paiement en ligne\n- Formulaire de demande de soumission gratuite\n\nDesign et marque:\n- Palette de couleurs: Vert et orange.\n\nTerritoire desservi:\n- Shawinigan, Grand-Mère, Trois-Rivières, Nicolet (Mauricie)",
+      "timestamp": "2026-06-13T04:21:07.746Z",
+      "changeNotes": "Build initial complet pour Lamontagne Raymond : site d'entretien de terrain en Mauricie. Identité « L'almanach des saisons » — ruban de saisons tricolore (vert pelouse / orange feuilles / bleu acier neige) qui change selon le mois, typographie Zilla Slab + Work Sans, sur fond crème. Pages : accueil, services, boutique avec panier et caisse, prise de rendez-vous, soumission gratuite, conseils (blogue), contact, mes commandes, et confirmation. Paiement via virement Interac à la commande (instructions éditables). Back-office admin complet (CRUD pour services, produits, conseils, témoignages, soumissions, rendez-vous, commandes) avec génération d'images IA et téléversement Cloudinary.\n\nAdmin enrichment: (1) Dashboard (admin.ejs) redone with a welcome header, icon-based stat cards, an actionable 'à traiter' alert banner summarizing new quotes/bookings/orders, a Réglages shortcut card, responsive horizontal-scroll tables and proper empty states. (2) New Réglages page (views/admin-settings.ejs) + /admin/settings route lets the owner edit all functional site copy, contact info and payment/Interac instructions with per-field auto-save feedback (SETTINGS_FIELDS extracted in routes.js and reused by /api/admin/modules). (3) Module pages (admin-shell.ejs) gained a toolbar with live search, a status filter (auto-built from the status field options), a result count, and a refresh button; tables now wrap in a scroll container and show clearer empty/no-result states — full create/edit/delete CRUD preserved for every module (services with price/season/order, products with price/stock, posts, testimonials, quotes, bookings, orders). (4) Sidebar updated with a Réglages link and active-state highlighting. (5) Accessibility/contrast: visible :focus-visible outlines added to both stylesheets, richer admin button/toolbar styling, and consistent badge colors. (6) Public site: added OG/Twitter social meta to the header partial using existing settings values. All {{IMG_*}} placeholder tokens preserved byte-for-byte; routes, data flows and platform service usage unchanged; no built-in service keys added.",
+      "generationId": 1313,
+      "filesModified": [
+        "manifest.json",
+        "migrations.sql",
+        "public/css/admin-styles.css",
+        "public/css/styles.css",
+        "public/js/app.js",
+        "routes.js",
+        "schema.sql",
+        "seed.js",
+        "views/admin-settings.ejs",
+        "views/admin-shell.ejs",
+        "views/admin.ejs",
+        "views/article.ejs",
+        "views/boutique.ejs",
+        "views/commandes.ejs",
+        "views/confirmation.ejs",
+        "views/conseils.ejs",
+        "views/contact.ejs",
+        "views/index.ejs",
+        "views/paiement.ejs",
+        "views/panier.ejs",
+        "views/partials/admin-sidebar.ejs",
+        "views/partials/footer.ejs",
+        "views/partials/header.ejs",
+        "views/produit.ejs",
+        "views/rendezvous.ejs",
+        "views/services.ejs",
+        "views/soumission.ejs"
+      ]
+    }
+  ],
+  "apiVariables": [],
+  "createdAt": "2026-06-12T04:56:48.146Z",
+  "updatedAt": "2026-06-13T04:21:13.438Z",
+  "exportedAt": "2026-06-13T04:21:13.648Z"
+}

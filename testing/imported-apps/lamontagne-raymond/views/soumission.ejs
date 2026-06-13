@@ -1,0 +1,22 @@
+<%- include('partials/header') %>
+<section class="page-head"><div class="container"><span class="eyebrow">Soumission gratuite</span><h1 class="display">Recevez une estimation sans engagement</h1><p class="lead">Décrivez votre terrain et vos besoins. Réponse en moins de 24 heures.</p></div></section>
+<section class="section" style="padding-top:20px"><div class="container">
+<div id="formWrap">
+<div class="form-card">
+<div id="formErr" class="alert err" style="display:none"></div>
+<form id="sform">
+<div class="grid2"><div class="field"><label>Nom complet *</label><input name="customer_name" required></div><div class="field"><label>Téléphone *</label><input name="phone" required></div></div>
+<div class="field"><label>Courriel</label><input type="email" name="email"></div>
+<div class="field"><label>Adresse du terrain</label><input name="address" placeholder="Rue, ville"></div>
+<div class="grid2"><div class="field"><label>Service souhaité</label><select name="service_type"><option>Entretien de pelouse</option><option>Ramassage de feuilles</option><option>Déneigement</option><option>Plusieurs services</option><option>Autre</option></select></div><div class="field"><label>Taille du terrain</label><select name="property_size"><option>Petit (moins de 500 m²)</option><option>Moyen (500 à 1500 m²)</option><option>Grand (plus de 1500 m²)</option><option>Je ne sais pas</option></select></div></div>
+<div class="field"><label>Message (optionnel)</label><textarea name="message" placeholder="Décrivez votre projet…"></textarea></div>
+<button type="submit" class="btn btn-primary btn-block" style="background:#256B42;color:#fff">Recevoir ma soumission</button>
+<p class="form-note">Sans engagement · Réponse rapide</p>
+</form>
+</div>
+</div>
+</div></section>
+<script>
+document.getElementById('sform').addEventListener('submit',function(e){ e.preventDefault(); var btn=this.querySelector('button[type=submit]'); btn.disabled=true; btn.textContent='Envoi…'; var data={}; new FormData(this).forEach(function(v,k){ data[k]=v; }); fetch('api/soumission',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}).then(function(r){ return r.json(); }).then(function(d){ if(d.success){ document.getElementById('formWrap').innerHTML='<div class="form-card"><div class="success-card"><div class="ic">✓</div><h2>Demande envoyée !</h2><p class="muted">Merci, nous préparons votre estimation et vous revenons rapidement.</p><a class="btn btn-primary" style="background:#256B42;color:#fff" href=".">Retour à l accueil</a></div></div>'; } else { var er=document.getElementById('formErr'); er.textContent=d.error||'Une erreur est survenue.'; er.style.display='block'; btn.disabled=false; btn.textContent='Recevoir ma soumission'; } }).catch(function(){ var er=document.getElementById('formErr'); er.textContent='Erreur de connexion. Réessayez.'; er.style.display='block'; btn.disabled=false; btn.textContent='Recevoir ma soumission'; }); });
+</script>
+<%- include('partials/footer') %>

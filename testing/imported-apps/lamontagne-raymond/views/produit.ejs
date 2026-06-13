@@ -1,0 +1,24 @@
+<%- include('partials/header') %>
+<section class="section"><div class="container">
+<div class="pd-grid">
+<div><img src="<%= product.image_url||'https://placehold.co/800x800/e4efe7/256b42/png?text=Produit' %>" alt="<%= product.name %>"></div>
+<div class="pd-info">
+<span class="prod-cat" style="color:#E2701E;font-weight:700;text-transform:uppercase;letter-spacing:.08em;font-size:.74rem"><%= product.category||'' %></span>
+<h1><%= product.name %></h1>
+<div class="prod-price" style="font-size:1.5rem;color:#1B5031;font-weight:700"><%= formatPrice(product.price) %> <% if(product.unit){ %><small style="font-size:.9rem;color:#5C6B5F"><%= product.unit %></small><% } %></div>
+<p style="margin:16px 0;color:#5C6B5F"><%= product.description %></p>
+<% if(product.in_stock){ %>
+<div class="qty-input"><label style="font-weight:600">Quantité</label><input type="number" id="qty" value="1" min="1"></div>
+<button class="btn btn-primary" id="addBtn" style="background-color:#256B42;color:#fff" data-id="<%= product.id %>" data-name="<%= product.name %>" data-price="<%= product.price %>" data-unit="<%= product.unit||'' %>" data-image="<%= product.image_url||'' %>"><%= t.add_cart %></button>
+<a class="btn btn-ghost" href="panier" style="margin-left:8px">Voir le panier</a>
+<% } else { %><p class="out-stock" style="color:#E2701E;font-weight:600">Ce produit est en rupture de stock.</p><% } %>
+<a href="boutique" style="display:inline-block;margin-top:22px;color:#256B42;font-weight:600">← Retour à la boutique</a>
+</div>
+</div>
+</div></section>
+<% if(product.in_stock){ %>
+<script>
+document.getElementById('addBtn').addEventListener('click',function(){ var b=this; var q=parseInt(document.getElementById('qty').value)||1; if(window.LRCart){ LRCart.add({id:parseInt(b.dataset.id),name:b.dataset.name,price:parseFloat(b.dataset.price),unit:b.dataset.unit,image:b.dataset.image,qty:q}); var tt=document.getElementById('toast'); if(tt){ tt.textContent='Ajouté au panier'; tt.classList.add('show'); setTimeout(function(){ tt.classList.remove('show'); },1700); } } });
+</script>
+<% } %>
+<%- include('partials/footer') %>

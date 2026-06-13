@@ -1,0 +1,82 @@
+<%- include('partials/header') %>
+<section class="hero"><div class="container hero-inner">
+<div class="hero-copy">
+<span class="eyebrow"><%= settings.hero_eyebrow %></span>
+<h1 class="display"><%= settings.hero_title %></h1>
+<p class="lead"><%= settings.hero_subtitle %></p>
+<div class="hero-cta"><a href="soumission" class="btn btn-primary" style="background-color:#256B42;color:#fff"><%= t.cta_quote %></a><a href="rendez-vous" class="btn btn-ghost"><%= t.cta_book %></a></div>
+<ul class="hero-tags"><li>Shawinigan</li><li>Grand-Mère</li><li>Trois-Rivières</li><li>Nicolet</li></ul>
+</div>
+<figure class="hero-plate"><img src="<%= settings._p_hero_image_url || 'https://placehold.co/1200x675/256B42/ffffff/png?text=Entretien+de+terrain' %>" alt="Entretien de terrain en Mauricie"><figcaption><span class="dot" style="background:<%= season.color %>"></span>Saison en cours · <%= season.service %></figcaption></figure>
+</div></section>
+
+<section class="section"><div class="container">
+<div class="section-head"><span class="kicker">Nos services</span><h2 class="h2">Un partenaire pour chaque saison</h2><p class="lead">De la tonte estivale au déneigement hivernal, on s'occupe de votre terrain toute l'année.</p></div>
+<% if(typeof services!=='undefined' && services.length){ %>
+<div class="svc-grid">
+<% services.slice(0,6).forEach(function(s){ var sc=s.season==='Hiver'?'hiver':(s.season==='Automne'?'automne':(s.season==='Toutes saisons'?'toutes':'ete')); %>
+<article class="svc-card"><div class="svc-media"><img src="<%= s.image_url||'https://placehold.co/800x600/e4efe7/256b42/png?text=Service' %>" alt="<%= s.name %>"><span class="svc-tab tab-<%= sc %>"><%= s.season||'Service' %></span></div><div class="svc-body"><h3><%= s.name %></h3><p><%= truncate(s.description,120) %></p><div class="svc-price"><% if(s.price){ %><%= s.price_unit||'' %> <%= formatPrice(s.price) %><% } else { %>Sur soumission<% } %></div><div class="svc-foot"><a class="btn btn-primary" style="background-color:#256B42;color:#fff" href="soumission"><%= t.cta_quote %></a></div></div></article>
+<% }); %>
+</div>
+<% } else { %><div class="empty"><p>Nos services seront bientôt en ligne.</p></div><% } %>
+</div></section>
+
+<section class="terr"><div class="container">
+<div><span class="kicker" style="color:#E2701E">Territoire desservi</span><h2>Fièrement au service de la Mauricie</h2></div>
+<div class="terr-list"><span>Shawinigan</span><span>Grand-Mère</span><span>Trois-Rivières</span><span>Nicolet</span></div>
+</div></section>
+
+<section class="section alt"><div class="container"><div class="about-split">
+<img src="<%= settings._p_about_image_url || 'https://placehold.co/800x600/e4efe7/256b42/png?text=Notre+equipe' %>" alt="Notre équipe">
+<div><span class="kicker">À propos</span><h2 class="h2"><%= settings.about_title %></h2><p class="lead"><%= settings.about_text %></p>
+<ul class="feature-list">
+<li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12l4 4L19 6"/></svg><span>Entreprise locale, réponse en moins de 24 h</span></li>
+<li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12l4 4L19 6"/></svg><span>Forfaits saisonniers et tarifs clairs</span></li>
+<li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12l4 4L19 6"/></svg><span><%= settings.guarantee_text %></span></li>
+</ul>
+<div class="stats">
+<div class="stat"><div class="n">4</div><div class="l">villes desservies</div></div>
+<div class="stat"><div class="n">3</div><div class="l">services saisonniers</div></div>
+<div class="stat"><div class="n">24 h</div><div class="l">délai de réponse</div></div>
+<div class="stat"><div class="n">100 %</div><div class="l">satisfaction visée</div></div>
+</div>
+</div>
+</div></div></section>
+
+<% if(typeof products!=='undefined' && products.length){ %>
+<section class="section"><div class="container">
+<div class="section-head"><span class="kicker">Boutique</span><h2 class="h2">Tout pour entretenir votre terrain</h2></div>
+<div class="prod-grid">
+<% products.forEach(function(p){ %>
+<article class="prod-card"><a class="pm" href="boutique/<%= p.id %>"><img src="<%= p.image_url||'https://placehold.co/600x600/e4efe7/256b42/png?text=Produit' %>" alt="<%= p.name %>"></a><div class="prod-info"><span class="prod-cat"><%= p.category||'' %></span><h3><a href="boutique/<%= p.id %>"><%= p.name %></a></h3><div class="prod-price"><%= formatPrice(p.price) %> <% if(p.unit){ %><small><%= p.unit %></small><% } %></div><button class="btn btn-primary add-cart" style="background-color:#256B42;color:#fff" data-id="<%= p.id %>" data-name="<%= p.name %>" data-price="<%= p.price %>" data-unit="<%= p.unit||'' %>" data-image="<%= p.image_url||'' %>"><%= t.add_cart %></button></div></article>
+<% }); %>
+</div>
+<div style="text-align:center;margin-top:30px"><a class="btn btn-ghost" href="boutique">Voir toute la boutique</a></div>
+</div></section>
+<% } %>
+
+<% if(typeof testimonials!=='undefined' && testimonials.length){ %>
+<section class="section alt"><div class="container">
+<div class="section-head center"><span class="kicker">Témoignages</span><h2 class="h2">Ce que disent nos clients</h2></div>
+<div class="testi-grid">
+<% testimonials.slice(0,3).forEach(function(tm){ var st=''; for(var i=0;i<(tm.rating||5);i++) st+='★'; %>
+<div class="testi-card"><div class="stars"><%= st %></div><p>« <%= tm.content %> »</p><div class="testi-who"><% if(tm.image_url){ %><img src="<%= tm.image_url %>" alt="<%= tm.author %>"><% } %><div><div class="nm"><%= tm.author %></div><div class="lo"><%= tm.location||'' %></div></div></div></div>
+<% }); %>
+</div>
+</div></section>
+<% } %>
+
+<% if(typeof posts!=='undefined' && posts.length){ %>
+<section class="section"><div class="container">
+<div class="section-head"><span class="kicker">Conseils</span><h2 class="h2">Astuces saisonnières</h2></div>
+<div class="tips-grid">
+<% posts.forEach(function(p){ %>
+<article class="tip-card"><a href="conseils/<%= p.id %>"><img src="<%= p.image_url||'https://placehold.co/800x500/e4efe7/256b42/png?text=Conseil' %>" alt="<%= p.title %>"></a><div class="tip-body"><span class="meta"><%= p.category||'Conseil' %></span><h3><a href="conseils/<%= p.id %>"><%= p.title %></a></h3><a class="more" href="conseils/<%= p.id %>">Lire l'article →</a></div></article>
+<% }); %>
+</div>
+</div></section>
+<% } %>
+
+<section class="section"><div class="container"><div class="cta-band"><h2><%= settings.cta_title %></h2><p><%= settings.cta_text %></p><div class="cta-row"><a class="btn btn-orange" style="background:#E2701E;color:#fff" href="soumission">Soumission gratuite</a><% if(settings.contact_phone){ %><a class="btn btn-ghost" href="tel:<%= settings.contact_phone %>">Appeler maintenant</a><% } %></div></div></div></section>
+
+<%- include('partials/footer') %>
