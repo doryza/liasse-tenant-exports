@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="<%= typeof lang!=='undefined'?lang:'fr' %>">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#6366f1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title><%= (typeof pageTitle!=='undefined'?pageTitle+' · ':'') + (typeof info!=='undefined'?info.businessName:'RAZZ·UP') %></title>
+<meta name="description" content="<%= typeof t!=='undefined'?t.brand_tagline:'' %>">
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,500..800;1,6..96,400..600&family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="public/css/styles.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="container nav-wrap">
+    <a class="brand" href=".">RAZZ<span class="brand-dot">·</span>UP</a>
+    <nav class="nav-desktop" aria-label="Navigation">
+      <a href="razes"><%= t.nav_razes %></a>
+      <a href="vendeurs"><%= t.nav_sellers %></a>
+      <a href="gagnants"><%= t.nav_winners %></a>
+      <a href="transparence"><%= t.nav_transparency %></a>
+      <a href="actualites"><%= t.nav_news %></a>
+    </nav>
+    <div class="nav-actions">
+      <span class="lang-toggle"><a href="?lang=fr" class="<%= lang==='fr'?'on':'' %>">FR</a><i>/</i><a href="?lang=en" class="<%= lang==='en'?'on':'' %>">EN</a></span>
+      <a href="messages" class="nav-icn" data-auth-only style="display:none" title="<%= t.nav_messages %>" aria-label="<%= t.nav_messages %>"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.6-.8L3 21l1.8-5.9A8.5 8.5 0 1 1 21 11.5z"/></svg></a>
+      <a href="compte" class="nav-icn" data-auth-only style="display:none" title="<%= t.nav_account %>" aria-label="<%= t.nav_account %>"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></svg></a>
+      <a href="#" class="btn btn-ghost btn-sm" data-login-btn><%= t.nav_login %></a>
+      <a href="soumettre" class="btn btn-primary btn-sm soumettre-cta"><%= t.nav_submit %></a>
+      <button class="hamburger" id="hbtn" aria-label="Menu"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+    </div>
+  </div>
+  <div class="mobile-panel" id="mpanel">
+    <a href="razes"><%= t.nav_razes %></a>
+    <a href="vendeurs"><%= t.nav_sellers %></a>
+    <a href="gagnants"><%= t.nav_winners %></a>
+    <a href="transparence"><%= t.nav_transparency %></a>
+    <a href="soumettre"><%= t.nav_submit %></a>
+    <a href="actualites"><%= t.nav_news %></a>
+    <a href="contact"><%= t.nav_contact %></a>
+    <a href="messages" data-auth-only style="display:none"><%= t.nav_messages %></a>
+    <a href="compte" data-auth-only style="display:none"><%= t.nav_account %></a>
+    <a href="#" data-login-btn><%= t.nav_login %></a>
+  </div>
+</header>
+<main>

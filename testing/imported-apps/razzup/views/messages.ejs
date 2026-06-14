@@ -1,0 +1,11 @@
+<%- include('partials/header') %>
+<section class="page-head"><div class="container"><span class="eyebrow">RAZZ·UP</span><h1><%= t.messages_title %></h1><p><%= t.messages_sub %></p></div></section>
+<section class="section"><div class="container">
+  <div data-login-btn class="login-gate"><p><%= t.msg_login_prompt %></p><a href="#" class="btn btn-primary" data-login-btn style="background-color:#6366f1;color:#fff"><%= t.nav_login %></a></div>
+  <div data-auth-only style="display:none" class="msg-layout">
+    <aside class="msg-threads"><div class="msg-threads-head"><strong><%= t.messages_title %></strong><button id="newMsgBtn" class="btn btn-gold btn-sm" style="background-color:#bd962f;color:#16181d">+ <%= t.msg_new %></button></div><div id="threadList"><p class="muted"><%= t.loading %></p></div></aside>
+    <section class="msg-main"><div id="threadView" class="msg-empty"><%= t.msg_select %></div></section>
+  </div>
+</div></section>
+<div id="newMsgModal" class="modal" style="display:none"><div class="modal-card"><div class="modal-head"><h3><%= t.msg_compose_title %></h3><button class="modal-x" id="closeNew">&times;</button></div><div class="modal-body"><label class="field"><span><%= t.msg_to_email %></span><input type="email" id="newTo" placeholder="membre@exemple.com"></label><label class="field"><span><%= t.contact_message %></span><textarea id="newBody" rows="4" placeholder="<%= t.msg_placeholder %>"></textarea></label><div id="newMsgErr"></div><button id="sendNew" class="btn btn-primary full" style="background-color:#6366f1;color:#fff"><%= t.msg_send %></button></div></div></div>
+<%- include('partials/footer') %>

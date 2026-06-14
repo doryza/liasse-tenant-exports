@@ -1,0 +1,23 @@
+<%- include('partials/header') %>
+<section class="page-head"><div class="container"><span class="eyebrow"><%= t.home_sellers_eyebrow %></span><h1><%= t.submit_title %></h1><p><%= t.submit_sub %></p></div></section>
+<section class="section"><div class="container narrow">
+  <div data-login-btn class="login-gate"><p><%= t.submit_login_prompt %></p><a href="#" class="btn btn-primary" data-login-btn style="background-color:#6366f1;color:#fff"><%= t.nav_login %></a></div>
+  <form id="submitForm" data-auth-only style="display:none" class="form-card">
+    <label class="field"><span><%= t.submit_card_name %> *</span><input type="text" id="sCardName" required placeholder="ex. Connor Bedard Young Guns"></label>
+    <div class="field-row">
+      <label class="field"><span><%= t.submit_year %></span><input type="text" id="sYear" placeholder="ex. 2023"></label>
+      <label class="field"><span><%= t.submit_sport %></span><select id="sSport"><option value=""><%= t.submit_select %></option><% sports.forEach(function(sp){ %><option value="<%= sp %>"><%= sp %></option><% }); %></select></label>
+    </div>
+    <div class="field-row">
+      <label class="field"><span><%= t.submit_grade %></span><select id="sGrade"><option value=""><%= t.submit_select %></option><% grades.forEach(function(g){ %><option value="<%= g %>"><%= g %></option><% }); %></select></label>
+      <label class="field"><span><%= t.submit_price %></span><input type="number" id="sPrice" min="0" step="1" placeholder="ex. 650"></label>
+    </div>
+    <label class="field"><span><%= t.submit_desc %></span><textarea id="sDesc" rows="3"></textarea></label>
+    <label class="field"><span><%= t.submit_image %></span><input type="file" id="sImage" accept="image/*"><small><%= t.submit_image_hint %></small></label>
+    <input type="hidden" id="sImageUrl">
+    <div id="sImagePreview"></div>
+    <button type="submit" class="btn btn-primary btn-lg" style="background-color:#6366f1;color:#fff"><%= t.submit_btn %></button>
+    <div id="submitResult"></div>
+  </form>
+</div></section>
+<%- include('partials/footer') %>

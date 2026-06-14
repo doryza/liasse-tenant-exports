@@ -1,0 +1,19 @@
+<% var pct = r.max_entries? Math.min(100, Math.round((r.sold_entries||0)/r.max_entries*100)) : 0; %>
+<a class="raze-card" href="razes/<%= r.id %>">
+  <div class="raze-media">
+    <img src="<%= r.image_url || 'https://placehold.co/600x800/1c2030/c2982e/png?text=RAZZ' %>" alt="<%= r.card_name||r.title %>" loading="lazy">
+    <span class="raze-lot"><%= t.raze_lot %> <%= r.id %></span>
+    <span class="raze-status raze-status--<%= r.status %>"><%= t['status_'+r.status] || r.status %></span>
+  </div>
+  <div class="raze-body">
+    <% if(r.sport){ %><div class="raze-sport"><%= r.sport %><% if(r.card_grade){ %> · <%= r.card_grade %><% } %></div><% } %>
+    <h3 class="raze-title"><%= r.title %></h3>
+    <div class="raze-meta">
+      <div><span><%= t.raze_entry_price %></span><strong><%= formatPrice(r.entry_price) %></strong></div>
+      <div><span><%= t.raze_value %></span><strong><%= formatPrice(r.estimated_value) %></strong></div>
+    </div>
+    <div class="raze-progress"><span style="width:<%= pct %>%"></span></div>
+    <div class="raze-progress-label"><%= (r.sold_entries||0) %> / <%= r.max_entries||'—' %> <%= t.raze_entries_label %></div>
+    <div class="raze-foot" data-ends="<%= r.ends_at||'' %>" data-status="<%= r.status %>"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span class="cd-out">—</span></div>
+  </div>
+</a>

@@ -1,0 +1,42 @@
+<%- include('partials/header') %>
+<% var pct = raze.max_entries? Math.min(100, Math.round((raze.sold_entries||0)/raze.max_entries*100)) : 0; %>
+<section class="section">
+  <div class="container">
+    <a href="razes" class="back-link">← <%= t.raze_back %></a>
+    <div class="raze-detail">
+      <div class="raze-detail-media">
+        <div class="slab"><img src="<%= raze.image_url || 'https://placehold.co/600x800/1c2030/c2982e/png?text=RAZZ' %>" alt="<%= raze.card_name||raze.title %>"><span class="slab-lot"><%= t.raze_lot %> <%= raze.id %></span></div>
+      </div>
+      <div class="raze-detail-info">
+        <span class="raze-status raze-status--<%= raze.status %> big"><%= t['status_'+raze.status] || raze.status %></span>
+        <h1><%= raze.title %></h1>
+        <% if(raze.sport||raze.card_year||raze.card_grade){ %><div class="chip-row"><% if(raze.sport){ %><span class="chip"><%= raze.sport %></span><% } %><% if(raze.card_year){ %><span class="chip"><%= raze.card_year %></span><% } %><% if(raze.card_grade){ %><span class="chip chip-gold"><%= raze.card_grade %></span><% } %></div><% } %>
+        <div class="raze-figures">
+          <div><span><%= t.raze_entry_price %></span><strong><%= formatPrice(raze.entry_price) %></strong></div>
+          <div><span><%= t.raze_value %></span><strong><%= formatPrice(raze.estimated_value) %></strong></div>
+        </div>
+        <div class="raze-progress big"><span style="width:<%= pct %>%"></span></div>
+        <div class="raze-progress-label"><%= (raze.sold_entries||0) %> / <%= raze.max_entries||'—' %> <%= t.raze_sold %></div>
+        <% if(raze.status==='active' && raze.ends_at){ %><p class="raze-timing"><%= t.raze_ends %> <%= fmtDate(raze.ends_at) %> · <span class="cd-out" data-ends="<%= raze.ends_at %>" data-status="active">—</span></p><% } else if(raze.status==='upcoming' && raze.starts_at){ %><p class="raze-timing"><%= t.raze_starts %> <%= fmtDate(raze.starts_at) %></p><% } %>
+        <p class="certified-note"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#bd962f" stroke-width="1.6"><path d="M12 3l8 3v6c0 5-3.4 7.7-8 9-4.6-1.3-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg> <%= t.raze_certified_note %></p>
+        <% if(raze.status==='active'){ %>
+          <a href="#" class="btn btn-primary btn-lg full" data-login-btn style="background-color:#6366f1;color:#fff"><%= t.raze_login_prompt %></a>
+          <form id="enterForm" data-raze-id="<%= raze.id %>" data-auth-only style="display:none">
+            <label class="field"><span><%= t.raze_quantity %></span><input type="number" id="qty" min="1" value="1"></label>
+            <p class="raze-total"><%= t.raze_total_label %>: <strong id="enterTotal"><%= formatPrice(raze.entry_price) %></strong></p>
+            <button type="submit" class="btn btn-primary btn-lg full" style="background-color:#6366f1;color:#fff"><%= t.raze_confirm %></button>
+          </form>
+          <div id="enterResult"></div>
+          <div id="myEntries" data-auth-only data-raze-id="<%= raze.id %>" style="display:none"></div>
+        <% } else if(raze.status==='drawn'){ %>
+          <div class="drawn-box"><h3><%= t.raze_winner_label %></h3><p class="winner-name"><%= raze.winner_name || '—' %></p><% if(raze.draw_proof){ %><div class="proof"><span><%= t.raze_proof_label %></span><code><%= raze.draw_proof %></code></div><% } %></div>
+        <% } else { %>
+          <a href="#" class="btn btn-outline btn-lg full" data-login-btn><%= t.raze_login_prompt %></a>
+        <% } %>
+      </div>
+    </div>
+    <% if(raze.description){ %><div class="raze-about"><h2><%= t.raze_about %></h2><p><%= raze.description %></p></div><% } %>
+    <% if(seller){ %><div class="raze-seller"><img src="<%= seller.image_url || 'https://placehold.co/120x120/1c2030/e8d8a4/png?text=V' %>" alt="<%= seller.name %>"><div><span class="eyebrow"><%= t.raze_seller_label %></span><h3><%= seller.name %><% if(seller.verified){ %> <span class="vbadge"><svg viewBox="0 0 24 24" width="14" height="14" fill="#bd962f"><path d="M12 2l2.4 2.3 3.2-.4 1 3.1 2.7 1.8-1.3 3 1.3 3-2.7 1.8-1 3.1-3.2-.4L12 22l-2.4-2.3-3.2.4-1-3.1L2.7 15l1.3-3-1.3-3 2.7-1.8 1-3.1 3.2.4z"/></svg></span><% } %></h3><span class="seller-rating">★ <%= (seller.rating||5).toFixed(1) %> · <%= seller.total_sales||0 %> <%= t.seller_sales %></span></div><div class="raze-seller-actions"><a href="vendeurs/<%= seller.id %>" class="btn btn-ghost btn-sm"><%= t.seller_about %></a><a href="messages?to=<%= encodeURIComponent(seller.contact_email||'') %>" class="btn btn-outline btn-sm" data-auth-only style="display:none"><%= t.raze_contact_seller %></a></div></div><% } %>
+  </div>
+</section>
+<%- include('partials/footer') %>

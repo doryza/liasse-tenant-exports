@@ -1,0 +1,24 @@
+<%- include('partials/header') %>
+<section class="page-head"><div class="container"><span class="eyebrow"><%= t.home_trust_eyebrow %></span><h1><%= t.transparency_title %></h1><p><%= t.transparency_sub %></p></div></section>
+<section class="section"><div class="container narrow">
+  <p class="lead"><%= (lang==='en' ? (settings.transparency_intro_en||settings.transparency_intro_fr) : settings.transparency_intro_fr) || t.transparency_sub %></p>
+  <h2 class="pt"><%= t.transp_step_title %></h2>
+  <div class="steps light">
+    <div class="step"><span class="step-n">1</span><h3><%= t.transp_s1_t %></h3><p><%= t.transp_s1_d %></p></div>
+    <div class="step"><span class="step-n">2</span><h3><%= t.transp_s2_t %></h3><p><%= t.transp_s2_d %></p></div>
+    <div class="step"><span class="step-n">3</span><h3><%= t.transp_s3_t %></h3><p><%= t.transp_s3_d %></p></div>
+  </div>
+</div></section>
+<section class="section band-paper"><div class="container">
+  <h2><%= t.transp_recent_title %></h2>
+  <% if(typeof drawnRazes!=='undefined' && drawnRazes.length){ %>
+    <div class="proof-table-wrap"><table class="proof-table"><thead><tr><th><%= t.transp_raze_col %></th><th><%= t.transp_winner_col %></th><th><%= t.transp_tickets_col %></th><th><%= t.transp_date_col %></th><th><%= t.transp_proof_col %></th></tr></thead><tbody>
+      <% drawnRazes.forEach(function(r){ %><tr><td><a href="razes/<%= r.id %>"><%= r.title %></a></td><td><%= r.winner_name||'—' %></td><td><%= r.total_tickets||0 %></td><td><%= fmtDate(r.drawn_at) %></td><td><code class="proof-code"><%= (r.draw_proof||'').slice(0,16) %>…</code></td></tr><% }); %>
+    </tbody></table></div>
+  <% } else { %><div class="empty"><%= t.empty_drawn %></div><% } %>
+</div></section>
+<section class="section" id="remboursement"><div class="container narrow">
+  <h2><%= t.refund_title %></h2>
+  <p class="policy"><%= (lang==='en' ? (settings.refund_policy_en||settings.refund_policy_fr) : settings.refund_policy_fr) || '' %></p>
+</div></section>
+<%- include('partials/footer') %>

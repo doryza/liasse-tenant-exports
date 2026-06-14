@@ -1,0 +1,283 @@
+{
+  "exportedAt": "2026-06-14T19:45:08.465Z",
+  "tables": {
+    "admin_users": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "password_hash",
+        "display_name",
+        "role",
+        "active",
+        "activation_token",
+        "invited_by",
+        "invite_token",
+        "invite_expires_at",
+        "last_login_at",
+        "is_active",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_invites": {
+      "columns": [
+        "id",
+        "email",
+        "token",
+        "role",
+        "status",
+        "invited_by",
+        "expires_at",
+        "accepted_at",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_webauthn_credentials": {
+      "columns": [
+        "id",
+        "admin_user_id",
+        "credential_id",
+        "public_key",
+        "counter",
+        "device_name",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_settings": {
+      "columns": [
+        "key",
+        "value",
+        "updated_at"
+      ],
+      "totalRows": 34,
+      "sampleRows": [
+        {
+          "key": "tagline",
+          "value": "La salle des ventes des collectionneurs sérieux.",
+          "updated_at": "2026-06-14T19:44:06.415Z"
+        },
+        {
+          "key": "refund_policy_fr",
+          "value": "Tous les paiements de razes sont conservés en fiducie jusqu’au tirage. Si un raze est annulé par le vendeur ou la plateforme, chaque participant est intégralement remboursé par e-transfer dans un délai de 3 jours ouvrables. Les entrées payées mais non confirmées avant la clôture sont automatiquement remboursées. En cas de carte non conforme à sa description, le gagnant dispose de 7 jours pour signaler un litige et obtenir un remboursement complet.",
+          "updated_at": "2026-06-14T19:44:06.422Z"
+        },
+        {
+          "key": "refund_policy_en",
+          "value": "All raze payments are held in trust until the draw. If a raze is cancelled by the seller or the platform, every participant is fully refunded by e-transfer within 3 business days. Entries paid but not confirmed before close are automatically refunded. If a card does not match its description, the winner has 7 days to report a dispute and receive a full refund.",
+          "updated_at": "2026-06-14T19:44:06.430Z"
+        },
+        {
+          "key": "transparency_intro_fr",
+          "value": "Chaque tirage RAZZ·UP est aléatoire, certifié et vérifiable. Nous générons une graine cryptographique sécurisée au moment du tirage, puis publions une empreinte (preuve SHA-256) que personne ne peut modifier après coup. Le nombre exact de billets en jeu et l’empreinte sont affichés publiquement pour chaque raze tiré.",
+          "updated_at": "2026-06-14T19:44:06.437Z"
+        },
+        {
+          "key": "transparency_intro_en",
+          "value": "Every RAZZ·UP draw is random, certified and verifiable. We generate a secure cryptographic seed at the moment of the draw, then publish a fingerprint (SHA-256 proof) that nobody can alter afterward. The exact number of tickets in play and the fingerprint are publicly shown for every drawn raze.",
+          "updated_at": "2026-06-14T19:44:06.446Z"
+        },
+        {
+          "key": "_p_hero_image_url",
+          "value": "https://res.cloudinary.com/duhp69meg/image/upload/v1781464215/tapavis_tenant_razzup/build_razzup_1781464215095.png",
+          "updated_at": "2026-06-14T19:44:06.455Z"
+        },
+        {
+          "key": "_p_seo_title_fr",
+          "value": "RAZZ·UP — Encans certifiés de cartes sportives",
+          "updated_at": "2026-06-14T19:44:42.374Z"
+        },
+        {
+          "key": "_p_seo_source_title_fr",
+          "value": "ai",
+          "updated_at": "2026-06-14T19:44:42.391Z"
+        },
+        {
+          "key": "_p_seo_description_fr",
+          "value": "Soumettez, vendez et participez à des razes de cartes sportives gradées. Tirages aléatoires certifiés, vendeurs vérifiés, paiements par e-transfer.",
+          "updated_at": "2026-06-14T19:44:42.424Z"
+        },
+        {
+          "key": "_p_seo_source_description_fr",
+          "value": "ai",
+          "updated_at": "2026-06-14T19:44:42.436Z"
+        }
+      ]
+    },
+    "site_visits": {
+      "columns": [
+        "id",
+        "path",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "posts": {
+      "columns": [
+        "id",
+        "title",
+        "content",
+        "image_url",
+        "category",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "sellers": {
+      "columns": [
+        "id",
+        "name",
+        "bio",
+        "image_url",
+        "verified",
+        "location",
+        "contact_email",
+        "rating",
+        "total_sales",
+        "member_since",
+        "featured",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "razes": {
+      "columns": [
+        "id",
+        "title",
+        "description",
+        "image_url",
+        "card_name",
+        "card_year",
+        "card_grade",
+        "sport",
+        "seller_id",
+        "seller_name",
+        "estimated_value",
+        "entry_price",
+        "max_entries",
+        "sold_entries",
+        "total_tickets",
+        "status",
+        "starts_at",
+        "ends_at",
+        "winner_user_id",
+        "winner_name",
+        "draw_seed",
+        "draw_proof",
+        "drawn_at",
+        "featured",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "raze_entries": {
+      "columns": [
+        "id",
+        "raze_id",
+        "user_id",
+        "user_name",
+        "user_email",
+        "quantity",
+        "amount",
+        "payment_status",
+        "etransfer_ref",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "card_submissions": {
+      "columns": [
+        "id",
+        "user_id",
+        "submitter_name",
+        "submitter_email",
+        "card_name",
+        "card_year",
+        "card_grade",
+        "sport",
+        "description",
+        "image_url",
+        "asking_price",
+        "status",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "reviews": {
+      "columns": [
+        "id",
+        "seller_id",
+        "author_name",
+        "rating",
+        "content",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "winners": {
+      "columns": [
+        "id",
+        "raze_id",
+        "raze_title",
+        "winner_name",
+        "card_name",
+        "image_url",
+        "draw_date",
+        "draw_proof",
+        "total_tickets",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "messages": {
+      "columns": [
+        "id",
+        "from_user_id",
+        "from_name",
+        "to_user_id",
+        "to_name",
+        "raze_id",
+        "body",
+        "read",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "form_submissions": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "subject",
+        "message",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    }
+  }
+}

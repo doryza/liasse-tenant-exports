@@ -1,0 +1,10 @@
+<%- include('partials/header') %>
+<section class="page-head"><div class="container"><span class="eyebrow"><%= t.home_news_eyebrow %></span><h1><%= t.news_title %></h1><p><%= t.news_sub %></p></div></section>
+<section class="section"><div class="container">
+  <% if(typeof posts!=='undefined' && posts.length){ %>
+    <div class="post-grid"><% posts.forEach(function(p){ %>
+      <a class="post-card" href="actualites/<%= p.id %>"><img src="<%= p.image_url || 'https://placehold.co/600x400/eee/999/png?text=Article' %>" alt="<%= p.title %>"><div class="post-body"><% if(p.category){ %><span class="post-cat"><%= p.category %></span><% } %><h3><%= p.title %></h3><span class="link-gold"><%= t.read_more %> →</span></div></a>
+    <% }); %></div>
+  <% } else { %><div class="empty"><%= t.empty_news %></div><% } %>
+</div></section>
+<%- include('partials/footer') %>

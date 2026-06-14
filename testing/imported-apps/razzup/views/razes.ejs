@@ -1,0 +1,17 @@
+<%- include('partials/header') %>
+<section class="page-head">
+  <div class="container"><span class="eyebrow"><%= t.home_active_eyebrow %></span><h1><%= t.razes_title %></h1><p><%= t.razes_sub %></p></div>
+</section>
+<section class="section">
+  <div class="container">
+    <form class="filters" method="get" action="razes">
+      <select name="sport"><option value=""><%= t.filter_all_sports %></option><% (sports||[]).forEach(function(sp){ %><option value="<%= sp %>" <%= sport===sp?'selected':'' %>><%= sp %></option><% }); %></select>
+      <select name="status"><option value=""><%= t.filter_all_status %></option><option value="active" <%= status==='active'?'selected':'' %>><%= t.status_active %></option><option value="upcoming" <%= status==='upcoming'?'selected':'' %>><%= t.status_upcoming %></option><option value="drawn" <%= status==='drawn'?'selected':'' %>><%= t.status_drawn %></option></select>
+      <button type="submit" class="btn btn-primary btn-sm" style="background-color:#6366f1;color:#fff"><%= t.filter_apply %></button>
+    </form>
+    <% if(typeof razes!=='undefined' && razes.length){ %>
+      <div class="raze-grid"><% razes.forEach(function(r){ %><%- include('partials/razecard', { r:r, t:t, lang:lang, formatPrice:formatPrice, fmtDate:fmtDate }) %><% }); %></div>
+    <% } else { %><div class="empty"><%= t.empty_razes %></div><% } %>
+  </div>
+</section>
+<%- include('partials/footer') %>

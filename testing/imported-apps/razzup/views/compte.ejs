@@ -1,0 +1,13 @@
+<%- include('partials/header') %>
+<section class="page-head"><div class="container"><span class="eyebrow">RAZZ·UP</span><h1><%= t.account_title %></h1><p><%= t.account_sub %></p></div></section>
+<section class="section"><div class="container">
+  <div data-login-btn class="login-gate"><p><%= t.account_login_prompt %></p><a href="#" class="btn btn-primary" data-login-btn style="background-color:#6366f1;color:#fff"><%= t.nav_login %></a></div>
+  <div data-auth-only style="display:none">
+    <div class="acct-notif"><div><h3><%= t.account_notif_title %></h3><p class="muted"><%= t.brand_tagline %></p></div><button class="btn btn-outline btn-sm" data-push-btn><%= t.enable_notif %></button></div>
+    <h2 class="pt"><%= t.account_entries %></h2>
+    <div id="acctEntries"><p class="muted"><%= t.loading %></p></div>
+    <h2 class="pt"><%= t.account_subs %></h2>
+    <div id="acctSubs"><p class="muted"><%= t.loading %></p></div>
+  </div>
+</div></section>
+<%- include('partials/footer') %>

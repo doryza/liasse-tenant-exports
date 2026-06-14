@@ -1,0 +1,105 @@
+{
+  "slug": "razzup",
+  "displayName": "RazzUp",
+  "description": "Type de projet: Marketplace web\nPublic cible: Collectionneurs sérieux\nBut: Permettre aux utilisateurs de soumettre et vendre des cartes sportives via un système de \"razes\".\n\nFonctionnalités clés:\n- Système de \"razes\" (enchères/loterie)\n- Soumission de cartes par les utilisateurs\n- Paiements par e-transfer\n- Messagerie entre utilisateurs\n- Tirages au sort aléatoires certifiés et transparents\n\nDesign & marque:\n- Ambiance: Moderne, prestigieux, léger\n- Palette de couleurs: Légère (ex: blanc, gris clair, couleur d'accent), choix final laissé au designer.\n\nIntégrations & extras:\n- Notifications (email/SMS) pour le début des \"razes\" et les résultats.",
+  "status": "active",
+  "generationVersion": 1,
+  "primaryColor": "#6366f1",
+  "iconUrl": "https://res.cloudinary.com/duhp69meg/image/upload/v1781466292/tapavis_tenant_razzup/icon_razzup_1781466292691.png",
+  "enabledAuthMethods": [
+    "webauthn",
+    "sms",
+    "email"
+  ],
+  "notificationsEnabled": true,
+  "geolocationEnabled": true,
+  "customConfig": {
+    "language": "both",
+    "designManifest": {
+      "concept": "Le Lot Certifié",
+      "elements": {
+        "blogSurfaced": true,
+        "pages": [
+          "home",
+          "razes",
+          "raze-detail",
+          "sellers",
+          "seller-detail",
+          "winners",
+          "transparency",
+          "submit",
+          "messages",
+          "account",
+          "contact",
+          "news"
+        ],
+        "userLogin": true
+      },
+      "iconDirection": "A flat emblem mark: a circular gold certification seal enclosing a stylized card slab silhouette, on the pale paper ground — engraved-house feel, no text.",
+      "palette": {
+        "accents": [
+          "#bd962f",
+          "#e8d8a4",
+          "#1c2030"
+        ],
+        "ground": "#f7f6f2",
+        "ink": "#16181d",
+        "primary": "#6366f1"
+      },
+      "signatureMove": "A running auction-catalogue 'lot' system: each raze is a graded-slab card stamped with a gold wax-seal certification mark, a 'Lot N' tag and a live countdown, with thin gold hairlines dividing every section like a printed sale ledger.",
+      "summary": "An auction-catalogue identity where every sports card is a numbered, sealed lot on a bright champagne-paper floor — the excitement of the draw framed by the credibility of a certified house.",
+      "typography": "Bodoni Moda (high-contrast didone display, auction catalogue) paired with Hanken Grotesk (clean humanist grotesque body)"
+    }
+  },
+  "promptHistory": [
+    {
+      "prompt": "Type de projet: Marketplace web\nPublic cible: Collectionneurs sérieux\nBut: Permettre aux utilisateurs de soumettre et vendre des cartes sportives via un système de \"razes\".\n\nFonctionnalités clés:\n- Système de \"razes\" (enchères/loterie)\n- Soumission de cartes par les utilisateurs\n- Paiements par e-transfer\n- Messagerie entre utilisateurs\n- Tirages au sort aléatoires certifiés et transparents\n\nDesign & marque:\n- Ambiance: Moderne, prestigieux, léger\n- Palette de couleurs: Légère (ex: blanc, gris clair, couleur d'accent), choix final laissé au designer.\n\nIntégrations & extras:\n- Notifications (email/SMS) pour le début des \"razes\" et les résultats.",
+      "timestamp": "2026-06-14T19:45:01.181Z",
+      "changeNotes": "Initial build of RAZZ·UP, a bilingual (FR/EN) premium sports-card marketplace with a certified 'razes' (auction/lottery) system. Includes a live raze board, raze detail with e-transfer entry flow, verified seller profiles + reviews, a certified-draws transparency page with public SHA-256 proofs, winners wall, card submission flow, peer-to-peer messaging, user account dashboard, news, and a contact form. A background cron auto-activates upcoming razes and runs certified random draws at close, notifying winners. Full self-contained admin backend (dashboard + shared shell modules for razes, submissions, sellers, reviews, winners, posts) with AI image generation and Cloudinary upload, pending e-transfer confirmation, and one-click certified draws.\n\nAdmin enrichment pass: (1) Rebuilt the admin module shell (admin-shell.ejs) with clearer module-aware modal titles, prettified human-readable field labels (label||prettified name), required-field markers + client-side validation, richer table rendering with status badges, boolean Oui/— indicators and image thumbnails, an item count in the topbar, a Refresh button, search empty-states distinct from no-data empty-states, friendly empty states with icons, toast notifications replacing all alert() calls, click-outside-to-close modal, and gold-styled AI generate button. CRUD (create/edit/delete) and row actions (draw/approve/reject) remain fully wired to existing API routes — every row stays editable/deletable. (2) Redesigned the dashboard (admin.ejs) with icon stat cards (active raze card accented), a pending-actions alert banner, section title, icon module cards, block headers with warning pill counts, scrollable styled tables, and proper icon empty states; pending e-transfer confirm/delete now give toast feedback. (3) Overhauled admin-styles.css: added --admin-brand var, focus-visible rings on inputs/buttons, toast component, status badge palette, checkbox field styling, table hover/scroll wrappers, alert/pill/empty-state styles, accent stat card, improved modal shadow and mobile behaviour while preserving prior class names. (4) Public CSS: added accessible focus-visible outlines on buttons. No functional data flows, routes, or schema changed; all hardcoded functional collections (razes with pricing/entry length, sellers, etc.) were already admin-manageable and remain so. All {{IMG_*}} placeholder tokens preserved byte-for-byte.",
+      "generationId": 1317,
+      "filesModified": [
+        "crons.js",
+        "manifest.json",
+        "migrations.sql",
+        "public/css/admin-styles.css",
+        "public/css/styles.css",
+        "public/js/app.js",
+        "routes.js",
+        "schema.sql",
+        "seed.js",
+        "views/actualites.ejs",
+        "views/admin-card_submissions.ejs",
+        "views/admin-form_submissions.ejs",
+        "views/admin-messages.ejs",
+        "views/admin-posts.ejs",
+        "views/admin-raze_entries.ejs",
+        "views/admin-razes.ejs",
+        "views/admin-reviews.ejs",
+        "views/admin-sellers.ejs",
+        "views/admin-winners.ejs",
+        "views/admin.ejs",
+        "views/article.ejs",
+        "views/compte.ejs",
+        "views/contact.ejs",
+        "views/gagnants.ejs",
+        "views/index.ejs",
+        "views/messages.ejs",
+        "views/partials/admin-shell.ejs",
+        "views/partials/admin-sidebar.ejs",
+        "views/partials/footer.ejs",
+        "views/partials/header.ejs",
+        "views/partials/razecard.ejs",
+        "views/raze.ejs",
+        "views/razes.ejs",
+        "views/soumettre.ejs",
+        "views/transparence.ejs",
+        "views/vendeur.ejs",
+        "views/vendeurs.ejs"
+      ]
+    }
+  ],
+  "apiVariables": [],
+  "createdAt": "2026-06-14T18:46:24.138Z",
+  "updatedAt": "2026-06-14T19:45:08.065Z",
+  "exportedAt": "2026-06-14T19:45:08.449Z"
+}
