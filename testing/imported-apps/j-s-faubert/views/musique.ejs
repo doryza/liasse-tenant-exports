@@ -1,0 +1,25 @@
+<%- include('partials/header') %>
+<section class='page-head'><div class='wrap'><p class='eyebrow'>Discographie</p><h1>Musique</h1><p>Écoutez les chansons une à une. Connectez-vous pour garder vos pistes préférées.</p></div></section>
+<section class='section paper'>
+  <div class='wrap'>
+    <% if(typeof tracks!=='undefined'&&tracks.length){ %>
+      <% var curAlbum='__none__'; %>
+      <% tracks.forEach(function(t){ %>
+        <% if((t.album||'')!==curAlbum){ curAlbum=(t.album||''); %>
+          <div class='album-row'><h3><%= curAlbum||'Singles' %></h3></div>
+        <% } %>
+        <div class='trk'>
+          <span class='trk-no'><%= (t.side||'') %><%= t.track_no||'' %></span>
+          <button class='trk-play' data-play data-audio='<%= t.audio_url||'' %>' data-title='<%= t.title %>' data-album='<%= t.album||'' %>' data-cover='<%= t.image_url||'' %>' aria-label='Lire <%= t.title %>' <%= t.audio_url?'':'disabled' %>><svg viewBox='0 0 24 24' fill='currentColor'><path d='M8 5v14l11-7z'/></svg></button>
+          <span class='trk-main'><span class='trk-title'><%= t.title %></span><span class='trk-album'><%= t.description?t.description.slice(0,70):(t.album||'') %></span></span>
+          <span class='trk-dur'><%= t.duration||'' %></span>
+          <button class='trk-fav' data-fav='<%= t.id %>' aria-label='Ajouter aux favoris'><svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.7'><path d='M12 20s-7-4.3-9.2-8.4C1.2 8.7 2.6 5.5 5.7 5.1 7.7 4.8 9.3 6 12 8.6 14.7 6 16.3 4.8 18.3 5.1c3.1.4 4.5 3.6 2.9 6.5C19 15.7 12 20 12 20z'/></svg></button>
+        </div>
+      <% }); %>
+      <p style='margin-top:30px;color:var(--muted);font-size:.92rem'>Astuce : appuyez sur ♪ pour lancer la lecture — le lecteur reste en bas de l’écran pendant que vous naviguez.</p>
+    <% } else { %>
+      <div class='empty'><p>La discographie sera disponible très bientôt.</p></div>
+    <% } %>
+  </div>
+</section>
+<%- include('partials/footer') %>

@@ -1,0 +1,35 @@
+<%- include('partials/header') %>
+<section class='page-head'><div class='wrap'><p class='eyebrow'>En tournée</p><h1>Spectacles</h1><p>Toutes les dates à venir. Réservez vos billets et venez entendre les chansons telles qu’elles ont été pensées : en direct.</p></div></section>
+<section class='section paper'>
+  <div class='wrap'>
+    <div class='section-head'><div><p class='kicker'>À venir</p><h2>Prochaines dates</h2></div></div>
+    <% if(typeof upcoming!=='undefined'&&upcoming.length){ %>
+      <% upcoming.forEach(function(s){ var dd=fmtDay(s.show_date); %>
+      <div class='show'>
+        <div class='show-date'><span class='d'><%= dd.d||'' %></span><span class='m'><%= dd.m||'' %></span></div>
+        <div class='show-body'><h3><%= s.title %></h3><p class='show-meta'><%= [s.venue,s.city].filter(Boolean).join(' · ') %><%= s.show_time?(' · '+s.show_time):'' %></p><% if(s.description){ %><p class='show-desc'><%= s.description %></p><% } %></div>
+        <div class='show-cta'>
+          <% if(s.sold_out){ %><span class='tag-soldout'>Complet</span><% } else if(s.ticket_url){ %><a class='btn-primary' href='<%= s.ticket_url %>' target='_blank' rel='noopener' style='background-color:#6366f1;color:#fff'>Billets</a><% } else if(s.price){ %><span class='show-meta'><%= s.price %></span><% } %>
+        </div>
+      </div>
+      <% }); %>
+    <% } else { %>
+      <div class='empty'><p>Aucune date annoncée pour le moment. Activez les notifications pour être averti des prochains spectacles.</p></div>
+    <% } %>
+  </div>
+</section>
+<% if(typeof past!=='undefined'&&past.length){ %>
+<section class='section night'>
+  <div class='wrap'>
+    <div class='section-head'><div><p class='kicker'>Archives</p><h2>Spectacles passés</h2></div></div>
+    <% past.forEach(function(s){ var dd=fmtDay(s.show_date); %>
+    <div class='show'>
+      <div class='show-date'><span class='d'><%= dd.d||'' %></span><span class='m'><%= dd.m||'' %></span></div>
+      <div class='show-body'><h3><%= s.title %></h3><p class='show-meta'><%= [s.venue,s.city].filter(Boolean).join(' · ') %> · <%= dd.y||'' %></p></div>
+      <div class='show-cta'></div>
+    </div>
+    <% }); %>
+  </div>
+</section>
+<% } %>
+<%- include('partials/footer') %>

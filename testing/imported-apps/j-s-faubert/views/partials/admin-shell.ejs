@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang='fr'>
+<head>
+<meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<title><%= title %> — Admin</title>
+<link rel='stylesheet' href='public/css/admin-styles.css'>
+</head>
+<body>
+<div class='admin-layout'>
+<%- include('admin-sidebar', { active: moduleKey }) %>
+<main class='admin-main'>
+  <header class='admin-topbar'><button class='adm-burger' id='admBurger' aria-label='Menu'>≡</button><h1><%= title %></h1><button class='btn-primary' id='btnNew'>+ Ajouter</button></header>
+  <div class='admin-content'>
+    <div class='adm-toolbar'><input id='search' class='adm-search' placeholder='Rechercher…'><span id='count' class='adm-count'></span></div>
+    <div id='tableWrap' class='adm-table-wrap'><div class='adm-empty'>Chargement…</div></div>
+  </div>
+</main>
+</div>
+<div class='modal' id='modal' aria-hidden='true'><div class='modal-card'><div class='modal-head'><h2 id='modalTitle'>Ajouter</h2><button class='modal-x' id='modalClose' aria-label='Fermer'>×</button></div><form id='form' class='modal-body'></form><div class='modal-foot'><button type='button' class='btn-ghost' id='cancelBtn'>Annuler</button><button type='button' class='btn-primary' id='saveBtn'>Enregistrer</button></div></div></div>
+<div class='toast-wrap' id='toastWrap'></div>
+<script>
+var MODULE_KEY=<%- JSON.stringify(moduleKey) %>;
+var MODULE_LABEL=<%- JSON.stringify(moduleLabel) %>;
+var FIELDS=[];var ITEMS=[];var editingId=null;
+var wrap=document.getElementById('tableWrap');var form=document.getElementById('form');var modal=document.getElementById('modal');var countEl=document.getElementById('count');
+function esc(s){return String(s==null?'':s).replace(/[&<>']/g,function(c){return c==='&'?'&amp;':c==='<'?'&lt;':c==='>'?'&gt;':'&#39;';});}
+function truthy(v){return v===true||v===1||v==='1'||v==='true';}
+function toast(msg,type){var w=document.getElementById('toastWrap');var t=document.createElement('div');t.className='toast '+(type||'');t.textContent=msg;w.appendChild(t);requestAnimationFrame(function(){t.classList.add('show');});setTimeout(function(){t.classList.remove('show');setTimeout(function(){t.remove();},250);},2600);}
+async function loadFields(){ try{var r=await fetch('api/admin/modules');var d=await r.json();var m=(d.modules||[]).filter(function(x){return x.key===MODULE_KEY;})[0];FIELDS=m?m.fields:[];}catch(e){FIELDS=[];} }
+async function load(){ try{var r=await fetch('api/admin/'+MODULE_KEY);var d=await r.json();ITEMS=d[MODULE_KEY]||[];render();}catch(e){wrap.innerHTML=`<div class='adm-empty'>Erreur de chargement.</div>`;} }
+function render(){
+  var q=(document.getElementById('search').value||'').toLowerCase();
+  var items=ITEMS.filter(function(it){ if(!q) return true; var hay=((it.title||'')+' '+(it.album||'')+' '+(it.venue||'')+' '+(it.city||'')+' '+(it.category||'')).toLowerCase(); return hay.indexOf(q)>=0; });
+  countEl.textContent=ITEMS.length?(ITEMS.length+' élément'+(ITEMS.length>1?'s':'')):'';
+  if(!ITEMS.length){ wrap.innerHTML=`<div class='adm-empty'>Aucun ${esc(MODULE_LABEL)} pour l’instant.<br><br><button class='btn-primary' id='emptyNew'>+ Ajouter un ${esc(MODULE_LABEL)}</button></div>`; var en=document.getElementById('emptyNew'); if(en) en.addEventListener('click',openCreate); return; }
+  if(!items.length){ wrap.innerHTML=`<div class='adm-empty'>Aucun résultat pour « ${esc(q)} ».</div>`; return; }
+  var rows=items.map(function(it){
+    var img=it.image_url?`<img class='adm-thumb' src='${esc(it.image_url)}'>`:`<span class='adm-thumb ph'></span>`;
+    var details=esc(it.album||it.venue||it.category||it.city||'');
+    var pub=truthy(it.published)?`<span class='badge on'>Publié</span>`:`<span class='badge'>Brouillon</span>`;
+    return `<tr><td>${img}</td><td class='t-title'>${esc(it.title||'(sans titre)')}</td><td class='t-mut'>${details}</td><td>${pub}</td><td class='t-actions'><button class='btn-mini' data-edit='${it.id}'>Modifier</button><button class='btn-mini danger' data-del='${it.id}'>Suppr.</button></td></tr>`;
+  }).join('');
+  wrap.innerHTML=`<table class='adm-table'><thead><tr><th></th><th>Titre</th><th>Détails</th><th>Statut</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+function buildForm(item){
+  item=item||{};
+  form.innerHTML=FIELDS.map(function(f){
+    var v=item[f.name]; if(v==null||v===undefined) v=(f.default!==undefined?f.default:'');
+    var id='f_'+f.name;
+    var label=`<label class='fld-label' for='${id}'>${esc(f.label||f.name)}${f.required?' *':''}</label>`;
+    var desc=f.description?`<small class='fld-desc'>${esc(f.description)}</small>`:'';
+    var ctrl='';
+    if(f.type==='textarea'){ ctrl=`<textarea id='${id}' name='${f.name}' rows='4' placeholder='${esc(f.placeholder||'')}'>${esc(v)}</textarea>`; }
+    else if(f.type==='boolean'){ ctrl=`<label class='switch'><input type='checkbox' id='${id}' name='${f.name}' ${truthy(v)?'checked':''}> <span>${esc(f.onLabel||'Activé')}</span></label>`; }
+    else if(f.type==='select'){ ctrl=`<select id='${id}' name='${f.name}'><option value=''>—</option>${(f.options||[]).map(function(o){return `<option value='${esc(o)}' ${String(v)===String(o)?'selected':''}>${esc(o)}</option>`;}).join('')}</select>`; }
+    else if(f.type==='image'){ ctrl=`<div class='img-field'><input type='text' id='${id}' name='${f.name}' value='${esc(v)}' placeholder='https://…'><div class='img-actions'><button type='button' class='btn-mini' data-upload='${id}'>Téléverser</button><button type='button' class='btn-mini' data-ai='${id}'>Générer (IA)</button></div><div class='img-prev'>${v?`<img src='${esc(v)}'>`:''}</div></div>`; }
+    else { var ty=(f.type==='number'?'number':(f.type==='date'?'date':(f.type==='url'?'url':(f.type==='email'?'email':'text')))); ctrl=`<input type='${ty}' id='${id}' name='${f.name}' value='${esc(v)}' placeholder='${esc(f.placeholder||'')}' ${f.step?`step='${f.step}'`:''} ${f.min!=null?`min='${f.min}'`:''}>`; }
+    return `<div class='fld'>${label}${ctrl}${desc}</div>`;
+  }).join('');
+}
+function openModal(){modal.classList.add('open');modal.setAttribute('aria-hidden','false');}
+function closeModal(){modal.classList.remove('open');modal.setAttribute('aria-hidden','true');}
+function openCreate(){editingId=null;document.getElementById('modalTitle').textContent='Ajouter';buildForm({});openModal();}
+function openEdit(idv){var it=ITEMS.filter(function(x){return x.id===idv;})[0];if(!it)return;editingId=idv;document.getElementById('modalTitle').textContent='Modifier';buildForm(it);openModal();}
+async function save(){
+  var data={};
+  FIELDS.forEach(function(f){ var el=form.querySelector(`[name='${f.name}']`); if(!el) return; if(f.type==='boolean') data[f.name]=el.checked; else data[f.name]=el.value; });
+  if(FIELDS.some(function(f){return f.name==='title'&&f.required;}) && !(data.title||'').trim()){ toast('Le titre est requis.','err'); return; }
+  var sb=document.getElementById('saveBtn'); sb.disabled=true; var ot=sb.textContent; sb.textContent='…';
+  try{
+    var url='api/admin/'+MODULE_KEY+(editingId?('/'+editingId):'');
+    var r=await fetch(url,{method:editingId?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+    if(r.ok){ closeModal(); toast(editingId?'Modifications enregistrées.':'Élément ajouté.','ok'); await load(); } else { var d=await r.json().catch(function(){return {};}); toast(d.error||'Erreur lors de l’enregistrement.','err'); }
+  }catch(e){ toast('Erreur réseau.','err'); }
+  sb.disabled=false; sb.textContent=ot;
+}
+async function doDelete(idv){ if(!confirm('Supprimer cet élément ?')) return; try{ var r=await fetch('api/admin/'+MODULE_KEY+'/'+idv,{method:'DELETE'}); if(r.ok){ toast('Élément supprimé.','ok'); await load(); } else toast('Suppression impossible.','err'); }catch(e){ toast('Erreur réseau.','err'); } }
+function prev(inp,url){ var w=inp.parentElement.querySelector('.img-prev'); if(w) w.innerHTML=`<img src='${url}'>`; }
+form.addEventListener('click', async function(e){
+  var up=e.target.closest('[data-upload]');
+  if(up){ var inp=document.getElementById(up.getAttribute('data-upload')); var fi=document.createElement('input'); fi.type='file'; fi.accept='image/*'; fi.onchange=function(){ var f=fi.files&&fi.files[0]; if(!f) return; var rd=new FileReader(); rd.onload=async function(){ var ot=up.textContent; up.textContent='…'; try{ var r=await fetch('api/admin/upload',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({dataUri:rd.result})}); var d=await r.json(); if(d.url){ inp.value=d.url; prev(inp,d.url); toast('Image téléversée.','ok'); } else toast(d.error||'Erreur','err'); }catch(err){ toast('Erreur de téléversement.','err'); } up.textContent=ot; }; rd.readAsDataURL(f); }; fi.click(); return; }
+  var ai=e.target.closest('[data-ai]');
+  if(ai){ var inp2=document.getElementById(ai.getAttribute('data-ai')); var p=prompt('Décrivez l’image à générer :'); if(!p) return; var ot2=ai.textContent; ai.textContent='…'; try{ var r=await fetch('api/admin/generate-image',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:p,aspectRatio:MODULE_KEY==='tracks'?'1:1':'4:3'})}); var d=await r.json(); if(d.imageUrl){ inp2.value=d.imageUrl; prev(inp2,d.imageUrl); toast('Image générée.','ok'); } else toast(d.error||'Erreur','err'); }catch(err){ toast('Erreur de génération.','err'); } ai.textContent=ot2; return; }
+});
+document.getElementById('btnNew').addEventListener('click',openCreate);
+document.getElementById('saveBtn').addEventListener('click',save);
+document.getElementById('cancelBtn').addEventListener('click',closeModal);
+document.getElementById('modalClose').addEventListener('click',closeModal);
+modal.addEventListener('click',function(e){ if(e.target===modal) closeModal(); });
+document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&modal.classList.contains('open')) closeModal(); });
+document.getElementById('search').addEventListener('input',render);
+wrap.addEventListener('click',function(e){ var ed=e.target.closest('[data-edit]'); if(ed){ openEdit(parseInt(ed.getAttribute('data-edit'))); return; } var dl=e.target.closest('[data-del]'); if(dl){ doDelete(parseInt(dl.getAttribute('data-del'))); } });
+(function(){var b=document.getElementById('admBurger'),s=document.getElementById('admSide');if(b&&s){b.addEventListener('click',function(){s.classList.toggle('open');});}})();
+(async function(){ await loadFields(); await load(); })();
+</script>
+</body>
+</html>

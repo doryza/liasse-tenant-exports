@@ -1,0 +1,104 @@
+<%- include('partials/header') %>
+<section class='hero'>
+  <div class='hero-media'><img src='<%= (typeof settings!=='undefined'&&settings._p_hero_image_url)?settings._p_hero_image_url:'https://placehold.co/1600x900/1c1626/6366f1/png?text=Studio' %>' alt='Ambiance de studio nocturne'></div>
+  <div class='hero-inner'>
+    <p class='eyebrow'><%= (typeof settings!=='undefined'&&settings.hero_eyebrow)?settings.hero_eyebrow:'Nouvel album' %></p>
+    <h1><%= (typeof settings!=='undefined'&&settings.hero_title)?settings.hero_title:'Jean-Sébastien Faubert' %></h1>
+    <p class='lead'><%= (typeof settings!=='undefined'&&settings.hero_subtitle)?settings.hero_subtitle:'Des chansons écrites pour la nuit.' %></p>
+    <div class='hero-cta'>
+      <% if(typeof latest!=='undefined'&&latest&&latest.audio_url){ %>
+        <button class='btn-primary' data-play data-audio='<%= latest.audio_url %>' data-title='<%= latest.title %>' data-album='<%= latest.album||'' %>' data-cover='<%= latest.image_url||'' %>' style='background-color:#6366f1;color:#fff'><svg viewBox='0 0 24 24' fill='currentColor'><path d='M8 5v14l11-7z'/></svg> Écouter le dernier titre</button>
+      <% } else { %>
+        <a class='btn-primary' href='musique' style='background-color:#6366f1;color:#fff'>Écouter la musique</a>
+      <% } %>
+      <a class='btn-ghost' href='spectacles' style='border-color:#fff;color:#fff'>Voir les spectacles</a>
+    </div>
+  </div>
+</section>
+
+<% if(typeof latest!=='undefined'&&latest){ %>
+<section class='section paper'>
+  <div class='wrap'>
+    <div class='feature'>
+      <div class='feature-cover'><img src='<%= latest.image_url||'https://placehold.co/600x600/241c30/6366f1/png?text=Pochette' %>' alt='Pochette de <%= latest.title %>'></div>
+      <div class='feature-body'>
+        <p class='kicker'><%= (typeof settings!=='undefined'&&settings.latest_label)?settings.latest_label:'À l’écoute en ce moment' %></p>
+        <h3><%= latest.title %></h3>
+        <p style='color:var(--muted);margin-top:6px'><%= latest.album?(latest.album+' · '):'' %><%= latest.release_date?fmtDate(latest.release_date):'' %></p>
+        <% if(latest.description){ %><p style='margin-top:14px;max-width:52ch'><%= latest.description %></p><% } %>
+        <div style='display:flex;gap:12px;margin-top:24px;flex-wrap:wrap'>
+          <% if(latest.audio_url){ %><button class='btn-primary' data-play data-audio='<%= latest.audio_url %>' data-title='<%= latest.title %>' data-album='<%= latest.album||'' %>' data-cover='<%= latest.image_url||'' %>' style='background-color:#6366f1;color:#fff'><svg viewBox='0 0 24 24' fill='currentColor'><path d='M8 5v14l11-7z'/></svg> Écouter</button><% } %>
+          <a class='btn-line' href='musique'>Toute la discographie →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<section class='section night'>
+  <div class='wrap'>
+    <div class='section-head'><div><p class='kicker'>Sélection</p><h2>Pistes en vedette</h2></div><a class='section-link' href='musique'>Tout voir →</a></div>
+    <% if(typeof tracks!=='undefined'&&tracks.length){ %>
+      <div class='tracklist'>
+        <% tracks.forEach(function(t){ %>
+          <div class='trk'>
+            <span class='trk-no'><%= (t.side||'') %><%= t.track_no||'' %></span>
+            <button class='trk-play' data-play data-audio='<%= t.audio_url||'' %>' data-title='<%= t.title %>' data-album='<%= t.album||'' %>' data-cover='<%= t.image_url||'' %>' aria-label='Lire <%= t.title %>' <%= t.audio_url?'':'disabled' %>><svg viewBox='0 0 24 24' fill='currentColor'><path d='M8 5v14l11-7z'/></svg></button>
+            <span class='trk-main'><span class='trk-title'><%= t.title %></span><span class='trk-album'><%= t.album||'' %></span></span>
+            <span class='trk-dur'><%= t.duration||'' %></span>
+            <button class='trk-fav' data-fav='<%= t.id %>' aria-label='Ajouter aux favoris'><svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.7'><path d='M12 20s-7-4.3-9.2-8.4C1.2 8.7 2.6 5.5 5.7 5.1 7.7 4.8 9.3 6 12 8.6 14.7 6 16.3 4.8 18.3 5.1c3.1.4 4.5 3.6 2.9 6.5C19 15.7 12 20 12 20z'/></svg></button>
+          </div>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <div class='empty'><p>Les pistes seront bientôt en ligne.</p></div>
+    <% } %>
+  </div>
+</section>
+
+<section class='section paper'>
+  <div class='wrap'>
+    <div class='section-head'><div><p class='kicker'>En concert</p><h2>Prochains spectacles</h2></div><a class='section-link' href='spectacles'>Toutes les dates →</a></div>
+    <% if(typeof shows!=='undefined'&&shows.length){ %>
+      <% shows.forEach(function(s){ var dd=fmtDay(s.show_date); %>
+      <div class='show'>
+        <div class='show-date'><span class='d'><%= dd.d||'' %></span><span class='m'><%= dd.m||'' %></span></div>
+        <div class='show-body'><h3><%= s.title %></h3><p class='show-meta'><%= [s.venue,s.city].filter(Boolean).join(' · ') %><%= s.show_time?(' · '+s.show_time):'' %></p></div>
+        <div class='show-cta'>
+          <% if(s.sold_out){ %><span class='tag-soldout'>Complet</span><% } else if(s.ticket_url){ %><a class='btn-line' href='<%= s.ticket_url %>' target='_blank' rel='noopener'>Billets →</a><% } else if(s.price){ %><span class='show-meta'><%= s.price %></span><% } %>
+        </div>
+      </div>
+      <% }); %>
+    <% } else { %>
+      <div class='empty'><p>Aucune date annoncée pour le moment. Revenez bientôt !</p></div>
+    <% } %>
+  </div>
+</section>
+
+<section class='section night'>
+  <div class='wrap'>
+    <div class='section-head'><div><p class='kicker'>Journal</p><h2>Dernières nouvelles</h2></div><a class='section-link' href='journal'>Tout lire →</a></div>
+    <% if(typeof posts!=='undefined'&&posts.length){ %>
+      <div class='cards'>
+        <% posts.forEach(function(p){ %>
+        <a class='card' href='journal/<%= p.id %>'>
+          <img class='card-img' src='<%= p.image_url||'https://placehold.co/600x375/241c30/6366f1/png?text=Journal' %>' alt='<%= p.title %>'>
+          <div class='card-body'><% if(p.category){ %><span class='card-cat'><%= p.category %></span><% } %><h3><%= p.title %></h3><p class='card-ex'><%= (p.content||'').slice(0,110) %><%= ((p.content||'').length>110)?'…':'' %></p><span class='section-link'>Lire →</span></div>
+        </a>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <div class='empty'><p>Aucune nouvelle publiée pour l’instant.</p></div>
+    <% } %>
+  </div>
+</section>
+
+<section class='cta-band'>
+  <div class='wrap'>
+    <p class='eyebrow' style='color:rgba(255,255,255,.82)'>Programmation &amp; collaborations</p>
+    <h2><%= (typeof settings!=='undefined'&&settings.booking_intro)?settings.booking_intro:'Une scène, un festival, une collaboration ? Écrivons la suite ensemble.' %></h2>
+    <div style='margin-top:26px'><a class='btn-ghost' href='contact' style='border-color:#fff;color:#fff'>Contacter / Réserver</a></div>
+  </div>
+</section>
+<%- include('partials/footer') %>

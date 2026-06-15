@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang='fr'>
+<head>
+<meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<title>Réglages — Admin</title>
+<link rel='stylesheet' href='public/css/admin-styles.css'>
+</head>
+<body>
+<div class='admin-layout'>
+<%- include('partials/admin-sidebar', { active: 'settings' }) %>
+<main class='admin-main'>
+  <header class='admin-topbar'><button class='adm-burger' id='admBurger' aria-label='Menu'>≡</button><h1>Réglages du site</h1><button class='btn-primary' id='saveTop'>Enregistrer</button></header>
+  <div class='admin-content'>
+    <div class='page-intro'><p class='page-intro-eyebrow'>Contenu</p><h2 class='page-intro-title'>Textes, coordonnées &amp; réseaux</h2><p class='page-intro-sub'>Modifiez les textes affichés sur le site public, vos coordonnées, vos liens de réseaux sociaux et les images principales.</p></div>
+    <div id='groups'><div class='adm-empty'>Chargement…</div></div>
+    <div class='save-bar'><span id='saveHint' class='t-mut'></span><button class='btn-primary' id='saveBtn'>Enregistrer les modifications</button></div>
+  </div>
+</main>
+</div>
+<div class='toast-wrap' id='toastWrap'></div>
+<script>
+var GROUPS=[
+  {title:'Identité', fields:[
+    {key:'business_name', label:'Nom d’artiste', type:'text'},
+    {key:'tagline', label:'Slogan', type:'text'},
+    {key:'footer_text', label:'Texte du pied de page', type:'textarea'}
+  ]},
+  {title:'Page d’accueil', fields:[
+    {key:'hero_eyebrow', label:'Surtitre (au-dessus du titre)', type:'text'},
+    {key:'hero_title', label:'Titre principal', type:'text'},
+    {key:'hero_subtitle', label:'Sous-titre', type:'textarea'},
+    {key:'latest_label', label:'Étiquette « à l’écoute »', type:'text'}
+  ]},
+  {title:'À propos', fields:[
+    {key:'about_title', label:'Titre de la section', type:'text'},
+    {key:'about_text', label:'Biographie', type:'textarea', rows:9},
+    {key:'about_quote', label:'Citation mise en avant', type:'textarea'}
+  ]},
+  {title:'Contact & réservations', fields:[
+    {key:'contact_email', label:'Courriel', type:'email'},
+    {key:'contact_phone', label:'Téléphone', type:'text'},
+    {key:'contact_intro', label:'Intro de la page Contact', type:'textarea'},
+    {key:'booking_intro', label:'Texte réservations / collaborations', type:'textarea'}
+  ]},
+  {title:'Réseaux sociaux', fields:[
+    {key:'social_spotify', label:'Spotify', type:'url'},
+    {key:'social_youtube', label:'YouTube', type:'url'},
+    {key:'social_instagram', label:'Instagram', type:'url'},
+    {key:'social_bandcamp', label:'Bandcamp', type:'url'}
+  ]},
+  {title:'Images', fields:[
+    {key:'_p_hero_image_url', label:'Image d’en-tête (accueil)', type:'image'},
+    {key:'_p_about_image_url', label:'Image de la page À propos', type:'image'}
+  ]}
+];
+var SETTINGS={};
+function esc(s){return String(s==null?'':s).replace(/[&<>'"]/g,function(c){return c==='&'?'&amp;':c==='<'?'&lt;':c==='>'?'&gt;':c==='"'?'&quot;':'&#39;';});}
+function toast(msg,type){var w=document.getElementById('toastWrap');var t=document.createElement('div');t.className='toast '+(type||'');t.textContent=msg;w.appendChild(t);requestAnimationFrame(function(){t.classList.add('show');});setTimeout(function(){t.classList.remove('show');setTimeout(function(){t.remove();},250);},2600);}
+function render(){
+  var html=GROUPS.map(function(g){
+    var fields=g.fields.map(function(f){
+      var v=SETTINGS[f.key]||'';
+      var id='s_'+f.key;
+      var ctrl;
+      if(f.type==='textarea'){ ctrl=`<textarea id='${id}' data-key='${esc(f.key)}' rows='${f.rows||3}'>${esc(v)}</textarea>`; }
+      else if(f.type==='image'){ ctrl=`<div class='img-field'><input type='text' id='${id}' data-key='${esc(f.key)}' value='${esc(v)}' placeholder='https://…'><div class='img-actions'><button type='button' class='btn-mini' data-upload='${id}'>Téléverser</button><button type='button' class='btn-mini' data-ai='${id}'>Générer (IA)</button></div><div class='img-prev'>${v?`<img src='${esc(v)}'>`:''}</div></div>`; }
+      else { var ty=f.type==='url'?'url':f.type==='email'?'email':'text'; ctrl=`<input type='${ty}' id='${id}' data-key='${esc(f.key)}' value='${esc(v)}'>`; }
+      return `<div class='fld'><label class='fld-label' for='${id}'>${esc(f.label)}</label>${ctrl}</div>`;
+    }).join('');
+    return `<div class='settings-group'><h2>${esc(g.title)}</h2>${fields}</div>`;
+  }).join('');
+  document.getElementById('groups').innerHTML=html;
+}
+async function load(){ try{ var r=await fetch('api/admin/settings'); var d=await r.json(); SETTINGS=d.settings||{}; render(); }catch(e){ document.getElementById('groups').innerHTML=`<div class='adm-empty'>Erreur de chargement.</div>`; } }
+function prev(inp,url){ var w=inp.parentElement.querySelector('.img-prev'); if(w) w.innerHTML=url?`<img src='${esc(url)}'>`:''; }
+document.getElementById('groups').addEventListener('click', async function(e){
+  var up=e.target.closest('[data-upload]');
+  if(up){ var inp=document.getElementById(up.getAttribute('data-upload')); var fi=document.createElement('input'); fi.type='file'; fi.accept='image/*'; fi.onchange=function(){ var f=fi.files&&fi.files[0]; if(!f) return; var rd=new FileReader(); rd.onload=async function(){ var ot=up.textContent; up.textContent='…'; try{ var r=await fetch('api/admin/upload',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({dataUri:rd.result})}); var d=await r.json(); if(d.url){ inp.value=d.url; prev(inp,d.url); toast('Image téléversée.','ok'); } else toast(d.error||'Erreur','err'); }catch(err){ toast('Erreur de téléversement.','err'); } up.textContent=ot; }; rd.readAsDataURL(f); }; fi.click(); return; }
+  var ai=e.target.closest('[data-ai]');
+  if(ai){ var inp2=document.getElementById(ai.getAttribute('data-ai')); var p=prompt('Décrivez l’image à générer :'); if(!p) return; var ot2=ai.textContent; ai.textContent='…'; try{ var r=await fetch('api/admin/generate-image',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:p,aspectRatio:'16:9'})}); var d=await r.json(); if(d.imageUrl){ inp2.value=d.imageUrl; prev(inp2,d.imageUrl); toast('Image générée.','ok'); } else toast(d.error||'Erreur','err'); }catch(err){ toast('Erreur de génération.','err'); } ai.textContent=ot2; return; }
+});
+async function saveAll(){
+  var inputs=document.querySelectorAll('[data-key]');
+  var btn=document.getElementById('saveBtn'); var topb=document.getElementById('saveTop');
+  btn.disabled=true; topb.disabled=true; var ot=btn.textContent; btn.textContent='Enregistrement…';
+  var changed=0, errors=0;
+  for(var i=0;i<inputs.length;i++){ var el=inputs[i]; var key=el.getAttribute('data-key'); var val=el.value; if((SETTINGS[key]||'')===val) continue; try{ var r=await fetch('api/admin/settings',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({key:key,value:val})}); if(r.ok){ SETTINGS[key]=val; changed++; } else errors++; }catch(e){ errors++; } }
+  btn.disabled=false; topb.disabled=false; btn.textContent=ot;
+  if(errors) toast('Certaines modifications n’ont pas été enregistrées.','err');
+  else if(changed) toast(changed+' modification(s) enregistrée(s).','ok');
+  else toast('Aucune modification à enregistrer.','');
+}
+document.getElementById('saveBtn').addEventListener('click',saveAll);
+document.getElementById('saveTop').addEventListener('click',saveAll);
+(function(){var b=document.getElementById('admBurger'),s=document.getElementById('admSide');if(b&&s){b.addEventListener('click',function(){s.classList.toggle('open');});}})();
+load();
+</script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+<%- include('partials/header') %>
+<section class='page-head'><div class='wrap'><p class='eyebrow'>Votre sélection</p><h1>Mes favoris</h1><p>Les pistes que vous avez mises de côté, prêtes à être réécoutées.</p></div></section>
+<section class='section paper'>
+  <div class='wrap'>
+    <% if(typeof user!=='undefined'&&user){ %>
+      <% if(typeof favs!=='undefined'&&favs.length){ %>
+        <div class='tracklist'>
+          <% favs.forEach(function(t){ %>
+          <div class='trk'>
+            <span class='trk-no'><%= (t.side||'') %><%= t.track_no||'' %></span>
+            <button class='trk-play' data-play data-audio='<%= t.audio_url||'' %>' data-title='<%= t.title %>' data-album='<%= t.album||'' %>' data-cover='<%= t.image_url||'' %>' aria-label='Lire <%= t.title %>' <%= t.audio_url?'':'disabled' %>><svg viewBox='0 0 24 24' fill='currentColor'><path d='M8 5v14l11-7z'/></svg></button>
+            <span class='trk-main'><span class='trk-title'><%= t.title %></span><span class='trk-album'><%= t.album||'' %></span></span>
+            <span class='trk-dur'><%= t.duration||'' %></span>
+            <button class='trk-fav on' data-fav='<%= t.id %>' aria-label='Retirer des favoris'><svg viewBox='0 0 24 24' fill='currentColor' stroke='currentColor' stroke-width='1.7'><path d='M12 20s-7-4.3-9.2-8.4C1.2 8.7 2.6 5.5 5.7 5.1 7.7 4.8 9.3 6 12 8.6 14.7 6 16.3 4.8 18.3 5.1c3.1.4 4.5 3.6 2.9 6.5C19 15.7 12 20 12 20z'/></svg></button>
+          </div>
+          <% }); %>
+        </div>
+      <% } else { %>
+        <div class='empty'><p>Vous n’avez encore aucun favori. Parcourez la <a href='musique' class='btn-line'>musique</a> et appuyez sur le cœur pour en ajouter.</p></div>
+      <% } %>
+    <% } else { %>
+      <div class='empty'><p>Connectez-vous pour enregistrer vos pistes préférées et les retrouver ici.</p><p style='margin-top:18px'><a href='#' data-login-btn class='btn-primary' style='background-color:#6366f1;color:#fff'>Se connecter</a></p></div>
+    <% } %>
+  </div>
+</section>
+<%- include('partials/footer') %>

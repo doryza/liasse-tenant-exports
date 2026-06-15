@@ -1,0 +1,15 @@
+<%- include('partials/header') %>
+<section class='page-head'><div class='wrap'><p class='eyebrow'>Biographie</p><h1><%= (typeof settings!=='undefined'&&settings.about_title)?settings.about_title:'Le parcours' %></h1></div></section>
+<section class='section paper'>
+  <div class='wrap'>
+    <div class='about-grid'>
+      <div class='about-img'><img src='<%= (typeof settings!=='undefined'&&settings._p_about_image_url)?settings._p_about_image_url:'https://placehold.co/800x600/241c30/6366f1/png?text=Studio' %>' alt='Jean-Sébastien Faubert en studio'></div>
+      <div>
+        <div class='prose' style='white-space:pre-wrap'><%= (typeof settings!=='undefined'&&settings.about_text)?settings.about_text:'Biographie à venir.' %></div>
+        <% if(typeof settings!=='undefined'&&settings.about_quote){ %><blockquote class='pullquote'><%= settings.about_quote %></blockquote><% } %>
+        <div style='margin-top:24px'><a class='btn-primary' href='contact' style='background-color:#6366f1;color:#fff'>Me contacter</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+<%- include('partials/footer') %>

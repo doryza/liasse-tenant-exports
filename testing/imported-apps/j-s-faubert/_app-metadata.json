@@ -1,0 +1,89 @@
+{
+  "slug": "j-s-faubert",
+  "displayName": "J-S Faubert",
+  "description": "Create a website to promote my music. I want my website to be French and English",
+  "status": "active",
+  "generationVersion": 1,
+  "primaryColor": "#6366f1",
+  "iconUrl": "https://res.cloudinary.com/duhp69meg/image/upload/v1781490640/tapavis_tenant_j-s-faubert/icon_j-s-faubert_1781490640026.png",
+  "enabledAuthMethods": [
+    "webauthn",
+    "sms",
+    "email"
+  ],
+  "notificationsEnabled": true,
+  "geolocationEnabled": true,
+  "customConfig": {
+    "language": "fr",
+    "designManifest": {
+      "concept": "Sillon de nuit",
+      "elements": {
+        "blogSurfaced": true,
+        "pages": [
+          "Accueil",
+          "Musique",
+          "Spectacles",
+          "Journal",
+          "À propos",
+          "Contact",
+          "Favoris"
+        ],
+        "userLogin": true
+      },
+      "iconDirection": "A flat emblem of a single vinyl groove circle with one warm amber light-glint on an indigo field — minimal, nocturnal, evoking a record spinning at midnight.",
+      "palette": {
+        "accents": [
+          "#e0824a",
+          "#1c1626",
+          "#241c30"
+        ],
+        "ground": "#f4efe6",
+        "ink": "#171219",
+        "primary": "#6366f1"
+      },
+      "signatureMove": "A persistent vinyl-style 'lecteur' bar fixed to the bottom of every page (spinning record disc, scrubber, play/pause) plus a side-A/B numbered tracklist that reads like a printed sleeve.",
+      "summary": "The site is built like the gatefold liner-notes of a vinyl record made at night — a warm paper sleeve for the words, a deep plum studio dark for the music — with the music itself never more than a tap away.",
+      "typography": "Bricolage Grotesque (characterful grotesque) for display & UI, Newsreader serif for body — a music-magazine / liner-notes voice"
+    }
+  },
+  "promptHistory": [
+    {
+      "prompt": "Create a website to promote my music. I want my website to be French and English",
+      "timestamp": "2026-06-15T02:30:48.373Z",
+      "changeNotes": "Initial build: a fully French PWA promoting Jean-Sébastien Faubert's music. Concept 'Sillon de nuit' — a nocturnal liner-notes identity with a persistent bottom vinyl player that plays track previews across every page, a side-A/B tracklist, tour dates, a journal, an artist bio, a booking/contact form, and a logged-in favorites feature. Includes a complete self-contained admin backend (dashboard, Musique/Spectacles/Journal modules with full CRUD, messages inbox) plus image upload and AI image generation. NOTE: the platform language was set to French, so the site is French-only.\n\nAdmin enrichment: (1) Rebuilt the dashboard (views/admin.ejs) with a welcome intro, accent-bordered stat cards with icons, and a richer 'quick-card' content grid (Musique, Spectacles, Journal, Messages, Réglages) showing live counts and descriptions. (2) Added a brand-new admin Réglages page (views/admin-settings.ejs + /admin/settings route + sidebar link) so the owner can edit all DB-backed site texts, contact info, social links and hero/about images (with upload + AI generation) — these are stored via the existing GET/PUT /api/admin/settings API, no new hardcoded data introduced. (3) Upgraded admin-shell CRUD: non-blocking toast notifications for create/edit/delete and image upload/AI, an item count badge, an empty-state with an inline '+ Ajouter' button, table row hover, ESC-to-close modal, and clearer feedback. (4) Improved admin Messages page with intro, count badge, clickable mailto, and toast-based delete feedback. (5) admin-styles.css: added focus-visible outlines (a11y), toast component, page-intro, quick-card, stat accent/icon, panel-head, save-bar, settings-group, count badge, and responsive rules. (6) Front-end: added a global focus-visible outline in styles.css for keyboard accessibility. All routes, data flows, CRUD APIs and {{IMG_*}} placeholder tokens preserved unchanged; existing functional content (tracks/shows/posts) was already fully admin-manageable.",
+      "generationId": 1318,
+      "filesModified": [
+        "manifest.json",
+        "migrations.sql",
+        "public/css/admin-styles.css",
+        "public/css/styles.css",
+        "public/js/app.js",
+        "routes.js",
+        "schema.sql",
+        "seed.js",
+        "views/admin-messages.ejs",
+        "views/admin-posts.ejs",
+        "views/admin-settings.ejs",
+        "views/admin-shows.ejs",
+        "views/admin-tracks.ejs",
+        "views/admin.ejs",
+        "views/apropos.ejs",
+        "views/article.ejs",
+        "views/contact.ejs",
+        "views/favoris.ejs",
+        "views/index.ejs",
+        "views/journal.ejs",
+        "views/musique.ejs",
+        "views/partials/admin-shell.ejs",
+        "views/partials/admin-sidebar.ejs",
+        "views/partials/footer.ejs",
+        "views/partials/header.ejs",
+        "views/spectacles.ejs"
+      ]
+    }
+  ],
+  "apiVariables": [],
+  "createdAt": "2026-06-15T01:46:20.440Z",
+  "updatedAt": "2026-06-15T02:30:51.565Z",
+  "exportedAt": "2026-06-15T02:30:51.734Z"
+}

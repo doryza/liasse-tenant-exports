@@ -1,0 +1,19 @@
+<%- include('partials/header') %>
+<section class='page-head'><div class='wrap'><p class='eyebrow'>Le journal</p><h1>Journal</h1><p>Nouvelles, coulisses du studio et carnet de route.</p></div></section>
+<section class='section paper'>
+  <div class='wrap'>
+    <% if(typeof posts!=='undefined'&&posts.length){ %>
+      <div class='cards'>
+        <% posts.forEach(function(p){ %>
+        <a class='card' href='journal/<%= p.id %>'>
+          <img class='card-img' src='<%= p.image_url||'https://placehold.co/600x375/241c30/6366f1/png?text=Journal' %>' alt='<%= p.title %>'>
+          <div class='card-body'><% if(p.category){ %><span class='card-cat'><%= p.category %></span><% } %><h3><%= p.title %></h3><p class='card-ex'><%= (p.content||'').slice(0,130) %><%= ((p.content||'').length>130)?'…':'' %></p><span class='section-link'>Lire →</span></div>
+        </a>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <div class='empty'><p>Aucun article publié pour l’instant. Revenez bientôt !</p></div>
+    <% } %>
+  </div>
+</section>
+<%- include('partials/footer') %>

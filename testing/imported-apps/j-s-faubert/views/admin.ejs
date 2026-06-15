@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang='fr'>
+<head>
+<meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<title>Tableau de bord — Admin</title>
+<link rel='stylesheet' href='public/css/admin-styles.css'>
+</head>
+<body>
+<div class='admin-layout'>
+<%- include('partials/admin-sidebar', { active: 'dashboard' }) %>
+<main class='admin-main'>
+  <header class='admin-topbar'><button class='adm-burger' id='admBurger' aria-label='Menu'>≡</button><h1>Tableau de bord</h1><a class='btn-ghost' href='.' target='_blank' rel='noopener'>Voir le site ↗</a></header>
+  <div class='admin-content'>
+    <div class='page-intro'>
+      <p class='page-intro-eyebrow'>Bienvenue</p>
+      <h2 class='page-intro-title'><%= (typeof settings!=='undefined'&&settings.business_name)?settings.business_name:'Jean-Sébastien Faubert' %></h2>
+      <p class='page-intro-sub'>Gérez votre musique, vos spectacles, votre journal et vos messages, et personnalisez les textes du site depuis ce tableau de bord.</p>
+    </div>
+    <div class='stat-grid'>
+      <div class='stat'><span class='stat-ic'>👁</span><div class='n'><%= stats.visits %></div><div class='l'>Visites totales</div></div>
+      <div class='stat'><span class='stat-ic'>📈</span><div class='n'><%= stats.visits7 %></div><div class='l'>Visites (7 jours)</div></div>
+      <div class='stat'><span class='stat-ic'>👤</span><div class='n'><%= stats.users %></div><div class='l'>Abonnés inscrits</div></div>
+      <div class='stat'><span class='stat-ic'>🔔</span><div class='n'><%= stats.push %></div><div class='l'>Notifications push</div></div>
+    </div>
+    <div class='panel'>
+      <div class='panel-head'><h2>Gérer le contenu</h2><a class='btn-mini' href='admin/settings'>Réglages du site</a></div>
+      <div class='quick-grid'>
+        <a class='quick-card' href='admin/tracks'><span class='qc-ic'>♪</span><span class='qc-main'><span class='qc-t'>Musique</span><span class='qc-d'>Pistes, pochettes et lecteur audio</span></span><span class='qc-n'><%= stats.tracks %></span></a>
+        <a class='quick-card' href='admin/shows'><span class='qc-ic'>♦</span><span class='qc-main'><span class='qc-t'>Spectacles</span><span class='qc-d'>Dates de tournée et billetterie</span></span><span class='qc-n'><%= stats.shows %></span></a>
+        <a class='quick-card' href='admin/posts'><span class='qc-ic'>✎</span><span class='qc-main'><span class='qc-t'>Journal</span><span class='qc-d'>Nouvelles et coulisses</span></span><span class='qc-n'><%= stats.posts %></span></a>
+        <a class='quick-card' href='admin/messages'><span class='qc-ic'>✉</span><span class='qc-main'><span class='qc-t'>Messages</span><span class='qc-d'>Demandes reçues via le formulaire</span></span><span class='qc-n'><%= stats.messages %></span></a>
+        <a class='quick-card' href='admin/settings'><span class='qc-ic'>⚙</span><span class='qc-main'><span class='qc-t'>Réglages</span><span class='qc-d'>Textes, coordonnées et réseaux</span></span><span class='qc-n'>›</span></a>
+      </div>
+    </div>
+    <div class='panel'>
+      <div class='panel-head'><h2>Messages récents</h2><% if(typeof recent!=='undefined'&&recent.length){ %><a class='btn-mini' href='admin/messages'>Tout voir</a><% } %></div>
+      <% if(typeof recent!=='undefined'&&recent.length){ %>
+        <% recent.forEach(function(m){ %>
+          <div class='msg-item'><div class='msg-head'><strong><%= m.name %><%= m.email?(' · '+m.email):'' %></strong><span class='time'><%= fmtDate(m.created_at) %></span></div><% if(m.subject){ %><div class='t-mut'><%= m.subject %></div><% } %><div class='msg-body'><%= m.message %></div></div>
+        <% }); %>
+      <% } else { %><div class='adm-empty'>Aucun message pour l’instant. Les demandes envoyées via le formulaire de contact apparaîtront ici.</div><% } %>
+    </div>
+  </div>
+</main>
+</div>
+<script>
+(function(){var b=document.getElementById('admBurger'),s=document.getElementById('admSide');if(b&&s){b.addEventListener('click',function(){s.classList.toggle('open');});}})();
+</script>
+</body>
+</html>

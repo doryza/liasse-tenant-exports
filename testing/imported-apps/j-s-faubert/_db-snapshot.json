@@ -1,0 +1,417 @@
+{
+  "exportedAt": "2026-06-15T02:30:51.748Z",
+  "tables": {
+    "site_visits": {
+      "columns": [
+        "id",
+        "path",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "posts": {
+      "columns": [
+        "id",
+        "title",
+        "content",
+        "image_url",
+        "category",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Lueurs de minuit est enfin disponible",
+          "content": "Après deux ans de travail nocturne, le premier album est maintenant en ligne sur toutes les plateformes. Six chansons enregistrées presque entièrement entre 22 h et l’aube, dans un petit studio de la Mauricie.\n\nMerci à tous ceux qui ont suivi le projet depuis le tout premier extrait. La meilleure façon de l’écouter ? Tard, au casque, lumières tamisées.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781489417/tapavis_tenant_j-s-faubert/build_j-s-faubert_1781489417579.png",
+          "category": "Sortie",
+          "published": 1,
+          "created_at": "2026-06-15T02:30:29.728Z",
+          "updated_at": "2026-06-15T02:30:29.728Z"
+        },
+        {
+          "id": 2,
+          "title": "Dans les coulisses du studio",
+          "content": "On a choisi de tout enregistrer en prises live, à quelques musiciens dans la même pièce. Pas de clic, pas de filet. On voulait garder le souffle des amplis et les petites imperfections qui rendent une chanson vivante.\n\nVoici quelques images et anecdotes de ces nuits passées à chercher le bon son.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781489416/tapavis_tenant_j-s-faubert/build_j-s-faubert_1781489416587.png",
+          "category": "Studio",
+          "published": 1,
+          "created_at": "2026-06-15T02:30:29.733Z",
+          "updated_at": "2026-06-15T02:30:29.733Z"
+        },
+        {
+          "id": 3,
+          "title": "Les dates de la tournée d’automne",
+          "content": "La tournée s’étend de Trois-Rivières à Sherbrooke, en passant par Montréal et Québec. Certaines salles affichent déjà complet — surveillez la page Spectacles et activez les notifications pour ne rien manquer.",
+          "image_url": "",
+          "category": "Tournée",
+          "published": 1,
+          "created_at": "2026-06-15T02:30:29.739Z",
+          "updated_at": "2026-06-15T02:30:29.739Z"
+        },
+        {
+          "id": 4,
+          "title": "La chanson derrière « On verra demain »",
+          "content": "C’est la première chanson écrite pour l’album, et la dernière de la liste. Une façon de boucler la boucle. Je vous raconte d’où elle vient et pourquoi elle a failli ne jamais voir le jour.",
+          "image_url": "",
+          "category": "Actualité",
+          "published": 1,
+          "created_at": "2026-06-15T02:30:29.744Z",
+          "updated_at": "2026-06-15T02:30:29.744Z"
+        }
+      ]
+    },
+    "tracks": {
+      "columns": [
+        "id",
+        "title",
+        "album",
+        "side",
+        "track_no",
+        "description",
+        "audio_url",
+        "image_url",
+        "duration",
+        "release_date",
+        "featured",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 6,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Lueurs de minuit",
+          "album": "Lueurs de minuit",
+          "side": "A",
+          "track_no": 1,
+          "description": "La pièce-titre, écrite d’un trait au retour d’une nuit blanche.",
+          "audio_url": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781489416/tapavis_tenant_j-s-faubert/build_j-s-faubert_1781489416553.png",
+          "duration": "3:52",
+          "release_date": "2024-09-20T00:00:00.000Z",
+          "featured": 1,
+          "published": 1,
+          "created_at": "2026-06-15T02:30:29.666Z",
+          "updated_at": "2026-06-15T02:30:29.666Z"
+        },
+        {
+          "id": 2,
+          "title": "Rue Saint-Maurice",
+          "album": "Lueurs de minuit",
+          "side": "A",
+          "track_no": 2,
+          "description": "Une marche imaginaire dans une ville endormie.",
+          "audio_url": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781489416/tapavis_tenant_j-s-faubert/build_j-s-faubert_1781489416374.png",
+          "duration": "4:10",
+          "release_date": "2024-09-20T00:00:00.000Z",
+          "featured": 1,
+          "published": 1,
+          "created_at": "2026-06-15T02:30:29.670Z",
+          "updated_at": "2026-06-15T02:30:29.670Z"
+        },
+        {
+          "id": 3,
+          "title": "Le dernier métro",
+          "album": "Lueurs de minuit",
+          "side": "A",
+          "track_no": 3,
+          "description": "Sur ces conversations qui n’ont jamais eu lieu.",
+          "audio_url": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781489415/tapavis_tenant_j-s-faubert/build_j-s-faubert_1781489415549.png",
+          "duration": "3:28",
+          "release_date": "2024-09-20T00:00:00.000Z",
+          "featured": 0,
+          "published": 1,
+          "created_at": "2026-06-15T02:30:29.675Z",
+          "updated_at": "2026-06-15T02:30:29.675Z"
+        },
+        {
+          "id": 4,
+          "title": "Comme une marée",
+          "album": "Lueurs de minuit",
+          "side": "B",
+          "track_no": 1,
+          "description": "Le morceau le plus lumineux de l’album, enregistré en une seule prise.",
+          "audio_url": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781489416/tapavis_tenant_j-s-faubert/build_j-s-faubert_1781489416553.png",
+          "duration": "4:35",
+          "release_date": "2024-09-20T00:00:00.000Z",
+          "featured": 1,
+          "published": 1,
+          "created_at": "2026-06-15T02:30:29.680Z",
+          "updated_at": "2026-06-15T02:30:29.680Z"
+        },
+        {
+          "id": 5,
+          "title": "Photographie",
+          "album": "Lueurs de minuit",
+          "side": "B",
+          "track_no": 2,
+          "description": "Une chanson murmurée, presque sans batterie.",
+          "audio_url": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781489416/tapavis_tenant_j-s-faubert/build_j-s-faubert_1781489416374.png",
+          "duration": "3:05",
+          "release_date": "2024-09-20T00:00:00.000Z",
+          "featured": 0,
+          "published": 1,
+          "created_at": "2026-06-15T02:30:29.685Z",
+          "updated_at": "2026-06-15T02:30:29.685Z"
+        },
+        {
+          "id": 6,
+          "title": "On verra demain",
+          "album": "Lueurs de minuit",
+          "side": "B",
+          "track_no": 3,
+          "description": "La dernière chanson, et la première écrite du disque.",
+          "audio_url": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781489415/tapavis_tenant_j-s-faubert/build_j-s-faubert_1781489415549.png",
+          "duration": "5:02",
+          "release_date": "2024-09-20T00:00:00.000Z",
+          "featured": 1,
+          "published": 1,
+          "created_at": "2026-06-15T02:30:29.690Z",
+          "updated_at": "2026-06-15T02:30:29.690Z"
+        }
+      ]
+    },
+    "shows": {
+      "columns": [
+        "id",
+        "title",
+        "venue",
+        "city",
+        "description",
+        "show_date",
+        "show_time",
+        "ticket_url",
+        "price",
+        "image_url",
+        "sold_out",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 5,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Lancement de Lueurs de minuit",
+          "venue": "Salle J.-Antonio-Thompson",
+          "city": "Trois-Rivières",
+          "description": "Soirée de lancement avec quartet complet, première partie surprise.",
+          "show_date": "2026-06-29T00:00:00.000Z",
+          "show_time": "20h00",
+          "ticket_url": null,
+          "price": "34 $",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781489416/tapavis_tenant_j-s-faubert/build_j-s-faubert_1781489416587.png",
+          "sold_out": 0,
+          "published": 1,
+          "created_at": "2026-06-15T02:30:29.698Z",
+          "updated_at": "2026-06-15T02:30:29.698Z"
+        },
+        {
+          "id": 2,
+          "title": "Soirée intime",
+          "venue": "Le Ministère",
+          "city": "Montréal",
+          "description": "Concert en formule trio, format intimiste.",
+          "show_date": "2026-07-13T00:00:00.000Z",
+          "show_time": "20h30",
+          "ticket_url": null,
+          "price": "28 $",
+          "image_url": "",
+          "sold_out": 1,
+          "published": 1,
+          "created_at": "2026-06-15T02:30:29.703Z",
+          "updated_at": "2026-06-15T02:30:29.703Z"
+        },
+        {
+          "id": 3,
+          "title": "En première partie de la nuit",
+          "venue": "Le Cercle",
+          "city": "Québec",
+          "description": "Nouvelles chansons et reprises revisitées.",
+          "show_date": "2026-07-30T00:00:00.000Z",
+          "show_time": "21h00",
+          "ticket_url": null,
+          "price": "30 $",
+          "image_url": "",
+          "sold_out": 0,
+          "published": 1,
+          "created_at": "2026-06-15T02:30:29.709Z",
+          "updated_at": "2026-06-15T02:30:29.709Z"
+        },
+        {
+          "id": 4,
+          "title": "Au coin du feu",
+          "venue": "La Petite Boîte Noire",
+          "city": "Sherbrooke",
+          "description": "Spectacle acoustique, voix et guitare.",
+          "show_date": "2026-08-16T00:00:00.000Z",
+          "show_time": "20h00",
+          "ticket_url": null,
+          "price": "26 $",
+          "image_url": "",
+          "sold_out": 0,
+          "published": 1,
+          "created_at": "2026-06-15T02:30:29.713Z",
+          "updated_at": "2026-06-15T02:30:29.713Z"
+        },
+        {
+          "id": 5,
+          "title": "Concert d’automne",
+          "venue": "Maison des arts",
+          "city": "Drummondville",
+          "description": "",
+          "show_date": "2026-05-12T00:00:00.000Z",
+          "show_time": "20h00",
+          "ticket_url": null,
+          "price": "25 $",
+          "image_url": "",
+          "sold_out": 1,
+          "published": 1,
+          "created_at": "2026-06-15T02:30:29.719Z",
+          "updated_at": "2026-06-15T02:30:29.719Z"
+        }
+      ]
+    },
+    "favorites": {
+      "columns": [
+        "id",
+        "user_id",
+        "track_id",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "form_submissions": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "subject",
+        "message",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_users": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "password_hash",
+        "display_name",
+        "role",
+        "active",
+        "activation_token",
+        "invited_by",
+        "invite_token",
+        "invite_expires_at",
+        "last_login_at",
+        "is_active",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_invites": {
+      "columns": [
+        "id",
+        "email",
+        "token",
+        "role",
+        "status",
+        "invited_by",
+        "expires_at",
+        "accepted_at",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_webauthn_credentials": {
+      "columns": [
+        "id",
+        "admin_user_id",
+        "credential_id",
+        "public_key",
+        "counter",
+        "device_name",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_settings": {
+      "columns": [
+        "key",
+        "value",
+        "updated_at"
+      ],
+      "totalRows": 39,
+      "sampleRows": [
+        {
+          "key": "business_name",
+          "value": "Jean-Sébastien Faubert",
+          "updated_at": "2026-06-15T02:30:29.588Z"
+        },
+        {
+          "key": "tagline",
+          "value": "Auteur-compositeur-interprète",
+          "updated_at": "2026-06-15T02:30:29.593Z"
+        },
+        {
+          "key": "hero_eyebrow",
+          "value": "Nouvel album · Lueurs de minuit",
+          "updated_at": "2026-06-15T02:30:29.598Z"
+        },
+        {
+          "key": "hero_title",
+          "value": "Jean-Sébastien Faubert",
+          "updated_at": "2026-06-15T02:30:29.602Z"
+        },
+        {
+          "key": "hero_subtitle",
+          "value": "Des chansons folk-pop écrites à la nuit tombée, quelque part entre le silence d’une chambre et la rumeur de la ville.",
+          "updated_at": "2026-06-15T02:30:29.607Z"
+        },
+        {
+          "key": "latest_label",
+          "value": "À l’écoute en ce moment",
+          "updated_at": "2026-06-15T02:30:29.612Z"
+        },
+        {
+          "key": "about_title",
+          "value": "Le parcours",
+          "updated_at": "2026-06-15T02:30:29.617Z"
+        },
+        {
+          "key": "about_text",
+          "value": "Jean-Sébastien Faubert compose depuis l’adolescence, d’abord seul avec une guitare prêtée, puis entouré de musiciens rencontrés au fil des scènes du Québec. Sa musique mêle la chaleur du folk à la précision de la pop, avec des textes qui s’attardent sur les petites choses : une lumière laissée allumée, un trajet de nuit, une conversation qui n’a jamais eu lieu.\n\nAprès plusieurs spectacles intimes et deux EP autoproduits, il présente aujourd’hui « Lueurs de minuit », un album enregistré presque entièrement entre 22 h et l’aube. On y entend le grain des prises live, le souffle des amplis et cette impression rare d’assister à une chanson au moment exact où elle se forme.",
+          "updated_at": "2026-06-15T02:30:29.623Z"
+        },
+        {
+          "key": "about_quote",
+          "value": "J’écris pour les heures où tout le monde dort. C’est là que les vraies chansons arrivent.",
+          "updated_at": "2026-06-15T02:30:29.628Z"
+        },
+        {
+          "key": "booking_intro",
+          "value": "Une scène, un festival, une collaboration ? Écrivons la suite ensemble.",
+          "updated_at": "2026-06-15T02:30:29.633Z"
+        }
+      ]
+    }
+  }
+}

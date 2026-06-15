@@ -1,0 +1,12 @@
+<aside class='admin-side' id='admSide'>
+  <div class='side-brand'><img src='<%= (typeof appIconUrl!=='undefined'&&appIconUrl)?appIconUrl:'https://placehold.co/60x60/6366f1/ffffff/png?text=JS' %>' alt='Logo'><span>Admin</span></div>
+  <nav>
+    <a href='admin' class='<%= (typeof active!=='undefined'&&active==='dashboard')?'on':'' %>'>Tableau de bord</a>
+    <a href='admin/tracks' class='<%= (typeof active!=='undefined'&&active==='tracks')?'on':'' %>'>Musique</a>
+    <a href='admin/shows' class='<%= (typeof active!=='undefined'&&active==='shows')?'on':'' %>'>Spectacles</a>
+    <a href='admin/posts' class='<%= (typeof active!=='undefined'&&active==='posts')?'on':'' %>'>Journal</a>
+    <a href='admin/messages' class='<%= (typeof active!=='undefined'&&active==='messages')?'on':'' %>'>Messages</a>
+    <a href='admin/settings' class='<%= (typeof active!=='undefined'&&active==='settings')?'on':'' %>'>Réglages</a>
+  </nav>
+  <div class='side-foot'><a href='.' target='_blank' rel='noopener'>Voir le site</a><a href='admin/logout'>Déconnexion</a></div>
+</aside>

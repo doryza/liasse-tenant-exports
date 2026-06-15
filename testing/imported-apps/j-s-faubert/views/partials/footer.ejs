@@ -1,0 +1,54 @@
+</main>
+<footer class='site-foot'>
+  <div class='wrap'>
+    <div class='foot-grid'>
+      <div class='foot-col'>
+        <h4><%= (typeof settings!=='undefined'&&settings.business_name)?settings.business_name:'Jean-Sébastien Faubert' %></h4>
+        <p style='color:#9a90a6;font-size:.95rem;max-width:34ch'><%= (typeof settings!=='undefined'&&settings.footer_text)?settings.footer_text:'Des chansons écrites pour la nuit.' %></p>
+        <% var _ig=(typeof settings!=='undefined')?settings.social_instagram:''; var _yt=(typeof settings!=='undefined')?settings.social_youtube:''; var _sp=(typeof settings!=='undefined')?settings.social_spotify:''; var _bc=(typeof settings!=='undefined')?settings.social_bandcamp:''; %>
+        <% if(_ig||_yt||_sp||_bc){ %>
+        <div class='social'>
+          <% if(_sp){ %><a href='<%= _sp %>' target='_blank' rel='noopener' aria-label='Spotify'><svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5'><circle cx='12' cy='12' r='9.2'/><path d='M7.5 9.5c3-.7 6-.4 8.5 1M8 12.5c2.3-.5 4.7-.3 6.7 1M8.6 15.2c1.7-.4 3.4-.2 4.8.7'/></svg></a><% } %>
+          <% if(_yt){ %><a href='<%= _yt %>' target='_blank' rel='noopener' aria-label='YouTube'><svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='2.5' y='6' width='19' height='12' rx='3.4'/><path d='M10.5 9.2l4.2 2.8-4.2 2.8z' fill='currentColor' stroke='none'/></svg></a><% } %>
+          <% if(_ig){ %><a href='<%= _ig %>' target='_blank' rel='noopener' aria-label='Instagram'><svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5'><rect x='3' y='3' width='18' height='18' rx='5'/><circle cx='12' cy='12' r='4'/><circle cx='17.4' cy='6.6' r='1' fill='currentColor' stroke='none'/></svg></a><% } %>
+          <% if(_bc){ %><a href='<%= _bc %>' target='_blank' rel='noopener' aria-label='Bandcamp'><svg viewBox='0 0 24 24' fill='currentColor'><path d='M4 16l4-8h12l-4 8z'/></svg></a><% } %>
+        </div>
+        <% } %>
+      </div>
+      <div class='foot-col'>
+        <h4>Naviguer</h4>
+        <a href='musique'>Musique</a>
+        <a href='spectacles'>Spectacles</a>
+        <a href='journal'>Journal</a>
+        <a href='a-propos'>À propos</a>
+        <a href='contact'>Contact</a>
+      </div>
+      <div class='foot-col'>
+        <h4>Rester à l’écoute</h4>
+        <% var _em=(typeof settings!=='undefined'&&settings.contact_email)?settings.contact_email:''; var _ph=(typeof settings!=='undefined'&&settings.contact_phone)?settings.contact_phone:''; %>
+        <% if(_em){ %><a href='mailto:<%= _em %>'><%= _em %></a><% } %>
+        <% if(_ph){ %><a href='tel:<%= _ph %>'><%= _ph %></a><% } %>
+        <button data-push-btn class='btn-ghost' style='margin-top:14px;border-color:rgba(255,255,255,.3);color:#fff;background:transparent'>Activer les notifications</button>
+      </div>
+    </div>
+    <div class='foot-bottom'><span>© <%= new Date().getFullYear() %> <%= (typeof settings!=='undefined'&&settings.business_name)?settings.business_name:'Jean-Sébastien Faubert' %>. Tous droits réservés.</span><span>Propulsé par Liasse</span></div>
+  </div>
+</footer>
+<div class='player' id='player' aria-hidden='true'>
+  <div class='player-disc' id='playerDisc'><img id='playerCover' src='' alt=''></div>
+  <div class='player-meta'><span id='playerTitle'>—</span><small id='playerAlbum'></small></div>
+  <button class='player-btn' id='playerToggle' aria-label='Lecture / Pause'><span id='ptPlay'><svg viewBox='0 0 24 24' fill='currentColor'><path d='M8 5v14l11-7z'/></svg></span><span id='ptPause' style='display:none'><svg viewBox='0 0 24 24' fill='currentColor'><path d='M7 5h3.4v14H7zM13.6 5H17v14h-3.4z'/></svg></span></button>
+  <div class='player-seek'><span id='playerCur'>0:00</span><div class='seek-track' id='seekTrack'><div class='seek-fill' id='seekFill'></div></div><span id='playerDur'>0:00</span></div>
+  <button class='player-close' id='playerClose' aria-label='Fermer le lecteur'><svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M6 6l12 12M18 6L6 18'/></svg></button>
+</div>
+<audio id='audioEl' preload='none'></audio>
+<script src='public/js/app.js'></script>
+<script>
+(function(){var t=document.getElementById('navToggle'),m=document.getElementById('navMobile');if(t&&m){t.addEventListener('click',function(){m.classList.toggle('open');});}})();
+</script>
+<script>
+try{ if(window.TenantSDK&&TenantSDK.ui){ TenantSDK.ui.showInstallBanner(); } }catch(e){}
+setTimeout(function(){ try{ if(window.TenantSDK&&TenantSDK.ui){ TenantSDK.ui.showPushPrompt(); } }catch(e){} },8000);
+</script>
+</body>
+</html>

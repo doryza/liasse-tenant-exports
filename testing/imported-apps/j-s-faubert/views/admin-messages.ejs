@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang='fr'>
+<head>
+<meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<title>Messages — Admin</title>
+<link rel='stylesheet' href='public/css/admin-styles.css'>
+</head>
+<body>
+<div class='admin-layout'>
+<%- include('partials/admin-sidebar', { active: 'messages' }) %>
+<main class='admin-main'>
+  <header class='admin-topbar'><button class='adm-burger' id='admBurger' aria-label='Menu'>≡</button><h1>Messages</h1><span id='count' class='adm-count'></span></header>
+  <div class='admin-content'>
+    <div class='page-intro'><p class='page-intro-eyebrow'>Boîte de réception</p><h2 class='page-intro-title'>Demandes &amp; messages</h2><p class='page-intro-sub'>Les messages envoyés via le formulaire de contact du site apparaissent ici.</p></div>
+    <div class='panel' id='list'><div class='adm-empty'>Chargement…</div></div>
+  </div>
+</main>
+</div>
+<div class='toast-wrap' id='toastWrap'></div>
+<script>
+var list=document.getElementById('list');var countEl=document.getElementById('count');
+function esc(s){return String(s==null?'':s).replace(/[&<>]/g,function(c){return c==='&'?'&amp;':c==='<'?'&lt;':'&gt;';});}
+function toast(msg,type){var w=document.getElementById('toastWrap');var t=document.createElement('div');t.className='toast '+(type||'');t.textContent=msg;w.appendChild(t);requestAnimationFrame(function(){t.classList.add('show');});setTimeout(function(){t.classList.remove('show');setTimeout(function(){t.remove();},250);},2600);}
+async function load(){
+  try{ var r=await fetch('api/admin/submissions'); var d=await r.json(); var items=d.submissions||[];
+    countEl.textContent=items.length?(items.length+' message'+(items.length>1?'s':'')):'';
+    if(!items.length){ list.innerHTML=`<div class='adm-empty'>Aucun message pour l’instant. Les demandes envoyées via le formulaire de contact apparaîtront ici.</div>`; return; }
+    list.innerHTML=items.map(function(m){ return `<div class='msg-item'><div class='msg-head'><strong>${esc(m.name||'')}${m.email?(' · <a href="mailto:'+esc(m.email)+'">'+esc(m.email)+'</a>'):''}</strong><span class='time'>${esc((m.created_at||'').toString().slice(0,10))} <button class='btn-mini danger' data-del='${m.id}'>Suppr.</button></span></div>${m.subject?`<div class='t-mut'>${esc(m.subject)}</div>`:''}<div class='msg-body'>${esc(m.message||'')}</div></div>`; }).join('');
+  }catch(e){ list.innerHTML=`<div class='adm-empty'>Erreur de chargement.</div>`; }
+}
+list.addEventListener('click', async function(e){ var d=e.target.closest('[data-del]'); if(d){ if(!confirm('Supprimer ce message ?')) return; try{ var r=await fetch('api/admin/submissions/'+d.getAttribute('data-del'),{method:'DELETE'}); if(r.ok){ toast('Message supprimé.','ok'); load(); } else toast('Suppression impossible.','err'); }catch(err){ toast('Erreur réseau.','err'); } } });
+(function(){var b=document.getElementById('admBurger'),s=document.getElementById('admSide');if(b&&s){b.addEventListener('click',function(){s.classList.toggle('open');});}})();
+load();
+</script>
+</body>
+</html>

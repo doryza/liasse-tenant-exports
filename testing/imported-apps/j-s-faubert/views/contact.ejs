@@ -1,0 +1,47 @@
+<%- include('partials/header') %>
+<section class='page-head'><div class='wrap'><p class='eyebrow'>Restons en contact</p><h1>Contact</h1><p><%= (typeof settings!=='undefined'&&settings.contact_intro)?settings.contact_intro:'Pour la programmation, la presse ou simplement pour dire bonjour.' %></p></div></section>
+<section class='section paper'>
+  <div class='wrap'>
+    <div class='contact-grid'>
+      <div class='contact-info'>
+        <h3>Coordonnées</h3>
+        <% var _em=(typeof settings!=='undefined'&&settings.contact_email)?settings.contact_email:''; var _ph=(typeof settings!=='undefined'&&settings.contact_phone)?settings.contact_phone:''; %>
+        <% if(_em){ %><p><span class='kicker'>Courriel</span><br><a href='mailto:<%= _em %>' class='btn-line'><%= _em %></a></p><% } %>
+        <% if(_ph){ %><p style='margin-top:18px'><span class='kicker'>Téléphone</span><br><a href='tel:<%= _ph %>' class='btn-line'><%= _ph %></a></p><% } %>
+        <% if(!_em&&!_ph){ %><p style='color:var(--muted)'>Utilisez le formulaire ci-contre, j’ai hâte de vous lire.</p><% } %>
+        <p style='margin-top:24px;color:var(--muted)'><%= (typeof settings!=='undefined'&&settings.booking_intro)?settings.booking_intro:'Une scène, un festival, une collaboration ? Écrivons la suite ensemble.' %></p>
+      </div>
+      <div>
+        <div id='contactNote' class='alert' style='display:none'></div>
+        <form id='contactForm' class='form'>
+          <div class='field'><label for='cn'>Nom *</label><input id='cn' name='name' type='text' placeholder='Votre nom' required></div>
+          <div class='field'><label for='ce'>Courriel</label><input id='ce' name='email' type='email' placeholder='vous@exemple.com'></div>
+          <div class='field'><label for='cs'>Sujet</label><input id='cs' name='subject' type='text' placeholder='ex. Demande de spectacle'></div>
+          <div class='field'><label for='cm'>Message *</label><textarea id='cm' name='message' rows='6' placeholder='Votre message…' required></textarea></div>
+          <button type='submit' class='btn-primary' style='background-color:#6366f1;color:#fff'>Envoyer le message</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+<script>
+(function(){
+  var f=document.getElementById('contactForm'); if(!f) return;
+  var note=document.getElementById('contactNote');
+  f.addEventListener('submit',async function(e){
+    e.preventDefault();
+    var btn=f.querySelector('button[type=submit]');
+    var data={ name:f.name.value, email:f.email.value, subject:f.subject.value, message:f.message.value };
+    if(!data.name||!data.message){ note.className='alert err'; note.textContent='Veuillez remplir votre nom et votre message.'; note.style.display='block'; return; }
+    btn.disabled=true; var ot=btn.textContent; btn.textContent='Envoi…';
+    try{
+      var r=await fetch('./api/contact',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+      var d=await r.json().catch(function(){return {};});
+      if(r.ok&&d.success){ note.className='alert ok'; note.textContent='Merci ! Votre message a bien été envoyé.'; note.style.display='block'; f.reset(); }
+      else { note.className='alert err'; note.textContent=(d.error||'Une erreur est survenue.'); note.style.display='block'; }
+    }catch(err){ note.className='alert err'; note.textContent='Erreur de connexion. Réessayez.'; note.style.display='block'; }
+    btn.disabled=false; btn.textContent=ot;
+  });
+})();
+</script>
+<%- include('partials/footer') %>

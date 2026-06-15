@@ -1,0 +1,30 @@
+<%- include('partials/header') %>
+<section class='page-head'><div class='wrap'><a class='section-link' href='journal' style='color:#cabfd6'>← Retour au journal</a><% if(typeof post!=='undefined'&&post.category){ %><p class='eyebrow' style='margin-top:18px'><%= post.category %></p><% } %><h1><%= (typeof post!=='undefined')?post.title:'' %></h1><% if(typeof post!=='undefined'){ %><p><%= fmtDate(post.created_at) %></p><% } %></div></section>
+<section class='section paper'>
+  <div class='wrap'>
+    <% if(typeof post!=='undefined'&&post){ %>
+      <article style='max-width:720px;margin:0 auto'>
+        <% if(post.image_url){ %><img src='<%= post.image_url %>' alt='<%= post.title %>' style='width:100%;border-radius:5px;margin-bottom:30px'><% } %>
+        <div class='prose' style='white-space:pre-wrap'><%= post.content||'' %></div>
+      </article>
+    <% } else { %>
+      <div class='empty'><p>Article introuvable. <a href='journal'>Retour au journal</a></p></div>
+    <% } %>
+  </div>
+</section>
+<% if(typeof more!=='undefined'&&more.length){ %>
+<section class='section night'>
+  <div class='wrap'>
+    <div class='section-head'><div><p class='kicker'>À lire aussi</p><h2>Autres nouvelles</h2></div></div>
+    <div class='cards'>
+      <% more.forEach(function(p){ %>
+      <a class='card' href='journal/<%= p.id %>'>
+        <img class='card-img' src='<%= p.image_url||'https://placehold.co/600x375/241c30/6366f1/png?text=Journal' %>' alt='<%= p.title %>'>
+        <div class='card-body'><% if(p.category){ %><span class='card-cat'><%= p.category %></span><% } %><h3><%= p.title %></h3><span class='section-link'>Lire →</span></div>
+      </a>
+      <% }); %>
+    </div>
+  </div>
+</section>
+<% } %>
+<%- include('partials/footer') %>
