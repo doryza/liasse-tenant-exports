@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Paramètres — Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,400;9..144,900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body class="admin">
+<%- include('partials/admin-sidebar', { active:'settings' }) %>
+<main class="admin-main">
+<header class="admin-topbar">
+<button class="admin-burger" id="adminBurger" aria-label="Menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+<h1>Paramètres</h1>
+<button class="btn-primary" id="saveAll">Enregistrer</button>
+</header>
+<div id="alert" class="admin-alert" style="display:none"></div>
+<div class="dash-wrap">
+<div class="panel">
+<h2>Coordonnées de contact</h2>
+<p class="panel-sub">Ces informations alimentent l'en-tête, le pied de page, la page Contact et tous les boutons « Appeler » du site.</p>
+<div class="settings-form">
+<div class="fld"><label for="set_business_name">Nom de l'entreprise</label><input id="set_business_name" type="text" data-setting-key="business_name"><div class="help">Affiché dans l'en-tête et le pied de page.</div></div>
+<div class="fld"><label for="set_contact_phone">Téléphone</label><input id="set_contact_phone" type="tel" data-setting-key="contact_phone"><div class="help">Utilisé par tous les boutons « Appeler » du site.</div></div>
+<div class="fld"><label for="set_contact_email">Courriel</label><input id="set_contact_email" type="email" data-setting-key="contact_email"><div class="help">Reçoit les demandes du formulaire de contact.</div></div>
+<div class="fld"><label for="set_business_address">Adresse</label><input id="set_business_address" type="text" data-setting-key="business_address"><div class="help">Optionnel — affiché sur la page Contact.</div></div>
+<div class="fld"><label for="set_service_area">Zone desservie</label><input id="set_service_area" type="text" data-setting-key="service_area"><div class="help">Ex. Partout au Québec.</div></div>
+</div>
+</div>
+<div class="panel" style="margin-top:22px">
+<h2>Images du site</h2>
+<p class="panel-sub">Logo affiché dans la barre de navigation, image d'accueil et photo de l'artisan.</p>
+<div class="settings-form">
+<div class="fld"><label>Logo (navigation)</label><div class="img-field"><input type="text" data-setting-key="_p_nav_logo_url" placeholder="URL de l'image"><button type="button" class="btn-ghost" data-upload="_p_nav_logo_url">Téléverser</button></div><div class="img-preview" id="prev__p_nav_logo_url"></div><div class="help">Logo carré recommandé. Laissez vide pour utiliser l'icône par défaut.</div></div>
+<div class="fld"><label>Image d'accueil (hero)</label><div class="img-field"><input type="text" data-setting-key="_p_hero_image_url" placeholder="URL de l'image"><button type="button" class="btn-ghost" data-upload="_p_hero_image_url">Téléverser</button></div><div class="img-preview" id="prev__p_hero_image_url"></div><div class="help">Paysage 1200×800 px recommandé.</div></div>
+<div class="fld"><label>Photo de l'artisan (à propos)</label><div class="img-field"><input type="text" data-setting-key="_p_about_image_url" placeholder="URL de l'image"><button type="button" class="btn-ghost" data-upload="_p_about_image_url">Téléverser</button></div><div class="img-preview" id="prev__p_about_image_url"></div><div class="help">Portrait ou paysage 900×700 px recommandé.</div></div>
+</div>
+</div>
+</div>
+</main>
+<script>
+function $(id){return document.getElementById(id);}
+function alertMsg(msg,ok){var a=$('alert');a.textContent=msg;a.className='admin-alert '+(ok?'ok':'err');a.style.display='block';setTimeout(function(){a.style.display='none';},3500);}
+async function loadSettings(){try{var r=await fetch('api/admin/settings');var s=await r.json();document.querySelectorAll('[data-setting-key]').forEach(function(el){var k=el.getAttribute('data-setting-key');el.value=(s[k]!=null?s[k]:'');var prev=document.getElementById('prev_'+k);if(prev){prev.innerHTML=s[k]?'<img src="'+s[k]+'">':'';}});}catch(e){alertMsg('Chargement des paramètres échoué.',false);}}
+async function putKey(k,v){var res=await fetch('api/admin/settings',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({key:k,value:v})});return res.ok;}
+async function saveAll(){var btn=$('saveAll');btn.disabled=true;var orig=btn.textContent;btn.textContent='…';var ok=true;var els=document.querySelectorAll('[data-setting-key]');for(var i=0;i<els.length;i++){var k=els[i].getAttribute('data-setting-key');try{var r=await putKey(k,els[i].value);if(!r)ok=false;}catch(e){ok=false;}}btn.disabled=false;btn.textContent=orig;alertMsg(ok?'Paramètres enregistrés.':'Certaines valeurs n\u2019ont pas pu être enregistrées.',ok);}
+function doUpload(key){var inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.onchange=function(){var file=inp.files[0];if(!file)return;var rd=new FileReader();rd.onload=async function(){var tgt=document.querySelector('[data-setting-key="'+key+'"]');var prev=document.getElementById('prev_'+key);var old=tgt.value;tgt.value='Téléversement…';try{var res=await fetch('api/admin/upload',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({dataUri:rd.result})});var d=await res.json();if(d.url){tgt.value=d.url;if(prev)prev.innerHTML='<img src="'+d.url+'">';}else{tgt.value=old;alertMsg(d.error||'Échec du téléversement',false);}}catch(e){tgt.value=old;alertMsg('Échec du téléversement',false);}};rd.readAsDataURL(file);};inp.click();}
+document.addEventListener('DOMContentLoaded',function(){$('saveAll').addEventListener('click',saveAll);document.querySelectorAll('[data-upload]').forEach(function(b){b.addEventListener('click',function(){doUpload(b.getAttribute('data-upload'));});});var ab=$('adminBurger');if(ab)ab.addEventListener('click',function(){document.getElementById('adminSidebar').classList.toggle('open');});loadSettings();});
+</script>
+</body>
+</html>

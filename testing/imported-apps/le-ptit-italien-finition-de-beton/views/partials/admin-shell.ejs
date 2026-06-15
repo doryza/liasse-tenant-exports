@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title><%= title %> — Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,400;9..144,900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body class="admin">
+<%- include('admin-sidebar', { active: moduleKey }) %>
+<main class="admin-main">
+<header class="admin-topbar">
+<button class="admin-burger" id="adminBurger" aria-label="Menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+<h1><%= title %></h1>
+<button class="btn-primary" id="btnNew">+ Nouveau</button>
+</header>
+<div id="alert" class="admin-alert" style="display:none"></div>
+<div class="admin-toolbar">
+<div class="search-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input type="text" id="searchInput" placeholder="Rechercher…" aria-label="Rechercher"></div>
+<span class="count-badge" id="countBadge">—</span>
+</div>
+<div class="table-wrap"><table class="admin-table"><thead id="thead"></thead><tbody id="tbody"></tbody></table></div>
+<div id="emptyState" class="admin-empty" style="display:none">Aucun élément pour le moment. Cliquez sur « + Nouveau » pour en ajouter.</div>
+</main>
+<div class="modal-overlay" id="modal" style="display:none">
+<div class="modal">
+<div class="modal-head"><h2 id="modalTitle">Nouveau</h2><button class="modal-close" id="modalClose" aria-label="Fermer">×</button></div>
+<form id="itemForm" class="modal-body"></form>
+<div class="modal-foot"><button class="btn-ghost" id="cancelBtn" type="button">Annuler</button><button class="btn-primary" id="saveBtn" type="button">Enregistrer</button></div>
+</div>
+</div>
+<script>
+const MODULE_KEY = <%- JSON.stringify(moduleKey) %>;
+const MODULE_LABEL = <%- JSON.stringify(moduleLabel) %>;
+let FIELDS = []; let ITEMS = []; let EDIT_ID = null; let SEARCH = '';
+function $(id){ return document.getElementById(id); }
+function escapeHtml(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function escapeAttr(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+function alertMsg(msg, ok){ var a=$('alert'); a.textContent=msg; a.className='admin-alert '+(ok?'ok':'err'); a.style.display='block'; setTimeout(function(){ a.style.display='none'; }, 3500); }
+async function loadModule(){ try { var mres=await fetch('api/admin/modules'); var mdata=await mres.json(); var mod=(mdata.modules||[]).find(function(m){ return m.key===MODULE_KEY; }); FIELDS=mod?mod.fields:[]; } catch(e){ FIELDS=[]; } await loadItems(); }
+async function loadItems(){ try { var res=await fetch('api/admin/'+MODULE_KEY); var data=await res.json(); ITEMS=data[MODULE_KEY]||[]; } catch(e){ ITEMS=[]; } renderTable(); }
+function colFields(){ return FIELDS.filter(function(f){ return ['text','select','number','boolean','date','url','email'].indexOf(f.type)>=0; }).slice(0,4); }
+function filteredItems(){ var q=(SEARCH||'').toLowerCase().trim(); if(!q) return ITEMS.slice(); return ITEMS.filter(function(it){ return Object.keys(it).some(function(k){ var v=it[k]; return v!=null && String(v).toLowerCase().indexOf(q)>=0; }); }); }
+function renderTable(){ var list=filteredItems(); var q=(SEARCH||'').trim(); var thead=$('thead'), tbody=$('tbody'); var hasImg=FIELDS.some(function(f){ return f.type==='image'; }); var cols=colFields(); var cb=$('countBadge'); if(cb) cb.textContent = q ? (list.length+' / '+ITEMS.length) : (ITEMS.length+' élément'+(ITEMS.length>1?'s':'')); var th='<tr>'; if(hasImg) th+='<th></th>'; cols.forEach(function(f){ th+='<th>'+escapeHtml(f.label||f.name)+'</th>'; }); th+='<th style="text-align:right">Actions</th></tr>'; thead.innerHTML=th; if(!list.length){ tbody.innerHTML=''; var es=$('emptyState'); es.style.display='block'; es.textContent = q ? 'Aucun résultat pour cette recherche.' : 'Aucun élément pour le moment. Cliquez sur « + Nouveau » pour en ajouter.'; return; } $('emptyState').style.display='none'; var imgKey=(FIELDS.find(function(f){ return f.type==='image'; })||{}).name; tbody.innerHTML=list.map(function(it){ var r='<tr>'; if(hasImg){ var iv=imgKey?it[imgKey]:''; r+='<td>'+(iv?'<img class="thumb" src="'+escapeAttr(iv)+'">':'<span style="color:#bbb">—</span>')+'</td>'; } cols.forEach(function(f){ var v=it[f.name]; if(f.type==='boolean'){ v=(v==1||v===true)?'<span class="tag on">Oui</span>':'<span class="tag off">Non</span>'; } else { v=escapeHtml(String(v==null?'':v)); if(v.length>50) v=v.slice(0,50)+'…'; } r+='<td>'+v+'</td>'; }); r+='<td><div class="t-actions" style="justify-content:flex-end"><button class="icon-btn" data-edit="'+it.id+'">Modifier</button><button class="icon-btn del" data-del="'+it.id+'">Suppr.</button></div></td>'; return r+'</tr>'; }).join(''); tbody.querySelectorAll('[data-edit]').forEach(function(b){ b.addEventListener('click',function(){ openEdit(parseInt(b.getAttribute('data-edit'),10)); }); }); tbody.querySelectorAll('[data-del]').forEach(function(b){ b.addEventListener('click',function(){ delItem(parseInt(b.getAttribute('data-del'),10)); }); }); }
+function fieldInput(f, val){ var name=f.name; var id='f_'+name; var help=f.description?'<div class="help">'+escapeHtml(f.description)+'</div>':''; var ph=f.placeholder?(' placeholder="'+escapeAttr(f.placeholder)+'"'):''; if(f.type==='textarea') return '<div class="fld"><label>'+escapeHtml(f.label||name)+'</label><textarea id="'+id+'"'+ph+'>'+escapeHtml(val==null?'':String(val))+'</textarea>'+help+'</div>'; if(f.type==='boolean'){ var ck=(val==1||val===true||(val==null&&f.default))?'checked':''; return '<div class="fld"><div class="check-row"><input type="checkbox" id="'+id+'" '+ck+'><label style="margin:0">'+escapeHtml(f.label||name)+'</label></div>'+help+'</div>'; } if(f.type==='select'){ var opts=(f.options||[]).map(function(o){ return '<option '+(String(val)===String(o)?'selected':'')+'>'+escapeHtml(o)+'</option>'; }).join(''); return '<div class="fld"><label>'+escapeHtml(f.label||name)+'</label><select id="'+id+'"><option value="">—</option>'+opts+'</select>'+help+'</div>'; } if(f.type==='number'){ var mn=f.min!=null?(' min="'+f.min+'"'):''; var mx=f.max!=null?(' max="'+f.max+'"'):''; var st=f.step!=null?(' step="'+f.step+'"'):''; return '<div class="fld"><label>'+escapeHtml(f.label||name)+'</label><input type="number" id="'+id+'"'+mn+mx+st+ph+' value="'+escapeAttr(val==null?'':String(val))+'">'+help+'</div>'; } if(f.type==='image'){ return '<div class="fld"><label>'+escapeHtml(f.label||name)+'</label><div class="img-field"><input type="text" id="'+id+'" value="'+escapeAttr(val==null?'':String(val))+'" placeholder="URL de l image"><button type="button" class="btn-ghost" data-upload="'+id+'">Téléverser</button><button type="button" class="btn-ghost" data-ai="'+id+'">IA</button></div><div class="img-preview" id="prev_'+id+'">'+(val?'<img src="'+escapeAttr(val)+'">':'')+'</div>'+help+'</div>'; } var typ=(f.type==='url'||f.type==='email'||f.type==='date')?f.type:'text'; return '<div class="fld"><label>'+escapeHtml(f.label||name)+'</label><input type="'+typ+'" id="'+id+'"'+ph+' value="'+escapeAttr(val==null?'':String(val))+'">'+help+'</div>'; }
+function buildForm(item){ var form=$('itemForm'); form.innerHTML=FIELDS.map(function(f){ return fieldInput(f, item?item[f.name]:(f.default!=null?f.default:'')); }).join(''); form.querySelectorAll('[data-upload]').forEach(function(b){ b.addEventListener('click',function(){ doUpload(b.getAttribute('data-upload')); }); }); form.querySelectorAll('[data-ai]').forEach(function(b){ b.addEventListener('click',function(){ doAI(b.getAttribute('data-ai')); }); }); }
+function openCreate(){ EDIT_ID=null; $('modalTitle').textContent='Nouveau — '+MODULE_LABEL; buildForm(null); $('modal').style.display='flex'; }
+function openEdit(id){ var it=ITEMS.find(function(x){ return x.id===id; }); if(!it) return; EDIT_ID=id; $('modalTitle').textContent='Modifier — '+MODULE_LABEL; buildForm(it); $('modal').style.display='flex'; }
+function closeModal(){ $('modal').style.display='none'; }
+function collect(){ var obj={}; FIELDS.forEach(function(f){ var el=document.getElementById('f_'+f.name); if(!el) return; if(f.type==='boolean') obj[f.name]=el.checked?1:0; else if(f.type==='number') obj[f.name]=(el.value===''?0:Number(el.value)); else obj[f.name]=el.value; }); return obj; }
+async function saveItem(){ var body=collect(); var sv=$('saveBtn'); sv.disabled=true; sv.textContent='…'; try { var url='api/admin/'+MODULE_KEY+(EDIT_ID?('/'+EDIT_ID):''); var res=await fetch(url,{ method: EDIT_ID?'PUT':'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) }); var data=await res.json(); if(!res.ok){ alertMsg(data.error||'Erreur', false); } else { closeModal(); await loadItems(); alertMsg('Enregistré.', true); } } catch(e){ alertMsg('Erreur réseau', false); } sv.disabled=false; sv.textContent='Enregistrer'; }
+async function delItem(id){ if(!confirm('Supprimer cet élément ? Cette action est irréversible.')) return; try { var res=await fetch('api/admin/'+MODULE_KEY+'/'+id,{ method:'DELETE' }); if(res.ok){ await loadItems(); alertMsg('Supprimé.', true); } else alertMsg('Suppression échouée', false); } catch(e){ alertMsg('Erreur réseau', false); } }
+function doUpload(inputId){ var inp=document.createElement('input'); inp.type='file'; inp.accept='image/*'; inp.onchange=function(){ var file=inp.files[0]; if(!file) return; var rd=new FileReader(); rd.onload=async function(){ var tgt=document.getElementById(inputId); var prev=document.getElementById('prev_'+inputId); var old=tgt.value; tgt.value='Téléversement…'; try { var res=await fetch('api/admin/upload',{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ dataUri: rd.result }) }); var d=await res.json(); if(d.url){ tgt.value=d.url; if(prev) prev.innerHTML='<img src="'+d.url+'">'; } else { tgt.value=old; alertMsg(d.error||'Échec du téléversement', false); } } catch(e){ tgt.value=old; alertMsg('Échec du téléversement', false); } }; rd.readAsDataURL(file); }; inp.click(); }
+async function doAI(inputId){ var p=window.prompt('Décrivez l image à générer :'); if(!p) return; var tgt=document.getElementById(inputId); var prev=document.getElementById('prev_'+inputId); var old=tgt.value; tgt.value='Génération…'; try { var res=await fetch('api/admin/generate-image',{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ prompt:p, aspectRatio:'4:3' }) }); var d=await res.json(); if(d.imageUrl){ tgt.value=d.imageUrl; if(prev) prev.innerHTML='<img src="'+d.imageUrl+'">'; } else { tgt.value=old; alertMsg(d.error||'Échec de la génération', false); } } catch(e){ tgt.value=old; alertMsg('Échec de la génération', false); } }
+document.addEventListener('DOMContentLoaded',function(){ $('btnNew').addEventListener('click',openCreate); $('modalClose').addEventListener('click',closeModal); $('cancelBtn').addEventListener('click',closeModal); $('saveBtn').addEventListener('click',saveItem); $('modal').addEventListener('click',function(e){ if(e.target===$('modal')) closeModal(); }); var si=$('searchInput'); if(si) si.addEventListener('input',function(){ SEARCH=si.value; renderTable(); }); var ab=$('adminBurger'); if(ab) ab.addEventListener('click',function(){ document.getElementById('adminSidebar').classList.toggle('open'); }); loadModule(); });
+</script>
+</body>
+</html>

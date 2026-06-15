@@ -1,0 +1,30 @@
+<%- include('partials/header') %>
+<section class="page-hero terrazzo">
+ <div class="container">
+  <span class="kicker"><%= t.work_eyebrow %></span>
+  <h1><%= t.page_work_title %></h1>
+  <p><%= t.page_work_sub %></p>
+ </div>
+</section>
+<section class="section light">
+ <div class="container">
+  <% if (typeof projects!=='undefined' && projects.length){ %>
+  <div class="filters">
+   <button class="filter-btn active" data-cat="all"><%= t.filter_all %></button>
+   <% (typeof cats!=='undefined'?cats:[]).forEach(function(c){ %><button class="filter-btn" data-cat="<%= c %>"><%= c %></button><% }); %>
+  </div>
+  <div class="work-grid">
+   <% projects.forEach(function(p){ %>
+   <div class="work-card" data-cat-item="<%= p.category %>" data-lb-img="<%= p.image_url %>" <% if(p.video_url){ %>data-lb-video="<%= p.video_url %>"<% } %>>
+    <img src="<%= p.image_url || 'https://placehold.co/600x450/211b15/c69749/png?text=Realisation' %>" alt="<%= p.title %>">
+    <% if(p.category){ %><span class="badge"><%= p.category %></span><% } %>
+    <% if(p.video_url){ %><span class="play-btn"><svg viewBox="0 0 24 24" fill="#16130f" width="20" height="20"><path d="M8 5v14l11-7z"/></svg></span><% } %>
+    <div class="work-overlay"><h4><%= p.title %></h4><% if(p.location){ %><span><%= p.location %></span><% } %></div>
+   </div>
+   <% }); %>
+  </div>
+  <% } else { %><p class="lead"><%= t.empty_work %></p><% } %>
+ </div>
+</section>
+<section class="section dark terrazzo"><div class="container" style="text-align:center"><h2 class="h2" style="color:var(--cream)"><%= t.contact_cta_title %></h2><p class="lead" style="max-width:55ch;margin:14px auto 24px"><%= t.contact_cta_text %></p><a class="btn btn-call" href="<%= telHref(settings.contact_phone) %>" style="background-color:#c69749;color:#16130f"><%= t.call_now %></a></div></section>
+<%- include('partials/footer') %>

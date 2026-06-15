@@ -1,0 +1,148 @@
+<%- include('partials/header') %>
+<section class="hero terrazzo">
+ <div class="container hero-grid">
+  <div class="hero-text">
+   <span class="kicker"><%= t.hero_kicker %></span>
+   <h1 class="slogan">« <%= t.slogan %> »</h1>
+   <p class="hero-sub"><%= t.hero_sub %></p>
+   <div class="hero-actions">
+    <a class="btn btn-call" href="<%= telHref(settings.contact_phone) %>" style="background-color:#c69749;color:#16130f"><%= t.call_now %></a>
+    <a class="btn btn-ghost-light" href="contact"><%= t.hero_cta2 %></a>
+   </div>
+  </div>
+  <div class="hero-figure">
+   <img class="hero-img" src="<%= settings._p_hero_image_url ? settings._p_hero_image_url : 'https://placehold.co/1200x800/16130f/c69749/png?text=Finition+de+beton' %>" alt="Plancher de béton fini">
+   <div class="seal"><%- include('partials/seal') %></div>
+  </div>
+ </div>
+</section>
+
+<section class="guarantee">
+ <div class="container guarantee-grid">
+  <div class="seal-static"><%- include('partials/seal') %></div>
+  <div>
+   <span class="eyebrow"><%= t.guarantee_eyebrow %></span>
+   <h2><%= t.guarantee_title %></h2>
+   <p><%= t.guarantee_text %></p>
+  </div>
+ </div>
+</section>
+
+<section class="section light">
+ <div class="container">
+  <div class="section-head">
+   <span class="eyebrow"><%= t.services_eyebrow %></span>
+   <h2 class="h2"><%= t.services_title %></h2>
+   <p class="lead"><%= t.services_sub %></p>
+  </div>
+  <% if (typeof serviceList!=='undefined' && serviceList.length){ %>
+  <div class="services-grid">
+   <% serviceList.slice(0,6).forEach(function(s){ %>
+   <div class="service-card">
+    <div class="svc-icon"><%- svcIcon(s.icon) %></div>
+    <h3><%= s.name %></h3>
+    <p><%= s.description %></p>
+    <% if(s.price_note){ %><div class="price-note"><%= s.price_note %></div><% } %>
+   </div>
+   <% }); %>
+  </div>
+  <div style="margin-top:34px"><a class="btn btn-dark" href="services"><%= t.services_all %></a></div>
+  <% } else { %><p class="lead"><%= t.empty_services %></p><% } %>
+ </div>
+</section>
+
+<section class="section dark terrazzo">
+ <div class="container">
+  <div class="section-head">
+   <span class="eyebrow"><%= t.work_eyebrow %></span>
+   <h2 class="h2" style="color:var(--cream)"><%= t.work_title %></h2>
+   <p class="lead"><%= t.work_sub %></p>
+  </div>
+  <% if (typeof projects!=='undefined' && projects.length){ %>
+  <div class="work-grid">
+   <% projects.slice(0,6).forEach(function(p){ %>
+   <div class="work-card" data-lb-img="<%= p.image_url %>" <% if(p.video_url){ %>data-lb-video="<%= p.video_url %>"<% } %>>
+    <img src="<%= p.image_url || 'https://placehold.co/600x450/211b15/c69749/png?text=Realisation' %>" alt="<%= p.title %>">
+    <% if(p.category){ %><span class="badge"><%= p.category %></span><% } %>
+    <% if(p.video_url){ %><span class="play-btn"><svg viewBox="0 0 24 24" fill="#16130f" width="20" height="20"><path d="M8 5v14l11-7z"/></svg></span><% } %>
+    <div class="work-overlay"><h4><%= p.title %></h4><% if(p.location){ %><span><%= p.location %></span><% } %></div>
+   </div>
+   <% }); %>
+  </div>
+  <div style="margin-top:34px"><a class="btn btn-call" href="realisations" style="background-color:#c69749;color:#16130f"><%= t.work_all %></a></div>
+  <% } else { %><p class="lead"><%= t.empty_work %></p><% } %>
+ </div>
+</section>
+
+<section class="section cream">
+ <div class="container about-grid">
+  <div>
+   <span class="eyebrow"><%= t.about_eyebrow %></span>
+   <h2 class="h2"><%= t.about_title %></h2>
+   <p class="lead" style="color:var(--ink)"><%= t.about_text %></p>
+   <p style="color:var(--muted)"><%= t.about_p2 %></p>
+   <div class="about-quote">« <%= t.slogan %> »</div>
+  </div>
+  <div><img class="about-img" src="<%= settings._p_about_image_url ? settings._p_about_image_url : 'https://placehold.co/900x700/211b15/c69749/png?text=Artisan' %>" alt="<%= t.about_title %>"></div>
+ </div>
+</section>
+
+<section class="section dark">
+ <div class="container">
+  <div class="section-head center">
+   <span class="eyebrow"><%= t.testi_eyebrow %></span>
+   <h2 class="h2" style="color:var(--cream)"><%= t.testi_title %></h2>
+   <p class="lead"><%= t.testi_sub %></p>
+  </div>
+  <% if (typeof testimonials!=='undefined' && testimonials.length){ %>
+  <div class="testi-grid">
+   <% testimonials.slice(0,6).forEach(function(tm){ %>
+   <div class="testi-card">
+    <div class="stars"><% for(var i=0;i<(tm.rating||5);i++){ %>★<% } %></div>
+    <p>« <%= tm.content %> »</p>
+    <div class="testi-author"><% if(tm.image_url){ %><img src="<%= tm.image_url %>" alt="<%= tm.author %>"><% } %><div><div class="ta-name"><%= tm.author %></div><% if(tm.role){ %><div class="ta-role"><%= tm.role %></div><% } %></div></div>
+   </div>
+   <% }); %>
+  </div>
+  <% } else { %><p class="lead" style="text-align:center"><%= t.empty_testimonials %></p><% } %>
+ </div>
+</section>
+
+<section class="section light">
+ <div class="container">
+  <div class="cta-band">
+   <span class="eyebrow" style="color:rgba(255,255,255,.85)"><%= t.season_eyebrow %></span>
+   <h2><%= t.season_title %></h2>
+   <p><%= t.season_text %></p>
+   <a class="btn btn-call" href="<%= telHref(settings.contact_phone) %>" style="background-color:#16130f;color:#e3c585"><%= t.call_now %></a>
+  </div>
+ </div>
+</section>
+
+<% if (typeof posts!=='undefined' && posts.length){ %>
+<section class="section cream">
+ <div class="container">
+  <div class="section-head">
+   <span class="eyebrow"><%= t.advice_eyebrow %></span>
+   <h2 class="h2"><%= t.advice_title %></h2>
+   <p class="lead"><%= t.advice_sub %></p>
+  </div>
+  <div class="posts-grid">
+   <% posts.forEach(function(p){ %>
+   <a class="post-card" href="conseils/<%= p.id %>">
+    <img src="<%= p.image_url || 'https://placehold.co/600x360/efe8da/8d8475/png?text=Conseil' %>" alt="<%= p.title %>">
+    <div class="post-body">
+     <% if(p.category){ %><span class="post-cat"><%= p.category %></span><% } %>
+     <h3><%= p.title %></h3>
+     <p><%= truncate(p.content, 110) %></p>
+     <div class="post-meta"><%= fmtDate(p.created_at) %></div>
+    </div>
+   </a>
+   <% }); %>
+  </div>
+  <div style="margin-top:30px"><a class="btn btn-dark" href="conseils"><%= t.advice_all %></a></div>
+ </div>
+</section>
+<% } %>
+
+<%- include('partials/footer') %>

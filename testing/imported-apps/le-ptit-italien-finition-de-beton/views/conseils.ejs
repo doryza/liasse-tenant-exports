@@ -1,0 +1,14 @@
+<%- include('partials/header') %>
+<section class="page-hero terrazzo"><div class="container"><span class="kicker"><%= t.advice_eyebrow %></span><h1><%= t.page_advice_title %></h1><p><%= t.page_advice_sub %></p></div></section>
+<section class="section light">
+ <div class="container">
+  <% if (typeof posts!=='undefined' && posts.length){ %>
+  <div class="posts-grid">
+   <% posts.forEach(function(p){ %>
+   <a class="post-card" href="conseils/<%= p.id %>"><img src="<%= p.image_url || 'https://placehold.co/600x360/efe8da/8d8475/png?text=Conseil' %>" alt="<%= p.title %>"><div class="post-body"><% if(p.category){ %><span class="post-cat"><%= p.category %></span><% } %><h3><%= p.title %></h3><p><%= truncate(p.content,120) %></p><div class="post-meta"><%= fmtDate(p.created_at) %></div></div></a>
+   <% }); %>
+  </div>
+  <% } else { %><p class="lead"><%= t.empty_advice %></p><% } %>
+ </div>
+</section>
+<%- include('partials/footer') %>

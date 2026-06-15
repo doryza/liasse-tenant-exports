@@ -1,0 +1,29 @@
+<%- include('partials/header') %>
+<section class="page-hero terrazzo"><div class="container"><span class="kicker"><%= t.contact_eyebrow %></span><h1><%= t.page_contact_title %></h1><p><%= t.page_contact_sub %></p></div></section>
+<section class="section light">
+ <div class="container contact-grid">
+  <div>
+   <h2 class="h2"><%= t.contact_info_title %></h2>
+   <ul class="info-list">
+    <% if(settings.contact_phone){ %><li><span class="info-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span><div><div class="il-label"><%= t.phone_label %></div><a class="il-val" href="<%= telHref(settings.contact_phone) %>"><%= settings.contact_phone %></a></div></li><% } %>
+    <% if(settings.contact_email){ %><li><span class="info-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 6 10 7L22 6"/></svg></span><div><div class="il-label"><%= t.email_label %></div><a class="il-val" href="mailto:<%= settings.contact_email %>"><%= settings.contact_email %></a></div></li><% } %>
+    <% if(settings.business_address){ %><li><span class="info-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span><div><div class="il-label"><%= t.address_label %></div><div class="il-val"><%= settings.business_address %></div></div></li><% } %>
+    <li><span class="info-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20z"/></svg></span><div><div class="il-label"><%= t.area_label %></div><div class="il-val"><%= settings.service_area || t.area_default %></div></div></li>
+   </ul>
+   <div class="about-quote" style="margin-top:30px">« <%= t.slogan %> »</div>
+  </div>
+  <div>
+   <form id="contactForm" class="form" data-ok="<%= t.form_success %>" data-err="<%= t.form_error %>">
+    <div id="formMsg" class="form-msg"></div>
+    <div class="field"><label for="cf_name"><%= t.form_name %></label><input id="cf_name" type="text" name="name" required></div>
+    <div class="field"><label for="cf_phone"><%= t.form_phone %></label><input id="cf_phone" type="tel" name="phone"></div>
+    <div class="field"><label for="cf_email"><%= t.form_email %></label><input id="cf_email" type="email" name="email"></div>
+    <div class="field"><label for="cf_service"><%= t.form_service %></label><select id="cf_service" name="service"><option value=""><%= t.form_select %></option><option>Finition de plancher de béton</option><option>Fini terrazzo</option><option>Acrylique sur murs</option><option>Plâtrage / crépi</option><option>Réparation de solage</option><option>Trottoir / stationnement</option><option>Autre</option></select></div>
+    <div class="field"><label for="cf_message"><%= t.form_message %></label><textarea id="cf_message" name="message"></textarea></div>
+    <button type="submit" class="btn btn-primary" style="background-color:#6366f1;color:#fff;width:100%;justify-content:center"><%= t.form_send %></button>
+    <p class="form-note"><%= t.form_note %></p>
+   </form>
+  </div>
+ </div>
+</section>
+<%- include('partials/footer') %>

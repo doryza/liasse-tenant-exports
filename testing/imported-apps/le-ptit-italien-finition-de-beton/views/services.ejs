@@ -1,0 +1,21 @@
+<%- include('partials/header') %>
+<section class="page-hero terrazzo"><div class="container"><span class="kicker"><%= t.services_eyebrow %></span><h1><%= t.page_services_title %></h1><p><%= t.page_services_sub %></p></div></section>
+<section class="section light">
+ <div class="container">
+  <% if (typeof serviceList!=='undefined' && serviceList.length){ %>
+  <div class="services-grid">
+   <% serviceList.forEach(function(s){ %>
+   <div class="service-card">
+    <% if(s.image_url){ %><img src="<%= s.image_url %>" alt="<%= s.name %>" style="border-radius:10px;margin:0 0 16px;height:170px;width:100%;object-fit:cover"><% } %>
+    <div class="svc-icon"><%- svcIcon(s.icon) %></div>
+    <h3><%= s.name %></h3>
+    <p><%= s.description %></p>
+    <% if(s.price_note){ %><div class="price-note"><%= s.price_note %></div><% } %>
+   </div>
+   <% }); %>
+  </div>
+  <% } else { %><p class="lead"><%= t.empty_services %></p><% } %>
+ </div>
+</section>
+<section class="section dark terrazzo"><div class="container" style="text-align:center"><h2 class="h2" style="color:var(--cream)"><%= t.contact_cta_title %></h2><p class="lead" style="max-width:55ch;margin:14px auto 24px"><%= t.contact_cta_text %></p><a class="btn btn-call" href="<%= telHref(settings.contact_phone) %>" style="background-color:#c69749;color:#16130f"><%= t.call_now %></a> <a class="btn btn-ghost-light" href="contact"><%= t.get_quote %></a></div></section>
+<%- include('partials/footer') %>

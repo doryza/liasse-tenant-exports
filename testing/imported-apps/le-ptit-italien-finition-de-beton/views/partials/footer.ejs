@@ -1,0 +1,41 @@
+<footer class="footer terrazzo">
+ <div class="container footer-grid">
+  <div>
+   <div class="logo" style="margin-bottom:8px"><img class="logo-img" src="<%= (typeof settings!=='undefined' && settings._p_nav_logo_url) ? settings._p_nav_logo_url : (typeof appIconUrl!=='undefined' ? appIconUrl : '') %>" alt="Logo" onerror="this.style.display='none'"><span class="logo-text"><%= settings.business_name || "Le P'tit Italien" %></span></div>
+   <p style="color:var(--muted-d);max-width:38ch"><%= t.footer_tagline %></p>
+   <p class="fslogan">« <%= t.slogan %> »</p>
+  </div>
+  <div>
+   <h4><%= t.footer_nav %></h4>
+   <div class="footer-links">
+    <a href="."><%= t.nav_home %></a>
+    <a href="realisations"><%= t.nav_work %></a>
+    <a href="services"><%= t.nav_services %></a>
+    <a href="temoignages"><%= t.nav_testimonials %></a>
+    <a href="conseils"><%= t.nav_advice %></a>
+    <a href="contact"><%= t.nav_contact %></a>
+   </div>
+  </div>
+  <div>
+   <h4><%= t.footer_contact_title %></h4>
+   <div class="footer-contact">
+    <% if(settings.contact_phone){ %><a href="<%= telHref(settings.contact_phone) %>"><%= settings.contact_phone %></a><% } %>
+    <% if(settings.contact_email){ %><a href="mailto:<%= settings.contact_email %>"><%= settings.contact_email %></a><% } %>
+    <span style="color:var(--muted-d);display:block;margin-bottom:16px"><%= settings.service_area || t.area_default %></span>
+   </div>
+   <button data-push-btn class="btn btn-ghost-light"><%= t.enable_notifs %></button>
+  </div>
+ </div>
+ <div class="footer-bottom">© <%= new Date().getFullYear() %> <%= settings.business_name || "Le P'tit Italien" %>. <%= t.footer_rights %></div>
+</footer>
+<div class="callbar">
+ <a class="cb-call" href="<%= telHref(settings.contact_phone) %>"><%= t.call_now %></a>
+ <a class="cb-quote" href="contact"><%= t.get_quote %></a>
+</div>
+<div class="lightbox" id="lightbox"><button class="lb-close" id="lbClose" aria-label="Fermer">×</button><div id="lbBody"></div></div>
+<script src="public/js/app.js"></script>
+<script>
+try{if(window.TenantSDK){TenantSDK.ui.showInstallBanner();setTimeout(function(){try{TenantSDK.ui.showPushPrompt();}catch(e){}},9000);}}catch(e){}
+</script>
+</body>
+</html>

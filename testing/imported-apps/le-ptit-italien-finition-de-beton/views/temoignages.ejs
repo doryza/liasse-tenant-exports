@@ -1,0 +1,19 @@
+<%- include('partials/header') %>
+<section class="page-hero terrazzo"><div class="container"><span class="kicker"><%= t.testi_eyebrow %></span><h1><%= t.page_testi_title %></h1><p><%= t.page_testi_sub %></p></div></section>
+<section class="section dark">
+ <div class="container">
+  <% if (typeof testimonials!=='undefined' && testimonials.length){ %>
+  <div class="testi-grid">
+   <% testimonials.forEach(function(tm){ %>
+   <div class="testi-card">
+    <div class="stars"><% for(var i=0;i<(tm.rating||5);i++){ %>★<% } %></div>
+    <p>« <%= tm.content %> »</p>
+    <div class="testi-author"><% if(tm.image_url){ %><img src="<%= tm.image_url %>" alt="<%= tm.author %>"><% } %><div><div class="ta-name"><%= tm.author %></div><% if(tm.role){ %><div class="ta-role"><%= tm.role %></div><% } %></div></div>
+   </div>
+   <% }); %>
+  </div>
+  <% } else { %><p class="lead" style="text-align:center"><%= t.empty_testimonials %></p><% } %>
+ </div>
+</section>
+<section class="section light"><div class="container"><div class="cta-band"><h2><%= t.contact_cta_title %></h2><p><%= t.contact_cta_text %></p><a class="btn btn-call" href="<%= telHref(settings.contact_phone) %>" style="background-color:#16130f;color:#e3c585"><%= t.call_now %></a></div></div></section>
+<%- include('partials/footer') %>

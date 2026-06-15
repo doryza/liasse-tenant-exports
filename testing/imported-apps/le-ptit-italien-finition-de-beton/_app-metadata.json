@@ -1,0 +1,89 @@
+{
+  "slug": "le-ptit-italien-finition-de-beton",
+  "displayName": "Le Ptit italien finition de Beton",
+  "description": "Type de projet: Site web.\n\nQui est-ce pour ?: Petite compagnie miniature (\"Le petit italien finition de plancher de béton\").\n\nBut: Mettre en valeur l'expertise de finisseur de plancher de béton.\n\nFonctionnalités clés:\n- Coordonnées de contact.\n- Galerie photos/vidéos des travaux (ex: planchers avec flatteuses, fini terrazzo).\n- Section possible pour témoignages clients (satisfaction garantie).\n\nDesign & marque:\n- Intégrer le logo existant créé par son garçon.\n- Le design est laissé à la discrétion du réalisateur (le client n'a pas de préférence de couleur).\n\nIntégrations & extras:\n- Slogan/Devise: \"Quand j'ai terminé le plancher, vous marcherez sur mon plancher ou vous ne me payez pas\".\n\nServices supplémentaires:\n- Pose d'acrylique sur les murs.\n- Plâtrage.\n- Réparation de solage extérieur.\n- Acrylique de toutes les couleurs.\n\nContexte d'affaires:\n- Forte saisonnalité: la demande commence avec l'été et s'intensifie avant les vacances de la construction et le retour du froid. Le client souhaite attirer plus de prospects grâce au site.",
+  "status": "active",
+  "generationVersion": 1,
+  "primaryColor": "#6366f1",
+  "iconUrl": "https://res.cloudinary.com/duhp69meg/image/upload/v1781545235/tapavis_tenant_le-ptit-italien-finition-de-beton/icon_le-ptit-italien-finition-de-beton_1781545234729.png",
+  "enabledAuthMethods": [
+    "webauthn",
+    "sms",
+    "email"
+  ],
+  "notificationsEnabled": true,
+  "geolocationEnabled": true,
+  "customConfig": {
+    "language": "both",
+    "designManifest": {
+      "concept": "Terrazzo & Truelle",
+      "elements": {
+        "blogSurfaced": true,
+        "pages": [
+          "Accueil",
+          "Réalisations",
+          "Services",
+          "Témoignages",
+          "Conseils",
+          "Contact"
+        ],
+        "userLogin": false
+      },
+      "iconDirection": "A square emblem with a warm espresso-charcoal ground, a single bronze hand-trowel mark sweeping across a polished concrete sheen, fine terrazzo speckle in the corners — flat, confident, artisanal, no text.",
+      "palette": {
+        "accents": [
+          "#c69749",
+          "#e3c585",
+          "#efe8da"
+        ],
+        "ground": "#16130f",
+        "ink": "#1b1813",
+        "primary": "#6366f1"
+      },
+      "signatureMove": "A circular foundry-style guarantee seal stamps the promise — oversized and slowly spinning over the hero photo, mounted static beside the guarantee band — backed by a fine terrazzo-aggregate speckle (bronze/indigo/cream dots) that frames every dark section, plus a persistent click-to-call bar so the phone is always one tap away.",
+      "summary": "An Italian-craftsman identity that treats every poured floor as a signed work — a warm espresso-and-limestone palette with a terrazzo-aggregate speckle and a foundry-style guarantee seal stamping the owner's personal promise across the site.",
+      "typography": "Fraunces (high-contrast warm display serif, Italian-artisanal voice) paired with Archivo (sturdy industrial grotesque body/UI)",
+      "typography_note": "display serif on industrial grotesque"
+    }
+  },
+  "promptHistory": [
+    {
+      "prompt": "Type de projet: Site web.\n\nQui est-ce pour ?: Petite compagnie miniature (\"Le petit italien finition de plancher de béton\").\n\nBut: Mettre en valeur l'expertise de finisseur de plancher de béton.\n\nFonctionnalités clés:\n- Coordonnées de contact.\n- Galerie photos/vidéos des travaux (ex: planchers avec flatteuses, fini terrazzo).\n- Section possible pour témoignages clients (satisfaction garantie).\n\nDesign & marque:\n- Intégrer le logo existant créé par son garçon.\n- Le design est laissé à la discrétion du réalisateur (le client n'a pas de préférence de couleur).\n\nIntégrations & extras:\n- Slogan/Devise: \"Quand j'ai terminé le plancher, vous marcherez sur mon plancher ou vous ne me payez pas\".\n\nServices supplémentaires:\n- Pose d'acrylique sur les murs.\n- Plâtrage.\n- Réparation de solage extérieur.\n- Acrylique de toutes les couleurs.\n\nContexte d'affaires:\n- Forte saisonnalité: la demande commence avec l'été et s'intensifie avant les vacances de la construction et le retour du froid. Le client souhaite attirer plus de prospects grâce au site.",
+      "timestamp": "2026-06-15T17:40:43.335Z",
+      "changeNotes": "Initial build of a bilingual (FR primary / EN) lead-generation site for Le P'tit Italien, a Quebec concrete-floor finisher. Concept 'Terrazzo & Truelle': warm espresso/limestone palette with bronze metallic accents, a terrazzo-speckle texture, a spinning foundry-style guarantee seal carrying the owner's slogan, and an always-visible click-to-call bar. Includes home, réalisations gallery (with category filter + lightbox), services, témoignages, conseils blog, and contact form. Full in-PWA admin backend with dashboard and CRUD for projects, services, testimonials and posts, including image upload and AI image generation.\n\nAdmin enrichment: (1) Rebuilt the dashboard (admin.ejs) with a welcome banner, a highlighted demandes-reçues stat, and a richer 5-card module grid (Réalisations, Services, Témoignages, Conseils, Paramètres) with icons + live counts and obvious arrows. (2) Added a full admin Paramètres page (admin-settings.ejs) + route + sidebar link to manage FUNCTIONAL data: business name, contact phone/email/address and service area (which drive the tel: links, contact page and footer) plus logo/hero/about images with upload + live preview, all wired to the existing PUT /api/admin/settings and upload endpoints. (3) Enriched every CRUD module page (admin-shell) with a search/filter toolbar, a live item-count badge, an explicit Actions column header, hover rows and context-aware empty states — full create/edit/delete already intact and preserved. (4) Added accessible focus-visible outlines across admin + public buttons, inputs, nav and module cards; improved muted-text contrast in footer/testimonial roles. (5) Added og:type, og:image and twitter:card meta to the public header and associated <label for> ids on the contact form. Services remain the admin-managed functional offering set (name, price_note, featured, ordering). No routes/data flows removed; all {{IMG_*}} placeholder tokens preserved byte-for-byte.",
+      "generationId": 1319,
+      "filesModified": [
+        "manifest.json",
+        "migrations.sql",
+        "public/css/admin-styles.css",
+        "public/css/styles.css",
+        "public/js/app.js",
+        "routes.js",
+        "schema.sql",
+        "seed.js",
+        "views/admin-posts.ejs",
+        "views/admin-projects.ejs",
+        "views/admin-services.ejs",
+        "views/admin-settings.ejs",
+        "views/admin-testimonials.ejs",
+        "views/admin.ejs",
+        "views/conseil.ejs",
+        "views/conseils.ejs",
+        "views/contact.ejs",
+        "views/index.ejs",
+        "views/partials/admin-shell.ejs",
+        "views/partials/admin-sidebar.ejs",
+        "views/partials/footer.ejs",
+        "views/partials/header.ejs",
+        "views/partials/seal.ejs",
+        "views/realisations.ejs",
+        "views/services.ejs",
+        "views/temoignages.ejs"
+      ]
+    }
+  ],
+  "apiVariables": [],
+  "createdAt": "2026-06-15T16:55:46.114Z",
+  "updatedAt": "2026-06-15T17:40:49.077Z",
+  "exportedAt": "2026-06-15T17:40:49.310Z"
+}

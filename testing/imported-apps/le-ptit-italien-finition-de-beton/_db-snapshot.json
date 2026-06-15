@@ -1,0 +1,446 @@
+{
+  "exportedAt": "2026-06-15T17:40:49.324Z",
+  "tables": {
+    "admin_users": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "password_hash",
+        "display_name",
+        "role",
+        "active",
+        "activation_token",
+        "invited_by",
+        "invite_token",
+        "invite_expires_at",
+        "last_login_at",
+        "is_active",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_invites": {
+      "columns": [
+        "id",
+        "email",
+        "token",
+        "role",
+        "status",
+        "invited_by",
+        "expires_at",
+        "accepted_at",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_webauthn_credentials": {
+      "columns": [
+        "id",
+        "admin_user_id",
+        "credential_id",
+        "public_key",
+        "counter",
+        "device_name",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "posts": {
+      "columns": [
+        "id",
+        "title",
+        "content",
+        "image_url",
+        "category",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Pourquoi réserver vos travaux de béton avant les vacances de la construction",
+          "content": "La demande pour la finition de béton n'est pas la même toute l'année. Elle démarre avec l'été et grimpe en flèche dans les semaines qui précèdent les vacances de la construction.\n\nRéserver tôt vous garantit votre date, évite les délais et vous laisse le temps de bien planifier votre projet. Les meilleurs créneaux partent souvent dès le printemps.\n\nUn conseil : appelez dès que vous avez une idée de votre échéancier. Même une réservation provisoire vaut mieux que d'attendre la dernière minute.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781544024/tapavis_tenant_le-ptit-italien-finition-de-beton/build_le-ptit-italien-finition-de-beton_1781544024121.png",
+          "category": "Conseils",
+          "published": 1,
+          "created_at": "2026-06-15T17:40:24.122Z",
+          "updated_at": "2026-06-15T17:40:24.122Z"
+        },
+        {
+          "id": 2,
+          "title": "Le béton poli : durabilité et élégance pour votre plancher",
+          "content": "Le béton poli combine résistance industrielle et fini raffiné. Une fois poli à la flatteuse, le plancher devient extrêmement dur, résiste à l'usure et se nettoie d'un simple coup de vadrouille.\n\nIdéal pour les garages, sous-sols, ateliers et espaces commerciaux, il offre un look moderne sans entretien lourd.\n\nLe secret d'un bon béton poli, c'est la préparation et la main de l'artisan. C'est là que des décennies d'expérience font toute la différence.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781544020/tapavis_tenant_le-ptit-italien-finition-de-beton/build_le-ptit-italien-finition-de-beton_1781544020000.png",
+          "category": "Béton",
+          "published": 1,
+          "created_at": "2026-06-15T17:40:24.131Z",
+          "updated_at": "2026-06-15T17:40:24.131Z"
+        },
+        {
+          "id": 3,
+          "title": "Le terrazzo, l'art italien du plancher qui traverse les décennies",
+          "content": "Le terrazzo n'est pas une mode : c'est une tradition italienne centenaire. Des agrégats de marbre et de verre noyés dans une matrice, puis polis jusqu'à obtenir une surface miroir.\n\nLe résultat est un plancher unique, élégant et pratiquement indestructible. Chaque terrazzo est différent — c'est ce qui en fait une pièce d'artisanat.\n\nParfait pour une entrée qui en impose ou un espace qui doit durer une vie.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781544020/tapavis_tenant_le-ptit-italien-finition-de-beton/build_le-ptit-italien-finition-de-beton_1781544020209.png",
+          "category": "Terrazzo",
+          "published": 1,
+          "created_at": "2026-06-15T17:40:24.139Z",
+          "updated_at": "2026-06-15T17:40:24.139Z"
+        },
+        {
+          "id": 4,
+          "title": "Acrylique extérieur : protéger et embellir avant le retour du froid",
+          "content": "L'acrylique appliqué sur les surfaces extérieures protège contre l'eau, le gel et l'usure tout en offrant un fini coloré et soigné.\n\nLe meilleur moment pour ces travaux, c'est la fin de l'été et le début de l'automne, quand les températures sont stables et avant les premiers froids.\n\nUne couche d'acrylique de qualité, posée par un artisan, prolonge la vie de vos surfaces de plusieurs années.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781544020/tapavis_tenant_le-ptit-italien-finition-de-beton/build_le-ptit-italien-finition-de-beton_1781544020543.png",
+          "category": "Acrylique",
+          "published": 1,
+          "created_at": "2026-06-15T17:40:24.148Z",
+          "updated_at": "2026-06-15T17:40:24.148Z"
+        }
+      ]
+    },
+    "admin_settings": {
+      "columns": [
+        "key",
+        "value",
+        "updated_at"
+      ],
+      "totalRows": 33,
+      "sampleRows": [
+        {
+          "key": "service_area",
+          "value": "Partout au Québec",
+          "updated_at": "2026-06-15T17:40:23.916Z"
+        },
+        {
+          "key": "_p_hero_image_url",
+          "value": "https://res.cloudinary.com/duhp69meg/image/upload/v1781544019/tapavis_tenant_le-ptit-italien-finition-de-beton/build_le-ptit-italien-finition-de-beton_1781544019853.png",
+          "updated_at": "2026-06-15T17:40:23.925Z"
+        },
+        {
+          "key": "_p_about_image_url",
+          "value": "https://res.cloudinary.com/duhp69meg/image/upload/v1781544019/tapavis_tenant_le-ptit-italien-finition-de-beton/build_le-ptit-italien-finition-de-beton_1781544019729.png",
+          "updated_at": "2026-06-15T17:40:23.933Z"
+        },
+        {
+          "key": "_seed_version",
+          "value": "9026c64aaa4d",
+          "updated_at": "2026-06-15T17:40:24.282Z"
+        },
+        {
+          "key": "_seeded_at",
+          "value": "2026-06-15 17:40:24.291114+00",
+          "updated_at": "2026-06-15T17:40:24.291Z"
+        },
+        {
+          "key": "_p_seo_title_fr",
+          "value": "Le P'tit Italien — Finition de plancher de béton",
+          "updated_at": "2026-06-15T17:40:24.440Z"
+        },
+        {
+          "key": "_p_seo_source_title_fr",
+          "value": "ai",
+          "updated_at": "2026-06-15T17:40:24.448Z"
+        },
+        {
+          "key": "_p_seo_description_fr",
+          "value": "Finition de plancher de béton, terrazzo, acrylique, plâtrage et réparation de solage. Travail d'artisan garanti, partout au Québec.",
+          "updated_at": "2026-06-15T17:40:24.462Z"
+        },
+        {
+          "key": "_p_seo_source_description_fr",
+          "value": "ai",
+          "updated_at": "2026-06-15T17:40:24.470Z"
+        },
+        {
+          "key": "_p_seo_keywords_fr",
+          "value": "finition de béton, plancher de béton poli, terrazzo, acrylique sur mur, plâtrage, réparation de solage, béton Québec, finisseur de plancher, entrée de béton, plancher commercial, crépi, trottoir béton",
+          "updated_at": "2026-06-15T17:40:24.485Z"
+        }
+      ]
+    },
+    "site_visits": {
+      "columns": [
+        "id",
+        "path",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "projects": {
+      "columns": [
+        "id",
+        "title",
+        "description",
+        "image_url",
+        "video_url",
+        "category",
+        "location",
+        "featured",
+        "sort_order",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 6,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Plancher de béton poli — Garage résidentiel",
+          "description": "Polissage haute brillance d'un plancher de garage neuf, fini à la flatteuse pour une surface dure et facile d'entretien.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781544020/tapavis_tenant_le-ptit-italien-finition-de-beton/build_le-ptit-italien-finition-de-beton_1781544019941.png",
+          "video_url": "",
+          "category": "Béton poli",
+          "location": "Trois-Rivières",
+          "featured": 1,
+          "sort_order": 1,
+          "created_at": "2026-06-15T17:40:23.947Z",
+          "updated_at": "2026-06-15T17:40:23.947Z"
+        },
+        {
+          "id": 2,
+          "title": "Fini terrazzo — Hall commercial",
+          "description": "Terrazzo poli aux agrégats de marbre pour l'entrée d'un édifice commercial : élégant et increvable.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781544020/tapavis_tenant_le-ptit-italien-finition-de-beton/build_le-ptit-italien-finition-de-beton_1781544020209.png",
+          "video_url": "",
+          "category": "Terrazzo",
+          "location": "Shawinigan",
+          "featured": 1,
+          "sort_order": 2,
+          "created_at": "2026-06-15T17:40:23.955Z",
+          "updated_at": "2026-06-15T17:40:23.955Z"
+        },
+        {
+          "id": 3,
+          "title": "Acrylique de couleur — Patio extérieur",
+          "description": "Fini acrylique texturé et teinté sur un patio résidentiel, pour une surface antidérapante et durable.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781544020/tapavis_tenant_le-ptit-italien-finition-de-beton/build_le-ptit-italien-finition-de-beton_1781544020543.png",
+          "video_url": "",
+          "category": "Acrylique",
+          "location": "Bécancour",
+          "featured": 0,
+          "sort_order": 3,
+          "created_at": "2026-06-15T17:40:23.964Z",
+          "updated_at": "2026-06-15T17:40:23.964Z"
+        },
+        {
+          "id": 4,
+          "title": "Plancher poli — Sous-sol résidentiel",
+          "description": "Sous-sol transformé avec un plancher de béton poli au fini mat, sobre et moderne.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781544020/tapavis_tenant_le-ptit-italien-finition-de-beton/build_le-ptit-italien-finition-de-beton_1781544020056.png",
+          "video_url": "",
+          "category": "Béton poli",
+          "location": "Trois-Rivières",
+          "featured": 0,
+          "sort_order": 4,
+          "created_at": "2026-06-15T17:40:23.972Z",
+          "updated_at": "2026-06-15T17:40:23.972Z"
+        },
+        {
+          "id": 5,
+          "title": "Réparation et crépi de solage",
+          "description": "Réparation et parge d'un solage extérieur fissuré, suivies d'un crépi protecteur uniforme.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781544019/tapavis_tenant_le-ptit-italien-finition-de-beton/build_le-ptit-italien-finition-de-beton_1781544019247.png",
+          "video_url": "",
+          "category": "Solage",
+          "location": "Grand-Mère",
+          "featured": 0,
+          "sort_order": 5,
+          "created_at": "2026-06-15T17:40:23.980Z",
+          "updated_at": "2026-06-15T17:40:23.980Z"
+        },
+        {
+          "id": 6,
+          "title": "Entrée et trottoir en béton",
+          "description": "Coulée et finition d'une entrée de garage et d'un trottoir, finis proprement à la flatteuse.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781544020/tapavis_tenant_le-ptit-italien-finition-de-beton/build_le-ptit-italien-finition-de-beton_1781544020168.png",
+          "video_url": "",
+          "category": "Extérieur",
+          "location": "Nicolet",
+          "featured": 0,
+          "sort_order": 6,
+          "created_at": "2026-06-15T17:40:23.989Z",
+          "updated_at": "2026-06-15T17:40:23.989Z"
+        }
+      ]
+    },
+    "services": {
+      "columns": [
+        "id",
+        "name",
+        "description",
+        "image_url",
+        "price_note",
+        "icon",
+        "featured",
+        "sort_order",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 6,
+      "sampleRows": [
+        {
+          "id": 1,
+          "name": "Finition de plancher de béton",
+          "description": "Finition à la flatteuse et polissage pour un plancher lisse, dur et durable — garages, sous-sols, entrepôts et planchers commerciaux.",
+          "image_url": null,
+          "price_note": "Estimation gratuite",
+          "icon": "concrete",
+          "featured": 1,
+          "sort_order": 1,
+          "created_at": "2026-06-15T17:40:24.007Z",
+          "updated_at": "2026-06-15T17:40:24.007Z"
+        },
+        {
+          "id": 2,
+          "name": "Fini terrazzo",
+          "description": "Le classique italien : agrégats de marbre et de verre polis en surface pour un plancher unique, élégant et increvable.",
+          "image_url": null,
+          "price_note": "Estimation gratuite",
+          "icon": "terrazzo",
+          "featured": 1,
+          "sort_order": 2,
+          "created_at": "2026-06-15T17:40:24.019Z",
+          "updated_at": "2026-06-15T17:40:24.019Z"
+        },
+        {
+          "id": 3,
+          "name": "Acrylique sur murs — toutes les couleurs",
+          "description": "Pose d'acrylique décoratif et protecteur sur les murs, dans la couleur de votre choix, pour un fini moderne et facile d'entretien.",
+          "image_url": null,
+          "price_note": "",
+          "icon": "acrylic",
+          "featured": 0,
+          "sort_order": 3,
+          "created_at": "2026-06-15T17:40:24.030Z",
+          "updated_at": "2026-06-15T17:40:24.030Z"
+        },
+        {
+          "id": 4,
+          "name": "Plâtrage et crépi",
+          "description": "Plâtrage de murs et plafonds, crépis et finitions de surface exécutés proprement par un artisan d'expérience.",
+          "image_url": null,
+          "price_note": "",
+          "icon": "plaster",
+          "featured": 0,
+          "sort_order": 4,
+          "created_at": "2026-06-15T17:40:24.038Z",
+          "updated_at": "2026-06-15T17:40:24.038Z"
+        },
+        {
+          "id": 5,
+          "name": "Réparation de solage extérieur",
+          "description": "Réparation, parge et étanchéité des solages et fondations extérieures pour protéger votre bâtiment des intempéries.",
+          "image_url": null,
+          "price_note": "",
+          "icon": "foundation",
+          "featured": 0,
+          "sort_order": 5,
+          "created_at": "2026-06-15T17:40:24.047Z",
+          "updated_at": "2026-06-15T17:40:24.047Z"
+        },
+        {
+          "id": 6,
+          "name": "Trottoirs, entrées et stationnements",
+          "description": "Coulée et finition de trottoirs, entrées de garage et stationnements en béton, finis à la flatteuse ou au balai.",
+          "image_url": null,
+          "price_note": "",
+          "icon": "exterior",
+          "featured": 0,
+          "sort_order": 6,
+          "created_at": "2026-06-15T17:40:24.055Z",
+          "updated_at": "2026-06-15T17:40:24.055Z"
+        }
+      ]
+    },
+    "testimonials": {
+      "columns": [
+        "id",
+        "author",
+        "role",
+        "content",
+        "rating",
+        "image_url",
+        "featured",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 5,
+      "sampleRows": [
+        {
+          "id": 1,
+          "author": "Jean Tremblay",
+          "role": "Propriétaire, Trois-Rivières",
+          "content": "Mon plancher de garage est magnifique et solide comme le roc. Travail propre, ponctuel, et la garantie n'est pas juste des paroles.",
+          "rating": 5,
+          "image_url": null,
+          "featured": 1,
+          "created_at": "2026-06-15T17:40:24.071Z",
+          "updated_at": "2026-06-15T17:40:24.071Z"
+        },
+        {
+          "id": 2,
+          "author": "Sylvie Bergeron",
+          "role": "Propriétaire, Shawinigan",
+          "content": "Le fini terrazzo dans notre entrée fait l'envie de tous les visiteurs. Un vrai artisan qui aime son métier.",
+          "rating": 5,
+          "image_url": null,
+          "featured": 1,
+          "created_at": "2026-06-15T17:40:24.080Z",
+          "updated_at": "2026-06-15T17:40:24.080Z"
+        },
+        {
+          "id": 3,
+          "author": "Marc Lefebvre",
+          "role": "Entrepreneur général",
+          "content": "Je fais affaire avec Mario sur plusieurs chantiers. Fiable, méticuleux et toujours à temps. Je recommande sans hésiter.",
+          "rating": 5,
+          "image_url": null,
+          "featured": 0,
+          "created_at": "2026-06-15T17:40:24.089Z",
+          "updated_at": "2026-06-15T17:40:24.089Z"
+        },
+        {
+          "id": 4,
+          "author": "Caroline Dubé",
+          "role": "Propriétaire, Bécancour",
+          "content": "Notre patio en acrylique a changé du tout au tout. Belle couleur, fini impeccable et un excellent rapport qualité-prix.",
+          "rating": 5,
+          "image_url": null,
+          "featured": 0,
+          "created_at": "2026-06-15T17:40:24.099Z",
+          "updated_at": "2026-06-15T17:40:24.099Z"
+        },
+        {
+          "id": 5,
+          "author": "Robert Gagnon",
+          "role": "Promoteur immobilier",
+          "content": "Des planchers de béton poli livrés dans les délais et au-delà de mes attentes. Un partenaire de confiance.",
+          "rating": 5,
+          "image_url": null,
+          "featured": 0,
+          "created_at": "2026-06-15T17:40:24.107Z",
+          "updated_at": "2026-06-15T17:40:24.107Z"
+        }
+      ]
+    },
+    "form_submissions": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "phone",
+        "service",
+        "message",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    }
+  }
+}
