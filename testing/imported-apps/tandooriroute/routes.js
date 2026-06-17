@@ -120,7 +120,7 @@ module.exports = function(services) {
   // Static menu preview for the one-pager homepage slider. Baked from the
   // Liasse Restaurants ordering-system export (Tandoori Route, 2026-06-10).
   // The live source of truth for ordering is
-  // https://tandoori-route-blain.tapavis.com/order — the tenant menu_items
+  // https://tandoori-route-blain.liasse.tech/order — the tenant menu_items
   // table no longer feeds the homepage. Image URLs carry a Cloudinary
   // w_640,h_480,c_fill transform so the 48-card slider stays light.
   const MENU_PREVIEW = {
