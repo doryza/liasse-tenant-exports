@@ -56,6 +56,19 @@ INSERT INTO menu_categories (slug, name_fr, name_en, position) VALUES ('vege', '
 INSERT INTO menu_categories (slug, name_fr, name_en, position) VALUES ('pain', 'Pains & accompagnements', 'Breads & sides', 5) ON CONFLICT (slug) DO NOTHING;
 INSERT INTO menu_categories (slug, name_fr, name_en, position) VALUES ('dessert', 'Desserts', 'Desserts', 6) ON CONFLICT (slug) DO NOTHING;
 
+-- 2026-06-16 menu mirror: categories of the live Liasse Restaurants ordering menu
+-- (business 639). The 6 original categories above are deactivated by migrations.sql
+-- (sentinel-guarded) since no items reference them anymore.
+INSERT INTO menu_categories (slug, name_fr, name_en, position) VALUES ('poulet', 'Poulet', 'Chicken', 1) ON CONFLICT (slug) DO NOTHING;
+INSERT INTO menu_categories (slug, name_fr, name_en, position) VALUES ('agneau', 'Agneau', 'Lamb', 2) ON CONFLICT (slug) DO NOTHING;
+INSERT INTO menu_categories (slug, name_fr, name_en, position) VALUES ('vegetarien', 'Végétarien', 'Vegetarian', 3) ON CONFLICT (slug) DO NOTHING;
+INSERT INTO menu_categories (slug, name_fr, name_en, position) VALUES ('alacarte', 'À la carte', 'À la carte', 4) ON CONFLICT (slug) DO NOTHING;
+INSERT INTO menu_categories (slug, name_fr, name_en, position) VALUES ('poutine', 'Poutine', 'Poutine', 5) ON CONFLICT (slug) DO NOTHING;
+INSERT INTO menu_categories (slug, name_fr, name_en, position) VALUES ('desserts', 'Dessert', 'Desserts', 6) ON CONFLICT (slug) DO NOTHING;
+INSERT INTO menu_categories (slug, name_fr, name_en, position) VALUES ('boissons', 'Chai / Boissons', 'Chai / Drinks', 7) ON CONFLICT (slug) DO NOTHING;
+INSERT INTO menu_categories (slug, name_fr, name_en, position) VALUES ('thali', 'Midi Special Thali', 'Lunch Thali Special', 8) ON CONFLICT (slug) DO NOTHING;
+INSERT INTO menu_categories (slug, name_fr, name_en, position) VALUES ('wraps', 'Wraps', 'Wraps', 9) ON CONFLICT (slug) DO NOTHING;
+
 CREATE TABLE IF NOT EXISTS delivery_platforms (
   id SERIAL PRIMARY KEY,
   name TEXT NOT NULL,

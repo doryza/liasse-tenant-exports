@@ -17,17 +17,160 @@ INSERT INTO admin_settings (key, value) VALUES ('_p_about_image_url', 'https://r
 INSERT INTO admin_settings (key, value) VALUES ('_p_nav_logo_url', 'https://res.cloudinary.com/duhp69meg/image/upload/v1779561501/tandooriroute/site/nav_logo_1779561501126.png')
   ON CONFLICT (key) DO NOTHING;
 
--- menu_items (update by name_fr — seeded with empty image_url, so first run sets them)
-UPDATE menu_items SET image_url = 'https://res.cloudinary.com/duhp69meg/image/upload/v1779561490/tandooriroute/menu/biryani_1779561489634.png' WHERE name_fr = 'Biryani au Poulet';
-UPDATE menu_items SET image_url = 'https://res.cloudinary.com/duhp69meg/image/upload/v1779561496/tandooriroute/menu/tikka_1779561495519.png' WHERE name_fr = 'Poulet Tikka Tandoori';
-UPDATE menu_items SET image_url = 'https://res.cloudinary.com/duhp69meg/image/upload/v1779561511/tandooriroute/menu/rogan_josh_1779561510397.png' WHERE name_fr = 'Agneau Rogan Josh';
-UPDATE menu_items SET image_url = 'https://res.cloudinary.com/duhp69meg/image/upload/v1779561510/tandooriroute/menu/butter_chicken_1779561509160.png' WHERE name_fr = 'Butter Chicken';
-UPDATE menu_items SET image_url = 'https://res.cloudinary.com/duhp69meg/image/upload/v1779561511/tandooriroute/menu/paneer_1779561509975.png' WHERE name_fr = 'Paneer Tikka Masala';
-UPDATE menu_items SET image_url = 'https://res.cloudinary.com/duhp69meg/image/upload/v1779561514/tandooriroute/menu/chana_1779561513454.png' WHERE name_fr = 'Chana Masala';
-UPDATE menu_items SET image_url = 'https://res.cloudinary.com/duhp69meg/image/upload/v1779561516/tandooriroute/menu/naan_1779561515519.png' WHERE name_fr = 'Naan à l''ail & beurre';
-UPDATE menu_items SET image_url = 'https://res.cloudinary.com/duhp69meg/image/upload/v1779561526/tandooriroute/menu/samosas_1779561525035.png' WHERE name_fr = 'Samosa aux légumes (2 mcx)';
-UPDATE menu_items SET image_url = 'https://res.cloudinary.com/duhp69meg/image/upload/v1779561528/tandooriroute/menu/gulab_1779561527852.png' WHERE name_fr = 'Gulab Jamun (3 mcx)';
-UPDATE menu_items SET image_url = 'https://res.cloudinary.com/duhp69meg/image/upload/v1779561616/tandooriroute/menu/lassi_1779561615541.png' WHERE name_fr = 'Mango Lassi';
+-- 2026-06-16 full menu overwrite — replace the website /menu (menu_items) with the
+-- live Liasse Restaurants ordering menu (business 639), the same data the homepage
+-- MENU_PREVIEW already shows. One-time + sentinel-guarded (_menu_v2_done) so a
+-- re-materialization never re-wipes the table or clobbers later operator edits.
+UPDATE menu_categories SET active = 0
+  WHERE slug IN ('tandoor','biryani','curry','vege','pain','dessert')
+  AND NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v2_done');
+DELETE FROM menu_items
+  WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v2_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,featured,available)
+  SELECT 'Poulet au beurre', 'Butter Chicken', 'Poulet désossé dans une sauce crémeuse et onctueuse à la tomate, préparée avec beurre et épices traditionnelles', 'Boneless chicken in a smooth, creamy tomato sauce made with butter and traditional spices.', 15.99, 'poulet', 'https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780759944/tapavis_menu/639/cqpmxhvxkyfas1oue0qw.jpg', 1, 0, 1
+  WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v2_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,featured,available)
+  SELECT 'Poulet Korma', 'Chicken Korma', 'Poulet braisé dans une sauce curry et crémeuse au yogourt, aux épices, riche et savoureuse', 'Chicken braised in a creamy yogurt curry sauce with spices — rich and flavourful.', 15.99, 'poulet', NULL, 2, 0, 1
+  WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v2_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,featured,available)
+  SELECT 'Poulet Cari', 'Chicken Curry', 'Poulet mijoté dans une sauce curry savoureuse aux épices, riche et bien relevée', 'Chicken simmered in a savoury, well-spiced curry sauce — rich and bold.', 15.99, 'poulet', 'https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780844492/tapavis_menu/639/svxljnat31y2bwt4nrvi.jpg', 3, 0, 1
+  WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v2_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,featured,available)
+  SELECT 'Poulet Palak', 'Chicken Palak', 'Épinards et Poulet mijotés ensemble dans un curry savoureux', 'Spinach and chicken simmered together in a savoury curry.', 15.99, 'poulet', NULL, 4, 0, 1
+  WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v2_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,featured,available)
+  SELECT 'Poulet Tikka Masala', 'Chicken Tikka Masala', 'Morceaux de poulet marinés et grillés, servis dans une sauce tomate crémeuse et épicée.', 'Marinated, grilled chicken pieces served in a creamy, spiced tomato sauce.', 16.99, 'poulet', 'https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780799740/tapavis_menu/639/jzeedqahj2k21d6oq50u.jpg', 5, 0, 1
+  WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v2_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,featured,available)
+  SELECT 'Karahi Poulet', 'Karahi Chicken', NULL, NULL, 17.99, 'poulet', NULL, 6, 0, 1
+  WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v2_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,featured,available)
+  SELECT 'Tandoori Poulet', 'Tandoori Chicken', 'Cuisse de poulet marinée dans du yogourt, de l''ail, du gingembre et un mélange traditionnel d''épices indiennes.', 'Chicken thigh marinated in yogurt, garlic, ginger and a traditional blend of Indian spices.', 7.99, 'poulet', NULL, 7, 0, 1
+  WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v2_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,featured,available)
+  SELECT 'Agneau Korma', 'Lamb Korma', 'Agneau braisé dans une sauce curry et crémeuse au yogourt, aux épices, riche et savoureuse.', 'Lamb braised in a creamy yogurt curry sauce with spices — rich and flavourful.', 17.99, 'agneau', NULL, 1, 0, 1
+  WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v2_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,featured,available)
+  SELECT 'Agneau Cari', 'Lamb Curry', 'Agneau mijoté dans une sauce curry savoureuse aux épices, riche et bien relevée.', 'Lamb simmered in a savoury, well-spiced curry sauce — rich and bold.', 17.99, 'agneau', NULL, 2, 0, 1
+  WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v2_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,featured,available)
+  SELECT 'Agneau Palak', 'Lamb Palak', 'Épinards et Agneau mijotés ensemble dans un curry savoureux.', 'Spinach and lamb simmered together in a savoury curry.', 17.99, 'agneau', 'https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780760423/tapavis_menu/639/tzi2onyi8uep4bxcgyui.jpg', 3, 0, 1
+  WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v2_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,featured,available)
+  SELECT 'Karahi Agneau', 'Karahi Lamb', NULL, NULL, 21.99, 'agneau', NULL, 4, 0, 1
+  WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v2_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,featured,available)
+  SELECT 'Dal Makhni', 'Dal Makhani', 'Lentilles noires crémeuses mijotées lentement avec beurre et épices.', 'Creamy black lentils slow-simmered with butter and spices.', 12.99, 'vegetarien', 'https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780760237/tapavis_menu/639/khcsg7tx884iph5b6amd.jpg', 1, 0, 1
+  WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v2_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,featured,available)
+  SELECT 'Kadhi Pakora', 'Kadhi Pakora', 'Sauce au yogourt légèrement acidulée et épicée, garnie de beignets de légumes frits.', 'Lightly tangy, spiced yogurt sauce topped with fried vegetable fritters.', 14.99, 'vegetarien', 'https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780799589/tapavis_menu/639/uy1gvywxcmo0hkduba7a.jpg', 2, 0, 1
+  WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v2_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,featured,available)
+  SELECT 'Shahi Paneer', 'Shahi Paneer', 'Paneer cuit dans une sauce crémeuse et onctueuse à la tomate, préparée avec beurre et épices traditionnelles.', 'Paneer cooked in a smooth, creamy tomato sauce made with butter and traditional spices.', 15.99, 'vegetarien', 'https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780760951/tapavis_menu/639/z7pqhgfn4mpxjd1rvq0r.jpg', 3, 0, 1
+  WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v2_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,featured,available)
+  SELECT 'Paneer Tikka Masala', 'Paneer Tikka Masala', 'Morceaux de Paneer marinés et grillés, servis dans une sauce tomate crémeuse et épicée.', 'Marinated, grilled paneer pieces served in a creamy, spiced tomato sauce.', 16.99, 'vegetarien', 'https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780844190/tapavis_menu/639/ucyfsongb9gmdessy241.jpg', 4, 0, 1
+  WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v2_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,featured,available)
+  SELECT 'Palak Paneer', 'Palak Paneer', 'Épinards et paneer mijotés ensemble dans un curry savoureux.', 'Spinach and paneer simmered together in a savoury curry.', 15.99, 'vegetarien', 'https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780844300/tapavis_menu/639/uajvxmkccnzzssdfbw7p.jpg', 5, 0, 1
+  WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v2_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,featured,available)
+  SELECT 'Chana Masala', 'Chana Masala', 'Curry savoureux de pois chiches épicé avec des assaisonnements traditionnels.', 'Savoury chickpea curry spiced with traditional seasonings.', 11.99, 'vegetarien', 'https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780800108/tapavis_menu/639/d23drzv8c4fzsgp57mcp.jpg', 6, 0, 1
+  WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v2_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,featured,available)
+  SELECT 'Chana Bhatura', 'Chana Bhatura', 'Pois Chiches épicés avec 2 bhaturas frits.', 'Spiced chickpeas served with 2 fried bhaturas.', 13.99, 'vegetarien', 'https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780760059/tapavis_menu/639/ase8aaw1x2qtvhl0loeo.jpg', 7, 0, 1
+  WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v2_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,featured,available)
+  SELECT 'Samosa (2 mcx)', 'Samosa (2 pcs)', NULL, NULL, 3.99, 'alacarte', 'https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780799156/tapavis_menu/639/fb9soufexvhdas2nlra4.jpg', 1, 0, 1
+  WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v2_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,featured,available)
+  SELECT 'Onion Bhaji', 'Onion Bhaji', NULL, NULL, 6.99, 'alacarte', NULL, 2, 0, 1
+  WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v2_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,featured,available)
+  SELECT 'Rouleaux de printemps (5 mcx)', 'Spring Rolls (5 pcs)', NULL, NULL, 4.99, 'alacarte', NULL, 3, 0, 1
+  WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v2_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,featured,available)
+  SELECT 'Frites', 'Fries', NULL, NULL, 4.99, 'alacarte', NULL, 4, 0, 1
+  WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v2_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,featured,available)
+  SELECT 'Frites Masala', 'Masala Fries', NULL, NULL, 6.99, 'alacarte', NULL, 5, 0, 1
+  WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v2_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,featured,available)
+  SELECT 'Samosa Chaat', 'Samosa Chaat', NULL, NULL, 8.99, 'alacarte', 'https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780845248/tapavis_menu/639/g3o9y6iiia7dm5z3to7e.jpg', 6, 0, 1
+  WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v2_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,featured,available)
+  SELECT 'Aloo Tiki Chaat', 'Aloo Tikki Chaat', NULL, NULL, 8.99, 'alacarte', NULL, 7, 0, 1
+  WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v2_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,featured,available)
+  SELECT 'Naan', 'Naan', NULL, NULL, 2.5, 'alacarte', NULL, 8, 0, 1
+  WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v2_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,featured,available)
+  SELECT 'Naan à l''ail', 'Garlic Naan', NULL, NULL, 3.5, 'alacarte', NULL, 9, 0, 1
+  WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v2_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,featured,available)
+  SELECT 'Riz Basmati', 'Basmati Rice', NULL, NULL, 4.99, 'alacarte', 'https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780799317/tapavis_menu/639/a8p9pilyxvbqobllyhgt.jpg', 10, 0, 1
+  WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v2_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,featured,available)
+  SELECT 'Biryani au poulet', 'Chicken Biryani', NULL, NULL, 14.99, 'alacarte', 'https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780845042/tapavis_menu/639/na7eowzxdihnqm1zzhzz.jpg', 11, 0, 1
+  WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v2_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,featured,available)
+  SELECT 'Raita', 'Raita', NULL, NULL, 4.99, 'alacarte', 'https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780799950/tapavis_menu/639/ejvhob27q0gpcsz0y6kk.jpg', 12, 0, 1
+  WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v2_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,featured,available)
+  SELECT 'Poutine Poulet au beurre', 'Butter Chicken Poutine', NULL, NULL, 12.99, 'poutine', NULL, 1, 0, 1
+  WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v2_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,featured,available)
+  SELECT 'Poutine Shahi Paneer', 'Shahi Paneer Poutine', NULL, NULL, 12.99, 'poutine', NULL, 2, 0, 1
+  WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v2_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,featured,available)
+  SELECT 'Rasmalai (2 pcs)', 'Rasmalai (2 pcs)', NULL, NULL, 4.5, 'desserts', 'https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780799455/tapavis_menu/639/xstkrezkvtqrgbzqnfoe.jpg', 1, 0, 1
+  WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v2_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,featured,available)
+  SELECT 'Gulab Jamun (2 pcs)', 'Gulab Jamun (2 pcs)', NULL, NULL, 3.99, 'desserts', 'https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780844873/tapavis_menu/639/atplbdpwazfjqrtgggym.jpg', 2, 0, 1
+  WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v2_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,featured,available)
+  SELECT 'Kulfi', 'Kulfi', NULL, NULL, 3.5, 'desserts', NULL, 3, 0, 1
+  WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v2_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,featured,available)
+  SELECT 'Cardamome Chai', 'Cardamom Chai', NULL, NULL, 3.5, 'boissons', NULL, 1, 0, 1
+  WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v2_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,featured,available)
+  SELECT 'Karak Chai', 'Karak Chai', NULL, NULL, 3.5, 'boissons', NULL, 2, 0, 1
+  WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v2_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,featured,available)
+  SELECT 'Kashmiri Chai', 'Kashmiri Chai', NULL, NULL, 3.5, 'boissons', NULL, 3, 0, 1
+  WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v2_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,featured,available)
+  SELECT 'Mango Lassi', 'Mango Lassi', NULL, NULL, 4.99, 'boissons', NULL, 4, 0, 1
+  WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v2_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,featured,available)
+  SELECT 'Canette', 'Soft Drink (Can)', NULL, NULL, 2.5, 'boissons', NULL, 5, 0, 1
+  WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v2_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,featured,available)
+  SELECT 'Eau', 'Water', NULL, NULL, 1.99, 'boissons', NULL, 6, 0, 1
+  WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v2_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,featured,available)
+  SELECT 'Thali Non-Vég', 'Non-Veg Thali', 'Butter chicken servi avec channa masala, riz, naan, raita, salade fraîche et boisson en canette incluse. Sur place seulement / Dine-in only. Midi seulement : disponible de 11h30 à 15h00.', 'Butter chicken served with channa masala, rice, naan, raita, fresh salad and a canned drink included. Dine-in only. Lunch only: available 11:30 AM–3:00 PM.', 16.99, 'thali', NULL, 1, 0, 1
+  WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v2_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,featured,available)
+  SELECT 'Thali Vég', 'Veg Thali', 'Shahi paneer servi avec channa masala, riz, naan, raita, salade fraîche et boisson en canette incluse. Sur place seulement / Dine-in only. Midi seulement : disponible de 11h30 à 15h00.', 'Shahi paneer served with channa masala, rice, naan, raita, fresh salad and a canned drink included. Dine-in only. Lunch only: available 11:30 AM–3:00 PM.', 16.99, 'thali', NULL, 2, 0, 1
+  WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v2_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,featured,available)
+  SELECT 'Wrap Poulet au beurre', 'Butter Chicken Wrap', 'Poulet au beurre dans un naan, garni de laitue, tomates et oignons.', 'Butter chicken in a naan, topped with lettuce, tomatoes and onions.', 11.99, 'wraps', 'https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780760707/tapavis_menu/639/psp34mviazjd0uedruoc.jpg', 1, 0, 1
+  WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v2_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,featured,available)
+  SELECT 'Wrap Tandoori Poulet', 'Tandoori Chicken Wrap', 'Poulet tandoori dans un naan, garni de laitue, tomates et oignons, sauce maison et sauce tandoori.', 'Tandoori chicken in a naan, topped with lettuce, tomatoes and onions, house sauce and tandoori sauce.', 11.99, 'wraps', NULL, 2, 0, 1
+  WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v2_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,featured,available)
+  SELECT 'Wrap Shahi Paneer', 'Shahi Paneer Wrap', 'Shahi paneer dans un naan, garni de laitue, tomates et oignons.', 'Shahi paneer in a naan, topped with lettuce, tomatoes and onions.', 11.99, 'wraps', 'https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780760876/tapavis_menu/639/mhdec8duxsnebrkct1p1.jpg', 3, 0, 1
+  WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v2_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,featured,available)
+  SELECT 'Wrap Kabab', 'Kabab Wrap', 'Kabab dans un naan, garni de laitue, tomates et oignons, sauce maison et sauce tandoori.', 'Kabab in a naan, topped with lettuce, tomatoes and onions, house sauce and tandoori sauce.', 12.99, 'wraps', NULL, 4, 0, 1
+  WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v2_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,featured,available)
+  SELECT 'Faites un trio (Patates + Canette)', 'Make it a Combo (Fries + Can)', 'Ajoutez des frites et une canette à votre wrap.', 'Add fries and a canned drink to your wrap.', 4.99, 'wraps', NULL, 5, 0, 1
+  WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v2_done');
+INSERT INTO admin_settings (key, value) VALUES ('_menu_v2_done', '1') ON CONFLICT (key) DO NOTHING;
 
 -- posts (update by title — seed inserts have no image_url column, so first run sets them)
 UPDATE posts SET image_url = 'https://res.cloudinary.com/duhp69meg/image/upload/v1779561532/tandooriroute/posts/post_opening_1779561532294.png' WHERE title = 'Tandoori Route ouvre ses portes à Blainville !';
