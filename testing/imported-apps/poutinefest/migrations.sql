@@ -13,6 +13,9 @@
 INSERT INTO admin_settings (key, value) VALUES ('contact_phone', '(450) 516-0044')
   ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = NOW();
 
+INSERT INTO admin_settings (key, value) VALUES ('business_address', '1000 Bd Lachapelle, Saint-Jérôme, QC J7Z 7M4')
+  ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = NOW();
+
 INSERT INTO admin_settings (key, value) VALUES ('hours_json', '[{"day":"mon","open":"11:00","close":"21:00","closed":false},{"day":"tue","open":"11:00","close":"21:00","closed":false},{"day":"wed","open":"11:00","close":"21:00","closed":false},{"day":"thu","open":"11:00","close":"21:00","closed":false},{"day":"fri","open":"11:00","close":"23:00","closed":false},{"day":"sat","open":"11:00","close":"23:00","closed":false},{"day":"sun","open":"11:00","close":"21:00","closed":false}]')
   ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = NOW();
 

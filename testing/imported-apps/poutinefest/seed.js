@@ -8,6 +8,7 @@ module.exports = async function(db, services) {
     // Real business facts (Google Places, 2026-06-18) — force-synced so they reach
     // already-live tenants too; mirrored in migrations.sql.
     ['contact_phone', '(450) 516-0044'],
+    ['business_address', '1000 Bd Lachapelle, Saint-Jérôme, QC J7Z 7M4'],
     ['hours_json', '[{"day":"mon","open":"11:00","close":"21:00","closed":false},{"day":"tue","open":"11:00","close":"21:00","closed":false},{"day":"wed","open":"11:00","close":"21:00","closed":false},{"day":"thu","open":"11:00","close":"21:00","closed":false},{"day":"fri","open":"11:00","close":"23:00","closed":false},{"day":"sat","open":"11:00","close":"23:00","closed":false},{"day":"sun","open":"11:00","close":"21:00","closed":false}]'],
     ['hours', 'Lun-Jeu : 11h - 21h\nVen-Sam : 11h - 23h\nDim : 11h - 21h']
   ];
@@ -19,7 +20,6 @@ module.exports = async function(db, services) {
     ['tagline', 'La poutine la plus authentique en ville.'],
     ['business_name', cfg.businessName || cfg.displayName || 'PoutineFest'],
     ['contact_email', cfg.contactEmail || ''],
-    ['business_address', cfg.businessAddress || ''],
     ['about_text_fr', 'Depuis 2018, PoutineFest célèbre la cuisine québécoise avec passion. Nos pommes de terre proviennent de fermes québécoises, notre fromage en grains est livré tous les matins, et notre sauce brune maison mijote 6 heures pour un goût incomparable. Notre camion-restaurant parcourt la province pour servir festivals, mariages et événements corporatifs.'],
     ['about_text_en', 'Since 2018, PoutineFest has been celebrating Quebec cuisine with passion. Our potatoes come from Quebec farms, our cheese curds are delivered every morning, and our house-made gravy simmers for 6 hours to deliver an unmatched flavor. Our food truck travels across the province for festivals, weddings and corporate events.']
   ];
