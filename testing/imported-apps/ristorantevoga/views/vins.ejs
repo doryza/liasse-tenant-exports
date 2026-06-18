@@ -1,6 +1,8 @@
 <%- include('partials/header', { pageTitle: (lang === 'en' ? 'Wine list' : 'Carte des vins'), activeNav: 'wine' }) %>
 <%
-  var order = ['Rouge', 'Blanc', 'Rosé', 'Bulles', 'Doux & fortifié', 'Apéritif & digestif'];
+  var order = ['Vino Bianco', 'Vino Rosé', 'Vino Rosso', 'Champagnes', 'Prosecco', 'Bulles', 'Doux & fortifié', 'Apéritif & digestif'];
+  // Italian wine terms read naturally in both languages; map the generic French
+  // options to EN for any operator-added custom category.
   var WINE_EN = { 'Rouge': 'Red', 'Blanc': 'White', 'Rosé': 'Rosé', 'Bulles': 'Sparkling', 'Doux & fortifié': 'Sweet & fortified', 'Apéritif & digestif': 'Aperitif & digestif' };
   function catLabelWine(c){ return (lang === 'en' && WINE_EN[c]) ? WINE_EN[c] : c; }
   var byCat = {};
@@ -47,6 +49,10 @@
         <a class="btn btn-ghost" href="contact"><%= t.nav_contact %></a>
       </div>
     </div>
+  <% } %>
+
+  <% if (sx('wine_fineprint')) { %>
+  <p class="wine-fineprint"><span aria-hidden="true">*</span> <%= sx('wine_fineprint') %></p>
   <% } %>
 
   <div class="text-center" style="padding:2.5rem 0 4rem">

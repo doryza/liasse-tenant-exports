@@ -64,6 +64,8 @@ module.exports = async function(db, services) {
     ['wine_title_en', 'The wine list'],
     ['wine_intro_fr', "Notre bar à vin met à l'honneur de belles bouteilles d'Italie et d'ailleurs, à découvrir au verre ou en bouteille. Demandez-nous nos suggestions d'accords."],
     ['wine_intro_en', 'Our wine bar showcases fine bottles from Italy and beyond, by the glass or the bottle. Ask us for pairing suggestions.'],
+    ['wine_fineprint_fr', "La carte des vins complète est présentée en salle. Demandez-la à votre serveur — et n'hésitez pas à nous écrire pour une suggestion."],
+    ['wine_fineprint_en', 'The full wine list is presented in the dining room. Ask your server — and feel free to write to us for a suggestion.'],
 
     // Tasting
     ['tasting_title_fr', 'Menu dégustation'],
@@ -344,8 +346,71 @@ module.exports = async function(db, services) {
     );
   }
 
-  // tasting_courses, wine_items and reviews are intentionally left empty — the
-  // operator adds the real seven courses, the wine list (Carte des vins) and
-  // genuine guest reviews from the admin backend. The site renders graceful,
-  // on-brand states for each until then.
+  // ---------------------------------------------------------------------------
+  // Wine list — transcribed from the Ristorante Voga Carte des vins.
+  // [name_fr, name_en, producer, varietal, region_fr, region_en, vintage,
+  //  desc_fr, desc_en, price_glass, price_bottle, category]
+  // ---------------------------------------------------------------------------
+  const wines = [
+    // --- Vino Bianco ---
+    ['Bacalhôa, Catarina', 'Bacalhôa, Catarina', 'Bacalhôa', '57% Fernão Pires, 35% Chardonnay, 8% Arinto', 'Portugal', 'Portugal', '2021', null, null, null, 39, 'Vino Bianco'],
+    ['Kris Pinot Grigio', 'Kris Pinot Grigio', 'Kris', 'Pinot Grigio', 'Delle Venezie, Italie', 'Delle Venezie, Italy', null, 'Importation privée', 'Private import', null, 47, 'Vino Bianco'],
+    ['Santinato Soave Biologico', 'Santinato Soave Biologico', 'Santinato', '100% Garganega', 'Soave, Vénétie, Italie', 'Soave, Veneto, Italy', '2023', 'Biologique', 'Organic', null, 48, 'Vino Bianco'],
+    ['Teruzzi, Ainaia', 'Teruzzi, Ainaia', 'Teruzzi', '100% Vernaccia di San Gimignano', 'Toscane, Italie', 'Tuscany, Italy', '2020', null, null, null, 49, 'Vino Bianco'],
+    ["Cave d'Aze, Mâcon-Azé", "Cave d'Aze, Mâcon-Azé", "Cave d'Aze", '100% Chardonnay', 'Mâcon, Bourgogne, France', 'Mâcon, Burgundy, France', '2023', null, null, null, 51, 'Vino Bianco'],
+    ['Farnito Toscana', 'Farnito Toscana', 'Carpineto', '100% Chardonnay', 'Toscane, Italie', 'Tuscany, Italy', '2022', null, null, null, 64, 'Vino Bianco'],
+    ['Chablis Sainte-Claire', 'Chablis Sainte-Claire', null, 'Chardonnay', 'Chablis, Bourgogne, France', 'Chablis, Burgundy, France', null, null, null, null, 69, 'Vino Bianco'],
+    ['Château de Sancerre', 'Château de Sancerre', 'Château de Sancerre', '100% Sauvignon Blanc', 'Sancerre, Vallée de la Loire, France', 'Sancerre, Loire Valley, France', null, null, null, null, 77, 'Vino Bianco'],
+
+    // --- Vino Rosé ---
+    ['Santa Margherita, Trevenezie', 'Santa Margherita, Trevenezie', 'Santa Margherita', null, 'Trevenezie, Vénétie, Italie', 'Trevenezie, Veneto, Italy', null, null, null, null, 47, 'Vino Rosé'],
+
+    // --- Vino Rosso ---
+    ['Zenato, Valpolicella Superiore', 'Zenato, Valpolicella Superiore', 'Zenato', null, 'Valpolicella Superiore, Vénétie, Italie', 'Valpolicella Superiore, Veneto, Italy', null, null, null, null, 48, 'Vino Rosso'],
+    ['Borgogno, Pinin Langhe', 'Borgogno, Pinin Langhe', 'Borgogno', '50% Barbera, 40% Dolcetto, 10% Nebbiolo', 'Langhe, Piémont, Italie', 'Langhe, Piedmont, Italy', '2020', null, null, null, 49, 'Vino Rosso'],
+    ['Xavier Vignon, Côtes du Rhône', 'Xavier Vignon, Côtes du Rhône', 'Xavier Vignon', '85% Grenache, 15% Mourvèdre', 'Côtes du Rhône, Vallée du Rhône, France', 'Côtes du Rhône, Rhône Valley, France', '2022', 'Vieilles vignes · Vin organique', 'Old vines · Organic wine', null, 49, 'Vino Rosso'],
+    ['Izadi Riserva', 'Izadi Riserva', 'Izadi', '100% Tempranillo', 'Rioja Alavesa, Espagne', 'Rioja Alavesa, Spain', '2019', null, null, null, 53, 'Vino Rosso'],
+    ['Alma Negra M Blend', 'Alma Negra M Blend', 'Alma Negra', 'Malbec, Bonarda', 'Argentine', 'Argentina', null, null, null, null, 53, 'Vino Rosso'],
+    ['Conde Valdemar, Rioja Reserva', 'Conde Valdemar, Rioja Reserva', 'Conde Valdemar', null, "Rioja, Vallée de l'Èbre, Espagne", 'Rioja, Ebro Valley, Spain', '2017', null, null, null, 58, 'Vino Rosso'],
+    ['Brancaia Tre', 'Brancaia Tre', 'Brancaia', 'Sangiovese, Merlot, Cabernet Sauvignon', 'Toscane, Italie', 'Tuscany, Italy', null, null, null, null, 59, 'Vino Rosso'],
+    ['Costadoro', 'Costadoro', 'Costadoro', "100% Montepulciano d'Abruzzo", 'Abruzzes, Italie', 'Abruzzo, Italy', '2022', null, null, null, 59, 'Vino Rosso'],
+    ['San Felice, Il Grigio Chianti Classico Riserva', 'San Felice, Il Grigio Chianti Classico Riserva', 'San Felice', '100% Sangiovese', 'Chianti Classico, Toscane, Italie', 'Chianti Classico, Tuscany, Italy', '2021', null, null, null, 67, 'Vino Rosso'],
+    ['Haza', 'Haza', null, '100% Tempranillo', 'Ribera del Duero, Vallée du Duero, Espagne', 'Ribera del Duero, Duero Valley, Spain', '2021', null, null, null, 69, 'Vino Rosso'],
+    ['Crognolo', 'Crognolo', 'Tenuta Sette Ponti', '95% Sangiovese, 5% Merlot', 'Toscane, Italie', 'Tuscany, Italy', '2021', null, null, null, 70, 'Vino Rosso'],
+    ['Brancaia Cabernet Sauvignon', 'Brancaia Cabernet Sauvignon', 'Brancaia', '100% Cabernet Sauvignon', 'Toscane, Italie', 'Tuscany, Italy', null, null, null, null, 71, 'Vino Rosso'],
+    ['Sidus, Tenuta Pianrossi', 'Sidus, Tenuta Pianrossi', 'Tenuta Pianrossi', '65% Sangiovese, 35% Montepulciano', 'Toscane, Italie', 'Tuscany, Italy', null, null, null, null, 72, 'Vino Rosso'],
+    ['Lucente', 'Lucente', 'Luce della Vite', '75% Merlot, 25% Sangiovese', 'Toscane, Italie', 'Tuscany, Italy', '2021', null, null, null, 74, 'Vino Rosso'],
+    ['Carpineto Farnito Toscana', 'Carpineto Farnito Toscana', 'Carpineto', null, 'Toscane, Italie', 'Tuscany, Italy', null, null, null, null, 74, 'Vino Rosso'],
+    ['Borgogno, Langhe Nebbiolo', 'Borgogno, Langhe Nebbiolo', 'Borgogno', '100% Nebbiolo', 'Langhe, Piémont, Italie', 'Langhe, Piedmont, Italy', null, null, null, null, 77, 'Vino Rosso'],
+    ['Il Bruciato', 'Il Bruciato', 'Guado al Tasso', null, 'Bolgheri, Toscane, Italie', 'Bolgheri, Tuscany, Italy', '2021', null, null, null, 88, 'Vino Rosso'],
+    ['Bodega Otazu, Pago de Otazu', 'Bodega Otazu, Pago de Otazu', 'Bodega Otazu', '61% Merlot, 39% Cabernet Sauvignon', "Pago de Otazu, Vallée de l'Èbre, Espagne", 'Pago de Otazu, Ebro Valley, Spain', '2022', null, null, null, 89, 'Vino Rosso'],
+    ['Roccato, Rocca delle Macìe', 'Roccato, Rocca delle Macìe', 'Rocca delle Macìe', 'Cabernet Sauvignon, Sangiovese', 'Toscane, Italie', 'Tuscany, Italy', '2022', null, null, null, 109, 'Vino Rosso'],
+    ['Umberto Cesari, Tauleto', 'Umberto Cesari, Tauleto', 'Umberto Cesari', '90% Sangiovese, 10% Longanesi', 'Rubicone, Émilie-Romagne, Italie', 'Rubicone, Emilia-Romagna, Italy', '2017', null, null, null, 109, 'Vino Rosso'],
+    ['Amarone · Brunello · Barolo', 'Amarone · Brunello · Barolo', null, null, null, null, null, 'Sélection du moment — informez-vous auprès de votre serveur.', 'Selection of the moment — ask your server.', null, null, 'Vino Rosso'],
+
+    // --- Champagnes ---
+    ['Victoire Brut', 'Victoire Brut', 'Victoire', null, 'Champagne, France', 'Champagne, France', null, null, null, null, 99, 'Champagnes'],
+    ['Moët & Chandon Brut Impérial', 'Moët & Chandon Brut Impérial', 'Moët & Chandon', null, 'Champagne, France', 'Champagne, France', null, null, null, null, 190, 'Champagnes'],
+    ['Moët & Chandon Ice Impérial', 'Moët & Chandon Ice Impérial', 'Moët & Chandon', null, 'Champagne, France', 'Champagne, France', null, 'Champagne rosé', 'Rosé Champagne', null, 240, 'Champagnes'],
+
+    // --- Prosecco ---
+    ['Bottega Rose Gold', 'Bottega Rose Gold', 'Bottega', '100% Pinot Noir', 'Vénétie, Italie', 'Veneto, Italy', null, null, null, null, 69, 'Prosecco'],
+    ['Bottega Gold Prosecco', 'Bottega Gold Prosecco', 'Bottega', '100% Glera', 'Vénétie, Italie', 'Veneto, Italy', null, null, null, null, 69, 'Prosecco'],
+    ['Mumm Napa Brut', 'Mumm Napa Brut', 'Mumm Napa', null, 'Napa, Californie, États-Unis', 'Napa, California, USA', null, 'Vin mousseux rosé', 'Sparkling rosé', null, 89, 'Prosecco']
+  ];
+  const wineCount = await db.get('SELECT COUNT(*) AS c FROM wine_items').catch(function(){ return { c: 0 }; });
+  if (!wineCount || Number(wineCount.c) === 0) {
+    let wpos = 0;
+    for (const w of wines) {
+      wpos++;
+      await db.run(
+        'INSERT INTO wine_items (name_fr,name_en,producer,varietal,region_fr,region_en,vintage,description_fr,description_en,price_glass,price_bottle,category,position,available) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,1)',
+        [w[0], w[1], w[2], w[3], w[4], w[5], w[6], w[7], w[8], w[9], w[10], w[11], wpos]
+      );
+    }
+  }
+
+  // tasting_courses and reviews are intentionally left empty — the operator adds
+  // the real seven tasting courses and genuine guest reviews from the admin
+  // backend. The site renders graceful, on-brand states for each until then.
 };
