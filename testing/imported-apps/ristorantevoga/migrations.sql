@@ -103,13 +103,15 @@ INSERT INTO admin_settings (key, value) VALUES ('_p_tasting_image_url', 'https:/
 INSERT INTO admin_settings (key, value) VALUES ('_p_promo_image_url', 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/site/capellini_dish.jpg') ON CONFLICT (key) DO NOTHING;
 INSERT INTO admin_settings (key, value) VALUES ('_p_location_image_url', 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/gallery/g30.jpg') ON CONFLICT (key) DO NOTHING;
 INSERT INTO admin_settings (key, value) VALUES ('_p_reservation_image_url', 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/site/cocktail_flame.jpg') ON CONFLICT (key) DO NOTHING;
-INSERT INTO admin_settings (key, value) VALUES ('social_facebook', '') ON CONFLICT (key) DO NOTHING;
-INSERT INTO admin_settings (key, value) VALUES ('social_instagram', '') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('social_facebook', 'https://www.facebook.com/ristorantevoga') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('social_instagram', 'https://www.instagram.com/ristorante_voga') ON CONFLICT (key) DO NOTHING;
 
 -- ── Refresh changed-default facts (only if still at the old default) ──
 UPDATE admin_settings SET value = '(450) 438-4283', updated_at = NOW() WHERE key = 'contact_phone' AND value IN ('');
 UPDATE admin_settings SET value = '330 Rue Saint-Georges, Saint-Jérôme, QC J7Z 5A5', updated_at = NOW() WHERE key = 'business_address' AND value IN ('330 Rue Saint-Georges, Saint-Jérôme, QC');
 UPDATE admin_settings SET value = '[{"day":"mon","open":"","close":"","closed":true},{"day":"tue","open":"12:00","close":"22:00","closed":false},{"day":"wed","open":"12:00","close":"22:00","closed":false},{"day":"thu","open":"12:00","close":"22:00","closed":false},{"day":"fri","open":"12:00","close":"23:00","closed":false},{"day":"sat","open":"16:00","close":"23:00","closed":false},{"day":"sun","open":"16:00","close":"21:00","closed":false}]', updated_at = NOW() WHERE key = 'hours_json' AND value IN ('[{"day":"mon","open":"","close":"","closed":false},{"day":"tue","open":"","close":"","closed":false},{"day":"wed","open":"","close":"","closed":false},{"day":"thu","open":"","close":"","closed":false},{"day":"fri","open":"","close":"","closed":false},{"day":"sat","open":"","close":"","closed":false},{"day":"sun","open":"","close":"","closed":false}]');
+UPDATE admin_settings SET value = 'https://www.facebook.com/ristorantevoga', updated_at = NOW() WHERE key = 'social_facebook' AND value IN ('');
+UPDATE admin_settings SET value = 'https://www.instagram.com/ristorante_voga', updated_at = NOW() WHERE key = 'social_instagram' AND value IN ('');
 
 -- ── Menu sections ──
 INSERT INTO menu_categories (slug, name_fr, name_en, subtitle_fr, subtitle_en, position) VALUES ('zuppe', 'Zuppe', 'Zuppe', 'Soupes', 'Soups', 1) ON CONFLICT (slug) DO NOTHING;

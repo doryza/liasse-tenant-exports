@@ -14,10 +14,13 @@
           var hasSocial = socials.some(function(s){ return settings[s.key]; });
         %>
         <% if (hasSocial) { %>
-        <div class="footer-social">
-          <% socials.forEach(function(s){ if (settings[s.key]) { %>
-            <a href="<%= settings[s.key] %>" target="_blank" rel="noopener" aria-label="<%= s.label %>"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="<%= s.icon %>"/></svg></a>
-          <% } }); %>
+        <div class="footer-follow">
+          <span class="footer-follow__label"><%= t.follow_us %></span>
+          <div class="footer-social">
+            <% socials.forEach(function(s){ if (settings[s.key]) { %>
+              <a href="<%= settings[s.key] %>" target="_blank" rel="noopener" aria-label="<%= s.label %>"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="<%= s.icon %>"/></svg></a>
+            <% } }); %>
+          </div>
         </div>
         <% } %>
       </div>
