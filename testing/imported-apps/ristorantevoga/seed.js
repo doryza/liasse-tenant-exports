@@ -140,9 +140,9 @@ module.exports = async function(db, services) {
     ['_p_location_image_url', g('g30')],
     ['_p_reservation_image_url', site('cocktail_flame.jpg')],
 
-    // Socials (operator adds the real links)
-    ['social_facebook', ''],
-    ['social_instagram', '']
+    // Socials
+    ['social_facebook', 'https://www.facebook.com/ristorantevoga'],
+    ['social_instagram', 'https://www.instagram.com/ristorante_voga']
   ];
   for (const [k, v] of settingsDefault) {
     await db.run('INSERT INTO admin_settings (key, value) VALUES ($1, $2) ON CONFLICT (key) DO NOTHING', [k, v]);
