@@ -18,18 +18,28 @@ module.exports = async function(db, services) {
 
     ['admin_email', cfg.contactEmail || ''],
     ['contact_email', ''],
-    ['contact_phone', ''],
-    ['business_address', '330 Rue Saint-Georges, Saint-Jérôme, QC'],
+    ['contact_phone', '(450) 438-4283'],
+    ['business_address', '330 Rue Saint-Georges, Saint-Jérôme, QC J7Z 5A5'],
     ['map_embed_url', ''],
+    // Hours from Google (Restaurant Vogà, place ChIJP4CCAc8xz0wRPCKv4e-28bQ).
     ['hours_json', JSON.stringify([
-      { day:'mon', open:'', close:'', closed:false },
-      { day:'tue', open:'', close:'', closed:false },
-      { day:'wed', open:'', close:'', closed:false },
-      { day:'thu', open:'', close:'', closed:false },
-      { day:'fri', open:'', close:'', closed:false },
-      { day:'sat', open:'', close:'', closed:false },
-      { day:'sun', open:'', close:'', closed:false }
+      { day:'mon', open:'', close:'', closed:true },
+      { day:'tue', open:'12:00', close:'22:00', closed:false },
+      { day:'wed', open:'12:00', close:'22:00', closed:false },
+      { day:'thu', open:'12:00', close:'22:00', closed:false },
+      { day:'fri', open:'12:00', close:'23:00', closed:false },
+      { day:'sat', open:'16:00', close:'23:00', closed:false },
+      { day:'sun', open:'16:00', close:'21:00', closed:false }
     ])],
+
+    // Google Business Profile (Restaurant Vogà). Drives the map pin, directions
+    // and the rating badge. Refresh with the place-id-fetcher tool.
+    ['google_place_id', 'ChIJP4CCAc8xz0wRPCKv4e-28bQ'],
+    ['google_maps_uri', 'https://maps.google.com/?cid=13038403537614086716'],
+    ['map_lat', '45.7769277'],
+    ['map_lng', '-74.0031857'],
+    ['google_rating', '4.6'],
+    ['google_rating_count', '648'],
 
     // Hero
     ['hero_kicker_fr', 'Ristorante · Bar à vin · Saint-Jérôme'],

@@ -123,6 +123,25 @@ module.exports = function(services) {
     if (!hours) return false;
     return hours.some(function(r){ return r.closed || (r.open && r.close); });
   }
+  // Today's open/closed status in the restaurant's timezone (America/Toronto).
+  function todayStatus(hours) {
+    if (!hours || !hours.length) return null;
+    try {
+      const parts = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Toronto', weekday: 'short', hour: '2-digit', minute: '2-digit', hour12: false }).formatToParts(new Date());
+      let wd = '', hh = '00', mm = '00';
+      parts.forEach(function(p){ if (p.type === 'weekday') wd = p.value; if (p.type === 'hour') hh = p.value; if (p.type === 'minute') mm = p.value; });
+      if (hh === '24') hh = '00';
+      const map = { Mon:'mon', Tue:'tue', Wed:'wed', Thu:'thu', Fri:'fri', Sat:'sat', Sun:'sun' };
+      const key = map[wd] || 'mon';
+      const nowMin = parseInt(hh, 10) * 60 + parseInt(mm, 10);
+      const row = hours.find(function(r){ return r.day === key; }) || null;
+      if (!row || row.closed || !row.open || !row.close) return { key: key, closed: true, isOpen: false };
+      function toMin(s){ const a = String(s).split(':'); return parseInt(a[0], 10) * 60 + parseInt(a[1] || '0', 10); }
+      const o = toMin(row.open), c = toMin(row.close);
+      const isOpen = c > o ? (nowMin >= o && nowMin < c) : (nowMin >= o || nowMin < c);
+      return { key: key, closed: false, open: row.open, close: row.close, isOpen: isOpen };
+    } catch(e) { return null; }
+  }
   // Inject a Cloudinary transform after /upload/ (BARE urls stored in DB).
   function cimg(url, transform) {
     if (!url || typeof url !== 'string') return url || '';
@@ -172,14 +191,26 @@ module.exports = function(services) {
       return settings[key] != null ? settings[key] : '';
     };
     const address = settings.business_address || '';
-    const mapEmbed = settings.map_embed_url || (address ? ('https://www.google.com/maps?q=' + encodeURIComponent(address) + '&output=embed') : '');
-    const mapLink = address ? ('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(address)) : '';
+    const placeId = settings.google_place_id || '';
+    const lat = settings.map_lat || '', lng = settings.map_lng || '';
+    // Accurate, keyless map: centre on the exact coordinates with a name label.
+    // The operator can paste a Maps Embed API URL into map_embed_url for the
+    // richer place card (it overrides this default).
+    let mapEmbed = settings.map_embed_url || '';
+    if (!mapEmbed) {
+      if (lat && lng) mapEmbed = 'https://maps.google.com/maps?q=' + encodeURIComponent(lat + ',' + lng + ' (' + (settings.business_name || t.brand) + ')') + '&z=16&output=embed';
+      else if (address) mapEmbed = 'https://maps.google.com/maps?q=' + encodeURIComponent(address) + '&z=16&output=embed';
+    }
+    const mapLink = settings.google_maps_uri || (address ? ('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(address) + (placeId ? '&query_place_id=' + encodeURIComponent(placeId) : '')) : '');
+    const directionsLink = address ? ('https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(address) + (placeId ? '&destination_place_id=' + encodeURIComponent(placeId) : '')) : '';
+    const rating = settings.google_rating ? { value: settings.google_rating, count: settings.google_rating_count || '' } : null;
     const hours = parseHours(settings.hours_json);
     return {
       t: t, lang: lang, settings: settings, sx: sx,
       formatPrice: formatPrice, itemPriceLabel: itemPriceLabel, pickLang: pickLang,
       parseSizes: parseSizes, cimg: cimg, hours: hours, hoursHaveData: hoursHaveData,
-      mapEmbed: mapEmbed, mapLink: mapLink, year: new Date().getFullYear()
+      mapEmbed: mapEmbed, mapLink: mapLink, directionsLink: directionsLink, rating: rating,
+      placeId: placeId, today: todayStatus(hours), year: new Date().getFullYear()
     };
   }
 
@@ -524,6 +555,7 @@ module.exports = function(services) {
   const SITE_SETTINGS_ALLOWED = new Set([
     'business_name','established_year','tagline_fr','tagline_en','seo_description_fr','seo_description_en',
     'admin_email','contact_email','contact_phone','business_address','map_embed_url','hours_json',
+    'google_place_id','google_maps_uri','map_lat','map_lng','google_rating','google_rating_count',
     'hero_kicker_fr','hero_kicker_en','hero_title_fr','hero_title_en','hero_subtitle_fr','hero_subtitle_en',
     'story_title_fr','story_title_en','story_kicker_fr','story_kicker_en','story_body_fr','story_body_en',
     'signature_title_fr','signature_title_en','signature_intro_fr','signature_intro_en',

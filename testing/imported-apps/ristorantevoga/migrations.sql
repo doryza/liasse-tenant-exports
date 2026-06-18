@@ -16,10 +16,16 @@ INSERT INTO admin_settings (key, value) VALUES ('seo_description_fr', 'Ristorant
 INSERT INTO admin_settings (key, value) VALUES ('seo_description_en', 'Ristorante Voga — authentic Italian cuisine and wine bar at 330 Rue Saint-Georges in Saint-Jérôme. Fresh pasta, risotto, pizza, a fine wine list and a tasting menu. Reserve your table.') ON CONFLICT (key) DO NOTHING;
 INSERT INTO admin_settings (key, value) VALUES ('admin_email', '') ON CONFLICT (key) DO NOTHING;
 INSERT INTO admin_settings (key, value) VALUES ('contact_email', '') ON CONFLICT (key) DO NOTHING;
-INSERT INTO admin_settings (key, value) VALUES ('contact_phone', '') ON CONFLICT (key) DO NOTHING;
-INSERT INTO admin_settings (key, value) VALUES ('business_address', '330 Rue Saint-Georges, Saint-Jérôme, QC') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('contact_phone', '(450) 438-4283') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('business_address', '330 Rue Saint-Georges, Saint-Jérôme, QC J7Z 5A5') ON CONFLICT (key) DO NOTHING;
 INSERT INTO admin_settings (key, value) VALUES ('map_embed_url', '') ON CONFLICT (key) DO NOTHING;
-INSERT INTO admin_settings (key, value) VALUES ('hours_json', '[{"day":"mon","open":"","close":"","closed":false},{"day":"tue","open":"","close":"","closed":false},{"day":"wed","open":"","close":"","closed":false},{"day":"thu","open":"","close":"","closed":false},{"day":"fri","open":"","close":"","closed":false},{"day":"sat","open":"","close":"","closed":false},{"day":"sun","open":"","close":"","closed":false}]') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('hours_json', '[{"day":"mon","open":"","close":"","closed":true},{"day":"tue","open":"12:00","close":"22:00","closed":false},{"day":"wed","open":"12:00","close":"22:00","closed":false},{"day":"thu","open":"12:00","close":"22:00","closed":false},{"day":"fri","open":"12:00","close":"23:00","closed":false},{"day":"sat","open":"16:00","close":"23:00","closed":false},{"day":"sun","open":"16:00","close":"21:00","closed":false}]') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('google_place_id', 'ChIJP4CCAc8xz0wRPCKv4e-28bQ') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('google_maps_uri', 'https://maps.google.com/?cid=13038403537614086716') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('map_lat', '45.7769277') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('map_lng', '-74.0031857') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('google_rating', '4.6') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('google_rating_count', '648') ON CONFLICT (key) DO NOTHING;
 INSERT INTO admin_settings (key, value) VALUES ('hero_kicker_fr', 'Ristorante · Bar à vin · Saint-Jérôme') ON CONFLICT (key) DO NOTHING;
 INSERT INTO admin_settings (key, value) VALUES ('hero_kicker_en', 'Ristorante · Wine bar · Saint-Jérôme') ON CONFLICT (key) DO NOTHING;
 INSERT INTO admin_settings (key, value) VALUES ('hero_title_fr', 'L''Italie, à votre table') ON CONFLICT (key) DO NOTHING;
@@ -99,6 +105,11 @@ INSERT INTO admin_settings (key, value) VALUES ('_p_location_image_url', 'https:
 INSERT INTO admin_settings (key, value) VALUES ('_p_reservation_image_url', 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/site/cocktail_flame.jpg') ON CONFLICT (key) DO NOTHING;
 INSERT INTO admin_settings (key, value) VALUES ('social_facebook', '') ON CONFLICT (key) DO NOTHING;
 INSERT INTO admin_settings (key, value) VALUES ('social_instagram', '') ON CONFLICT (key) DO NOTHING;
+
+-- ── Refresh changed-default facts (only if still at the old default) ──
+UPDATE admin_settings SET value = '(450) 438-4283', updated_at = NOW() WHERE key = 'contact_phone' AND value IN ('');
+UPDATE admin_settings SET value = '330 Rue Saint-Georges, Saint-Jérôme, QC J7Z 5A5', updated_at = NOW() WHERE key = 'business_address' AND value IN ('330 Rue Saint-Georges, Saint-Jérôme, QC');
+UPDATE admin_settings SET value = '[{"day":"mon","open":"","close":"","closed":true},{"day":"tue","open":"12:00","close":"22:00","closed":false},{"day":"wed","open":"12:00","close":"22:00","closed":false},{"day":"thu","open":"12:00","close":"22:00","closed":false},{"day":"fri","open":"12:00","close":"23:00","closed":false},{"day":"sat","open":"16:00","close":"23:00","closed":false},{"day":"sun","open":"16:00","close":"21:00","closed":false}]', updated_at = NOW() WHERE key = 'hours_json' AND value IN ('[{"day":"mon","open":"","close":"","closed":false},{"day":"tue","open":"","close":"","closed":false},{"day":"wed","open":"","close":"","closed":false},{"day":"thu","open":"","close":"","closed":false},{"day":"fri","open":"","close":"","closed":false},{"day":"sat","open":"","close":"","closed":false},{"day":"sun","open":"","close":"","closed":false}]');
 
 -- ── Menu sections ──
 INSERT INTO menu_categories (slug, name_fr, name_en, subtitle_fr, subtitle_en, position) VALUES ('zuppe', 'Zuppe', 'Zuppe', 'Soupes', 'Soups', 1) ON CONFLICT (slug) DO NOTHING;

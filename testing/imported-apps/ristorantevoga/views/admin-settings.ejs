@@ -84,6 +84,23 @@
   </div>
 
   <div class="section-card">
+    <h2>📍 Carte & Google</h2>
+    <p class="section-hint">Identifiant Google, coordonnées de la carte (repère) et note. Récupérés via l'outil <code>place-id-fetcher</code>. La carte affiche un repère Voga personnalisé centré sur ces coordonnées.</p>
+    <div class="field-row">
+      <div class="form-group"><label>Google Place ID</label><input type="text" class="form-control" name="google_place_id" placeholder="ChIJ…"><div class="help-text">Sert aux itinéraires précis et au lien « Google Maps ».</div></div>
+      <div class="form-group"><label>Lien page Google Maps</label><input type="url" class="form-control" name="google_maps_uri" placeholder="https://maps.google.com/?cid=…"></div>
+    </div>
+    <div class="field-row">
+      <div class="form-group"><label>Latitude</label><input type="text" class="form-control" name="map_lat" placeholder="45.7769277"></div>
+      <div class="form-group"><label>Longitude</label><input type="text" class="form-control" name="map_lng" placeholder="-74.0031857"></div>
+    </div>
+    <div class="field-row">
+      <div class="form-group"><label>Note Google (ex. 4.6)</label><input type="text" class="form-control" name="google_rating" placeholder="4.6"></div>
+      <div class="form-group"><label>Nombre d'avis</label><input type="text" class="form-control" name="google_rating_count" placeholder="648"></div>
+    </div>
+  </div>
+
+  <div class="section-card">
     <h2>🌐 Réseaux sociaux</h2>
     <p class="section-hint">Collez le lien complet (https://…). Laissez vide pour masquer.</p>
     <div class="field-row">
