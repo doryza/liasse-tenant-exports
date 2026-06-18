@@ -45,7 +45,7 @@
       phone: 'Téléphone mobile', phone_ph: '+1 514 555 0123', send_code: 'Envoyer le code', code: 'Code reçu par SMS', code_ph: '4 chiffres', verify: 'Vérifier', verified: 'Numéro vérifié ✓', code_sent: 'Code envoyé par SMS.', resend: 'Renvoyer',
       place: 'Confirmer la commande', placing: 'Envoi…', locating: 'Localisation…',
       need_name: 'Veuillez indiquer votre nom.', need_geo: "La localisation est requise pour passer la commande. Activez-la et réessayez.", need_phone: 'Numéro de téléphone requis.', need_code: 'Entrez le code reçu par SMS.', need_verify: 'Veuillez vérifier votre numéro avant de continuer.',
-      remote_notice: 'Vous êtes hors de la zone de récupération — une vérification du téléphone est requise.',
+      remote_notice: 'Une vérification du téléphone est requise pour les commandes à distance.', too_far: "Vous êtes trop loin pour une commande pour emporter à cette adresse.",
       placed: 'Commande reçue !', order_no: 'Commande', pickup_eta: 'Récupération', status: 'Suivi de votre commande',
       st_received: 'Reçue', st_confirmed: 'Confirmée', st_preparing: 'En préparation', st_ready: 'Prête à récupérer', st_done: 'Complétée', st_cancelled: 'Annulée', cancelled_msg: 'Cette commande a été annulée. Contactez le restaurant pour plus de détails.',
       rate_title: 'Comment était votre expérience ?', rate_thanks: 'Merci pour votre visite !', rate_5: 'Quel plaisir ! Partagez-le sur Google ?', leave_google: 'Laisser un avis Google', rate_low: 'Aidez-nous à nous améliorer', fb_email: 'Votre courriel (optionnel)', fb_msg: 'Qu\'aurions-nous pu faire mieux ?', fb_send: 'Envoyer', fb_thanks: 'Merci, votre commentaire a été transmis à la direction.',
@@ -63,7 +63,7 @@
       phone: 'Mobile phone', phone_ph: '+1 514 555 0123', send_code: 'Send code', code: 'SMS code', code_ph: '4 digits', verify: 'Verify', verified: 'Number verified ✓', code_sent: 'Code sent by SMS.', resend: 'Resend',
       place: 'Place order', placing: 'Sending…', locating: 'Locating…',
       need_name: 'Please enter your name.', need_geo: 'Location is required to place the order. Enable it and try again.', need_phone: 'Phone number required.', need_code: 'Enter the SMS code.', need_verify: 'Please verify your number first.',
-      remote_notice: 'You are outside the pickup zone — phone verification is required.',
+      remote_notice: 'Phone verification is required for orders away from the restaurant.', too_far: 'You are too far for takeout from this location.',
       placed: 'Order received!', order_no: 'Order', pickup_eta: 'Pickup', status: 'Tracking your order',
       st_received: 'Received', st_confirmed: 'Confirmed', st_preparing: 'Preparing', st_ready: 'Ready for pickup', st_done: 'Completed', st_cancelled: 'Cancelled', cancelled_msg: 'This order was cancelled. Contact the restaurant for details.',
       rate_title: 'How was your experience?', rate_thanks: 'Thank you for visiting!', rate_5: 'Wonderful! Share it on Google?', leave_google: 'Leave a Google review', rate_low: 'Help us do better', fb_email: 'Your email (optional)', fb_msg: 'What could we have done better?', fb_send: 'Send', fb_thanks: 'Thank you, your feedback has been sent to management.',
@@ -305,11 +305,18 @@
     if (!navigator.geolocation){ errEl.textContent = S.need_geo; btn.disabled = false; btn.textContent = S.place; return; }
     navigator.geolocation.getCurrentPosition(function(pos){
       var lat = pos.coords.latitude, lng = pos.coords.longitude;
+      // The server requires a phone token for "remote" takeout = beyond a fixed
+      // 250 m (server.js), independent of the merchant's max radius. Beyond the
+      // configured max radius the order is rejected outright (too far).
+      var REMOTE_M = 250;
       var remote = false;
       if (state.config.businessLat != null && state.config.businessLng != null){
-        remote = haversine(lat, lng, Number(state.config.businessLat), Number(state.config.businessLng)) > Number(state.config.takeoutRadiusMeters || 250);
+        var dist = haversine(lat, lng, Number(state.config.businessLat), Number(state.config.businessLng));
+        var maxR = Number(state.config.takeoutRadiusMeters || 250);
+        if (dist > maxR){ errEl.textContent = S.too_far; btn.disabled = false; btn.textContent = S.place; return; }
+        remote = dist > REMOTE_M;
       } else {
-        remote = true; // can't prove we're in-zone → require verification (server enforces it anyway)
+        remote = true; // can't prove proximity → require verification (server enforces it anyway)
       }
       var needToken = scheduled || mandatory || remote;
       if (needToken && !state.token){
@@ -326,7 +333,23 @@
       if (scheduled) body.pickupOffsetMinutes = Number(document.getElementById('pkOffset').value || state.config.minPickupMinutes || 15);
       btn.textContent = S.placing;
       api('/order/orders', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
-        .then(function(r){ if (r.ok && r.body && (r.body.orderId || r.body.orderNumber)){ state.order = r.body; renderConfirm(r.body); } else { btn.disabled = false; btn.textContent = S.place; errEl.textContent = (r.body && (r.body.error || r.body.message)) || S.err; } })
+        .then(function(r){
+          if (r.ok && r.body && (r.body.orderId || r.body.orderNumber)){ state.order = r.body; renderConfirm(r.body); return; }
+          btn.disabled = false; btn.textContent = S.place;
+          var emsg = (r.body && (r.body.error || r.body.message)) || '';
+          // The server is authoritative on who needs verification (remote / scheduled
+          // / expired token) — recover by prompting the OTP in place instead of dead-ending.
+          var needsVerify = r.body && (r.body.code === 'phoneVerifExpired' || /verif|vérif/i.test(emsg));
+          if (needsVerify){
+            state.token = null;
+            toggleVerify(true);
+            var n = document.querySelector('#verifyWrap .order-note'); if (n){ n.textContent = S.remote_notice; n.classList.add('warn'); }
+            errEl.textContent = S.need_verify;
+            var w = document.getElementById('verifyWrap'); if (w) w.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          } else {
+            errEl.textContent = emsg || S.err;
+          }
+        })
         .catch(function(){ btn.disabled = false; btn.textContent = S.place; errEl.textContent = S.err; });
     }, function(){ errEl.textContent = S.need_geo; btn.disabled = false; btn.textContent = S.place; }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 });
   }
