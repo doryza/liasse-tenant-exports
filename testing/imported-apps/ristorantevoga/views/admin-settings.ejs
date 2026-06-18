@@ -59,7 +59,9 @@
     <p class="section-hint">Téléversez ou collez l'URL de chaque image. Le logo est blanc (conçu pour les fonds foncés).</p>
     <% var imageSlots = [
       ['_p_nav_logo_url', 'Logo', 'Logo blanc — en-tête, héros et pied de page.'],
-      ['_p_hero_image_url', 'Image héros (accueil)', 'Grande image, paysage 16:9.'],
+      ['_p_hero_image_url', 'Héros — image 1', 'Diaporama du héros (1re image). Paysage 16:9.'],
+      ['_p_hero_image_2_url', 'Héros — image 2', 'Diaporama du héros (2e image). Laissez vide pour un héros fixe.'],
+      ['_p_hero_image_3_url', 'Héros — image 3', 'Diaporama du héros (3e image). Laissez vide pour ignorer.'],
       ['_p_story_image_url', 'Image — Notre histoire', 'Portrait (4:5).'],
       ['_p_atmosphere_image_url', 'Image d\'ambiance', 'Salle à manger, paysage.'],
       ['_p_wine_image_url', 'Image — Vins', 'Portrait (3:4).'],
@@ -162,7 +164,7 @@ async function loadSettings(){
     document.querySelectorAll('#settingsForm input[name], #settingsForm textarea[name]').forEach(function(el){ var k = el.getAttribute('name'); if (k === 'hours_json') return; if (s[k] != null) el.value = s[k]; });
     var hours = null; try { if (s.hours_json) hours = JSON.parse(s.hours_json); } catch(e){}
     renderHoursRows(hours);
-    ['_p_nav_logo_url','_p_hero_image_url','_p_story_image_url','_p_atmosphere_image_url','_p_wine_image_url','_p_tasting_image_url','_p_promo_image_url','_p_location_image_url','_p_reservation_image_url'].forEach(prev);
+    ['_p_nav_logo_url','_p_hero_image_url','_p_hero_image_2_url','_p_hero_image_3_url','_p_story_image_url','_p_atmosphere_image_url','_p_wine_image_url','_p_tasting_image_url','_p_promo_image_url','_p_location_image_url','_p_reservation_image_url'].forEach(prev);
     document.getElementById('saveStatus').textContent = 'Chargé';
   } catch(e){ document.getElementById('saveStatus').textContent = 'Erreur de chargement'; renderHoursRows(null); }
 }

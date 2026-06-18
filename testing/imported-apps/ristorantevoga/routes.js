@@ -537,7 +537,7 @@ module.exports = function(services) {
     'gallery_title_fr','gallery_title_en','gallery_intro_fr','gallery_intro_en',
     'footer_intro_fr','footer_intro_en',
     'social_facebook','social_instagram','social_twitter','social_tiktok','social_youtube','social_linkedin',
-    '_p_nav_logo_url','_p_hero_image_url','_p_story_image_url','_p_atmosphere_image_url','_p_wine_image_url','_p_tasting_image_url','_p_promo_image_url','_p_location_image_url','_p_reservation_image_url'
+    '_p_nav_logo_url','_p_hero_image_url','_p_hero_image_2_url','_p_hero_image_3_url','_p_story_image_url','_p_atmosphere_image_url','_p_wine_image_url','_p_tasting_image_url','_p_promo_image_url','_p_location_image_url','_p_reservation_image_url'
   ]);
   router.put('/api/admin/site_settings', isAdminApi, async function(req, res) {
     try {

@@ -88,6 +88,8 @@ INSERT INTO admin_settings (key, value) VALUES ('footer_intro_fr', 'Cuisine ital
 INSERT INTO admin_settings (key, value) VALUES ('footer_intro_en', 'Authentic Italian cuisine and wine bar, in the heart of Saint-Jérôme since 2014.') ON CONFLICT (key) DO NOTHING;
 INSERT INTO admin_settings (key, value) VALUES ('_p_nav_logo_url', 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/site/voga_logo.png') ON CONFLICT (key) DO NOTHING;
 INSERT INTO admin_settings (key, value) VALUES ('_p_hero_image_url', 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/site/hero_rigatoni.jpg') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('_p_hero_image_2_url', 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/site/interior_banquettes.jpg') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('_p_hero_image_3_url', 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/site/capellini_dish.jpg') ON CONFLICT (key) DO NOTHING;
 INSERT INTO admin_settings (key, value) VALUES ('_p_story_image_url', 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/site/interior_banquettes.jpg') ON CONFLICT (key) DO NOTHING;
 INSERT INTO admin_settings (key, value) VALUES ('_p_atmosphere_image_url', 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/site/interior_room.jpg') ON CONFLICT (key) DO NOTHING;
 INSERT INTO admin_settings (key, value) VALUES ('_p_wine_image_url', 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/gallery/g12.jpg') ON CONFLICT (key) DO NOTHING;
