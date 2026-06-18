@@ -282,6 +282,93 @@ module.exports = function(services) {
     } catch(e) { console.error('Commander error:', e.message); res.status(500).send('Erreur'); }
   });
 
+  // ===========================================================================
+  // Ordering accounts & history (Option A — per-app mirror). See
+  // READFIRST-liasse-ordering.md ("Ordering accounts & order history").
+  // Liasse stays the source of truth; we bridge its OTP-verified phone into a
+  // tenant user (platform-provisioned per-app `users` table) and mirror the
+  // placed order into a tenant `orders` table so the current order + 90-day
+  // history persist for the customer regardless of navigation.
+  // ===========================================================================
+  let jwtLib = null; try { jwtLib = require('jsonwebtoken'); } catch(e) { jwtLib = null; }
+  const _fetch = (typeof fetch === 'function') ? fetch : null;
+  const authMod = services.auth || {};
+  const optionalAuth = (typeof authMod.optionalAuth === 'function') ? authMod.optionalAuth : function(req, res, next){ next(); };
+  function orderBaseFrom(settings){ return (settings.order_base_url || 'https://restaurant-vog-saint860.liasse.tech').replace(/\/+$/, ''); }
+  async function fetchLiasseOrder(base, id){
+    if (!_fetch || !base || !id) return null;
+    try { const r = await _fetch(base + '/order/orders/' + encodeURIComponent(id)); if (!r.ok) return null; return await r.json(); }
+    catch(e) { return null; }
+  }
+
+  // Bridge a Liasse OTP token ({ phone, verified:true }, signed with the shared
+  // JWT_SECRET) into a 30-day tenant session — same shape the platform's
+  // optionalAuth/requireAuth expect: { userId, tenantSlug }.
+  router.post('/api/order/session', async function(req, res) {
+    try {
+      if (!jwtLib || !services.jwtSecret) return res.status(503).json({ error: 'auth_unavailable' });
+      const token = req.body && req.body.token;
+      if (!token) return res.status(400).json({ error: 'missing_token' });
+      let payload;
+      try { payload = jwtLib.verify(token, services.jwtSecret); } catch(e) { return res.status(401).json({ error: 'invalid_token' }); }
+      if (!payload || payload.verified !== true || !payload.phone) return res.status(401).json({ error: 'not_verified' });
+      const phone = String(payload.phone);
+      let user = null;
+      try { user = (typeof authMod.getUserByPhone === 'function') ? await authMod.getUserByPhone(phone) : await db.get('SELECT * FROM users WHERE phone = $1', [phone]); } catch(e) { user = null; }
+      if (!user) {
+        const r = await db.run('INSERT INTO users (phone, phone_verified, created_at, updated_at) VALUES ($1, 1, NOW(), NOW()) ON CONFLICT (phone) DO UPDATE SET phone_verified = 1, updated_at = NOW() RETURNING id', [phone]);
+        user = { id: r.lastInsertRowid, phone: phone };
+      } else {
+        await db.run('UPDATE users SET phone_verified = 1, updated_at = NOW() WHERE id = $1', [user.id]).catch(function(){});
+      }
+      const slug = (services.config && services.config.slug) || 'ristorantevoga';
+      const sessionToken = jwtLib.sign({ userId: user.id, tenantSlug: slug }, services.jwtSecret, { expiresIn: '30d' });
+      try { res.cookie('tenant_token', sessionToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: false, sameSite: 'lax', secure: true, path: '/' }); } catch(e) {}
+      res.json({ success: true, token: sessionToken, user: { id: user.id } });
+    } catch(e) { console.error('order/session error:', e.message); res.status(500).json({ error: e.message }); }
+  });
+
+  // Mirror a placed order under the signed-in user. The server fetches the
+  // authoritative record from Liasse — it never trusts client-sent totals.
+  router.post('/api/order/record', optionalAuth, async function(req, res) {
+    try {
+      if (!req.user) return res.status(401).json({ error: 'no_session' });
+      const id = req.body && (req.body.liasseOrderId || req.body.orderId);
+      if (!id) return res.status(400).json({ error: 'missing_order' });
+      const settings = await getSettings();
+      const o = await fetchLiasseOrder(orderBaseFrom(settings), id);
+      if (!o) return res.status(502).json({ error: 'fetch_failed' });
+      await db.run(
+        'INSERT INTO orders (user_id, liasse_order_id, order_number, order_type, status, items, subtotal_cents, total_cents, tax_breakdown, customer_name, pickup_time, created_at, updated_at) ' +
+        'VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,NOW(),NOW()) ' +
+        'ON CONFLICT (liasse_order_id) DO UPDATE SET status = EXCLUDED.status, total_cents = EXCLUDED.total_cents, tax_breakdown = EXCLUDED.tax_breakdown, pickup_time = EXCLUDED.pickup_time, updated_at = NOW()',
+        [req.user.id, String(id), o.order_number || null, o.order_type || 'takeout', o.status || 'pending', JSON.stringify(o.items || []), o.subtotal_cents != null ? o.subtotal_cents : null, o.total_cents != null ? o.total_cents : null, o.tax_breakdown ? JSON.stringify(o.tax_breakdown) : null, o.customer_name || null, o.pickup_time || null]
+      );
+      res.json({ success: true });
+    } catch(e) { console.error('order/record error:', e.message); res.status(500).json({ error: e.message }); }
+  });
+
+  // The signed-in user's last-90-days orders; refresh non-terminal statuses
+  // from Liasse (read-time write-through, no webhook needed).
+  router.get('/api/order/history', optionalAuth, async function(req, res) {
+    try {
+      if (!req.user) return res.json({ authenticated: false, orders: [] });
+      const rows = await db.all("SELECT id, liasse_order_id, order_number, order_type, status, items, subtotal_cents, total_cents, tax_breakdown, pickup_time, created_at FROM orders WHERE user_id = $1 AND created_at > NOW() - INTERVAL '90 days' ORDER BY created_at DESC", [req.user.id]).catch(function(){ return []; });
+      const settings = await getSettings();
+      const base = orderBaseFrom(settings);
+      for (const row of rows) {
+        if (row.status !== 'completed' && row.status !== 'cancelled') {
+          const o = await fetchLiasseOrder(base, row.liasse_order_id);
+          if (o && o.status && o.status !== row.status) {
+            await db.run('UPDATE orders SET status = $1, pickup_time = COALESCE($2, pickup_time), updated_at = NOW() WHERE id = $3', [o.status, o.pickup_time || null, row.id]).catch(function(){});
+            row.status = o.status;
+          }
+        }
+      }
+      res.json({ authenticated: true, orders: rows });
+    } catch(e) { console.error('order/history error:', e.message); res.status(500).json({ error: e.message }); }
+  });
+
   // Public contact-form submission. Stores the message and best-effort emails
   // the admin. NOT a reservation channel.
   router.post('/api/contact', async function(req, res) {

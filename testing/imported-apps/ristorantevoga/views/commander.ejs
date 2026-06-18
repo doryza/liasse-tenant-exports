@@ -6,6 +6,7 @@
     <span class="eyebrow center" style="justify-content:center"><%= t.order_takeout_short %></span>
     <h1><%= t.order_takeout %></h1>
     <p class="lead"><%= lang === 'en' ? 'Order your favourites for pickup — ready when you arrive.' : 'Commandez vos plats préférés pour emporter — prêts à votre arrivée.' %></p>
+    <div class="order-hero__actions"><button class="btn btn-outline-light" id="myOrdersBtn" type="button"><%= lang === 'en' ? 'My orders' : 'Mes commandes' %></button></div>
   </div>
 </section>
 
@@ -49,7 +50,8 @@
       placed: 'Commande reçue !', order_no: 'Commande', pickup_eta: 'Récupération', status: 'Suivi de votre commande',
       st_received: 'Reçue', st_confirmed: 'Confirmée', st_preparing: 'En préparation', st_ready: 'Prête à récupérer', st_done: 'Complétée', st_cancelled: 'Annulée', cancelled_msg: 'Cette commande a été annulée. Contactez le restaurant pour plus de détails.',
       rate_title: 'Comment était votre expérience ?', rate_thanks: 'Merci pour votre visite !', rate_5: 'Quel plaisir ! Partagez-le sur Google ?', leave_google: 'Laisser un avis Google', rate_low: 'Aidez-nous à nous améliorer', fb_email: 'Votre courriel (optionnel)', fb_msg: 'Qu\'aurions-nous pu faire mieux ?', fb_send: 'Envoyer', fb_thanks: 'Merci, votre commentaire a été transmis à la direction.',
-      err: 'Une erreur est survenue. Réessayez.', close: 'Fermer'
+      err: 'Une erreur est survenue. Réessayez.', close: 'Fermer',
+      my_orders: 'Mes commandes', history_signin: "Vérifiez votre numéro lors d'une commande pour accéder à votre historique.", history_empty: "Aucune commande pour l'instant.", resume_active: 'Commande en cours', resume_track: 'Suivre'
     },
     en: {
       menu_unavailable: 'Online ordering unavailable', closed: 'The restaurant is currently closed. Reserve a table or come back during opening hours.', paused: 'Orders are paused for the moment. Please check back soon.', load_err: 'Could not load the menu. Please try again in a moment.',
@@ -67,7 +69,8 @@
       placed: 'Order received!', order_no: 'Order', pickup_eta: 'Pickup', status: 'Tracking your order',
       st_received: 'Received', st_confirmed: 'Confirmed', st_preparing: 'Preparing', st_ready: 'Ready for pickup', st_done: 'Completed', st_cancelled: 'Cancelled', cancelled_msg: 'This order was cancelled. Contact the restaurant for details.',
       rate_title: 'How was your experience?', rate_thanks: 'Thank you for visiting!', rate_5: 'Wonderful! Share it on Google?', leave_google: 'Leave a Google review', rate_low: 'Help us do better', fb_email: 'Your email (optional)', fb_msg: 'What could we have done better?', fb_send: 'Send', fb_thanks: 'Thank you, your feedback has been sent to management.',
-      err: 'Something went wrong. Please try again.', close: 'Close'
+      err: 'Something went wrong. Please try again.', close: 'Close',
+      my_orders: 'My orders', history_signin: 'Verify your number during an order to access your history.', history_empty: 'No orders yet.', resume_active: 'Order in progress', resume_track: 'Track'
     }
   }[LANG];
 
@@ -82,6 +85,52 @@
   function api(path, opts){ return fetch(BASE + path, opts).then(function(r){ return r.json().catch(function(){ return {}; }).then(function(j){ return { ok: r.ok, status: r.status, body: j }; }); }); }
   function haversine(la1, lo1, la2, lo2){ var R = 6371000, dLa = (la2-la1)*Math.PI/180, dLo = (lo2-lo1)*Math.PI/180, a = Math.sin(dLa/2)*Math.sin(dLa/2) + Math.cos(la1*Math.PI/180)*Math.cos(la2*Math.PI/180)*Math.sin(dLo/2)*Math.sin(dLo/2); return 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); }
   function fmtClock(ms){ try { return new Intl.DateTimeFormat(LANG === 'en' ? 'en-CA' : 'fr-CA', { timeZone: TZ, hour: '2-digit', minute: '2-digit', hour12: LANG === 'en' }).format(new Date(ms)); } catch(e){ return ''; } }
+
+  // ---- ordering account, persistence & history (Phase 1/2; same-origin) ----
+  function sess(){ try { return localStorage.getItem('voga_session') || ''; } catch(e){ return ''; } }
+  function api2(path, opts){ opts = opts || {}; opts.headers = opts.headers || {}; var s = sess(); if (s) opts.headers['Authorization'] = 'Bearer ' + s; return fetch(path.replace(/^\//, ''), opts).then(function(r){ return r.json().catch(function(){ return {}; }).then(function(j){ return { ok: r.ok, status: r.status, body: j }; }); }); }
+  function ensureSession(token){ if (sess()) return Promise.resolve(true); if (!token) return Promise.resolve(false); return api2('api/order/session', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ token: token }) }).then(function(r){ if (r.ok && r.body && r.body.token){ try { localStorage.setItem('voga_session', r.body.token); } catch(e){} return true; } return false; }).catch(function(){ return false; }); }
+  function recordOrder(id){ if (!sess() || !id) return; api2('api/order/record', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ liasseOrderId: id }) }).catch(function(){}); }
+  function saveActive(o){ try { localStorage.setItem('voga_active_order', JSON.stringify({ id: o.orderId || o.orderNumber, num: o.orderNumber || o.orderId, ts: Date.now() })); } catch(e){} }
+  function clearActive(){ try { localStorage.removeItem('voga_active_order'); } catch(e){} }
+  function statusLabel(s){ return ({ pending:S.st_received, confirmed:S.st_confirmed, preparing:S.st_preparing, ready:S.st_ready, completed:S.st_done, cancelled:S.st_cancelled })[s] || s; }
+  function fmtDateTime(s){ try { return new Intl.DateTimeFormat(LANG === 'en' ? 'en-CA' : 'fr-CA', { dateStyle:'medium', timeStyle:'short' }).format(new Date(s)); } catch(e){ return String(s || ''); } }
+  function maybeResume(){
+    var raw; try { raw = localStorage.getItem('voga_active_order'); } catch(e){ return; }
+    if (!raw) return;
+    var a; try { a = JSON.parse(raw); } catch(e){ clearActive(); return; }
+    if (!a || !a.id || (Date.now() - (a.ts || 0) > 36 * 3600 * 1000)){ clearActive(); return; }
+    var wrap = document.querySelector('.order-wrap');
+    if (wrap && !document.getElementById('resumeBanner')){
+      var b = document.createElement('div'); b.id = 'resumeBanner'; b.className = 'order-resume';
+      b.innerHTML = '<span>' + esc(S.resume_active) + ' #' + esc(a.num || a.id) + '</span><button class="btn btn-reserve" type="button">' + esc(S.resume_track) + '</button>';
+      wrap.insertBefore(b, wrap.firstChild);
+      b.querySelector('button').addEventListener('click', function(){ openTracking(a); });
+    }
+    try { if (/[?&]track=1/.test(location.search)) openTracking(a); } catch(e){}
+  }
+  function openTracking(a){ state.order = { orderId: a.id, orderNumber: a.num }; state.cart = {}; renderConfirm(state.order); sheet.classList.add('open'); document.body.style.overflow = 'hidden'; }
+  function historyView(){
+    sheet.classList.add('open'); document.body.style.overflow = 'hidden';
+    panel.innerHTML = '<div class="sheet-head"><h2>' + esc(S.my_orders) + '</h2><button class="sheet-close" id="histClose" aria-label="' + esc(S.close) + '">&times;</button></div><div class="order-loading"><div class="spinner" aria-hidden="true"></div></div>';
+    var hc = document.getElementById('histClose'); if (hc) hc.addEventListener('click', closeSheet);
+    api2('api/order/history', {}).then(function(r){
+      var box = panel.querySelector('.order-loading'); if (!box) return;
+      var body = r.body || {};
+      if (!body.authenticated){ box.outerHTML = '<p class="order-note">' + esc(S.history_signin) + '</p>'; return; }
+      var orders = body.orders || [];
+      if (!orders.length){ box.outerHTML = '<p class="order-note">' + esc(S.history_empty) + '</p>'; return; }
+      var h = '';
+      orders.forEach(function(o){
+        var items = []; try { items = typeof o.items === 'string' ? JSON.parse(o.items) : (o.items || []); } catch(e){ items = []; }
+        var sum = items.map(function(it){ return (it.quantity || 1) + '× ' + (it.name || ''); }).join(', ');
+        h += '<div class="hist-order"><div class="hist-order__top"><strong>#' + esc(o.order_number || o.liasse_order_id) + '</strong><span class="hist-status">' + esc(statusLabel(o.status)) + '</span></div>' +
+          '<div class="hist-meta">' + esc(fmtDateTime(o.created_at)) + (o.total_cents != null ? ' · ' + money(o.total_cents) : '') + '</div>' +
+          (sum ? '<div class="hist-items">' + esc(sum) + '</div>' : '') + '</div>';
+      });
+      box.outerHTML = '<div class="hist-list">' + h + '</div>';
+    }).catch(function(){ var box = panel.querySelector('.order-loading'); if (box) box.outerHTML = '<p class="order-note">' + esc(S.err) + '</p>'; });
+  }
 
   // ---- load ----
   Promise.all([ api('/order/takeout-config'), api('/order/menu.json') ]).then(function(res){
@@ -103,7 +152,9 @@
   function renderState(msg, soft){
     app.innerHTML = '<div class="order-state"><h2>' + esc(S.menu_unavailable) + '</h2><p>' + esc(msg) + '</p>' +
       '<div><a class="btn btn-reserve" href=".#reservation">' + esc(S.reserve) + '</a> <a class="btn btn-ghost" href=".">' + esc(S.back_home) + '</a></div></div>';
+    maybeResume();
   }
+  var _myOrdersBtn = document.getElementById('myOrdersBtn'); if (_myOrdersBtn) _myOrdersBtn.addEventListener('click', historyView);
 
   // ---- menu ----
   function menuItems(){ return ((state.menu.menu && state.menu.menu.items) || state.menu.items || []); }
@@ -136,6 +187,7 @@
     app.innerHTML = html;
     renderCart();
     wireMenu();
+    maybeResume();
   }
   function wireMenu(){
     var chips = Array.prototype.slice.call(app.querySelectorAll('.ocat-chip'));
@@ -290,7 +342,7 @@
     if (!otp){ toast(S.need_code); return; }
     var btn = document.getElementById('verifyBtn'); btn.disabled = true;
     api('/order/takeout-otp/verify', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone: state.phone, otp: otp }) })
-      .then(function(r){ btn.disabled = false; if (r.ok && r.body && r.body.verificationToken){ state.token = r.body.verificationToken; document.getElementById('verifyWrap').innerHTML = '<p class="order-note" style="color:var(--olive-deep)">' + esc(S.verified) + '</p>'; } else { var msg = (r.body && (r.body.error || r.body.message)) || S.err; var vm = document.getElementById('vMsg'); if (vm){ vm.textContent = msg; vm.style.color = '#b3261e'; } toast(msg); } })
+      .then(function(r){ btn.disabled = false; if (r.ok && r.body && r.body.verificationToken){ state.token = r.body.verificationToken; ensureSession(state.token); document.getElementById('verifyWrap').innerHTML = '<p class="order-note" style="color:var(--olive-deep)">' + esc(S.verified) + '</p>'; } else { var msg = (r.body && (r.body.error || r.body.message)) || S.err; var vm = document.getElementById('vMsg'); if (vm){ vm.textContent = msg; vm.style.color = '#b3261e'; } toast(msg); } })
       .catch(function(){ btn.disabled = false; toast(S.err); });
   }
 
@@ -334,7 +386,7 @@
       btn.textContent = S.placing;
       api('/order/orders', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
         .then(function(r){
-          if (r.ok && r.body && (r.body.orderId || r.body.orderNumber)){ state.order = r.body; renderConfirm(r.body); return; }
+          if (r.ok && r.body && (r.body.orderId || r.body.orderNumber)){ state.order = r.body; saveActive(r.body); ensureSession(state.token).then(function(){ recordOrder(r.body.orderId || r.body.orderNumber); }); renderConfirm(r.body); return; }
           btn.disabled = false; btn.textContent = S.place;
           var emsg = (r.body && (r.body.error || r.body.message)) || '';
           // The server is authoritative on who needs verification (remote / scheduled
@@ -373,6 +425,7 @@
   function renderStatus(o){
     var box = document.getElementById('statusBox'); if (!box) return;
     var status = o.status || 'pending';
+    if (status === 'completed' || status === 'cancelled') clearActive();
     if (status === 'cancelled'){ box.innerHTML = '<p class="order-note warn" style="margin-top:1rem">' + esc(S.st_cancelled) + ' — ' + esc(S.cancelled_msg) + '</p>'; return; }
     var idx = stepIndex(status);
     var labels = [S.st_received, S.st_preparing, S.st_ready];
