@@ -1,0 +1,301 @@
+<%- include('partials/header', { activeNav: 'home' }) %>
+<%
+  var catName = {};
+  (categories || []).forEach(function(c){ catName[c.slug] = (lang === 'en' && c.name_en) ? c.name_en : c.name_fr; });
+  function clipDesc(s){ s = s || ''; return s.length > 140 ? s.slice(0,138).trim() + '…' : s; }
+%>
+
+<!-- ===== Hero ===== -->
+<section class="hero">
+  <img class="hero__img" src="<%= cimg(settings._p_hero_image_url || '', 'f_auto,q_auto,w_1920,h_1280,c_fill,g_auto') %>" alt="" fetchpriority="high">
+  <div class="hero__veil"></div>
+  <div class="container">
+    <div class="hero__inner">
+      <img class="hero__logo" src="<%= cimg(settings._p_nav_logo_url || '', 'f_auto,q_auto,w_460') %>" alt="<%= settings.business_name || t.brand %>" onerror="this.style.display='none'">
+      <p class="hero__kicker"><%= sx('hero_kicker') %></p>
+      <h1><%= sx('hero_title') %></h1>
+      <p class="hero__sub"><%= sx('hero_subtitle') %></p>
+      <div class="hero__ctas">
+        <a class="btn btn-reserve btn-lg" href="#reservation"><%= t.reserve %></a>
+        <a class="btn btn-outline-light btn-lg" href="menu"><%= t.nav_menu %></a>
+      </div>
+    </div>
+  </div>
+  <div class="hero__scroll" aria-hidden="true"><span><%= lang === 'en' ? 'Scroll' : 'Défiler' %></span><span class="line"></span></div>
+</section>
+
+<!-- ===== Story ===== -->
+<section class="section section--paper" id="story" aria-labelledby="story-title">
+  <div class="container">
+    <div class="story-grid">
+      <div class="story-figure reveal">
+        <img src="<%= cimg(settings._p_story_image_url || '', 'f_auto,q_auto,w_900,h_1125,c_fill,g_auto') %>" alt="<%= lang === 'en' ? 'The Ristorante Voga dining room with its green banquettes' : 'La salle à manger de Ristorante Voga et ses banquettes vertes' %>" loading="lazy">
+      </div>
+      <div class="story-body reveal">
+        <span class="eyebrow"><%= sx('story_kicker') %></span>
+        <h2 class="display-title" id="story-title"><%= sx('story_title') %></h2>
+        <% (sx('story_body') || '').split(/\n\n+/).forEach(function(para){ if (para.trim()) { %><p><%= para.trim() %></p><% } }); %>
+        <div class="story-meta">
+          <div class="stat"><div class="n"><%= settings.established_year || '2014' %></div><div class="l"><%= lang === 'en' ? 'Since' : 'Depuis' %></div></div>
+          <div class="stat"><div class="n">Cucina</div><div class="l"><%= lang === 'en' ? 'Authentic Italian' : 'Italienne authentique' %></div></div>
+          <div class="stat"><div class="n">Vino</div><div class="l"><%= lang === 'en' ? 'Wine bar' : 'Bar à vin' %></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Signature dishes ===== -->
+<% if (signatures && signatures.length) { %>
+<section class="section" aria-labelledby="signature-title">
+  <div class="container">
+    <div class="section-head center reveal">
+      <span class="eyebrow center"><%= lang === 'en' ? 'Specialità' : 'Specialità' %></span>
+      <h2 class="display-title" id="signature-title"><%= sx('signature_title') %></h2>
+      <p class="lead"><%= sx('signature_intro') %></p>
+    </div>
+    <div class="signature-grid">
+      <% signatures.forEach(function(m){ %>
+      <article class="dish-card reveal">
+        <div class="dish-card__media">
+          <% if (m.image_url) { %>
+            <img src="<%= cimg(m.image_url, 'f_auto,q_auto,w_640,h_480,c_fill,g_auto') %>" alt="<%= pickLang(m,'name',lang) %>" loading="lazy">
+          <% } else { %>
+            <div class="dish-card__monogram"><span>V</span></div>
+          <% } %>
+        </div>
+        <div class="dish-card__body">
+          <div class="dish-card__top">
+            <h3 class="dish-card__name"><%= pickLang(m,'name',lang) %></h3>
+            <span class="dish-card__price"><%= itemPriceLabel(m) %></span>
+          </div>
+          <% if (pickLang(m,'description',lang)) { %><p class="dish-card__desc"><%= clipDesc(pickLang(m,'description',lang)) %></p><% } %>
+          <% if (catName[m.category]) { %><span class="dish-card__cat"><%= catName[m.category] %></span><% } %>
+        </div>
+      </article>
+      <% }); %>
+    </div>
+    <div class="text-center mt-cta"><a class="btn btn-ghost" href="menu"><%= t.signature_more %></a></div>
+  </div>
+</section>
+<% } %>
+
+<!-- ===== Menu overview ===== -->
+<section class="section section--paper" id="menu" aria-labelledby="menu-title">
+  <div class="container">
+    <div class="section-head center reveal">
+      <span class="eyebrow center"><%= t.menu_categories %></span>
+      <h2 class="display-title" id="menu-title"><%= sx('menu_title') %></h2>
+      <p class="lead"><%= sx('menu_intro') %></p>
+    </div>
+    <% if (categories && categories.length) { %>
+    <div class="menu-overview reveal">
+      <% categories.forEach(function(c){ %>
+      <a class="menu-cat" href="menu#<%= c.slug %>">
+        <span class="menu-cat__name"><%= (lang === 'en' && c.name_en) ? c.name_en : c.name_fr %></span>
+        <% var _sub = (lang === 'en' ? c.subtitle_en : c.subtitle_fr) || (lang === 'en' ? c.subtitle_fr : c.subtitle_en); %>
+        <% if (_sub) { %><span class="menu-cat__sub"><%= _sub %></span><% } %>
+        <% if (Number(c.item_count) > 0) { %><span class="menu-cat__count"><%= c.item_count %> <%= Number(c.item_count) > 1 ? t.items_count : t.item_count %></span><% } %>
+      </a>
+      <% }); %>
+    </div>
+    <% } %>
+    <div class="menu-overview-cta"><a class="btn btn-reserve" href="menu"><%= t.view_full_menu %></a></div>
+  </div>
+</section>
+
+<!-- ===== Wine ===== -->
+<section class="section section-dark" id="wine" aria-labelledby="wine-title">
+  <div class="container">
+    <div class="wine-split">
+      <div class="wine-content reveal">
+        <span class="eyebrow on-dark"><%= lang === 'en' ? 'Enoteca' : 'Enoteca' %></span>
+        <h2 class="display-title" id="wine-title"><%= sx('wine_title') %></h2>
+        <p class="lead"><%= sx('wine_intro') %></p>
+        <% if (wines && wines.length) { %>
+          <div class="wine-list-preview">
+            <% wines.forEach(function(w){ %>
+            <div class="wine-row">
+              <div class="wine-row__main">
+                <div class="n"><%= pickLang(w,'name',lang) %><% if (w.vintage) { %> <span style="color:var(--muted-light);font-size:.9rem"><%= w.vintage %></span><% } %></div>
+                <% var _wm = [pickLang(w,'region',lang), w.varietal].filter(Boolean).join(' · '); %>
+                <% if (_wm) { %><div class="meta"><%= _wm %></div><% } %>
+              </div>
+              <div class="wine-row__price">
+                <% if (w.price_glass != null) { %><%= formatPrice(w.price_glass) %> <span style="opacity:.7"><%= t.glass.toLowerCase() %></span><br><% } %>
+                <% if (w.price_bottle != null) { %><%= formatPrice(w.price_bottle) %> <span style="opacity:.7"><%= t.bottle.toLowerCase() %></span><% } %>
+              </div>
+            </div>
+            <% }); %>
+          </div>
+        <% } else { %>
+          <p class="wine-empty-note"><%= t.wine_empty %></p>
+        <% } %>
+        <div class="mt-cta"><a class="btn btn-gold" href="vins"><%= t.view_wine %></a></div>
+      </div>
+      <div class="wine-figure reveal">
+        <img src="<%= cimg(settings._p_wine_image_url || '', 'f_auto,q_auto,w_800,h_1066,c_fill,g_auto') %>" alt="<%= lang === 'en' ? 'A toast with Voga-etched wine glasses' : 'Un toast avec des verres gravés Voga' %>" loading="lazy">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Tasting ===== -->
+<section class="section section-burgundy" id="tasting" aria-labelledby="tasting-title">
+  <div class="container">
+    <div class="tasting-split">
+      <div class="tasting-figure reveal">
+        <img src="<%= cimg(settings._p_tasting_image_url || '', 'f_auto,q_auto,w_900,h_720,c_fill,g_auto') %>" alt="<%= lang === 'en' ? 'A table laid with Italian dishes and wine at Ristorante Voga' : 'Une table garnie de plats italiens et de vin chez Ristorante Voga' %>" loading="lazy">
+        <% if (sx('tasting_price')) { %>
+        <div class="tasting-medallion"><span class="price"><%= sx('tasting_price') %>$</span><span class="per"><%= t.per_person %></span></div>
+        <% } %>
+      </div>
+      <div class="tasting-content reveal">
+        <span class="eyebrow on-dark"><%= sx('tasting_kicker') %></span>
+        <h2 class="display-title" id="tasting-title"><%= sx('tasting_title') %></h2>
+        <p class="lead" style="color:rgba(247,241,230,.92)"><%= sx('tasting_intro') %></p>
+        <% if (tasting && tasting.length) { %>
+          <div class="tasting-courses">
+            <% tasting.forEach(function(c){ %>
+            <div class="tasting-course">
+              <span class="tasting-course__num"></span>
+              <div class="tasting-course__body">
+                <div class="t"><%= pickLang(c,'title',lang) %></div>
+                <% if (pickLang(c,'description',lang)) { %><div class="d"><%= pickLang(c,'description',lang) %></div><% } %>
+              </div>
+            </div>
+            <% }); %>
+          </div>
+        <% } else { %>
+          <p class="tasting-note"><%= t.tasting_empty_note %></p>
+        <% } %>
+        <div class="mt-cta"><a class="btn btn-gold btn-lg" href="#reservation"><%= t.reserve %></a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Promotion ===== -->
+<% if (promo) { %>
+<section class="section section--ivory2" id="promotion" aria-label="<%= lang === 'en' ? 'Current promotion' : 'Promotion en cours' %>">
+  <div class="container">
+    <div class="promo-band reveal">
+      <div class="promo-band__text">
+        <% var _badge = (lang === 'en' ? promo.badge_en : promo.badge_fr) || (lang === 'en' ? promo.badge_fr : promo.badge_en); %>
+        <% if (_badge) { %><span class="promo-band__badge"><%= _badge %></span><% } %>
+        <h2 class="promo-band__title"><%= pickLang(promo,'title',lang) %></h2>
+        <% if (pickLang(promo,'description',lang)) { %><p class="promo-band__desc"><%= pickLang(promo,'description',lang) %></p><% } %>
+        <% var _pcta = (lang === 'en' ? promo.cta_label_en : promo.cta_label_fr) || (lang === 'en' ? promo.cta_label_fr : promo.cta_label_en) || t.reserve; %>
+        <div><a class="btn btn-gold" href="<%= promo.cta_url || '#reservation' %>"<%- /^https?:/.test(promo.cta_url || '') ? ' target="_blank" rel="noopener"' : '' %>><%= _pcta %></a></div>
+      </div>
+      <% if (promo.image_url) { %>
+      <div class="promo-band__media"><img src="<%= cimg(promo.image_url, 'f_auto,q_auto,w_900,h_700,c_fill,g_auto') %>" alt="<%= pickLang(promo,'title',lang) %>" loading="lazy"></div>
+      <% } %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<!-- ===== Gallery ===== -->
+<% if (gallery && gallery.length) { %>
+<section class="section section--paper" id="gallery" aria-labelledby="gallery-title">
+  <div class="container">
+    <div class="section-head center reveal">
+      <span class="eyebrow center"><%= lang === 'en' ? 'Atmosfera' : 'Atmosfera' %></span>
+      <h2 class="display-title" id="gallery-title"><%= sx('gallery_title') %></h2>
+      <p class="lead"><%= sx('gallery_intro') %></p>
+    </div>
+    <div class="gallery-grid reveal">
+      <% gallery.forEach(function(img, _gi){ var _alt = (lang === 'en' && img.alt_en) ? img.alt_en : (img.alt_fr || img.alt_en || ((settings.business_name || t.brand) + ' — ' + sx('gallery_title') + ' ' + (_gi + 1))); var _cap = (lang === 'en' ? img.caption_en : img.caption_fr) || ''; %>
+      <figure>
+        <img src="<%= cimg(img.image_url, 'f_auto,q_auto,w_640') %>" alt="<%= _alt %>" loading="lazy" decoding="async">
+        <% if (_cap) { %><figcaption><%= _cap %></figcaption><% } %>
+      </figure>
+      <% }); %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<!-- ===== Reviews ===== -->
+<section class="section section--ivory2" id="reviews" aria-labelledby="reviews-title">
+  <div class="container">
+    <div class="section-head center reveal">
+      <span class="eyebrow center"><%= lang === 'en' ? 'Recensioni' : 'Recensioni' %></span>
+      <h2 class="display-title" id="reviews-title"><%= sx('reviews_title') %></h2>
+      <p class="lead"><%= sx('reviews_intro') %></p>
+    </div>
+    <% if (reviews && reviews.length) { %>
+    <div class="reviews-grid">
+      <% reviews.forEach(function(r){ var _rt = Math.max(0, Math.min(5, Number(r.rating || 5))); %>
+      <figure class="review-card reveal">
+        <div class="review-card__stars" aria-label="<%= _rt %>/5"><% for (var i=0;i<5;i++){ %><%= i < _rt ? '★' : '☆' %><% } %></div>
+        <blockquote class="review-card__quote">“<%= pickLang(r,'quote',lang) %>”</blockquote>
+        <figcaption class="review-card__meta">
+          <span class="review-card__author"><%= r.author %><% if (r.review_date) { %> · <span style="color:var(--muted);font-weight:400"><%= r.review_date %></span><% } %></span>
+          <% if (r.source) { %><span class="review-card__source"><%= r.source %></span><% } %>
+        </figcaption>
+      </figure>
+      <% }); %>
+    </div>
+    <% } else { %>
+    <div class="reviews-empty reveal">
+      <p><%= t.reviews_empty %></p>
+      <div class="mt-cta"><a class="btn btn-ghost" href="https://www.google.com/search?q=<%= encodeURIComponent((settings.business_name || 'Ristorante Voga') + ' Saint-Jérôme avis') %>" target="_blank" rel="noopener"><%= t.leave_review %></a></div>
+    </div>
+    <% } %>
+  </div>
+</section>
+
+<!-- ===== Reservation ===== -->
+<%- include('partials/reservation') %>
+
+<!-- ===== Location / Visit ===== -->
+<section class="section" id="location" aria-labelledby="location-title">
+  <div class="container">
+    <div class="section-head reveal" style="margin-bottom:2.6rem">
+      <span class="eyebrow"><%= lang === 'en' ? 'Visit' : 'Nous visiter' %></span>
+      <h2 class="display-title" id="location-title"><%= sx('location_title') %></h2>
+      <p class="lead"><%= sx('location_intro') %></p>
+    </div>
+    <div class="visit-grid">
+      <div class="visit-info reveal">
+        <div class="info-block">
+          <h3><%= t.hours_title %></h3>
+          <% if (hoursHaveData(hours)) { %>
+          <table class="hours-table">
+            <% hours.forEach(function(row){ %>
+            <tr class="<%= row.closed ? 'is-closed' : '' %>">
+              <td class="day"><%= t['day_' + row.day] %></td>
+              <td class="val"><% if (row.closed) { %><%= t.closed %><% } else if (row.open && row.close) { %><%= row.open %> – <%= row.close %><% } else { %>—<% } %></td>
+            </tr>
+            <% }); %>
+          </table>
+          <% } else { %>
+          <p class="muted"><%= t.hours_tbd %></p>
+          <% } %>
+        </div>
+        <div class="info-block">
+          <h3><%= t.nav_contact %></h3>
+          <% if (settings.business_address) { %><div class="row"><span class="ic" aria-hidden="true">📍</span><span><%= settings.business_address %></span></div><% } %>
+          <% if (settings.contact_phone) { %><div class="row"><span class="ic" aria-hidden="true">☎</span><a href="tel:<%= settings.contact_phone.replace(/[^0-9+]/g,'') %>"><%= settings.contact_phone %></a></div><% } %>
+          <% if (settings.contact_email) { %><div class="row"><span class="ic" aria-hidden="true">✉</span><a href="mailto:<%= settings.contact_email %>"><%= settings.contact_email %></a></div><% } %>
+          <div class="row" style="margin-top:1.1rem;gap:.7rem;flex-wrap:wrap">
+            <a class="btn btn-reserve" href="#reservation"><%= t.reserve %></a>
+            <% if (mapLink) { %><a class="btn btn-ghost" href="<%= mapLink %>" target="_blank" rel="noopener"><%= t.get_directions %></a><% } %>
+            <a class="btn btn-ghost" href="contact"><%= t.nav_contact %></a>
+          </div>
+        </div>
+      </div>
+      <div class="visit-map reveal">
+        <% if (mapEmbed) { %>
+          <iframe src="<%= mapEmbed %>" title="<%= lang === 'en' ? 'Map to Ristorante Voga' : 'Carte vers Ristorante Voga' %>" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+        <% } else if (settings._p_location_image_url) { %>
+          <div class="map-fallback"><img src="<%= cimg(settings._p_location_image_url, 'f_auto,q_auto,w_900,h_900,c_fill,g_auto') %>" alt="<%= lang === 'en' ? 'Ristorante Voga storefront' : 'Façade de Ristorante Voga' %>"><div class="addr"><%= settings.business_address %></div></div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#211d1b">
+<%
+  var _name = settings.business_name || t.brand;
+  var _desc = sx('seo_description') || sx('tagline') || '';
+  var _logo = settings._p_nav_logo_url || 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/site/voga_logo.png';
+  var _ogImg = cimg(settings._p_hero_image_url || '', 'f_auto,q_auto,w_1200,h_630,c_fill,g_auto');
+  var _pageTitle = (typeof pageTitle !== 'undefined' && pageTitle) ? (pageTitle + ' — ' + _name) : (_name + ' — ' + sx('tagline'));
+  var _active = (typeof activeNav !== 'undefined') ? activeNav : '';
+  // Structured-data address + hours derived from editable settings (never hardcoded).
+  var _addrParts = (settings.business_address || '').split(',').map(function(s){ return s.trim(); }).filter(Boolean);
+  var _postalAddr = settings.business_address ? {
+    "@type": "PostalAddress",
+    "streetAddress": _addrParts[0] || settings.business_address,
+    "addressLocality": _addrParts[1] || undefined,
+    "addressRegion": _addrParts[2] || undefined,
+    "addressCountry": "CA"
+  } : undefined;
+  var _dayName = { mon:'Monday', tue:'Tuesday', wed:'Wednesday', thu:'Thursday', fri:'Friday', sat:'Saturday', sun:'Sunday' };
+  var _ohs = (typeof hours !== 'undefined' && hours) ? hours.filter(function(h){ return h.open && h.close && !h.closed; }).map(function(h){ return { "@type":"OpeningHoursSpecification", "dayOfWeek": _dayName[h.day], "opens": h.open, "closes": h.close }; }) : [];
+%>
+<title><%= _pageTitle %></title>
+<meta name="description" content="<%= _desc %>">
+<link rel="icon" type="image/png" href="<%= cimg(_logo, 'f_auto,w_96') %>">
+<link rel="apple-touch-icon" href="<%= cimg(_logo, 'f_auto,w_180') %>">
+<link rel="manifest" href="manifest.json">
+<meta property="og:type" content="restaurant">
+<meta property="og:title" content="<%= _pageTitle %>">
+<meta property="og:description" content="<%= _desc %>">
+<meta property="og:locale" content="<%= lang === 'en' ? 'en_CA' : 'fr_CA' %>">
+<% if (_ogImg) { %><meta property="og:image" content="<%= _ogImg %>"><% } %>
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="public/css/styles.css">
+<script type="application/ld+json">
+<%- JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "Restaurant",
+  "name": _name,
+  "servesCuisine": "Italian",
+  "priceRange": "$$",
+  "image": _ogImg || cimg(_logo, 'f_auto,w_600'),
+  "description": _desc,
+  "address": _postalAddr,
+  "openingHoursSpecification": _ohs.length ? _ohs : undefined,
+  "telephone": settings.contact_phone || undefined,
+  "email": settings.contact_email || undefined,
+  "acceptsReservations": "True"
+}) %>
+</script>
+</head>
+<body data-page="<%= _active %>">
+<a class="skip-link" href="#main"><%= t.skip_to_content %></a>
+
+<header class="site-header" id="siteHeader">
+  <div class="container">
+    <a href="." class="brand-lockup" aria-label="<%= _name %>">
+      <img src="<%= cimg(_logo, 'f_auto,q_auto,w_220') %>" alt="<%= _name %>" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'">
+      <span class="brand-fallback" style="display:none">Vogà</span>
+    </a>
+    <nav class="main-nav" aria-label="<%= lang === 'en' ? 'Main navigation' : 'Navigation principale' %>">
+      <a class="nav-link" href=".#story"><%= t.nav_story %></a>
+      <a class="nav-link<%= _active==='menu'?' active':'' %>"<%- _active==='menu' ? ' aria-current="page"' : '' %> href="menu"><%= t.nav_menu %></a>
+      <a class="nav-link<%= _active==='wine'?' active':'' %>"<%- _active==='wine' ? ' aria-current="page"' : '' %> href="vins"><%= t.nav_wine %></a>
+      <a class="nav-link" href=".#tasting"><%= t.nav_tasting %></a>
+      <a class="nav-link" href=".#gallery"><%= t.nav_gallery %></a>
+      <a class="nav-link<%= _active==='contact'?' active':'' %>"<%- _active==='contact' ? ' aria-current="page"' : '' %> href="contact"><%= t.nav_contact %></a>
+    </nav>
+    <div class="header-actions">
+      <a class="lang-toggle" href="?lang=<%= lang === 'en' ? 'fr' : 'en' %>" aria-label="<%= lang === 'en' ? 'Passer au français' : 'Switch to English' %>"><%= lang === 'en' ? 'FR' : 'EN' %></a>
+      <a class="btn btn-reserve header-reserve" href=".#reservation"><%= t.reserve %></a>
+      <button class="nav-toggle" id="navToggle" aria-label="<%= lang === 'en' ? 'Open menu' : 'Ouvrir le menu' %>" aria-controls="mobileNav" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="3" y1="7" x2="21" y2="7"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="17" x2="21" y2="17"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="mobile-nav" id="mobileNav">
+  <div class="mobile-nav__backdrop" data-close></div>
+  <div class="mobile-nav__panel" role="dialog" aria-modal="true" aria-label="<%= t.nav_menu %>">
+    <div class="mobile-nav__head">
+      <img src="<%= cimg(_logo, 'f_auto,q_auto,w_200') %>" alt="<%= _name %>">
+      <button class="mobile-nav__close" data-close aria-label="<%= lang === 'en' ? 'Close' : 'Fermer' %>">&times;</button>
+    </div>
+    <a class="m-link" href="."><%= t.nav_home %></a>
+    <a class="m-link" href=".#story"><%= t.nav_story %></a>
+    <a class="m-link" href="menu"><%= t.nav_menu %></a>
+    <a class="m-link" href="vins"><%= t.nav_wine %></a>
+    <a class="m-link" href=".#tasting"><%= t.nav_tasting %></a>
+    <a class="m-link" href=".#gallery"><%= t.nav_gallery %></a>
+    <a class="m-link" href="contact"><%= t.nav_contact %></a>
+    <a class="btn btn-reserve btn-block" href=".#reservation"><%= t.reserve %></a>
+    <div class="mobile-nav__lang">
+      <a href="?lang=fr" class="<%= lang === 'fr' ? 'active' : '' %>">Français</a>
+      <a href="?lang=en" class="<%= lang === 'en' ? 'active' : '' %>">English</a>
+    </div>
+  </div>
+</div>
+
+<main id="main">

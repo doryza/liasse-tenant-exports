@@ -1,0 +1,112 @@
+<%- include('partials/header', { pageTitle: (lang === 'en' ? 'Contact' : 'Contact'), activeNav: 'contact' }) %>
+
+<section class="subpage-hero">
+  <div class="container">
+    <span class="eyebrow center" style="justify-content:center"><%= settings.business_name || t.brand %></span>
+    <h1><%= sx('contact_title') %></h1>
+    <p class="lead"><%= sx('contact_intro') %></p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="contact-grid">
+      <div class="contact-aside">
+        <h3><%= lang === 'en' ? 'Visit us' : 'Nous visiter' %></h3>
+        <% if (settings.business_address) { %><div class="ca-row"><span class="ic" aria-hidden="true">📍</span><span><%= settings.business_address %></span></div><% } %>
+        <% if (settings.contact_phone) { %><div class="ca-row"><span class="ic" aria-hidden="true">☎</span><a href="tel:<%= settings.contact_phone.replace(/[^0-9+]/g,'') %>"><%= settings.contact_phone %></a></div><% } %>
+        <% if (settings.contact_email) { %><div class="ca-row"><span class="ic" aria-hidden="true">✉</span><a href="mailto:<%= settings.contact_email %>"><%= settings.contact_email %></a></div><% } %>
+        <% if (hoursHaveData(hours)) { %>
+        <div class="ca-row" style="border-bottom:0;flex-direction:column;gap:.5rem">
+          <strong style="color:var(--ivory)"><%= t.hours_title %></strong>
+          <table class="footer-hours" style="width:100%">
+            <% hours.forEach(function(row){ %><tr><td style="color:var(--muted-light)"><%= t['day_' + row.day] %></td><td class="val" style="color:var(--muted-light)"><% if (row.closed) { %><%= t.closed %><% } else if (row.open && row.close) { %><%= row.open %> – <%= row.close %><% } else { %>—<% } %></td></tr><% }); %>
+          </table>
+        </div>
+        <% } %>
+        <a class="btn btn-reserve btn-block" style="margin-top:1.4rem" href=".#reservation"><%= t.reserve %></a>
+      </div>
+
+      <div class="contact-main">
+        <div class="contact-disclaimer">
+          <span class="ic" aria-hidden="true">ⓘ</span>
+          <p><strong><%= t.not_for_reservations %></strong> <%= sx('contact_disclaimer') %></p>
+        </div>
+
+        <form class="contact-form" id="contactForm" novalidate>
+          <div class="field">
+            <label for="cf-name"><%= t.contact_name %> *</label>
+            <input id="cf-name" name="name" type="text" autocomplete="name" required maxlength="200">
+          </div>
+          <div class="field">
+            <label for="cf-email"><%= t.contact_email %> *</label>
+            <input id="cf-email" name="email" type="email" autocomplete="email" required maxlength="200">
+          </div>
+          <div class="field">
+            <label for="cf-phone"><%= t.contact_phone %></label>
+            <input id="cf-phone" name="phone" type="tel" autocomplete="tel" maxlength="60">
+          </div>
+          <div class="field">
+            <label for="cf-subject"><%= t.contact_subject %></label>
+            <input id="cf-subject" name="subject" type="text" maxlength="200">
+          </div>
+          <div class="field full">
+            <label for="cf-message"><%= t.contact_message %> *</label>
+            <textarea id="cf-message" name="message" required maxlength="4000"></textarea>
+          </div>
+          <div class="contact-actions">
+            <button class="btn btn-reserve btn-lg" type="submit" id="cfSubmit"><%= t.contact_send %></button>
+            <span class="form-status" id="cfStatus" role="status" aria-live="polite"></span>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+(function(){
+  var form = document.getElementById('contactForm');
+  if (!form) return;
+  var btn = document.getElementById('cfSubmit');
+  var status = document.getElementById('cfStatus');
+  var T = {
+    sending: <%- JSON.stringify(t.contact_sending) %>,
+    send: <%- JSON.stringify(t.contact_send) %>,
+    ok: <%- JSON.stringify(t.contact_success + ' ' + t.contact_success_note) %>,
+    err: <%- JSON.stringify(t.contact_error) %>,
+    required: <%- JSON.stringify(t.contact_required) %>
+  };
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    status.className = 'form-status';
+    status.textContent = '';
+    var data = {
+      name: form.name.value.trim(),
+      email: form.email.value.trim(),
+      phone: form.phone.value.trim(),
+      subject: form.subject.value.trim(),
+      message: form.message.value.trim(),
+      locale: <%- JSON.stringify(lang) %>
+    };
+    if (!data.name || !data.email || !data.message) {
+      status.className = 'form-status err'; status.textContent = T.required; return;
+    }
+    btn.disabled = true; btn.textContent = T.sending;
+    fetch('api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
+      .then(function(r){ return r.json().then(function(j){ return { ok: r.ok, j: j }; }); })
+      .then(function(res){
+        if (res.ok && res.j && res.j.success) {
+          form.reset();
+          status.className = 'form-status ok'; status.textContent = T.ok;
+        } else {
+          status.className = 'form-status err'; status.textContent = T.err;
+        }
+      })
+      .catch(function(){ status.className = 'form-status err'; status.textContent = T.err; })
+      .finally(function(){ btn.disabled = false; btn.textContent = T.send; });
+  });
+})();
+</script>
+
+<%- include('partials/footer') %>
