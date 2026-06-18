@@ -137,6 +137,9 @@ p { margin: 0 0 1rem; }
 .main-nav a.nav-link:hover::after { right: 0; }
 .main-nav a.nav-link.active { color: #fff; }
 .main-nav a.nav-link.active::after { right: 0; background: var(--gold); }
+.main-nav a.nav-link--order { color: var(--gold-soft); border: 1px solid rgba(216,189,128,.5); border-radius: 999px; padding: .34rem .9rem; }
+.main-nav a.nav-link--order::after { display: none; }
+.main-nav a.nav-link--order:hover { color: #1f1c1a; background: var(--gold-soft); border-color: var(--gold-soft); }
 .header-actions { display: flex; align-items: center; gap: 1rem; }
 .lang-toggle {
   font-family: var(--sans); font-size: .72rem; font-weight: 700; letter-spacing: .12em;

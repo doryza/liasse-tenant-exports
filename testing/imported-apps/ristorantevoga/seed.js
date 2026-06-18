@@ -41,6 +41,10 @@ module.exports = async function(db, services) {
     ['google_rating', '4.6'],
     ['google_rating_count', '648'],
 
+    // Native takeout ordering — the linked Liasse Restaurants business host.
+    // Refreshed by the AI Builder when the app is re-linked (see READFIRST).
+    ['order_base_url', 'https://restaurant-vog-saint860.liasse.tech'],
+
     // Hero
     ['hero_kicker_fr', 'Ristorante · Bar à vin · Saint-Jérôme'],
     ['hero_kicker_en', 'Ristorante · Wine bar · Saint-Jérôme'],
