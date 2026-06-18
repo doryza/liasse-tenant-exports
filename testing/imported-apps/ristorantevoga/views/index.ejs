@@ -5,10 +5,19 @@
   function clipDesc(s){ s = s || ''; return s.length > 140 ? s.slice(0,138).trim() + '…' : s; }
 %>
 
-<!-- ===== Hero ===== -->
-<section class="hero">
-  <img class="hero__img" src="<%= cimg(settings._p_hero_image_url || '', 'f_auto,q_auto,w_1920,h_1280,c_fill,g_auto') %>" alt="" fetchpriority="high">
+<!-- ===== Hero (gilded-reveal slideshow) ===== -->
+<%
+  var heroImgs = [settings._p_hero_image_url, settings._p_hero_image_2_url, settings._p_hero_image_3_url].filter(function(u){ return u && String(u).trim(); });
+  if (!heroImgs.length) heroImgs = [''];
+%>
+<section class="hero" id="hero">
+  <div class="hero__stage" aria-hidden="true">
+    <% heroImgs.forEach(function(u, i){ %>
+    <img class="hero__slide<%= i===0 ? ' is-active' : '' %>" data-i="<%= i %>" src="<%= cimg(u, 'f_auto,q_auto,w_1920,h_1280,c_fill,g_auto') %>" alt=""<%- i===0 ? ' fetchpriority="high"' : ' decoding="async"' %>>
+    <% }); %>
+  </div>
   <div class="hero__veil"></div>
+  <div class="hero__sweep" aria-hidden="true"></div>
   <div class="container">
     <div class="hero__inner">
       <img class="hero__logo" src="<%= cimg(settings._p_nav_logo_url || '', 'f_auto,q_auto,w_460') %>" alt="<%= settings.business_name || t.brand %>" onerror="this.style.display='none'">
@@ -21,8 +30,48 @@
       </div>
     </div>
   </div>
-  <div class="hero__scroll" aria-hidden="true"><span><%= lang === 'en' ? 'Scroll' : 'Défiler' %></span><span class="line"></span></div>
+  <% if (heroImgs.length > 1) { %>
+  <div class="hero__dots" role="tablist" aria-label="<%= lang === 'en' ? 'Hero images' : 'Images du héros' %>">
+    <% heroImgs.forEach(function(u, i){ %>
+    <button class="hero__dot<%= i===0 ? ' is-active' : '' %>" type="button" data-i="<%= i %>" role="tab" aria-selected="<%= i===0 ? 'true' : 'false' %>" aria-label="<%= (lang === 'en' ? 'Image ' : 'Image ') + (i+1) %>"></button>
+    <% }); %>
+  </div>
+  <% } %>
 </section>
+
+<script>
+(function(){
+  var hero = document.getElementById('hero');
+  if (!hero) return;
+  var slides = Array.prototype.slice.call(hero.querySelectorAll('.hero__slide'));
+  var dots = Array.prototype.slice.call(hero.querySelectorAll('.hero__dot'));
+  var sweep = hero.querySelector('.hero__sweep');
+  if (slides.length < 2) return;
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return; // static, no motion
+  var i = 0, timer = null;
+  var HOLD = 6200; // ms each slide is held before the gilded reveal
+  function show(n){
+    n = (n + slides.length) % slides.length;
+    if (n === i && slides[i].classList.contains('is-active')) return;
+    slides[i].classList.remove('is-active');
+    if (dots[i]) { dots[i].classList.remove('is-active'); dots[i].setAttribute('aria-selected','false'); }
+    i = n;
+    slides[i].classList.add('is-active');
+    if (dots[i]) { dots[i].classList.add('is-active'); dots[i].setAttribute('aria-selected','true'); }
+    if (sweep) { sweep.classList.remove('run'); void sweep.offsetWidth; sweep.classList.add('run'); }
+  }
+  function next(){ show(i + 1); }
+  function start(){ stop(); timer = setInterval(next, HOLD); }
+  function stop(){ if (timer) { clearInterval(timer); timer = null; } }
+  dots.forEach(function(d){ d.addEventListener('click', function(){ show(parseInt(d.getAttribute('data-i'), 10)); start(); }); });
+  // Preload non-first slides so the first transition is crisp.
+  slides.slice(1).forEach(function(s){ var im = new Image(); im.src = s.getAttribute('src'); });
+  hero.addEventListener('mouseenter', stop);
+  hero.addEventListener('mouseleave', start);
+  document.addEventListener('visibilitychange', function(){ if (document.hidden) stop(); else start(); });
+  start();
+})();
+</script>
 
 <!-- ===== Story ===== -->
 <section class="section section--paper" id="story" aria-labelledby="story-title">

@@ -120,6 +120,8 @@ module.exports = async function(db, services) {
     // Image slots (also kept in migrations.sql). Stored BARE; render-time transforms.
     ['_p_nav_logo_url', site('voga_logo.png')],
     ['_p_hero_image_url', site('hero_rigatoni.jpg')],
+    ['_p_hero_image_2_url', site('interior_banquettes.jpg')],
+    ['_p_hero_image_3_url', site('capellini_dish.jpg')],
     ['_p_story_image_url', site('interior_banquettes.jpg')],
     ['_p_atmosphere_image_url', site('interior_room.jpg')],
     ['_p_wine_image_url', g('g12')],
