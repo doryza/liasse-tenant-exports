@@ -131,6 +131,7 @@
         <% } else { %>
           <p class="wine-empty-note"><%= t.wine_empty %></p>
         <% } %>
+        <% if (sx('wine_fineprint')) { %><p class="wine-fineprint on-dark"><span aria-hidden="true">*</span> <%= sx('wine_fineprint') %></p><% } %>
         <div class="mt-cta"><a class="btn btn-gold" href="vins"><%= t.view_wine %></a></div>
       </div>
       <div class="wine-figure reveal">

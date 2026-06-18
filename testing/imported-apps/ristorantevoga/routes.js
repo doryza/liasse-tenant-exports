@@ -319,7 +319,7 @@ module.exports = function(services) {
   router.get('/admin/messages', isAdminPage, function(req, res) { res.render('admin-messages', { page: 'messages' }); });
 
   // ----- Module field definitions (drives the generic admin CRUD shell) -----
-  const WINE_CATEGORIES = ['Rouge', 'Blanc', 'Rosé', 'Bulles', 'Doux & fortifié', 'Apéritif & digestif'];
+  const WINE_CATEGORIES = ['Vino Bianco', 'Vino Rosé', 'Vino Rosso', 'Champagnes', 'Prosecco', 'Bulles', 'Doux & fortifié', 'Apéritif & digestif'];
   const GALLERY_CATEGORIES = ['interior', 'exterior', 'dishes', 'dessert', 'wine', 'drinks', 'atmosphere', 'decor', 'dining', 'staff', 'other'];
   router.get('/api/admin/modules', isAdminApi, function(req, res) {
     res.json({ modules: [
@@ -528,7 +528,7 @@ module.exports = function(services) {
     'story_title_fr','story_title_en','story_kicker_fr','story_kicker_en','story_body_fr','story_body_en',
     'signature_title_fr','signature_title_en','signature_intro_fr','signature_intro_en',
     'menu_title_fr','menu_title_en','menu_intro_fr','menu_intro_en',
-    'wine_title_fr','wine_title_en','wine_intro_fr','wine_intro_en',
+    'wine_title_fr','wine_title_en','wine_intro_fr','wine_intro_en','wine_fineprint_fr','wine_fineprint_en',
     'tasting_title_fr','tasting_title_en','tasting_kicker_fr','tasting_kicker_en','tasting_price','tasting_intro_fr','tasting_intro_en',
     'reservation_mode','reservation_embed_code','reservation_url','reservation_title_fr','reservation_title_en','reservation_intro_fr','reservation_intro_en','reservation_note_fr','reservation_note_en',
     'contact_title_fr','contact_title_en','contact_intro_fr','contact_intro_en','contact_disclaimer_fr','contact_disclaimer_en',
