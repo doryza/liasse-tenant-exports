@@ -13,6 +13,7 @@ module.exports = function(services) {
       nav_home: 'Accueil', nav_story: 'Histoire', nav_menu: 'Menu', nav_wine: 'Vins',
       nav_tasting: 'Dégustation', nav_gallery: 'Galerie', nav_contact: 'Contact',
       reserve: 'Réservez', reserve_aria: 'Réserver une table',
+      order_takeout: 'Commande pour emporter', order_takeout_short: 'Emporter',
       view_full_menu: 'Voir le menu complet', view_wine: 'Voir la carte des vins',
       back_home: "Retour à l'accueil",
       per_person: 'par personne', from: 'dès',
@@ -47,6 +48,7 @@ module.exports = function(services) {
       nav_home: 'Home', nav_story: 'Story', nav_menu: 'Menu', nav_wine: 'Wine',
       nav_tasting: 'Tasting', nav_gallery: 'Gallery', nav_contact: 'Contact',
       reserve: 'Reserve', reserve_aria: 'Reserve a table',
+      order_takeout: 'Order Takeout', order_takeout_short: 'Takeout',
       view_full_menu: 'See the full menu', view_wine: 'See the wine list',
       back_home: 'Back to home',
       per_person: 'per person', from: 'from',
@@ -266,6 +268,18 @@ module.exports = function(services) {
       const ctx = await renderCtx(req);
       res.render('contact', ctx);
     } catch(e) { console.error('Contact error:', e.message); res.status(500).send('Erreur'); }
+  });
+
+  // Native takeout ordering — talks to the linked Liasse Restaurants business
+  // (#649) at its own host. Liasse owns pricing/tax/OTP/geofence/hours; this
+  // page only renders the menu, collects input and calls those endpoints.
+  // See READFIRST-liasse-ordering.md.
+  router.get('/commander', async function(req, res) {
+    try {
+      const ctx = await renderCtx(req);
+      const orderBaseUrl = (ctx.settings.order_base_url || 'https://restaurant-vog-saint860.liasse.tech').replace(/\/+$/, '');
+      res.render('commander', Object.assign(ctx, { orderBaseUrl: orderBaseUrl }));
+    } catch(e) { console.error('Commander error:', e.message); res.status(500).send('Erreur'); }
   });
 
   // Public contact-form submission. Stores the message and best-effort emails
@@ -555,7 +569,7 @@ module.exports = function(services) {
   const SITE_SETTINGS_ALLOWED = new Set([
     'business_name','established_year','tagline_fr','tagline_en','seo_description_fr','seo_description_en',
     'admin_email','contact_email','contact_phone','business_address','map_embed_url','hours_json',
-    'google_place_id','google_maps_uri','map_lat','map_lng','google_rating','google_rating_count',
+    'google_place_id','google_maps_uri','map_lat','map_lng','google_rating','google_rating_count','order_base_url',
     'hero_kicker_fr','hero_kicker_en','hero_title_fr','hero_title_en','hero_subtitle_fr','hero_subtitle_en',
     'story_title_fr','story_title_en','story_kicker_fr','story_kicker_en','story_body_fr','story_body_en',
     'signature_title_fr','signature_title_en','signature_intro_fr','signature_intro_en',

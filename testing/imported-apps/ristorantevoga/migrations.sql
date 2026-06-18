@@ -26,6 +26,7 @@ INSERT INTO admin_settings (key, value) VALUES ('map_lat', '45.7769277') ON CONF
 INSERT INTO admin_settings (key, value) VALUES ('map_lng', '-74.0031857') ON CONFLICT (key) DO NOTHING;
 INSERT INTO admin_settings (key, value) VALUES ('google_rating', '4.6') ON CONFLICT (key) DO NOTHING;
 INSERT INTO admin_settings (key, value) VALUES ('google_rating_count', '648') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('order_base_url', 'https://restaurant-vog-saint860.liasse.tech') ON CONFLICT (key) DO NOTHING;
 INSERT INTO admin_settings (key, value) VALUES ('hero_kicker_fr', 'Ristorante · Bar à vin · Saint-Jérôme') ON CONFLICT (key) DO NOTHING;
 INSERT INTO admin_settings (key, value) VALUES ('hero_kicker_en', 'Ristorante · Wine bar · Saint-Jérôme') ON CONFLICT (key) DO NOTHING;
 INSERT INTO admin_settings (key, value) VALUES ('hero_title_fr', 'L''Italie, à votre table') ON CONFLICT (key) DO NOTHING;

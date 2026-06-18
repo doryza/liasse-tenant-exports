@@ -68,9 +68,9 @@
       <a class="nav-link" href=".#story"><%= t.nav_story %></a>
       <a class="nav-link<%= _active==='menu'?' active':'' %>"<%- _active==='menu' ? ' aria-current="page"' : '' %> href="menu"><%= t.nav_menu %></a>
       <a class="nav-link<%= _active==='wine'?' active':'' %>"<%- _active==='wine' ? ' aria-current="page"' : '' %> href="vins"><%= t.nav_wine %></a>
-      <a class="nav-link" href=".#tasting"><%= t.nav_tasting %></a>
       <a class="nav-link" href=".#gallery"><%= t.nav_gallery %></a>
       <a class="nav-link<%= _active==='contact'?' active':'' %>"<%- _active==='contact' ? ' aria-current="page"' : '' %> href="contact"><%= t.nav_contact %></a>
+      <a class="nav-link nav-link--order<%= _active==='order'?' active':'' %>"<%- _active==='order' ? ' aria-current="page"' : '' %> href="commander"><%= t.order_takeout_short %></a>
     </nav>
     <div class="header-actions">
       <a class="lang-toggle" href="?lang=<%= lang === 'en' ? 'fr' : 'en' %>" aria-label="<%= lang === 'en' ? 'Passer au français' : 'Switch to English' %>"><%= lang === 'en' ? 'FR' : 'EN' %></a>
@@ -97,6 +97,7 @@
     <a class="m-link" href=".#gallery"><%= t.nav_gallery %></a>
     <a class="m-link" href="contact"><%= t.nav_contact %></a>
     <a class="btn btn-reserve btn-block" href=".#reservation"><%= t.reserve %></a>
+    <a class="btn btn-gold btn-block" style="margin-top:.6rem" href="commander"><%= t.order_takeout %></a>
     <% if (settings.social_instagram || settings.social_facebook) { %>
     <div class="mobile-nav__social">
       <% if (settings.social_instagram) { %><a href="<%= settings.social_instagram %>" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.334 3.608 1.308.975.975 1.247 2.242 1.308 3.608.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.062 1.366-.334 2.633-1.308 3.608-.975.975-2.242 1.247-3.608 1.308-1.265.058-1.645.07-4.849.07-3.204 0-3.584-.012-4.849-.07-1.366-.062-2.633-.334-3.608-1.308-.975-.975-1.247-2.242-1.308-3.608C2.175 15.747 2.163 15.367 2.163 12s.012-3.584.07-4.849c.062-1.366.334-2.633 1.308-3.608.975-.975 2.242-1.247 3.608-1.308C8.416 2.175 8.796 2.163 12 2.163zm0 1.802c-3.141 0-3.515.013-4.756.07-1.07.05-1.65.226-2.04.376-.513.2-.88.437-1.265.823-.385.385-.622.752-.823 1.265-.15.39-.326.97-.376 2.04-.057 1.241-.07 1.615-.07 4.756 0 3.141.013 3.515.07 4.756.05 1.07.226 1.65.376 2.04.2.513.438.88.823 1.265.385.385.752.622 1.265.823.39.15.97.326 2.04.376 1.241.057 1.615.07 4.756.07 3.141 0 3.515-.013 4.756-.07 1.07-.05 1.65-.226 2.04-.376.513-.2.88-.437 1.265-.823.385-.385.622-.752.823-1.265.15-.39.326-.97.376-2.04.057-1.241.07-1.615.07-4.756 0-3.141-.013-3.515-.07-4.756-.05-1.07-.226-1.65-.376-2.04-.2-.513-.437-.88-.823-1.265-.385-.385-.752-.622-1.265-.823-.39-.15-.97-.326-2.04-.376-1.241-.057-1.615-.07-4.756-.07zm0 3.064a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 8.467a3.333 3.333 0 100-6.666 3.333 3.333 0 000 6.666zm6.538-8.671a1.2 1.2 0 11-2.4 0 1.2 1.2 0 012.4 0z"/></svg></a><% } %>
