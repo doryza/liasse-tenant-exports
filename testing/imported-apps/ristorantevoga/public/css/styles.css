@@ -595,4 +595,8 @@ p { margin: 0 0 1rem; }
 .order-pill:hover { background: var(--burgundy-700); color: #fff; }
 .order-pill[hidden] { display: none; }
 body[data-page="order"] .order-pill { display: none !important; }
-@media (max-width: 900px) { .order-pill { bottom: 4.8rem; } }
+/* Lift the pill clear of the fixed "Réservez" bar. That bar's height includes
+   env(safe-area-inset-bottom), which the old fixed 4.8rem ignored — so on
+   notched phones the bar (z-index 900) covered the lower half of the pill
+   (z-index 850). Mirror the inset here and clear the bar's ~76px height. */
+@media (max-width: 900px) { .order-pill { bottom: calc(6rem + env(safe-area-inset-bottom)); } }
