@@ -147,3 +147,25 @@ CREATE TABLE IF NOT EXISTS contact_messages (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS contact_messages_created_idx ON contact_messages(created_at DESC);
+
+-- Mirror of placed Liasse takeout orders, keyed to the platform-provisioned
+-- per-app `users` table (user_id = users.id). Liasse stays the source of truth;
+-- this persists the current order + 90-day history for the customer. No FK to
+-- `users` (that table is platform-managed and created outside this schema).
+CREATE TABLE IF NOT EXISTS orders (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER,
+  liasse_order_id TEXT UNIQUE,
+  order_number INTEGER,
+  order_type TEXT,
+  status TEXT DEFAULT 'pending',
+  items JSONB,
+  subtotal_cents INTEGER,
+  total_cents INTEGER,
+  tax_breakdown JSONB,
+  customer_name TEXT,
+  pickup_time TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS orders_user_idx ON orders(user_id, created_at DESC);
