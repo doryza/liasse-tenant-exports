@@ -42,7 +42,7 @@
       asap: 'Dès que possible', asap_hint: 'au comptoir', scheduled: 'Planifier', sched_hint: 'à une heure précise',
       pickup_time: 'Heure de récupération', ready_around: '≈ prête vers',
       verify_title: 'Vérification du téléphone', verify_hint: 'Une commande planifiée ou hors zone nécessite la vérification de votre numéro.',
-      phone: 'Téléphone mobile', phone_ph: '+1 514 555 0123', send_code: 'Envoyer le code', code: 'Code reçu par SMS', code_ph: '6 chiffres', verify: 'Vérifier', verified: 'Numéro vérifié ✓', code_sent: 'Code envoyé par SMS.', resend: 'Renvoyer',
+      phone: 'Téléphone mobile', phone_ph: '+1 514 555 0123', send_code: 'Envoyer le code', code: 'Code reçu par SMS', code_ph: '4 chiffres', verify: 'Vérifier', verified: 'Numéro vérifié ✓', code_sent: 'Code envoyé par SMS.', resend: 'Renvoyer',
       place: 'Confirmer la commande', placing: 'Envoi…', locating: 'Localisation…',
       need_name: 'Veuillez indiquer votre nom.', need_geo: "La localisation est requise pour passer la commande. Activez-la et réessayez.", need_phone: 'Numéro de téléphone requis.', need_code: 'Entrez le code reçu par SMS.', need_verify: 'Veuillez vérifier votre numéro avant de continuer.',
       remote_notice: 'Vous êtes hors de la zone de récupération — une vérification du téléphone est requise.',
@@ -60,7 +60,7 @@
       asap: 'As soon as possible', asap_hint: 'at the counter', scheduled: 'Schedule', sched_hint: 'for a set time',
       pickup_time: 'Pickup time', ready_around: '≈ ready around',
       verify_title: 'Phone verification', verify_hint: 'A scheduled or out-of-range order requires verifying your number.',
-      phone: 'Mobile phone', phone_ph: '+1 514 555 0123', send_code: 'Send code', code: 'SMS code', code_ph: '6 digits', verify: 'Verify', verified: 'Number verified ✓', code_sent: 'Code sent by SMS.', resend: 'Resend',
+      phone: 'Mobile phone', phone_ph: '+1 514 555 0123', send_code: 'Send code', code: 'SMS code', code_ph: '4 digits', verify: 'Verify', verified: 'Number verified ✓', code_sent: 'Code sent by SMS.', resend: 'Resend',
       place: 'Place order', placing: 'Sending…', locating: 'Locating…',
       need_name: 'Please enter your name.', need_geo: 'Location is required to place the order. Enable it and try again.', need_phone: 'Phone number required.', need_code: 'Enter the SMS code.', need_verify: 'Please verify your number first.',
       remote_notice: 'You are outside the pickup zone — phone verification is required.',
@@ -111,9 +111,15 @@
     var items = menuItems();
     var cats = [];
     items.forEach(function(it){ var c = it.category || ''; if (cats.indexOf(c) === -1) cats.push(c); });
-    var html = '<div class="order-grid"><div class="order-menu" id="orderMenu">';
-    cats.forEach(function(cat){
-      html += '<section class="order-menu__cat">' + (cat ? '<h2>' + esc(cat) + '</h2>' : '');
+    var html = '';
+    if (cats.length > 1){
+      html += '<div class="order-cats" id="orderCats"><div class="order-cats__row">';
+      cats.forEach(function(cat, ci){ html += '<button type="button" class="ocat-chip' + (ci === 0 ? ' active' : '') + '" data-target="ocat-' + ci + '">' + esc(cat || 'Menu') + '</button>'; });
+      html += '</div></div>';
+    }
+    html += '<div class="order-grid"><div class="order-menu" id="orderMenu">';
+    cats.forEach(function(cat, ci){
+      html += '<section class="order-menu__cat" id="ocat-' + ci + '">' + (cat ? '<h2>' + esc(cat) + '</h2>' : '');
       items.filter(function(it){ return (it.category || '') === cat; }).forEach(function(it){
         var pc = priceCents(it);
         var avail = it.available !== false && pc != null;
@@ -129,6 +135,22 @@
     html += '</div><aside class="order-cart" id="orderCart"></aside></div>';
     app.innerHTML = html;
     renderCart();
+    wireMenu();
+  }
+  function wireMenu(){
+    var chips = Array.prototype.slice.call(app.querySelectorAll('.ocat-chip'));
+    var sections = Array.prototype.slice.call(app.querySelectorAll('.order-menu__cat'));
+    chips.forEach(function(ch){ ch.addEventListener('click', function(){
+      var el = document.getElementById(ch.getAttribute('data-target'));
+      if (!el) return;
+      var y = el.getBoundingClientRect().top + window.pageYOffset - 116;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+      var row = ch.parentNode; if (row) row.scrollTo({ left: ch.offsetLeft - 16, behavior: 'smooth' });
+    }); });
+    if ('IntersectionObserver' in window && sections.length){
+      var io = new IntersectionObserver(function(entries){ entries.forEach(function(en){ if (en.isIntersecting){ var id = en.target.id; chips.forEach(function(c){ c.classList.toggle('active', c.getAttribute('data-target') === id); }); } }); }, { rootMargin: '-25% 0px -65% 0px', threshold: 0 });
+      sections.forEach(function(s){ io.observe(s); });
+    }
   }
   function itemControl(id){
     var q = (state.cart[id] && state.cart[id].qty) || 0;
@@ -164,7 +186,7 @@
     }
     if (bar){
       if (t.count){ bar.className = 'cart-bar has-items'; bar.innerHTML = '<button class="btn btn-reserve" id="checkoutBtnM"><span>' + t.count + ' ' + esc(t.count > 1 ? S.items : S.item) + ' · ' + money(t.total) + '</span><span>' + esc(S.checkout) + ' →</span></button>'; }
-      else { bar.className = 'cart-bar'; bar.innerHTML = ''; }
+      else { bar.className = 'cart-bar'; bar.innerHTML = '<div class="cart-bar__empty">' + esc(S.empty) + '</div>'; }
     }
   }
 
