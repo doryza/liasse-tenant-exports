@@ -290,8 +290,17 @@
     </div>
     <% } else { %>
     <div class="reviews-empty reveal">
+      <% if (rating) { %>
+      <a class="google-rating" href="<%= mapLink %>" target="_blank" rel="noopener" aria-label="<%= rating.value %> / 5 — <%= rating.count %> <%= lang === 'en' ? 'Google reviews' : 'avis Google' %>">
+        <div class="gr-score"><%= String(rating.value).replace('.', ',') %><span>/5</span></div>
+        <div class="gr-side">
+          <div class="gr-stars" aria-hidden="true">★★★★★</div>
+          <div class="gr-meta"><strong><%= rating.count %></strong> <%= lang === 'en' ? 'reviews on Google' : 'avis sur Google' %></div>
+        </div>
+      </a>
+      <% } %>
       <p><%= t.reviews_empty %></p>
-      <div class="mt-cta"><a class="btn btn-ghost" href="https://www.google.com/search?q=<%= encodeURIComponent((settings.business_name || 'Ristorante Voga') + ' Saint-Jérôme avis') %>" target="_blank" rel="noopener"><%= t.leave_review %></a></div>
+      <div class="mt-cta"><a class="btn btn-ghost" href="<%= mapLink || ('https://www.google.com/search?q=' + encodeURIComponent((settings.business_name || 'Ristorante Voga') + ' Saint-Jérôme avis')) %>" target="_blank" rel="noopener"><%= t.leave_review %></a></div>
     </div>
     <% } %>
   </div>
@@ -301,6 +310,10 @@
 <%- include('partials/reservation') %>
 
 <!-- ===== Location / Visit ===== -->
+<%
+  var _useIframe = !!(settings.map_embed_url && settings.map_embed_url.trim());
+  var _useLeaflet = !_useIframe && settings.map_lat && settings.map_lng;
+%>
 <section class="section" id="location" aria-labelledby="location-title">
   <div class="container">
     <div class="section-head reveal" style="margin-bottom:2.6rem">
@@ -310,13 +323,29 @@
     </div>
     <div class="visit-grid">
       <div class="visit-info reveal">
+        <% if (today || rating) { %>
+        <div class="visit-chips">
+          <% if (today) { %>
+          <span class="status-chip <%= today.isOpen ? 'is-open' : 'is-closed' %>">
+            <span class="dot" aria-hidden="true"></span>
+            <% if (today.isOpen) { %><%= lang === 'en' ? 'Open now' : 'Ouvert' %> · <%= lang === 'en' ? 'until' : "jusqu'à" %> <%= today.close %><% } else if (!today.closed && today.open) { %><%= lang === 'en' ? 'Closed' : 'Fermé' %> · <%= lang === 'en' ? 'opens at' : 'ouvre à' %> <%= today.open %><% } else { %><%= lang === 'en' ? 'Closed today' : "Fermé aujourd'hui" %><% } %>
+          </span>
+          <% } %>
+          <% if (rating) { %>
+          <a class="rating-chip" href="<%= mapLink %>" target="_blank" rel="noopener" aria-label="<%= rating.value %> / 5 sur Google">
+            <span class="star" aria-hidden="true">★</span><%= rating.value %><% if (rating.count) { %> <span class="rc">· <%= rating.count %> <%= lang === 'en' ? 'reviews' : 'avis' %></span><% } %> <span class="g">Google</span>
+          </a>
+          <% } %>
+        </div>
+        <% } %>
+
         <div class="info-block">
           <h3><%= t.hours_title %></h3>
           <% if (hoursHaveData(hours)) { %>
           <table class="hours-table">
             <% hours.forEach(function(row){ %>
-            <tr class="<%= row.closed ? 'is-closed' : '' %>">
-              <td class="day"><%= t['day_' + row.day] %></td>
+            <tr class="<%= row.closed ? 'is-closed' : '' %> <%= (today && today.key === row.day) ? 'today' : '' %>">
+              <td class="day"><%= t['day_' + row.day] %><% if (today && today.key === row.day) { %> <span class="today-tag"><%= lang === 'en' ? "Today" : "Aujourd'hui" %></span><% } %></td>
               <td class="val"><% if (row.closed) { %><%= t.closed %><% } else if (row.open && row.close) { %><%= row.open %> – <%= row.close %><% } else { %>—<% } %></td>
             </tr>
             <% }); %>
@@ -332,20 +361,60 @@
           <% if (settings.contact_email) { %><div class="row"><span class="ic" aria-hidden="true">✉</span><a href="mailto:<%= settings.contact_email %>"><%= settings.contact_email %></a></div><% } %>
           <div class="row" style="margin-top:1.1rem;gap:.7rem;flex-wrap:wrap">
             <a class="btn btn-reserve" href="#reservation"><%= t.reserve %></a>
-            <% if (mapLink) { %><a class="btn btn-ghost" href="<%= mapLink %>" target="_blank" rel="noopener"><%= t.get_directions %></a><% } %>
-            <a class="btn btn-ghost" href="contact"><%= t.nav_contact %></a>
+            <% if (directionsLink) { %><a class="btn btn-ghost" href="<%= directionsLink %>" target="_blank" rel="noopener"><%= t.get_directions %></a><% } %>
+            <% if (mapLink) { %><a class="btn btn-ghost" href="<%= mapLink %>" target="_blank" rel="noopener"><%= lang === 'en' ? 'Google Maps' : 'Google Maps' %></a><% } %>
           </div>
         </div>
       </div>
+
       <div class="visit-map reveal">
-        <% if (mapEmbed) { %>
+        <% if (settings._p_location_image_url) { %>
+          <img class="visit-map__fallback" src="<%= cimg(settings._p_location_image_url, 'f_auto,q_auto,w_900,h_900,c_fill,g_auto') %>" alt="" aria-hidden="true">
+        <% } %>
+        <% if (_useIframe) { %>
           <iframe src="<%= mapEmbed %>" title="<%= lang === 'en' ? 'Map to Ristorante Voga' : 'Carte vers Ristorante Voga' %>" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+        <% } else if (_useLeaflet) { %>
+          <div id="vogaMap" class="visit-map__leaflet"
+               data-lat="<%= settings.map_lat %>" data-lng="<%= settings.map_lng %>"
+               data-name="<%= settings.business_name || t.brand %>"
+               data-addr="<%= settings.business_address || '' %>"
+               data-dir="<%= directionsLink %>" data-dirlabel="<%= t.get_directions %>"
+               role="img" aria-label="<%= (lang === 'en' ? 'Map showing ' : 'Carte indiquant ') + (settings.business_name || t.brand) %>"></div>
         <% } else if (settings._p_location_image_url) { %>
-          <div class="map-fallback"><img src="<%= cimg(settings._p_location_image_url, 'f_auto,q_auto,w_900,h_900,c_fill,g_auto') %>" alt="<%= lang === 'en' ? 'Ristorante Voga storefront' : 'Façade de Ristorante Voga' %>"><div class="addr"><%= settings.business_address %></div></div>
+          <div class="map-fallback"><div class="addr"><%= settings.business_address %></div></div>
         <% } %>
       </div>
     </div>
   </div>
 </section>
+
+<% if (_useLeaflet) { %>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin="" defer></script>
+<script>
+(function(){
+  function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, function(c){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]; }); }
+  function init(){
+    var el = document.getElementById('vogaMap');
+    if (!el || typeof L === 'undefined') return;
+    var lat = parseFloat(el.dataset.lat), lng = parseFloat(el.dataset.lng);
+    if (isNaN(lat) || isNaN(lng)) return;
+    var map = L.map(el, { scrollWheelZoom: false, zoomControl: true, attributionControl: true }).setView([lat, lng], 16);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      subdomains: 'abcd', maxZoom: 20
+    }).addTo(map);
+    var icon = L.divIcon({ className: 'voga-marker', html: '<span class="voga-pin"><span class="voga-pin__v">V</span></span>', iconSize: [46, 58], iconAnchor: [23, 56], popupAnchor: [0, -52] });
+    var marker = L.marker([lat, lng], { icon: icon, title: el.dataset.name, keyboard: true, alt: el.dataset.name }).addTo(map);
+    var pop = '<div class="voga-pop"><strong>' + esc(el.dataset.name) + '</strong>' +
+      (el.dataset.addr ? ('<br><span>' + esc(el.dataset.addr) + '</span>') : '') +
+      (el.dataset.dir ? ('<br><a href="' + esc(el.dataset.dir) + '" target="_blank" rel="noopener">' + esc(el.dataset.dirlabel || 'Directions') + ' →</a>') : '') + '</div>';
+    marker.bindPopup(pop);
+    setTimeout(function(){ map.invalidateSize(); }, 250);
+  }
+  window.addEventListener('load', init);
+})();
+</script>
+<% } %>
 
 <%- include('partials/footer') %>

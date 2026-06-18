@@ -384,6 +384,47 @@ p { margin: 0 0 1rem; }
 .visit-map .map-fallback .addr { position: absolute; left: 0; right: 0; bottom: 0; padding: 1.4rem; background: linear-gradient(0deg, rgba(0,0,0,.7), transparent); color: #fff; }
 @media (max-width: 820px) { .visit-grid { grid-template-columns: 1fr; } .visit-map { min-height: 300px; } }
 
+/* status + rating chips */
+.visit-chips { display: flex; gap: .6rem; flex-wrap: wrap; margin-bottom: 1.7rem; }
+.status-chip { display: inline-flex; align-items: center; gap: .5rem; font-size: .82rem; font-weight: 600; padding: .45rem .9rem; border-radius: 999px; border: 1px solid var(--line); background: var(--paper); }
+.status-chip .dot { width: 8px; height: 8px; border-radius: 50%; flex: 0 0 auto; }
+.status-chip.is-open { color: var(--olive-deep); border-color: rgba(107,115,83,.4); background: rgba(107,115,83,.08); }
+.status-chip.is-open .dot { background: #4f8a3f; box-shadow: 0 0 0 3px rgba(79,138,63,.18); }
+.status-chip.is-closed { color: var(--muted); }
+.status-chip.is-closed .dot { background: var(--muted-light); }
+.rating-chip { display: inline-flex; align-items: center; gap: .35rem; font-size: .85rem; font-weight: 600; color: var(--ink); padding: .45rem .9rem; border-radius: 999px; border: 1px solid var(--line); background: var(--paper); }
+.rating-chip:hover { border-color: var(--gold); color: var(--ink); }
+.rating-chip .star { color: var(--gold); }
+.rating-chip .rc { color: var(--muted); font-weight: 400; }
+.rating-chip .g { color: var(--muted); font-weight: 700; margin-left: .15rem; }
+.today-tag { font-size: .6rem; letter-spacing: .12em; text-transform: uppercase; color: var(--gold-deep); border: 1px solid rgba(196,162,76,.5); border-radius: 999px; padding: .04rem .42rem; margin-left: .45rem; vertical-align: middle; }
+
+/* map layers + custom Voga marker */
+.visit-map__fallback { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
+.visit-map__leaflet { position: absolute; inset: 0; z-index: 1; background: var(--ivory-2); }
+.visit-map__leaflet .leaflet-tile-pane { filter: saturate(.9) contrast(1.03); }
+.leaflet-container { font-family: var(--sans); background: var(--ivory-2); }
+.leaflet-control-zoom a { color: var(--burgundy) !important; }
+.voga-marker { background: transparent; border: 0; }
+.voga-pin { display: block; position: relative; width: 36px; height: 36px; background: var(--burgundy); border: 2px solid var(--gold); border-radius: 50% 50% 50% 0; transform: rotate(-45deg); box-shadow: 0 8px 16px rgba(0,0,0,.35); animation: voga-pin-drop .55s cubic-bezier(.2,.8,.3,1.25) both; }
+.voga-pin__v { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; transform: rotate(45deg); color: var(--ivory); font-family: var(--serif); font-style: italic; font-weight: 700; font-size: 1.15rem; }
+@keyframes voga-pin-drop { 0% { transform: rotate(-45deg) translateY(-18px) scale(.7); opacity: 0; } 100% { transform: rotate(-45deg) translateY(0) scale(1); opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .voga-pin { animation: none; } }
+.voga-pop { font-family: var(--sans); text-align: left; }
+.voga-pop strong { font-family: var(--serif); font-size: 1.18rem; color: var(--ink); }
+.voga-pop span { color: var(--muted); font-size: .85rem; }
+.voga-pop a { color: var(--burgundy); font-weight: 600; font-size: .85rem; display: inline-block; margin-top: .35rem; }
+
+/* Google rating card (reviews empty state) */
+.google-rating { display: inline-flex; align-items: center; gap: 1.1rem; margin: 0 auto 1.5rem; padding: 1rem 1.7rem; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; }
+.google-rating:hover { border-color: var(--gold); }
+.google-rating .gr-score { font-family: var(--serif); font-size: 2.7rem; line-height: 1; color: var(--burgundy); }
+.google-rating .gr-score span { font-size: 1.1rem; color: var(--muted); }
+.google-rating .gr-side { text-align: left; }
+.google-rating .gr-stars { color: var(--gold); letter-spacing: .14em; font-size: 1.02rem; }
+.google-rating .gr-meta { font-size: .84rem; color: var(--muted); margin-top: .25rem; }
+.google-rating .gr-meta strong { color: var(--ink); }
+
 /* ---- Reservation (third-party widget area) ---- */
 .reservation-shell { display: grid; grid-template-columns: 1fr 1fr; align-items: stretch; border-radius: 2px; overflow: hidden; box-shadow: 0 30px 70px rgba(0,0,0,.3); }
 .reservation-aside { position: relative; min-height: 320px; color: #fff; display: flex; flex-direction: column; justify-content: flex-end; padding: clamp(2rem,4vw,3rem); }
