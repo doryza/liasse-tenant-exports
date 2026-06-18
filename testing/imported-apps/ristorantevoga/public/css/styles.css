@@ -94,6 +94,17 @@ p { margin: 0 0 1rem; }
 .btn-outline-light:hover { border-color: var(--gold-soft); color: var(--gold-soft); }
 .btn-lg { padding: 1.05rem 2.3rem; font-size: .85rem; }
 .btn-block { width: 100%; }
+/* Keep button label colors from being overridden by container link rules
+   (.info-block a, .contact-aside a, .footer-col a) — those are more specific
+   than a single .btn-* class and would otherwise tint the label (e.g. the
+   burgundy "Réservez" text on the burgundy button = invisible until hover). */
+.btn.btn-reserve { color: var(--ivory); }
+.btn.btn-reserve:hover { color: #fff; }
+.btn.btn-gold, .btn.btn-gold:hover { color: #2a210e; }
+.btn.btn-ghost { color: var(--ink); }
+.btn.btn-ghost:hover { color: var(--burgundy); }
+.btn.btn-outline-light { color: var(--ivory); }
+.btn.btn-outline-light:hover { color: var(--gold-soft); }
 
 /* ===========================================================================
    Header
