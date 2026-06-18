@@ -1,0 +1,57 @@
+<%- include('partials/header', { pageTitle: (lang === 'en' ? 'Wine list' : 'Carte des vins'), activeNav: 'wine' }) %>
+<%
+  var order = ['Rouge', 'Blanc', 'Rosé', 'Bulles', 'Doux & fortifié', 'Apéritif & digestif'];
+  var WINE_EN = { 'Rouge': 'Red', 'Blanc': 'White', 'Rosé': 'Rosé', 'Bulles': 'Sparkling', 'Doux & fortifié': 'Sweet & fortified', 'Apéritif & digestif': 'Aperitif & digestif' };
+  function catLabelWine(c){ return (lang === 'en' && WINE_EN[c]) ? WINE_EN[c] : c; }
+  var byCat = {};
+  (wines || []).forEach(function(w){ var k = w.category || 'Autres'; (byCat[k] = byCat[k] || []).push(w); });
+  var groups = order.filter(function(k){ return byCat[k]; });
+  Object.keys(byCat).forEach(function(k){ if (order.indexOf(k) === -1) groups.push(k); });
+%>
+
+<section class="subpage-hero">
+  <div class="container">
+    <span class="eyebrow center" style="justify-content:center"><%= lang === 'en' ? 'Enoteca' : 'Enoteca' %></span>
+    <h1><%= sx('wine_title') %></h1>
+    <p class="lead"><%= sx('wine_intro') %></p>
+  </div>
+</section>
+
+<div class="container">
+  <% if (wines && wines.length) { %>
+    <% groups.forEach(function(cat){ %>
+    <section class="wine-section">
+      <h2><%= catLabelWine(cat) %></h2>
+      <div class="cat-rule"></div>
+      <div class="wine-items">
+        <% byCat[cat].forEach(function(w){ var _meta = [w.producer, pickLang(w,'region',lang), w.varietal].filter(Boolean).join(' · '); var _d = pickLang(w,'description',lang); %>
+        <div class="w-item">
+          <div class="w-item__top">
+            <span class="w-item__name"><%= pickLang(w,'name',lang) %><% if (w.vintage) { %> <span class="vint"><%= w.vintage %></span><% } %></span>
+            <span class="w-item__prices">
+              <% if (w.price_glass != null) { %><%= formatPrice(w.price_glass) %> <span style="opacity:.65"><%= t.glass.toLowerCase() %></span><% } %><% if (w.price_glass != null && w.price_bottle != null) { %> · <% } %><% if (w.price_bottle != null) { %><%= formatPrice(w.price_bottle) %> <span style="opacity:.65"><%= t.bottle.toLowerCase() %></span><% } %>
+            </span>
+          </div>
+          <% if (_meta) { %><div class="w-item__meta"><%= _meta %></div><% } %>
+          <% if (_d) { %><div class="w-item__desc"><%= _d %></div><% } %>
+        </div>
+        <% }); %>
+      </div>
+    </section>
+    <% }); %>
+  <% } else { %>
+    <div class="page-empty">
+      <p style="font-size:1.15rem;color:var(--ink)"><%= t.wine_empty %></p>
+      <div class="mt-cta" style="display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap">
+        <a class="btn btn-reserve" href=".#reservation"><%= t.reserve %></a>
+        <a class="btn btn-ghost" href="contact"><%= t.nav_contact %></a>
+      </div>
+    </div>
+  <% } %>
+
+  <div class="text-center" style="padding:2.5rem 0 4rem">
+    <a class="btn btn-ghost" href="menu"><%= t.view_full_menu %></a>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

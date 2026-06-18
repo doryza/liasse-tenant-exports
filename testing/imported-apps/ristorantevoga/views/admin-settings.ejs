@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin — Paramètres</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body>
+<div class="admin-layout">
+<%- include('partials/admin-sidebar', { page: 'settings' }) %>
+<main class="admin-main">
+<div class="admin-header">
+  <div>
+    <h1>Paramètres</h1>
+    <p style="margin:.25rem 0 0;color:#8a7e6e;font-size:.9rem">Coordonnées, heures, images et tous les textes du site (français et anglais).</p>
+  </div>
+</div>
+
+<form id="settingsForm" class="settings-grid">
+
+  <div class="section-card">
+    <h2>🏛️ Informations générales</h2>
+    <div class="field-row">
+      <div class="form-group"><label>Nom de l'établissement</label><input type="text" class="form-control" name="business_name" placeholder="Ristorante Voga"></div>
+      <div class="form-group"><label>Année d'ouverture</label><input type="text" class="form-control" name="established_year" placeholder="2014"></div>
+    </div>
+    <div class="field-row">
+      <div class="form-group"><label>Slogan (FR)</label><input type="text" class="form-control" name="tagline_fr"></div>
+      <div class="form-group"><label>Slogan (EN)</label><input type="text" class="form-control" name="tagline_en"></div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <h2>📧 Coordonnées & courriel admin</h2>
+    <p class="section-hint">Le <strong>courriel administrateur</strong> reçoit les messages du formulaire de contact. Le courriel public est affiché sur le site.</p>
+    <div class="field-row">
+      <div class="form-group"><label>Courriel administrateur <span style="color:#b3261e">*</span></label><input type="email" class="form-control" name="admin_email" placeholder="info@…"><div class="help-text">Destinataire des messages de contact. Non affiché si le courriel public est rempli.</div></div>
+      <div class="form-group"><label>Courriel public (optionnel)</label><input type="email" class="form-control" name="contact_email"></div>
+    </div>
+    <div class="field-row">
+      <div class="form-group"><label>Téléphone public</label><input type="tel" class="form-control" name="contact_phone" placeholder="+1 450 …"></div>
+      <div class="form-group"><label>Adresse</label><input type="text" class="form-control" name="business_address" placeholder="330 Rue Saint-Georges, Saint-Jérôme, QC"></div>
+    </div>
+    <div class="form-group"><label>Carte intégrée (URL d'intégration Google Maps, optionnel)</label><input type="url" class="form-control" name="map_embed_url" placeholder="https://www.google.com/maps/embed?…"><div class="help-text">Laissez vide pour utiliser automatiquement l'adresse ci-dessus.</div></div>
+  </div>
+
+  <div class="section-card">
+    <h2>🕐 Heures d'ouverture</h2>
+    <p class="section-hint">Laissez une journée vide si l'horaire n'est pas encore confirmé. Cochez « Fermé » pour les jours hors service.</p>
+    <table class="hours-table-ad">
+      <thead><tr><th>Jour</th><th style="width:32%">Ouverture</th><th style="width:32%">Fermeture</th><th>Fermé</th></tr></thead>
+      <tbody id="hoursBody"></tbody>
+    </table>
+  </div>
+
+  <div class="section-card">
+    <h2>🖼️ Images du site</h2>
+    <p class="section-hint">Téléversez ou collez l'URL de chaque image. Le logo est blanc (conçu pour les fonds foncés).</p>
+    <% var imageSlots = [
+      ['_p_nav_logo_url', 'Logo', 'Logo blanc — en-tête, héros et pied de page.'],
+      ['_p_hero_image_url', 'Image héros (accueil)', 'Grande image, paysage 16:9.'],
+      ['_p_story_image_url', 'Image — Notre histoire', 'Portrait (4:5).'],
+      ['_p_atmosphere_image_url', 'Image d\'ambiance', 'Salle à manger, paysage.'],
+      ['_p_wine_image_url', 'Image — Vins', 'Portrait (3:4).'],
+      ['_p_tasting_image_url', 'Image — Dégustation', 'Paysage (5:4).'],
+      ['_p_promo_image_url', 'Image — Promotion', 'Paysage (4:3).'],
+      ['_p_location_image_url', 'Image — Façade / localisation', 'Affichée si aucune carte intégrée.'],
+      ['_p_reservation_image_url', 'Image — Réservation', 'Ambiance, à côté du widget.']
+    ]; %>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.2rem">
+      <% imageSlots.forEach(function(s){ %>
+      <div class="form-group" style="margin:0">
+        <label><%= s[1] %></label>
+        <input type="text" class="form-control" name="<%= s[0] %>" placeholder="URL de l'image" oninput="prev('<%= s[0] %>')">
+        <input type="file" accept="image/*" onchange="up(this,'<%= s[0] %>')" style="margin-top:.4rem;font-size:.82rem">
+        <div id="prev_<%= s[0] %>"></div>
+        <div class="help-text"><%= s[2] %></div>
+      </div>
+      <% }); %>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <h2>🌐 Réseaux sociaux</h2>
+    <p class="section-hint">Collez le lien complet (https://…). Laissez vide pour masquer.</p>
+    <div class="field-row">
+      <div class="form-group"><label>Facebook</label><input type="url" class="form-control" name="social_facebook"></div>
+      <div class="form-group"><label>Instagram</label><input type="url" class="form-control" name="social_instagram"></div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <h2>✍️ Textes & traductions</h2>
+    <p class="section-hint">Tous les textes du site, en français et en anglais.</p>
+    <%
+      var single = { 'tasting_price': 1 };
+      var groups = [
+        ['Héros (accueil)', [['hero_kicker','Accroche',''],['hero_title','Titre',''],['hero_subtitle','Sous-titre','area']]],
+        ['Notre histoire', [['story_kicker','Accroche',''],['story_title','Titre',''],['story_body','Texte','area']]],
+        ['Spécialités', [['signature_title','Titre',''],['signature_intro','Intro','area']]],
+        ['Menu', [['menu_title','Titre',''],['menu_intro','Intro','area']]],
+        ['Vins', [['wine_title','Titre',''],['wine_intro','Intro','area']]],
+        ['Dégustation', [['tasting_kicker','Accroche',''],['tasting_title','Titre',''],['tasting_price','Prix par personne (chiffre seulement)','num'],['tasting_intro','Intro','area']]],
+        ['Galerie', [['gallery_title','Titre',''],['gallery_intro','Intro','area']]],
+        ['Avis', [['reviews_title','Titre',''],['reviews_intro','Intro','area']]],
+        ['Localisation', [['location_title','Titre',''],['location_intro','Intro','area']]],
+        ['Contact', [['contact_title','Titre',''],['contact_intro','Intro','area'],['contact_disclaimer','Avertissement (le formulaire ne sert pas aux réservations)','area']]],
+        ['Pied de page', [['footer_intro','Texte','area']]],
+        ['Référencement (SEO)', [['seo_description','Description','area']]]
+      ];
+    %>
+    <% groups.forEach(function(grp){ %>
+      <h3 style="font-size:1rem;color:#6e1b2a;margin:1.4rem 0 .6rem;font-family:Cormorant Garamond,Georgia,serif"><%= grp[0] %></h3>
+      <% grp[1].forEach(function(f){ var nm=f[0],lab=f[1],ty=f[2]; %>
+        <% if (single[nm]) { %>
+          <div class="form-group"><label><%= lab %></label><% if (ty==='num'){ %><input type="number" min="0" step="1" class="form-control" name="<%= nm %>" style="max-width:160px"><% } else { %><input type="text" class="form-control" name="<%= nm %>"><% } %></div>
+        <% } else { %>
+          <div class="field-row">
+            <div class="form-group"><label><%= lab %> (FR)</label><% if (ty==='area'){ %><textarea class="form-control" name="<%= nm %>_fr" rows="3"></textarea><% } else { %><input type="text" class="form-control" name="<%= nm %>_fr"><% } %></div>
+            <div class="form-group"><label><%= lab %> (EN)</label><% if (ty==='area'){ %><textarea class="form-control" name="<%= nm %>_en" rows="3"></textarea><% } else { %><input type="text" class="form-control" name="<%= nm %>_en"><% } %></div>
+          </div>
+        <% } %>
+      <% }); %>
+    <% }); %>
+  </div>
+
+  <div class="save-bar">
+    <span class="status" id="saveStatus">—</span>
+    <button type="submit" class="btn btn-primary" id="saveBtn">💾 Enregistrer les modifications</button>
+  </div>
+</form>
+</main>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+var DAY_KEYS = ['mon','tue','wed','thu','fri','sat','sun'];
+var DAY_LABELS = { mon:'Lundi', tue:'Mardi', wed:'Mercredi', thu:'Jeudi', fri:'Vendredi', sat:'Samedi', sun:'Dimanche' };
+function toast(msg, type){ var t = document.getElementById('toast'); t.className = 'toast toast-' + (type||'success'); t.textContent = msg; setTimeout(function(){ t.classList.add('show'); }, 10); setTimeout(function(){ t.classList.remove('show'); }, 2800); }
+
+function renderHoursRows(parsed){
+  var byDay = {}; (parsed||[]).forEach(function(r){ if (r && r.day) byDay[r.day] = r; });
+  var html = '';
+  DAY_KEYS.forEach(function(d){
+    var r = byDay[d] || {}; var open = r.open||''; var close = r.close||''; var closed = !!r.closed;
+    html += '<tr data-day="' + d + '"><td><strong>' + DAY_LABELS[d] + '</strong></td>';
+    html += '<td><input type="time" data-field="open" value="' + open + '"' + (closed?' disabled':'') + '></td>';
+    html += '<td><input type="time" data-field="close" value="' + close + '"' + (closed?' disabled':'') + '></td>';
+    html += '<td><label class="checkbox-row"><input type="checkbox" data-field="closed"' + (closed?' checked':'') + '> Fermé</label></td></tr>';
+  });
+  document.getElementById('hoursBody').innerHTML = html;
+  document.querySelectorAll('#hoursBody input[data-field="closed"]').forEach(function(cb){ cb.addEventListener('change', function(){ var row = cb.closest('tr'); row.querySelectorAll('input[type="time"]').forEach(function(inp){ inp.disabled = cb.checked; }); }); });
+}
+function collectHours(){ var rows = []; document.querySelectorAll('#hoursBody tr').forEach(function(tr){ var day = tr.getAttribute('data-day'); var closed = !!tr.querySelector('input[data-field="closed"]').checked; var open = tr.querySelector('input[data-field="open"]').value||''; var close = tr.querySelector('input[data-field="close"]').value||''; rows.push({ day: day, open: closed?'':open, close: closed?'':close, closed: closed }); }); return rows; }
+
+function prev(key){ var el = document.querySelector('[name="' + key + '"]'); var box = document.getElementById('prev_' + key); if (!el || !box) return; var url = el.value; box.innerHTML = url ? '<img src="' + url.replace(/"/g,'&quot;') + '" class="img-preview">' : ''; }
+async function up(input, key){ var file = input.files[0]; if (!file) return; var reader = new FileReader(); reader.onload = async function(){ try { var r = await fetch('api/admin/upload', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ dataUri: reader.result }) }); var d = await r.json(); if (d.url){ document.querySelector('[name="' + key + '"]').value = d.url; prev(key); toast('Image téléchargée'); } else toast('Erreur: ' + (d.error||'inconnue'), 'error'); } catch(e){ toast('Erreur de téléchargement', 'error'); } }; reader.readAsDataURL(file); }
+
+async function loadSettings(){
+  try {
+    var r = await fetch('api/admin/settings'); var data = await r.json(); var s = data.settings || {};
+    document.querySelectorAll('#settingsForm input[name], #settingsForm textarea[name]').forEach(function(el){ var k = el.getAttribute('name'); if (k === 'hours_json') return; if (s[k] != null) el.value = s[k]; });
+    var hours = null; try { if (s.hours_json) hours = JSON.parse(s.hours_json); } catch(e){}
+    renderHoursRows(hours);
+    ['_p_nav_logo_url','_p_hero_image_url','_p_story_image_url','_p_atmosphere_image_url','_p_wine_image_url','_p_tasting_image_url','_p_promo_image_url','_p_location_image_url','_p_reservation_image_url'].forEach(prev);
+    document.getElementById('saveStatus').textContent = 'Chargé';
+  } catch(e){ document.getElementById('saveStatus').textContent = 'Erreur de chargement'; renderHoursRows(null); }
+}
+
+document.getElementById('settingsForm').addEventListener('submit', async function(e){
+  e.preventDefault();
+  var btn = document.getElementById('saveBtn'); btn.disabled = true; btn.textContent = '⏳ Enregistrement…';
+  var payload = {};
+  document.querySelectorAll('#settingsForm input[name], #settingsForm textarea[name]').forEach(function(el){ if (el.type === 'file') return; payload[el.getAttribute('name')] = el.value; });
+  payload.hours_json = JSON.stringify(collectHours());
+  try {
+    var r = await fetch('api/admin/site_settings', { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ settings: payload }) });
+    var d = await r.json().catch(function(){ return {}; });
+    if (r.ok && d.success){ toast('Modifications enregistrées (' + (d.saved||0) + ' champs)'); document.getElementById('saveStatus').textContent = 'Enregistré à ' + new Date().toLocaleTimeString('fr-CA'); }
+    else toast('Erreur: ' + (d.error||'inconnue'), 'error');
+  } catch(e){ toast('Erreur réseau', 'error'); }
+  finally { btn.disabled = false; btn.textContent = '💾 Enregistrer les modifications'; }
+});
+loadSettings();
+</script>
+</body>
+</html>

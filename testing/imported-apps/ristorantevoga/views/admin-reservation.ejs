@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin — Réservation</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body>
+<div class="admin-layout">
+<%- include('partials/admin-sidebar', { page: 'reservation' }) %>
+<main class="admin-main">
+<div class="admin-header">
+  <div>
+    <h1>Réservation</h1>
+    <p style="margin:.25rem 0 0;color:#8a7e6e;font-size:.9rem">Branchez votre outil de réservation (Libro, OpenTable, Resy, SevenRooms, formulaire intégré…) sans toucher au code.</p>
+  </div>
+</div>
+
+<form id="resForm" class="settings-grid">
+  <div class="section-card">
+    <h2>Mode de réservation</h2>
+    <p class="section-hint">Choisissez comment les clients réservent. Le bouton « Réservez » du site mène toujours à cette section.</p>
+    <input type="hidden" name="reservation_mode" id="reservation_mode" value="<%= settings.reservation_mode || 'soon' %>">
+    <div class="radio-cards">
+      <div class="radio-card" data-mode="embed"><strong>① Widget intégré</strong><span>Collez le code (iframe / script) de votre fournisseur. Il s'affiche directement sur le site.</span></div>
+      <div class="radio-card" data-mode="link"><strong>② Lien externe</strong><span>Le bouton « Réservez » ouvre la page de réservation de votre fournisseur dans un nouvel onglet.</span></div>
+      <div class="radio-card" data-mode="soon"><strong>③ Bientôt disponible</strong><span>Affiche une invitation à appeler ou écrire, en attendant votre outil de réservation.</span></div>
+    </div>
+  </div>
+
+  <div class="section-card" id="embedCard">
+    <h2>Code du widget (mode intégré)</h2>
+    <p class="section-hint">Collez ici le code <strong>iframe</strong>, <strong>script</strong> ou HTML fourni par votre service de réservation. Astuce : un &lt;iframe&gt; est le plus fiable.</p>
+    <div class="form-group">
+      <textarea class="form-control code-area" name="reservation_embed_code" placeholder='ex. &lt;iframe src="https://…" width="100%" height="600" frameborder="0"&gt;&lt;/iframe&gt;'><%= settings.reservation_embed_code || '' %></textarea>
+    </div>
+  </div>
+
+  <div class="section-card" id="linkCard">
+    <h2>Lien de réservation (mode lien externe)</h2>
+    <div class="form-group">
+      <label>URL de réservation</label>
+      <input type="url" class="form-control" name="reservation_url" placeholder="https://www.opentable.ca/…" value="<%= settings.reservation_url || '' %>">
+    </div>
+  </div>
+
+  <div class="section-card">
+    <h2>Textes de la section</h2>
+    <p class="section-hint">Titre et texte affichés à côté du widget de réservation.</p>
+    <div class="field-row">
+      <div class="form-group"><label>Titre (FR)</label><input type="text" class="form-control" name="reservation_title_fr" value="<%= settings.reservation_title_fr || '' %>"></div>
+      <div class="form-group"><label>Titre (EN)</label><input type="text" class="form-control" name="reservation_title_en" value="<%= settings.reservation_title_en || '' %>"></div>
+    </div>
+    <div class="field-row">
+      <div class="form-group"><label>Introduction (FR)</label><textarea class="form-control" name="reservation_intro_fr" rows="2"><%= settings.reservation_intro_fr || '' %></textarea></div>
+      <div class="form-group"><label>Introduction (EN)</label><textarea class="form-control" name="reservation_intro_en" rows="2"><%= settings.reservation_intro_en || '' %></textarea></div>
+    </div>
+    <div class="field-row">
+      <div class="form-group"><label>Note / mention (FR, optionnel)</label><input type="text" class="form-control" name="reservation_note_fr" value="<%= settings.reservation_note_fr || '' %>"></div>
+      <div class="form-group"><label>Note / mention (EN, optionnel)</label><input type="text" class="form-control" name="reservation_note_en" value="<%= settings.reservation_note_en || '' %>"></div>
+    </div>
+  </div>
+
+  <div class="save-bar">
+    <span class="status" id="saveStatus">—</span>
+    <button type="submit" class="btn btn-primary" id="saveBtn">💾 Enregistrer</button>
+  </div>
+</form>
+</main>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+function toast(msg, type){ var t = document.getElementById('toast'); t.className = 'toast toast-' + (type||'success'); t.textContent = msg; setTimeout(function(){ t.classList.add('show'); }, 10); setTimeout(function(){ t.classList.remove('show'); }, 2800); }
+var modeInput = document.getElementById('reservation_mode');
+var cards = document.querySelectorAll('.radio-card');
+function syncMode(){
+  var m = modeInput.value;
+  cards.forEach(function(c){ c.classList.toggle('active', c.getAttribute('data-mode') === m); });
+  document.getElementById('embedCard').style.display = (m === 'embed') ? '' : 'none';
+  document.getElementById('linkCard').style.display = (m === 'link') ? '' : 'none';
+}
+cards.forEach(function(c){ c.addEventListener('click', function(){ modeInput.value = c.getAttribute('data-mode'); syncMode(); }); });
+syncMode();
+
+document.getElementById('resForm').addEventListener('submit', async function(e){
+  e.preventDefault();
+  var btn = document.getElementById('saveBtn'); btn.disabled = true; btn.textContent = '⏳ Enregistrement…';
+  var payload = {};
+  this.querySelectorAll('input[name], textarea[name]').forEach(function(el){ payload[el.getAttribute('name')] = el.value; });
+  try {
+    var r = await fetch('api/admin/site_settings', { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ settings: payload }) });
+    var d = await r.json().catch(function(){ return {}; });
+    if (r.ok && d.success){ toast('Réservation enregistrée'); document.getElementById('saveStatus').textContent = 'Enregistré à ' + new Date().toLocaleTimeString('fr-CA'); }
+    else toast('Erreur: ' + (d.error || 'inconnue'), 'error');
+  } catch(e){ toast('Erreur réseau', 'error'); }
+  finally { btn.disabled = false; btn.textContent = '💾 Enregistrer'; }
+});
+</script>
+</body>
+</html>

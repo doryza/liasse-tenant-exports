@@ -1,0 +1,53 @@
+<%
+  var _resMode = (settings.reservation_mode || 'soon');
+  var _resEmbed = settings.reservation_embed_code || '';
+  var _resUrl = settings.reservation_url || '';
+  var _resImg = settings._p_reservation_image_url || '';
+  var _phoneDigits = (settings.contact_phone || '').replace(/[^0-9+]/g, '');
+  // Fall back to the "coming soon" state if a mode is selected but its content is missing.
+  if (_resMode === 'embed' && !_resEmbed.trim()) _resMode = 'soon';
+  if (_resMode === 'link' && !_resUrl.trim()) _resMode = 'soon';
+%>
+<section class="section section--ivory2" id="reservation" aria-labelledby="reservation-title">
+  <div class="container">
+    <div class="section-head center reveal" style="margin-bottom:2.4rem">
+      <span class="eyebrow center"><%= t.reserve %></span>
+      <h2 class="display-title" id="reservation-title"><%= sx('reservation_title') %></h2>
+    </div>
+
+    <div class="reservation-shell reveal">
+      <div class="reservation-aside">
+        <% if (_resImg) { %><img src="<%= cimg(_resImg, 'f_auto,q_auto,w_900,h_900,c_fill,g_auto') %>" alt="" aria-hidden="true"><% } %>
+        <h3><%= sx('reservation_title') %></h3>
+        <p><%= sx('reservation_intro') %></p>
+      </div>
+
+      <div class="reservation-widget">
+        <% if (_resMode === 'embed') { %>
+          <%# Operator-pasted third-party reservation widget (iframe / JS / HTML). %>
+          <div class="reservation-widget__embed"><%- _resEmbed %></div>
+        <% } else if (_resMode === 'link') { %>
+          <div class="reservation-placeholder">
+            <div class="ic" aria-hidden="true">✦</div>
+            <h4><%= sx('reservation_title') %></h4>
+            <p><%= sx('reservation_intro') %></p>
+            <div class="pl-actions">
+              <a class="btn btn-reserve btn-lg btn-block" href="<%= _resUrl %>" target="_blank" rel="noopener"><%= t.reserve %></a>
+            </div>
+          </div>
+        <% } else { %>
+          <div class="reservation-placeholder">
+            <div class="ic" aria-hidden="true">✦</div>
+            <h4><%= t.reservation_soon_title %></h4>
+            <p><%= t.reservation_soon_body %></p>
+            <div class="pl-actions">
+              <% if (_phoneDigits) { %><a class="btn btn-reserve btn-block" href="tel:<%= _phoneDigits %>"><%= t.reservation_call %></a><% } %>
+              <a class="btn btn-ghost btn-block" href="contact"><%= t.reservation_write %></a>
+            </div>
+          </div>
+        <% } %>
+        <% if (sx('reservation_note')) { %><p class="muted" style="font-size:.84rem;margin-top:1.1rem;text-align:center"><%= sx('reservation_note') %></p><% } %>
+      </div>
+    </div>
+  </div>
+</section>

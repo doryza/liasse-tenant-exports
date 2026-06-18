@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin — Ristorante Voga</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body>
+<div class="admin-layout">
+<%- include('partials/admin-sidebar', { page: 'dashboard' }) %>
+<main class="admin-main">
+<div class="admin-header">
+  <div>
+    <h1>Tableau de bord</h1>
+    <p style="margin:.25rem 0 0;color:#8a7e6e;font-size:.9rem">Gérez le contenu de Ristorante Voga. Vos changements sont visibles sur le site immédiatement.</p>
+  </div>
+  <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+    <a href="." target="_blank" class="btn btn-secondary">↗ Voir le site</a>
+    <a href="admin/menu" class="btn btn-primary">🍝 Gérer le menu</a>
+  </div>
+</div>
+
+<h2 style="margin:0 0 1rem;font-size:1rem;color:#6a5f50;text-transform:uppercase;letter-spacing:.05em">Activité du site</h2>
+<div class="stat-grid">
+  <div class="stat-card"><div class="label">Visites totales</div><div class="value"><%= stats.visits %></div></div>
+  <div class="stat-card"><div class="label">7 derniers jours</div><div class="value"><%= stats.visits7 %></div></div>
+  <div class="stat-card"><div class="label">Plats au menu</div><div class="value"><%= stats.menu %></div></div>
+  <div class="stat-card"><div class="label">Nouveaux messages</div><div class="value"><%= stats.newMessages %></div></div>
+</div>
+
+<h2 style="margin:2rem 0 1rem;font-size:1rem;color:#6a5f50;text-transform:uppercase;letter-spacing:.05em">Gestion du contenu</h2>
+<div class="module-grid">
+  <a href="admin/menu" class="module-card"><div class="module-icon">🍝</div><h3>Menu</h3><p><strong><%= stats.menu %></strong> plat<%= stats.menu>1?'s':'' %></p></a>
+  <a href="admin/wine" class="module-card"><div class="module-icon">🍷</div><h3>Carte des vins</h3><p><strong><%= stats.wines %></strong> vin<%= stats.wines>1?'s':'' %></p></a>
+  <a href="admin/tasting" class="module-card"><div class="module-icon">✨</div><h3>Menu dégustation</h3><p>Services & prix</p></a>
+  <a href="admin/gallery" class="module-card"><div class="module-icon">🖼️</div><h3>Galerie</h3><p><strong><%= stats.gallery %></strong> photo<%= stats.gallery>1?'s':'' %></p></a>
+  <a href="admin/promotions" class="module-card"><div class="module-icon">🏷️</div><h3>Promotions</h3><p>Offre du moment</p></a>
+  <a href="admin/reviews" class="module-card"><div class="module-icon">⭐</div><h3>Avis</h3><p><strong><%= stats.reviews %></strong> avis</p></a>
+  <a href="admin/reservation" class="module-card"><div class="module-icon">📅</div><h3>Réservation</h3><p>Widget de réservation</p></a>
+  <a href="admin/messages" class="module-card"><div class="module-icon">✉️</div><h3>Messages<% if (stats.newMessages>0){ %> <span class="badge-pill"><%= stats.newMessages %></span><% } %></h3><p><strong><%= stats.messages %></strong> au total</p></a>
+  <a href="admin/settings" class="module-card"><div class="module-icon">⚙️</div><h3>Paramètres</h3><p>Infos, heures, textes, images</p></a>
+</div>
+</main>
+</div>
+</body>
+</html>
