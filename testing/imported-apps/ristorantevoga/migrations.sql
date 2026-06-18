@@ -1,12 +1,89 @@
 -- Ristorante Voga — migrations. Re-applied on every Push-to-Live /
--- re-materialization. Keep every statement idempotent and NON-destructive of
--- operator overrides.
+-- re-materialization. Idempotent and non-destructive of operator overrides.
 --
--- Platform image slots are stored BARE (no Cloudinary transform segment — the
--- f_auto,q_auto,w_… transform is injected at render time). ON CONFLICT DO
--- NOTHING so an operator's later upload / inline-editor swap survives a
--- re-materialization (an upsert would clobber it).
+-- Mirrors seed.js so content also reaches ALREADY-LIVE tenants: seed.js only
+-- runs on a fresh/empty DB, while this file re-runs on every deploy. Image
+-- slots + all bilingual copy use ON CONFLICT DO NOTHING (operator edits win).
+-- Menu / gallery / promotion use a one-shot sentinel guard so the first deploy
+-- syncs the canonical set and later deploys no-op (preserving operator edits).
 
+-- ── Site settings: image slots (BARE urls) + all bilingual copy ──
+INSERT INTO admin_settings (key, value) VALUES ('business_name', 'Ristorante Voga') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('established_year', '2014') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('tagline_fr', 'Cuisine italienne authentique & bar à vin') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('tagline_en', 'Authentic Italian cuisine & wine bar') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('seo_description_fr', 'Ristorante Voga — cuisine italienne authentique et bar à vin au 330, rue Saint-Georges à Saint-Jérôme. Pâtes fraîches, risottos, pizzas, grande carte des vins et menu dégustation. Réservez votre table.') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('seo_description_en', 'Ristorante Voga — authentic Italian cuisine and wine bar at 330 Rue Saint-Georges in Saint-Jérôme. Fresh pasta, risotto, pizza, a fine wine list and a tasting menu. Reserve your table.') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('admin_email', '') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('contact_email', '') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('contact_phone', '') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('business_address', '330 Rue Saint-Georges, Saint-Jérôme, QC') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('map_embed_url', '') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('hours_json', '[{"day":"mon","open":"","close":"","closed":false},{"day":"tue","open":"","close":"","closed":false},{"day":"wed","open":"","close":"","closed":false},{"day":"thu","open":"","close":"","closed":false},{"day":"fri","open":"","close":"","closed":false},{"day":"sat","open":"","close":"","closed":false},{"day":"sun","open":"","close":"","closed":false}]') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('hero_kicker_fr', 'Ristorante · Bar à vin · Saint-Jérôme') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('hero_kicker_en', 'Ristorante · Wine bar · Saint-Jérôme') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('hero_title_fr', 'L''Italie, à votre table') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('hero_title_en', 'Italy, at your table') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('hero_subtitle_fr', 'Pâtes fraîches, risottos crémeux, pizzas généreuses et une belle carte des vins, au cœur de Saint-Jérôme.') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('hero_subtitle_en', 'Fresh pasta, creamy risotto, generous pizza and a fine wine list, in the heart of Saint-Jérôme.') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('story_title_fr', 'Notre histoire') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('story_title_en', 'Our story') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('story_kicker_fr', 'Depuis 2014') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('story_kicker_en', 'Since 2014') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('story_body_fr', 'Au cœur de Saint-Jérôme, Ristorante Voga célèbre l''Italie comme on l''aime : généreuse, chaleureuse et sincère. Depuis 2014, nous réunissons autour de nos tables les grands classiques de la cuisine italienne — pâtes fraîches, risottos crémeux, pizzas garnies et plats mijotés — préparés avec des ingrédients soignés et un vrai souci du détail.
+
+Dans une salle élégante aux banquettes vertes et à la lumière dorée, accompagnés d''une belle carte des vins, chaque repas se vit comme une soirée en bonne compagnie. Benvenuti.') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('story_body_en', 'In the heart of Saint-Jérôme, Ristorante Voga celebrates Italy the way we love it: generous, warm and heartfelt. Since 2014 we have gathered guests around the great classics of Italian cooking — fresh pasta, creamy risotto, loaded pizza and slow-simmered dishes — prepared with carefully chosen ingredients and real attention to detail.
+
+In an elegant room of green banquettes and golden light, paired with a fine wine list, every meal feels like an evening among good company. Benvenuti.') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('signature_title_fr', 'Nos spécialités') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('signature_title_en', 'Signature dishes') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('signature_intro_fr', 'Quelques-uns des plats qui font la réputation de la maison.') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('signature_intro_en', 'A few of the dishes that have made the house''s name.') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('menu_title_fr', 'Le menu') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('menu_title_en', 'The menu') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('menu_intro_fr', 'Antipasti, pâtes, risottos, pizzas et grandes assiettes — la cuisine italienne dans toute sa générosité. Les prix affichés à deux valeurs correspondent aux formats petite / grande.') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('menu_intro_en', 'Antipasti, pasta, risotto, pizza and hearty mains — Italian cooking in all its generosity. Two-value prices indicate small / large portions.') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('wine_title_fr', 'La carte des vins') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('wine_title_en', 'The wine list') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('wine_intro_fr', 'Notre bar à vin met à l''honneur de belles bouteilles d''Italie et d''ailleurs, à découvrir au verre ou en bouteille. Demandez-nous nos suggestions d''accords.') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('wine_intro_en', 'Our wine bar showcases fine bottles from Italy and beyond, by the glass or the bottle. Ask us for pairing suggestions.') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('tasting_title_fr', 'Menu dégustation') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('tasting_title_en', 'Tasting menu') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('tasting_kicker_fr', 'Vivez l''expérience') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('tasting_kicker_en', 'Live the experience') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('tasting_price', '75') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('tasting_intro_fr', 'Laissez la cuisine vous guider à travers une succession de services pensés par le chef — une découverte gourmande, du premier au dernier plat. Informez-vous auprès de votre serveur.') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('tasting_intro_en', 'Let the kitchen guide you through a succession of chef-designed courses — a delicious journey from the first plate to the last. Ask your server for details.') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('reservation_mode', 'soon') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('reservation_embed_code', '') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('reservation_url', '') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('reservation_title_fr', 'Réservez votre table') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('reservation_title_en', 'Reserve your table') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('reservation_intro_fr', 'Réservez en quelques secondes. Pour les groupes et les occasions spéciales, écrivez-nous.') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('reservation_intro_en', 'Book in seconds. For groups and special occasions, write to us.') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('reservation_note_fr', '') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('reservation_note_en', '') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('contact_title_fr', 'Nous joindre') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('contact_title_en', 'Contact us') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('contact_intro_fr', 'Une question, un commentaire ou une demande pour un événement ? Écrivez-nous, nous vous répondrons avec plaisir.') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('contact_intro_en', 'A question, a comment or an event request? Write to us — we will be glad to reply.') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('contact_disclaimer_fr', 'Ce formulaire ne sert pas aux réservations. Pour réserver une table, utilisez le bouton « Réservez ».') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('contact_disclaimer_en', 'This form cannot be used for reservations. To book a table, please use the “Reserve” button.') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('location_title_fr', 'Nous trouver') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('location_title_en', 'Find us') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('location_intro_fr', 'Au 330, rue Saint-Georges, à Saint-Jérôme — au cœur du Vieux-Saint-Jérôme.') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('location_intro_en', 'At 330 Rue Saint-Georges in Saint-Jérôme — in the heart of Old Saint-Jérôme.') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('reviews_title_fr', 'Ce que disent nos invités') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('reviews_title_en', 'What our guests say') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('reviews_intro_fr', 'Merci à celles et ceux qui partagent leur soirée chez Voga.') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('reviews_intro_en', 'Thank you to everyone who shares their evening at Voga.') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('gallery_title_fr', 'Galerie') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('gallery_title_en', 'Gallery') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('gallery_intro_fr', 'Un aperçu de la salle, des assiettes et de l''ambiance.') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('gallery_intro_en', 'A glimpse of the room, the plates and the atmosphere.') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('footer_intro_fr', 'Cuisine italienne authentique et bar à vin, au cœur de Saint-Jérôme depuis 2014.') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('footer_intro_en', 'Authentic Italian cuisine and wine bar, in the heart of Saint-Jérôme since 2014.') ON CONFLICT (key) DO NOTHING;
 INSERT INTO admin_settings (key, value) VALUES ('_p_nav_logo_url', 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/site/voga_logo.png') ON CONFLICT (key) DO NOTHING;
 INSERT INTO admin_settings (key, value) VALUES ('_p_hero_image_url', 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/site/hero_rigatoni.jpg') ON CONFLICT (key) DO NOTHING;
 INSERT INTO admin_settings (key, value) VALUES ('_p_story_image_url', 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/site/interior_banquettes.jpg') ON CONFLICT (key) DO NOTHING;
@@ -16,3 +93,237 @@ INSERT INTO admin_settings (key, value) VALUES ('_p_tasting_image_url', 'https:/
 INSERT INTO admin_settings (key, value) VALUES ('_p_promo_image_url', 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/site/capellini_dish.jpg') ON CONFLICT (key) DO NOTHING;
 INSERT INTO admin_settings (key, value) VALUES ('_p_location_image_url', 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/gallery/g30.jpg') ON CONFLICT (key) DO NOTHING;
 INSERT INTO admin_settings (key, value) VALUES ('_p_reservation_image_url', 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/site/cocktail_flame.jpg') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('social_facebook', '') ON CONFLICT (key) DO NOTHING;
+INSERT INTO admin_settings (key, value) VALUES ('social_instagram', '') ON CONFLICT (key) DO NOTHING;
+
+-- ── Menu sections ──
+INSERT INTO menu_categories (slug, name_fr, name_en, subtitle_fr, subtitle_en, position) VALUES ('zuppe', 'Zuppe', 'Zuppe', 'Soupes', 'Soups', 1) ON CONFLICT (slug) DO NOTHING;
+INSERT INTO menu_categories (slug, name_fr, name_en, subtitle_fr, subtitle_en, position) VALUES ('insalate', 'Insalate', 'Insalate', 'Salades', 'Salads', 2) ON CONFLICT (slug) DO NOTHING;
+INSERT INTO menu_categories (slug, name_fr, name_en, subtitle_fr, subtitle_en, position) VALUES ('sfizi', 'Sfizi', 'Sfizi', 'Entrées & petites assiettes', 'Starters & small plates', 3) ON CONFLICT (slug) DO NOTHING;
+INSERT INTO menu_categories (slug, name_fr, name_en, subtitle_fr, subtitle_en, position) VALUES ('risotto', 'Risotto', 'Risotto', 'Risottos crémeux', 'Creamy risotto', 4) ON CONFLICT (slug) DO NOTHING;
+INSERT INTO menu_categories (slug, name_fr, name_en, subtitle_fr, subtitle_en, position) VALUES ('pizza', 'Pizza', 'Pizza', 'Pizzas', 'Pizza', 5) ON CONFLICT (slug) DO NOTHING;
+INSERT INTO menu_categories (slug, name_fr, name_en, subtitle_fr, subtitle_en, position) VALUES ('pasta', 'Pasta', 'Pasta', 'Pâtes', 'Pasta', 6) ON CONFLICT (slug) DO NOTHING;
+INSERT INTO menu_categories (slug, name_fr, name_en, subtitle_fr, subtitle_en, position) VALUES ('scaloppini', 'Scaloppini e Pollo', 'Scaloppini e Pollo', 'Escalopes & poulet — servis avec des pâtes, choix du chef', 'Veal scaloppine & chicken — served with pasta, chef’s choice', 7) ON CONFLICT (slug) DO NOTHING;
+INSERT INTO menu_categories (slug, name_fr, name_en, subtitle_fr, subtitle_en, position) VALUES ('dolci', 'Dolci', 'Dolci', 'Desserts', 'Desserts', 8) ON CONFLICT (slug) DO NOTHING;
+
+-- ── Menu items (sentinel-guarded one-shot full sync) ──
+DELETE FROM menu_items WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Stracciatella della nonna', 'Stracciatella della nonna', NULL, NULL, 9, NULL, 'zuppe', NULL, 0, 1, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Zuppa Vogà', 'Zuppa Vogà', NULL, NULL, 9, NULL, 'zuppe', NULL, 0, 2, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Potage inspiration', 'Potage inspiration', NULL, NULL, 10, NULL, 'zuppe', NULL, 0, 3, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Arugula & Prosciutto', 'Arugula & Prosciutto', 'Salade de roquette, prosciutto, Padano, huile d''olive & réduction de balsamique.', 'Arugula salad, prosciutto, Padano, olive oil & balsamic reduction.', NULL, '[{"label_fr":"Petite","label_en":"Small","price":13},{"label_fr":"Grande","label_en":"Large","price":18}]', 'insalate', NULL, 0, 1, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Mista', 'Mista', 'Salade mixte à l''italienne.', 'Italian-style mixed salad.', NULL, '[{"label_fr":"Petite","label_en":"Small","price":12},{"label_fr":"Grande","label_en":"Large","price":17}]', 'insalate', NULL, 0, 2, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Cesare en Vogà', 'Cesare en Vogà', 'Romaine, bacon et prosciutto croustillant, croûtons à l''ail rôti & Padano.', 'Romaine, crispy bacon and prosciutto, roasted-garlic croutons & Padano.', NULL, '[{"label_fr":"Petite","label_en":"Small","price":13},{"label_fr":"Grande","label_en":"Large","price":18}]', 'insalate', 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/gallery/g19.jpg', 1, 3, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Cesare Piccante', 'Cesare Piccante', 'Notre classique salade César, relevée d''une touche épicée, croûtons émiettés maison, bacon & parmesan.', 'Our classic Caesar with a spicy kick, house crumbled croutons, bacon & parmesan.', NULL, '[{"label_fr":"Petite","label_en":"Small","price":14},{"label_fr":"Grande","label_en":"Large","price":19}]', 'insalate', NULL, 0, 4, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Giò', 'Giò', 'Salade mixte, romaine, endives, radicchio, bocconcini, prosciutto, olives & tomates cerises. Servie avec poitrine de poulet grillé, paillard ou saucisses italiennes grillées.', 'Mixed greens, romaine, endive, radicchio, bocconcini, prosciutto, olives & cherry tomatoes. Served with grilled chicken breast, paillard or grilled Italian sausage.', 26, NULL, 'insalate', NULL, 0, 5, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Ajout de protéine', 'Add a protein', 'Poulet grillé, saucisse italienne ou paillard, en ajout à votre salade.', 'Grilled chicken, Italian sausage or paillard, added to your salad.', 8, NULL, 'insalate', NULL, 0, 6, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Polpette della nonna (3)', 'Polpette della nonna (3)', 'Recette secrète « della nonna », sauce tomate, Padano & basilic frais.', 'Grandmother''s secret recipe, tomato sauce, Padano & fresh basil.', 17, NULL, 'sfizi', 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/gallery/g15.jpg', 1, 1, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Polpettes à la Gigi (2) ou à la Fiorentina (2)', 'Polpette alla Gigi (2) or alla Fiorentina (2)', 'Deux boulettes à la Gigi, ou deux à la Fiorentina.', 'Two meatballs alla Gigi, or two alla Fiorentina.', 17, NULL, 'sfizi', NULL, 0, 2, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Calamari Fritti alla Fradiavolo', 'Calamari Fritti alla Fradiavolo', 'Calmars frits, sauce fra diavolo.', 'Fried calamari, fra diavolo sauce.', 20, NULL, 'sfizi', NULL, 0, 3, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Salmone Affumicato alla Ricotta', 'Salmone Affumicato alla Ricotta', 'Saumon fumé, mélange de ricotta, fromage à la crème & aneth frais, servi sur des croûtons de concombre.', 'Smoked salmon, ricotta blend, cream cheese & fresh dill, served on cucumber croutons.', 20, NULL, 'sfizi', NULL, 0, 4, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Arancini alla Siciliana (2)', 'Arancini alla Siciliana (2)', 'Boules de risotto panées & farcies à la sicilienne.', 'Sicilian-style breaded, stuffed risotto balls.', 17, NULL, 'sfizi', NULL, 0, 5, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Salsiccia Peperonata', 'Salsiccia Peperonata', 'Saucisses italiennes piquantes, poivrons, oignons, champignons & sauce tomate.', 'Spicy Italian sausage, peppers, onions, mushrooms & tomato sauce.', 17, NULL, 'sfizi', NULL, 0, 6, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Bruschetta', 'Bruschetta', NULL, NULL, 12, NULL, 'sfizi', NULL, 0, 7, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Fondue Parmigiana', 'Fondue Parmigiana', 'Recette maison.', 'House recipe.', 16, NULL, 'sfizi', NULL, 0, 8, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Caprese di Bufalone con Pomodoro', 'Caprese di Bufalone con Pomodoro', 'Fromage bufalone, prosciutto, huile d''olive, pesto, tomates fraîches & basilic frais.', 'Bufala cheese, prosciutto, olive oil, pesto, fresh tomatoes & fresh basil.', 17, NULL, 'sfizi', 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/gallery/g02.jpg', 1, 9, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Brie in Crosta', 'Brie in Crosta', 'Brie fondant enveloppé dans une pâte à pizza, bruschetta maison, oignons caramélisés, miel & réduction de balsamique.', 'Melting brie wrapped in pizza dough, house bruschetta, caramelized onions, honey & balsamic reduction.', 22, NULL, 'sfizi', NULL, 0, 10, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Poutine Vogà gourmet', 'Poutine Vogà gourmet', NULL, NULL, 22, NULL, 'sfizi', NULL, 0, 11, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Poutine 2puff', 'Poutine 2puff', 'Sauce aux poivres, frites au parmesan & bacon, mozzarella & fromage en grains frais.', 'Pepper sauce, parmesan-and-bacon fries, mozzarella & fresh squeaky cheese curds.', 22, NULL, 'sfizi', NULL, 0, 12, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Vogà', 'Vogà', 'Cinq fromages, huile de truffe & champignons sauvages.', 'Five cheeses, truffle oil & wild mushrooms.', 26, NULL, 'risotto', 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/gallery/g13.jpg', 1, 1, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Alla Clo Clo', 'Alla Clo Clo', 'Prosciutto, épinards, champignons, Padano & vin blanc.', 'Prosciutto, spinach, mushrooms, Padano & white wine.', 26, NULL, 'risotto', NULL, 0, 2, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Risotto Michele Angelo', 'Risotto Michele Angelo', 'Saucisses italiennes, cinq fromages, poivrons, tomates séchées, asperges, brocoli & épinards.', 'Italian sausage, five cheeses, peppers, sun-dried tomatoes, asparagus, broccoli & spinach.', 27, NULL, 'risotto', NULL, 0, 3, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Risotto Frutti di Mare', 'Risotto Frutti di Mare', 'Crevettes, pétoncles, crabe, champignons, cinq fromages & épinards.', 'Shrimp, scallops, crab, mushrooms, five cheeses & spinach.', 34, NULL, 'risotto', NULL, 0, 4, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Giò', 'Giò', 'Champignons, bœuf braisé, épinards, poivrons grillés, huile de truffe & Padano.', 'Mushrooms, braised beef, spinach, grilled peppers, truffle oil & Padano.', 32, NULL, 'risotto', NULL, 0, 5, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Pizza Americana', 'Pizza Americana', 'Sauce tomate, pepperoni, champignons, poivrons & mozzarella.', 'Tomato sauce, pepperoni, mushrooms, peppers & mozzarella.', 23, NULL, 'pizza', NULL, 0, 1, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Alla Peppino', 'Alla Peppino', 'Capicollo piquant, champignons, mozzarella, tomates fraîches, bacon & oignons rouges.', 'Spicy capicollo, mushrooms, mozzarella, fresh tomatoes, bacon & red onions.', 25, NULL, 'pizza', NULL, 0, 2, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Polpettini', 'Polpettini', 'Boulettes, basilic frais, Padano, bocconcini & mozzarella.', 'Meatballs, fresh basil, Padano, bocconcini & mozzarella.', 26, NULL, 'pizza', NULL, 0, 3, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Vogà', 'Vogà', 'Pepperoni, champignons, oignons, piments forts, bacon & mozzarella.', 'Pepperoni, mushrooms, onions, hot peppers, bacon & mozzarella.', 25, NULL, 'pizza', NULL, 1, 4, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Margherita', 'Margherita', 'Sauce tomate, mozzarella, tomates fraîches & fines herbes.', 'Tomato sauce, mozzarella, fresh tomatoes & herbs.', 21, NULL, 'pizza', NULL, 0, 5, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Mafiosa', 'Mafiosa', 'Saucisses italiennes piquantes, mozzarella & basilic frais.', 'Spicy Italian sausage, mozzarella & fresh basil.', 24, NULL, 'pizza', NULL, 0, 6, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Carolina', 'Carolina', 'Pancetta, champignons, tomates séchées, épinards, mozzarella & fromage de chèvre.', 'Pancetta, mushrooms, sun-dried tomatoes, spinach, mozzarella & goat cheese.', 25, NULL, 'pizza', NULL, 0, 7, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Bufalone Prosciutto & Arugula', 'Bufalone Prosciutto & Arugula', 'Sauce tomate, fromage bufalone, prosciutto & roquette.', 'Tomato sauce, bufala cheese, prosciutto & arugula.', 28, NULL, 'pizza', NULL, 0, 8, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Mortadella e Burrata', 'Mortadella e Burrata', 'Sauce tomate, mozzarella, garnie de mortadelle italienne, burrata crémeuse & un filet de pesto frais.', 'Tomato sauce, mozzarella, topped with Italian mortadella, creamy burrata & a drizzle of fresh pesto.', 28, NULL, 'pizza', NULL, 0, 9, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Cosa Nostra', 'Cosa Nostra', 'Saucisses italiennes piquantes, pancetta, boulettes, capicollo, soppressata calabrese, mozzarella & Padano.', 'Spicy Italian sausage, pancetta, meatballs, capicollo, Calabrese soppressata, mozzarella & Padano.', 30, NULL, 'pizza', NULL, 0, 10, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Frutti di Mare', 'Frutti di Mare', 'Croûte beurre à l''ail et sauce crème maison, câpres frits, garnie de crevettes, chair de crabe, pétoncles & roquette croquante.', 'Garlic-butter crust and house cream sauce, fried capers, topped with shrimp, crab meat, scallops & crisp arugula.', 35, NULL, 'pizza', NULL, 0, 11, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Rigatoni Arrabbiata & Salsiccia', 'Rigatoni Arrabbiata & Salsiccia', 'Sauce tomate épicée et saucisse italienne piquante.', 'Spicy tomato sauce and hot Italian sausage.', 24, NULL, 'pasta', 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/gallery/g01.jpg', 0, 1, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Capellini del Capo', 'Capellini del Capo', 'Consommé, huile d''olive, pesto, poivrons, roquette, ail, tomates fraîches, échalotes, Padano & vin blanc.', 'Consommé, olive oil, pesto, peppers, arugula, garlic, fresh tomatoes, shallots, Padano & white wine.', 23, NULL, 'pasta', 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/gallery/g05.jpg', 1, 2, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Capellini Carolina', 'Capellini Carolina', 'Consommé, huile d''olive, tomates séchées, asperges, kale, champignons, fromage de chèvre, Padano & vin blanc.', 'Consommé, olive oil, sun-dried tomatoes, asparagus, kale, mushrooms, goat cheese, Padano & white wine.', 24, NULL, 'pasta', NULL, 0, 3, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Pennine Marco Polo', 'Pennine Marco Polo', 'Sauce rosée piquante, brocoli, pancetta, ail, échalotes, Padano & vin blanc.', 'Spicy rosé sauce, broccoli, pancetta, garlic, shallots, Padano & white wine.', 25, NULL, 'pasta', NULL, 0, 4, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Tagliatelle Monte Carlo', 'Tagliatelle Monte Carlo', 'Sauce à la crème, saucisses italiennes piquantes, cinq fromages, tomates séchées, épinards, Padano & vin blanc.', 'Cream sauce, spicy Italian sausage, five cheeses, sun-dried tomatoes, spinach, Padano & white wine.', 28, NULL, 'pasta', NULL, 0, 5, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Gnocchi con Pomodoro, Basilico & Bocconcini', 'Gnocchi con Pomodoro, Basilico & Bocconcini', 'Sauce tomate, bocconcini, basilic frais, pesto, Padano & vin blanc.', 'Tomato sauce, bocconcini, fresh basil, pesto, Padano & white wine.', 25, NULL, 'pasta', NULL, 0, 6, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Linguini Piemontese', 'Linguini Piemontese', 'Consommé, épinards, tomates fraîches, champignons, bocconcini, Padano & vin blanc.', 'Consommé, spinach, fresh tomatoes, mushrooms, bocconcini, Padano & white wine.', 25, NULL, 'pasta', NULL, 0, 7, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Linguini Nautica', 'Linguini Nautica', 'Sauce rosée, crevettes, pétoncles, crabe, ail, échalotes & vin blanc.', 'Rosé sauce, shrimp, scallops, crab, garlic, shallots & white wine.', 35, NULL, 'pasta', NULL, 0, 8, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Tortellini ou Gnocchi Rosé', 'Tortellini or Gnocchi Rosé', 'Tortellini ou gnocchi, sauce rosée.', 'Tortellini or gnocchi, rosé sauce.', 25, NULL, 'pasta', NULL, 0, 9, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Tortellini ou Gnocchi Vogà', 'Tortellini or Gnocchi Vogà', 'Sauce rosée, pancetta, champignons, échalotes, Padano & vin blanc.', 'Rosé sauce, pancetta, mushrooms, shallots, Padano & white wine.', 26, NULL, 'pasta', NULL, 0, 10, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Tagliatelle alla Mortadella con Funghi e Spinaci', 'Tagliatelle alla Mortadella con Funghi e Spinaci', 'Sauce crémeuse à la mortadelle, champignons sautés, épinards frais, ail & Padano.', 'Creamy mortadella sauce, sautéed mushrooms, fresh spinach, garlic & Padano.', 29, NULL, 'pasta', NULL, 0, 11, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Fettuccini alla Gigi', 'Fettuccini alla Gigi', 'Sauce rosée, champignons, prosciutto, Padano & vin blanc.', 'Rosé sauce, mushrooms, prosciutto, Padano & white wine.', 25, NULL, 'pasta', NULL, 0, 12, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Rigatoni Montanara Vogà', 'Rigatoni Montanara Vogà', 'Sauce à la viande rosée, saucisses italiennes piquantes, poivrons, champignons, oignons, Padano & basilic frais.', 'Rosé meat sauce, spicy Italian sausage, peppers, mushrooms, onions, Padano & fresh basil.', 29, NULL, 'pasta', NULL, 0, 13, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Tagliatelle « Giò »', 'Tagliatelle “Giò”', 'Consommé, fond de veau, légèrement tomaté, bœuf braisé et légumes du marché, vin blanc, basilic frais & Padano.', 'Consommé, veal stock, lightly tomatoed, braised beef and market vegetables, white wine, fresh basil & Padano.', 32, NULL, 'pasta', NULL, 0, 14, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Linguini Siracusa', 'Linguini Siracusa', 'Sauce crème, ail, échalotes, vin blanc, crevettes, épinards, basilic frais & Padano.', 'Cream sauce, garlic, shallots, white wine, shrimp, spinach, fresh basil & Padano.', 32, NULL, 'pasta', NULL, 0, 15, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Rigatoni Mona Lisa', 'Rigatoni Mona Lisa', 'Sauce à la crème, pesto, poulet grillé, brocoli, Padano & vin blanc.', 'Cream sauce, pesto, grilled chicken, broccoli, Padano & white wine.', 28, NULL, 'pasta', NULL, 0, 16, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Spaghetti Bolognese, Polpette & Bocconcini', 'Spaghetti Bolognese, Polpette & Bocconcini', 'Sauce à la viande maison, basilic frais, Padano, boulettes & bocconcini.', 'House meat sauce, fresh basil, Padano, meatballs & bocconcini.', 28, NULL, 'pasta', NULL, 0, 17, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Spaghetti Carbonara', 'Spaghetti Carbonara', 'Crème, œufs, pancetta, Padano, oignons & vin blanc.', 'Cream, eggs, pancetta, Padano, onions & white wine.', 26, NULL, 'pasta', NULL, 0, 18, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Tagliatelle alla Peppino', 'Tagliatelle alla Peppino', 'Sauce tomate piquante, saucisses italiennes, boulettes, rapinis, champignons, basilic, bocconcini, Padano & vin blanc.', 'Spicy tomato sauce, Italian sausage, meatballs, rapini, mushrooms, basil, bocconcini, Padano & white wine.', 28, NULL, 'pasta', 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/gallery/g21.jpg', 0, 19, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Lasagna Vogà', 'Lasagna Vogà', 'Boulettes, saucisses italiennes, pancetta, cinq fromages, sauce à la viande rosée, gratinée.', 'Meatballs, Italian sausage, pancetta, five cheeses, rosé meat sauce, gratinéed.', 26, NULL, 'pasta', NULL, 1, 20, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Saltimbocca Vogà', 'Saltimbocca Vogà', 'Vin blanc, demi-glace, tomates fraîches, prosciutto, bocconcini & basilic frais.', 'White wine, demi-glace, fresh tomatoes, prosciutto, bocconcini & fresh basil.', 31, NULL, 'scaloppini', NULL, 1, 1, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Piccata al Limone', 'Piccata al Limone', 'Sauce au beurre citronné & vin blanc.', 'Lemon-butter sauce & white wine.', 32, NULL, 'scaloppini', NULL, 0, 2, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Alla Parmigiana', 'Alla Parmigiana', 'Panée, nappée de sauce tomate, gratinée, basilic & Padano.', 'Breaded, topped with tomato sauce, gratinéed, basil & Padano.', 32, NULL, 'scaloppini', NULL, 0, 3, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Alla Francesca', 'Alla Francesca', 'Panée à l''œuf, sauce au beurre citronné & vin blanc.', 'Egg-battered, lemon-butter sauce & white wine.', 32, NULL, 'scaloppini', NULL, 0, 4, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'La Marsala', 'La Marsala', 'Vin marsala, demi-glace & champignons.', 'Marsala wine, demi-glace & mushrooms.', 31, NULL, 'scaloppini', NULL, 0, 5, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Alla Fiorentina', 'Alla Fiorentina', 'Crème, échalotes, champignons, épinards, tomates séchées & vin blanc.', 'Cream, shallots, mushrooms, spinach, sun-dried tomatoes & white wine.', 32, NULL, 'scaloppini', NULL, 0, 6, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Roccato', 'Roccato', 'Sauce aux cinq poivres, flambée au cognac, pancetta, poivrons & champignons.', 'Five-pepper sauce, flambéed in cognac, pancetta, peppers & mushrooms.', 31, NULL, 'scaloppini', NULL, 0, 7, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Pollo Parmigiana', 'Pollo Parmigiana', 'Poulet pané, nappé de sauce tomate, gratiné, basilic & Padano.', 'Breaded chicken, topped with tomato sauce, gratinéed, basil & Padano.', 32, NULL, 'scaloppini', NULL, 0, 8, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Pollo Toscano', 'Pollo Toscano', 'Poitrine de poulet grillée, garnie de courgettes et poivrons sautés, sauce jardinière, fromage de chèvre fondant, accompagnée de pâtes aglio e olio maison.', 'Grilled chicken breast, topped with sautéed zucchini and peppers, garden sauce, melting goat cheese, served with house aglio e olio pasta.', 33, NULL, 'scaloppini', NULL, 0, 9, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Barres Mars ou Caramilk frites', 'Fried Mars or Caramilk bar', 'Une gourmandise croustillante à l''extérieur, irrésistiblement fondante à l''intérieur.', 'Crisp on the outside, irresistibly molten within.', 8, NULL, 'dolci', NULL, 0, 1, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Cornetti au Nutella', 'Nutella Cornetti', 'La gourmandise à l''italienne : pâte légère, Nutella fondant, pur plaisir.', 'Italian indulgence: light pastry, molten Nutella, pure pleasure.', 8, NULL, 'dolci', NULL, 0, 2, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Cannoli à la ricotta maison', 'House ricotta Cannoli', 'Délice italien garni d''une onctueuse ricotta préparée sur place.', 'Italian classic filled with silky house-made ricotta.', 8, NULL, 'dolci', NULL, 0, 3, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Gâteau au fromage & carottes caramel', 'Cheesecake & caramel carrot cake', 'Un mariage gourmand entre la douceur du cheesecake et le moelleux du carrot cake, nappé de caramel.', 'A gourmand marriage of creamy cheesecake and tender carrot cake, draped in caramel.', 12, NULL, 'dolci', NULL, 0, 4, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Tarte Divine Key Lime', 'Divine Key Lime tart', 'Acidulée et crémeuse, sur une croûte croustillante.', 'Tangy and creamy on a crisp crust.', 12, NULL, 'dolci', NULL, 0, 5, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Tiramisu fait maison', 'House-made Tiramisu', 'Classique italien crémeux, café et mascarpone, préparé sur place avec amour.', 'Creamy Italian classic, coffee and mascarpone, made in-house with love.', 12, NULL, 'dolci', NULL, 1, 6, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Tarte Frutti di Bosco', 'Frutti di Bosco tart', 'Fraîche et colorée, un mélange de baies juteuses sur un lit crémeux.', 'Fresh and colourful, a medley of juicy berries on a creamy base.', 10, NULL, 'dolci', NULL, 0, 7, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,sizes_json,category,image_url,is_signature,position,available)
+  SELECT 'Gelato', 'Gelato', 'Citron, pistache, Nutella, vanille ou framboise.', 'Lemon, pistachio, Nutella, vanilla or raspberry.', 7, NULL, 'dolci', NULL, 0, 8, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_menu_v1_done');
+INSERT INTO admin_settings (key, value) VALUES ('_voga_menu_v1_done', '1') ON CONFLICT (key) DO NOTHING;
+
+-- ── Gallery (sentinel-guarded one-shot full sync) ──
+DELETE FROM gallery_images WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_gallery_v1_done');
+INSERT INTO gallery_images (image_url, alt_fr, alt_en, category, position, active)
+  SELECT 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/gallery/g14.jpg', 'Salle à manger aux alcôves cintrées en bois rétroéclairées, banquette verte et tables dressées de verres', 'Dining room with backlit arched wood alcoves, green banquette and set tables with stemware', 'interior', 1, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_gallery_v1_done');
+INSERT INTO gallery_images (image_url, alt_fr, alt_en, category, position, active)
+  SELECT 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/gallery/g01.jpg', 'Rigatoni en sauce tomate dans un bol à liseré doré, garni de menthe, avec panier de pain', 'Rigatoni in red tomato sauce in a gold-rimmed bowl, garnished with mint, beside a bread basket', 'dishes', 2, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_gallery_v1_done');
+INSERT INTO gallery_images (image_url, alt_fr, alt_en, category, position, active)
+  SELECT 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/gallery/g22.jpg', 'Salle à manger chaleureuse avec banquettes, chaises en bois, fresque murale et long bar latéral', 'Warm dining room with banquette seating, wooden chairs, mural wall and a long side bar', 'interior', 3, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_gallery_v1_done');
+INSERT INTO gallery_images (image_url, alt_fr, alt_en, category, position, active)
+  SELECT 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/gallery/g15.jpg', 'Boulettes de viande en sauce tomate garnies de copeaux de fromage sur assiette blanche', 'Meatballs in tomato sauce topped with shaved cheese on a white plate', 'dishes', 4, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_gallery_v1_done');
+INSERT INTO gallery_images (image_url, alt_fr, alt_en, category, position, active)
+  SELECT 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/gallery/g12.jpg', 'Deux mains trinquant avec des verres gravés du logo Voga, vin blanc et vin rouge', 'Two hands toasting Voga-etched wine glasses, one white and one red wine', 'wine', 5, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_gallery_v1_done');
+INSERT INTO gallery_images (image_url, alt_fr, alt_en, category, position, active)
+  SELECT 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/gallery/g07.jpg', 'Salle à manger chaleureuse aux banquettes vertes, arches lumineuses et bar en bois massif', 'Warm dining room with green banquettes, lit arched alcoves and a live-edge wood bar', 'interior', 6, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_gallery_v1_done');
+INSERT INTO gallery_images (image_url, alt_fr, alt_en, category, position, active)
+  SELECT 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/gallery/g02.jpg', 'Crostino grillé garni de pesto, mozzarella et charcuterie italienne sur assiette blanche', 'Grilled crostino topped with pesto, mozzarella and Italian cured ham on a white plate', 'dishes', 7, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_gallery_v1_done');
+INSERT INTO gallery_images (image_url, alt_fr, alt_en, category, position, active)
+  SELECT 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/gallery/g25.jpg', 'Cocktail rouge orangé sur glace garni d''une tranche d''agrume séchée, dans une ambiance tamisée', 'Reddish-orange cocktail over ice garnished with a dried citrus slice in dim mood lighting', 'drinks', 8, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_gallery_v1_done');
+INSERT INTO gallery_images (image_url, alt_fr, alt_en, category, position, active)
+  SELECT 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/gallery/g04.jpg', 'Banquette courbe en cuir vert, miroirs en arche rétroéclairés et décor de cerfs dorés', 'Curved green leather banquette, backlit arched mirrors and golden deer decor', 'interior', 9, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_gallery_v1_done');
+INSERT INTO gallery_images (image_url, alt_fr, alt_en, category, position, active)
+  SELECT 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/gallery/g13.jpg', 'Risotto crémeux aux champignons dans un bol à liseré doré, garni de menthe', 'Creamy mushroom risotto in a gold-rimmed bowl, garnished with mint', 'dishes', 10, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_gallery_v1_done');
+INSERT INTO gallery_images (image_url, alt_fr, alt_en, category, position, active)
+  SELECT 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/gallery/g28.jpg', 'Bar aux étagères à spiritueux rétroéclairées sous une arche, tabourets sombres et foyer allumé', 'Bar with backlit liquor shelves under an arch, dark stools and a lit fireplace', 'interior', 11, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_gallery_v1_done');
+INSERT INTO gallery_images (image_url, alt_fr, alt_en, category, position, active)
+  SELECT 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/gallery/g21.jpg', 'Tagliatelles fraîches en sauce tomate au basilic, servies avec un verre de vin rouge griffé Voga', 'Fresh tagliatelle in tomato sauce with basil, served with a Voga-branded glass of red wine', 'dishes', 12, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_gallery_v1_done');
+INSERT INTO gallery_images (image_url, alt_fr, alt_en, category, position, active)
+  SELECT 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/gallery/g10.jpg', 'Vue large de la salle aux alcôves cintrées, banquettes vertes et pilier central', 'Wide dining room view with arched alcoves, green banquettes and a central pillar', 'interior', 13, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_gallery_v1_done');
+INSERT INTO gallery_images (image_url, alt_fr, alt_en, category, position, active)
+  SELECT 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/gallery/g17.jpg', 'Beignets dorés avec tranche de citron, garniture croustillante et sauce crémeuse sur assiette blanche', 'Golden battered fritters with lemon, crispy garnish and creamy sauce on a white plate', 'dishes', 14, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_gallery_v1_done');
+INSERT INTO gallery_images (image_url, alt_fr, alt_en, category, position, active)
+  SELECT 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/gallery/g09.jpg', 'Cocktail café en verre coupe à côté d''une flamme sur une table sombre', 'Coffee cocktail in a coupe glass beside a flame on a dark table', 'drinks', 15, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_gallery_v1_done');
+INSERT INTO gallery_images (image_url, alt_fr, alt_en, category, position, active)
+  SELECT 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/gallery/g06.jpg', 'Grande table garnie de plats italiens, deux bouteilles de vin et des verres devant une banquette verte', 'Table laid with many Italian dishes, two wine bottles and glasses before a green booth', 'atmosphere', 16, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_gallery_v1_done');
+INSERT INTO gallery_images (image_url, alt_fr, alt_en, category, position, active)
+  SELECT 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/gallery/g08.jpg', 'Vue en enfilade de la salle à manger : banquette verte, table dressée, miroirs en arche et mur de marbre', 'Angled view down the dining room with green banquette, set table, arched mirrors and marble wall', 'interior', 17, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_gallery_v1_done');
+INSERT INTO gallery_images (image_url, alt_fr, alt_en, category, position, active)
+  SELECT 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/gallery/g19.jpg', 'Salade César vue de dessus avec romaine, croûtons et fromage râpé dans un bol', 'Overhead Caesar salad with romaine, croutons and grated cheese in a bowl', 'dishes', 18, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_gallery_v1_done');
+INSERT INTO gallery_images (image_url, alt_fr, alt_en, category, position, active)
+  SELECT 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/gallery/g11.jpg', 'Salle à manger avec foyer décoratif lumineux, plante et table dressée devant une murale en agate', 'Dining room with a glowing decorative fireplace, potted plant and a set table by an agate mural', 'interior', 19, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_gallery_v1_done');
+INSERT INTO gallery_images (image_url, alt_fr, alt_en, category, position, active)
+  SELECT 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/gallery/g16.jpg', 'Cocktail rouge en verre haut à bord givré, garni de citron, cornichon, olive et pepperoni', 'Tall red cocktail with a salted rim, garnished with lemon, pickle, olive and pepperoni', 'drinks', 20, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_gallery_v1_done');
+INSERT INTO gallery_images (image_url, alt_fr, alt_en, category, position, active)
+  SELECT 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/gallery/g03.jpg', 'Assiette de viande grillée, sauce et légumes avec risotto, carafe dorée et vin rouge en arrière-plan', 'Plate of grilled meat with sauce and vegetables alongside risotto, gold carafe and red wine behind', 'dishes', 21, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_gallery_v1_done');
+INSERT INTO gallery_images (image_url, alt_fr, alt_en, category, position, active)
+  SELECT 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/gallery/g24.jpg', 'Rangée de banquettes vertes et tables en bois sous des arches rétroéclairées, derrière une cloison à lattes', 'Row of green banquettes and wood tables beneath backlit arches behind a wood-slat partition', 'interior', 22, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_gallery_v1_done');
+INSERT INTO gallery_images (image_url, alt_fr, alt_en, category, position, active)
+  SELECT 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/gallery/g05.jpg', 'Bol de capellini en sauce tomate aux légumes, garni de roquette, vu de haut sur bois foncé', 'Bowl of capellini in tomato sauce with vegetables, topped with arugula, on dark wood', 'dishes', 23, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_gallery_v1_done');
+INSERT INTO gallery_images (image_url, alt_fr, alt_en, category, position, active)
+  SELECT 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/gallery/g18.jpg', 'Comptoir-bar en bois avec chaises noires, lustre à sphères et logo Voga rétroéclairé', 'Wooden bar counter with black chairs, sphere chandelier and backlit Voga logo', 'interior', 24, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_gallery_v1_done');
+INSERT INTO gallery_images (image_url, alt_fr, alt_en, category, position, active)
+  SELECT 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/gallery/g23.jpg', 'Plat en sauce crémeuse aux épinards, champignons et tomates séchées, garni d''une tuile de parmesan', 'Plated dish in creamy sauce with spinach, mushrooms and sun-dried tomatoes, topped with a Parmesan tuile', 'dishes', 25, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_gallery_v1_done');
+INSERT INTO gallery_images (image_url, alt_fr, alt_en, category, position, active)
+  SELECT 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/gallery/g20.jpg', 'Cocktail bleu garni d''une rondelle d''agrume près d''un cocktail de café sur un bar sombre', 'Bright blue cocktail with a citrus wheel beside a coffee cocktail on a dark bar', 'drinks', 26, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_gallery_v1_done');
+INSERT INTO gallery_images (image_url, alt_fr, alt_en, category, position, active)
+  SELECT 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/gallery/g26.jpg', 'Coin repas intime avec banquette verte, cloisons en lattes de bois et arche rétroéclairée en lumière ambrée', 'Intimate dining nook with green banquette, wooden slat partitions and a backlit arch in warm amber light', 'interior', 27, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_gallery_v1_done');
+INSERT INTO gallery_images (image_url, alt_fr, alt_en, category, position, active)
+  SELECT 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/gallery/g27.jpg', 'Deux salades fraîches en assiettes avec bouteille et verre de vin rouge en arrière-plan', 'Two fresh plated salads with a bottle and glass of red wine in the softly lit background', 'dishes', 28, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_gallery_v1_done');
+INSERT INTO gallery_images (image_url, alt_fr, alt_en, category, position, active)
+  SELECT 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/gallery/g29.jpg', 'Trois shooters garnis de concombre devant des cocktails dont un martini espresso et une boisson bleue', 'Three pale shooters garnished with cucumber in front of cocktails including an espresso martini and a blue drink', 'drinks', 29, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_gallery_v1_done');
+INSERT INTO gallery_images (image_url, alt_fr, alt_en, category, position, active)
+  SELECT 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/gallery/g30.jpg', 'Façade en brique du restaurant Voga au crépuscule, enseigne lumineuse et adresse 330', 'Brick facade of Voga restaurant at dusk, with illuminated sign and the address 330', 'exterior', 30, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_gallery_v1_done');
+INSERT INTO admin_settings (key, value) VALUES ('_voga_gallery_v1_done', '1') ON CONFLICT (key) DO NOTHING;
+
+-- ── Current promotion (sentinel-guarded one-shot) ──
+DELETE FROM promotions WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_promo_v1_done');
+INSERT INTO promotions (title_fr,title_en,description_fr,description_en,badge_fr,badge_en,image_url,cta_label_fr,cta_label_en,cta_url,position,active)
+  SELECT 'Vivez l''expérience — Menu dégustation', 'Live the experience — Tasting menu', 'Laissez le chef vous guider à travers une succession de services. 75 $ par personne. Informez-vous auprès de votre serveur.', 'Let the chef guide you through a succession of courses. $75 per person. Ask your server for details.', 'À l''affiche', 'Featured', 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/site/capellini_dish.jpg', 'Réservez', 'Reserve', '#reservation', 1, 1 WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_voga_promo_v1_done');
+INSERT INTO admin_settings (key, value) VALUES ('_voga_promo_v1_done', '1') ON CONFLICT (key) DO NOTHING;
