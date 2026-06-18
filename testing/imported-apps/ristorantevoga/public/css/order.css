@@ -107,6 +107,8 @@
 .stars { display: inline-flex; gap: .25rem; }
 .stars button { background: none; border: 0; cursor: pointer; font-size: 2rem; line-height: 1; color: var(--muted-light); transition: color .12s, transform .12s; padding: 0 .1rem; }
 .stars button:hover, .stars button.lit { color: var(--gold); transform: scale(1.08); }
+.stars button:focus-visible { color: var(--gold); outline: 2px solid var(--gold-deep); outline-offset: 2px; border-radius: 4px; }
+.order-status-now { font-family: var(--serif); font-size: 1.35rem; color: var(--burgundy); margin: .2rem 0 .9rem; }
 
 .order-toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--charcoal-deep); color: var(--ivory); padding: .8rem 1.3rem; border-radius: 4px; font-size: .9rem; z-index: 1500; opacity: 0; transition: all .2s; box-shadow: 0 10px 30px rgba(0,0,0,.3); pointer-events: none; }
 .order-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }

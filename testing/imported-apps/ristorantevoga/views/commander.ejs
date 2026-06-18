@@ -47,7 +47,7 @@
       need_name: 'Veuillez indiquer votre nom.', need_geo: "La localisation est requise pour passer la commande. Activez-la et réessayez.", need_phone: 'Numéro de téléphone requis.', need_code: 'Entrez le code reçu par SMS.', need_verify: 'Veuillez vérifier votre numéro avant de continuer.',
       remote_notice: 'Vous êtes hors de la zone de récupération — une vérification du téléphone est requise.',
       placed: 'Commande reçue !', order_no: 'Commande', pickup_eta: 'Récupération', status: 'Suivi de votre commande',
-      st_received: 'Reçue', st_preparing: 'En préparation', st_ready: 'Prête à récupérer', st_done: 'Complétée', st_cancelled: 'Annulée', cancelled_msg: 'Cette commande a été annulée. Contactez le restaurant pour plus de détails.',
+      st_received: 'Reçue', st_confirmed: 'Confirmée', st_preparing: 'En préparation', st_ready: 'Prête à récupérer', st_done: 'Complétée', st_cancelled: 'Annulée', cancelled_msg: 'Cette commande a été annulée. Contactez le restaurant pour plus de détails.',
       rate_title: 'Comment était votre expérience ?', rate_thanks: 'Merci pour votre visite !', rate_5: 'Quel plaisir ! Partagez-le sur Google ?', leave_google: 'Laisser un avis Google', rate_low: 'Aidez-nous à nous améliorer', fb_email: 'Votre courriel (optionnel)', fb_msg: 'Qu\'aurions-nous pu faire mieux ?', fb_send: 'Envoyer', fb_thanks: 'Merci, votre commentaire a été transmis à la direction.',
       err: 'Une erreur est survenue. Réessayez.', close: 'Fermer'
     },
@@ -65,17 +65,18 @@
       need_name: 'Please enter your name.', need_geo: 'Location is required to place the order. Enable it and try again.', need_phone: 'Phone number required.', need_code: 'Enter the SMS code.', need_verify: 'Please verify your number first.',
       remote_notice: 'You are outside the pickup zone — phone verification is required.',
       placed: 'Order received!', order_no: 'Order', pickup_eta: 'Pickup', status: 'Tracking your order',
-      st_received: 'Received', st_preparing: 'Preparing', st_ready: 'Ready for pickup', st_done: 'Completed', st_cancelled: 'Cancelled', cancelled_msg: 'This order was cancelled. Contact the restaurant for details.',
+      st_received: 'Received', st_confirmed: 'Confirmed', st_preparing: 'Preparing', st_ready: 'Ready for pickup', st_done: 'Completed', st_cancelled: 'Cancelled', cancelled_msg: 'This order was cancelled. Contact the restaurant for details.',
       rate_title: 'How was your experience?', rate_thanks: 'Thank you for visiting!', rate_5: 'Wonderful! Share it on Google?', leave_google: 'Leave a Google review', rate_low: 'Help us do better', fb_email: 'Your email (optional)', fb_msg: 'What could we have done better?', fb_send: 'Send', fb_thanks: 'Thank you, your feedback has been sent to management.',
       err: 'Something went wrong. Please try again.', close: 'Close'
     }
   }[LANG];
 
-  var state = { config: null, menu: null, cart: {}, pickup: 'asap', offset: 0, token: null, phone: '', order: null, pollTimer: null, rated: false };
+  var state = { config: null, menu: null, cart: {}, pickup: 'asap', offset: 0, token: null, phone: '', order: null, pollTimer: null, polling: false, rated: false, lastFocus: null };
   var visitorId = (function(){ try { var v = localStorage.getItem('voga_visitor'); if (!v) { v = 'v' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8); localStorage.setItem('voga_visitor', v); } return v; } catch(e){ return 'v' + Date.now(); } })();
 
   function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, function(c){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]; }); }
   function money(cents){ var v = cents / 100; return LANG === 'en' ? ('$' + v.toFixed(2)) : (v.toFixed(2).replace('.', ',') + ' $'); }
+  function priceCents(it){ var v = Number(it && it.price); return isFinite(v) ? Math.round(v * 100) : null; }
   function toast(msg){ var t = document.getElementById('orderToast'); t.textContent = msg; t.classList.add('show'); clearTimeout(t._h); t._h = setTimeout(function(){ t.classList.remove('show'); }, 3200); }
   function imgUrl(u){ if (!u) return ''; return /^https?:/.test(u) ? u : (BASE + u); }
   function api(path, opts){ return fetch(BASE + path, opts).then(function(r){ return r.json().catch(function(){ return {}; }).then(function(j){ return { ok: r.ok, status: r.status, body: j }; }); }); }
@@ -87,7 +88,12 @@
     var cfg = (res[0].body) || {}, menu = (res[1].body) || {};
     if (!res[0].ok || !res[1].ok || cfg.success === false || menu.success === false) return renderState(S.load_err);
     state.config = cfg; state.menu = menu;
-    var hoursOpen = !cfg.hoursStatus || cfg.hoursStatus.isOpen !== false;
+    var hs = cfg.hoursStatus, hoursOpen = true;
+    if (hs != null) {
+      if (typeof hs === 'object') hoursOpen = hs.isOpen !== false && hs.closedAllDay !== true;
+      else if (typeof hs === 'string') hoursOpen = !/clos|ferm/i.test(hs);
+      else if (typeof hs === 'boolean') hoursOpen = hs;
+    }
     if (cfg.takeoutEnabled === false) return renderState(S.closed, true);
     if (cfg.ordersPaused === true) return renderState(S.paused, true);
     if (!hoursOpen) return renderState(S.closed, true);
@@ -109,10 +115,11 @@
     cats.forEach(function(cat){
       html += '<section class="order-menu__cat">' + (cat ? '<h2>' + esc(cat) + '</h2>' : '');
       items.filter(function(it){ return (it.category || '') === cat; }).forEach(function(it){
-        var avail = it.available !== false;
+        var pc = priceCents(it);
+        var avail = it.available !== false && pc != null;
         html += '<article class="o-item' + (avail ? '' : ' is-unavailable') + '" data-id="' + esc(it.id) + '">';
         if (it.imageUrl) html += '<img class="o-item__img" src="' + esc(imgUrl(it.imageUrl)) + '" alt="' + esc(it.name) + '" loading="lazy">';
-        html += '<div class="o-item__body"><div class="o-item__top"><h3 class="o-item__name">' + esc(it.name) + '</h3><span class="o-item__price">' + money(Math.round(Number(it.price) * 100)) + '</span></div>';
+        html += '<div class="o-item__body"><div class="o-item__top"><h3 class="o-item__name">' + esc(it.name) + '</h3><span class="o-item__price">' + (pc != null ? money(pc) : '—') + '</span></div>';
         if (it.description) html += '<p class="o-item__desc">' + esc(it.description) + '</p>';
         html += '<div class="o-item__ctl">' + (avail ? itemControl(it.id) : '<span class="o-item__unavail">' + esc(S.unavailable) + '</span>') + '</div>';
         html += '</div></article>';
@@ -131,7 +138,7 @@
   function findItem(id){ return menuItems().filter(function(i){ return String(i.id) === String(id); })[0]; }
 
   function totals(){
-    var sub = 0; for (var id in state.cart){ sub += Math.round(Number(state.cart[id].item.price) * 100) * state.cart[id].qty; }
+    var sub = 0; for (var id in state.cart){ sub += (priceCents(state.cart[id].item) || 0) * state.cart[id].qty; }
     var taxes = ((state.menu.tax) || []).map(function(t){ var c = Math.round(sub * Number(t.rate) / 100); return { label: LANG === 'en' ? (t.label || t.labelFr) : (t.labelFr || t.label), rate: t.rate, cents: c }; });
     var total = sub + taxes.reduce(function(a, t){ return a + t.cents; }, 0);
     var count = 0; for (var k in state.cart) count += state.cart[k].qty;
@@ -147,9 +154,9 @@
       if (!t.count){ h += '<p class="cart-empty">' + esc(S.empty) + '</p>'; }
       else {
         h += '<div class="cart-lines">';
-        for (var id in state.cart){ var c = state.cart[id]; h += '<div class="cart-line"><span class="cl-name"><b>' + c.qty + '×</b> ' + esc(c.item.name) + '</span><span class="cl-amt">' + money(Math.round(Number(c.item.price)*100)*c.qty) + '</span></div>'; }
+        for (var id in state.cart){ var c = state.cart[id]; h += '<div class="cart-line"><span class="cl-name"><b>' + c.qty + '×</b> ' + esc(c.item.name) + '</span><span class="cl-amt">' + money((priceCents(c.item)||0)*c.qty) + '</span></div>'; }
         h += '</div><div class="cart-totals"><div class="row"><span>' + esc(S.subtotal) + '</span><span>' + money(t.sub) + '</span></div>';
-        t.taxes.forEach(function(tx){ h += '<div class="row"><span>' + esc(tx.label) + ' (' + tx.rate + '%)</span><span>' + money(tx.cents) + '</span></div>'; });
+        t.taxes.forEach(function(tx){ h += '<div class="row"><span>' + esc(tx.label) + ' (' + esc(String(tx.rate)) + '%)</span><span>' + money(tx.cents) + '</span></div>'; });
         h += '<div class="row total"><span>' + esc(S.total) + '</span><span>' + money(t.total) + '</span></div></div>';
       }
       h += '<button class="btn btn-reserve" id="checkoutBtn"' + (t.count ? '' : ' disabled') + '>' + esc(S.checkout) + '</button>';
@@ -177,14 +184,23 @@
       return;
     }
     if (e.target.closest('#checkoutBtn') || e.target.closest('#checkoutBtnM')) { openSheet(); return; }
-    if (e.target.closest('[data-close]')) { closeSheet(); return; }
+    // Backdrop / ✕ close: blocked once an order is placed (use the in-sheet close button instead).
+    if (e.target.closest('[data-close]')) { if (!state.order) closeSheet(); return; }
   });
 
   // ---- checkout sheet ----
   var sheet = document.getElementById('orderSheet'), panel = document.getElementById('sheetPanel');
-  function openSheet(){ if (!totals().count) return; renderCheckout(); sheet.classList.add('open'); document.body.style.overflow = 'hidden'; }
-  function closeSheet(){ sheet.classList.remove('open'); document.body.style.overflow = ''; if (state.pollTimer){ clearTimeout(state.pollTimer); state.pollTimer = null; } }
+  function sheetFocusables(){ return Array.prototype.slice.call(panel.querySelectorAll('a[href],button:not([disabled]),input:not([disabled]),select:not([disabled])')).filter(function(el){ return el.offsetParent !== null; }); }
+  function openSheet(){ if (!totals().count) return; state.lastFocus = document.activeElement; renderCheckout(); sheet.classList.add('open'); document.body.style.overflow = 'hidden'; var f = sheetFocusables(); if (f.length) f[0].focus(); }
+  function closeSheet(){ sheet.classList.remove('open'); document.body.style.overflow = ''; state.polling = false; if (state.pollTimer){ clearTimeout(state.pollTimer); state.pollTimer = null; } if (state.lastFocus && state.lastFocus.focus){ try { state.lastFocus.focus(); } catch(e){} } }
   document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && sheet.classList.contains('open') && !state.order) closeSheet(); });
+  panel.addEventListener('keydown', function(e){
+    if (e.key !== 'Tab' || !sheet.classList.contains('open')) return;
+    var f = sheetFocusables(); if (!f.length) return;
+    var first = f[0], last = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
+  });
 
   function pickupOptions(){
     var min = Number(state.config.minPickupMinutes || 15);
@@ -196,7 +212,7 @@
     var opts = pickupOptions();
     var schedHtml = '<select id="pkOffset" class="">' + opts.map(function(m){ return '<option value="' + m + '">' + (LANG === 'en' ? ('In ' + m + ' min') : ('Dans ' + m + ' min')) + ' · ' + esc(S.ready_around) + ' ' + fmtClock(Date.now() + m * 60000) + '</option>'; }).join('') + '</select>';
     var summary = '<div class="sheet-summary">';
-    for (var id in state.cart){ var c = state.cart[id]; summary += '<div class="cart-line"><span class="cl-name"><b>' + c.qty + '×</b> ' + esc(c.item.name) + '</span><span class="cl-amt">' + money(Math.round(Number(c.item.price)*100)*c.qty) + '</span></div>'; }
+    for (var id in state.cart){ var c = state.cart[id]; summary += '<div class="cart-line"><span class="cl-name"><b>' + c.qty + '×</b> ' + esc(c.item.name) + '</span><span class="cl-amt">' + money((priceCents(c.item)||0)*c.qty) + '</span></div>'; }
     summary += '<div class="cart-totals" style="margin-top:.6rem">';
     t.taxes.forEach(function(tx){ summary += '<div class="row"><span>' + esc(tx.label) + '</span><span>' + money(tx.cents) + '</span></div>'; });
     summary += '<div class="row total"><span>' + esc(S.total) + '</span><span>' + money(t.total) + '</span></div></div></div>';
@@ -233,7 +249,7 @@
     w.dataset.built = '1'; w.style.display = '';
     w.innerHTML = '<p class="order-note">' + esc(S.verify_hint) + '</p>' +
       '<div class="order-field"><label for="vPhone">' + esc(S.phone) + '</label><div class="verify-row"><input id="vPhone" type="tel" autocomplete="tel" placeholder="' + esc(S.phone_ph) + '"><button class="btn btn-ghost" id="sendCodeBtn" type="button">' + esc(S.send_code) + '</button></div></div>' +
-      '<div class="order-field" id="codeField" style="display:none"><label for="vCode">' + esc(S.code) + '</label><div class="verify-row"><input id="vCode" type="text" inputmode="numeric" placeholder="' + esc(S.code_ph) + '"><button class="btn btn-ghost" id="verifyBtn" type="button">' + esc(S.verify) + '</button></div><div class="order-note" id="vMsg"></div></div>';
+      '<div class="order-field" id="codeField" style="display:none"><label for="vCode">' + esc(S.code) + '</label><div class="verify-row"><input id="vCode" type="text" inputmode="numeric" placeholder="' + esc(S.code_ph) + '"><button class="btn btn-ghost" id="verifyBtn" type="button">' + esc(S.verify) + '</button></div><div class="order-note" id="vMsg" aria-live="assertive"></div></div>';
     document.getElementById('sendCodeBtn').addEventListener('click', sendCode);
     document.getElementById('verifyBtn').addEventListener('click', verifyCode);
   }
@@ -252,7 +268,7 @@
     if (!otp){ toast(S.need_code); return; }
     var btn = document.getElementById('verifyBtn'); btn.disabled = true;
     api('/order/takeout-otp/verify', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone: state.phone, otp: otp }) })
-      .then(function(r){ btn.disabled = false; if (r.ok && r.body && r.body.verificationToken){ state.token = r.body.verificationToken; document.getElementById('verifyWrap').innerHTML = '<p class="order-note" style="color:var(--olive-deep)">' + esc(S.verified) + '</p>'; } else { toast((r.body && (r.body.error || r.body.message)) || S.err); } })
+      .then(function(r){ btn.disabled = false; if (r.ok && r.body && r.body.verificationToken){ state.token = r.body.verificationToken; document.getElementById('verifyWrap').innerHTML = '<p class="order-note" style="color:var(--olive-deep)">' + esc(S.verified) + '</p>'; } else { var msg = (r.body && (r.body.error || r.body.message)) || S.err; var vm = document.getElementById('vMsg'); if (vm){ vm.textContent = msg; vm.style.color = '#b3261e'; } toast(msg); } })
       .catch(function(){ btn.disabled = false; toast(S.err); });
   }
 
@@ -270,6 +286,8 @@
       var remote = false;
       if (state.config.businessLat != null && state.config.businessLng != null){
         remote = haversine(lat, lng, Number(state.config.businessLat), Number(state.config.businessLng)) > Number(state.config.takeoutRadiusMeters || 250);
+      } else {
+        remote = true; // can't prove we're in-zone → require verification (server enforces it anyway)
       }
       var needToken = scheduled || mandatory || remote;
       if (needToken && !state.token){
@@ -280,7 +298,7 @@
         document.getElementById('verifyWrap').scrollIntoView({ behavior: 'smooth', block: 'center' });
         return;
       }
-      var items = []; for (var id in state.cart){ var c = state.cart[id]; items.push({ menuItemId: c.item.id, name: c.item.name, quantity: c.qty, unitPriceCents: Math.round(Number(c.item.price) * 100) }); }
+      var items = []; for (var id in state.cart){ var c = state.cart[id]; items.push({ menuItemId: c.item.id, name: c.item.name, quantity: c.qty, unitPriceCents: priceCents(c.item) || 0 }); }
       var body = { customerName: name, orderType: 'takeout', tableNumber: null, items: items, lat: lat, lng: lng };
       if (needToken) body.phoneVerificationToken = state.token;
       if (scheduled) body.pickupOffsetMinutes = Number(document.getElementById('pkOffset').value || state.config.minPickupMinutes || 15);
@@ -297,11 +315,15 @@
   function renderConfirm(order){
     state.cart = {};
     panel.innerHTML =
+      '<div class="sheet-head" style="justify-content:flex-end"><button class="sheet-close" id="confirmClose" aria-label="' + esc(S.close) + '">&times;</button></div>' +
       '<div class="order-confirm"><div class="check" aria-hidden="true">✓</div>' +
       '<h2>' + esc(S.placed) + '</h2>' +
       '<div class="order-num">' + esc(S.order_no) + ' #' + esc(order.orderNumber || order.orderId) + '</div>' +
       '<div id="statusBox"></div></div>';
+    var cc = document.getElementById('confirmClose'); if (cc) cc.addEventListener('click', closeSheet);
+    state.polling = true;
     pollStatus(order.orderId || order.orderNumber);
+    if (cc) cc.focus();
   }
   function renderStatus(o){
     var box = document.getElementById('statusBox'); if (!box) return;
@@ -309,7 +331,10 @@
     if (status === 'cancelled'){ box.innerHTML = '<p class="order-note warn" style="margin-top:1rem">' + esc(S.st_cancelled) + ' — ' + esc(S.cancelled_msg) + '</p>'; return; }
     var idx = stepIndex(status);
     var labels = [S.st_received, S.st_preparing, S.st_ready];
-    var h = '<p class="order-note" style="margin-top:.6rem">' + esc(S.status) + '</p><div class="status-steps">';
+    var SL = { pending: S.st_received, confirmed: S.st_confirmed, preparing: S.st_preparing, ready: S.st_ready, completed: S.st_done };
+    var h = '<p class="order-note" style="margin-top:.6rem">' + esc(S.status) + '</p>';
+    h += '<p class="order-status-now">' + esc(SL[status] || S.st_received) + '</p>';
+    h += '<div class="status-steps">';
     STEPS.forEach(function(s, i){ var cls = i < idx ? 'done' : (i === idx ? 'current' : ''); if (status === 'completed') cls = 'done'; h += '<div class="status-step ' + cls + '"><span class="dot"></span>' + esc(labels[i]) + '</div>'; });
     h += '</div>';
     if (o.pickup_time) h += '<p class="order-note">' + esc(S.pickup_eta) + ' : ' + esc(fmtClock(o.pickup_time)) + '</p>';
@@ -319,18 +344,20 @@
     if ((status === 'ready' || status === 'completed') && ratingOk && !state.rated) renderRating(state.menu.business.placeId);
   }
   function pollStatus(orderId){
+    if (!state.polling) return;
     api('/order/orders/' + encodeURIComponent(orderId)).then(function(r){
+      if (!state.polling) return;
       var o = r.body || {}; renderStatus(o);
       var done = o.status === 'completed' || o.status === 'cancelled';
-      if (!done) state.pollTimer = setTimeout(function(){ pollStatus(orderId); }, 8000);
-    }).catch(function(){ state.pollTimer = setTimeout(function(){ pollStatus(orderId); }, 8000); });
+      if (!done && state.polling) state.pollTimer = setTimeout(function(){ pollStatus(orderId); }, 8000);
+    }).catch(function(){ if (state.polling) state.pollTimer = setTimeout(function(){ pollStatus(orderId); }, 8000); });
   }
 
   // ---- rating funnel ----
   function renderRating(placeId){
     var box = document.getElementById('ratingBox'); if (!box || box.dataset.built) return; box.dataset.built = '1';
     box.innerHTML = '<div class="rating-box"><h3>' + esc(S.rate_title) + '</h3><div class="stars" id="stars" role="radiogroup" aria-label="' + esc(S.rate_title) + '">' +
-      [1,2,3,4,5].map(function(n){ return '<button type="button" data-star="' + n + '" role="radio" aria-label="' + n + '">★</button>'; }).join('') + '</div><div id="ratingAfter"></div></div>';
+      [1,2,3,4,5].map(function(n){ return '<button type="button" data-star="' + n + '" role="radio" aria-checked="false" aria-label="' + n + ' / 5">★</button>'; }).join('') + '</div><div id="ratingAfter"></div></div>';
     var stars = box.querySelectorAll('#stars button');
     stars.forEach(function(btn){
       btn.addEventListener('mouseenter', function(){ var v = +btn.getAttribute('data-star'); stars.forEach(function(s){ s.classList.toggle('lit', +s.getAttribute('data-star') <= v); }); });
@@ -340,7 +367,7 @@
   }
   function submitRating(placeId, rating){
     if (state.rated) return; state.rated = true;
-    var stars = document.querySelectorAll('#stars button'); stars.forEach(function(s){ s.classList.toggle('lit', +s.getAttribute('data-star') <= rating); s.disabled = true; });
+    var stars = document.querySelectorAll('#stars button'); stars.forEach(function(s){ var n = +s.getAttribute('data-star'); s.classList.toggle('lit', n <= rating); s.setAttribute('aria-checked', n === rating ? 'true' : 'false'); s.disabled = true; });
     api('/api/user-review', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ placeId: placeId, rating: rating, comment: '', visitorId: visitorId }) }).catch(function(){});
     var after = document.getElementById('ratingAfter');
     if (rating === 5){
@@ -349,8 +376,8 @@
       after.innerHTML = '<p class="order-note" style="margin-top:.8rem;color:var(--olive-deep)">' + esc(S.rate_thanks) + '</p>';
     } else {
       after.innerHTML = '<p class="order-note" style="margin-top:.8rem">' + esc(S.rate_low) + '</p>' +
-        '<div class="order-field"><input id="fbEmail" type="email" placeholder="' + esc(S.fb_email) + '"></div>' +
-        '<div class="order-field"><input id="fbMsg" type="text" placeholder="' + esc(S.fb_msg) + '"></div>' +
+        '<div class="order-field"><label for="fbEmail">' + esc(S.fb_email) + '</label><input id="fbEmail" type="email" autocomplete="email" placeholder="' + esc(S.fb_email) + '"></div>' +
+        '<div class="order-field"><label for="fbMsg">' + esc(S.fb_msg) + '</label><input id="fbMsg" type="text" placeholder="' + esc(S.fb_msg) + '"></div>' +
         '<button class="btn btn-ghost" id="fbBtn" type="button">' + esc(S.fb_send) + '</button>';
       document.getElementById('fbBtn').addEventListener('click', function(){
         var em = (document.getElementById('fbEmail').value || '').trim(), msg = (document.getElementById('fbMsg').value || '').trim();
