@@ -1,0 +1,261 @@
+<%# Keychain review modal — mirrors the business-association overlay
+    behavior from tapavis-admin's /uk/<id> page:
+      - 5★ → Google review URL using settings.google_place_id (admin sets
+             in /admin/settings → Google Place ID). Falls back to thanks
+             if not configured.
+      - 4★ → simple thank-you (no Google, no form).
+      - 1-3★ → contact form (email + message) → POST /api/keychain-review
+              → emails the tenant's admin_email (Courriel administrateur).
+
+    Renders only when the post-login attribution middleware set the
+    keychain_show_review=1 cookie. Cookie cleared on first open so it
+    doesn't pop on subsequent navigations. %>
+<style>
+  /* Scoped styles — prefix all selectors with .krm- so they don't leak
+     into the tenant's own design tokens. */
+  .krm-overlay { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(0,0,0,0.65); z-index: 9999; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 16px; }
+  .krm-overlay.is-open { display: flex; }
+  .krm-card { background: #fff; color: #111; max-width: 440px; width: 100%; border-radius: 14px; padding: 24px; position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.4); animation: krm-enter 220ms ease-out; }
+  @keyframes krm-enter { from { opacity: 0; transform: translateY(8px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+  .krm-close { position: absolute; top: 10px; right: 14px; background: none; border: none; font-size: 24px; line-height: 1; color: #888; cursor: pointer; padding: 4px 8px; }
+  .krm-close:hover { color: #111; }
+  .krm-title { margin: 0 0 6px; font-size: 20px; font-weight: 700; }
+  .krm-sub { margin: 0 0 16px; color: #555; font-size: 14px; line-height: 1.5; }
+  .krm-stars { display: flex; justify-content: center; gap: 6px; margin: 16px 0 8px; }
+  .krm-star { background: none; border: none; padding: 4px; cursor: pointer; }
+  .krm-star svg { width: 36px; height: 36px; display: block; transition: transform 120ms ease, fill 120ms ease; }
+  .krm-star-poly { fill: #e5e7eb; stroke: #d1d5db; stroke-width: 1.5; stroke-linejoin: round; }
+  .krm-star.is-filled .krm-star-poly,
+  .krm-star.is-hover .krm-star-poly { fill: #fbbf24; stroke: #f59e0b; }
+  .krm-star.pop svg { animation: krm-pop 260ms ease; }
+  @keyframes krm-pop { 0% { transform: scale(1); } 40% { transform: scale(1.35); } 100% { transform: scale(1); } }
+  .krm-step { display: none; }
+  .krm-step.is-active { display: block; animation: krm-step-enter 240ms ease-out; }
+  @keyframes krm-step-enter { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  .krm-hero { font-size: 56px; line-height: 1; text-align: center; margin: 4px 0 12px; }
+  .krm-h3 { font-size: 18px; font-weight: 600; margin: 0 0 8px; text-align: center; }
+  .krm-p { color: #6b7280; font-size: 14px; margin: 0 0 20px; text-align: center; line-height: 1.5; }
+  .krm-label { display: block; font-size: 13px; font-weight: 600; color: #374151; margin: 0 0 6px; }
+  .krm-input, .krm-textarea { width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; font-family: inherit; box-sizing: border-box; color: #111; }
+  .krm-input:focus, .krm-textarea:focus { outline: none; border-color: #dc2626; box-shadow: 0 0 0 3px rgba(220,38,38,0.15); }
+  .krm-textarea { resize: vertical; min-height: 88px; }
+  .krm-row { margin-bottom: 14px; }
+  .krm-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 12px 20px; background: #dc2626; color: #fff; border: none; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; transition: background 120ms ease; }
+  .krm-btn-primary:hover { background: #b91c1c; }
+  .krm-btn-primary:disabled { opacity: 0.55; cursor: not-allowed; }
+  .krm-btn-google { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 12px 20px; background: linear-gradient(135deg, #dc2626, #f97316); color: #fff; border: none; border-radius: 10px; text-decoration: none; font-size: 14px; font-weight: 700; }
+  .krm-btn-secondary { display: inline-flex; align-items: center; justify-content: center; width: 100%; padding: 12px 20px; background: #f3f4f6; color: #111; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .krm-btn-secondary:hover { background: #e5e7eb; }
+  .krm-error { color: #b91c1c; font-size: 13px; margin: 8px 0 0; text-align: center; display: none; }
+  .krm-error.is-visible { display: block; }
+</style>
+<%# Place ID source: ONLY googlePlaceId, which renderCtx populates from
+    public.subscriber_pwas.google_place_id (set by admin in tapavis-admin →
+    AI Builder → Apps → "Set Place ID"). The legacy
+    admin_settings.google_place_id fallback is intentionally gone — single
+    source of truth on the platform. If 5-star doesn't open Google, the
+    Place ID needs to be set in tapavis-admin, not anywhere else. %>
+<div id="krm-overlay" class="krm-overlay" data-action-url="<%= typeof reviewActionUrl !== 'undefined' && reviewActionUrl ? reviewActionUrl : '/api/keychain-review' %>" data-place-id="<%= (typeof googlePlaceId !== 'undefined' && googlePlaceId) || '' %>" data-lang="<%= lang %>">
+  <div class="krm-card" role="dialog" aria-modal="true" aria-labelledby="krm-title">
+    <button id="krm-close" type="button" class="krm-close" aria-label="<%= lang === 'en' ? 'Close' : 'Fermer' %>">×</button>
+
+    <!-- Step 1: rating -->
+    <div id="krm-step-rate" class="krm-step is-active">
+      <h2 id="krm-title" class="krm-title"><%= lang === 'en' ? 'Thanks for visiting!' : 'Merci de votre visite!' %></h2>
+      <p class="krm-sub"><%= lang === 'en'
+        ? 'How was your experience with ' + (settings.business_name_en || settings.business_name || 'us') + '?'
+        : 'Comment était votre expérience avec ' + (settings.business_name_fr || settings.business_name || 'nous') + '?' %></p>
+      <div id="krm-stars" class="krm-stars" role="radiogroup" aria-label="<%= lang === 'en' ? 'Rate from 1 to 5 stars' : 'Notez de 1 à 5 étoiles' %>">
+        <% [1,2,3,4,5].forEach(function(r){ %>
+          <button type="button" class="krm-star" data-rating="<%= r %>" aria-label="<%= r %> <%= lang === 'en' ? 'star' : 'étoile' %>">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <polygon class="krm-star-poly" points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+            </svg>
+          </button>
+        <% }); %>
+      </div>
+    </div>
+
+    <!-- Step 2: 5★ → Google review redirect -->
+    <div id="krm-step-google" class="krm-step">
+      <div class="krm-hero">🌟</div>
+      <h3 class="krm-h3"><%= lang === 'en' ? "You're a star!" : 'Vous êtes une étoile !' %></h3>
+      <p class="krm-p"><%= lang === 'en'
+        ? (settings.business_name_en || settings.business_name || 'The team') + " will be delighted! Share it on Google so others can find them too."
+        : (settings.business_name_fr || settings.business_name || "L'équipe") + " sera ravie ! Partagez-le sur Google pour aider d'autres à les trouver." %></p>
+      <a id="krm-google-link" href="#" target="_blank" rel="noopener noreferrer" class="krm-btn-google">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+          <polyline points="15 3 21 3 21 9"></polyline>
+          <line x1="10" y1="14" x2="21" y2="3"></line>
+        </svg>
+        <%= lang === 'en' ? 'Review on Google' : 'Évaluer sur Google' %>
+      </a>
+    </div>
+
+    <!-- Step 3: 4★ → simple thank-you (no Google, no form) -->
+    <div id="krm-step-thanks" class="krm-step">
+      <div class="krm-hero">🙌</div>
+      <h3 class="krm-h3"><%= lang === 'en' ? 'Thank you!' : 'Merci !' %></h3>
+      <p class="krm-p"><%= lang === 'en' ? 'Thanks for rating us.' : 'Merci pour votre note.' %></p>
+      <button type="button" id="krm-thanks-close" class="krm-btn-secondary"><%= lang === 'en' ? 'Close' : 'Fermer' %></button>
+    </div>
+
+    <!-- Step 4: 1-3★ → contact form -->
+    <form id="krm-step-feedback" class="krm-step" novalidate>
+      <h3 class="krm-h3"><%= lang === 'en' ? 'Help us improve' : 'Aidez-nous à nous améliorer' %></h3>
+      <p class="krm-p"><%= lang === 'en' ? 'The team will reply to you directly.' : "L'équipe vous répondra directement." %></p>
+      <div class="krm-row">
+        <label class="krm-label" for="krm-email"><%= lang === 'en' ? 'Your email' : 'Votre courriel' %></label>
+        <input id="krm-email" type="email" required autocomplete="email" class="krm-input" placeholder="you@example.com" />
+      </div>
+      <div class="krm-row">
+        <label class="krm-label" for="krm-message"><%= lang === 'en' ? 'Message' : 'Message' %></label>
+        <textarea id="krm-message" required rows="4" class="krm-textarea" placeholder="<%= lang === 'en' ? 'What could we do better?' : 'Que pourrions-nous mieux faire ?' %>"></textarea>
+      </div>
+      <button type="submit" id="krm-send" class="krm-btn-primary"><%= lang === 'en' ? 'Send' : 'Envoyer' %></button>
+      <p id="krm-error" class="krm-error" role="alert"></p>
+    </form>
+
+    <!-- Step 5: done (after low-rating submission) -->
+    <div id="krm-step-done" class="krm-step">
+      <div class="krm-hero">🙏</div>
+      <h3 class="krm-h3"><%= lang === 'en' ? 'Thanks for your feedback' : 'Merci pour vos commentaires' %></h3>
+      <p class="krm-p"><%= lang === 'en' ? "We'll get back to you as soon as we can." : 'Nous reviendrons vers vous dès que possible.' %></p>
+      <button type="button" id="krm-done-close" class="krm-btn-secondary"><%= lang === 'en' ? 'Close' : 'Fermer' %></button>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  function getCookie(name) {
+    var m = document.cookie.match(new RegExp('(?:^|; )' + name.replace(/[.$?*|{}()[\]\\\/+^]/g, '\\$&') + '=([^;]*)'));
+    return m ? decodeURIComponent(m[1]) : null;
+  }
+  function clearCookie(name) {
+    document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+  }
+  var overlay = document.getElementById('krm-overlay');
+  if (!overlay) return;
+  if (getCookie('keychain_show_review') !== '1') return;
+  // One-shot: clear immediately so a quick reload doesn't re-show.
+  clearCookie('keychain_show_review');
+
+  var actionUrl = overlay.getAttribute('data-action-url');
+  var placeId = overlay.getAttribute('data-place-id') || '';
+  // Browser-console breadcrumb so the next 5-star test is self-diagnosing.
+  // Open DevTools → Console before clicking the star. If placeId is empty
+  // string, the platform value (subscriber_pwas.google_place_id) didn't
+  // thread through; check server logs for [keychain-place-id] and confirm
+  // the Place ID is set in tapavis-admin → AI Builder → Apps.
+  console.log('[krm] modal mounted, placeId="' + placeId + '" (empty = will fall back to thanks on 5-star)');
+
+  var stepRate = document.getElementById('krm-step-rate');
+  var stepGoogle = document.getElementById('krm-step-google');
+  var stepThanks = document.getElementById('krm-step-thanks');
+  var stepFeedback = document.getElementById('krm-step-feedback');
+  var stepDone = document.getElementById('krm-step-done');
+  var googleLink = document.getElementById('krm-google-link');
+  var sendBtn = document.getElementById('krm-send');
+  var emailInput = document.getElementById('krm-email');
+  var messageInput = document.getElementById('krm-message');
+  var errorEl = document.getElementById('krm-error');
+  var closeBtn = document.getElementById('krm-close');
+
+  var stars = Array.from(overlay.querySelectorAll('.krm-star'));
+  var selectedRating = 0;
+
+  function show() { overlay.classList.add('is-open'); }
+  function dismiss() { overlay.classList.remove('is-open'); }
+  function showStep(el) {
+    [stepRate, stepGoogle, stepThanks, stepFeedback, stepDone].forEach(function (s) { s.classList.remove('is-active'); });
+    el.classList.add('is-active');
+  }
+  function paintFilled(n) {
+    stars.forEach(function (s) {
+      var r = parseInt(s.getAttribute('data-rating'), 10);
+      s.classList.toggle('is-filled', r <= n);
+      s.classList.remove('is-hover');
+    });
+  }
+  function paintHover(n) {
+    stars.forEach(function (s) {
+      var r = parseInt(s.getAttribute('data-rating'), 10);
+      s.classList.toggle('is-hover', r <= n);
+    });
+  }
+  function clearHover() {
+    stars.forEach(function (s) { s.classList.remove('is-hover'); });
+  }
+
+  stars.forEach(function (btn) {
+    btn.addEventListener('mouseenter', function () { paintHover(parseInt(btn.getAttribute('data-rating'), 10)); });
+    btn.addEventListener('focus', function () { paintHover(parseInt(btn.getAttribute('data-rating'), 10)); });
+    btn.addEventListener('blur', clearHover);
+    btn.addEventListener('click', function () {
+      var rating = parseInt(btn.getAttribute('data-rating'), 10);
+      selectedRating = rating;
+      paintFilled(rating);
+      btn.classList.remove('pop');
+      void btn.offsetWidth;
+      btn.classList.add('pop');
+
+      if (rating >= 5) {
+        if (placeId) {
+          googleLink.href = 'https://search.google.com/local/writereview?placeid=' + encodeURIComponent(placeId);
+          showStep(stepGoogle);
+        } else {
+          showStep(stepThanks);
+        }
+      } else if (rating === 4) {
+        showStep(stepThanks);
+      } else {
+        showStep(stepFeedback);
+      }
+    });
+  });
+
+  document.getElementById('krm-stars').addEventListener('mouseleave', clearHover);
+
+  stepFeedback.addEventListener('submit', function (e) {
+    e.preventDefault();
+    errorEl.classList.remove('is-visible');
+    var userEmail = (emailInput.value || '').trim();
+    var message = (messageInput.value || '').trim();
+    if (!userEmail || !message) return;
+    sendBtn.disabled = true;
+    fetch(actionUrl, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ rating: selectedRating, message: message, userEmail: userEmail }),
+    })
+      .then(function (r) { return r.json().catch(function () { return { success: false, error: 'HTTP ' + r.status }; }); })
+      .then(function (data) {
+        if (data && data.success) {
+          showStep(stepDone);
+        } else {
+          errorEl.textContent = (data && data.error) || 'Error';
+          errorEl.classList.add('is-visible');
+          sendBtn.disabled = false;
+        }
+      })
+      .catch(function (err) {
+        errorEl.textContent = (err && err.message) || 'Network error';
+        errorEl.classList.add('is-visible');
+        sendBtn.disabled = false;
+      });
+  });
+
+  closeBtn.addEventListener('click', dismiss);
+  document.getElementById('krm-thanks-close').addEventListener('click', dismiss);
+  document.getElementById('krm-done-close').addEventListener('click', dismiss);
+  overlay.addEventListener('click', function (e) { if (e.target === overlay) dismiss(); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && overlay.classList.contains('is-open')) dismiss();
+  });
+
+  // Show after a brief tick so the page settles in first.
+  setTimeout(show, 400);
+})();
+</script>

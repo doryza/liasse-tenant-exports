@@ -1,0 +1,228 @@
+<%- include('partials/header') %>
+<% var ORDER_URL = 'https://ali-baba-boucherie.liasse.tech/order'; %>
+<% var CAT_EMOJI = { 'Entrées': '🥗', 'Sandwichs': '🥙', 'Tartares': '🥩', 'Assiettes': '🔥', 'Breuvages': '🥤', 'Dessert': '🍯' }; %>
+<% var SPLASH_LOGO = (typeof settings!=='undefined' && settings._p_nav_logo_url) ? settings._p_nav_logo_url : (typeof appIconUrl !== 'undefined' ? appIconUrl : ''); %>
+
+<% if (SPLASH_LOGO) { %>
+<style>
+  #logoSplash {
+    position: fixed; inset: 0; z-index: 9999;
+    display: flex; align-items: center; justify-content: center;
+    background: #0a0806;
+    transition: background 0.55s ease, opacity 0.45s ease;
+    /* CSS-only fallback: if scripts never run, fade out on our own so the
+       page can never stay trapped behind the splash. */
+    animation: splash-autohide 0.45s ease 4.2s forwards;
+  }
+  @keyframes splash-autohide { to { opacity: 0; visibility: hidden; } }
+  #logoSplash img {
+    width: 112px; height: 112px; object-fit: contain; border-radius: 12px;
+    will-change: transform;
+    animation: splash-pulse 1.5s ease-in-out infinite;
+  }
+  #logoSplash.splash-flying { background: transparent; }
+  #logoSplash.splash-flying img {
+    animation: none;
+    transition: transform 0.8s cubic-bezier(0.25, 0.8, 0.3, 1.05);
+  }
+  #logoSplash.splash-fade { opacity: 0; pointer-events: none; }
+  body.splash-active .hero-banner-logo { visibility: hidden; }
+  @keyframes splash-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.07); } }
+  @media (prefers-reduced-motion: reduce) { #logoSplash img { animation: none; } }
+</style>
+<div id="logoSplash" aria-hidden="true"><img src="<%= SPLASH_LOGO %>" alt=""></div>
+<script>
+(function(){
+  var splash = document.getElementById('logoSplash');
+  if (!splash) return;
+  // Owner/inline-editor mode: the platform injects data-pwa-admin on <body>
+  // and an image editor that scans all <img>s ~500ms after DOMContentLoaded.
+  // The splash would still be covering the hero then (the editor's purple
+  // edit buttons sit at a lower z-index), hiding the hero image and its
+  // edit icon — so don't run the splash at all when editing.
+  if (document.body.hasAttribute('data-pwa-admin') || /[?&]_inline_edit=1/.test(location.search)) {
+    splash.parentNode.removeChild(splash);
+    return;
+  }
+  document.body.classList.add('splash-active');
+  var img = splash.querySelector('img');
+  var started = Date.now();
+  var done = false;
+  var MIN_SHOW = 700;   // never flash the splash for less than this
+  var LOAD_CAP = 2500;  // fly even if window load is still pending
+
+  function cleanup() {
+    document.body.classList.remove('splash-active');
+    if (splash.parentNode) splash.parentNode.removeChild(splash);
+  }
+  // No-animation exit: fade the whole overlay, then reveal the real logo.
+  function finish() {
+    if (done) return; done = true;
+    splash.classList.add('splash-fade');
+    setTimeout(cleanup, 500);
+  }
+  function fly() {
+    if (done) return;
+    var target = document.querySelector('.hero-banner-logo');
+    var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    // Target can be display:none (banner logo onerror) — fall back to a plain fade.
+    if (reduced || !target || target.offsetParent === null) { finish(); return; }
+    done = true;
+    var tr = target.getBoundingClientRect();
+    var ir = img.getBoundingClientRect();
+    var dx = (tr.left + tr.width / 2) - (ir.left + ir.width / 2);
+    var dy = (tr.top + tr.height / 2) - (ir.top + ir.height / 2);
+    var scale = tr.width / ir.width;
+    splash.classList.add('splash-flying');
+    void img.offsetWidth;
+    img.style.transform = 'translate(' + dx + 'px,' + dy + 'px) scale(' + scale + ')';
+    setTimeout(cleanup, 850);
+  }
+  function schedule() {
+    setTimeout(fly, Math.max(0, MIN_SHOW - (Date.now() - started)));
+  }
+  img.addEventListener('error', finish);
+  if (document.readyState === 'complete') schedule();
+  else { window.addEventListener('load', schedule); setTimeout(fly, LOAD_CAP); }
+  setTimeout(finish, 4000); // hard safety net — never trap the page behind the splash
+})();
+</script>
+<% } %>
+
+<section class="hero hero-squeeze">
+  <img src="<%= (typeof settings!=='undefined' && settings._p_hero_image_url) ? settings._p_hero_image_url : 'https://placehold.co/1600x900/0a0806/F5A524/png?text=Ali+Baba+Grillades' %>" alt="<%= t.brand %>" class="hero-img">
+  <div class="hero-overlay"></div>
+  <div class="hero-banner">
+    <div class="hero-banner-inner">
+      <img src="<%= (typeof settings!=='undefined' && settings._p_nav_logo_url) ? settings._p_nav_logo_url : (typeof appIconUrl !== 'undefined' ? appIconUrl : '') %>" alt="<%= t.brand %>" class="hero-banner-logo" onerror="this.style.display='none'">
+      <span class="hero-banner-divider"></span>
+      <span class="hero-banner-title">
+        <span class="hero-banner-name"><%= settings.business_name || t.brand %></span>
+        <span class="hero-banner-sub">sur charbon</span>
+      </span>
+    </div>
+  </div>
+  <h1 class="hero-slogan"><%= lang === 'en' ? 'The Taste of Real Charcoal' : 'Le goût du charbon de bois' %></h1>
+</section>
+
+<section class="section squeeze-section" id="menu">
+  <div class="container">
+    <h2 class="section-title"><%= t.menu_title %></h2>
+    <p class="section-sub"><%= t.menu_subtitle %></p>
+  </div>
+  <% if (typeof preview !== 'undefined' && preview && preview.items && preview.items.length > 0) { %>
+  <div class="container">
+    <div class="menu-chips" id="menuChips">
+      <button class="chip active" data-cat="*"><%= lang === 'en' ? 'All' : 'Tout' %></button>
+      <% preview.categories.forEach(function(cat) { %>
+      <button class="chip" data-cat="<%= cat %>"><%= (CAT_EMOJI[cat] ? CAT_EMOJI[cat] + ' ' : '') %><%= (lang === 'en' && typeof previewCatEn !== 'undefined' && previewCatEn[cat]) ? previewCatEn[cat] : cat %></button>
+      <% }); %>
+    </div>
+  </div>
+  <div class="menu-slider" id="menuSlider">
+    <button class="slider-arrow slider-prev" id="sliderPrev" aria-label="<%= lang === 'en' ? 'Previous' : 'Précédent' %>">‹</button>
+    <div class="slider-track" id="sliderTrack">
+      <% preview.items.forEach(function(m) { %>
+      <article class="slide-card" data-cat="<%= m.category %>">
+        <div class="slide-card-imgwrap">
+          <% if (m.imageUrl) { %><img src="<%= m.imageUrl %>" alt="<%= m.name %>" loading="lazy"><% } else { %><div class="slide-card-placeholder"><%= CAT_EMOJI[m.category] || '🔥' %></div><% } %>
+          <span class="slide-cat"><%= (lang === 'en' && typeof previewCatEn !== 'undefined' && previewCatEn[m.category]) ? previewCatEn[m.category] : m.category %></span>
+        </div>
+        <div class="slide-card-body">
+          <div class="slide-card-top">
+            <h3><%= m.name %></h3>
+            <span class="price"><%= formatPrice(m.price) %></span>
+          </div>
+          <% if (m.note) { %><span class="slide-note">🕐 <%= lang === 'en' ? 'Lunch only · 11:30–15:00' : 'Midi seulement · 11h30–15h00' %></span><% } %>
+          <% if (m.description) { %><p class="desc"><%= m.description %></p><% } %>
+        </div>
+      </article>
+      <% }); %>
+    </div>
+    <button class="slider-arrow slider-next" id="sliderNext" aria-label="<%= lang === 'en' ? 'Next' : 'Suivant' %>">›</button>
+    <div class="slider-progress"><span id="sliderBar"></span></div>
+  </div>
+  <% } else { %>
+  <div class="container"><p class="empty-state"><%= t.no_menu %></p></div>
+  <% } %>
+</section>
+
+<section class="section squeeze-section alt-section">
+  <div class="container order-band">
+    <div class="order-band-text">
+      <h2><%= lang === 'en' ? 'Your next meal is waiting.' : 'Votre prochain repas vous attend.' %></h2>
+      <p><%= lang === 'en' ? 'Charcoal-grilled meats, Lebanese tartares and house pastries — fresh from the butcher, made to order.' : 'Viandes grillées sur charbon, tartares libanais et pâtisseries maison — fraîches de la boucherie, préparées à la commande.' %></p>
+    </div>
+    <a href="<%= ORDER_URL %>" target="_blank" rel="noopener" class="btn btn-primary btn-order"><%= lang === 'en' ? 'Order now' : 'Commander maintenant' %> →</a>
+    <% if (typeof platforms !== 'undefined' && platforms && platforms.length > 0) { %>
+    <div class="order-band-platforms">
+      <span><%= lang === 'en' ? 'Also on' : 'Aussi sur' %></span>
+      <% platforms.forEach(function(p) { %>
+        <a href="<%= p.link_url %>" target="_blank" rel="noopener" title="<%= p.name %>"><% if (p.logo_url) { %><img src="<%= p.logo_url %>" alt="<%= p.name %>"><% } else { %><%= p.name %><% } %></a>
+      <% }); %>
+    </div>
+    <% } %>
+  </div>
+</section>
+
+<a href="<%= ORDER_URL %>" target="_blank" rel="noopener" class="sticky-order-cta"><%= lang === 'en' ? 'Order now' : 'Commander' %> →</a>
+
+<script>
+(function(){
+  var track = document.getElementById('sliderTrack');
+  if (!track) return;
+  var prev = document.getElementById('sliderPrev');
+  var next = document.getElementById('sliderNext');
+  var bar = document.getElementById('sliderBar');
+  var chipsWrap = document.getElementById('menuChips');
+  var allCards = Array.prototype.slice.call(track.querySelectorAll('.slide-card'));
+
+  function visibleCards(){
+    return allCards.filter(function(c){ return !c.classList.contains('chip-hidden'); });
+  }
+  function cardStep(){
+    var v = visibleCards();
+    if (v.length < 2) return v[0] ? v[0].offsetWidth : 0;
+    return v[1].offsetLeft - v[0].offsetLeft;
+  }
+  function currentIndex(){
+    var step = cardStep();
+    return step ? Math.round(track.scrollLeft / step) : 0;
+  }
+  function goTo(i){
+    var max = visibleCards().length - 1;
+    if (max < 0) return;
+    if (i < 0) i = max; else if (i > max) i = 0;
+    track.scrollTo({ left: i * cardStep(), behavior: 'smooth' });
+  }
+  function syncBar(){
+    var maxScroll = track.scrollWidth - track.clientWidth;
+    bar.style.width = (maxScroll > 0 ? Math.min(100, Math.max(0, (track.scrollLeft / maxScroll) * 100)) : 100) + '%';
+  }
+  syncBar();
+  track.addEventListener('scroll', syncBar, { passive: true });
+  window.addEventListener('resize', syncBar);
+
+  prev.addEventListener('click', function(){ goTo(currentIndex() - 1); pause(); });
+  next.addEventListener('click', function(){ goTo(currentIndex() + 1); pause(); });
+
+  chipsWrap.addEventListener('click', function(ev){
+    var chip = ev.target.closest('.chip');
+    if (!chip) return;
+    var cat = chip.getAttribute('data-cat');
+    chipsWrap.querySelectorAll('.chip').forEach(function(c){ c.classList.toggle('active', c === chip); });
+    allCards.forEach(function(card){
+      card.classList.toggle('chip-hidden', cat !== '*' && card.getAttribute('data-cat') !== cat);
+    });
+    track.scrollTo({ left: 0, behavior: 'auto' });
+    syncBar();
+  });
+
+  var timer = setInterval(function(){ goTo(currentIndex() + 1); }, 4500);
+  function pause(){ if (timer) { clearInterval(timer); timer = null; } }
+  track.addEventListener('pointerdown', pause, { passive: true });
+  track.addEventListener('wheel', pause, { passive: true });
+})();
+</script>
+
+<%- include('partials/footer') %>

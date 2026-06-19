@@ -1,0 +1,364 @@
+<style>
+.offer-stats-wrap { margin-bottom: 1.25rem; }
+.offer-stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0.75rem; margin-bottom: 1rem; }
+.offer-stat-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1rem 1.1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+.offer-stat-card .label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: #718096; font-weight: 700; margin-bottom: 0.35rem; }
+.offer-stat-card .value { font-size: 1.6rem; font-weight: 800; color: #1a202c; line-height: 1.1; }
+.offer-stat-card .sub { font-size: 0.78rem; color: #718096; margin-top: 0.25rem; }
+.offer-stats-table-wrap { background: #fff; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); padding: 1rem 1.1rem 1.1rem; margin-bottom: 1.25rem; overflow-x: auto; }
+.offer-stats-table-wrap h3 { margin: 0 0 0.75rem; font-size: 0.95rem; color: #1a202c; font-weight: 700; }
+.offer-stats-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.offer-stats-table th { text-align: left; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: #718096; font-weight: 700; padding: 0.5rem 0.6rem; border-bottom: 1px solid #edf2f7; }
+.offer-stats-table th.num, .offer-stats-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
+.offer-stats-table td { padding: 0.65rem 0.6rem; border-bottom: 1px solid #f7fafc; color: #2d3748; }
+.offer-stats-table tr:last-child td { border-bottom: 0; }
+.offer-stats-table .offer-title { font-weight: 600; color: #1a202c; }
+.offer-stats-table .offer-meta { font-size: 0.78rem; color: #a0aec0; }
+.offer-stats-empty { padding: 1.25rem; text-align: center; color: #718096; font-size: 0.9rem; }
+.offer-stats-status { font-size: 0.72rem; padding: 0.18rem 0.5rem; border-radius: 999px; font-weight: 700; display: inline-block; }
+.offer-stats-status.active { background: #e6fffa; color: #0a6e5a; }
+.offer-stats-status.inactive { background: #f7fafc; color: #718096; }
+.offer-stats-status.expired { background: #fff5f5; color: #9b2c2c; }
+.offer-stats-status.upcoming { background: #fffaf0; color: #92500a; }
+.offer-stats-rate { font-weight: 700; color: #16a34a; }
+.offer-stats-rate.low { color: #a0aec0; }
+
+.redeem-widget { background: #fff; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); margin-bottom: 1.25rem; overflow: hidden; }
+.redeem-widget-header { display: flex; align-items: center; justify-content: space-between; padding: 0.85rem 1.25rem; user-select: none; background: linear-gradient(90deg, rgba(245,165,36,0.06), transparent); border-bottom: 1px solid #e2e8f0; }
+.redeem-widget-header h3 { margin: 0; font-size: 1rem; color: #1a202c; font-weight: 700; }
+.redeem-widget-body { padding: 1.25rem; }
+.redeem-tabs { display: flex; gap: 0.5rem; margin-bottom: 1rem; background: #f7fafc; padding: 0.25rem; border-radius: 10px; }
+.redeem-tab { flex: 1; padding: 0.6rem 0.85rem; text-align: center; font-size: 0.92rem; font-weight: 700; color: #4a5568; background: transparent; border: 0; border-radius: 8px; cursor: pointer; transition: background 0.15s, color 0.15s; }
+.redeem-tab.active { background: #fff; color: #1a202c; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+.redeem-tab:hover:not(.active) { background: rgba(255,255,255,0.6); }
+.redeem-mode { display: none; }
+.redeem-mode.active { display: block; }
+.redeem-input-row { display: flex; gap: 0.6rem; margin-bottom: 0.9rem; }
+.redeem-input-row input { flex: 1; font-family: 'SFMono-Regular','Menlo',Consolas,monospace; font-size: 1.35rem; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; padding: 0.65rem 0.9rem; border: 2px solid #e2e8f0; border-radius: 9px; }
+.redeem-input-row input:focus { outline: none; border-color: #F5A524; box-shadow: 0 0 0 4px rgba(245,165,36,0.15); }
+.redeem-scan-area { position: relative; }
+#qrReader { width: 100%; max-width: 360px; margin: 0 auto; border-radius: 12px; overflow: hidden; background: #0a0a0a; }
+#qrReader video { width: 100%; display: block; }
+.qr-scan-hint { text-align: center; color: #718096; font-size: 0.85rem; margin: 0.75rem 0 0; }
+.qr-scan-controls { display: flex; gap: 0.5rem; justify-content: center; margin-top: 0.75rem; }
+.qr-scan-controls .btn { padding: 0.55rem 1.1rem; font-size: 0.9rem; font-weight: 700; border-radius: 8px; border: 0; cursor: pointer; }
+.qr-scan-controls .btn-stop { background: #fed7d7; color: #9b2c2c; }
+.qr-scan-controls .btn-stop:hover { background: #feb2b2; }
+.qr-scan-error { background: #fff5f5; border: 1px solid #fed7d7; color: #9b2c2c; padding: 0.7rem 0.95rem; border-radius: 9px; font-size: 0.88rem; margin-bottom: 0.75rem; }
+.qr-scan-placeholder { aspect-ratio: 1; max-width: 360px; margin: 0 auto; background: #f7fafc; border: 2px dashed #cbd5e0; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #a0aec0; font-size: 0.9rem; text-align: center; padding: 1rem; }
+.redeem-result { padding: 0.8rem 0; font-size: 0.9rem; }
+.redeem-result-row { display: flex; justify-content: space-between; padding: 0.45rem 0; border-bottom: 1px solid #edf2f7; gap: 1rem; }
+.redeem-result-row:last-child { border-bottom: 0; }
+.redeem-result-row .lbl { color: #718096; font-size: 0.85rem; }
+.redeem-result-row .val { font-weight: 600; text-align: right; }
+.redeem-banner { padding: 0.7rem 1rem; border-radius: 9px; margin-bottom: 0.85rem; font-weight: 600; font-size: 0.9rem; }
+.redeem-banner.ok { background: #e8fff0; color: #0a6e2e; border: 1px solid #b7f5cb; }
+.redeem-banner.warn { background: #fff7e0; color: #92500a; border: 1px solid #f7d889; }
+.redeem-banner.err { background: #ffeaea; color: #8a1a1a; border: 1px solid #f8b3b3; }
+.btn-redeem-confirm { background: #F5A524; color: #000; padding: 0.75rem 1.25rem; font-weight: 800; font-size: 0.95rem; border-radius: 9px; border: 0; cursor: pointer; width: 100%; margin-top: 0.6rem; }
+.btn-redeem-confirm:hover { background: #5cff44; }
+.btn-redeem-confirm:disabled { background: #cbd5e0; color: #4a5568; cursor: not-allowed; }
+</style>
+
+<div class="offer-stats-wrap">
+  <div class="offer-stats-grid" id="offerStatsOverall">
+    <div class="offer-stat-card"><div class="label">Offres totales</div><div class="value" id="osTotal">—</div><div class="sub" id="osActive">—</div></div>
+    <div class="offer-stat-card"><div class="label">Réservations</div><div class="value" id="osClaims">—</div><div class="sub">Codes émis aux clients</div></div>
+    <div class="offer-stat-card"><div class="label">Utilisations</div><div class="value" id="osRedeemed">—</div><div class="sub">Codes échangés au comptoir</div></div>
+    <div class="offer-stat-card"><div class="label">Taux d'utilisation</div><div class="value" id="osRate">—</div><div class="sub">Utilisations / réservations</div></div>
+  </div>
+</div>
+
+<div class="offer-stats-table-wrap" id="offerStatsTableWrap">
+  <h3>Statistiques par campagne</h3>
+  <div id="offerStatsTableBody"><div class="offer-stats-empty">Chargement…</div></div>
+</div>
+
+<div class="redeem-widget" id="redeemWidget">
+  <div class="redeem-widget-header">
+    <h3>✅ Échanger un code client</h3>
+  </div>
+  <div class="redeem-widget-body">
+    <div class="redeem-tabs" role="tablist">
+      <button class="redeem-tab active" id="redeemTabKey" type="button" role="tab" aria-selected="true">📝 Saisir le code</button>
+      <button class="redeem-tab" id="redeemTabScan" type="button" role="tab" aria-selected="false">📷 Scanner le QR</button>
+    </div>
+
+    <div class="redeem-mode active" id="redeemModeKey" role="tabpanel">
+      <p style="margin:0 0 0.85rem;color:#718096;font-size:0.85rem">Entrez le code à 8 caractères que le client présente au comptoir.</p>
+      <div class="redeem-input-row">
+        <input type="text" id="redeemCodeInput" maxlength="8" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ex. B7XK9P2M">
+        <button class="btn btn-primary" id="redeemLookupBtn" style="background-color:#F5A524;color:#000">Vérifier</button>
+      </div>
+    </div>
+
+    <div class="redeem-mode" id="redeemModeScan" role="tabpanel">
+      <div id="qrScanError" class="qr-scan-error" style="display:none"></div>
+      <div class="redeem-scan-area">
+        <div id="qrReader"></div>
+        <div id="qrReaderPlaceholder" class="qr-scan-placeholder" style="display:none">📷 Activation de la caméra…</div>
+      </div>
+      <p class="qr-scan-hint">Pointez la caméra vers le QR code affiché sur le téléphone du client.</p>
+      <div class="qr-scan-controls">
+        <button type="button" class="btn btn-stop" id="qrStopBtn" style="display:none">Arrêter la caméra</button>
+      </div>
+    </div>
+
+    <div id="redeemResultArea" style="margin-top:1rem"></div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script>
+(function(){
+  function rEsc(s) { if (s == null) return ''; return String(s).replace(/[&<>"']/g, function(c){ return ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[c]; }); }
+  function rToast(msg, type) { if (typeof toast === 'function') return toast(msg, type); }
+  function fmtDateTime(s) { if (!s) return '—'; try { return new Date(s).toLocaleString('fr-CA', { year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' }); } catch(_) { return s; } }
+
+  function statusLabel(s) {
+    if (s === 'claimed') return '<span class="badge badge-warn">Réservé</span>';
+    if (s === 'redeemed') return '<span class="badge badge-success">Utilisé</span>';
+    if (s === 'expired') return '<span class="badge badge-muted">Expiré</span>';
+    return '<span class="badge badge-muted">' + rEsc(s || '—') + '</span>';
+  }
+  function userLabel(u) {
+    if (!u) return '—';
+    if (u.display_name) return rEsc(u.display_name);
+    if (u.email) return rEsc(u.email);
+    if (u.phone) return rEsc(u.phone);
+    return '—';
+  }
+  function errorBanner(err) {
+    if (err === 'not_found') return '<div class="redeem-banner err">⚠️ Code introuvable.</div>';
+    if (err === 'expired') return '<div class="redeem-banner err">⚠️ Cette offre est expirée.</div>';
+    if (err === 'offer_inactive') return '<div class="redeem-banner err">⚠️ Cette offre n\'est plus active.</div>';
+    if (err === 'already_redeemed') return '<div class="redeem-banner warn">⚠️ Ce code a déjà été utilisé.</div>';
+    return '<div class="redeem-banner err">Erreur: ' + rEsc(err || 'inconnue') + '</div>';
+  }
+  function renderClaim(c, banner) {
+    if (!c) return '';
+    var title = c.title_fr || c.title_en || ('Offre #' + c.offer_id);
+    var html = '';
+    if (banner) html += banner;
+    html += '<div class="redeem-result">';
+    html += '<div class="redeem-result-row"><div class="lbl">Code</div><div class="val" style="font-family:monospace;letter-spacing:0.12em">' + rEsc(c.short_code) + '</div></div>';
+    html += '<div class="redeem-result-row"><div class="lbl">Offre</div><div class="val">' + rEsc(title) + (c.discount_label ? ' <span style="color:#16a34a">(' + rEsc(c.discount_label) + ')</span>' : '') + '</div></div>';
+    html += '<div class="redeem-result-row"><div class="lbl">Client</div><div class="val">' + userLabel(c._user) + '</div></div>';
+    html += '<div class="redeem-result-row"><div class="lbl">Réservé le</div><div class="val">' + fmtDateTime(c.claimed_at) + '</div></div>';
+    html += '<div class="redeem-result-row"><div class="lbl">Expire le</div><div class="val">' + fmtDateTime(c.offer_expires_at) + '</div></div>';
+    html += '<div class="redeem-result-row"><div class="lbl">Statut</div><div class="val">' + statusLabel(c.status) + '</div></div>';
+    if (c.status === 'redeemed') html += '<div class="redeem-result-row"><div class="lbl">Utilisé le</div><div class="val">' + fmtDateTime(c.redeemed_at) + '</div></div>';
+    html += '</div>';
+    if (c.status === 'claimed' && c.offer_active != 0 && new Date(c.offer_expires_at) > new Date()) {
+      html += '<button class="btn-redeem-confirm" id="redeemConfirmBtn" data-code="' + rEsc(c.short_code) + '">✓ Valider et marquer comme utilisé</button>';
+    }
+    return html;
+  }
+
+  async function lookupCode() {
+    var input = document.getElementById('redeemCodeInput');
+    var code = (input.value || '').trim().toUpperCase();
+    if (!code) { rToast('Entrez un code', 'error'); input.focus(); return; }
+    var area = document.getElementById('redeemResultArea');
+    area.innerHTML = '<div class="redeem-banner warn">⏳ Recherche…</div>';
+    try {
+      var r = await fetch('api/admin/offer_claims/lookup', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ short_code: code }) });
+      var data = await r.json().catch(function(){ return {}; });
+      if (r.status === 404) { area.innerHTML = errorBanner('not_found'); return; }
+      if (!r.ok || !data.claim) { area.innerHTML = errorBanner(data.error || 'unknown'); return; }
+      area.innerHTML = renderClaim(data.claim);
+    } catch(e) { area.innerHTML = errorBanner('network'); }
+  }
+
+  async function redeemClaim(code) {
+    var btn = document.getElementById('redeemConfirmBtn');
+    if (btn) { btn.disabled = true; btn.textContent = '⏳ Validation…'; }
+    try {
+      var r = await fetch('api/admin/offer_claims/redeem', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ short_code: code }) });
+      var data = await r.json().catch(function(){ return {}; });
+      var area = document.getElementById('redeemResultArea');
+      if (r.ok && data.success) {
+        rToast('Code validé!', 'success');
+        area.innerHTML = renderClaim(data.claim, '<div class="redeem-banner ok">✅ Code validé. Servez le client.</div>');
+      } else {
+        var banner = errorBanner(data.error || 'unknown');
+        area.innerHTML = data.claim ? renderClaim(data.claim, banner) : banner;
+      }
+    } catch(e) {
+      rToast('Erreur réseau', 'error');
+      if (btn) { btn.disabled = false; btn.textContent = '✓ Valider et marquer comme utilisé'; }
+    }
+  }
+
+  function offerStatusKey(o, now) {
+    if (!o || o.active == 0) return 'inactive';
+    if (o.expires_at && new Date(o.expires_at) <= now) return 'expired';
+    if (o.starts_at && new Date(o.starts_at) > now) return 'upcoming';
+    return 'active';
+  }
+  function fmtDate(s) { if (!s) return '—'; try { return new Date(s).toLocaleDateString('fr-CA', { year:'numeric', month:'short', day:'numeric' }); } catch(_) { return s; } }
+  function statusBadge(key) {
+    var label = key === 'active' ? 'Active' : key === 'expired' ? 'Expirée' : key === 'upcoming' ? 'À venir' : 'Inactive';
+    return '<span class="offer-stats-status ' + key + '">' + label + '</span>';
+  }
+  function pct(num, den) {
+    if (!den) return { text: '—', low: true };
+    var r = (num / den) * 100;
+    return { text: (r >= 10 ? Math.round(r) : r.toFixed(1)) + ' %', low: r < 1 };
+  }
+
+  async function loadOfferStats() {
+    var overall = { total: 0, active: 0, claims: 0, redeemed: 0 };
+    var tableBody = document.getElementById('offerStatsTableBody');
+    try {
+      var r = await fetch('api/admin/offers', { headers: { 'Accept': 'application/json' } });
+      var data = await r.json().catch(function(){ return {}; });
+      var offers = (data && data.offers) || [];
+      var now = new Date();
+      if (!offers.length) {
+        tableBody.innerHTML = '<div class="offer-stats-empty">Aucune offre créée pour l\'instant.</div>';
+      } else {
+        var rows = '<table class="offer-stats-table"><thead><tr>' +
+          '<th>Offre</th><th>Statut</th><th class="num">Réservations</th>' +
+          '<th class="num">Utilisations</th><th class="num">Taux</th></tr></thead><tbody>';
+        offers.forEach(function(o){
+          var key = offerStatusKey(o, now);
+          if (key === 'active') overall.active++;
+          overall.total++;
+          var claims = Number(o.claim_count || 0);
+          var redeemed = Number(o.redeem_count || 0);
+          overall.claims += claims;
+          overall.redeemed += redeemed;
+          var rate = pct(redeemed, claims);
+          var title = rEsc(o.title_fr || o.title_en || ('Offre #' + o.id));
+          var discount = o.discount_label ? ' <span style="color:#16a34a;font-size:0.78rem">(' + rEsc(o.discount_label) + ')</span>' : '';
+          var meta = '<div class="offer-meta">Expire le ' + fmtDate(o.expires_at) + '</div>';
+          rows += '<tr>' +
+            '<td><div class="offer-title">' + title + discount + '</div>' + meta + '</td>' +
+            '<td>' + statusBadge(key) + '</td>' +
+            '<td class="num">' + claims + '</td>' +
+            '<td class="num">' + redeemed + '</td>' +
+            '<td class="num"><span class="offer-stats-rate' + (rate.low ? ' low' : '') + '">' + rate.text + '</span></td>' +
+            '</tr>';
+        });
+        rows += '</tbody></table>';
+        tableBody.innerHTML = rows;
+      }
+    } catch(e) {
+      tableBody.innerHTML = '<div class="offer-stats-empty">Erreur lors du chargement des statistiques.</div>';
+    }
+    document.getElementById('osTotal').textContent = overall.total;
+    document.getElementById('osActive').textContent = overall.active + ' active' + (overall.active === 1 ? '' : 's');
+    document.getElementById('osClaims').textContent = overall.claims;
+    document.getElementById('osRedeemed').textContent = overall.redeemed;
+    var overallRate = pct(overall.redeemed, overall.claims);
+    document.getElementById('osRate').textContent = overallRate.text;
+  }
+  loadOfferStats();
+
+  document.getElementById('redeemCodeInput').addEventListener('input', function(e){ e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,''); });
+  document.getElementById('redeemCodeInput').addEventListener('keydown', function(e){ if (e.key === 'Enter') { e.preventDefault(); lookupCode(); } });
+  document.getElementById('redeemLookupBtn').addEventListener('click', lookupCode);
+  document.addEventListener('click', function(e){
+    var b = e.target.closest && e.target.closest('#redeemConfirmBtn');
+    if (b) { e.preventDefault(); redeemClaim(b.getAttribute('data-code')); }
+  });
+
+  // ---- Tabs (Saisir le code / Scanner le QR) -----------------------------
+  var tabKey = document.getElementById('redeemTabKey');
+  var tabScan = document.getElementById('redeemTabScan');
+  var modeKey = document.getElementById('redeemModeKey');
+  var modeScan = document.getElementById('redeemModeScan');
+  var qrErrorEl = document.getElementById('qrScanError');
+  var qrPlaceholder = document.getElementById('qrReaderPlaceholder');
+  var qrStopBtn = document.getElementById('qrStopBtn');
+  var qrScanner = null;
+  var qrScanInFlight = false;
+
+  function setMode(mode) {
+    var scan = mode === 'scan';
+    tabKey.classList.toggle('active', !scan); tabKey.setAttribute('aria-selected', String(!scan));
+    tabScan.classList.toggle('active', scan); tabScan.setAttribute('aria-selected', String(scan));
+    modeKey.classList.toggle('active', !scan);
+    modeScan.classList.toggle('active', scan);
+    if (scan) startScanner(); else stopScanner();
+  }
+
+  function showScanError(msg) {
+    if (!qrErrorEl) return;
+    qrErrorEl.textContent = msg;
+    qrErrorEl.style.display = msg ? 'block' : 'none';
+  }
+
+  function startScanner() {
+    showScanError('');
+    if (typeof Html5Qrcode === 'undefined') {
+      showScanError('Le module de scan n\'a pas pu être chargé. Vérifiez votre connexion.');
+      return;
+    }
+    if (qrScanner) return; // already running
+    qrPlaceholder.style.display = 'flex';
+    qrStopBtn.style.display = 'none';
+    try {
+      qrScanner = new Html5Qrcode('qrReader', { verbose: false });
+    } catch(e) {
+      showScanError('Impossible d\'initialiser la caméra: ' + (e.message || e));
+      qrScanner = null;
+      qrPlaceholder.style.display = 'none';
+      return;
+    }
+    var config = { fps: 10, qrbox: { width: 240, height: 240 }, aspectRatio: 1.0 };
+    qrScanner.start({ facingMode: 'environment' }, config, onScanSuccess, function(){ /* ignore per-frame decode errors */ })
+      .then(function(){
+        qrPlaceholder.style.display = 'none';
+        qrStopBtn.style.display = 'inline-block';
+      })
+      .catch(function(err){
+        var msg = (err && err.message) || String(err) || 'inconnue';
+        if (/NotAllowed|Permission/i.test(msg)) {
+          showScanError('Accès à la caméra refusé. Autorisez la caméra dans les réglages du navigateur.');
+        } else if (/NotFound|no camera/i.test(msg)) {
+          showScanError('Aucune caméra disponible sur cet appareil.');
+        } else {
+          showScanError('Erreur caméra: ' + msg);
+        }
+        qrScanner = null;
+        qrPlaceholder.style.display = 'none';
+      });
+  }
+
+  function stopScanner() {
+    if (!qrScanner) return;
+    var s = qrScanner;
+    qrScanner = null;
+    qrStopBtn.style.display = 'none';
+    s.stop().then(function(){ try { s.clear(); } catch(_) {} }).catch(function(){});
+  }
+
+  function onScanSuccess(decodedText) {
+    if (qrScanInFlight) return;
+    // Codes are 8-char alphanumeric (BCDFGHJKMNPQRSTWXYZ23456789). Extract from
+    // anything else the QR may carry (e.g. a URL with the code in it).
+    var code = String(decodedText || '').toUpperCase().match(/[BCDFGHJKMNPQRSTWXYZ23456789]{8}/);
+    if (!code) {
+      showScanError('QR scanné, mais aucun code de réservation valide détecté.');
+      return;
+    }
+    qrScanInFlight = true;
+    showScanError('');
+    stopScanner();
+    document.getElementById('redeemCodeInput').value = code[0];
+    // Bounce the admin back to the keyboard tab so they see the result + can confirm.
+    setMode('key');
+    lookupCode().finally(function(){ qrScanInFlight = false; });
+  }
+
+  tabKey.addEventListener('click', function(){ setMode('key'); });
+  tabScan.addEventListener('click', function(){ setMode('scan'); });
+  qrStopBtn.addEventListener('click', function(){ stopScanner(); setMode('key'); });
+
+  // Stop the camera if the admin navigates away or hides the tab.
+  window.addEventListener('pagehide', stopScanner);
+  document.addEventListener('visibilitychange', function(){ if (document.hidden) stopScanner(); });
+})();
+</script>
