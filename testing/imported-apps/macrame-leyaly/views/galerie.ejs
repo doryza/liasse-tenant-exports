@@ -1,0 +1,19 @@
+<%- include('partials/header') %>
+<section class="page-head">
+<div class="wrap"><span class="eyebrow script">La galerie</span><h1>Nos créations en macramé</h1><p class="lead"><%= settings.gallery_intro || 'Des suspensions, des tentures et des accessoires noués à la main. Trouvez la pièce qui réchauffera votre intérieur.' %></p></div>
+<div class="dowel" aria-hidden="true"></div>
+</section>
+<section class="wrap">
+<div class="filter-row">
+<a class="chip <%= activeCat==='' ? 'active' : '' %>" href="galerie">Tout</a>
+<% (cats||[]).forEach(function(cat){ %><a class="chip <%= activeCat===cat ? 'active' : '' %>" href="?categorie=<%= encodeURIComponent(cat) %>"><%= cat %></a><% }); %>
+</div>
+<% if(creations && creations.length){ %>
+<div class="cr-grid">
+<% creations.forEach(function(c){ %><%- include('partials/creation-card', { c:c, favIds:favIds, formatPrice:formatPrice, truncate:truncate }) %><% }); %>
+</div>
+<% } else { %>
+<div class="empty-box"><p>Aucune création dans cette catégorie pour le moment.</p><a class="btn btn-outline" href="galerie">Voir toutes les créations</a></div>
+<% } %>
+</section>
+<%- include('partials/footer') %>

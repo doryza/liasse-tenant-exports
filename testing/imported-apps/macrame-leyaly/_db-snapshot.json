@@ -1,0 +1,337 @@
+{
+  "exportedAt": "2026-06-19T19:56:59.841Z",
+  "tables": {
+    "admin_webauthn_credentials": {
+      "columns": [
+        "id",
+        "admin_user_id",
+        "credential_id",
+        "public_key",
+        "counter",
+        "device_name",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_invites": {
+      "columns": [
+        "id",
+        "email",
+        "token",
+        "role",
+        "status",
+        "invited_by",
+        "expires_at",
+        "accepted_at",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_users": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "password_hash",
+        "display_name",
+        "role",
+        "active",
+        "activation_token",
+        "invited_by",
+        "invite_token",
+        "invite_expires_at",
+        "last_login_at",
+        "is_active",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_settings": {
+      "columns": [
+        "key",
+        "value",
+        "updated_at"
+      ],
+      "totalRows": 42,
+      "sampleRows": [
+        {
+          "key": "tagline",
+          "value": "Décorations en macramé faites main par Leylou & Aly",
+          "updated_at": "2026-06-19T19:56:36.852Z"
+        },
+        {
+          "key": "hero_title",
+          "value": "Des nœuds tissés avec le cœur",
+          "updated_at": "2026-06-19T19:56:36.861Z"
+        },
+        {
+          "key": "hero_subtitle",
+          "value": "Chaque pièce est nouée à la main dans notre petit atelier, pour habiller vos murs de douceur et de matières naturelles.",
+          "updated_at": "2026-06-19T19:56:36.868Z"
+        },
+        {
+          "key": "hero_cta",
+          "value": "Commander une création",
+          "updated_at": "2026-06-19T19:56:36.879Z"
+        },
+        {
+          "key": "featured_title",
+          "value": "Coups de cœur de l’atelier",
+          "updated_at": "2026-06-19T19:56:36.888Z"
+        },
+        {
+          "key": "featured_text",
+          "value": "Une sélection de pièces nouées avec amour, prêtes à embellir votre intérieur.",
+          "updated_at": "2026-06-19T19:56:36.915Z"
+        },
+        {
+          "key": "about_title",
+          "value": "Leylou & Aly",
+          "updated_at": "2026-06-19T19:56:36.924Z"
+        },
+        {
+          "key": "about_text",
+          "value": "Leyaly, c’est la rencontre de deux amies passionnées par le travail des fibres naturelles. Entre deux cafés, on noue, on tresse et on imagine des pièces uniques pour vous.",
+          "updated_at": "2026-06-19T19:56:36.934Z"
+        },
+        {
+          "key": "about_text2",
+          "value": "Tout a commencé autour d’une table, avec des pelotes de coton et beaucoup d’idées. De nœud en nœud est née l’envie de partager nos créations. Chaque pièce est unique, faite main avec patience et tendresse.",
+          "updated_at": "2026-06-19T19:56:36.946Z"
+        },
+        {
+          "key": "about_signature",
+          "value": "Leylou & Aly",
+          "updated_at": "2026-06-19T19:56:36.955Z"
+        }
+      ]
+    },
+    "site_visits": {
+      "columns": [
+        "id",
+        "path",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "posts": {
+      "columns": [
+        "id",
+        "title",
+        "content",
+        "image_url",
+        "category",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Bienvenue dans l’atelier de Leyaly",
+          "content": "Nous sommes Leylou et Aly, deux amies réunies par une même passion : le macramé. Sur ce journal, on partagera nos créations, nos coulisses et nos petites astuces. Bienvenue dans notre univers tout doux et fait main !",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781898013/tapavis_tenant_macrame-leyaly/build_macrame-leyaly_1781898013075.png",
+          "category": "Atelier",
+          "published": 1,
+          "created_at": "2026-06-19T19:56:37.122Z",
+          "updated_at": "2026-06-19T19:56:37.122Z"
+        },
+        {
+          "id": 2,
+          "title": "Comment entretenir votre macramé",
+          "content": "Le coton naturel mérite un peu d’attention. Dépoussiérez délicatement votre pièce avec un plumeau ou un sèche-cheveux en mode froid. En cas de tache, tamponnez doucement avec un linge humide et un peu de savon doux, sans frotter. Évitez l’exposition directe et prolongée au soleil pour garder la teinte d’origine.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781898014/tapavis_tenant_macrame-leyaly/build_macrame-leyaly_1781898014761.png",
+          "category": "Conseils",
+          "published": 1,
+          "created_at": "2026-06-19T19:56:37.136Z",
+          "updated_at": "2026-06-19T19:56:37.136Z"
+        },
+        {
+          "id": 3,
+          "title": "Petit lexique du nœud plat",
+          "content": "Le nœud plat est la base de presque toutes nos créations. On le réalise avec quatre fils : deux fils de travail qui entourent deux fils centraux. Répété, il forme de jolies colonnes régulières. C’est lui qui donne ce relief si reconnaissable aux tentures murales.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781898014/tapavis_tenant_macrame-leyaly/build_macrame-leyaly_1781898014562.png",
+          "category": "Coulisses",
+          "published": 1,
+          "created_at": "2026-06-19T19:56:37.142Z",
+          "updated_at": "2026-06-19T19:56:37.142Z"
+        },
+        {
+          "id": 4,
+          "title": "Nos cordons : du coton recyclé",
+          "content": "Nous choisissons nos matières avec soin. La majorité de nos pièces sont nouées avec du coton recyclé, doux au toucher et plus respectueux de la planète. Une façon de créer de belles choses tout en limitant notre empreinte.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781898015/tapavis_tenant_macrame-leyaly/build_macrame-leyaly_1781898014957.png",
+          "category": "Atelier",
+          "published": 1,
+          "created_at": "2026-06-19T19:56:37.149Z",
+          "updated_at": "2026-06-19T19:56:37.149Z"
+        }
+      ]
+    },
+    "creations": {
+      "columns": [
+        "id",
+        "name",
+        "description",
+        "price",
+        "image_url",
+        "category",
+        "dimensions",
+        "materials",
+        "featured",
+        "available",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 7,
+      "sampleRows": [
+        {
+          "id": 1,
+          "name": "Tenture murale Bohème",
+          "description": "Une tenture nouée à la main avec des franges délicates et des nœuds géométriques. Elle apporte chaleur et texture à n’importe quel mur.",
+          "price": 45,
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781898014/tapavis_tenant_macrame-leyaly/build_macrame-leyaly_1781898014562.png",
+          "category": "Suspensions murales",
+          "dimensions": "60 cm x 90 cm",
+          "materials": "Coton recyclé, bois de hêtre",
+          "featured": 1,
+          "available": 1,
+          "created_at": "2026-06-19T19:56:37.036Z",
+          "updated_at": "2026-06-19T19:56:37.036Z"
+        },
+        {
+          "id": 2,
+          "name": "Suspension à plante en macramé",
+          "description": "Un porte-plante suspendu tout en finesse, idéal pour mettre en valeur vos plantes vertes près d’une fenêtre.",
+          "price": 32,
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781898013/tapavis_tenant_macrame-leyaly/build_macrame-leyaly_1781898013710.png",
+          "category": "Suspensions à plantes",
+          "dimensions": "80 cm de long",
+          "materials": "Coton naturel, anneau de bois",
+          "featured": 1,
+          "available": 1,
+          "created_at": "2026-06-19T19:56:37.044Z",
+          "updated_at": "2026-06-19T19:56:37.044Z"
+        },
+        {
+          "id": 3,
+          "name": "Attrape-rêves Lune",
+          "description": "Un attrape-rêves en forme de croissant de lune, paré de franges douces et de petites perles de bois.",
+          "price": 38,
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781898014/tapavis_tenant_macrame-leyaly/build_macrame-leyaly_1781898014451.png",
+          "category": "Attrape-rêves",
+          "dimensions": "Ø 30 cm",
+          "materials": "Coton, métal doré, perles de bois",
+          "featured": 1,
+          "available": 1,
+          "created_at": "2026-06-19T19:56:37.057Z",
+          "updated_at": "2026-06-19T19:56:37.057Z"
+        },
+        {
+          "id": 4,
+          "name": "Grande tenture Cascade",
+          "description": "Une pièce imposante aux mailles en cascade, parfaite au-dessus d’un lit ou d’un canapé.",
+          "price": 78,
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781898014/tapavis_tenant_macrame-leyaly/build_macrame-leyaly_1781898014391.png",
+          "category": "Suspensions murales",
+          "dimensions": "90 cm x 130 cm",
+          "materials": "Coton recyclé, bois flotté",
+          "featured": 0,
+          "available": 1,
+          "created_at": "2026-06-19T19:56:37.066Z",
+          "updated_at": "2026-06-19T19:56:37.066Z"
+        },
+        {
+          "id": 5,
+          "name": "Porte-clés en coton",
+          "description": "Un petit accessoire tout doux, noué à la main. Le cadeau parfait à offrir ou à s’offrir.",
+          "price": 12,
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781898015/tapavis_tenant_macrame-leyaly/build_macrame-leyaly_1781898014957.png",
+          "category": "Accessoires",
+          "dimensions": "12 cm",
+          "materials": "Coton, anneau métallique",
+          "featured": 0,
+          "available": 1,
+          "created_at": "2026-06-19T19:56:37.083Z",
+          "updated_at": "2026-06-19T19:56:37.083Z"
+        },
+        {
+          "id": 6,
+          "name": "Mobile décoratif Plumes",
+          "description": "Un mobile aérien orné de plumes en macramé, à suspendre dans une chambre ou un coin lecture.",
+          "price": 29,
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781898012/tapavis_tenant_macrame-leyaly/build_macrame-leyaly_1781898012635.png",
+          "category": "Décorations murales",
+          "dimensions": "50 cm de long",
+          "materials": "Coton, perles de bois",
+          "featured": 0,
+          "available": 1,
+          "created_at": "2026-06-19T19:56:37.092Z",
+          "updated_at": "2026-06-19T19:56:37.092Z"
+        },
+        {
+          "id": 7,
+          "name": "Création sur mesure",
+          "description": "Vous avez une idée précise ? On crée la pièce de vos rêves, à vos dimensions et dans vos couleurs.",
+          "price": null,
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1781898014/tapavis_tenant_macrame-leyaly/build_macrame-leyaly_1781898014761.png",
+          "category": "Sur mesure",
+          "dimensions": "Selon votre projet",
+          "materials": "Fibres naturelles au choix",
+          "featured": 0,
+          "available": 1,
+          "created_at": "2026-06-19T19:56:37.100Z",
+          "updated_at": "2026-06-19T19:56:37.100Z"
+        }
+      ]
+    },
+    "orders": {
+      "columns": [
+        "id",
+        "user_id",
+        "customer_name",
+        "customer_email",
+        "customer_phone",
+        "creation_id",
+        "creation_name",
+        "quantity",
+        "custom_request",
+        "message",
+        "status",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "messages": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "message",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "favorites": {
+      "columns": [
+        "id",
+        "user_id",
+        "creation_id",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    }
+  }
+}

@@ -1,0 +1,22 @@
+<%- include('partials/header') %>
+<section class="page-head"><div class="wrap"><span class="eyebrow script">À propos</span><h1><%= settings.about_title || 'Leylou & Aly' %></h1></div></section>
+<section class="wrap about-page">
+<div class="about-split">
+<div class="about-media"><img src="<%= (typeof settings!=='undefined' && settings._p_about_image_url) ? settings._p_about_image_url : 'https://placehold.co/800x600/EBDDC9/9E5634/png?text=Leylou+%26+Aly' %>" alt="Leylou et Aly"></div>
+<div class="about-text">
+<p class="lead"><%= settings.about_text || 'Leyaly, c’est la rencontre de deux amies passionnées par le travail des fibres naturelles.' %></p>
+<p><%= settings.about_text2 || 'Tout a commencé autour d’une table, avec des pelotes de coton et beaucoup d’idées. De nœud en nœud est née l’envie de partager nos créations. Chaque pièce est unique, faite main avec patience et tendresse.' %></p>
+<p class="script foot-sign"><%= settings.about_signature || 'Leylou & Aly' %></p>
+</div>
+</div>
+</section>
+<section class="section wrap">
+<div class="section-head"><h2>Ce qui nous tient à cœur</h2></div>
+<div class="steps">
+<div class="step"><h3>Le fait main</h3><p>Pas de machine, pas de série. Juste nos mains, du temps et de l’attention.</p></div>
+<div class="step"><h3>Des matières douces</h3><p>Coton recyclé, fibres naturelles et bois choisis pour leur chaleur.</p></div>
+<div class="step"><h3>La complicité</h3><p>Deux amies, deux paires de mains, une seule passion partagée.</p></div>
+</div>
+</section>
+<section class="cta-band"><div class="wrap cta-inner"><h2>Envie d’une pièce qui vous ressemble ?</h2><a class="btn btn-light" href="commande">Commander une création</a></div></section>
+<%- include('partials/footer') %>

@@ -1,0 +1,21 @@
+<%- include('partials/header') %>
+<article class="wrap post">
+<a class="back-link" href="journal">← Retour au journal</a>
+<% if(post.category){ %><span class="cr-cat"><%= post.category %></span><% } %>
+<h1><%= post.title %></h1>
+<p class="post-date"><%= formatDate(post.created_at) %></p>
+<% if(post.image_url){ %><div class="post-img"><img src="<%= post.image_url %>" alt="<%= post.title %>"></div><% } %>
+<div class="post-content"><%= post.content %></div>
+</article>
+<% if(more && more.length){ %>
+<%- include('partials/cord') %>
+<section class="section wrap">
+<div class="section-head"><h2>À lire aussi</h2></div>
+<div class="journal-grid">
+<% more.forEach(function(p){ %>
+<a class="jcard" href="journal/<%= p.id %>"><div class="jcard-img"><img src="<%= p.image_url || 'https://placehold.co/600x400/EBDDC9/9E5634/png?text=Journal' %>" alt="<%= p.title %>" loading="lazy"></div><div class="jcard-body"><h3><%= p.title %></h3><p><%= truncate(p.content, 90) %></p></div></a>
+<% }); %>
+</div>
+</section>
+<% } %>
+<%- include('partials/footer') %>

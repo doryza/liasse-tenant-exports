@@ -1,0 +1,17 @@
+<article class="cr-card">
+<button class="fav-btn <%= (typeof favIds!=='undefined' && favIds.indexOf(c.id)!==-1) ? 'is-fav' : '' %>" data-fav data-creation="<%= c.id %>" aria-label="Favori"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M12 21s-7.5-4.6-10-9.3C.4 8.4 2 5 5.2 5c2 0 3.3 1.2 4.8 3 1.5-1.8 2.8-3 4.8-3C18 5 19.6 8.4 22 11.7 19.5 16.4 12 21 12 21z"/></svg></button>
+<a class="cr-thumb" href="creations/<%= c.id %>">
+<span class="cr-hook" aria-hidden="true"></span>
+<img src="<%= c.image_url || 'https://placehold.co/600x450/EBDDC9/9E5634/png?text=Cr%C3%A9ation' %>" alt="<%= c.name %>" loading="lazy">
+<% if(c.featured){ %><span class="cr-badge">Coup de cœur</span><% } %>
+</a>
+<div class="cr-body">
+<% if(c.category){ %><span class="cr-cat"><%= c.category %></span><% } %>
+<h3><a href="creations/<%= c.id %>"><%= c.name %></a></h3>
+<p class="cr-desc"><%= truncate(c.description, 88) %></p>
+<div class="cr-foot">
+<span class="cr-price"><%= formatPrice(c.price) %></span>
+<a class="btn btn-sm btn-primary" style="background-color:#BE6F49;color:#fff" href="commande?creation=<%= c.id %>">Commander</a>
+</div>
+</div>
+</article>

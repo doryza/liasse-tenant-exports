@@ -1,0 +1,17 @@
+<%- include('partials/header') %>
+<section class="page-head"><div class="wrap"><span class="eyebrow script">Le journal</span><h1>Des nouvelles de l’atelier</h1><p class="lead"><%= settings.journal_intro || 'Conseils, coulisses et petites histoires autour du macramé.' %></p></div></section>
+<section class="wrap section">
+<% if(posts && posts.length){ %>
+<div class="journal-grid">
+<% posts.forEach(function(p){ %>
+<a class="jcard" href="journal/<%= p.id %>">
+<div class="jcard-img"><img src="<%= p.image_url || 'https://placehold.co/600x400/EBDDC9/9E5634/png?text=Journal' %>" alt="<%= p.title %>" loading="lazy"></div>
+<div class="jcard-body"><% if(p.category){ %><span class="cr-cat"><%= p.category %></span><% } %><h3><%= p.title %></h3><p><%= truncate(p.content, 110) %></p><small><%= formatDate(p.created_at) %></small></div>
+</a>
+<% }); %>
+</div>
+<% } else { %>
+<div class="empty-box"><p>Le journal arrive bientôt.</p></div>
+<% } %>
+</section>
+<%- include('partials/footer') %>

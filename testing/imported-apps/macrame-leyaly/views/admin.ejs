@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tableau de bord · Leyaly</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+<link href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="admin-body">
+<%- include('partials/admin-sidebar', { active:'dashboard' }) %>
+<main class="admin-main">
+<header class="admin-top"><button class="admin-burger" id="adminBurger" aria-label="Menu">☰</button><div class="admin-top-titles"><h1>Tableau de bord</h1><p class="admin-sub">Bienvenue dans l’atelier Leyaly · gérez vos créations et vos commandes</p></div><a class="btn btn-light" href="." target="_blank">↗ Voir le site</a></header>
+<% if(stats.newOrders > 0){ %><div class="admin-alert"><span class="admin-alert-dot"></span><span><strong><%= stats.newOrders %></strong> nouvelle<%= stats.newOrders>1?'s':'' %> commande<%= stats.newOrders>1?'s':'' %> à traiter.</span><a href="admin/orders" class="admin-alert-link">Voir les commandes →</a></div><% } %>
+<section class="stat-grid">
+<a href="admin/creations" class="stat-card link"><span class="stat-n"><%= stats.creations %></span><span class="stat-l">Créations</span></a>
+<a href="admin/orders" class="stat-card accent"><span class="stat-n"><%= stats.newOrders %></span><span class="stat-l">Nouvelles commandes</span></a>
+<a href="admin/orders" class="stat-card link"><span class="stat-n"><%= stats.orders %></span><span class="stat-l">Commandes totales</span></a>
+<a href="admin/messages" class="stat-card link"><span class="stat-n"><%= stats.messages %></span><span class="stat-l">Messages</span></a>
+<div class="stat-card"><span class="stat-n"><%= stats.recentVisits %></span><span class="stat-l">Visites (7 j)</span></div>
+<div class="stat-card"><span class="stat-n"><%= stats.push %></span><span class="stat-l">Abonnés notifications</span></div>
+</section>
+<section class="admin-panels">
+<div class="admin-panel"><div class="panel-head"><h2>Commandes récentes</h2><a href="admin/orders">Tout voir</a></div>
+<% if(recentOrders && recentOrders.length){ %><table class="admin-table"><thead><tr><th>Client</th><th>Création</th><th>Statut</th><th>Date</th></tr></thead><tbody><% recentOrders.forEach(function(o){ %><tr><td><%= o.customer_name %></td><td><%= o.creation_name || 'Sur mesure' %></td><td><span class="badge b-<%= (o.status||'nouvelle').replace(/\s/g,'-') %>"><%= o.status %></span></td><td><%= formatDate(o.created_at) %></td></tr><% }); %></tbody></table><% } else { %><div class="admin-empty"><p>Aucune commande pour le moment.</p><p class="admin-empty-hint">Les commandes passées via le site apparaîtront ici.</p></div><% } %>
+</div>
+<div class="admin-panel"><div class="panel-head"><h2>Messages récents</h2><a href="admin/messages">Tout voir</a></div>
+<% if(recentMessages && recentMessages.length){ %><ul class="msg-list"><% recentMessages.forEach(function(m){ %><li><strong><%= m.name %></strong><p><%= (m.message||'').slice(0,90) %></p><small><%= formatDate(m.created_at) %></small></li><% }); %></ul><% } else { %><div class="admin-empty"><p>Aucun message pour le moment.</p></div><% } %>
+</div>
+</section>
+<section class="admin-quick-block"><h2 class="admin-block-title">Actions rapides</h2><div class="admin-quick"><a href="admin/creations" class="qlink">＋ Gérer les créations</a><a href="admin/posts" class="qlink">✎ Gérer le journal</a><a href="admin/orders" class="qlink">☰ Voir les commandes</a><a href="admin/messages" class="qlink">✉ Voir les messages</a></div></section>
+</main>
+<script>(function(){var b=document.getElementById('adminBurger');if(b)b.addEventListener('click',function(){document.querySelector('.admin-sidebar').classList.toggle('open');});})();</script>
+</body>
+</html>

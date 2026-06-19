@@ -1,0 +1,11 @@
+<aside class="admin-sidebar">
+<div class="admin-brand">Leyaly <span>· gestion</span></div>
+<nav class="admin-nav">
+<a href="admin" class="<%= (typeof active!=='undefined' && active==='dashboard') ? 'active' : '' %>">Tableau de bord</a>
+<a href="admin/creations" class="<%= (typeof active!=='undefined' && active==='creations') ? 'active' : '' %>">Créations</a>
+<a href="admin/posts" class="<%= (typeof active!=='undefined' && active==='posts') ? 'active' : '' %>">Journal</a>
+<a href="admin/orders" class="<%= (typeof active!=='undefined' && active==='orders') ? 'active' : '' %>">Commandes</a>
+<a href="admin/messages" class="<%= (typeof active!=='undefined' && active==='messages') ? 'active' : '' %>">Messages</a>
+</nav>
+<div class="admin-side-foot"><a href="." target="_blank">↗ Voir le site</a><a href="admin/logout">Déconnexion</a></div>
+</aside>

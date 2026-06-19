@@ -1,0 +1,26 @@
+<%- include('partials/header') %>
+<section class="page-head"><div class="wrap"><span class="eyebrow script">Contact</span><h1>Écrivez-nous</h1><p class="lead"><%= settings.contact_intro || 'Une question, une idée de projet ? On vous répond avec plaisir.' %></p></div></section>
+<section class="wrap contact-grid">
+<div class="contact-info">
+<h3>Nos coordonnées</h3>
+<% if(settings.contact_email){ %><p><span class="ci-l">Courriel</span><a href="mailto:<%= settings.contact_email %>"><%= settings.contact_email %></a></p><% } %>
+<% if(settings.contact_phone){ %><p><span class="ci-l">Téléphone</span><a href="tel:<%= settings.contact_phone %>"><%= settings.contact_phone %></a></p><% } %>
+<% if(settings.business_address){ %><p><span class="ci-l">Adresse</span><span><%= settings.business_address %></span></p><% } %>
+<% if(!settings.contact_email && !settings.contact_phone && !settings.business_address){ %><p>Utilisez le formulaire ci-contre pour nous joindre.</p><% } %>
+<p class="script foot-sign"><%= settings.about_signature || 'Leylou & Aly' %></p>
+</div>
+<div class="contact-form">
+<div id="contactOk" class="form-ok" style="display:none"><h2>Merci !</h2><p>Votre message nous est bien parvenu. À très vite !</p></div>
+<form id="contactForm" class="form">
+<div id="contactErr" class="form-err" style="display:none"></div>
+<div class="field"><label>Votre nom *</label><input type="text" name="name" required placeholder="ex. Marie"></div>
+<div class="field"><label>Courriel</label><input type="email" name="email" placeholder="vous@exemple.com"></div>
+<div class="field"><label>Message *</label><textarea name="message" rows="5" required placeholder="Votre message…"></textarea></div>
+<button type="submit" class="btn btn-primary btn-lg" style="background-color:#BE6F49;color:#fff">Envoyer</button>
+</form>
+</div>
+</section>
+<script>
+(function(){var f=document.getElementById('contactForm');if(!f)return;f.addEventListener('submit',async function(e){e.preventDefault();var btn=f.querySelector('button[type=submit]');var err=document.getElementById('contactErr');err.style.display='none';var data={};new FormData(f).forEach(function(v,k){data[k]=v;});btn.disabled=true;var prev=btn.textContent;btn.textContent='Envoi…';try{var r=await fetch('api/contact',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});var d=await r.json();if(r.ok&&d.success){f.style.display='none';document.getElementById('contactOk').style.display='block';}else{err.textContent=d.error||'Une erreur est survenue.';err.style.display='block';}}catch(x){err.textContent='Erreur de connexion. Réessayez.';err.style.display='block';}btn.disabled=false;btn.textContent=prev;});})();
+</script>
+<%- include('partials/footer') %>

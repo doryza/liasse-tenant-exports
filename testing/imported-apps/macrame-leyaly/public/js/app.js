@@ -1,0 +1,7 @@
+(function(){
+  function onReady(fn){ if(document.readyState!=='loading') fn(); else document.addEventListener('DOMContentLoaded',fn); }
+  function loggedIn(){ try{ return window.TenantSDK && TenantSDK.auth && TenantSDK.auth.isLoggedIn(); }catch(e){ return false; } }
+  async function toggleFav(btn){ var id=btn.getAttribute('data-creation'); if(!loggedIn()){ try{ TenantSDK.ui.showLogin({onSuccess:function(){ location.reload(); }}); }catch(e){} return; } var active=btn.classList.contains('is-fav'); try{ if(active){ var r=await TenantSDK.fetch('api/favorites/'+id,{method:'DELETE'}); if(r.ok){ btn.classList.remove('is-fav'); if(btn.getAttribute('data-reload')) location.reload(); } } else { var r2=await TenantSDK.fetch('api/favorites',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({creationId:id})}); if(r2.ok){ btn.classList.add('is-fav'); } } }catch(e){} }
+  onReady(function(){ document.addEventListener('click', function(e){ var b=e.target.closest('[data-fav]'); if(b){ e.preventDefault(); toggleFav(b); } }); });
+})();
+(function(){ try{ if(window.TenantSDK && TenantSDK.ui){ TenantSDK.ui.showInstallBanner(); } }catch(e){} setTimeout(function(){ try{ if(window.TenantSDK && TenantSDK.ui){ TenantSDK.ui.showPushPrompt(); } }catch(e){} }, 9000); })();

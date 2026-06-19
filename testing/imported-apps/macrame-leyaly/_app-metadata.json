@@ -1,0 +1,92 @@
+{
+  "slug": "macrame-leyaly",
+  "displayName": "Macramé leyaly",
+  "description": "Salut je fais une compagnie avec mon ami Aly et moi je m'appelle Leylou on va faire du macramé et en vendre",
+  "status": "active",
+  "generationVersion": 1,
+  "primaryColor": "#6366f1",
+  "iconUrl": "https://res.cloudinary.com/duhp69meg/image/upload/v1781899006/tapavis_tenant_macrame-leyaly/icon_macrame-leyaly_1781899006192.png",
+  "enabledAuthMethods": [
+    "webauthn",
+    "sms",
+    "email"
+  ],
+  "notificationsEnabled": true,
+  "geolocationEnabled": true,
+  "customConfig": {
+    "language": "fr",
+    "designManifest": {
+      "concept": "À deux fils",
+      "elements": {
+        "blogSurfaced": true,
+        "pages": [
+          "Accueil",
+          "Galerie",
+          "Création (détail)",
+          "Commande",
+          "À propos",
+          "Journal",
+          "Contact",
+          "Mon espace"
+        ],
+        "userLogin": true
+      },
+      "iconDirection": "A flat emblem of two intertwined cotton cords forming a single square-knot heart on a cream ground, terracotta and sage strands with a single indigo thread — soft, handmade, no text.",
+      "palette": {
+        "accents": [
+          "#8E9B7E",
+          "#EBDDC9",
+          "#6366f1"
+        ],
+        "ground": "#F4ECDF",
+        "ink": "#3A2C22",
+        "primary": "#BE6F49"
+      },
+      "signatureMove": "Creations hang from a hand-drawn cord-and-ring hook and major sections are separated by a knotted-cord divider, with a thin tricolour 'fil' (terracotta–sage–indigo) threading the very top of every page.",
+      "summary": "A warm cotton-paper craft-workbook identity where each macramé piece hangs from its own little cord-and-ring, knot motifs thread through the page, and the founders' indigo signature fil runs as the one bright thread honouring the brand colour.",
+      "typography": "Gloock warm display serif for headings + Caveat handwriting for the founders' signature accents + Mulish humanist sans for body/UI"
+    }
+  },
+  "promptHistory": [
+    {
+      "prompt": "Salut je fais une compagnie avec mon ami Aly et moi je m'appelle Leylou on va faire du macramé et en vendre",
+      "timestamp": "2026-06-19T19:56:54.911Z",
+      "changeNotes": "Build initial de la boutique artisanale de macramé Leyaly : palette chaude crème/terracotta avec fil indigo signature, créations qui pendent à un cordon, formulaire de commande complet, galerie filtrable, favoris (connexion), journal, à propos et espace membre, plus un backend admin complet (créations, journal, commandes, messages) avec téléversement et génération d'images IA.\n\nAdmin enrichment: (1) Dashboard (admin.ejs) — added welcome subtitle, a 'nouvelles commandes' alert banner, clickable stat cards linking to their modules, richer empty states with hints, and an 'Actions rapides' titled section. (2) admin-shell.ejs CRUD pages — added a subtitle, a live result count, status rendered as colored badges in tables, an actionable empty state with an inline '+ Ajouter' button, replaced all blocking alert() calls with non-blocking toast feedback (success/error), added Escape-key and backdrop-click to close the modal, and added image upload/AI-generate success toasts. Full create/edit/delete CRUD (already present) preserved and reinforced. (3) admin-styles.css — added toast component, alert banner, focus-visible outlines for accessibility, card hover/focus states, input focus ring, table row hover, right-aligned actions, and helper classes (admin-sub, admin-block-title, admin-count, admin-empty-hint). (4) styles.css — added :focus-visible outlines across buttons, links, chips, fields and favorite buttons for keyboard accessibility. All CTAs keep inline color fallbacks. No functional routes/data flows changed; functional content (creations with price/dimensions/materials/featured/available, posts, orders status) remains fully admin-manageable. All {{IMG_*}} placeholder tokens preserved byte-for-byte.",
+      "generationId": 1350,
+      "filesModified": [
+        "manifest.json",
+        "migrations.sql",
+        "public/css/admin-styles.css",
+        "public/css/styles.css",
+        "public/js/app.js",
+        "routes.js",
+        "schema.sql",
+        "seed.js",
+        "views/a-propos.ejs",
+        "views/admin-creations.ejs",
+        "views/admin-messages.ejs",
+        "views/admin-orders.ejs",
+        "views/admin-posts.ejs",
+        "views/admin.ejs",
+        "views/article.ejs",
+        "views/commande.ejs",
+        "views/contact.ejs",
+        "views/creation.ejs",
+        "views/galerie.ejs",
+        "views/index.ejs",
+        "views/journal.ejs",
+        "views/mon-espace.ejs",
+        "views/partials/admin-shell.ejs",
+        "views/partials/admin-sidebar.ejs",
+        "views/partials/cord.ejs",
+        "views/partials/creation-card.ejs",
+        "views/partials/footer.ejs",
+        "views/partials/header.ejs"
+      ]
+    }
+  ],
+  "apiVariables": [],
+  "createdAt": "2026-06-19T19:19:23.525Z",
+  "updatedAt": "2026-06-19T19:56:59.599Z",
+  "exportedAt": "2026-06-19T19:56:59.828Z"
+}

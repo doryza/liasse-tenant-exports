@@ -1,0 +1,24 @@
+<%- include('partials/header') %>
+<section class="page-head"><div class="wrap"><span class="eyebrow script">Passer commande</span><h1>Commander une création</h1><p class="lead"><%= settings.commande_intro || 'Choisissez une pièce existante ou décrivez votre projet sur mesure. On vous recontacte rapidement pour finaliser les détails.' %></p></div></section>
+<section class="wrap form-wrap">
+<div id="orderOk" class="form-ok" style="display:none"><h2>Merci ! 🌿</h2><p>Votre demande a bien été envoyée. Leylou & Aly vous reviennent très bientôt par courriel.</p><a class="btn btn-outline" href="galerie">Continuer à explorer</a></div>
+<form id="orderForm" class="form">
+<div id="orderErr" class="form-err" style="display:none"></div>
+<div class="field"><label>Votre nom *</label><input type="text" name="customer_name" required value="<%= (typeof user!=='undefined' && user && user.display_name) ? user.display_name : '' %>" placeholder="ex. Marie Tremblay"></div>
+<div class="grid-2">
+<div class="field"><label>Courriel *</label><input type="email" name="customer_email" required value="<%= (typeof user!=='undefined' && user && user.email) ? user.email : '' %>" placeholder="vous@exemple.com"></div>
+<div class="field"><label>Téléphone</label><input type="tel" name="customer_phone" placeholder="(facultatif)"></div>
+</div>
+<div class="grid-2">
+<div class="field"><label>Création souhaitée</label><select name="creation_id"><option value="">— Création sur mesure —</option><% (creations||[]).forEach(function(c){ %><option value="<%= c.id %>" <%= (String(preselect)===String(c.id)) ? 'selected' : '' %>><%= c.name %></option><% }); %></select></div>
+<div class="field"><label>Quantité</label><input type="number" name="quantity" min="1" value="1"></div>
+</div>
+<div class="field"><label>Votre projet sur mesure</label><textarea name="custom_request" rows="3" placeholder="Couleurs, dimensions, inspiration… (requis pour une création sur mesure)"></textarea></div>
+<div class="field"><label>Message</label><textarea name="message" rows="3" placeholder="Une précision à ajouter ?"></textarea></div>
+<button type="submit" class="btn btn-primary btn-lg" style="background-color:#BE6F49;color:#fff">Envoyer ma demande</button>
+</form>
+</section>
+<script>
+(function(){var f=document.getElementById('orderForm');if(!f)return;f.addEventListener('submit',async function(e){e.preventDefault();var btn=f.querySelector('button[type=submit]');var err=document.getElementById('orderErr');err.style.display='none';var data={};new FormData(f).forEach(function(v,k){data[k]=v;});btn.disabled=true;var prev=btn.textContent;btn.textContent='Envoi…';try{var doFetch=(window.TenantSDK&&TenantSDK.fetch)?TenantSDK.fetch:fetch;var r=await doFetch('api/commande',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});var d=await r.json();if(r.ok&&d.success){f.style.display='none';document.getElementById('orderOk').style.display='block';window.scrollTo({top:0,behavior:'smooth'});}else{err.textContent=d.error||'Une erreur est survenue.';err.style.display='block';}}catch(x){err.textContent='Erreur de connexion. Réessayez.';err.style.display='block';}btn.disabled=false;btn.textContent=prev;});})();
+</script>
+<%- include('partials/footer') %>

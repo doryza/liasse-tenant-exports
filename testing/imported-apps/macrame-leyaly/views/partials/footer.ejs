@@ -1,0 +1,33 @@
+</main>
+<%- include('cord') %>
+<footer class="site-foot">
+<div class="wrap foot-grid">
+<div class="foot-col">
+<div class="foot-brand brand-word">Leyaly</div>
+<p class="foot-tag"><%= settings.tagline || 'Décorations en macramé faites main.' %></p>
+<p class="script foot-sign"><%= settings.about_signature || 'Leylou & Aly' %></p>
+</div>
+<div class="foot-col">
+<h4>Naviguer</h4>
+<a href="galerie">Galerie</a>
+<a href="commande">Commander</a>
+<a href="journal">Journal</a>
+<a href="a-propos">À propos</a>
+<a href="contact">Contact</a>
+</div>
+<div class="foot-col">
+<h4>Nous joindre</h4>
+<% if(settings.contact_email){ %><a href="mailto:<%= settings.contact_email %>"><%= settings.contact_email %></a><% } %>
+<% if(settings.contact_phone){ %><a href="tel:<%= settings.contact_phone %>"><%= settings.contact_phone %></a><% } %>
+<% if(settings.business_address){ %><p class="foot-addr"><%= settings.business_address %></p><% } %>
+<button class="btn btn-outline btn-sm push-btn" data-push-btn>Activer les notifications</button>
+</div>
+</div>
+<div class="wrap foot-bottom">
+<span>© <%= new Date().getFullYear() %> <%= settings.business_name || 'Macramé Leyaly' %></span>
+<a href="admin" class="foot-admin">Espace gérant</a>
+</div>
+</footer>
+<script src="public/js/app.js"></script>
+</body>
+</html>

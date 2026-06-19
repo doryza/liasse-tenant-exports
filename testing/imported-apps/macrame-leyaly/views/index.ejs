@@ -1,0 +1,62 @@
+<%- include('partials/header') %>
+<section class="hero">
+<img class="hero-img" src="<%= (typeof settings!=='undefined' && settings._p_hero_image_url) ? settings._p_hero_image_url : 'https://placehold.co/1600x900/EBDDC9/9E5634/png?text=Macram%C3%A9' %>" alt="Macramé fait main">
+<div class="hero-veil"></div>
+<div class="wrap hero-content">
+<span class="eyebrow script">Fait main · Leylou & Aly</span>
+<h1><%= settings.hero_title || 'Des nœuds tissés avec le cœur' %></h1>
+<p><%= settings.hero_subtitle || 'Chaque pièce est nouée à la main dans notre petit atelier, pour habiller vos murs de douceur et de matières naturelles.' %></p>
+<div class="hero-cta">
+<a class="btn btn-primary" style="background-color:#BE6F49;color:#fff" href="commande"><%= settings.hero_cta || 'Commander une création' %></a>
+<a class="btn btn-ghost" href="galerie">Voir la galerie</a>
+</div>
+</div>
+</section>
+<section class="features">
+<div class="feature"><span class="f-ico"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 11V6a2 2 0 0 1 4 0v4M10 10V4a2 2 0 0 1 4 0v6M14 10V6a2 2 0 0 1 4 0v8a6 6 0 0 1-6 6h-1a6 6 0 0 1-5-3l-2-3.5a1.6 1.6 0 0 1 2.7-1.7L8 13"/></svg></span><h3>100% fait main</h3><p>Chaque nœud est réalisé à la main, une maille à la fois.</p></div>
+<div class="feature"><span class="f-ico"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 4 13c0-5 4-9 16-9 0 8-4 12-9 12z"/><path d="M11 20c0-5 2-8 6-10"/></svg></span><h3>Fibres naturelles</h3><p>Du coton doux et des bois choisis pour durer.</p></div>
+<div class="feature"><span class="f-ico"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 4.8L18.5 9 13.8 10.8 12 15.5 10.2 10.8 5.5 9l4.7-1.2z"/><path d="M19 14l.8 2.2L22 17l-2.2.8L19 20l-.8-2.2L16 17l2.2-.8z"/></svg></span><h3>Sur mesure</h3><p>Une idée précise ? On crée la pièce à votre image.</p></div>
+</section>
+<%- include('partials/cord') %>
+<section class="section wrap">
+<div class="section-head"><span class="eyebrow script">Nos créations</span><h2><%= settings.featured_title || 'Coups de cœur de l’atelier' %></h2><p class="section-sub"><%= settings.featured_text || 'Une sélection de pièces nouées avec amour, prêtes à embellir votre intérieur.' %></p></div>
+<% if(featured && featured.length){ %>
+<div class="cr-grid">
+<% featured.forEach(function(c){ %><%- include('partials/creation-card', { c:c, favIds:favIds, formatPrice:formatPrice, truncate:truncate }) %><% }); %>
+</div>
+<div class="center mt"><a class="btn btn-outline" href="galerie">Découvrir toute la galerie</a></div>
+<% } else { %>
+<p class="empty">Nos créations arrivent bientôt. Revenez vite !</p>
+<% } %>
+</section>
+<section class="about-band">
+<div class="wrap about-split">
+<div class="about-media"><img src="<%= (typeof settings!=='undefined' && settings._p_about_image_url) ? settings._p_about_image_url : 'https://placehold.co/800x600/EBDDC9/9E5634/png?text=Leylou+%26+Aly' %>" alt="Leylou et Aly"></div>
+<div class="about-text"><span class="eyebrow script">Notre histoire</span><h2><%= settings.about_title || 'Leylou & Aly' %></h2><p><%= settings.about_text || 'Leyaly, c’est la rencontre de deux amies passionnées par le travail des fibres naturelles. Entre deux cafés, on noue, on tresse et on imagine des pièces uniques pour vous.' %></p><p class="script foot-sign"><%= settings.about_signature || 'Leylou & Aly' %></p><a class="btn btn-outline" href="a-propos">En savoir plus</a></div>
+</div>
+</section>
+<section class="section wrap">
+<div class="section-head"><span class="eyebrow script">Comment ça marche</span><h2>Commander, c’est tout doux</h2></div>
+<div class="steps">
+<div class="step"><span class="step-n">1</span><h3>Choisissez</h3><p>Parcourez la galerie ou imaginez une pièce sur mesure.</p></div>
+<div class="step"><span class="step-n">2</span><h3>Commandez</h3><p>Remplissez le formulaire, on vous répond rapidement.</p></div>
+<div class="step"><span class="step-n">3</span><h3>Recevez</h3><p>On noue votre création avec soin, puis on vous l’envoie.</p></div>
+</div>
+<div class="center mt"><a class="btn btn-primary" style="background-color:#BE6F49;color:#fff" href="commande">Passer une commande</a></div>
+</section>
+<% if(posts && posts.length){ %>
+<%- include('partials/cord') %>
+<section class="section wrap">
+<div class="section-head"><span class="eyebrow script">Le journal</span><h2>Des nouvelles de l’atelier</h2></div>
+<div class="journal-grid">
+<% posts.forEach(function(p){ %>
+<a class="jcard" href="journal/<%= p.id %>">
+<div class="jcard-img"><img src="<%= p.image_url || 'https://placehold.co/600x400/EBDDC9/9E5634/png?text=Journal' %>" alt="<%= p.title %>" loading="lazy"></div>
+<div class="jcard-body"><% if(p.category){ %><span class="cr-cat"><%= p.category %></span><% } %><h3><%= p.title %></h3><p><%= truncate(p.content, 96) %></p><span class="read">Lire la suite →</span></div>
+</a>
+<% }); %>
+</div>
+</section>
+<% } %>
+<section class="cta-band"><div class="wrap cta-inner"><h2><%= settings.cta_title || 'Une idée en tête ?' %></h2><p><%= settings.cta_text || 'Parlons-en ! On adore créer des pièces sur mesure qui vous ressemblent.' %></p><a class="btn btn-light" href="commande">Commander une création</a></div></section>
+<%- include('partials/footer') %>

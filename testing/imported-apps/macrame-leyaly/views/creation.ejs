@@ -1,0 +1,33 @@
+<%- include('partials/header') %>
+<section class="wrap detail">
+<a class="back-link" href="galerie">← Retour à la galerie</a>
+<div class="detail-grid">
+<div class="detail-media">
+<button class="fav-btn detail-fav <%= (typeof favIds!=='undefined' && favIds.indexOf(c.id)!==-1) ? 'is-fav' : '' %>" data-fav data-creation="<%= c.id %>" aria-label="Favori"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 21s-7.5-4.6-10-9.3C.4 8.4 2 5 5.2 5c2 0 3.3 1.2 4.8 3 1.5-1.8 2.8-3 4.8-3C18 5 19.6 8.4 22 11.7 19.5 16.4 12 21 12 21z"/></svg></button>
+<img src="<%= c.image_url || 'https://placehold.co/800x600/EBDDC9/9E5634/png?text=Cr%C3%A9ation' %>" alt="<%= c.name %>">
+</div>
+<div class="detail-info">
+<% if(c.category){ %><span class="cr-cat"><%= c.category %></span><% } %>
+<h1><%= c.name %></h1>
+<div class="detail-price"><%= formatPrice(c.price) %></div>
+<% if(c.description){ %><p class="detail-desc"><%= c.description %></p><% } %>
+<ul class="detail-specs">
+<% if(c.dimensions){ %><li><span>Dimensions</span><strong><%= c.dimensions %></strong></li><% } %>
+<% if(c.materials){ %><li><span>Matériaux</span><strong><%= c.materials %></strong></li><% } %>
+<li><span>Fait main</span><strong>Oui, avec amour</strong></li>
+</ul>
+<a class="btn btn-primary btn-lg" style="background-color:#BE6F49;color:#fff" href="commande?creation=<%= c.id %>">Commander cette création</a>
+<p class="detail-note">Une variante de couleur ou de taille ? Précisez-le dans votre commande.</p>
+</div>
+</div>
+</section>
+<% if(related && related.length){ %>
+<%- include('partials/cord') %>
+<section class="section wrap">
+<div class="section-head"><h2>Vous aimerez aussi</h2></div>
+<div class="cr-grid">
+<% related.forEach(function(c){ %><%- include('partials/creation-card', { c:c, favIds:favIds, formatPrice:formatPrice, truncate:truncate }) %><% }); %>
+</div>
+</section>
+<% } %>
+<%- include('partials/footer') %>
