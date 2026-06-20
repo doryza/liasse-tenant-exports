@@ -466,10 +466,10 @@ textarea.form-control { resize: vertical; min-height: 120px; }
   box-shadow: 0 8px 24px rgba(156,124,42,0.4), inset 0 1px 0 rgba(255,255,255,0.32);
 }
 
-/* ---- Hero banner — horizontal brass nameplate (top-center) ---- */
+/* ---- Hero banner — vertical crest: diamond logo emblem, title below ---- */
 .hero-banner {
   position: absolute;
-  top: 26px;
+  top: 30px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 3;
@@ -478,50 +478,77 @@ textarea.form-control { resize: vertical; min-height: 120px; }
 }
 .hero-banner-inner {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
-  gap: 1rem;
-  padding: 0.7rem 1.3rem;
-  background: linear-gradient(180deg, rgba(12,11,10,0.92), rgba(12,11,10,0.78));
-  border: 1px solid rgba(216,180,90,0.55);
-  border-radius: 4px;
-  box-shadow: inset 0 0 0 3px rgba(12,11,10,0.9), inset 0 0 0 4px rgba(216,180,90,0.25);
+  gap: 0.85rem;
 }
-.hero-banner-logo { width: 50px; height: 50px; object-fit: contain; border-radius: 6px; flex: 0 0 auto; }
-.hero-banner-divider {
-  width: 1px;
-  height: 40px;
-  background: linear-gradient(180deg, transparent, var(--brand), transparent);
+/* diamond emblem framing the logo — the frame is a rotated square ::before, so
+   the logo itself stays upright (and the splash fly-target keeps a clean rect) */
+.hero-banner-badge {
+  position: relative;
+  width: 88px;
+  height: 88px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex: 0 0 auto;
 }
-.hero-banner-title { display: flex; flex-direction: column; align-items: flex-start; gap: 0.28rem; }
+.hero-banner-badge::before {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 60px; height: 60px;
+  margin: -30px 0 0 -30px;
+  transform: rotate(45deg);
+  border: 1px solid rgba(216,180,90,0.65);
+  border-radius: 7px;
+  background: linear-gradient(135deg, rgba(12,11,10,0.96), rgba(12,11,10,0.8));
+  box-shadow: inset 0 0 0 4px rgba(12,11,10,0.92), inset 0 0 0 5px rgba(216,180,90,0.28), 0 8px 22px rgba(0,0,0,0.5);
+}
+.hero-banner-logo {
+  position: relative;
+  z-index: 1;
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+  border-radius: 6px;
+}
+.hero-banner-divider {
+  width: 44px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--brand), transparent);
+}
+.hero-banner-title { display: flex; flex-direction: column; align-items: center; gap: 0.3rem; }
 .hero-banner-name {
   font-family: var(--font-display);
   font-weight: 600;
   font-size: 1.12rem;
   line-height: 1;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.13em;
   text-transform: uppercase;
   color: var(--brand-light);
+  text-align: center;
 }
 .hero-banner-sub {
   font-family: var(--font-display);
-  font-size: 0.64rem;
+  font-size: 0.62rem;
   font-weight: 500;
-  letter-spacing: 0.42em;
+  letter-spacing: 0.4em;
   text-transform: uppercase;
   color: var(--brand);
-  padding-left: 0.42em;
+  padding-left: 0.4em;
+  text-align: center;
 }
 @keyframes banner-drop {
   from { opacity: 0; transform: translateX(-50%) translateY(-28px); }
   to { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
 @media (max-width: 720px) {
-  .hero-banner-inner { gap: 0.75rem; padding: 0.55rem 1rem; }
-  .hero-banner-logo { width: 42px; height: 42px; }
-  .hero-banner-name { font-size: 0.95rem; }
-  .hero-banner-sub { font-size: 0.56rem; letter-spacing: 0.34em; }
+  .hero-banner-badge { width: 74px; height: 74px; }
+  .hero-banner-badge::before { width: 52px; height: 52px; margin: -26px 0 0 -26px; }
+  .hero-banner-logo { width: 36px; height: 36px; }
+  .hero-banner-name { font-size: 0.98rem; }
+  .hero-banner-sub { font-size: 0.56rem; letter-spacing: 0.32em; }
 }
 
 /* ---- Hero slogan — elegant serif, lowered, left-anchored ----
