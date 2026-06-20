@@ -9,14 +9,14 @@
         <div class="delivery-card">
           <% if (p.logo_url) { %><img src="<%= p.logo_url %>" alt="<%= p.name %>"><% } else { %><div class="logo-placeholder">🚚</div><% } %>
           <h3><%= p.name %></h3>
-          <a href="<%= p.link_url %>" target="_blank" rel="noopener" class="btn btn-primary" style="background-color:#F5A524;color:#000"><%= t.order_now %> →</a>
+          <a href="<%= p.link_url %>" target="_blank" rel="noopener" class="btn btn-primary" style="background-color:#D8B45A;color:#000"><%= t.order_now %> →</a>
         </div>
         <% }); %>
       </div>
     <% } else { %>
       <div class="empty-state">
         <p><%= t.no_platforms %></p>
-        <% if (settings.contact_phone) { %><p style="margin-top:1rem"><%= t.phone %> : <a href="tel:<%= settings.contact_phone %>" style="color:#F5A524"><%= settings.contact_phone %></a></p><% } %>
+        <% if (settings.contact_phone) { %><p style="margin-top:1rem"><%= t.phone %> : <a href="tel:<%= settings.contact_phone %>" style="color:#D8B45A"><%= settings.contact_phone %></a></p><% } %>
       </div>
     <% } %>
   </div>

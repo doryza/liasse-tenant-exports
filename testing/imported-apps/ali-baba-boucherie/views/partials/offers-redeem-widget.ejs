@@ -24,7 +24,7 @@
 .offer-stats-rate.low { color: #a0aec0; }
 
 .redeem-widget { background: #fff; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); margin-bottom: 1.25rem; overflow: hidden; }
-.redeem-widget-header { display: flex; align-items: center; justify-content: space-between; padding: 0.85rem 1.25rem; user-select: none; background: linear-gradient(90deg, rgba(245,165,36,0.06), transparent); border-bottom: 1px solid #e2e8f0; }
+.redeem-widget-header { display: flex; align-items: center; justify-content: space-between; padding: 0.85rem 1.25rem; user-select: none; background: linear-gradient(90deg, rgba(216,180,90,0.06), transparent); border-bottom: 1px solid #e2e8f0; }
 .redeem-widget-header h3 { margin: 0; font-size: 1rem; color: #1a202c; font-weight: 700; }
 .redeem-widget-body { padding: 1.25rem; }
 .redeem-tabs { display: flex; gap: 0.5rem; margin-bottom: 1rem; background: #f7fafc; padding: 0.25rem; border-radius: 10px; }
@@ -35,7 +35,7 @@
 .redeem-mode.active { display: block; }
 .redeem-input-row { display: flex; gap: 0.6rem; margin-bottom: 0.9rem; }
 .redeem-input-row input { flex: 1; font-family: 'SFMono-Regular','Menlo',Consolas,monospace; font-size: 1.35rem; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; padding: 0.65rem 0.9rem; border: 2px solid #e2e8f0; border-radius: 9px; }
-.redeem-input-row input:focus { outline: none; border-color: #F5A524; box-shadow: 0 0 0 4px rgba(245,165,36,0.15); }
+.redeem-input-row input:focus { outline: none; border-color: #D8B45A; box-shadow: 0 0 0 4px rgba(216,180,90,0.15); }
 .redeem-scan-area { position: relative; }
 #qrReader { width: 100%; max-width: 360px; margin: 0 auto; border-radius: 12px; overflow: hidden; background: #0a0a0a; }
 #qrReader video { width: 100%; display: block; }
@@ -55,7 +55,7 @@
 .redeem-banner.ok { background: #e8fff0; color: #0a6e2e; border: 1px solid #b7f5cb; }
 .redeem-banner.warn { background: #fff7e0; color: #92500a; border: 1px solid #f7d889; }
 .redeem-banner.err { background: #ffeaea; color: #8a1a1a; border: 1px solid #f8b3b3; }
-.btn-redeem-confirm { background: #F5A524; color: #000; padding: 0.75rem 1.25rem; font-weight: 800; font-size: 0.95rem; border-radius: 9px; border: 0; cursor: pointer; width: 100%; margin-top: 0.6rem; }
+.btn-redeem-confirm { background: #D8B45A; color: #000; padding: 0.75rem 1.25rem; font-weight: 800; font-size: 0.95rem; border-radius: 9px; border: 0; cursor: pointer; width: 100%; margin-top: 0.6rem; }
 .btn-redeem-confirm:hover { background: #5cff44; }
 .btn-redeem-confirm:disabled { background: #cbd5e0; color: #4a5568; cursor: not-allowed; }
 </style>
@@ -88,7 +88,7 @@
       <p style="margin:0 0 0.85rem;color:#718096;font-size:0.85rem">Entrez le code à 8 caractères que le client présente au comptoir.</p>
       <div class="redeem-input-row">
         <input type="text" id="redeemCodeInput" maxlength="8" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ex. B7XK9P2M">
-        <button class="btn btn-primary" id="redeemLookupBtn" style="background-color:#F5A524;color:#000">Vérifier</button>
+        <button class="btn btn-primary" id="redeemLookupBtn" style="background-color:#D8B45A;color:#000">Vérifier</button>
       </div>
     </div>
 
