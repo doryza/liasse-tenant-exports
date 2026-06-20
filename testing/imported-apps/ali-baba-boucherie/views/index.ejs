@@ -94,7 +94,7 @@
   <div class="hero-overlay"></div>
   <div class="hero-banner">
     <div class="hero-banner-inner">
-      <img src="<%= (typeof settings!=='undefined' && settings._p_nav_logo_url) ? settings._p_nav_logo_url : (typeof appIconUrl !== 'undefined' ? appIconUrl : '') %>" alt="<%= t.brand %>" class="hero-banner-logo" onerror="this.style.display='none'">
+      <span class="hero-banner-badge"><img src="<%= (typeof settings!=='undefined' && settings._p_nav_logo_url) ? settings._p_nav_logo_url : (typeof appIconUrl !== 'undefined' ? appIconUrl : '') %>" alt="<%= t.brand %>" class="hero-banner-logo" onerror="var b=this.closest('.hero-banner-badge'); if(b){b.style.display='none';}"></span>
       <span class="hero-banner-divider"></span>
       <span class="hero-banner-title">
         <span class="hero-banner-name"><%= settings.business_name || t.brand %></span>
