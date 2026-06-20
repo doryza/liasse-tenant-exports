@@ -1,7 +1,8 @@
 <%- include('partials/header') %>
 <% var ORDER_URL = 'https://ali-baba-boucherie.liasse.tech/order'; %>
 <% var CAT_EMOJI = { 'Entrées': '🥗', 'Sandwichs': '🥙', 'Tartares': '🥩', 'Assiettes': '🔥', 'Breuvages': '🥤', 'Dessert': '🍯' }; %>
-<% var SPLASH_LOGO = (typeof settings!=='undefined' && settings._p_nav_logo_url) ? settings._p_nav_logo_url : (typeof appIconUrl !== 'undefined' ? appIconUrl : ''); %>
+<% var BRAND_LOGO = 'https://res.cloudinary.com/duhp69meg/image/upload/v1781938357/alibaba_wbjnon.jpg'; %>
+<% var SPLASH_LOGO = BRAND_LOGO; %>
 
 <% if (SPLASH_LOGO) { %>
 <style>
@@ -94,7 +95,7 @@
   <div class="hero-overlay"></div>
   <div class="hero-banner">
     <div class="hero-banner-inner">
-      <span class="hero-banner-badge"><img src="<%= (typeof settings!=='undefined' && settings._p_nav_logo_url) ? settings._p_nav_logo_url : (typeof appIconUrl !== 'undefined' ? appIconUrl : '') %>" alt="<%= t.brand %>" class="hero-banner-logo" onerror="var b=this.closest('.hero-banner-badge'); if(b){b.style.display='none';}"></span>
+      <span class="hero-banner-badge"><img src="<%= BRAND_LOGO %>" alt="<%= t.brand %>" class="hero-banner-logo" onerror="var b=this.closest('.hero-banner-badge'); if(b){b.style.display='none';}"></span>
       <span class="hero-banner-divider"></span>
       <span class="hero-banner-title">
         <span class="hero-banner-name"><%= settings.business_name || t.brand %></span>
