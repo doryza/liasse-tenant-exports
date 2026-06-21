@@ -561,9 +561,11 @@ h1.hero-slogan {
   position: relative;
   z-index: 2;
   width: 100%;
-  max-width: 980px;
-  margin: 0;
-  padding: 0 1.4rem 2.6rem;
+  max-width: 1200px;   /* match .container so the slogan + rule line up with the
+                          left-aligned section headers below, instead of hugging
+                          the full-width hero's left edge on desktop */
+  margin: 0 auto;
+  padding: 0 1.25rem 2.6rem;
   text-align: left;
   font-family: var(--font-serif);
   font-style: italic;
