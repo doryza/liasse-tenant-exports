@@ -124,190 +124,16 @@ module.exports = function(services) {
   // w_640,h_480,c_fill transform so the slider stays light.
   const MENU_PREVIEW = {
     "categories": [
+      "Assiettes",
       "Entrées",
       "Sandwichs",
       "Tartares",
-      "Assiettes",
       "Breuvages",
       "Dessert"
     ],
     "items": [
       {
         "id": "ab1",
-        "name": "Babaghanouge",
-        "price": 7.99,
-        "category": "Entrées",
-        "description": "Caviar d'aubergine grillée au tahini, citron et ail."
-      },
-      {
-        "id": "ab2",
-        "name": "Patates à l'ail",
-        "price": 4.99,
-        "category": "Entrées",
-        "description": "Pommes de terre sautées à l'ail et coriandre. Format petit ou grand."
-      },
-      {
-        "id": "ab3",
-        "name": "Riz",
-        "price": 3.99,
-        "category": "Entrées",
-        "description": "Riz libanais parfumé. Format petit ou grand.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898979/tapavis_menu/296/cfz05akntqy9cvmgoj7q.jpg"
-      },
-      {
-        "id": "ab4",
-        "name": "Hommous",
-        "price": 7.5,
-        "category": "Entrées",
-        "description": "Purée de pois chiches au tahini, citron et huile d'olive. Format petit ou grand."
-      },
-      {
-        "id": "ab5",
-        "name": "Fattouche",
-        "price": 4.99,
-        "category": "Entrées",
-        "description": "Salade de légumes croquants et pain pita grillé, vinaigrette au sumac.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898980/tapavis_menu/296/cyrudrgnomuladqj5s2s.jpg"
-      },
-      {
-        "id": "ab6",
-        "name": "Taboulé",
-        "price": 4.99,
-        "category": "Entrées",
-        "description": "Salade de persil, boulgour, tomate et menthe, citron et huile d'olive.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898980/tapavis_menu/296/kaplmu0fx59xu6xmtx0n.jpg"
-      },
-      {
-        "id": "ab7",
-        "name": "Sauce à l'ail",
-        "price": 7.5,
-        "category": "Entrées",
-        "description": "Notre sauce à l'ail maison, crémeuse et généreuse."
-      },
-      {
-        "id": "ab8",
-        "name": "Pain pita épicé",
-        "price": 3.57,
-        "category": "Entrées",
-        "description": "Pain pita moyen assaisonné de sauce piquante et d'oignons, le tout grillé."
-      },
-      {
-        "id": "ab9",
-        "name": "Sac de 5 pitas moyennes",
-        "price": 2.5,
-        "category": "Entrées",
-        "description": "Sac de 5 pains pita moyens."
-      },
-      {
-        "id": "ab10",
-        "name": "Sandwich Shish taouk",
-        "price": 9.99,
-        "category": "Sandwichs",
-        "description": "Poitrine de poulet marinée, grillée sur charbon. Garni de tomate, cornichon, oignon, houmous ou sauce à l'ail.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898972/tapavis_menu/296/zxacvy75nmtgrcl0jd1t.jpg"
-      },
-      {
-        "id": "ab11",
-        "name": "Sandwich Filet mignon",
-        "price": 9.99,
-        "category": "Sandwichs",
-        "description": "Filet mignon grillé sur charbon. Garni de tomate, cornichon, oignon, houmous ou sauce à l'ail.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898973/tapavis_menu/296/okka7eig9hv5cczktkff.jpg"
-      },
-      {
-        "id": "ab12",
-        "name": "Sandwich Steak",
-        "price": 9.99,
-        "category": "Sandwichs",
-        "description": "Steak grillé sur charbon. Garni de tomate, cornichon, oignon, houmous ou sauce à l'ail.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898975/tapavis_menu/296/un8hwnr3asdhm68gpxho.jpg"
-      },
-      {
-        "id": "ab13",
-        "name": "Sandwich Kafta",
-        "price": 9.99,
-        "category": "Sandwichs",
-        "description": "Brochette de bœuf haché, persil, oignon et épices, grillée sur charbon. Garni de tomate, cornichon, oignon, houmous ou sauce à l'ail.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898974/tapavis_menu/296/ac30uszwyjejexi27bhr.jpg"
-      },
-      {
-        "id": "ab14",
-        "name": "Sandwich Makaneek",
-        "price": 9.99,
-        "category": "Sandwichs",
-        "description": "Saucisses libanaises non piquantes, grillées sur charbon. Garni de tomate, cornichon, oignon, houmous ou sauce à l'ail.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898977/tapavis_menu/296/suycuncj0ylxjb5qo3x4.jpg"
-      },
-      {
-        "id": "ab15",
-        "name": "Sandwich Soujouk",
-        "price": 9.99,
-        "category": "Sandwichs",
-        "description": "Saucisses arméniennes piquantes, grillées sur charbon. Garni de tomate, cornichon, oignon, houmous ou sauce à l'ail.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898977/tapavis_menu/296/klmcglqmwktai6dbdm1d.jpg"
-      },
-      {
-        "id": "ab16",
-        "name": "Sandwich Arayes",
-        "price": 12.99,
-        "category": "Sandwichs",
-        "description": "Pain pita farci de kafta et grillé sur charbon, croustillant. Garni de tomate, cornichon, oignon, houmous ou sauce à l'ail.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898978/tapavis_menu/296/eqcby2c0p8avm0lmxdde.jpg"
-      },
-      {
-        "id": "ab17",
-        "name": "Sandwich Foie",
-        "price": 9.99,
-        "category": "Sandwichs",
-        "description": "Foie grillé sur charbon. Garni de tomate, cornichon, oignon, houmous ou sauce à l'ail."
-      },
-      {
-        "id": "ab18",
-        "name": "Sandwich Crevettes",
-        "price": 9.99,
-        "category": "Sandwichs",
-        "description": "Crevettes grillées sur charbon. Garni de tomate, cornichon, oignon, houmous ou sauce à l'ail."
-      },
-      {
-        "id": "ab19",
-        "name": "Hamburger",
-        "price": 9.99,
-        "category": "Sandwichs",
-        "description": "Galette de bœuf grillée sur charbon. Garni de tomate, cornichon, oignon, houmous ou sauce à l'ail."
-      },
-      {
-        "id": "ab20",
-        "name": "Sandwich Agneau",
-        "price": 9.99,
-        "category": "Sandwichs",
-        "description": "Agneau grillé sur charbon. Garni de tomate, cornichon, oignon, houmous ou sauce à l'ail."
-      },
-      {
-        "id": "ab21",
-        "name": "Bœuf (tartare)",
-        "price": 9.5,
-        "category": "Tartares",
-        "description": "Tartare de bœuf libanais. Styles tablé, kebbeh, kafta ou malsé. Sandwich ou au kilo.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781899013/tapavis_menu/296/yyhhj3jhqznnjyqmujre.jpg"
-      },
-      {
-        "id": "ab22",
-        "name": "Agneau (tartare)",
-        "price": 9.99,
-        "category": "Tartares",
-        "description": "Tartare d'agneau libanais. Styles tablé, kebbeh, kafta ou malsé. Sandwich ou au kilo.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781899015/tapavis_menu/296/i86zl9dfmhfnf1widnya.jpg"
-      },
-      {
-        "id": "ab23",
-        "name": "Veau (tartare)",
-        "price": 9.5,
-        "category": "Tartares",
-        "description": "Tartare de veau libanais. Styles tablé, kebbeh, kafta ou malsé. Sandwich ou au kilo.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781899014/tapavis_menu/296/f4zigtnpkzxgxttfvngu.jpg"
-      },
-      {
-        "id": "ab24",
         "name": "Poulet sur charbon en crapaudine",
         "price": 25.99,
         "category": "Assiettes",
@@ -315,7 +141,7 @@ module.exports = function(services) {
         "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898961/tapavis_menu/296/zkpkruhfiq2vqdzvisx0.jpg"
       },
       {
-        "id": "ab25",
+        "id": "ab2",
         "name": "Mix",
         "price": 32,
         "category": "Assiettes",
@@ -323,7 +149,7 @@ module.exports = function(services) {
         "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898959/tapavis_menu/296/l6qrlo9ykavj0wszyh2c.jpg"
       },
       {
-        "id": "ab26",
+        "id": "ab3",
         "name": "Filet mignon",
         "price": 39,
         "category": "Assiettes",
@@ -331,7 +157,7 @@ module.exports = function(services) {
         "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898960/tapavis_menu/296/w9hcgfmjapohgaglmm4a.jpg"
       },
       {
-        "id": "ab27",
+        "id": "ab4",
         "name": "Kafta",
         "price": 30,
         "category": "Assiettes",
@@ -339,7 +165,7 @@ module.exports = function(services) {
         "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898962/tapavis_menu/296/pwmlbzi4kkrjrn6aazi0.jpg"
       },
       {
-        "id": "ab28",
+        "id": "ab5",
         "name": "Taouk",
         "price": 32,
         "category": "Assiettes",
@@ -347,7 +173,7 @@ module.exports = function(services) {
         "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898962/tapavis_menu/296/iruy1v5h35zxwriqzabi.jpg"
       },
       {
-        "id": "ab29",
+        "id": "ab6",
         "name": "Makanek",
         "price": 32,
         "category": "Assiettes",
@@ -355,7 +181,7 @@ module.exports = function(services) {
         "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898963/tapavis_menu/296/qoo2efrlejjtvlbodfzh.jpg"
       },
       {
-        "id": "ab30",
+        "id": "ab7",
         "name": "Côtelettes d'agneau",
         "price": 40,
         "category": "Assiettes",
@@ -363,7 +189,7 @@ module.exports = function(services) {
         "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898966/tapavis_menu/296/yt9pwpwp02y7vnrcxkm3.jpg"
       },
       {
-        "id": "ab31",
+        "id": "ab8",
         "name": "Soujouk",
         "price": 32,
         "category": "Assiettes",
@@ -371,7 +197,7 @@ module.exports = function(services) {
         "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898965/tapavis_menu/296/fpruetusiyssanepfoea.jpg"
       },
       {
-        "id": "ab32",
+        "id": "ab9",
         "name": "Merguez",
         "price": 32,
         "category": "Assiettes",
@@ -379,90 +205,270 @@ module.exports = function(services) {
         "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898964/tapavis_menu/296/rxbuefnkkkmleg7prcjl.jpg"
       },
       {
-        "id": "ab33",
+        "id": "ab10",
         "name": "Foie de veau de grain",
         "price": 35,
         "category": "Assiettes",
-        "description": "Foie de veau de grain grillé sur charbon. Servi avec légumes grillés, pain pita épicé, houmous et sauce à l'ail. ½ kg ou 1 kg."
+        "description": "Foie de veau de grain grillé sur charbon. Servi avec légumes grillés, pain pita épicé, houmous et sauce à l'ail. ½ kg ou 1 kg.",
+        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782061818/tapavis_menu/296/foie_de_veau_de_grain_1782061816066.png"
       },
       {
-        "id": "ab34",
+        "id": "ab11",
         "name": "Agneau qc. en cubes",
         "price": 40,
         "category": "Assiettes",
-        "description": "Agneau du Québec en cubes, grillé sur charbon. Servi avec légumes grillés, pain pita épicé, houmous et sauce à l'ail. ½ kg ou 1 kg."
+        "description": "Agneau du Québec en cubes, grillé sur charbon. Servi avec légumes grillés, pain pita épicé, houmous et sauce à l'ail. ½ kg ou 1 kg.",
+        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782061816/tapavis_menu/296/agneau_qc_en_cubes_1782061814979.png"
+      },
+      {
+        "id": "ab12",
+        "name": "Babaghanouge",
+        "price": 7.5,
+        "category": "Entrées",
+        "description": "Caviar d'aubergine grillée au tahini, citron et ail.",
+        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782061795/tapavis_menu/296/babaghanouge_1782061794032.png"
+      },
+      {
+        "id": "ab13",
+        "name": "Patates à l'ail",
+        "price": 4.99,
+        "category": "Entrées",
+        "description": "Pommes de terre sautées à l'ail et coriandre. Format petit ou grand.",
+        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782061795/tapavis_menu/296/patates_a_l_ail_1782061793656.png"
+      },
+      {
+        "id": "ab14",
+        "name": "Riz",
+        "price": 3.99,
+        "category": "Entrées",
+        "description": "Riz libanais parfumé. Format petit ou grand.",
+        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782061828/tapavis_menu/296/riz_1782061826840.png"
+      },
+      {
+        "id": "ab15",
+        "name": "Hommous",
+        "price": 7.5,
+        "category": "Entrées",
+        "description": "Purée de pois chiches au tahini, citron et huile d'olive. Format petit ou grand.",
+        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782061793/tapavis_menu/296/hommous_1782061791979.png"
+      },
+      {
+        "id": "ab16",
+        "name": "Fattouche",
+        "price": 4.99,
+        "category": "Entrées",
+        "description": "Salade de légumes croquants et pain pita grillé, vinaigrette au sumac.",
+        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782062416/tapavis_menu/296/fattouche_1782062414159.png"
+      },
+      {
+        "id": "ab17",
+        "name": "Taboulé",
+        "price": 4.99,
+        "category": "Entrées",
+        "description": "Salade de persil, boulgour, tomate et menthe, citron et huile d'olive.",
+        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782062428/tapavis_menu/296/taboule_1782062426682.png"
+      },
+      {
+        "id": "ab18",
+        "name": "Sauce à l'ail",
+        "price": 7.5,
+        "category": "Entrées",
+        "description": "Notre sauce à l'ail maison, crémeuse et généreuse.",
+        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782061795/tapavis_menu/296/sauce_a_l_ail_1782061794060.png"
+      },
+      {
+        "id": "ab19",
+        "name": "Pain pita épicé",
+        "price": 3.57,
+        "category": "Entrées",
+        "description": "Pain pita moyen assaisonné de sauce piquante et d'oignons, le tout grillé.",
+        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782062440/tapavis_menu/296/pain_pita_epice_1782062438515.png"
+      },
+      {
+        "id": "ab20",
+        "name": "Sac de 5 pitas moyennes",
+        "price": 2.5,
+        "category": "Entrées",
+        "description": "Sac de 5 pains pita moyens.",
+        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782062655/tapavis_menu/296/dgjoct5idueftu4qfxxs.jpg"
+      },
+      {
+        "id": "ab21",
+        "name": "Sandwich Shish taouk",
+        "price": 9.99,
+        "category": "Sandwichs",
+        "description": "Poitrine de poulet marinée, grillée sur charbon. Garni de tomate, cornichon, oignon, houmous ou sauce à l'ail.",
+        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898972/tapavis_menu/296/zxacvy75nmtgrcl0jd1t.jpg"
+      },
+      {
+        "id": "ab22",
+        "name": "Sandwich Filet mignon",
+        "price": 9.99,
+        "category": "Sandwichs",
+        "description": "Filet mignon grillé sur charbon. Garni de tomate, cornichon, oignon, houmous ou sauce à l'ail.",
+        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898973/tapavis_menu/296/okka7eig9hv5cczktkff.jpg"
+      },
+      {
+        "id": "ab23",
+        "name": "Sandwich Steak",
+        "price": 9.99,
+        "category": "Sandwichs",
+        "description": "Steak grillé sur charbon. Garni de tomate, cornichon, oignon, houmous ou sauce à l'ail.",
+        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898975/tapavis_menu/296/un8hwnr3asdhm68gpxho.jpg"
+      },
+      {
+        "id": "ab24",
+        "name": "Sandwich Kafta",
+        "price": 9.99,
+        "category": "Sandwichs",
+        "description": "Brochette de bœuf haché, persil, oignon et épices, grillée sur charbon. Garni de tomate, cornichon, oignon, houmous ou sauce à l'ail.",
+        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898974/tapavis_menu/296/ac30uszwyjejexi27bhr.jpg"
+      },
+      {
+        "id": "ab25",
+        "name": "Sandwich Makaneek",
+        "price": 9.99,
+        "category": "Sandwichs",
+        "description": "Saucisses libanaises non piquantes, grillées sur charbon. Garni de tomate, cornichon, oignon, houmous ou sauce à l'ail.",
+        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898977/tapavis_menu/296/suycuncj0ylxjb5qo3x4.jpg"
+      },
+      {
+        "id": "ab26",
+        "name": "Sandwich Soujouk",
+        "price": 9.99,
+        "category": "Sandwichs",
+        "description": "Saucisses arméniennes piquantes, grillées sur charbon. Garni de tomate, cornichon, oignon, houmous ou sauce à l'ail.",
+        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898977/tapavis_menu/296/klmcglqmwktai6dbdm1d.jpg"
+      },
+      {
+        "id": "ab27",
+        "name": "Sandwich Arayes",
+        "price": 12.99,
+        "category": "Sandwichs",
+        "description": "Pain pita farci de kafta et grillé sur charbon, croustillant. Garni de tomate, cornichon, oignon, houmous ou sauce à l'ail.",
+        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898978/tapavis_menu/296/eqcby2c0p8avm0lmxdde.jpg"
+      },
+      {
+        "id": "ab28",
+        "name": "Sandwich Foie",
+        "price": 9.99,
+        "category": "Sandwichs",
+        "description": "Foie grillé sur charbon. Garni de tomate, cornichon, oignon, houmous ou sauce à l'ail.",
+        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782061807/tapavis_menu/296/sandwich_foie_1782061805486.png"
+      },
+      {
+        "id": "ab29",
+        "name": "Sandwich Crevettes",
+        "price": 9.99,
+        "category": "Sandwichs",
+        "description": "Crevettes grillées sur charbon. Garni de tomate, cornichon, oignon, houmous ou sauce à l'ail.",
+        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782061806/tapavis_menu/296/sandwich_crevettes_1782061804583.png"
+      },
+      {
+        "id": "ab30",
+        "name": "Hamburger",
+        "price": 9.99,
+        "category": "Sandwichs",
+        "description": "Galette de bœuf grillée sur charbon. Garni de tomate, cornichon, oignon, houmous ou sauce à l'ail.",
+        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782061808/tapavis_menu/296/hamburger_1782061806892.png"
+      },
+      {
+        "id": "ab31",
+        "name": "Sandwich Agneau",
+        "price": 9.99,
+        "category": "Sandwichs",
+        "description": "Agneau grillé sur charbon. Garni de tomate, cornichon, oignon, houmous ou sauce à l'ail.",
+        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782061808/tapavis_menu/296/sandwich_agneau_1782061806619.png"
+      },
+      {
+        "id": "ab32",
+        "name": "Sandwich Merguez",
+        "price": 9.99,
+        "category": "Sandwichs",
+        "description": "Saucisses marocaines non piquantes, grillées sur charbon. Garni de tomate, cornichon, oignon, houmous ou sauce à l'ail.",
+        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782061818/tapavis_menu/296/sandwich_merguez_1782061815915.png"
+      },
+      {
+        "id": "ab33",
+        "name": "Boeuf (tartare)",
+        "price": 9.5,
+        "category": "Tartares",
+        "description": "Tartare de bœuf libanais. Styles tablé, kebbeh, kafta ou malsé. Sandwich ou au kilo.",
+        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781899013/tapavis_menu/296/yyhhj3jhqznnjyqmujre.jpg"
+      },
+      {
+        "id": "ab34",
+        "name": "Agneau (tartare)",
+        "price": 9.99,
+        "category": "Tartares",
+        "description": "Tartare d'agneau libanais. Styles tablé, kebbeh, kafta ou malsé. Sandwich ou au kilo.",
+        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781899015/tapavis_menu/296/i86zl9dfmhfnf1widnya.jpg"
       },
       {
         "id": "ab35",
-        "name": "Pepsi",
-        "price": 3.25,
-        "category": "Breuvages"
+        "name": "Veau (tartare)",
+        "price": 9.5,
+        "category": "Tartares",
+        "description": "Tartare de veau libanais. Styles tablé, kebbeh, kafta ou malsé. Sandwich ou au kilo.",
+        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781899014/tapavis_menu/296/f4zigtnpkzxgxttfvngu.jpg"
       },
       {
         "id": "ab36",
-        "name": "Pepsi Diète",
+        "name": "Pepsi",
         "price": 3.25,
-        "category": "Breuvages"
+        "category": "Breuvages",
+        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782063139/tapavis_menu/296/x7whccqlumhpcdenctur.jpg"
       },
       {
         "id": "ab37",
-        "name": "Coca-Cola",
+        "name": "Pepsi Diète",
         "price": 3.25,
-        "category": "Breuvages"
+        "category": "Breuvages",
+        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782063175/tapavis_menu/296/jtqhze789mplbs2etd5f.jpg"
       },
       {
         "id": "ab38",
-        "name": "7 UP",
+        "name": "Coca-Cola",
         "price": 3.25,
-        "category": "Breuvages"
+        "category": "Breuvages",
+        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782063303/tapavis_menu/296/gs2kjjq1k8le6dvuu4rh.jpg"
       },
       {
         "id": "ab39",
-        "name": "Crush",
+        "name": "7 UP",
         "price": 3.25,
-        "category": "Breuvages"
+        "category": "Breuvages",
+        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782063329/tapavis_menu/296/nie5drrrzijmhovts7ha.jpg"
       },
       {
         "id": "ab40",
-        "name": "Bouteille d'eau",
+        "name": "Crush",
         "price": 3.25,
-        "category": "Breuvages"
+        "category": "Breuvages",
+        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782063354/tapavis_menu/296/pfdafxggjox2pculd1ui.jpg"
       },
       {
         "id": "ab41",
-        "name": "Ayrane",
-        "price": 4.5,
+        "name": "Bouteille d'Eau",
+        "price": 3.25,
         "category": "Breuvages",
-        "description": "Boisson lactée rafraîchissante à base de yogourt."
+        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782063406/tapavis_menu/296/pf1xgiqhcdqgxmlbgabv.jpg"
       },
       {
         "id": "ab42",
+        "name": "Ayrane",
+        "price": 4.5,
+        "category": "Breuvages",
+        "description": "Boisson lactée rafraîchissante à base de yogourt.",
+        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782063412/tapavis_menu/296/py7om9aueqptdelwfyom.jpg"
+      },
+      {
+        "id": "ab43",
         "name": "Mélange de Baklava",
         "price": 9.86,
         "category": "Dessert",
         "description": "10 morceaux de baklavas frais.",
         "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898981/tapavis_menu/296/bor0dhsbt3tdtyx1xzpk.jpg"
-      },
-      {
-        "id": "ab43",
-        "name": "Bassboussa",
-        "price": 15.7,
-        "category": "Dessert",
-        "description": "400 g de gâteaux orientaux à la semoule de blé, noix de coco et amandes."
-      },
-      {
-        "id": "ab44",
-        "name": "Maamoul",
-        "price": 14.27,
-        "category": "Dessert",
-        "description": "400 g de biscuits à la semoule de blé, noix de Grenoble et dattes."
-      },
-      {
-        "id": "ab45",
-        "name": "Tamara",
-        "price": 14.27,
-        "category": "Dessert",
-        "description": "400 g d'assortiment de biscuits orientaux aux noix variées."
       }
     ]
   };
@@ -521,7 +527,7 @@ module.exports = function(services) {
   }
 
   async function getMenuCategories() {
-    try { return await db.all('SELECT * FROM menu_categories WHERE active = 1 ORDER BY id ASC'); }
+    try { return await db.all('SELECT * FROM menu_categories WHERE active = 1 ORDER BY position ASC, id ASC'); }
     catch(e) { return []; }
   }
 
@@ -823,7 +829,7 @@ module.exports = function(services) {
   router.get('/menu', async function(req, res) {
     try {
       const ctx = await renderCtx(req);
-      const menu = await db.all('SELECT m.* FROM menu_items m LEFT JOIN menu_categories c ON c.slug = m.category ORDER BY COALESCE(c.id, 999999) ASC, m.position ASC, m.id ASC').catch(function(){ return []; });
+      const menu = await db.all('SELECT m.* FROM menu_items m LEFT JOIN menu_categories c ON c.slug = m.category ORDER BY COALESCE(c.position, 999999) ASC, m.position ASC, m.id ASC').catch(function(){ return []; });
       const categories = await getMenuCategories();
       res.render('menu', Object.assign(ctx, { menu: menu, categories: categories }));
     } catch(e) { res.status(500).send('Erreur'); }
@@ -1279,7 +1285,7 @@ module.exports = function(services) {
   // --- CRUD: menu_items ---
   router.get('/api/admin/menu_items', isAdminApi, async function(req, res) {
     try {
-      const rows = await db.all('SELECT m.* FROM menu_items m LEFT JOIN menu_categories c ON c.slug = m.category ORDER BY COALESCE(c.id, 999999) ASC, m.position ASC, m.id ASC');
+      const rows = await db.all('SELECT m.* FROM menu_items m LEFT JOIN menu_categories c ON c.slug = m.category ORDER BY COALESCE(c.position, 999999) ASC, m.position ASC, m.id ASC');
       res.json({ menu_items: rows });
     } catch(e) { res.status(500).json({ error: e.message }); }
   });
