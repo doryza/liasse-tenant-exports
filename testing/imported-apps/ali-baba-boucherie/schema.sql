@@ -50,10 +50,11 @@ CREATE TABLE IF NOT EXISTS menu_categories (
 );
 
 -- Ali Baba Grillades — menu categories (Lebanese charcoal grill + butcher).
-INSERT INTO menu_categories (slug, name_fr, name_en, position) VALUES ('entrees', 'Entrées', 'Starters', 1) ON CONFLICT (slug) DO NOTHING;
-INSERT INTO menu_categories (slug, name_fr, name_en, position) VALUES ('sandwichs', 'Sandwichs', 'Sandwiches', 2) ON CONFLICT (slug) DO NOTHING;
-INSERT INTO menu_categories (slug, name_fr, name_en, position) VALUES ('tartares', 'Tartares', 'Tartares', 3) ON CONFLICT (slug) DO NOTHING;
-INSERT INTO menu_categories (slug, name_fr, name_en, position) VALUES ('assiettes', 'Assiettes', 'Platters', 4) ON CONFLICT (slug) DO NOTHING;
+-- Display order: Assiettes first, then Entrées, Sandwichs, Tartares, Breuvages, Dessert.
+INSERT INTO menu_categories (slug, name_fr, name_en, position) VALUES ('assiettes', 'Assiettes', 'Platters', 1) ON CONFLICT (slug) DO NOTHING;
+INSERT INTO menu_categories (slug, name_fr, name_en, position) VALUES ('entrees', 'Entrées', 'Starters', 2) ON CONFLICT (slug) DO NOTHING;
+INSERT INTO menu_categories (slug, name_fr, name_en, position) VALUES ('sandwichs', 'Sandwichs', 'Sandwiches', 3) ON CONFLICT (slug) DO NOTHING;
+INSERT INTO menu_categories (slug, name_fr, name_en, position) VALUES ('tartares', 'Tartares', 'Tartares', 4) ON CONFLICT (slug) DO NOTHING;
 INSERT INTO menu_categories (slug, name_fr, name_en, position) VALUES ('breuvages', 'Breuvages', 'Drinks', 5) ON CONFLICT (slug) DO NOTHING;
 INSERT INTO menu_categories (slug, name_fr, name_en, position) VALUES ('dessert', 'Dessert', 'Desserts', 6) ON CONFLICT (slug) DO NOTHING;
 
