@@ -34,7 +34,7 @@
   @media (prefers-reduced-motion: reduce) { .hero-vip::after { display: none; } }
 
   /* Hero menu — horizontal scrolling white product cards */
-  .hero-menu { display: flex; gap: .9rem; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; margin: 1.6rem 0 1.7rem; padding-bottom: .6rem; }
+  .hero-menu { display: flex; align-items: flex-start; gap: .9rem; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; margin: 1.6rem 0 1.7rem; padding-bottom: .6rem; }
   .hero-menu::-webkit-scrollbar { height: 6px; }
   .hero-menu::-webkit-scrollbar-thumb { background: rgba(255,255,255,.25); border-radius: 3px; }
   .hero-item { scroll-snap-align: start; flex: 0 0 235px; width: 235px; display: flex; flex-direction: column; background: #fff; color: var(--text-dark); border-radius: 14px; overflow: hidden; text-decoration: none; box-shadow: 0 14px 34px rgba(0,0,0,.35); transition: transform .15s ease; }
@@ -46,7 +46,18 @@
   .hero-item__name { font-family: var(--font-display); text-transform: uppercase; font-size: 1.04rem; color: var(--ink); line-height: 1.05; }
   .hero-item__price { font-family: var(--font-display); color: var(--red); font-size: 1.04rem; white-space: nowrap; }
   .hero-item__desc { color: var(--muted-dark); font-size: .82rem; line-height: 1.4; margin: .35rem 0 .7rem; flex: 1; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-  .hero-item__order { font-family: var(--font-display); text-transform: uppercase; letter-spacing: .04em; font-size: .82rem; color: var(--red); }
+  /* Per-card "Commander ▾" dropdown: Takeout (our order page) + delivery */
+  .hero-item__cmd { margin-top: .75rem; }
+  .hero-item__cmd-btn { width: 100%; display: flex; align-items: center; justify-content: center; gap: .4rem; cursor: pointer; border: 0; border-radius: 9px; padding: .58rem .8rem; background: var(--red); color: #fff; font-family: var(--font-display); text-transform: uppercase; letter-spacing: .04em; font-size: .9rem; }
+  .hero-item__cmd-btn .ar { transition: transform .2s ease; }
+  .hero-item__cmd[data-open="true"] .hero-item__cmd-btn { background: var(--red-deep); }
+  .hero-item__cmd[data-open="true"] .hero-item__cmd-btn .ar { transform: rotate(180deg); }
+  .hero-item__cmd-menu { display: none; flex-direction: column; margin-top: .4rem; border: 1px solid var(--line-light); border-radius: 9px; overflow: hidden; }
+  .hero-item__cmd[data-open="true"] .hero-item__cmd-menu { display: flex; }
+  .hero-item__cmd-menu a { display: flex; align-items: center; gap: .5rem; padding: .6rem .7rem; font-size: .85rem; font-weight: 800; color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--line-light); }
+  .hero-item__cmd-menu a:last-child { border-bottom: 0; }
+  .hero-item__cmd-menu a:hover { background: var(--cream); }
+  .hero-item__cmd-menu img { width: 16px; height: 16px; display: block; }
   .hero-ctas { flex-wrap: wrap; align-items: center; gap: .7rem; }
   /* Delivery buttons (brand icons via Simple Icons CDN) */
   .deliver-btn { display: inline-flex; align-items: center; gap: .5rem; padding: .7rem 1.1rem; border-radius: 10px; font-weight: 800; font-size: .92rem; color: #fff; text-decoration: none; line-height: 1; }
@@ -64,9 +75,10 @@
     <div class="hero-inner">
       <span class="eyebrow hero-eyebrow"><%= t.hero_eyebrow %></span>
       <h1 class="hero-title"><%= t.hero_title_1 %> <span class="hl"><%= t.hero_title_hl %></span> <%= t.hero_title_2 %></h1>
+      <% var _ue = settings.ubereats_url || 'https://www.ubereats.com'; var _dd = settings.doordash_url || 'https://www.doordash.com'; %>
       <div class="hero-menu">
         <% (typeof heroFeatured !== 'undefined' ? heroFeatured : []).forEach(function(f){ var _img = f.item.image_url; %>
-        <a class="hero-item" href="commander">
+        <div class="hero-item">
           <% if (_img) { %><img class="hero-item__img" src="<%= cimg(_img, 'f_auto,q_auto,w_480,h_360,c_fill,g_auto') %>" alt="<%= pickLang(f.item, 'name', lang) %>" loading="lazy"><% } else { %><span class="hero-item__emoji"><%= f.emoji %></span><% } %>
           <span class="hero-item__b">
             <span class="hero-item__row">
@@ -74,16 +86,17 @@
               <% if (f.item.price != null && f.item.price !== '') { %><span class="hero-item__price"><%= formatPrice(f.item.price) %></span><% } %>
             </span>
             <% var _d = pickLang(f.item, 'description', lang); if (_d) { %><span class="hero-item__desc"><%= _d %></span><% } %>
-            <span class="hero-item__order"><%= t.order_now %> →</span>
+            <div class="hero-item__cmd" data-open="false">
+              <button type="button" class="hero-item__cmd-btn"><%= t.order %> <span class="ar" aria-hidden="true">▾</span></button>
+              <div class="hero-item__cmd-menu">
+                <a href="commander"><%= t.order_now %></a>
+                <a href="<%= _ue %>" target="_blank" rel="noopener"><img src="https://cdn.simpleicons.org/ubereats" alt="" width="16" height="16" loading="lazy">Uber Eats</a>
+                <a href="<%= _dd %>" target="_blank" rel="noopener"><img src="https://cdn.simpleicons.org/doordash" alt="" width="16" height="16" loading="lazy">DoorDash</a>
+              </div>
+            </div>
           </span>
-        </a>
+        </div>
         <% }); %>
-      </div>
-      <div class="hero-ctas">
-        <a class="btn btn-gold btn-lg" href="commander"><%= t.order_now %></a>
-        <a class="deliver-btn deliver-btn--ue" href="<%= settings.ubereats_url || 'https://www.ubereats.com' %>" target="_blank" rel="noopener"><img src="https://cdn.simpleicons.org/ubereats/white" alt="" width="16" height="16" loading="lazy">Uber Eats</a>
-        <a class="deliver-btn deliver-btn--dd" href="<%= settings.doordash_url || 'https://www.doordash.com' %>" target="_blank" rel="noopener"><img src="https://cdn.simpleicons.org/doordash/white" alt="" width="16" height="16" loading="lazy">DoorDash</a>
-        <a class="hero-vip" href="vip"><span class="star">★</span> <%= t.hero_vip %> <span class="arr" aria-hidden="true">→</span></a>
       </div>
     </div>
   </div>
@@ -164,6 +177,19 @@
     i = (i + 1) % slides.length;
     slides[i].classList.add('is-active');
   }, 5000);
+})();
+</script>
+<script>
+(function(){
+  var cmds = Array.prototype.slice.call(document.querySelectorAll('.hero-item__cmd'));
+  if (!cmds.length) return;
+  document.addEventListener('click', function(e){
+    var btn = e.target.closest('.hero-item__cmd-btn');
+    cmds.forEach(function(c){
+      var isThis = btn && c.contains(btn);
+      c.setAttribute('data-open', isThis ? (c.getAttribute('data-open') === 'true' ? 'false' : 'true') : 'false');
+    });
+  });
 })();
 </script>
 <%- include('partials/footer') %>
