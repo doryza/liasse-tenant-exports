@@ -1,0 +1,32 @@
+<%# Global "current order" pill — shows on every page (via footer) when an
+    active takeout order is in localStorage, so the order + status follow the
+    user as they navigate. Hidden on /commander (it has its own resume banner). %>
+<style>
+  .order-pill { position: fixed; left: 50%; bottom: 1rem; transform: translateX(-50%); z-index: 1400;
+    background: var(--red); color: #fff; font-family: var(--font-display); text-transform: uppercase;
+    letter-spacing: .03em; font-size: .82rem; padding: .6rem 1.15rem; border-radius: 999px; text-decoration: none;
+    box-shadow: 0 10px 30px rgba(0,0,0,.35); border: 1.5px solid var(--gold); }
+  .order-pill:hover { background: var(--red-bright); }
+</style>
+<a class="order-pill" id="orderPill" href="commander?track=1" hidden></a>
+<script>
+(function(){
+  if (document.body && document.body.getAttribute('data-page') === 'order') return;
+  var pill = document.getElementById('orderPill'); if (!pill) return;
+  var BASE = '<%- (settings && settings.order_base_url ? String(settings.order_base_url).replace(/\/+$/, "").replace(/"/g, "") : "") %>';
+  var EN = <%- (typeof lang !== 'undefined' && lang === 'en') ? 'true' : 'false' %>;
+  var ST = EN ? { label:'My order', pending:'received', confirmed:'confirmed', preparing:'being prepared', ready:'ready for pickup', track:'Track' }
+              : { label:'Ma commande', pending:'reçue', confirmed:'confirmée', preparing:'en préparation', ready:'prête', track:'Suivre' };
+  var a; try { a = JSON.parse(localStorage.getItem('redbox_active_order') || 'null'); } catch(e){ a = null; }
+  if (!a || !a.id || (Date.now() - (a.ts || 0) > 36 * 3600 * 1000)) { if (a) { try { localStorage.removeItem('redbox_active_order'); } catch(e){} } return; }
+  function render(status){ pill.textContent = ST.label + ' #' + (a.num || a.id) + (status ? (' · ' + status) : '') + ' · ' + ST.track + ' →'; pill.hidden = false; }
+  render('');
+  if (BASE) {
+    fetch(BASE + '/order/orders/' + encodeURIComponent(a.id)).then(function(r){ return r.ok ? r.json() : null; }).then(function(o){
+      if (!o || !o.status) return;
+      if (o.status === 'completed' || o.status === 'cancelled') { try { localStorage.removeItem('redbox_active_order'); } catch(e){} pill.hidden = true; return; }
+      render(ST[o.status] || '');
+    }).catch(function(){});
+  }
+})();
+</script>

@@ -77,3 +77,25 @@ CREATE TABLE IF NOT EXISTS franchise_requests (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS franchise_requests_created_idx ON franchise_requests(created_at DESC);
+
+-- Ordering history mirror (native Liasse Restaurants ordering, Option A). Liasse
+-- stays the source of truth; this is a read-through cache so a customer's current
+-- order + 90-day history follow them. No FK to the platform-managed `users` table.
+-- (Exclude from any public _db-snapshot export — it can hold customer PII.)
+CREATE TABLE IF NOT EXISTS orders (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER,
+  liasse_order_id TEXT UNIQUE,
+  order_number INTEGER,
+  order_type TEXT,
+  status TEXT DEFAULT 'pending',
+  items JSONB,
+  subtotal_cents INTEGER,
+  total_cents INTEGER,
+  tax_breakdown JSONB,
+  customer_name TEXT,
+  pickup_time TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS orders_user_idx ON orders(user_id, created_at DESC);

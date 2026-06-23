@@ -70,9 +70,8 @@
         </div>
         <% }); %>
       </div>
-      <% var _orderUrl = settings.order_url || 'menu'; var _orderExt = /^https?:\/\//i.test(_orderUrl); %>
       <div class="hero-ctas">
-        <a class="btn btn-gold btn-lg" href="<%= _orderUrl %>"<%- _orderExt ? ' target="_blank" rel="noopener"' : '' %>>🛒 <%= t.order_now %></a>
+        <a class="btn btn-gold btn-lg" href="commander">🛒 <%= t.order_now %></a>
         <a class="hero-vip" href="vip"><span class="star">★</span> <%= t.hero_vip %> <span class="arr" aria-hidden="true">→</span></a>
       </div>
     </div>
