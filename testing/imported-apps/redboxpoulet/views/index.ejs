@@ -32,6 +32,20 @@
     animation: vipShine 3.4s ease-in-out infinite; }
   @keyframes vipShine { 0% { left: -60%; } 55%, 100% { left: 130%; } }
   @media (prefers-reduced-motion: reduce) { .hero-vip::after { display: none; } }
+
+  /* Hero menu showcase */
+  .hero-menu { display: grid; gap: .7rem; margin: 1.6rem 0 1.9rem; max-width: 540px; }
+  .hero-item { display: flex; gap: .85rem; align-items: flex-start; padding: .8rem 1rem; border-radius: 14px;
+    background: rgba(12,10,9,.55); border: 1px solid rgba(255,255,255,.1); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
+  .hero-item__emoji { font-size: 1.75rem; line-height: 1.1; flex-shrink: 0; }
+  .hero-item__body { flex: 1; min-width: 0; }
+  .hero-item__top { display: flex; align-items: baseline; justify-content: space-between; gap: .6rem; }
+  .hero-item__name { font-family: var(--font-display); text-transform: uppercase; font-size: 1.06rem; color: #fff; letter-spacing: .02em; }
+  .hero-item__price { font-family: var(--font-display); color: var(--gold); font-size: 1.06rem; white-space: nowrap; }
+  .hero-item__desc { margin: .25rem 0 0; color: var(--muted-light); font-size: .9rem; line-height: 1.4;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .hero-ctas { flex-wrap: wrap; align-items: center; }
+  @media (max-width: 600px) { .hero-item__desc { -webkit-line-clamp: 3; } }
 </style>
 <section class="hero"<%= _heroSlides.length > 1 ? ' data-hero-slider' : '' %>>
   <% _heroSlides.forEach(function(_s, _i){ %>
@@ -42,14 +56,23 @@
     <div class="hero-inner">
       <span class="eyebrow hero-eyebrow"><%= t.hero_eyebrow %></span>
       <h1 class="hero-title"><%= t.hero_title_1 %> <span class="hl"><%= t.hero_title_hl %></span> <%= t.hero_title_2 %></h1>
-      <div class="hero-tags">
-        <span><%= t.hero_tag1 %></span><span><%= t.hero_tag2 %></span><span><%= t.hero_tag3 %></span>
+      <div class="hero-menu">
+        <% (typeof heroFeatured !== 'undefined' ? heroFeatured : []).forEach(function(f){ %>
+        <div class="hero-item">
+          <span class="hero-item__emoji"><%= f.emoji %></span>
+          <div class="hero-item__body">
+            <div class="hero-item__top">
+              <span class="hero-item__name"><%= pickLang(f.item, 'name', lang) %></span>
+              <% if (f.item.price != null && f.item.price !== '') { %><span class="hero-item__price"><%= formatPrice(f.item.price) %></span><% } %>
+            </div>
+            <% var _d = pickLang(f.item, 'description', lang); if (_d) { %><p class="hero-item__desc"><%= _d %></p><% } %>
+          </div>
+        </div>
+        <% }); %>
       </div>
+      <% var _orderUrl = settings.order_url || 'menu'; var _orderExt = /^https?:\/\//i.test(_orderUrl); %>
       <div class="hero-ctas">
-        <a class="btn btn-gold btn-lg" href="menu"><%= t.hero_cta %></a>
-        <a class="btn btn-outline" href="promesse"><%= t.nav_promise %></a>
-      </div>
-      <div class="hero-vip-row">
+        <a class="btn btn-gold btn-lg" href="<%= _orderUrl %>"<%- _orderExt ? ' target="_blank" rel="noopener"' : '' %>>🛒 <%= t.order_now %></a>
         <a class="hero-vip" href="vip"><span class="star">★</span> <%= t.hero_vip %> <span class="arr" aria-hidden="true">→</span></a>
       </div>
     </div>

@@ -12,7 +12,7 @@ module.exports = function(services) {
     fr: {
       brand: 'RED BOX', brand_tag: 'Poulet Nashville',
       nav_home: 'Accueil', nav_menu: 'Menu', nav_promise: 'Notre Promesse', nav_franchise: 'Franchise', nav_contact: 'Contact', nav_vip: 'VIP',
-      order: 'Commander', order_view_menu: 'Voir le menu', learn_more: 'En savoir plus', back_home: "Retour à l'accueil",
+      order: 'Commander', order_now: 'Commander en ligne', order_view_menu: 'Voir le menu', learn_more: 'En savoir plus', back_home: "Retour à l'accueil",
       contact_us: 'Nous joindre', footer_rights: 'Tous droits réservés.',
       footer_intro: "Le poulet frit réinventé. Extrêmement croustillant. Zéro gras saturé. L'expérience fast-casual premium au Québec.",
 
@@ -120,7 +120,7 @@ module.exports = function(services) {
     en: {
       brand: 'RED BOX', brand_tag: 'Nashville Chicken',
       nav_home: 'Home', nav_menu: 'Menu', nav_promise: 'Our Promise', nav_franchise: 'Franchise', nav_contact: 'Contact', nav_vip: 'VIP',
-      order: 'Order', order_view_menu: 'See the menu', learn_more: 'Learn more', back_home: 'Back to home',
+      order: 'Order', order_now: 'Order now', order_view_menu: 'See the menu', learn_more: 'Learn more', back_home: 'Back to home',
       contact_us: 'Contact us', footer_rights: 'All rights reserved.',
       footer_intro: 'Fried chicken reinvented. Extremely crispy. Zero saturated fat. The premium fast-casual experience in Quebec.',
 
@@ -311,7 +311,25 @@ module.exports = function(services) {
   router.get('/', async function(req, res) {
     try {
       const ctx = await renderCtx(req);
-      res.render('index', ctx);
+      // Featured items for the hero showcase: the popular pick, then the family
+      // box and the burger for variety (fallback to the first non-extra items),
+      // each tagged with a pertinent emoji.
+      const items = await getMenuItems();
+      const nonExtra = items.filter(function(i){ return !Number(i.is_extra); });
+      const pop = nonExtra.find(function(i){ return Number(i.is_popular); }) || nonExtra[0];
+      const picks = [];
+      if (pop) picks.push(pop);
+      const grosse = nonExtra.find(function(i){ return i.category === 'grosse' && i !== pop; });
+      if (grosse) picks.push(grosse);
+      const burger = nonExtra.find(function(i){ return /burger/i.test(i.name_fr || '') && i !== pop && i !== grosse; });
+      if (burger) picks.push(burger);
+      nonExtra.forEach(function(i){ if (picks.length < 3 && picks.indexOf(i) === -1) picks.push(i); });
+      const heroFeatured = picks.slice(0, 3).map(function(i){
+        const n = (i.name_fr || '').toLowerCase();
+        const emoji = /burger/.test(n) ? '🍔' : (i.category === 'grosse' ? '🍱' : '🍗');
+        return { item: i, emoji: emoji };
+      });
+      res.render('index', Object.assign(ctx, { heroFeatured: heroFeatured }));
     } catch(e) { console.error('index error:', e.message); res.status(500).send('Erreur'); }
   });
 
