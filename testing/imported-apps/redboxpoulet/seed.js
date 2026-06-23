@@ -17,6 +17,9 @@ module.exports = async function(db, services) {
     ['footer_intro_fr', "Le poulet frit réinventé. Extrêmement croustillant. Zéro gras saturé. L'expérience fast-casual premium au Québec."],
     ['footer_intro_en', 'Fried chicken reinvented. Extremely crispy. Zero saturated fat. The premium fast-casual experience in Quebec.'],
     ['footer_credit', 'Propulsé par Liasse'],
+    // Hero slider: curated from existing brand visuals (one URL per line). The
+    // home hero crossfades through these; editable in Admin → Bannière défilante.
+    ['hero_slides', 'https://res.cloudinary.com/duhp69meg/image/upload/v1782232050/redboxpoulet/site/hero.png\nhttps://res.cloudinary.com/duhp69meg/image/upload/v1782232050/redboxpoulet/site/vibe.png\nhttps://res.cloudinary.com/duhp69meg/image/upload/v1782232052/redboxpoulet/site/action.png\nhttps://res.cloudinary.com/duhp69meg/image/upload/v1782232188/redboxpoulet/site/tenders_macro_1782232188334.png'],
     // Socials — the original site's links were non-functional placeholders, so
     // we leave them blank (the social row stays hidden until real URLs are set
     // from the admin backend).
