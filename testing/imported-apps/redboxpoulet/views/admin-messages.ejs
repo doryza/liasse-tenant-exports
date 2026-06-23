@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin — Messages — RED BOX</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body>
+<div class="admin-layout">
+<%- include('partials/admin-sidebar', { page: adminPage }) %>
+<main class="admin-main">
+<div class="admin-header">
+  <div>
+    <h1>Messages</h1>
+    <p style="margin:0.25rem 0 0;color:#718096;font-size:0.9rem">Messages reçus via le formulaire de contact.</p>
+  </div>
+  <a href="." target="_blank" class="btn btn-secondary">🌐 Voir le site</a>
+</div>
+
+<% if (!messages || !messages.length) { %>
+  <div class="card"><div class="empty"><span class="emoji">📭</span>Aucun message reçu pour l'instant.</div></div>
+<% } else { %>
+<div class="table-wrap">
+  <table class="admin-table">
+    <thead><tr><th>Date</th><th>Expéditeur</th><th>Sujet</th><th>Message</th><th>Statut</th><th></th></tr></thead>
+    <tbody>
+      <% messages.forEach(function(m){
+        var dt = m.created_at ? new Date(m.created_at) : null;
+        var when = dt && !isNaN(dt) ? dt.toLocaleString('fr-CA') : '';
+        var subjFr = (m.subject || (m.locale === 'en' ? 'Message' : 'Message'));
+        var mailSubj = encodeURIComponent('RE: ' + subjFr);
+      %>
+      <tr data-row="<%= m.id %>" class="<%= Number(m.handled) ? '' : '' %>">
+        <td><span class="cell-meta"><%= when %></span><% if (m.locale) { %><br><span class="badge badge-muted"><%= String(m.locale).toUpperCase() %></span><% } %></td>
+        <td>
+          <strong><%= m.name || '—' %></strong><br>
+          <a href="mailto:<%= m.email %>" class="cell-meta"><%= m.email || '' %></a>
+          <% if (m.phone) { %><br><span class="cell-meta"><%= m.phone %></span><% } %>
+        </td>
+        <td><%= m.subject || '—' %></td>
+        <td><div class="msg-text"><%= m.message || '' %></div></td>
+        <td>
+          <% if (Number(m.handled)) { %><span class="badge badge-success">Traité</span><% } else { %><span class="badge badge-warn">Nouveau</span><% } %>
+        </td>
+        <td class="row-actions">
+          <a class="btn btn-secondary btn-sm" href="mailto:<%= m.email %>?subject=<%= mailSubj %>">↩️ Répondre</a>
+          <button type="button" class="btn btn-secondary btn-sm" data-toggle="<%= m.id %>" data-handled="<%= Number(m.handled) ? 1 : 0 %>"><%= Number(m.handled) ? '↺ Marquer non traité' : '✓ Marquer traité' %></button>
+          <button type="button" class="btn btn-danger btn-sm" data-del="<%= m.id %>">🗑️</button>
+        </td>
+      </tr>
+      <% }); %>
+    </tbody>
+  </table>
+</div>
+<% } %>
+
+</main>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+function toast(msg, type) {
+  var el = document.getElementById('toast');
+  el.className = 'toast toast-' + (type || 'success');
+  el.textContent = msg;
+  setTimeout(function(){ el.classList.add('show'); }, 10);
+  setTimeout(function(){ el.classList.remove('show'); }, 2600);
+}
+document.querySelectorAll('[data-toggle]').forEach(function(b){
+  b.addEventListener('click', async function(){
+    var id = b.getAttribute('data-toggle');
+    var newHandled = Number(b.getAttribute('data-handled')) ? false : true;
+    b.disabled = true;
+    try {
+      var r = await fetch('api/admin/contact_messages/' + id, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ handled: newHandled }) });
+      var data = await r.json().catch(function(){ return {}; });
+      if (r.ok && data.success) { toast('Statut mis à jour', 'success'); setTimeout(function(){ location.reload(); }, 450); }
+      else { toast('Erreur', 'error'); b.disabled = false; }
+    } catch(e) { toast('Erreur réseau', 'error'); b.disabled = false; }
+  });
+});
+document.querySelectorAll('[data-del]').forEach(function(b){
+  b.addEventListener('click', async function(){
+    if (!confirm('Supprimer ce message ?')) return;
+    try {
+      var r = await fetch('api/admin/contact_messages/' + b.getAttribute('data-del'), { method: 'DELETE' });
+      var data = await r.json().catch(function(){ return {}; });
+      if (r.ok && data.success) { toast('Message supprimé', 'success'); setTimeout(function(){ location.reload(); }, 450); }
+      else { toast('Erreur de suppression', 'error'); }
+    } catch(e) { toast('Erreur réseau', 'error'); }
+  });
+});
+</script>
+</body>
+</html>

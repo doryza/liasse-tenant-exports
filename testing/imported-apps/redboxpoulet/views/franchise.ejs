@@ -1,0 +1,130 @@
+<%- include('partials/header', { activeNav: 'franchise', pageTitle: t.nav_franchise }) %>
+<%
+  var _hdr = settings._p_header_franchise_url || 'https://res.cloudinary.com/duhp69meg/image/upload/v1782232054/redboxpoulet/headers/header_franchise.png';
+  var _flagship = settings._p_flagship_image_url || 'https://res.cloudinary.com/duhp69meg/image/upload/v1782232050/redboxpoulet/site/vibe.png';
+  var _neighbour = settings.flagship_neighbour || 'Superbol';
+%>
+
+<!-- ============================ PAGE HERO ============================ -->
+<section class="page-hero">
+  <img class="page-hero-bg" src="<%= cimg(_hdr, 'f_auto,q_auto,w_1800,c_fill,g_auto') %>" alt="<%= t.fr_title_1 %> <%= t.fr_title_hl %>">
+  <div class="page-hero-overlay"></div>
+  <div class="container"><div class="page-hero-inner">
+    <span class="eyebrow center page-hero-eyebrow"><%= t.fr_eyebrow %></span>
+    <h1 class="page-hero-title"><%= t.fr_title_1 %> <span class="hl"><%= t.fr_title_hl %></span></h1>
+    <p class="page-hero-sub"><%= t.fr_sub %></p>
+  </div></div>
+</section>
+
+<!-- ============================ THE MODEL ============================ -->
+<section class="band band--cream tear-to-black">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow center on-light"><%= t.fr_model_eyebrow %></span>
+      <h2 class="section-title"><%= t.fr_model_title %></h2>
+      <p class="section-sub"><%= t.fr_model_intro %></p>
+    </div>
+    <div class="model-grid">
+      <div class="model-card">
+        <div class="num">01</div>
+        <h3><%= t.fr_m1_t %></h3>
+        <p><%= t.fr_m1_d %></p>
+      </div>
+      <div class="model-card">
+        <div class="num">02</div>
+        <h3><%= t.fr_m2_t %></h3>
+        <p><%= t.fr_m2_d %></p>
+      </div>
+      <div class="model-card">
+        <div class="num">03</div>
+        <h3><%= t.fr_m3_t %></h3>
+        <p><%= t.fr_m3_d %></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ FLAGSHIP ============================ -->
+<section class="band band--black tear-to-cream">
+  <div class="container">
+    <div class="flagship">
+      <div class="flagship-media">
+        <img src="<%= cimg(_flagship, 'f_auto,q_auto,w_900,h_675,c_fill,g_auto') %>" alt="<%= t.fr_flagship_title %>">
+      </div>
+      <div class="flagship-body">
+        <span class="eyebrow"><%= t.fr_flagship_eyebrow %></span>
+        <h2 class="section-title" style="text-align:left"><%= t.fr_flagship_title %></h2>
+        <p><%= t.fr_flagship_body %> (<%= t.fr_flagship_neighbour_pre %> <%= _neighbour %>).</p>
+        <% if (settings.business_address) { %>
+        <p class="addr"><strong><%= t.address %> :</strong> <%= settings.business_address %></p>
+        <% } %>
+        <a class="btn btn-outline" href="contact"><%= t.ct_map_cta %></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ APPLICATION FORM ============================ -->
+<section class="band band--cream tear-to-black">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow center on-light"><%= t.fr_form_eyebrow %></span>
+      <h2 class="section-title"><%= t.fr_form_title %></h2>
+    </div>
+    <div class="form-card" style="max-width:760px;margin:0 auto">
+      <form class="form" id="franchiseForm" novalidate>
+        <div class="form-row">
+          <div class="field">
+            <label for="frName"><%= t.f_name %> <span class="req">*</span></label>
+            <input id="frName" name="full_name" type="text" autocomplete="name" required>
+          </div>
+          <div class="field">
+            <label for="frEmail"><%= t.f_email %> <span class="req">*</span></label>
+            <input id="frEmail" name="email" type="email" autocomplete="email" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="field">
+            <label for="frPhone"><%= t.f_phone %></label>
+            <input id="frPhone" name="phone" type="tel" autocomplete="tel">
+          </div>
+          <div class="field">
+            <label for="frCity"><%= t.f_city %></label>
+            <input id="frCity" name="city" type="text">
+          </div>
+        </div>
+        <div class="field full">
+          <label for="frExperience"><%= t.f_experience %></label>
+          <textarea id="frExperience" name="experience"></textarea>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-red btn-lg" type="submit" id="frSubmit"><%= t.fr_submit %></button>
+          <span class="form-status" id="frStatus" role="status" aria-live="polite"></span>
+        </div>
+        <p class="form-note"><%= t.fr_confidential %></p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<script>(function(){
+  var form=document.getElementById('franchiseForm'); if(!form) return;
+  var btn=document.getElementById('frSubmit'), status=document.getElementById('frStatus');
+  var M={sending:<%- JSON.stringify(t.form_sending) %>, send:<%- JSON.stringify(t.fr_submit) %>,
+         ok:<%- JSON.stringify(t.fr_success) %>, err:<%- JSON.stringify(t.form_error) %>,
+         required:<%- JSON.stringify(t.form_required) %>};
+  form.addEventListener('submit',function(e){e.preventDefault();status.className='form-status';status.textContent='';
+    var d={full_name:form.full_name.value.trim(), email:form.email.value.trim(), phone:form.phone.value.trim(),
+           city:form.city.value.trim(), experience:form.experience.value.trim(), locale:<%- JSON.stringify(lang) %>};
+    if(!d.full_name||!d.email){status.className='form-status err';status.textContent=M.required;return;}
+    btn.disabled=true;btn.textContent=M.sending;
+    fetch('api/franchise',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)})
+     .then(function(r){return r.json().then(function(j){return{ok:r.ok,j:j};});})
+     .then(function(res){ if(res.ok&&res.j&&res.j.success){form.reset();status.className='form-status ok';status.textContent=M.ok;}
+       else{status.className='form-status err';status.textContent=M.err;} })
+     .catch(function(){status.className='form-status err';status.textContent=M.err;})
+     .finally(function(){btn.disabled=false;btn.textContent=M.send;});
+  });
+})();</script>
+
+<%- include('partials/footer') %>

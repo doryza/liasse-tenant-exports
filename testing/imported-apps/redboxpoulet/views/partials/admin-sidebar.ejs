@@ -1,0 +1,49 @@
+<div class="admin-mobile-topbar">
+  <button type="button" class="icon-btn" id="adminNavToggle" aria-label="Ouvrir le menu" aria-controls="adminSidebar" aria-expanded="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+      <line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/>
+    </svg>
+  </button>
+  <h2 class="brand">RED BOX</h2>
+  <a href="." target="_blank" class="icon-btn" aria-label="Voir le site">🌐</a>
+</div>
+
+<div class="admin-nav-backdrop" id="adminNavBackdrop" aria-hidden="true"></div>
+
+<aside class="admin-sidebar" id="adminSidebar">
+  <button type="button" class="admin-sidebar-close" id="adminNavClose" aria-label="Fermer le menu">✕</button>
+  <h2>RED BOX</h2>
+  <nav>
+    <a href="admin" class="<%= page==='dashboard'?'active':'' %>">📊 Tableau de bord</a>
+    <a href="admin/settings" class="<%= page==='settings'?'active':'' %>">⚙️ Paramètres</a>
+    <a href="admin/menu" class="<%= page==='menu'?'active':'' %>">🍴 Menu</a>
+    <a href="admin/messages" class="<%= page==='messages'?'active':'' %>">✉️ Messages</a>
+    <a href="admin/franchise" class="<%= page==='franchise'?'active':'' %>">🤝 Franchise</a>
+    <div class="divider"></div>
+    <a href="." target="_blank">🌐 Voir le site</a>
+    <a href="admin/logout">🚪 Déconnexion</a>
+  </nav>
+</aside>
+<script>
+(function(){
+  var body = document.body;
+  var toggleBtn = document.getElementById('adminNavToggle');
+  var closeBtn = document.getElementById('adminNavClose');
+  var backdrop = document.getElementById('adminNavBackdrop');
+  var sidebar = document.getElementById('adminSidebar');
+  if (!toggleBtn || !sidebar) return;
+  function open() {
+    body.classList.add('admin-nav-open');
+    toggleBtn.setAttribute('aria-expanded', 'true');
+  }
+  function close() {
+    body.classList.remove('admin-nav-open');
+    toggleBtn.setAttribute('aria-expanded', 'false');
+  }
+  toggleBtn.addEventListener('click', open);
+  if (closeBtn) closeBtn.addEventListener('click', close);
+  if (backdrop) backdrop.addEventListener('click', close);
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') close(); });
+  sidebar.querySelectorAll('nav a').forEach(function(a){ a.addEventListener('click', close); });
+})();
+</script>

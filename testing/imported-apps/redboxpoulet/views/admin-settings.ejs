@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin — Paramètres — RED BOX</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+<style>
+.settings-grid { max-width: 920px; }
+.img-field { display: grid; grid-template-columns: 1fr 72px; gap: 0.75rem; align-items: center; }
+.img-field .img-thumb { width: 72px; height: 72px; border-radius: 8px; object-fit: cover; border: 1px solid #e2e8f0; background: #f7fafc; }
+.img-field .img-thumb.empty { display: flex; align-items: center; justify-content: center; color: #cbd5e0; font-size: 1.4rem; }
+</style>
+</head>
+<body>
+<div class="admin-layout">
+<%- include('partials/admin-sidebar', { page: adminPage }) %>
+<main class="admin-main">
+<div class="admin-header">
+  <div>
+    <h1>Paramètres</h1>
+    <p style="margin:0.25rem 0 0;color:#718096;font-size:0.9rem">Modifiez les informations de l'entreprise, les réseaux sociaux et les images du site.</p>
+  </div>
+  <a href="." target="_blank" class="btn btn-secondary">🌐 Voir le site</a>
+</div>
+
+<form id="settingsForm" class="settings-grid">
+
+  <div class="section-card">
+    <h2>🏢 Entreprise</h2>
+    <p class="section-hint">Identité, coordonnées et textes du pied de page.</p>
+    <div class="field-row">
+      <div class="form-group"><label>Nom de l'entreprise</label><input type="text" class="form-control" name="business_name" placeholder="RED BOX"></div>
+      <div class="form-group"><label>Slogan</label><input type="text" class="form-control" name="tagline" placeholder="Poulet Nashville"></div>
+    </div>
+    <div class="field-row">
+      <div class="form-group"><label>Courriel de contact</label><input type="email" class="form-control" name="contact_email" placeholder="bonjour@redbox.ca"></div>
+      <div class="form-group"><label>Téléphone</label><input type="tel" class="form-control" name="contact_phone" placeholder="+1 514 555 0123"></div>
+    </div>
+    <div class="form-group"><label>Adresse</label><input type="text" class="form-control" name="business_address" placeholder="123 Rue Principale, Laval, QC"></div>
+    <div class="form-group"><label>Voisin de la succursale flagship</label><input type="text" class="form-control" name="flagship_neighbour" placeholder="Costco Laval"><div class="help-text">Affiché sur la page Franchise (« voisin de … »).</div></div>
+    <div class="field-row">
+      <div class="form-group"><label>Texte du pied de page (FR)</label><textarea class="form-control" name="footer_intro_fr" rows="3" placeholder="Quelques mots sur RED BOX (FR)"></textarea></div>
+      <div class="form-group"><label>Texte du pied de page (EN)</label><textarea class="form-control" name="footer_intro_en" rows="3" placeholder="A short blurb (EN)"></textarea></div>
+    </div>
+    <div class="form-group"><label>Crédit du pied de page</label><input type="text" class="form-control" name="footer_credit" placeholder="Propulsé par Liasse"></div>
+  </div>
+
+  <div class="section-card">
+    <h2>🌐 Réseaux sociaux</h2>
+    <p class="section-hint">Coller le lien complet (https://…). Laissez vide pour masquer.</p>
+    <div class="form-group"><label>Instagram</label><input type="url" class="form-control" name="social_instagram" placeholder="https://instagram.com/redbox"></div>
+    <div class="form-group"><label>Facebook</label><input type="url" class="form-control" name="social_facebook" placeholder="https://facebook.com/redbox"></div>
+    <div class="form-group"><label>TikTok</label><input type="url" class="form-control" name="social_tiktok" placeholder="https://tiktok.com/@redbox"></div>
+  </div>
+
+  <div class="section-card">
+    <h2>🖼️ Images</h2>
+    <p class="section-hint">Coller l'URL Cloudinary de chaque image. Laissez vide pour utiliser l'image par défaut.</p>
+    <% var imageFields = [
+      { key: '_p_hero_image_url', label: 'Image bannière (accueil)' },
+      { key: '_p_story_image_url', label: 'Image « notre histoire »' },
+      { key: '_p_feature_family_url', label: 'Image — Boîte Familiale' },
+      { key: '_p_feature_burger_url', label: 'Image — Burger Red Box' },
+      { key: '_p_promise_image_url', label: 'Image — Notre Promesse' },
+      { key: '_p_flagship_image_url', label: 'Image — Succursale flagship' },
+      { key: '_p_nav_logo_url', label: 'Logo (nav, rouge)' },
+      { key: '_p_footer_logo_url', label: 'Logo (pied de page, blanc)' },
+      { key: '_p_header_menu_url', label: 'Bannière de page — Menu' },
+      { key: '_p_header_promise_url', label: 'Bannière de page — Promesse' },
+      { key: '_p_header_franchise_url', label: 'Bannière de page — Franchise' },
+      { key: '_p_header_contact_url', label: 'Bannière de page — Contact' }
+    ]; %>
+    <% imageFields.forEach(function(f){ %>
+    <div class="form-group">
+      <label><%= f.label %></label>
+      <div class="img-field">
+        <input type="url" class="form-control" name="<%= f.key %>" data-img placeholder="https://res.cloudinary.com/…">
+        <img class="img-thumb empty" data-thumb-for="<%= f.key %>" alt="" onerror="this.classList.add('empty');this.removeAttribute('src');">
+      </div>
+    </div>
+    <% }); %>
+  </div>
+
+  <div class="save-bar">
+    <span class="status" id="saveStatus">—</span>
+    <button type="submit" class="btn btn-primary" id="saveBtn">💾 Enregistrer</button>
+  </div>
+
+</form>
+
+</main>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+function toast(msg, type) {
+  var el = document.getElementById('toast');
+  el.className = 'toast toast-' + (type || 'success');
+  el.textContent = msg;
+  setTimeout(function(){ el.classList.add('show'); }, 10);
+  setTimeout(function(){ el.classList.remove('show'); }, 2800);
+}
+function syncThumb(input) {
+  var thumb = document.querySelector('[data-thumb-for="' + input.getAttribute('name') + '"]');
+  if (!thumb) return;
+  var v = input.value.trim();
+  if (v) { thumb.src = v; thumb.classList.remove('empty'); thumb.textContent = ''; }
+  else { thumb.removeAttribute('src'); thumb.classList.add('empty'); thumb.textContent = '🖼️'; }
+}
+async function loadSettings() {
+  try {
+    var r = await fetch('api/admin/settings');
+    var data = await r.json();
+    var s = data.settings || {};
+    document.querySelectorAll('#settingsForm input[name], #settingsForm textarea[name]').forEach(function(el){
+      var k = el.getAttribute('name');
+      if (s[k] != null) el.value = s[k];
+    });
+    document.querySelectorAll('#settingsForm input[data-img]').forEach(syncThumb);
+    document.getElementById('saveStatus').textContent = 'Chargé';
+  } catch(e) {
+    document.getElementById('saveStatus').textContent = 'Erreur de chargement';
+  }
+}
+document.addEventListener('input', function(e){ if (e.target.matches('input[data-img]')) syncThumb(e.target); });
+document.getElementById('settingsForm').addEventListener('submit', async function(e){
+  e.preventDefault();
+  var btn = document.getElementById('saveBtn');
+  btn.disabled = true; btn.textContent = '⏳ Enregistrement…';
+  var payload = {};
+  document.querySelectorAll('#settingsForm input[name], #settingsForm textarea[name]').forEach(function(el){
+    payload[el.getAttribute('name')] = el.value.trim();
+  });
+  try {
+    var r = await fetch('api/admin/settings', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+    var data = await r.json().catch(function(){ return {}; });
+    if (r.ok && data.success) {
+      toast('Modifications enregistrées (' + (data.saved || 0) + ' champs)', 'success');
+      document.getElementById('saveStatus').textContent = 'Enregistré à ' + new Date().toLocaleTimeString('fr-CA');
+    } else {
+      toast('Erreur : ' + (data.error || 'inconnue'), 'error');
+    }
+  } catch(e) {
+    toast('Erreur réseau', 'error');
+  } finally {
+    btn.disabled = false; btn.textContent = '💾 Enregistrer';
+  }
+});
+loadSettings();
+</script>
+</body>
+</html>

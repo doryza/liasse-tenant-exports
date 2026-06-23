@@ -1,0 +1,91 @@
+<%- include('partials/header', { activeNav: 'home' }) %>
+<%
+  var _hero = settings._p_hero_image_url || 'https://res.cloudinary.com/duhp69meg/image/upload/v1782232050/redboxpoulet/site/hero.png';
+  var _story = settings._p_story_image_url || 'https://res.cloudinary.com/duhp69meg/image/upload/v1782232050/redboxpoulet/site/vibe.png';
+  var _family = settings._p_feature_family_url || 'https://res.cloudinary.com/duhp69meg/image/upload/v1782232051/redboxpoulet/site/packaging.png';
+  var _burger = settings._p_feature_burger_url || 'https://res.cloudinary.com/duhp69meg/image/upload/v1782232052/redboxpoulet/site/action.png';
+%>
+
+<!-- ============================ HERO ============================ -->
+<section class="hero">
+  <img class="hero-bg" src="<%= cimg(_hero, 'f_auto,q_auto,w_1800,c_fill,g_auto') %>" alt="<%= settings.business_name || t.brand %> — <%= t.brand_tag %>">
+  <div class="hero-overlay"></div>
+  <div class="container">
+    <div class="hero-inner">
+      <span class="eyebrow hero-eyebrow"><%= t.hero_eyebrow %></span>
+      <h1 class="hero-title"><%= t.hero_title_1 %> <span class="hl"><%= t.hero_title_hl %></span> <%= t.hero_title_2 %></h1>
+      <div class="hero-tags">
+        <span><%= t.hero_tag1 %></span><span><%= t.hero_tag2 %></span><span><%= t.hero_tag3 %></span>
+      </div>
+      <div class="hero-ctas">
+        <a class="btn btn-gold btn-lg" href="menu"><%= t.hero_cta %></a>
+        <a class="btn btn-outline" href="promesse"><%= t.nav_promise %></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="seam seam--cream"></div>
+
+<!-- ====================== BRAND STORY ====================== -->
+<section class="band band--cream tear-to-black">
+  <div class="container">
+    <div class="split">
+      <div class="split-media">
+        <img src="<%= cimg(_story, 'f_auto,q_auto,w_900,h_675,c_fill,g_auto') %>" alt="<%= t.story_eyebrow %>">
+        <span class="media-badge"><%= t.story_eyebrow %></span>
+      </div>
+      <div class="split-body">
+        <span class="eyebrow on-light"><%= t.story_eyebrow %></span>
+        <h2 class="section-title"><%= t.story_title %></h2>
+        <p><%= t.story_p1 %></p>
+        <p><%= t.story_p2 %></p>
+        <a class="btn btn-red" href="promesse"><%= t.story_cta %></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PRODUCT HIGHLIGHTS ===================== -->
+<section class="band band--black tear-to-red">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow center"><%= t.highlights_eyebrow %></span>
+      <h2 class="section-title"><%= t.highlights_title %></h2>
+      <p class="section-sub"><%= t.highlights_sub %></p>
+    </div>
+    <div class="feature-grid">
+      <article class="feature-card">
+        <img src="<%= cimg(_family, 'f_auto,q_auto,w_820,h_1020,c_fill,g_auto') %>" alt="<%= t.feat_family_title %>">
+        <div class="feature-card__body">
+          <span class="feature-tag"><%= t.feat_family_tag %></span>
+          <h3><%= t.feat_family_title %></h3>
+          <p><%= t.feat_family_desc %></p>
+          <a class="feature-card__link" href="menu"><%= t.feat_link %> →</a>
+        </div>
+      </article>
+      <article class="feature-card">
+        <img src="<%= cimg(_burger, 'f_auto,q_auto,w_820,h_1020,c_fill,g_auto') %>" alt="<%= t.feat_burger_title %>">
+        <div class="feature-card__body">
+          <span class="feature-tag"><%= t.feat_burger_tag %></span>
+          <h3><%= t.feat_burger_title %></h3>
+          <p><%= t.feat_burger_desc %></p>
+          <a class="feature-card__link" href="menu"><%= t.feat_link %> →</a>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ========================= CTA STRIP ========================= -->
+<section class="band band--red tear-to-black">
+  <div class="container center">
+    <h2 class="section-title"><%= t.home_cta_title %></h2>
+    <p class="section-sub" style="margin-left:auto;margin-right:auto"><%= t.home_cta_text %></p>
+    <div class="cta-strip" style="margin-top:1.8rem">
+      <a class="btn btn-gold btn-lg" href="menu"><%= t.home_cta_btn %></a>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

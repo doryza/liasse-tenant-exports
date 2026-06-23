@@ -1,0 +1,137 @@
+<%- include('partials/header', { activeNav: 'menu', pageTitle: t.menu_title }) %>
+<%
+  var _hdr = settings._p_header_menu_url || 'https://res.cloudinary.com/duhp69meg/image/upload/v1782232053/redboxpoulet/headers/header_menu.png';
+%>
+
+<!-- ============================ PAGE HERO ============================ -->
+<section class="page-hero">
+  <img class="page-hero-bg" src="<%= cimg(_hdr, 'f_auto,q_auto,w_1800,c_fill,g_auto') %>" alt="<%= t.menu_title %> — <%= settings.business_name || t.brand %>">
+  <div class="page-hero-overlay"></div>
+  <div class="container"><div class="page-hero-inner">
+    <span class="eyebrow center page-hero-eyebrow"><%= t.menu_eyebrow %></span>
+    <h1 class="page-hero-title"><%= t.menu_title %></h1>
+    <p class="page-hero-sub"><%= t.menu_sub %></p>
+  </div></div>
+</section>
+
+<!-- ============================ MENU ============================ -->
+<section class="band band--cream tear-to-red">
+  <div class="container">
+
+    <!-- Category filter chips -->
+    <div class="menu-cats">
+      <button type="button" class="chip active" data-cat="all"><%= t.cat_all %></button>
+      <% categories.forEach(function(cat){ %>
+        <button type="button" class="chip" data-cat="<%= cat.slug %>"><%= pickLang(cat, 'name', lang) %></button>
+      <% }); %>
+    </div>
+
+    <% categories.forEach(function(cat){
+         var catItems = items.filter(function(it){ return it.category === cat.slug; });
+         if (!catItems.length) return;
+         var note = pickLang(cat, 'served_note', lang);
+    %>
+    <section class="menu-group" data-cat="<%= cat.slug %>">
+      <div class="menu-group__head">
+        <h2><%= pickLang(cat, 'name', lang) %></h2>
+        <span class="line"></span>
+        <% if (note) { %><span class="note"><%= note %></span><% } %>
+      </div>
+
+      <% if (cat.slug === 'grosse') {
+           var feat = catItems[0]; %>
+      <div class="menu-feature">
+        <div class="menu-feature__media">
+          <% if (feat.image_url) { %>
+            <img src="<%= cimg(feat.image_url, 'f_auto,q_auto,w_900,h_700,c_fill,g_auto') %>" alt="<%= pickLang(feat, 'name', lang) %>">
+          <% } else { %>
+            <div class="ph">🍗</div>
+          <% } %>
+        </div>
+        <div class="menu-feature__body">
+          <% if (note) { %><span class="feature-tag"><%= note %></span><% } %>
+          <h3><%= pickLang(feat, 'name', lang) %></h3>
+          <span class="price"><%= formatPrice(feat.price) %></span>
+          <% var fdesc = pickLang(feat, 'description', lang); if (fdesc) { %><p><%= fdesc %></p><% } %>
+        </div>
+      </div>
+
+      <% } else {
+           var cards = catItems.filter(function(it){ return !it.is_extra; });
+           var extras = catItems.filter(function(it){ return it.is_extra; }); %>
+
+        <% if (cards.length) { %>
+        <div class="menu-grid">
+          <% cards.forEach(function(it){ var idesc = pickLang(it, 'description', lang); %>
+          <article class="menu-card">
+            <div class="menu-card__media">
+              <% if (it.image_url) { %>
+                <img src="<%= cimg(it.image_url, 'f_auto,q_auto,w_640,h_480,c_fill,g_auto') %>" alt="<%= pickLang(it, 'name', lang) %>">
+              <% } else { %>
+                <div class="ph">🍗</div>
+              <% } %>
+              <% if (it.is_popular) { %><span class="pop-tag"><%= t.popular_badge %></span><% } %>
+            </div>
+            <div class="menu-card__body">
+              <div class="menu-card__top">
+                <h3><%= pickLang(it, 'name', lang) %></h3>
+                <span class="price"><%= formatPrice(it.price) %></span>
+              </div>
+              <% if (idesc) { %><p class="desc"><%= idesc %></p><% } %>
+            </div>
+          </article>
+          <% }); %>
+        </div>
+        <% } %>
+
+        <% if (extras.length) { %>
+        <div class="extras-list" style="margin-top:2rem">
+          <% extras.forEach(function(it){ var xdesc = pickLang(it, 'description', lang); %>
+          <div class="extra-row">
+            <span class="x-name"><%= pickLang(it, 'name', lang) %><% if (xdesc) { %><span class="x-desc"><%= xdesc %></span><% } %></span>
+            <span class="x-dots"></span>
+            <span class="price"><%= formatPrice(it.price) %></span>
+          </div>
+          <% }); %>
+        </div>
+        <% } %>
+
+      <% } %>
+    </section>
+    <% }); %>
+
+  </div>
+</section>
+
+<!-- ============================ CTA ============================ -->
+<section class="band band--red tear-to-black">
+  <div class="container center">
+    <h2 class="section-title"><%= t.menu_cta_title %></h2>
+    <p class="section-sub" style="margin:1rem auto 0"><%= t.menu_cta_sub %></p>
+    <div class="cta-strip" style="margin-top:1.6rem">
+      <a class="btn btn-gold btn-lg" href="contact"><%= t.menu_cta_btn %></a>
+    </div>
+  </div>
+</section>
+
+<script>
+(function(){
+  var chips = document.querySelectorAll('.menu-cats .chip');
+  var groups = document.querySelectorAll('.menu-group');
+  if (!chips.length) return;
+  function apply(cat){
+    groups.forEach(function(g){
+      g.style.display = (cat === 'all' || g.getAttribute('data-cat') === cat) ? '' : 'none';
+    });
+  }
+  chips.forEach(function(chip){
+    chip.addEventListener('click', function(){
+      chips.forEach(function(c){ c.classList.remove('active'); });
+      chip.classList.add('active');
+      apply(chip.getAttribute('data-cat'));
+    });
+  });
+})();
+</script>
+
+<%- include('partials/footer') %>
