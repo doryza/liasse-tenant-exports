@@ -174,3 +174,10 @@ body[data-page="order"] .sticky-reserve { display: none !important; }
 .o-item__ctl .qty { width: 100%; justify-content: space-between; }
 .o-item__ctl .qty span { flex: 1; text-align: center; }
 @media (prefers-reduced-motion: reduce){ .o-item:hover { transform: none; } }
+
+/* Unify the ordering page to ONE light surface. The site body is dark, which
+   made the light cards/cart clash on a black background. Give the order page a
+   cream background (global --cream token) so it reads as one cohesive light
+   section, framed by the dark hero + dark footer — exactly like the marketing
+   menu page (dark hero -> cream menu band). */
+body[data-page="order"] { background: var(--cream); color: var(--text-dark); }
