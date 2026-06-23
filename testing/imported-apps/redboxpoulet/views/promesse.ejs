@@ -1,0 +1,91 @@
+<%- include('partials/header', { activeNav: 'promesse', pageTitle: t.nav_promise }) %>
+<%
+  var _hdr = settings._p_header_promise_url || 'https://res.cloudinary.com/duhp69meg/image/upload/v1782232053/redboxpoulet/headers/header_promise.png';
+  var _promise = settings._p_promise_image_url || 'https://res.cloudinary.com/duhp69meg/image/upload/v1782232188/redboxpoulet/site/tenders_macro_1782232188334.png';
+%>
+
+<!-- ============================ PAGE HERO ============================ -->
+<section class="page-hero">
+  <img class="page-hero-bg" src="<%= cimg(_hdr, 'f_auto,q_auto,w_1800,c_fill,g_auto') %>" alt="<%= t.promise_story_title %>">
+  <div class="page-hero-overlay"></div>
+  <div class="container"><div class="page-hero-inner">
+    <span class="eyebrow center page-hero-eyebrow"><%= t.promise_eyebrow %></span>
+    <h1 class="page-hero-title"><%= t.promise_title_1 %> <span class="hl"><%= t.promise_title_hl %></span></h1>
+    <p class="page-hero-sub"><%= t.promise_sub %></p>
+  </div></div>
+</section>
+
+<!-- ============================ STORY ============================ -->
+<section class="band band--cream tear-to-black">
+  <div class="container">
+    <div class="split">
+      <div class="split-media">
+        <img src="<%= cimg(_promise, 'f_auto,q_auto,w_900,h_675,c_fill,g_auto') %>" alt="<%= t.promise_story_title %>">
+        <span class="media-badge"><%= t.promise_spec_num %></span>
+      </div>
+      <div class="split-body">
+        <span class="eyebrow on-light"><%= t.promise_story_eyebrow %></span>
+        <h2 class="section-title"><%= t.promise_story_title %></h2>
+        <p><%= t.promise_p1 %></p>
+        <p><%= t.promise_p2 %></p>
+        <p><%= t.promise_p3 %></p>
+        <div class="spec-badge">
+          <span class="num"><%= t.promise_spec_num %></span>
+          <span class="lbl"><%= t.promise_spec_lbl %></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ PULLQUOTE ============================ -->
+<section class="band band--black tear-to-cream">
+  <div class="container center">
+    <p class="pullquote"><%= t.pullquote_1 %> <span class="hl"><%= t.pullquote_hl %></span></p>
+    <p class="section-sub" style="margin:1.4rem auto 0;color:var(--gold)"><%= t.promise_tagline %></p>
+  </div>
+</section>
+
+<!-- ============================ VALUES ============================ -->
+<section class="band band--cream tear-to-red">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow center"><%= t.values_eyebrow %></span>
+      <h2 class="section-title"><%= t.values_title %></h2>
+    </div>
+    <div class="values-grid">
+      <article class="value-card">
+        <div class="value-card__icon">🍗</div>
+        <h3><%= t.val1_t %></h3>
+        <p><%= t.val1_d %></p>
+      </article>
+      <article class="value-card">
+        <div class="value-card__icon">⚡</div>
+        <h3><%= t.val2_t %></h3>
+        <p><%= t.val2_d %></p>
+      </article>
+      <article class="value-card">
+        <div class="value-card__icon">📦</div>
+        <h3><%= t.val3_t %></h3>
+        <p><%= t.val3_d %></p>
+      </article>
+      <article class="value-card">
+        <div class="value-card__icon">🙃</div>
+        <h3><%= t.val4_t %></h3>
+        <p><%= t.val4_d %></p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ CTA ============================ -->
+<section class="band band--red tear-to-black">
+  <div class="container center">
+    <h2 class="section-title"><%= t.menu_cta_title %></h2>
+    <div class="cta-strip" style="margin-top:1.6rem">
+      <a class="btn btn-gold btn-lg" href="menu"><%= t.order_view_menu %></a>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

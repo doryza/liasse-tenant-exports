@@ -1,0 +1,97 @@
+<%- include('partials/header', { activeNav: 'contact', pageTitle: t.nav_contact }) %>
+<%
+  var _hdr = settings._p_header_contact_url || 'https://res.cloudinary.com/duhp69meg/image/upload/v1782232055/redboxpoulet/headers/header_contact.png';
+%>
+
+<!-- ============================ PAGE HERO ============================ -->
+<section class="page-hero">
+  <img class="page-hero-bg" src="<%= cimg(_hdr, 'f_auto,q_auto,w_1800,c_fill,g_auto') %>" alt="<%= settings.business_name || t.brand %> — <%= t.nav_contact %>">
+  <div class="page-hero-overlay"></div>
+  <div class="container"><div class="page-hero-inner">
+    <span class="eyebrow center page-hero-eyebrow"><%= t.ct_eyebrow %></span>
+    <h1 class="page-hero-title"><%= t.ct_title_1 %> <span class="hl"><%= t.ct_title_hl %></span></h1>
+    <p class="page-hero-sub"><%= t.ct_sub %></p>
+  </div></div>
+</section>
+
+<!-- ============================ CONTACT ============================ -->
+<section class="band band--cream tear-to-black">
+  <div class="container">
+    <div class="contact-grid">
+      <aside class="contact-aside">
+        <h3><%= t.ct_info_title %></h3>
+        <% if (settings.business_address) { %>
+        <div class="contact-row">
+          <span class="ic">📍</span>
+          <span><%= settings.business_address %></span>
+        </div>
+        <% } %>
+        <% if (settings.contact_phone) { %>
+        <div class="contact-row">
+          <span class="ic">☎</span>
+          <a href="tel:<%= settings.contact_phone.replace(/[^0-9+]/g,'') %>"><%= settings.contact_phone %></a>
+        </div>
+        <% } %>
+        <% if (settings.contact_email) { %>
+        <div class="contact-row">
+          <span class="ic">✉</span>
+          <a href="mailto:<%= settings.contact_email %>"><%= settings.contact_email %></a>
+        </div>
+        <% } %>
+        <% if (mapEmbed) { %>
+        <iframe class="map-embed" src="<%= mapEmbed %>" loading="lazy" title="Carte"></iframe>
+        <% } %>
+        <% if (mapLink) { %>
+        <a class="btn btn-red btn-block" style="margin-top:1.2rem" href="<%= directionsLink || mapLink %>" target="_blank" rel="noopener"><%= t.ct_map_cta %></a>
+        <% } %>
+      </aside>
+
+      <div class="form-card">
+        <span class="eyebrow on-light"><%= t.ct_form_title %></span>
+        <form class="form" id="contactForm" novalidate>
+          <div class="field full">
+            <label for="ctName"><%= t.c_name %> <span class="req">*</span></label>
+            <input id="ctName" name="name" type="text" autocomplete="name" required>
+          </div>
+          <div class="field full">
+            <label for="ctEmail"><%= t.c_email %> <span class="req">*</span></label>
+            <input id="ctEmail" name="email" type="email" autocomplete="email" required>
+          </div>
+          <div class="field full">
+            <label for="ctSubject"><%= t.c_subject %></label>
+            <input id="ctSubject" name="subject" type="text">
+          </div>
+          <div class="field full">
+            <label for="ctMessage"><%= t.c_message %> <span class="req">*</span></label>
+            <textarea id="ctMessage" name="message" required></textarea>
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-red btn-lg" type="submit" id="ctSubmit"><%= t.ct_send %></button>
+            <span class="form-status" id="ctStatus" role="status" aria-live="polite"></span>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>(function(){
+  var form=document.getElementById('contactForm'); if(!form) return;
+  var btn=document.getElementById('ctSubmit'), status=document.getElementById('ctStatus');
+  var M={sending:<%- JSON.stringify(t.form_sending) %>, send:<%- JSON.stringify(t.ct_send) %>,
+         ok:<%- JSON.stringify(t.ct_success) %>, err:<%- JSON.stringify(t.form_error) %>,
+         required:<%- JSON.stringify(t.form_required) %>};
+  form.addEventListener('submit',function(e){e.preventDefault();status.className='form-status';status.textContent='';
+    var d={name:form.name.value.trim(),email:form.email.value.trim(),subject:form.subject.value.trim(),message:form.message.value.trim(),locale:<%- JSON.stringify(lang) %>};
+    if(!d.name||!d.email||!d.message){status.className='form-status err';status.textContent=M.required;return;}
+    btn.disabled=true;btn.textContent=M.sending;
+    fetch('api/contact',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)})
+     .then(function(r){return r.json().then(function(j){return{ok:r.ok,j:j};});})
+     .then(function(res){ if(res.ok&&res.j&&res.j.success){form.reset();status.className='form-status ok';status.textContent=M.ok;}
+       else{status.className='form-status err';status.textContent=M.err;} })
+     .catch(function(){status.className='form-status err';status.textContent=M.err;})
+     .finally(function(){btn.disabled=false;btn.textContent=M.send;});
+  });
+})();</script>
+
+<%- include('partials/footer') %>

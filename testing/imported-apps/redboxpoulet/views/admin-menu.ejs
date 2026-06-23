@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin — Menu — RED BOX</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body>
+<div class="admin-layout">
+<%- include('partials/admin-sidebar', { page: adminPage }) %>
+<main class="admin-main">
+<div class="admin-header">
+  <div>
+    <h1>Menu</h1>
+    <p style="margin:0.25rem 0 0;color:#718096;font-size:0.9rem">Gérez les éléments et les catégories du menu.</p>
+  </div>
+  <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+    <a href="." target="_blank" class="btn btn-secondary">🌐 Voir le site</a>
+    <button type="button" class="btn btn-primary" id="addItemBtn">＋ Ajouter un élément</button>
+  </div>
+</div>
+
+<!-- ===================== CATEGORIES ===================== -->
+<div class="card">
+  <h2 style="font-size:1.15rem">🗂️ Catégories</h2>
+  <div class="table-wrap" style="box-shadow:none">
+    <table class="admin-table">
+      <thead><tr><th>Position</th><th>Nom (FR)</th><th>Nom (EN)</th><th>Slug</th><th>Active</th><th></th></tr></thead>
+      <tbody>
+        <% if (!categories || !categories.length) { %>
+          <tr><td colspan="6"><div class="empty"><span class="emoji">🗂️</span>Aucune catégorie.</div></td></tr>
+        <% } else { categories.forEach(function(c){ %>
+        <tr>
+          <td><%= c.position == null ? '—' : c.position %></td>
+          <td><strong><%= c.name_fr || '' %></strong></td>
+          <td><%= c.name_en || '' %></td>
+          <td><span class="cell-meta"><%= c.slug || '' %></span></td>
+          <td><% if (Number(c.active)) { %><span class="badge badge-success">Oui</span><% } else { %><span class="badge badge-muted">Non</span><% } %></td>
+          <td class="row-actions"><button type="button" class="btn btn-danger btn-sm" data-del-cat="<%= c.id %>">🗑️</button></td>
+        </tr>
+        <% }); } %>
+      </tbody>
+    </table>
+  </div>
+  <details style="margin-top:1rem">
+    <summary style="cursor:pointer;font-weight:700;color:#E11313">＋ Ajouter une catégorie</summary>
+    <form id="catForm" style="margin-top:1rem">
+      <div class="field-row">
+        <div class="form-group"><label>Nom (FR)</label><input type="text" class="form-control" name="name_fr" required></div>
+        <div class="form-group"><label>Nom (EN)</label><input type="text" class="form-control" name="name_en"></div>
+      </div>
+      <div class="field-row">
+        <div class="form-group"><label>Slug</label><input type="text" class="form-control" name="slug" placeholder="solo" required></div>
+        <div class="form-group"><label>Position</label><input type="number" class="form-control" name="position" value="0"></div>
+      </div>
+      <div class="field-row">
+        <div class="form-group"><label>Note de service (FR)</label><input type="text" class="form-control" name="served_note_fr" placeholder="Servies avec frites…"></div>
+        <div class="form-group"><label>Note de service (EN)</label><input type="text" class="form-control" name="served_note_en" placeholder="Served with…"></div>
+      </div>
+      <div class="field-checkbox"><input type="checkbox" name="active" id="catActive" checked><label for="catActive" style="margin:0">Catégorie active</label></div>
+      <div style="margin-top:1rem"><button type="submit" class="btn btn-primary btn-sm">Ajouter la catégorie</button></div>
+    </form>
+  </details>
+</div>
+
+<!-- ===================== ITEMS ===================== -->
+<div class="card">
+  <h2 style="font-size:1.15rem">🍴 Éléments du menu</h2>
+  <div class="table-wrap" style="box-shadow:none">
+    <table class="admin-table">
+      <thead><tr><th></th><th>Nom</th><th>Catégorie</th><th>Prix</th><th>Tags</th><th>Dispo.</th><th></th></tr></thead>
+      <tbody>
+        <% if (!items || !items.length) { %>
+          <tr><td colspan="7"><div class="empty"><span class="emoji">🍴</span>Aucun élément. Ajoutez-en un.</div></td></tr>
+        <% } else { items.forEach(function(it){ %>
+        <tr>
+          <td><% if (it.image_url) { %><img src="<%= cimg(it.image_url, 'f_auto,q_auto,w_120,h_120,c_fill,g_auto') %>" alt=""><% } else { %><span class="cell-meta">—</span><% } %></td>
+          <td><strong><%= it.name_fr || '' %></strong><% if (it.name_en) { %><br><span class="cell-meta"><%= it.name_en %></span><% } %></td>
+          <td><span class="cell-meta"><%= it.category || '—' %></span></td>
+          <td><%= formatPrice(it.price) || '—' %></td>
+          <td>
+            <% if (Number(it.is_popular)) { %><span class="badge badge-red">Populaire</span> <% } %>
+            <% if (Number(it.is_extra)) { %><span class="badge badge-muted">Extra</span><% } %>
+          </td>
+          <td><% if (Number(it.available)) { %><span class="badge badge-success">Oui</span><% } else { %><span class="badge badge-danger">Non</span><% } %></td>
+          <td class="row-actions">
+            <button type="button" class="btn btn-secondary btn-sm"
+              data-edit='<%- JSON.stringify({ id: it.id, name_fr: it.name_fr || "", name_en: it.name_en || "", description_fr: it.description_fr || "", description_en: it.description_en || "", price: it.price == null ? "" : it.price, category: it.category || "", image_url: it.image_url || "", position: it.position == null ? "" : it.position, is_popular: Number(it.is_popular) ? 1 : 0, is_extra: Number(it.is_extra) ? 1 : 0, available: Number(it.available) ? 1 : 0 }) %>'>✏️</button>
+            <button type="button" class="btn btn-danger btn-sm" data-del-item="<%= it.id %>">🗑️</button>
+          </td>
+        </tr>
+        <% }); } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</main>
+</div>
+
+<!-- ===================== ITEM MODAL ===================== -->
+<div class="modal-overlay" id="itemModal">
+  <div class="modal">
+    <h2 id="itemModalTitle">Ajouter un élément</h2>
+    <form id="itemForm">
+      <input type="hidden" name="id" id="itemId">
+      <div class="field-row">
+        <div class="form-group"><label>Nom (FR)</label><input type="text" class="form-control" name="name_fr" required></div>
+        <div class="form-group"><label>Nom (EN)</label><input type="text" class="form-control" name="name_en"></div>
+      </div>
+      <div class="field-row">
+        <div class="form-group"><label>Description (FR)</label><textarea class="form-control" name="description_fr" rows="2"></textarea></div>
+        <div class="form-group"><label>Description (EN)</label><textarea class="form-control" name="description_en" rows="2"></textarea></div>
+      </div>
+      <div class="field-row">
+        <div class="form-group"><label>Prix ($)</label><input type="number" step="0.01" class="form-control" name="price" placeholder="12.99"></div>
+        <div class="form-group">
+          <label>Catégorie</label>
+          <select class="form-control" name="category">
+            <option value="">— Choisir —</option>
+            <% (categories || []).forEach(function(c){ %><option value="<%= c.slug %>"><%= c.name_fr || c.slug %></option><% }); %>
+          </select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="form-group"><label>URL de l'image (Cloudinary)</label><input type="url" class="form-control" name="image_url" placeholder="https://res.cloudinary.com/…"></div>
+        <div class="form-group"><label>Position</label><input type="number" class="form-control" name="position" value="0"></div>
+      </div>
+      <div class="field-checkbox"><input type="checkbox" name="is_popular" id="itPopular"><label for="itPopular" style="margin:0">Populaire (badge mis en avant)</label></div>
+      <div class="field-checkbox"><input type="checkbox" name="is_extra" id="itExtra"><label for="itExtra" style="margin:0">Extra (affiché en liste simple)</label></div>
+      <div class="field-checkbox"><input type="checkbox" name="available" id="itAvailable" checked><label for="itAvailable" style="margin:0">Disponible</label></div>
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" id="itemCancel">Annuler</button>
+        <button type="submit" class="btn btn-primary" id="itemSave">Enregistrer</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script>
+function toast(msg, type) {
+  var el = document.getElementById('toast');
+  el.className = 'toast toast-' + (type || 'success');
+  el.textContent = msg;
+  setTimeout(function(){ el.classList.add('show'); }, 10);
+  setTimeout(function(){ el.classList.remove('show'); }, 2600);
+}
+var modal = document.getElementById('itemModal');
+var itemForm = document.getElementById('itemForm');
+function openModal(data) {
+  itemForm.reset();
+  data = data || {};
+  document.getElementById('itemModalTitle').textContent = data.id ? "Modifier l'élément" : 'Ajouter un élément';
+  document.getElementById('itemId').value = data.id || '';
+  itemForm.name_fr.value = data.name_fr || '';
+  itemForm.name_en.value = data.name_en || '';
+  itemForm.description_fr.value = data.description_fr || '';
+  itemForm.description_en.value = data.description_en || '';
+  itemForm.price.value = (data.price === '' || data.price == null) ? '' : data.price;
+  itemForm.category.value = data.category || '';
+  itemForm.image_url.value = data.image_url || '';
+  itemForm.position.value = (data.position === '' || data.position == null) ? 0 : data.position;
+  itemForm.is_popular.checked = !!Number(data.is_popular);
+  itemForm.is_extra.checked = !!Number(data.is_extra);
+  itemForm.available.checked = data.id ? !!Number(data.available) : true;
+  modal.classList.add('open');
+}
+function closeModal() { modal.classList.remove('open'); }
+document.getElementById('addItemBtn').addEventListener('click', function(){ openModal(null); });
+document.getElementById('itemCancel').addEventListener('click', closeModal);
+modal.addEventListener('click', function(e){ if (e.target === modal) closeModal(); });
+
+document.querySelectorAll('[data-edit]').forEach(function(b){
+  b.addEventListener('click', function(){
+    try { openModal(JSON.parse(b.getAttribute('data-edit'))); } catch(e) { openModal(null); }
+  });
+});
+
+itemForm.addEventListener('submit', async function(e){
+  e.preventDefault();
+  var btn = document.getElementById('itemSave');
+  btn.disabled = true;
+  var body = {
+    name_fr: itemForm.name_fr.value.trim(),
+    name_en: itemForm.name_en.value.trim(),
+    description_fr: itemForm.description_fr.value.trim(),
+    description_en: itemForm.description_en.value.trim(),
+    price: itemForm.price.value.trim(),
+    category: itemForm.category.value,
+    image_url: itemForm.image_url.value.trim(),
+    position: itemForm.position.value.trim() || 0,
+    is_popular: itemForm.is_popular.checked ? 1 : 0,
+    is_extra: itemForm.is_extra.checked ? 1 : 0,
+    available: itemForm.available.checked ? 1 : 0
+  };
+  var id = document.getElementById('itemId').value;
+  if (id) body.id = id;
+  try {
+    var r = await fetch('api/admin/menu', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    var data = await r.json().catch(function(){ return {}; });
+    if (r.ok && data.success) { toast('Élément enregistré', 'success'); setTimeout(function(){ location.reload(); }, 600); }
+    else { toast('Erreur : ' + (data.error || 'inconnue'), 'error'); btn.disabled = false; }
+  } catch(e) { toast('Erreur réseau', 'error'); btn.disabled = false; }
+});
+
+document.querySelectorAll('[data-del-item]').forEach(function(b){
+  b.addEventListener('click', async function(){
+    if (!confirm('Supprimer cet élément ?')) return;
+    try {
+      var r = await fetch('api/admin/menu/' + b.getAttribute('data-del-item'), { method: 'DELETE' });
+      var data = await r.json().catch(function(){ return {}; });
+      if (r.ok && data.success) { toast('Élément supprimé', 'success'); setTimeout(function(){ location.reload(); }, 500); }
+      else { toast('Erreur de suppression', 'error'); }
+    } catch(e) { toast('Erreur réseau', 'error'); }
+  });
+});
+
+document.getElementById('catForm').addEventListener('submit', async function(e){
+  e.preventDefault();
+  var f = e.target;
+  var body = {
+    name_fr: f.name_fr.value.trim(),
+    name_en: f.name_en.value.trim(),
+    slug: f.slug.value.trim(),
+    position: f.position.value.trim() || 0,
+    served_note_fr: f.served_note_fr.value.trim(),
+    served_note_en: f.served_note_en.value.trim(),
+    active: f.active.checked ? 1 : 0
+  };
+  try {
+    var r = await fetch('api/admin/menu_category', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    var data = await r.json().catch(function(){ return {}; });
+    if (r.ok && data.success) { toast('Catégorie ajoutée', 'success'); setTimeout(function(){ location.reload(); }, 600); }
+    else { toast('Erreur : ' + (data.error || 'inconnue'), 'error'); }
+  } catch(e) { toast('Erreur réseau', 'error'); }
+});
+
+document.querySelectorAll('[data-del-cat]').forEach(function(b){
+  b.addEventListener('click', async function(){
+    if (!confirm('Supprimer cette catégorie ? Les éléments associés ne seront pas supprimés.')) return;
+    try {
+      var r = await fetch('api/admin/menu_category/' + b.getAttribute('data-del-cat'), { method: 'DELETE' });
+      var data = await r.json().catch(function(){ return {}; });
+      if (r.ok && data.success) { toast('Catégorie supprimée', 'success'); setTimeout(function(){ location.reload(); }, 500); }
+      else { toast('Erreur de suppression', 'error'); }
+    } catch(e) { toast('Erreur réseau', 'error'); }
+  });
+});
+</script>
+</body>
+</html>
