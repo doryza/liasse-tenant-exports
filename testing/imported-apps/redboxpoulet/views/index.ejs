@@ -33,19 +33,27 @@
   @keyframes vipShine { 0% { left: -60%; } 55%, 100% { left: 130%; } }
   @media (prefers-reduced-motion: reduce) { .hero-vip::after { display: none; } }
 
-  /* Hero menu showcase */
-  .hero-menu { display: grid; gap: .7rem; margin: 1.6rem 0 1.9rem; max-width: 540px; }
-  .hero-item { display: flex; gap: .85rem; align-items: flex-start; padding: .8rem 1rem; border-radius: 14px;
-    background: rgba(12,10,9,.55); border: 1px solid rgba(255,255,255,.1); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
-  .hero-item__emoji { font-size: 1.75rem; line-height: 1.1; flex-shrink: 0; }
-  .hero-item__body { flex: 1; min-width: 0; }
-  .hero-item__top { display: flex; align-items: baseline; justify-content: space-between; gap: .6rem; }
-  .hero-item__name { font-family: var(--font-display); text-transform: uppercase; font-size: 1.06rem; color: #fff; letter-spacing: .02em; }
-  .hero-item__price { font-family: var(--font-display); color: var(--gold); font-size: 1.06rem; white-space: nowrap; }
-  .hero-item__desc { margin: .25rem 0 0; color: var(--muted-light); font-size: .9rem; line-height: 1.4;
-    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-  .hero-ctas { flex-wrap: wrap; align-items: center; }
-  @media (max-width: 600px) { .hero-item__desc { -webkit-line-clamp: 3; } }
+  /* Hero menu — horizontal scrolling white product cards */
+  .hero-menu { display: flex; gap: .9rem; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; margin: 1.6rem 0 1.7rem; padding-bottom: .6rem; }
+  .hero-menu::-webkit-scrollbar { height: 6px; }
+  .hero-menu::-webkit-scrollbar-thumb { background: rgba(255,255,255,.25); border-radius: 3px; }
+  .hero-item { scroll-snap-align: start; flex: 0 0 235px; width: 235px; display: flex; flex-direction: column; background: #fff; color: var(--text-dark); border-radius: 14px; overflow: hidden; text-decoration: none; box-shadow: 0 14px 34px rgba(0,0,0,.35); transition: transform .15s ease; }
+  .hero-item:hover { transform: translateY(-3px); }
+  .hero-item__img { width: 100%; height: 140px; object-fit: cover; display: block; }
+  .hero-item__emoji { font-size: 3rem; line-height: 1; text-align: center; padding: 1.5rem 0; background: var(--cream); }
+  .hero-item__b { padding: .8rem .9rem 1rem; display: flex; flex-direction: column; flex: 1; }
+  .hero-item__row { display: flex; align-items: baseline; justify-content: space-between; gap: .5rem; }
+  .hero-item__name { font-family: var(--font-display); text-transform: uppercase; font-size: 1.04rem; color: var(--ink); line-height: 1.05; }
+  .hero-item__price { font-family: var(--font-display); color: var(--red); font-size: 1.04rem; white-space: nowrap; }
+  .hero-item__desc { color: var(--muted-dark); font-size: .82rem; line-height: 1.4; margin: .35rem 0 .7rem; flex: 1; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .hero-item__order { font-family: var(--font-display); text-transform: uppercase; letter-spacing: .04em; font-size: .82rem; color: var(--red); }
+  .hero-ctas { flex-wrap: wrap; align-items: center; gap: .7rem; }
+  /* Delivery buttons (brand icons via Simple Icons CDN) */
+  .deliver-btn { display: inline-flex; align-items: center; gap: .5rem; padding: .7rem 1.1rem; border-radius: 10px; font-weight: 800; font-size: .92rem; color: #fff; text-decoration: none; line-height: 1; }
+  .deliver-btn img { height: 16px; width: 16px; display: block; }
+  .deliver-btn--ue { background: #06C167; }
+  .deliver-btn--dd { background: #FF3008; }
+  .deliver-btn:hover { filter: brightness(1.07); }
 </style>
 <section class="hero"<%= _heroSlides.length > 1 ? ' data-hero-slider' : '' %>>
   <% _heroSlides.forEach(function(_s, _i){ %>
@@ -57,21 +65,24 @@
       <span class="eyebrow hero-eyebrow"><%= t.hero_eyebrow %></span>
       <h1 class="hero-title"><%= t.hero_title_1 %> <span class="hl"><%= t.hero_title_hl %></span> <%= t.hero_title_2 %></h1>
       <div class="hero-menu">
-        <% (typeof heroFeatured !== 'undefined' ? heroFeatured : []).forEach(function(f){ %>
-        <div class="hero-item">
-          <span class="hero-item__emoji"><%= f.emoji %></span>
-          <div class="hero-item__body">
-            <div class="hero-item__top">
+        <% (typeof heroFeatured !== 'undefined' ? heroFeatured : []).forEach(function(f){ var _img = f.item.image_url; %>
+        <a class="hero-item" href="commander">
+          <% if (_img) { %><img class="hero-item__img" src="<%= cimg(_img, 'f_auto,q_auto,w_480,h_360,c_fill,g_auto') %>" alt="<%= pickLang(f.item, 'name', lang) %>" loading="lazy"><% } else { %><span class="hero-item__emoji"><%= f.emoji %></span><% } %>
+          <span class="hero-item__b">
+            <span class="hero-item__row">
               <span class="hero-item__name"><%= pickLang(f.item, 'name', lang) %></span>
               <% if (f.item.price != null && f.item.price !== '') { %><span class="hero-item__price"><%= formatPrice(f.item.price) %></span><% } %>
-            </div>
-            <% var _d = pickLang(f.item, 'description', lang); if (_d) { %><p class="hero-item__desc"><%= _d %></p><% } %>
-          </div>
-        </div>
+            </span>
+            <% var _d = pickLang(f.item, 'description', lang); if (_d) { %><span class="hero-item__desc"><%= _d %></span><% } %>
+            <span class="hero-item__order"><%= t.order_now %> →</span>
+          </span>
+        </a>
         <% }); %>
       </div>
       <div class="hero-ctas">
-        <a class="btn btn-gold btn-lg" href="commander">🛒 <%= t.order_now %></a>
+        <a class="btn btn-gold btn-lg" href="commander"><%= t.order_now %></a>
+        <a class="deliver-btn deliver-btn--ue" href="<%= settings.ubereats_url || 'https://www.ubereats.com' %>" target="_blank" rel="noopener"><img src="https://cdn.simpleicons.org/ubereats/white" alt="" width="16" height="16" loading="lazy">Uber Eats</a>
+        <a class="deliver-btn deliver-btn--dd" href="<%= settings.doordash_url || 'https://www.doordash.com' %>" target="_blank" rel="noopener"><img src="https://cdn.simpleicons.org/doordash/white" alt="" width="16" height="16" loading="lazy">DoorDash</a>
         <a class="hero-vip" href="vip"><span class="star">★</span> <%= t.hero_vip %> <span class="arr" aria-hidden="true">→</span></a>
       </div>
     </div>

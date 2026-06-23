@@ -12,7 +12,7 @@ module.exports = function(services) {
     fr: {
       brand: 'RED BOX', brand_tag: 'Poulet Nashville',
       nav_home: 'Accueil', nav_menu: 'Menu', nav_promise: 'Notre Promesse', nav_franchise: 'Franchise', nav_contact: 'Contact', nav_vip: 'VIP',
-      order: 'Commander', order_now: 'Commander en ligne', order_takeout: 'Commander pour emporter', order_takeout_short: 'Commande en ligne', order_view_menu: 'Voir le menu', learn_more: 'En savoir plus', back_home: "Retour à l'accueil",
+      order: 'Commander', order_now: 'Pour emporter', order_takeout: 'Commander pour emporter', order_takeout_short: 'Commande en ligne', order_view_menu: 'Voir le menu', learn_more: 'En savoir plus', back_home: "Retour à l'accueil",
       contact_us: 'Nous joindre', footer_rights: 'Tous droits réservés.',
       footer_intro: "Le poulet frit réinventé. Extrêmement croustillant. Zéro gras saturé. L'expérience fast-casual premium au Québec.",
 
@@ -120,7 +120,7 @@ module.exports = function(services) {
     en: {
       brand: 'RED BOX', brand_tag: 'Nashville Chicken',
       nav_home: 'Home', nav_menu: 'Menu', nav_promise: 'Our Promise', nav_franchise: 'Franchise', nav_contact: 'Contact', nav_vip: 'VIP',
-      order: 'Order', order_now: 'Order now', order_takeout: 'Order for pickup', order_takeout_short: 'Online ordering', order_view_menu: 'See the menu', learn_more: 'Learn more', back_home: 'Back to home',
+      order: 'Order', order_now: 'Takeout', order_takeout: 'Order for pickup', order_takeout_short: 'Online ordering', order_view_menu: 'See the menu', learn_more: 'Learn more', back_home: 'Back to home',
       contact_us: 'Contact us', footer_rights: 'All rights reserved.',
       footer_intro: 'Fried chicken reinvented. Extremely crispy. Zero saturated fat. The premium fast-casual experience in Quebec.',
 
