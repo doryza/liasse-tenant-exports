@@ -20,6 +20,9 @@ module.exports = async function(db, services) {
     // Hero slider: curated from existing brand visuals (one URL per line). The
     // home hero crossfades through these; editable in Admin → Bannière défilante.
     ['hero_slides', 'https://res.cloudinary.com/duhp69meg/image/upload/v1782232050/redboxpoulet/site/hero.png\nhttps://res.cloudinary.com/duhp69meg/image/upload/v1782232050/redboxpoulet/site/vibe.png\nhttps://res.cloudinary.com/duhp69meg/image/upload/v1782232052/redboxpoulet/site/action.png\nhttps://res.cloudinary.com/duhp69meg/image/upload/v1782232188/redboxpoulet/site/tenders_macro_1782232188334.png'],
+    // Native Liasse Restaurants ordering host (linked business #657) — /commander
+    // loads the menu, verifies phones and places orders against this host.
+    ['order_base_url', 'https://redboxpoulet.liasse.tech'],
     // Socials — the original site's links were non-functional placeholders, so
     // we leave them blank (the social row stays hidden until real URLs are set
     // from the admin backend).

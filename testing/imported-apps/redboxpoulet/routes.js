@@ -12,7 +12,7 @@ module.exports = function(services) {
     fr: {
       brand: 'RED BOX', brand_tag: 'Poulet Nashville',
       nav_home: 'Accueil', nav_menu: 'Menu', nav_promise: 'Notre Promesse', nav_franchise: 'Franchise', nav_contact: 'Contact', nav_vip: 'VIP',
-      order: 'Commander', order_now: 'Commander en ligne', order_view_menu: 'Voir le menu', learn_more: 'En savoir plus', back_home: "Retour à l'accueil",
+      order: 'Commander', order_now: 'Commander en ligne', order_takeout: 'Commander pour emporter', order_takeout_short: 'Commande en ligne', order_view_menu: 'Voir le menu', learn_more: 'En savoir plus', back_home: "Retour à l'accueil",
       contact_us: 'Nous joindre', footer_rights: 'Tous droits réservés.',
       footer_intro: "Le poulet frit réinventé. Extrêmement croustillant. Zéro gras saturé. L'expérience fast-casual premium au Québec.",
 
@@ -120,7 +120,7 @@ module.exports = function(services) {
     en: {
       brand: 'RED BOX', brand_tag: 'Nashville Chicken',
       nav_home: 'Home', nav_menu: 'Menu', nav_promise: 'Our Promise', nav_franchise: 'Franchise', nav_contact: 'Contact', nav_vip: 'VIP',
-      order: 'Order', order_now: 'Order now', order_view_menu: 'See the menu', learn_more: 'Learn more', back_home: 'Back to home',
+      order: 'Order', order_now: 'Order now', order_takeout: 'Order for pickup', order_takeout_short: 'Online ordering', order_view_menu: 'See the menu', learn_more: 'Learn more', back_home: 'Back to home',
       contact_us: 'Contact us', footer_rights: 'All rights reserved.',
       footer_intro: 'Fried chicken reinvented. Extremely crispy. Zero saturated fat. The premium fast-casual experience in Quebec.',
 
@@ -362,6 +362,101 @@ module.exports = function(services) {
   router.get('/vip', async function(req, res) {
     try { res.render('vip', await renderCtx(req)); }
     catch(e) { console.error('vip error:', e.message); res.status(500).send('Erreur'); }
+  });
+
+  // ===========================================================================
+  // Native takeout ordering — talks to the linked Liasse Restaurants business at
+  // its own host (set order_base_url in Admin → Paramètres). Liasse owns pricing/
+  // tax/OTP/geofence/hours; this page only renders the menu, collects input and
+  // calls those endpoints. Login + 90-day history bridge below (Option A mirror).
+  // ACTIVATION: requires the app to be LINKED/provisioned (services.auth,
+  // services.jwtSecret, the per-app `users` table) + order_base_url set + CORS
+  // from this origin. Until then the commander page degrades gracefully.
+  // ===========================================================================
+  router.get('/commander', async function(req, res) {
+    try {
+      const ctx = await renderCtx(req);
+      const orderBaseUrl = (ctx.settings.order_base_url || 'https://redboxpoulet.liasse.tech').replace(/\/+$/, '');
+      res.render('commander', Object.assign(ctx, { orderBaseUrl: orderBaseUrl }));
+    } catch(e) { console.error('commander error:', e.message); res.status(500).send('Erreur'); }
+  });
+
+  let jwtLib = null; try { jwtLib = require('jsonwebtoken'); } catch(e) { jwtLib = null; }
+  const _fetch = (typeof fetch === 'function') ? fetch : null;
+  const authMod = services.auth || {};
+  const optionalAuth = (typeof authMod.optionalAuth === 'function') ? authMod.optionalAuth : function(req, res, next){ next(); };
+  function orderBaseFrom(settings){ return (settings.order_base_url || 'https://redboxpoulet.liasse.tech').replace(/\/+$/, ''); }
+  async function fetchLiasseOrder(base, id){
+    if (!_fetch || !base || !id) return null;
+    try { const r = await _fetch(base + '/order/orders/' + encodeURIComponent(id)); if (!r.ok) return null; return await r.json(); }
+    catch(e) { return null; }
+  }
+
+  // Bridge a Liasse OTP token ({ phone, verified:true }, signed with the shared
+  // JWT secret) into a 30-day tenant session { userId, tenantSlug }.
+  router.post('/api/order/session', async function(req, res) {
+    try {
+      if (!jwtLib || !services.jwtSecret) return res.status(503).json({ error: 'auth_unavailable' });
+      const token = req.body && req.body.token;
+      if (!token) return res.status(400).json({ error: 'missing_token' });
+      let payload;
+      try { payload = jwtLib.verify(token, services.jwtSecret); } catch(e) { return res.status(401).json({ error: 'invalid_token' }); }
+      if (!payload || payload.verified !== true || !payload.phone) return res.status(401).json({ error: 'not_verified' });
+      const phone = String(payload.phone);
+      let user = null;
+      try { user = (typeof authMod.getUserByPhone === 'function') ? await authMod.getUserByPhone(phone) : await db.get('SELECT * FROM users WHERE phone = $1', [phone]); } catch(e) { user = null; }
+      if (!user) {
+        const r = await db.run('INSERT INTO users (phone, phone_verified, created_at, updated_at) VALUES ($1, 1, NOW(), NOW()) ON CONFLICT (phone) DO UPDATE SET phone_verified = 1, updated_at = NOW() RETURNING id', [phone]);
+        user = { id: r.lastInsertRowid, phone: phone };
+      } else {
+        await db.run('UPDATE users SET phone_verified = 1, updated_at = NOW() WHERE id = $1', [user.id]).catch(function(){});
+      }
+      const slug = (services.config && services.config.slug) || 'redboxpoulet';
+      const sessionToken = jwtLib.sign({ userId: user.id, tenantSlug: slug }, services.jwtSecret, { expiresIn: '30d' });
+      try { res.cookie('tenant_token', sessionToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: false, sameSite: 'lax', secure: true, path: '/' }); } catch(e) {}
+      res.json({ success: true, token: sessionToken, user: { id: user.id } });
+    } catch(e) { console.error('order/session error:', e.message); res.status(500).json({ error: e.message }); }
+  });
+
+  // Mirror a placed order under the signed-in user. The server fetches the
+  // authoritative record from Liasse — it never trusts client-sent totals.
+  router.post('/api/order/record', optionalAuth, async function(req, res) {
+    try {
+      if (!req.user) return res.status(401).json({ error: 'no_session' });
+      const id = req.body && (req.body.liasseOrderId || req.body.orderId);
+      if (!id) return res.status(400).json({ error: 'missing_order' });
+      const settings = await getSettings();
+      const o = await fetchLiasseOrder(orderBaseFrom(settings), id);
+      if (!o) return res.status(502).json({ error: 'fetch_failed' });
+      await db.run(
+        'INSERT INTO orders (user_id, liasse_order_id, order_number, order_type, status, items, subtotal_cents, total_cents, tax_breakdown, customer_name, pickup_time, created_at, updated_at) ' +
+        'VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,NOW(),NOW()) ' +
+        'ON CONFLICT (liasse_order_id) DO UPDATE SET status = EXCLUDED.status, total_cents = EXCLUDED.total_cents, tax_breakdown = EXCLUDED.tax_breakdown, pickup_time = EXCLUDED.pickup_time, updated_at = NOW()',
+        [req.user.id, String(id), o.order_number || null, o.order_type || 'takeout', o.status || 'pending', JSON.stringify(o.items || []), o.subtotal_cents != null ? o.subtotal_cents : null, o.total_cents != null ? o.total_cents : null, o.tax_breakdown ? JSON.stringify(o.tax_breakdown) : null, o.customer_name || null, o.pickup_time || null]
+      );
+      res.json({ success: true });
+    } catch(e) { console.error('order/record error:', e.message); res.status(500).json({ error: e.message }); }
+  });
+
+  // The signed-in user's last-90-days orders; refresh non-terminal statuses from
+  // Liasse on read (write-through, no webhook).
+  router.get('/api/order/history', optionalAuth, async function(req, res) {
+    try {
+      if (!req.user) return res.json({ authenticated: false, orders: [] });
+      const rows = await db.all("SELECT id, liasse_order_id, order_number, order_type, status, items, subtotal_cents, total_cents, tax_breakdown, pickup_time, created_at FROM orders WHERE user_id = $1 AND created_at > NOW() - INTERVAL '90 days' ORDER BY created_at DESC", [req.user.id]).catch(function(){ return []; });
+      const settings = await getSettings();
+      const base = orderBaseFrom(settings);
+      for (const row of rows) {
+        if (row.status !== 'completed' && row.status !== 'cancelled') {
+          const o = await fetchLiasseOrder(base, row.liasse_order_id);
+          if (o && o.status && o.status !== row.status) {
+            await db.run('UPDATE orders SET status = $1, pickup_time = COALESCE($2, pickup_time), updated_at = NOW() WHERE id = $3', [o.status, o.pickup_time || null, row.id]).catch(function(){});
+            row.status = o.status;
+          }
+        }
+      }
+      res.json({ authenticated: true, orders: rows });
+    } catch(e) { console.error('order/history error:', e.message); res.status(500).json({ error: e.message }); }
   });
 
   // ===========================================================================

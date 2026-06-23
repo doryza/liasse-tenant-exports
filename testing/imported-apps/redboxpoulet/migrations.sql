@@ -107,3 +107,9 @@ https://res.cloudinary.com/duhp69meg/image/upload/v1782232050/redboxpoulet/site/
 https://res.cloudinary.com/duhp69meg/image/upload/v1782232052/redboxpoulet/site/action.png
 https://res.cloudinary.com/duhp69meg/image/upload/v1782232188/redboxpoulet/site/tenders_macro_1782232188334.png')
   ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value WHERE admin_settings.value IS NULL OR admin_settings.value = '';
+
+-- Native ordering host (linked Liasse Restaurants business #657). /commander +
+-- the order-status pill call this host. Fill-if-empty so it publishes without
+-- overwriting an operator override.
+INSERT INTO admin_settings (key, value) VALUES ('order_base_url', 'https://redboxpoulet.liasse.tech')
+  ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value WHERE admin_settings.value IS NULL OR admin_settings.value = '';

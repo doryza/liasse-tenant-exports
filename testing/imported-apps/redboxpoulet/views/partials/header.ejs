@@ -68,7 +68,7 @@
     </nav>
     <div class="nav-actions">
       <a class="lang-toggle" href="?lang=<%= lang === 'en' ? 'fr' : 'en' %>" aria-label="<%= lang === 'en' ? 'Passer au français' : 'Switch to English' %>"><%= lang === 'en' ? 'FR' : 'EN' %></a>
-      <a class="nav-cta" href="menu"><%= t.order %></a>
+      <a class="nav-cta" href="commander"><%= t.order %></a>
       <button class="nav-toggle" id="navToggle" aria-label="<%= lang === 'en' ? 'Open menu' : 'Ouvrir le menu' %>" aria-controls="mobileNav" aria-expanded="false">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="7" x2="21" y2="7"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="17" x2="21" y2="17"/></svg>
       </button>
@@ -89,7 +89,7 @@
     <a class="m-link" href="franchise"><%= t.nav_franchise %></a>
     <a class="m-link" href="contact"><%= t.nav_contact %></a>
     <a class="m-link" href="vip" style="color:var(--gold)">★ <%= t.nav_vip %></a>
-    <a class="btn btn-gold btn-block" style="margin-top:1.2rem" href="menu"><%= t.order %></a>
+    <a class="btn btn-gold btn-block" style="margin-top:1.2rem" href="commander"><%= t.order %></a>
     <div class="mobile-nav__lang">
       <a href="?lang=fr" class="<%= lang === 'fr' ? 'active' : '' %>">Français</a>
       <a href="?lang=en" class="<%= lang === 'en' ? 'active' : '' %>">English</a>
