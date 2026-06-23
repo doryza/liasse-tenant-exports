@@ -14,8 +14,11 @@
 -- promise "gold standard" macro (tenders_macro).
 
 -- Brand marks
-INSERT INTO admin_settings (key, value) VALUES ('_p_nav_logo_url', 'https://res.cloudinary.com/duhp69meg/image/upload/v1782232049/redboxpoulet/site/logo_red.png') ON CONFLICT (key) DO NOTHING;
-INSERT INTO admin_settings (key, value) VALUES ('_p_footer_logo_url', 'https://res.cloudinary.com/duhp69meg/image/upload/v1782232049/redboxpoulet/site/logo_white.png') ON CONFLICT (key) DO NOTHING;
+-- Logo: force-restore the original full-size brand logos. A smaller logo was
+-- uploaded via the dashboard and overwrote these; DO UPDATE (not DO NOTHING)
+-- restores the originals on Push-to-Live. (Remove the force if a new logo is wanted.)
+INSERT INTO admin_settings (key, value) VALUES ('_p_nav_logo_url', 'https://res.cloudinary.com/duhp69meg/image/upload/v1782232049/redboxpoulet/site/logo_red.png') ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value;
+INSERT INTO admin_settings (key, value) VALUES ('_p_footer_logo_url', 'https://res.cloudinary.com/duhp69meg/image/upload/v1782232049/redboxpoulet/site/logo_white.png') ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value;
 
 -- Home page imagery
 INSERT INTO admin_settings (key, value) VALUES ('_p_hero_image_url', 'https://res.cloudinary.com/duhp69meg/image/upload/v1782232050/redboxpoulet/site/hero.png') ON CONFLICT (key) DO NOTHING;
