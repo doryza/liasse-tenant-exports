@@ -41,6 +41,8 @@
 
   .vip-note { display: inline-flex; gap: .55rem; align-items: center; border: 1px solid rgba(225,19,19,.35);
     background: rgba(225,19,19,.10); color: #f7c9c9; padding: .7rem 1.15rem; border-radius: 999px; font-weight: 700; font-size: .92rem; }
+  .vip-fineprint { margin-top: 1rem; color: var(--muted-light); font-size: .82rem; opacity: .9; }
+  .vip-urgent { margin-top: 1.1rem; color: var(--gold); font-weight: 800; font-size: .92rem; letter-spacing: .01em; }
 
   @keyframes vipfloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-16px); } }
   @keyframes vipbob   { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
@@ -70,6 +72,7 @@
           <a class="btn btn-gold btn-lg" href="menu"><%= t.vip_cta_menu %></a>
           <a class="btn btn-outline" href="#how"><%= t.vip_how_link %></a>
         </div>
+        <p class="vip-urgent">⚡ <%= t.vip_scarcity %></p>
       </div>
 
       <div class="vip-stage" aria-hidden="false">
@@ -101,17 +104,17 @@
     </div>
     <div class="vip-steps">
       <article class="vip-box">
-        <div class="num">01</div>
+        <div class="num">1</div>
         <h3><%= t.vip_s1_t %></h3>
         <p><%= t.vip_s1_d %></p>
       </article>
       <article class="vip-box">
-        <div class="num">02</div>
+        <div class="num">2</div>
         <h3><%= t.vip_s2_t %></h3>
         <p><%= t.vip_s2_d %></p>
       </article>
       <article class="vip-box">
-        <div class="num">03</div>
+        <div class="num">3</div>
         <h3><%= t.vip_s3_t %></h3>
         <p><%= t.vip_s3_d %></p>
       </article>
@@ -142,6 +145,7 @@
     </div>
     <div class="center" style="margin-top:2.4rem">
       <span class="vip-note">🔑 <%= t.vip_exclusive %></span>
+      <p class="vip-fineprint"><%= t.vip_offers_note %></p>
     </div>
   </div>
 </section>
