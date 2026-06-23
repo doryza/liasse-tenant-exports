@@ -80,3 +80,17 @@ WHERE NOT EXISTS (SELECT 1 FROM menu_items WHERE name_fr='1 Filet Extra');
 INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,is_popular,is_extra)
 SELECT 'Boissons','Drinks','Fontaine, thé glacé, limonade.','Fountain, iced tea, lemonade.',2.49,'burgers',NULL,7,0,1
 WHERE NOT EXISTS (SELECT 1 FROM menu_items WHERE name_fr='Boissons');
+
+-- ===========================================================================
+-- Contact ("Nous rejoindre") coordinates — address, phone, email. The contact
+-- page + footer only render each field when its admin_settings row is non-empty
+-- (and the map is derived from the address), so a missing/blank row hides the
+-- whole block. Fill-if-empty: publish these values on Push-to-Live when the row
+-- is absent or empty, but never overwrite a non-empty value an operator set.
+-- ===========================================================================
+INSERT INTO admin_settings (key, value) VALUES ('business_address', '110-2790 Boul. de la Pinière, Terrebonne, QC J6X 0G4')
+  ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value WHERE admin_settings.value IS NULL OR admin_settings.value = '';
+INSERT INTO admin_settings (key, value) VALUES ('contact_phone', '(514) 886-4545')
+  ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value WHERE admin_settings.value IS NULL OR admin_settings.value = '';
+INSERT INTO admin_settings (key, value) VALUES ('contact_email', 'info@redboxpoulet.ca')
+  ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value WHERE admin_settings.value IS NULL OR admin_settings.value = '';
