@@ -1,0 +1,457 @@
+{
+  "exportedAt": "2026-06-23T19:42:28.851Z",
+  "tables": {
+    "admin_invites": {
+      "columns": [
+        "id",
+        "email",
+        "token",
+        "role",
+        "status",
+        "invited_by",
+        "expires_at",
+        "accepted_at",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_users": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "password_hash",
+        "display_name",
+        "role",
+        "active",
+        "activation_token",
+        "invited_by",
+        "invite_token",
+        "invite_expires_at",
+        "last_login_at",
+        "is_active",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_webauthn_credentials": {
+      "columns": [
+        "id",
+        "admin_user_id",
+        "credential_id",
+        "public_key",
+        "counter",
+        "device_name",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_settings": {
+      "columns": [
+        "key",
+        "value",
+        "updated_at"
+      ],
+      "totalRows": 25,
+      "sampleRows": [
+        {
+          "key": "_p_hero_image_url",
+          "value": "https://res.cloudinary.com/duhp69meg/image/upload/v1782232050/redboxpoulet/site/hero.png",
+          "updated_at": "2026-06-23T17:03:46.027Z"
+        },
+        {
+          "key": "_p_story_image_url",
+          "value": "https://res.cloudinary.com/duhp69meg/image/upload/v1782232050/redboxpoulet/site/vibe.png",
+          "updated_at": "2026-06-23T17:03:46.033Z"
+        },
+        {
+          "key": "_p_feature_family_url",
+          "value": "https://res.cloudinary.com/duhp69meg/image/upload/v1782232051/redboxpoulet/site/packaging.png",
+          "updated_at": "2026-06-23T17:03:46.039Z"
+        },
+        {
+          "key": "_p_feature_burger_url",
+          "value": "https://res.cloudinary.com/duhp69meg/image/upload/v1782232052/redboxpoulet/site/action.png",
+          "updated_at": "2026-06-23T17:03:46.043Z"
+        },
+        {
+          "key": "_p_promise_image_url",
+          "value": "https://res.cloudinary.com/duhp69meg/image/upload/v1782232188/redboxpoulet/site/tenders_macro_1782232188334.png",
+          "updated_at": "2026-06-23T17:03:46.051Z"
+        },
+        {
+          "key": "_p_flagship_image_url",
+          "value": "https://res.cloudinary.com/duhp69meg/image/upload/v1782232050/redboxpoulet/site/vibe.png",
+          "updated_at": "2026-06-23T17:03:46.055Z"
+        },
+        {
+          "key": "_p_header_menu_url",
+          "value": "https://res.cloudinary.com/duhp69meg/image/upload/v1782232053/redboxpoulet/headers/header_menu.png",
+          "updated_at": "2026-06-23T17:03:46.063Z"
+        },
+        {
+          "key": "_p_header_promise_url",
+          "value": "https://res.cloudinary.com/duhp69meg/image/upload/v1782232053/redboxpoulet/headers/header_promise.png",
+          "updated_at": "2026-06-23T17:03:46.070Z"
+        },
+        {
+          "key": "_p_header_franchise_url",
+          "value": "https://res.cloudinary.com/duhp69meg/image/upload/v1782232054/redboxpoulet/headers/header_franchise.png",
+          "updated_at": "2026-06-23T17:03:46.077Z"
+        },
+        {
+          "key": "_p_header_contact_url",
+          "value": "https://res.cloudinary.com/duhp69meg/image/upload/v1782232055/redboxpoulet/headers/header_contact.png",
+          "updated_at": "2026-06-23T17:03:46.081Z"
+        }
+      ]
+    },
+    "site_visits": {
+      "columns": [
+        "id",
+        "path",
+        "visited_at"
+      ],
+      "totalRows": 179,
+      "sampleRows": [
+        {
+          "id": 1,
+          "path": "/",
+          "visited_at": "2026-06-23T17:03:46.888Z"
+        },
+        {
+          "id": 2,
+          "path": "/menu",
+          "visited_at": "2026-06-23T17:04:10.548Z"
+        },
+        {
+          "id": 3,
+          "path": "/",
+          "visited_at": "2026-06-23T17:04:15.054Z"
+        },
+        {
+          "id": 4,
+          "path": "/",
+          "visited_at": "2026-06-23T17:04:38.955Z"
+        },
+        {
+          "id": 5,
+          "path": "/",
+          "visited_at": "2026-06-23T17:09:38.026Z"
+        },
+        {
+          "id": 6,
+          "path": "/",
+          "visited_at": "2026-06-23T17:10:09.522Z"
+        },
+        {
+          "id": 7,
+          "path": "/",
+          "visited_at": "2026-06-23T17:10:20.787Z"
+        },
+        {
+          "id": 8,
+          "path": "/",
+          "visited_at": "2026-06-23T17:10:38.971Z"
+        },
+        {
+          "id": 9,
+          "path": "/",
+          "visited_at": "2026-06-23T17:10:44.883Z"
+        },
+        {
+          "id": 10,
+          "path": "/",
+          "visited_at": "2026-06-23T17:10:45.419Z"
+        }
+      ]
+    },
+    "menu_categories": {
+      "columns": [
+        "id",
+        "slug",
+        "name_fr",
+        "name_en",
+        "served_note_fr",
+        "served_note_en",
+        "position",
+        "active",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 3,
+      "sampleRows": [
+        {
+          "id": 1,
+          "slug": "solo",
+          "name_fr": "Les Boîtes Solo",
+          "name_en": "The Solo Boxes",
+          "served_note_fr": "Servies avec frites ondulées, Texas toast et sauce signature RED BOX.",
+          "served_note_en": "Served with wavy fries, Texas toast and signature RED BOX sauce.",
+          "position": 1,
+          "active": 1,
+          "created_at": "2026-06-23T17:52:10.453Z",
+          "updated_at": "2026-06-23T17:52:10.453Z"
+        },
+        {
+          "id": 2,
+          "slug": "grosse",
+          "name_fr": "La Grosse Boîte",
+          "name_en": "The Big Box",
+          "served_note_fr": "Le repas familial. Conçu pour partager.",
+          "served_note_en": "The family meal. Built to share.",
+          "position": 2,
+          "active": 1,
+          "created_at": "2026-06-23T17:52:10.477Z",
+          "updated_at": "2026-06-23T17:52:10.477Z"
+        },
+        {
+          "id": 3,
+          "slug": "burgers",
+          "name_fr": "Les Burgers & Extras",
+          "name_en": "Burgers & Extras",
+          "served_note_fr": "",
+          "served_note_en": "",
+          "position": 3,
+          "active": 1,
+          "created_at": "2026-06-23T17:52:10.481Z",
+          "updated_at": "2026-06-23T17:52:10.481Z"
+        }
+      ]
+    },
+    "menu_items": {
+      "columns": [
+        "id",
+        "name_fr",
+        "name_en",
+        "description_fr",
+        "description_en",
+        "price",
+        "category",
+        "image_url",
+        "position",
+        "is_popular",
+        "is_extra",
+        "available",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 11,
+      "sampleRows": [
+        {
+          "id": 1,
+          "name_fr": "Boîte 3 Filets",
+          "name_en": "3-Tender Box",
+          "description_fr": "3 filets croustillants, frites ondulées, 1 Texas toast, 1 sauce.",
+          "description_en": "3 crispy tenders, wavy fries, 1 Texas toast, 1 sauce.",
+          "price": 12.99,
+          "category": "solo",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1782232169/redboxpoulet/menu/box_3filets_1782232169349.png",
+          "position": 1,
+          "is_popular": 0,
+          "is_extra": 0,
+          "available": 1,
+          "created_at": "2026-06-23T17:52:10.484Z",
+          "updated_at": "2026-06-23T17:52:10.484Z"
+        },
+        {
+          "id": 2,
+          "name_fr": "Boîte 4 Filets",
+          "name_en": "4-Tender Box",
+          "description_fr": "4 filets croustillants, frites ondulées, 1 Texas toast, 1 sauce.",
+          "description_en": "4 crispy tenders, wavy fries, 1 Texas toast, 1 sauce.",
+          "price": 14.99,
+          "category": "solo",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1782232169/redboxpoulet/menu/box_4filets_1782232168971.png",
+          "position": 2,
+          "is_popular": 1,
+          "is_extra": 0,
+          "available": 1,
+          "created_at": "2026-06-23T17:52:10.490Z",
+          "updated_at": "2026-06-23T17:52:10.490Z"
+        },
+        {
+          "id": 3,
+          "name_fr": "Boîte 6 Filets",
+          "name_en": "6-Tender Box",
+          "description_fr": "6 filets croustillants, frites ondulées, 1 Texas toast, 2 sauces.",
+          "description_en": "6 crispy tenders, wavy fries, 1 Texas toast, 2 sauces.",
+          "price": 18.99,
+          "category": "solo",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1782232169/redboxpoulet/menu/box_6filets_1782232169238.png",
+          "position": 3,
+          "is_popular": 0,
+          "is_extra": 0,
+          "available": 1,
+          "created_at": "2026-06-23T17:52:10.494Z",
+          "updated_at": "2026-06-23T17:52:10.494Z"
+        },
+        {
+          "id": 4,
+          "name_fr": "La Grosse Boîte",
+          "name_en": "The Big Box",
+          "description_fr": "Conçue pour partager. Poulet d'un côté, frites de l'autre, sauces au milieu. 12 filets croustillants, une montagne de frites ondulées, 4 Texas toasts beurrés et 4 sauces RED BOX.",
+          "description_en": "Built to share. Chicken on one side, fries on the other, sauces in the middle. 12 crispy tenders, a mountain of wavy fries, 4 buttered Texas toasts and 4 RED BOX sauces.",
+          "price": 36.99,
+          "category": "grosse",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1782232051/redboxpoulet/site/packaging.png",
+          "position": 1,
+          "is_popular": 0,
+          "is_extra": 0,
+          "available": 1,
+          "created_at": "2026-06-23T17:52:10.497Z",
+          "updated_at": "2026-06-23T17:52:10.497Z"
+        },
+        {
+          "id": 5,
+          "name_fr": "Burger Red Box Solo",
+          "name_en": "Red Box Burger Solo",
+          "description_fr": "3 filets premium empilés dans un pain brioché, avec salade de chou fraîche et sauce maison.",
+          "description_en": "Three premium tenders stacked in a brioche bun with fresh coleslaw and house sauce.",
+          "price": 9.99,
+          "category": "burgers",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1782232169/redboxpoulet/menu/burger_solo_1782232169368.png",
+          "position": 1,
+          "is_popular": 0,
+          "is_extra": 0,
+          "available": 1,
+          "created_at": "2026-06-23T17:52:10.501Z",
+          "updated_at": "2026-06-23T17:52:10.501Z"
+        },
+        {
+          "id": 6,
+          "name_fr": "Frites Ondulées",
+          "name_en": "Wavy Fries",
+          "description_fr": "Portion régulière.",
+          "description_en": "Regular portion.",
+          "price": 3.99,
+          "category": "burgers",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1782232179/redboxpoulet/menu/fries_1782232179220.png",
+          "position": 2,
+          "is_popular": 0,
+          "is_extra": 1,
+          "available": 1,
+          "created_at": "2026-06-23T17:52:10.505Z",
+          "updated_at": "2026-06-23T17:52:10.505Z"
+        },
+        {
+          "id": 7,
+          "name_fr": "Texas Toast",
+          "name_en": "Texas Toast",
+          "description_fr": "Beurre à l'ail, grillé.",
+          "description_en": "Garlic butter, grilled.",
+          "price": 1.99,
+          "category": "burgers",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1782232179/redboxpoulet/menu/texas_toast_1782232178583.png",
+          "position": 3,
+          "is_popular": 0,
+          "is_extra": 1,
+          "available": 1,
+          "created_at": "2026-06-23T17:52:10.509Z",
+          "updated_at": "2026-06-23T17:52:10.509Z"
+        },
+        {
+          "id": 8,
+          "name_fr": "Salade de Chou",
+          "name_en": "Coleslaw",
+          "description_fr": "Crémeuse et fraîche.",
+          "description_en": "Creamy & fresh.",
+          "price": 2.49,
+          "category": "burgers",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1782232177/redboxpoulet/menu/slaw_1782232177035.png",
+          "position": 4,
+          "is_popular": 0,
+          "is_extra": 1,
+          "available": 1,
+          "created_at": "2026-06-23T17:52:10.512Z",
+          "updated_at": "2026-06-23T17:52:10.512Z"
+        },
+        {
+          "id": 9,
+          "name_fr": "Sauce Red Box Signature",
+          "name_en": "Red Box Signature Sauce",
+          "description_fr": "La sauce secrète (extra).",
+          "description_en": "The secret sauce (extra).",
+          "price": 0.5,
+          "category": "burgers",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1782232179/redboxpoulet/menu/sauce_1782232178894.png",
+          "position": 5,
+          "is_popular": 0,
+          "is_extra": 1,
+          "available": 1,
+          "created_at": "2026-06-23T17:52:10.516Z",
+          "updated_at": "2026-06-23T17:52:10.516Z"
+        },
+        {
+          "id": 10,
+          "name_fr": "1 Filet Extra",
+          "name_en": "Extra Tender",
+          "description_fr": "",
+          "description_en": "",
+          "price": 3.49,
+          "category": "burgers",
+          "image_url": null,
+          "position": 6,
+          "is_popular": 0,
+          "is_extra": 1,
+          "available": 1,
+          "created_at": "2026-06-23T17:52:10.520Z",
+          "updated_at": "2026-06-23T17:52:10.520Z"
+        }
+      ]
+    },
+    "contact_messages": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "phone",
+        "subject",
+        "message",
+        "locale",
+        "handled",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "franchise_requests": {
+      "columns": [
+        "id",
+        "full_name",
+        "email",
+        "phone",
+        "city",
+        "experience",
+        "locale",
+        "handled",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "orders": {
+      "columns": [
+        "id",
+        "user_id",
+        "liasse_order_id",
+        "order_number",
+        "order_type",
+        "status",
+        "items",
+        "subtotal_cents",
+        "total_cents",
+        "tax_breakdown",
+        "customer_name",
+        "pickup_time",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    }
+  }
+}
