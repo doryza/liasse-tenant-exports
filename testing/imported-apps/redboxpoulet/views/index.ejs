@@ -16,6 +16,13 @@
   .hero-slide { opacity: 0; transition: opacity 1.1s ease-in-out; }
   .hero-slide.is-active { opacity: 1; }
 
+  /* Fixed shaded hero background (replaces the image slider) — dark RED BOX base
+     with a fiery red glow + subtle gold, for depth. */
+  .hero--solid { background:
+      radial-gradient(120% 95% at 18% 12%, rgba(225,19,19,.42), transparent 55%),
+      radial-gradient(90% 80% at 92% 92%, rgba(255,198,41,.10), transparent 55%),
+      linear-gradient(160deg, #1c0e0c 0%, var(--black) 58%, #120f0d 100%); }
+
   /* Cool VIP link in the hero — shimmering gold pill. */
   .hero-vip-row { margin-top: 1.5rem; }
   .hero-vip { position: relative; display: inline-flex; align-items: center; gap: .55rem; overflow: hidden;
@@ -42,10 +49,10 @@
   .hero-item__img { width: 100%; height: 140px; object-fit: cover; display: block; }
   .hero-item__emoji { font-size: 3rem; line-height: 1; text-align: center; padding: 1.5rem 0; background: var(--cream); }
   .hero-item__b { padding: .8rem .9rem 1rem; display: flex; flex-direction: column; flex: 1; }
-  .hero-item__row { display: flex; align-items: baseline; justify-content: space-between; gap: .5rem; }
-  .hero-item__name { font-family: var(--font-display); text-transform: uppercase; font-size: 1.04rem; color: var(--ink); line-height: 1.05; }
+  .hero-item__row { display: flex; align-items: baseline; justify-content: space-between; gap: .5rem; min-height: 2.3rem; }
+  .hero-item__name { font-family: var(--font-display); text-transform: uppercase; font-size: 1.04rem; color: var(--ink); line-height: 1.05; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   .hero-item__price { font-family: var(--font-display); color: var(--red); font-size: 1.04rem; white-space: nowrap; }
-  .hero-item__desc { color: var(--muted-dark); font-size: .82rem; line-height: 1.4; margin: .35rem 0 .7rem; flex: 1; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .hero-item__desc { color: var(--muted-dark); font-size: .82rem; line-height: 1.4; margin: .35rem 0 .7rem; height: 3.4rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
   /* Per-card "Commander ▾" dropdown: Takeout (our order page) + delivery */
   .hero-item__cmd { margin-top: .75rem; }
   .hero-item__cmd-btn { width: 100%; display: flex; align-items: center; justify-content: center; gap: .4rem; cursor: pointer; border: 0; border-radius: 9px; padding: .58rem .8rem; background: var(--red); color: #fff; font-family: var(--font-display); text-transform: uppercase; letter-spacing: .04em; font-size: .9rem; }
@@ -66,10 +73,7 @@
   .deliver-btn--dd { background: #FF3008; }
   .deliver-btn:hover { filter: brightness(1.07); }
 </style>
-<section class="hero"<%= _heroSlides.length > 1 ? ' data-hero-slider' : '' %>>
-  <% _heroSlides.forEach(function(_s, _i){ %>
-  <img class="hero-bg hero-slide<%= _i === 0 ? ' is-active' : '' %>" src="<%= cimg(_s, 'f_auto,q_auto,w_1800,c_fill,g_auto') %>" alt="<%= settings.business_name || t.brand %> — <%= t.brand_tag %>"<%- _i > 0 ? ' loading="lazy"' : '' %>>
-  <% }); %>
+<section class="hero hero--solid">
   <div class="hero-overlay"></div>
   <div class="container">
     <div class="hero-inner">
