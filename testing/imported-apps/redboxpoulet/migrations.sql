@@ -94,3 +94,16 @@ INSERT INTO admin_settings (key, value) VALUES ('contact_phone', '(514) 886-4545
   ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value WHERE admin_settings.value IS NULL OR admin_settings.value = '';
 INSERT INTO admin_settings (key, value) VALUES ('contact_email', 'info@redboxpoulet.ca')
   ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value WHERE admin_settings.value IS NULL OR admin_settings.value = '';
+
+-- ===========================================================================
+-- Hero slider default — curated from our existing brand visuals (hero scene,
+-- ambiance, action, gold-standard tenders macro), one BARE Cloudinary URL per
+-- line. The home hero crossfades through these; cimg() injects the transform at
+-- render. Fill-if-empty so the slider ships populated, but an operator's own
+-- slide list (set in Admin → Bannière défilante) is never overwritten.
+-- ===========================================================================
+INSERT INTO admin_settings (key, value) VALUES ('hero_slides', 'https://res.cloudinary.com/duhp69meg/image/upload/v1782232050/redboxpoulet/site/hero.png
+https://res.cloudinary.com/duhp69meg/image/upload/v1782232050/redboxpoulet/site/vibe.png
+https://res.cloudinary.com/duhp69meg/image/upload/v1782232052/redboxpoulet/site/action.png
+https://res.cloudinary.com/duhp69meg/image/upload/v1782232188/redboxpoulet/site/tenders_macro_1782232188334.png')
+  ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value WHERE admin_settings.value IS NULL OR admin_settings.value = '';
