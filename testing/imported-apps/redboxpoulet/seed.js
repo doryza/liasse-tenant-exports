@@ -9,7 +9,9 @@ module.exports = async function(db, services) {
   const settingsDefault = [
     ['business_name', cfg.businessName || cfg.displayName || 'RED BOX'],
     ['tagline', 'Le poulet le plus croustillant en ville.'],
-    ['seo_description', 'RED BOX — Poulet Nashville. Le poulet frit réinventé : extrêmement croustillant, jamais gras. Filets de poulet premium, frites ondulées et sauce signature, dans la boîte rouge iconique. Terrebonne, QC.'],
+    ['seo_description', 'RED BOX — Poulet Nashville à Terrebonne. Le poulet frit réinventé : filets premium ultra croustillants, jamais gras, frites ondulées et sauce signature. Commandez pour emporter ou en livraison.'],
+    ['seo_description_fr', 'RED BOX — Poulet Nashville à Terrebonne. Le poulet frit réinventé : filets premium ultra croustillants, jamais gras, frites ondulées et sauce signature. Commandez pour emporter ou en livraison.'],
+    ['seo_description_en', 'RED BOX — Nashville hot chicken in Terrebonne. Fried chicken reinvented: premium ultra-crispy tenders, never greasy, wavy fries and our signature sauce. Order takeout or delivery.'],
     ['contact_email', cfg.contactEmail || 'info@redboxpoulet.ca'],
     ['contact_phone', cfg.contactPhone || '(514) 886-4545'],
     ['business_address', cfg.businessAddress || '110-2790 Boul. de la Pinière, Terrebonne, QC J6X 0G4'],

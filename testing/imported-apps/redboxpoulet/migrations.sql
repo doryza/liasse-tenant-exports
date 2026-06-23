@@ -21,7 +21,13 @@ INSERT INTO admin_settings (key, value) VALUES ('_p_nav_logo_url', 'https://res.
 INSERT INTO admin_settings (key, value) VALUES ('_p_footer_logo_url', 'https://res.cloudinary.com/duhp69meg/image/upload/v1782232049/redboxpoulet/site/logo_white.png') ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value;
 
 -- Home page imagery
-INSERT INTO admin_settings (key, value) VALUES ('_p_hero_image_url', 'https://res.cloudinary.com/duhp69meg/image/upload/v1782232050/redboxpoulet/site/hero.png') ON CONFLICT (key) DO NOTHING;
+-- OG / social-share image (og:image, 1200x630) and SEO meta description were
+-- changed to inferior values via the dashboard; DO UPDATE force-restores them.
+-- (_p_hero_image_url now feeds OG/meta only — the home hero is a solid background.)
+INSERT INTO admin_settings (key, value) VALUES ('_p_hero_image_url', 'https://res.cloudinary.com/duhp69meg/image/upload/v1782232050/redboxpoulet/site/hero.png') ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value;
+INSERT INTO admin_settings (key, value) VALUES ('seo_description_fr', 'RED BOX — Poulet Nashville à Terrebonne. Le poulet frit réinventé : filets premium ultra croustillants, jamais gras, frites ondulées et sauce signature. Commandez pour emporter ou en livraison.') ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value;
+INSERT INTO admin_settings (key, value) VALUES ('seo_description_en', 'RED BOX — Nashville hot chicken in Terrebonne. Fried chicken reinvented: premium ultra-crispy tenders, never greasy, wavy fries and our signature sauce. Order takeout or delivery.') ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value;
+INSERT INTO admin_settings (key, value) VALUES ('seo_description', 'RED BOX — Poulet Nashville à Terrebonne. Le poulet frit réinventé : filets premium ultra croustillants, jamais gras, frites ondulées et sauce signature. Commandez pour emporter ou en livraison.') ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value;
 INSERT INTO admin_settings (key, value) VALUES ('_p_story_image_url', 'https://res.cloudinary.com/duhp69meg/image/upload/v1782232050/redboxpoulet/site/vibe.png') ON CONFLICT (key) DO NOTHING;
 INSERT INTO admin_settings (key, value) VALUES ('_p_feature_family_url', 'https://res.cloudinary.com/duhp69meg/image/upload/v1782232051/redboxpoulet/site/packaging.png') ON CONFLICT (key) DO NOTHING;
 INSERT INTO admin_settings (key, value) VALUES ('_p_feature_burger_url', 'https://res.cloudinary.com/duhp69meg/image/upload/v1782232052/redboxpoulet/site/action.png') ON CONFLICT (key) DO NOTHING;
