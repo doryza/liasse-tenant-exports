@@ -35,7 +35,11 @@
 
   .vip-steps, .vip-perks { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; margin-top: 2.6rem; }
   .vip-box { background: var(--char); border: 1px solid var(--line-dark); border-radius: var(--radius); padding: 1.8rem; }
-  .vip-box .num { font-family: var(--font-display); color: var(--red-bright); font-size: 1.05rem; letter-spacing: .12em; }
+  /* Big graphical step badges — easy as 1, 2, 3. */
+  .vip-box .num { font-family: var(--font-display); display: inline-flex; align-items: center; justify-content: center;
+    width: 4rem; height: 4rem; border-radius: 999px; background: linear-gradient(150deg, var(--red-bright), var(--red-deep));
+    color: #fff; font-size: 2.3rem; line-height: 1; padding-top: .12em; margin-bottom: .85rem;
+    border: 3px solid var(--gold); box-shadow: 0 10px 26px rgba(225,19,19,.5); }
   .vip-box h3 { font-family: var(--font-display); text-transform: uppercase; margin: .55rem 0 .5rem; font-size: 1.35rem; color: var(--text-light); }
   .vip-box p { color: var(--muted-light); margin: 0; }
 
