@@ -1,0 +1,160 @@
+<%- include('partials/header', { activeNav: 'vip', pageTitle: (lang === 'en' ? 'VIP keychain' : 'Porte-clés VIP') }) %>
+<%
+  var _kc = settings._p_vip_keychain_url || 'https://res.cloudinary.com/duhp69meg/image/upload/v1782234336/ChatGPT_Image_Jun_23__2026__01_02_19_PM-removebg-preview_vzmfev.png';
+%>
+
+<style>
+  /* ---- VIP keychain landing (scoped) ---- */
+  .vip-hero { position: relative; overflow: hidden; }
+  .vip-hero::before { content: ''; position: absolute; inset: 0; background:
+      radial-gradient(60% 50% at 18% 30%, rgba(225,19,19,.22), transparent 60%),
+      radial-gradient(55% 45% at 85% 75%, rgba(255,198,41,.12), transparent 60%);
+    pointer-events: none; }
+  .vip-grid { position: relative; display: grid; grid-template-columns: 1.05fr .95fr; gap: 3rem; align-items: center; }
+  .vip-title { font-family: var(--font-display); text-transform: uppercase; letter-spacing: .01em;
+    font-size: clamp(2.6rem, 7.5vw, 5rem); line-height: .92; color: var(--text-light); margin: .4rem 0 1.1rem; }
+  .vip-title .hl { color: var(--gold); }
+  .vip-sub { color: var(--muted-light); font-size: 1.12rem; max-width: 34rem; }
+  .vip-ctas { display: flex; flex-wrap: wrap; gap: .9rem; margin-top: 1.8rem; }
+
+  .vip-stage { position: relative; width: min(440px, 84vw); aspect-ratio: 1; margin: 0 auto; }
+  .vip-ring { position: absolute; border-radius: 50%; inset: 0; }
+  .vip-ring--1 { border: 2px solid rgba(225,19,19,.30); animation: vipspin 12s linear infinite; }
+  .vip-ring--2 { inset: 13%; border: 2px dashed rgba(255,198,41,.22); animation: vipspin 18s linear infinite reverse; }
+  .vip-kc { position: absolute; inset: 0; display: grid; place-items: center; animation: vipfloat 6s ease-in-out infinite; }
+  .vip-kc img { width: 78%; height: 78%; object-fit: contain; filter: drop-shadow(0 26px 55px rgba(225,19,19,.5)); }
+
+  .vip-card { position: absolute; background: rgba(34,26,22,.86); -webkit-backdrop-filter: blur(7px); backdrop-filter: blur(7px);
+    border: 1px solid var(--line-dark); border-radius: 14px; padding: .6rem .95rem; box-shadow: 0 14px 34px rgba(0,0,0,.45); text-align: left; }
+  .vip-card .l { font-family: var(--font-display); text-transform: uppercase; letter-spacing: .16em; font-size: .62rem; color: var(--muted-light); }
+  .vip-card .v { font-family: var(--font-display); font-size: 1.55rem; line-height: 1; }
+  .vip-card--deals { top: 6%; right: -3%; animation: vipbob 4.5s ease-in-out infinite; }
+  .vip-card--deals .v { color: var(--gold); }
+  .vip-card--disc { bottom: 13%; left: -3%; animation: vipbob 5.4s ease-in-out infinite .6s; }
+  .vip-card--disc .v { color: var(--red-bright); }
+
+  .vip-steps, .vip-perks { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; margin-top: 2.6rem; }
+  .vip-box { background: var(--char); border: 1px solid var(--line-dark); border-radius: var(--radius); padding: 1.8rem; }
+  .vip-box .num { font-family: var(--font-display); color: var(--red-bright); font-size: 1.05rem; letter-spacing: .12em; }
+  .vip-box h3 { font-family: var(--font-display); text-transform: uppercase; margin: .55rem 0 .5rem; font-size: 1.35rem; color: var(--text-light); }
+  .vip-box p { color: var(--muted-light); margin: 0; }
+
+  .vip-note { display: inline-flex; gap: .55rem; align-items: center; border: 1px solid rgba(225,19,19,.35);
+    background: rgba(225,19,19,.10); color: #f7c9c9; padding: .7rem 1.15rem; border-radius: 999px; font-weight: 700; font-size: .92rem; }
+
+  @keyframes vipfloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-16px); } }
+  @keyframes vipbob   { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+  @keyframes vipspin  { to { transform: rotate(360deg); } }
+
+  @media (max-width: 860px) {
+    .vip-grid { grid-template-columns: 1fr; text-align: center; }
+    .vip-sub { margin-left: auto; margin-right: auto; }
+    .vip-ctas { justify-content: center; }
+    .vip-stage { margin-top: 2.5rem; }
+  }
+  @media (max-width: 720px) { .vip-steps, .vip-perks { grid-template-columns: 1fr; } }
+  @media (prefers-reduced-motion: reduce) {
+    .vip-kc, .vip-card, .vip-ring { animation: none !important; }
+  }
+</style>
+
+<!-- ============================ HERO ============================ -->
+<section class="band band--black vip-hero">
+  <div class="container">
+    <div class="vip-grid">
+      <div class="vip-copy">
+        <span class="eyebrow"><%= t.vip_eyebrow %></span>
+        <h1 class="vip-title"><%= t.vip_title_1 %> <span class="hl"><%= t.vip_title_hl %></span> <%= t.vip_title_2 %></h1>
+        <p class="vip-sub"><%= t.vip_sub %></p>
+        <div class="vip-ctas">
+          <a class="btn btn-gold btn-lg" href="menu"><%= t.vip_cta_menu %></a>
+          <a class="btn btn-outline" href="#how"><%= t.vip_how_link %></a>
+        </div>
+      </div>
+
+      <div class="vip-stage" aria-hidden="false">
+        <span class="vip-ring vip-ring--1"></span>
+        <span class="vip-ring vip-ring--2"></span>
+        <div class="vip-kc">
+          <img src="<%= cimg(_kc, 'f_auto,q_auto,w_700') %>" alt="<%= t.vip_keychain_alt %>">
+        </div>
+        <div class="vip-card vip-card--deals">
+          <div class="l"><%= t.vip_deals_label %></div>
+          <div class="v"><%= t.vip_deals_value %></div>
+        </div>
+        <div class="vip-card vip-card--disc">
+          <div class="l"><%= t.vip_disc_label %></div>
+          <div class="v"><%= t.vip_disc_value %></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================= HOW IT WORKS ========================= -->
+<section class="band band--black" id="how">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow center"><%= t.vip_how_eyebrow %></span>
+      <h2 class="section-title"><%= t.vip_how_title %></h2>
+      <p class="section-sub"><%= t.vip_how_sub %></p>
+    </div>
+    <div class="vip-steps">
+      <article class="vip-box">
+        <div class="num">01</div>
+        <h3><%= t.vip_s1_t %></h3>
+        <p><%= t.vip_s1_d %></p>
+      </article>
+      <article class="vip-box">
+        <div class="num">02</div>
+        <h3><%= t.vip_s2_t %></h3>
+        <p><%= t.vip_s2_d %></p>
+      </article>
+      <article class="vip-box">
+        <div class="num">03</div>
+        <h3><%= t.vip_s3_t %></h3>
+        <p><%= t.vip_s3_d %></p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ PERKS ============================ -->
+<section class="band band--black">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow center"><%= t.vip_perks_eyebrow %></span>
+      <h2 class="section-title"><%= t.vip_perks_title %></h2>
+    </div>
+    <div class="vip-perks">
+      <article class="vip-box">
+        <h3><%= t.vip_p1_t %></h3>
+        <p><%= t.vip_p1_d %></p>
+      </article>
+      <article class="vip-box">
+        <h3><%= t.vip_p2_t %></h3>
+        <p><%= t.vip_p2_d %></p>
+      </article>
+      <article class="vip-box">
+        <h3><%= t.vip_p3_t %></h3>
+        <p><%= t.vip_p3_d %></p>
+      </article>
+    </div>
+    <div class="center" style="margin-top:2.4rem">
+      <span class="vip-note">🔑 <%= t.vip_exclusive %></span>
+    </div>
+  </div>
+</section>
+
+<!-- ========================= CTA STRIP ========================= -->
+<section class="band band--red">
+  <div class="container center">
+    <h2 class="section-title"><%= t.vip_cta_title %></h2>
+    <p class="section-sub" style="margin-left:auto;margin-right:auto"><%= t.vip_cta_sub %></p>
+    <div class="cta-strip" style="margin-top:1.8rem">
+      <a class="btn btn-gold btn-lg" href="<%= mapLink || 'contact' %>"><%= t.menu_cta_btn %></a>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

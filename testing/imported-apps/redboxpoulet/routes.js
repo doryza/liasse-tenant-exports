@@ -90,7 +90,30 @@ module.exports = function(services) {
       // Forms (shared)
       form_sending: 'Envoi…', form_error: 'Une erreur est survenue. Réessayez ou écrivez-nous directement par courriel.',
       form_required: 'Veuillez remplir les champs requis.',
-      ct_success: 'Merci ! Votre message a bien été envoyé.'
+      ct_success: 'Merci ! Votre message a bien été envoyé.',
+
+      // VIP keychain (exclusive program)
+      vip_eyebrow: 'Programme VIP',
+      vip_title_1: 'Le porte-clés', vip_title_hl: 'VIP', vip_title_2: 'RED BOX.',
+      vip_sub: "Procurez-vous-en un gratuitement avec votre premier repas à votre RED BOX. Tapez-le sur votre téléphone pour débloquer des offres et rabais réservés aux membres — accessibles uniquement avec le porte-clés.",
+      vip_cta_menu: 'Voir le menu', vip_how_link: 'Comment ça marche',
+      vip_deals_label: 'Offres', vip_deals_value: 'BOGO',
+      vip_disc_label: 'Rabais', vip_disc_value: '15 %',
+      vip_keychain_alt: 'Porte-clés NFC VIP RED BOX',
+      vip_how_eyebrow: 'Comment ça marche',
+      vip_how_title: 'Trois taps vers vos privilèges.',
+      vip_how_sub: 'De votre première visite à une vie de récompenses.',
+      vip_s1_t: 'Obtenez le vôtre en magasin', vip_s1_d: "Recevez votre porte-clés VIP gratuitement avec votre premier repas à votre RED BOX — la seule façon d'en obtenir un.",
+      vip_s2_t: 'Tapez pour débloquer', vip_s2_d: 'Tapez le porte-clés sur votre téléphone — aucune application à installer — pour ouvrir vos offres VIP.',
+      vip_s3_t: 'Économisez à chaque visite', vip_s3_d: "Profitez d'offres et de rabais réservés aux membres sur votre poulet préféré, encore et encore.",
+      vip_perks_eyebrow: 'Réservé aux membres',
+      vip_perks_title: 'Des privilèges exclusifs.',
+      vip_p1_t: 'Offres BOGO', vip_p1_d: "Des offres « un acheté, un gratuit » réservées aux porteurs du porte-clés.",
+      vip_p2_t: 'Rabais de 15 %', vip_p2_d: 'Un pourcentage de rabais exclusif, activé directement depuis votre porte-clés.',
+      vip_p3_t: 'Accès en primeur', vip_p3_d: 'Priorité sur les nouveautés et les offres à durée limitée.',
+      vip_exclusive: 'Non vendu — le porte-clés VIP est remis uniquement en magasin avec votre premier repas.',
+      vip_cta_title: 'Prêt à devenir VIP ?',
+      vip_cta_sub: 'Passez à votre RED BOX, commandez votre premier repas et repartez avec votre porte-clés.'
     },
     en: {
       brand: 'RED BOX', brand_tag: 'Nashville Chicken',
@@ -167,7 +190,30 @@ module.exports = function(services) {
 
       form_sending: 'Sending…', form_error: 'Something went wrong. Try again or email us directly.',
       form_required: 'Please fill in the required fields.',
-      ct_success: 'Thank you! Your message has been sent.'
+      ct_success: 'Thank you! Your message has been sent.',
+
+      // VIP keychain (exclusive program)
+      vip_eyebrow: 'VIP program',
+      vip_title_1: 'The RED BOX', vip_title_hl: 'VIP', vip_title_2: 'keychain.',
+      vip_sub: 'Pick one up free with your first meal at your local RED BOX. Tap it on your phone to unlock member-only deals and discounts — available only with the keychain.',
+      vip_cta_menu: 'See the menu', vip_how_link: 'How it works',
+      vip_deals_label: 'Deals', vip_deals_value: 'BOGO',
+      vip_disc_label: 'Discounts', vip_disc_value: '15%',
+      vip_keychain_alt: 'RED BOX VIP NFC keychain',
+      vip_how_eyebrow: 'How it works',
+      vip_how_title: 'Three taps to your perks.',
+      vip_how_sub: 'From your first visit to a lifetime of rewards.',
+      vip_s1_t: 'Grab yours in-store', vip_s1_d: 'Get your VIP keychain free with your first meal at your local RED BOX — the only way to get one.',
+      vip_s2_t: 'Tap to unlock', vip_s2_d: 'Tap the keychain on your phone — no app to install — to open your VIP offers.',
+      vip_s3_t: 'Save every visit', vip_s3_d: 'Redeem member-only deals and discounts on your favourite chicken, again and again.',
+      vip_perks_eyebrow: 'Members only',
+      vip_perks_title: 'Exclusive perks.',
+      vip_p1_t: 'BOGO deals', vip_p1_d: 'Buy-one-get-one offers reserved for keychain holders.',
+      vip_p2_t: '15% discounts', vip_p2_d: 'Exclusive percentage off, activated straight from your keychain.',
+      vip_p3_t: 'Early access', vip_p3_d: 'First dibs on new items and limited-time specials.',
+      vip_exclusive: 'Not for sale — the VIP keychain is only handed out in-store with your first meal.',
+      vip_cta_title: 'Ready to go VIP?',
+      vip_cta_sub: 'Drop by your local RED BOX, order your first meal, and leave with your keychain.'
     }
   };
 
@@ -287,6 +333,13 @@ module.exports = function(services) {
   router.get('/contact', async function(req, res) {
     try { res.render('contact', await renderCtx(req)); }
     catch(e) { console.error('contact error:', e.message); res.status(500).send('Erreur'); }
+  });
+
+  // Exclusive VIP keychain landing (reached by tapping the in-store NFC keychain;
+  // intentionally not in the main nav).
+  router.get('/vip', async function(req, res) {
+    try { res.render('vip', await renderCtx(req)); }
+    catch(e) { console.error('vip error:', e.message); res.status(500).send('Erreur'); }
   });
 
   // ===========================================================================
