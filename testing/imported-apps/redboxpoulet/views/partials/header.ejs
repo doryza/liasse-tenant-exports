@@ -64,6 +64,7 @@
       <a class="nav-link<%= _active==='promesse'?' active':'' %>"<%- _active==='promesse' ? ' aria-current="page"' : '' %> href="promesse"><%= t.nav_promise %></a>
       <a class="nav-link<%= _active==='franchise'?' active':'' %>"<%- _active==='franchise' ? ' aria-current="page"' : '' %> href="franchise"><%= t.nav_franchise %></a>
       <a class="nav-link<%= _active==='contact'?' active':'' %>"<%- _active==='contact' ? ' aria-current="page"' : '' %> href="contact"><%= t.nav_contact %></a>
+      <a class="nav-link<%= _active==='vip'?' active':'' %>"<%- _active==='vip' ? ' aria-current="page"' : '' %> href="vip" style="color:var(--gold)">★ <%= t.nav_vip %></a>
     </nav>
     <div class="nav-actions">
       <a class="lang-toggle" href="?lang=<%= lang === 'en' ? 'fr' : 'en' %>" aria-label="<%= lang === 'en' ? 'Passer au français' : 'Switch to English' %>"><%= lang === 'en' ? 'FR' : 'EN' %></a>
@@ -87,6 +88,7 @@
     <a class="m-link" href="promesse"><%= t.nav_promise %></a>
     <a class="m-link" href="franchise"><%= t.nav_franchise %></a>
     <a class="m-link" href="contact"><%= t.nav_contact %></a>
+    <a class="m-link" href="vip" style="color:var(--gold)">★ <%= t.nav_vip %></a>
     <a class="btn btn-gold btn-block" style="margin-top:1.2rem" href="menu"><%= t.order %></a>
     <div class="mobile-nav__lang">
       <a href="?lang=fr" class="<%= lang === 'fr' ? 'active' : '' %>">Français</a>
