@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#6366f1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title><%= (typeof settings!=='undefined' && settings.business_name) ? settings.business_name : 'ASCENSION' %> — <%= (typeof pageTitle!=='undefined') ? pageTitle : 'Protocole du Chasseur' %></title>
+<meta name="description" content="<%= (typeof settings!=='undefined' && settings.tagline) ? settings.tagline : 'Réveille le chasseur en toi.' %>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="public/css/styles.css">
+</head>
+<body>
+<header class="nav">
+  <div class="nav-inner">
+    <a href="." class="brand">
+      <% var _logo = (typeof settings!=='undefined' && settings._p_nav_logo_url) ? settings._p_nav_logo_url : (typeof appIconUrl!=='undefined' ? appIconUrl : ''); %>
+      <% if (_logo) { %><img src="<%= _logo %>" alt="logo" class="brand-mark"><% } %>
+      <span class="brand-name"><%= (typeof settings!=='undefined' && settings.business_name) ? settings.business_name : 'ASCENSION' %></span>
+    </a>
+    <nav class="nav-links" id="navLinks">
+      <a href=".">Accueil</a>
+      <a href="routine">Routine</a>
+      <a href="progression">Progression</a>
+      <a href="journal">Journal</a>
+      <a href="systeme">Le Système</a>
+      <a href="progression" class="nav-cta" data-auth-only style="display:none">Mon statut</a>
+      <a href="#" class="nav-cta" data-login-btn>Connexion</a>
+    </nav>
+    <button class="nav-toggle" id="navToggle" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</header>
+<script>
+(function(){ var t=document.getElementById('navToggle'), n=document.getElementById('navLinks'); if(t&&n){ t.addEventListener('click', function(){ n.classList.toggle('open'); t.classList.toggle('active'); }); } })();
+</script>

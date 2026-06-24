@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ASCENSION — Messages</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body>
+<div class="admin-layout">
+<%- include('partials/admin-sidebar') %>
+<main class="admin-main">
+ <button class="admin-burger" onclick="document.querySelector('.admin-sidebar').classList.toggle('open')">Menu</button>
+ <header class="admin-head"><div><h1>Messages reçus</h1><p>Les messages envoyés depuis le formulaire de contact du site.</p></div></header>
+ <div id="subsList" class="subs-list"><p class="muted2">Chargement…</p></div>
+ <div id="subsEmpty" class="empty-state" style="display:none">Aucun message reçu pour le moment.</div>
+</main>
+</div>
+<script>
+(function(){
+  function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  fetch('api/admin/submissions').then(function(r){ return r.json(); }).then(function(j){
+    var subs=(j&&j.submissions)||[];
+    var box=document.getElementById('subsList');
+    if(!subs.length){ box.innerHTML=''; document.getElementById('subsEmpty').style.display='block'; return; }
+    var h='';
+    subs.forEach(function(s){
+      var dt=''; try{ dt=new Date(s.created_at).toLocaleString('fr-FR'); }catch(e){}
+      h+="<div class='sub-card'><div class='sub-head'><strong>"+esc(s.name||'Anonyme')+"</strong><span class='muted2'>"+esc(dt)+"</span></div>";
+      if(s.email){ h+="<a class='sub-email' href='mailto:"+esc(s.email)+"'>"+esc(s.email)+"</a>"; }
+      h+="<p class='sub-msg'>"+esc(s.message||'')+"</p></div>";
+    });
+    box.innerHTML=h;
+  }).catch(function(){ document.getElementById('subsList').innerHTML=''; document.getElementById('subsEmpty').style.display='block'; });
+})();
+</script>
+</body>
+</html>

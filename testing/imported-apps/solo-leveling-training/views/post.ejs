@@ -1,0 +1,22 @@
+<%- include('partials/header') %>
+<div class="wrap">
+<article class="container section-sm" style="padding-top:2.5rem;max-width:760px">
+ <a href="journal" class="muted" style="font-size:.85rem">← Tout le journal</a>
+ <% if (post.category) { %><div style="margin-top:1rem"><span class="chip"><%= post.category %></span></div><% } %>
+ <h1 style="font-size:clamp(2rem,5vw,3rem);margin:.8rem 0"><%= post.title %></h1>
+ <p class="muted"><%= formatDate(post.created_at) %></p>
+ <% if (post.image_url) { %><img src="<%= post.image_url %>" alt="<%= post.title %>" style="width:100%;margin:1.5rem 0;border:1px solid rgba(99,102,241,.25);clip-path:polygon(16px 0,100% 0,100% calc(100% - 16px),calc(100% - 16px) 100%,0 100%,0 16px)"><% } %>
+ <div class="article-body"><% (post.content || '').split('\n').forEach(function(par){ if (par.trim()) { %><p style="margin:1rem 0;color:#cdd4ee"><%= par %></p><% } }); %></div>
+</article>
+<% if (related && related.length) { %>
+<section class="container section-sm" style="padding-bottom:4rem">
+ <div class="sec-head"><div class="eyebrow">[ À lire aussi ]</div></div>
+ <div class="grid g3" style="margin-top:1rem">
+  <% related.forEach(function(p){ %>
+   <a href="journal/<%= p.id %>" class="day-card"><% if (p.image_url) { %><img class="day-thumb" src="<%= p.image_url %>" alt="<%= p.title %>"><% } %><div class="day-body"><h3 style="font-size:1rem"><%= p.title %></h3></div></a>
+  <% }); %>
+ </div>
+</section>
+<% } %>
+</div>
+<%- include('partials/footer') %>

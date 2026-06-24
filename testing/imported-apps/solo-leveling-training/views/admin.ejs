@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ASCENSION — Console</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body>
+<div class="admin-layout">
+<%- include('partials/admin-sidebar') %>
+<main class="admin-main">
+ <button class="admin-burger" onclick="document.querySelector('.admin-sidebar').classList.toggle('open')">Menu</button>
+ <header class="admin-head"><div><h1>Tableau de bord</h1><p>Gère ton protocole d'entraînement et suis l'activité des chasseurs.</p></div><a href="." target="_blank" class="abtn abtn-ghost">Voir le site ↗</a></header>
+ <div class="stat-grid">
+   <div class="stat-card"><div class="sc-num"><%= stats.userCount %></div><div class="sc-lbl">Chasseurs inscrits</div></div>
+   <div class="stat-card"><div class="sc-num"><%= stats.completionsCount %></div><div class="sc-lbl">Quêtes complétées</div></div>
+   <div class="stat-card"><div class="sc-num"><%= stats.pushSubscriberCount %></div><div class="sc-lbl">Abonnés notifications</div></div>
+   <div class="stat-card"><div class="sc-num"><%= stats.totalVisits %></div><div class="sc-lbl">Visites totales</div></div>
+   <div class="stat-card"><div class="sc-num"><%= stats.recentVisits %></div><div class="sc-lbl">Visites (7 j)</div></div>
+   <div class="stat-card"><div class="sc-num"><%= stats.submissionsCount %></div><div class="sc-lbl">Messages reçus</div></div>
+ </div>
+ <div class="admin-cols">
+   <section class="admin-panel">
+     <h2>Gestion du contenu</h2>
+     <div class="quick-links">
+       <a href="admin/posts"><span class="ql-label">Journal du Système</span> <span class="ql-count"><%= stats.postsCount %></span></a>
+       <a href="admin/routine_days"><span class="ql-label">Jours de la routine</span> <span class="ql-count"><%= stats.daysCount %></span></a>
+       <a href="admin/exercises"><span class="ql-label">Exercices (quêtes)</span> <span class="ql-count"><%= stats.exercisesCount %></span></a>
+       <a href="admin/settings"><span class="ql-label">Réglages du site</span> <span class="ql-count">⚙</span></a>
+       <a href="admin/submissions"><span class="ql-label">Messages reçus</span> <span class="ql-count"><%= stats.submissionsCount %></span></a>
+     </div>
+   </section>
+   <section class="admin-panel">
+     <h2>Dernières quêtes complétées</h2>
+     <% if (recent && recent.length) { %>
+       <ul class="mini-list">
+       <% recent.forEach(function(r){ %><li><span><%= DAY_NAMES[r.day_index] || 'Quête' %></span><span class="muted2">+<%= r.xp_gained %> XP · <%= formatDate(r.completed_at) %></span></li><% }); %>
+       </ul>
+     <% } else { %><p class="muted2">Aucune quête complétée pour l'instant.</p><% } %>
+   </section>
+   <section class="admin-panel">
+     <h2>Messages récents</h2>
+     <% if (subs && subs.length) { %>
+       <ul class="mini-list">
+       <% subs.forEach(function(s){ %><li><span><%= s.name || 'Anonyme' %></span><span class="muted2"><%= (s.message || '').slice(0,40) %></span></li><% }); %>
+       </ul>
+       <a href="admin/submissions" class="panel-link">Tous les messages →</a>
+     <% } else { %><p class="muted2">Aucun message reçu.</p><% } %>
+   </section>
+ </div>
+</main>
+</div>
+</body>
+</html>

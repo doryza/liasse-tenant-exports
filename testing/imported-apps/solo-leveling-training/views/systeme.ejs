@@ -1,0 +1,54 @@
+<%- include('partials/header') %>
+<div class="wrap">
+<section class="container section-sm" style="padding-top:2.5rem">
+ <div class="hero-grid" style="align-items:center">
+   <div>
+     <div class="eyebrow">[ Le Système ]</div>
+     <h1 style="font-size:clamp(2rem,5vw,3rem);margin:.5rem 0">Réveille le chasseur en toi</h1>
+     <p style="color:#cdd4ee"><%= settings.about_text || "ASCENSION transforme ton entraînement en un protocole de montée en puissance inspiré des chasseurs. Chaque semaine, le Système te confie sept quêtes." %></p>
+   </div>
+   <div class="hero-media"><img class="hero-img" style="height:100%;min-height:320px" src="<%= settings._p_about_image_url ? settings._p_about_image_url : 'https://placehold.co/800x600/0a0e1a/6366f1/png?text=Le+Systeme' %>" alt="Le Système"></div>
+ </div>
+</section>
+<section class="container section-sm">
+ <div class="grid g3">
+   <div class="swin"><div class="step-num">1</div><h3>Une routine qui se régénère</h3><p class="muted">Ta semaine d'entraînement se répète, mais les protocoles tournent automatiquement chaque semaine pour casser la monotonie.</p></div>
+   <div class="swin"><div class="step-num">2</div><h3>Gagne de l'XP</h3><p class="muted">Chaque quête complétée rapporte de l'expérience. Plus tu es régulier, plus ta série grandit.</p></div>
+   <div class="swin"><div class="step-num">3</div><h3>Monte en rang</h3><p class="muted">Du rang E au rang S — chaque palier de niveau te rapproche du statut de Monarque.</p></div>
+ </div>
+</section>
+<section class="container section-sm">
+ <div class="swin">
+   <div class="eyebrow">[ Mécanique des variations ]</div>
+   <h2 style="margin:.6rem 0">Pourquoi ça ne devient jamais ennuyeux</h2>
+   <p class="muted" style="max-width:62ch">Chaque jour de la semaine possède plusieurs protocoles (Alpha, Bêta, Gamma...). Le Système sélectionne automatiquement celui de la semaine en cours et fait tourner les autres au fil des semaines. Tu refais la même structure — mais jamais exactement les mêmes exercices.</p>
+ </div>
+</section>
+<section class="container section-sm">
+ <div class="sec-head"><div class="eyebrow">[ Échelle des rangs ]</div><h2>Les six rangs</h2></div>
+ <div class="grid g3" style="margin-top:1.2rem">
+  <% ranks.forEach(function(r){ %>
+   <div class="swin" style="display:flex;align-items:center;gap:1rem"><div class="rankbadge" style="width:58px;height:66px;font-size:1.4rem;border-color:<%= r.color %>;color:<%= r.color %>"><%= r.label %></div><div><h3 style="font-size:1.05rem"><%= r.name %></h3><p class="muted" style="font-size:.85rem">Niveau <%= r.minLevel %>+</p></div></div>
+  <% }); %>
+ </div>
+</section>
+<section class="container section-sm" style="padding-bottom:4rem">
+ <div class="hero-grid" style="align-items:start">
+  <div>
+   <div class="eyebrow">[ Contact ]</div>
+   <h2 style="margin:.6rem 0">Une question pour le Système ?</h2>
+   <p class="muted">Écris-nous, nous te répondrons.</p>
+   <% if (settings.contact_email) { %><p style="margin-top:.6rem"><strong>Courriel :</strong> <%= settings.contact_email %></p><% } %>
+   <% if (settings.contact_phone) { %><p><strong>Téléphone :</strong> <%= settings.contact_phone %></p><% } %>
+  </div>
+  <form id="contactForm" class="swin">
+    <div class="fld"><label>Nom</label><input id="cName" type="text" required placeholder="Ton nom de chasseur"></div>
+    <div class="fld"><label>Courriel</label><input id="cEmail" type="email" placeholder="toi@exemple.com"></div>
+    <div class="fld"><label>Message</label><textarea id="cMsg" rows="4" required placeholder="Ton message..."></textarea></div>
+    <button type="submit" class="btn btn-primary btn-block" style="background-color:#6366f1;color:#fff">Envoyer au Système</button>
+    <p id="contactMsg" style="display:none;margin-top:.8rem;color:#34d399">Message transmis. Le Système te répondra bientôt.</p>
+  </form>
+ </div>
+</section>
+</div>
+<%- include('partials/footer') %>

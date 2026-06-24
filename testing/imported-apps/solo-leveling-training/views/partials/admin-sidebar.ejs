@@ -1,0 +1,15 @@
+<aside class="admin-sidebar">
+  <div class="asb-brand">ASCENSION<span>Console du Système</span></div>
+  <nav class="asb-nav">
+    <a href="admin" class="<%= active==='dashboard' ? 'active' : '' %>">Tableau de bord</a>
+    <a href="admin/posts" class="<%= active==='posts' ? 'active' : '' %>">Journal</a>
+    <a href="admin/routine_days" class="<%= active==='routine_days' ? 'active' : '' %>">Jours de la routine</a>
+    <a href="admin/exercises" class="<%= active==='exercises' ? 'active' : '' %>">Exercices</a>
+    <a href="admin/settings" class="<%= active==='settings' ? 'active' : '' %>">Réglages</a>
+    <a href="admin/submissions" class="<%= active==='submissions' ? 'active' : '' %>">Messages</a>
+  </nav>
+  <div class="asb-foot">
+    <a href="." target="_blank">Voir le site ↗</a>
+    <a href="admin/logout">Déconnexion</a>
+  </div>
+</aside>

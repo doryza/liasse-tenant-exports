@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ASCENSION — Réglages</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body>
+<div class="admin-layout">
+<%- include('partials/admin-sidebar') %>
+<main class="admin-main">
+ <button class="admin-burger" onclick="document.querySelector('.admin-sidebar').classList.toggle('open')">Menu</button>
+ <header class="admin-head"><div><h1>Réglages du site</h1><p>Modifie les textes d'accueil, les coordonnées et les images affichées sur le site public.</p></div></header>
+ <div class="settings-card">
+   <form id="settingsForm" class="settings-form"><p class="muted2">Chargement…</p></form>
+ </div>
+</main>
+</div>
+<script>
+window.__SETTINGS_FIELDS=[
+ {name:'business_name',label:'Nom du site',type:'text'},
+ {name:'tagline',label:'Slogan',type:'text'},
+ {name:'hero_subtitle',label:"Sous-titre de la page d'accueil",type:'textarea'},
+ {name:'about_text',label:"Texte de la page « Le Système »",type:'textarea'},
+ {name:'contact_email',label:'Courriel de contact',type:'email'},
+ {name:'contact_phone',label:'Téléphone de contact',type:'text'},
+ {name:'_p_hero_image_url',label:"Image d'accueil (héros)",type:'image'},
+ {name:'_p_about_image_url',label:"Image de la page « Le Système »",type:'image'}
+];
+</script>
+<script src="public/js/admin-settings.js"></script>
+</body>
+</html>

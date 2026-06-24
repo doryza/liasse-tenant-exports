@@ -1,0 +1,70 @@
+<%- include('partials/header') %>
+<div class="wrap">
+<section class="container section-sm" style="padding-top:2.5rem">
+ <a href="routine" class="muted" style="font-size:.85rem">← Retour au donjon</a>
+ <div class="hero-grid" style="margin-top:1rem;align-items:stretch">
+   <div class="swin" style="display:flex;flex-direction:column;justify-content:center">
+     <div class="eyebrow">[ <%= dayName %><%= day.day_index===todayIndex ? " • Aujourd'hui" : "" %> ]</div>
+     <h1 style="font-size:clamp(1.8rem,4vw,2.6rem);margin:.5rem 0"><%= day.title %></h1>
+     <% if (day.focus) { %><p class="muted"><%= day.focus %></p><% } %>
+     <% if (day.description) { %><p style="margin:.8rem 0;color:#cdd4ee"><%= day.description %></p><% } %>
+     <div class="tag-row" style="display:flex;gap:.5rem;flex-wrap:wrap;margin:.6rem 0">
+       <% if (day.rank_label) { %><span class="chip chip-gold"><%= day.rank_label %></span><% } %>
+       <span class="chip"><%= exercises.length %> exercices</span>
+       <span class="chip chip-gold"><%= xpTotal %> XP</span>
+       <% if (count > 1) { %><span class="chip">Protocole <%= curVar+1 %>/<%= count %></span><% } %>
+     </div>
+     <button class="btn btn-primary <%= completed ? 'is-done' : '' %>" data-complete-day="<%= day.day_index %>" <%= completed ? 'disabled' : '' %> style="background-color:#6366f1;color:#fff;margin-top:.6rem"><%= completed ? 'Quête complétée ✓' : 'Terminer la quête' %></button>
+   </div>
+   <div class="hero-media">
+     <img class="hero-img" style="height:100%;min-height:300px" src="<%= day.image_url ? day.image_url : ('https://placehold.co/800x600/0a0e1a/6366f1/png?text=' + encodeURIComponent(day.title)) %>" alt="<%= day.title %>">
+   </div>
+ </div>
+</section>
+<section class="container section-sm">
+ <div class="sec-head"><div class="eyebrow">[ Protocole actif<%= (exercises.length && exercises[0].variation_label) ? (' — ' + exercises[0].variation_label) : '' %> ]</div><h2>Les exercices</h2></div>
+ <div class="swin" style="margin-top:1.2rem">
+  <% if (exercises.length) { %>
+   <% exercises.forEach(function(e, i){ %>
+     <div class="ex-row">
+       <div class="ex-idx"><%= i+1 %></div>
+       <div style="flex:1">
+         <h3 style="font-size:1.05rem"><%= e.name %></h3>
+         <div class="ex-meta">
+           <% if (e.sets) { %><span><b><%= e.sets %></b> séries</span><% } %>
+           <% if (e.reps) { %><span><b><%= e.reps %></b> reps</span><% } %>
+           <% if (e.rest_seconds) { %><span>repos <b><%= e.rest_seconds %>s</b></span><% } %>
+           <span><b>+<%= e.xp_reward %></b> XP</span>
+         </div>
+         <% if (e.notes) { %><p class="muted" style="font-size:.9rem;margin-top:.4rem"><%= e.notes %></p><% } %>
+       </div>
+     </div>
+   <% }); %>
+  <% } else { %>
+   <p class="muted">Journée de récupération — pas d'exercices imposés. Repos, étirements légers et hydratation.</p>
+  <% } %>
+ </div>
+</section>
+<% if (allVariations && allVariations.length > 1) { %>
+<section class="container section-sm">
+ <div class="sec-head"><div class="eyebrow">[ Rotation ]</div><h2>Toutes les variations</h2><p class="muted">La routine alterne entre ces protocoles chaque semaine.</p></div>
+ <div class="grid g3" style="margin-top:1.2rem">
+  <% allVariations.forEach(function(v){ %>
+   <div class="swin <%= v.index===curVar ? 'swin-glow' : '' %>">
+     <div class="eyebrow"><%= v.index===curVar ? '● Actif — ' : '' %><%= v.label %></div>
+     <ul class="ex-mini" style="margin-top:.6rem">
+       <% v.exercises.forEach(function(e){ %><li><span><%= e.name %></span><b><%= e.sets || '' %><%= (e.sets && e.reps) ? '×' : '' %><%= e.reps || '' %></b></li><% }); %>
+     </ul>
+   </div>
+  <% }); %>
+ </div>
+</section>
+<% } %>
+<section class="container section-sm" style="padding-bottom:4rem">
+ <div style="display:flex;justify-content:space-between;gap:1rem">
+   <a href="jour/<%= (day.day_index+6)%7 %>" class="btn btn-ghost btn-sm">← Jour précédent</a>
+   <a href="jour/<%= (day.day_index+1)%7 %>" class="btn btn-ghost btn-sm">Jour suivant →</a>
+ </div>
+</section>
+</div>
+<%- include('partials/footer') %>

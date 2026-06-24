@@ -1,0 +1,506 @@
+{
+  "exportedAt": "2026-06-24T00:46:44.382Z",
+  "tables": {
+    "admin_invites": {
+      "columns": [
+        "id",
+        "email",
+        "token",
+        "role",
+        "status",
+        "invited_by",
+        "expires_at",
+        "accepted_at",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_users": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "password_hash",
+        "display_name",
+        "role",
+        "active",
+        "activation_token",
+        "invited_by",
+        "invite_token",
+        "invite_expires_at",
+        "last_login_at",
+        "is_active",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_webauthn_credentials": {
+      "columns": [
+        "id",
+        "admin_user_id",
+        "credential_id",
+        "public_key",
+        "counter",
+        "device_name",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_settings": {
+      "columns": [
+        "key",
+        "value",
+        "updated_at"
+      ],
+      "totalRows": 30,
+      "sampleRows": [
+        {
+          "key": "tagline",
+          "value": "Réveille le chasseur en toi.",
+          "updated_at": "2026-06-24T00:46:22.086Z"
+        },
+        {
+          "key": "hero_subtitle",
+          "value": "Suis le protocole d'ascension. Une routine hebdomadaire qui se régénère chaque semaine pour forger le chasseur en toi.",
+          "updated_at": "2026-06-24T00:46:22.092Z"
+        },
+        {
+          "key": "about_text",
+          "value": "ASCENSION transforme ton entraînement en un protocole de montée en puissance inspiré des chasseurs. Chaque semaine, le Système te confie sept quêtes. Complète-les, gagne de l'expérience et grimpe les rangs, du rang E jusqu'au légendaire rang S.",
+          "updated_at": "2026-06-24T00:46:22.098Z"
+        },
+        {
+          "key": "business_name",
+          "value": "ASCENSION",
+          "updated_at": "2026-06-24T00:46:22.105Z"
+        },
+        {
+          "key": "_p_hero_image_url",
+          "value": "https://res.cloudinary.com/duhp69meg/image/upload/v1782260716/tapavis_tenant_solo-leveling-training/build_solo-leveling-training_1782260716069.png",
+          "updated_at": "2026-06-24T00:46:22.110Z"
+        },
+        {
+          "key": "_p_about_image_url",
+          "value": "https://res.cloudinary.com/duhp69meg/image/upload/v1782260715/tapavis_tenant_solo-leveling-training/build_solo-leveling-training_1782260715016.png",
+          "updated_at": "2026-06-24T00:46:22.118Z"
+        },
+        {
+          "key": "_seed_version",
+          "value": "7d44647c4490",
+          "updated_at": "2026-06-24T00:46:22.790Z"
+        },
+        {
+          "key": "_seeded_at",
+          "value": "2026-06-24 00:46:22.797178+00",
+          "updated_at": "2026-06-24T00:46:22.797Z"
+        },
+        {
+          "key": "_p_seo_title_fr",
+          "value": "ASCENSION — Routine d'entraînement du Chasseur",
+          "updated_at": "2026-06-24T00:46:22.958Z"
+        },
+        {
+          "key": "_p_seo_source_title_fr",
+          "value": "ai",
+          "updated_at": "2026-06-24T00:46:22.964Z"
+        }
+      ]
+    },
+    "site_visits": {
+      "columns": [
+        "id",
+        "path",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "posts": {
+      "columns": [
+        "id",
+        "title",
+        "content",
+        "image_url",
+        "category",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 5,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Le Système t'a choisi",
+          "content": "Bienvenue, Joueur.\n\nTu viens d'être éveillé. À partir d'aujourd'hui, ton entraînement n'est plus une corvée : c'est une série de quêtes. Chaque jour de la semaine ouvre une nouvelle porte, et chaque quête complétée te rapporte de l'expérience.\n\nTon objectif est simple : ne jamais refuser une quête. La régularité est la seule véritable arme du chasseur.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1782260716/tapavis_tenant_solo-leveling-training/build_solo-leveling-training_1782260716704.png",
+          "category": "Annonce",
+          "published": 1,
+          "created_at": "2026-06-24T00:46:22.674Z",
+          "updated_at": "2026-06-24T00:46:22.674Z"
+        },
+        {
+          "id": 2,
+          "title": "Comment fonctionne la montée en rang",
+          "content": "Ton niveau augmente avec l'XP que tu accumules en complétant des quêtes.\n\nLes rangs vont de E (Éveillé) à S (Monarque). Chaque palier de niveau te fait progresser dans la hiérarchie des chasseurs. Plus tu es constant, plus ta série de jours grandit — et avec elle, ta discipline.\n\nVise un palier à la fois. Le rang S n'est pas un sprint, c'est une ascension.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1782260713/tapavis_tenant_solo-leveling-training/build_solo-leveling-training_1782260713798.png",
+          "category": "Conseil",
+          "published": 1,
+          "created_at": "2026-06-24T00:46:22.680Z",
+          "updated_at": "2026-06-24T00:46:22.680Z"
+        },
+        {
+          "id": 3,
+          "title": "Nutrition du chasseur : le carburant du mana",
+          "content": "Aucun chasseur ne progresse sans énergie. Hydrate-toi avant, pendant et après chaque quête.\n\nPrivilégie des protéines à chaque repas pour réparer tes muscles, des glucides complexes pour soutenir l'effort, et des légumes pour la récupération. Le sommeil reste ta meilleure potion de régénération : vise 7 à 8 heures par nuit.",
+          "image_url": null,
+          "category": "Conseil",
+          "published": 1,
+          "created_at": "2026-06-24T00:46:22.686Z",
+          "updated_at": "2026-06-24T00:46:22.686Z"
+        },
+        {
+          "id": 4,
+          "title": "Mise à jour : les variations hebdomadaires",
+          "content": "Le Système a évolué. Chaque jour possède désormais plusieurs protocoles (Alpha, Bêta, Gamma...).\n\nLa structure de ta semaine reste la même, mais les exercices tournent automatiquement d'une semaine à l'autre. Résultat : tu ne fais jamais exactement le même entraînement deux semaines de suite, et ton corps continue de progresser.",
+          "image_url": null,
+          "category": "Mise à jour",
+          "published": 1,
+          "created_at": "2026-06-24T00:46:22.692Z",
+          "updated_at": "2026-06-24T00:46:22.692Z"
+        },
+        {
+          "id": 5,
+          "title": "Récit : la première porte",
+          "content": "La première porte est toujours la plus lourde à franchir.\n\nLe premier jour, chaque répétition semble impossible. Le deuxième, un peu moins. Au bout d'une semaine, le doute commence à reculer. Le chasseur n'est pas celui qui n'a jamais peur — c'est celui qui franchit la porte malgré la peur. Franchis la tienne aujourd'hui.",
+          "image_url": null,
+          "category": "Récit",
+          "published": 1,
+          "created_at": "2026-06-24T00:46:22.698Z",
+          "updated_at": "2026-06-24T00:46:22.698Z"
+        }
+      ]
+    },
+    "routine_days": {
+      "columns": [
+        "id",
+        "day_index",
+        "title",
+        "focus",
+        "description",
+        "rank_label",
+        "base_xp",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 7,
+      "sampleRows": [
+        {
+          "id": 1,
+          "day_index": 0,
+          "title": "Éveil de la Force",
+          "focus": "Haut du corps",
+          "description": "Active les muscles du haut du corps pour bâtir une base solide de chasseur.",
+          "rank_label": "Donjon de rang E",
+          "base_xp": 60,
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1782260716/tapavis_tenant_solo-leveling-training/build_solo-leveling-training_1782260716698.png",
+          "created_at": "2026-06-24T00:46:22.129Z",
+          "updated_at": "2026-06-24T00:46:22.129Z"
+        },
+        {
+          "id": 2,
+          "day_index": 1,
+          "title": "Course du Chasseur",
+          "focus": "Cardio & endurance",
+          "description": "Augmente ton endurance pour survivre aux donjons les plus longs.",
+          "rank_label": "Donjon de rang D",
+          "base_xp": 55,
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1782260713/tapavis_tenant_solo-leveling-training/build_solo-leveling-training_1782260713586.png",
+          "created_at": "2026-06-24T00:46:22.137Z",
+          "updated_at": "2026-06-24T00:46:22.137Z"
+        },
+        {
+          "id": 3,
+          "day_index": 2,
+          "title": "Forge des Jambes",
+          "focus": "Bas du corps",
+          "description": "Forge des jambes capables de te propulser hors du danger.",
+          "rank_label": "Donjon de rang D",
+          "base_xp": 65,
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1782260716/tapavis_tenant_solo-leveling-training/build_solo-leveling-training_1782260716163.png",
+          "created_at": "2026-06-24T00:46:22.144Z",
+          "updated_at": "2026-06-24T00:46:22.144Z"
+        },
+        {
+          "id": 4,
+          "day_index": 3,
+          "title": "Récupération Active",
+          "focus": "Mobilité & souplesse",
+          "description": "Régénère ton corps avec mobilité, étirements profonds et respiration.",
+          "rank_label": "Repos actif",
+          "base_xp": 30,
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1782260713/tapavis_tenant_solo-leveling-training/build_solo-leveling-training_1782260713853.png",
+          "created_at": "2026-06-24T00:46:22.153Z",
+          "updated_at": "2026-06-24T00:46:22.153Z"
+        },
+        {
+          "id": 5,
+          "day_index": 4,
+          "title": "Noyau de Mana",
+          "focus": "Gainage & abdos",
+          "description": "Renforce ton noyau — la source de toute ta puissance.",
+          "rank_label": "Donjon de rang C",
+          "base_xp": 60,
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1782260715/tapavis_tenant_solo-leveling-training/build_solo-leveling-training_1782260715843.png",
+          "created_at": "2026-06-24T00:46:22.159Z",
+          "updated_at": "2026-06-24T00:46:22.159Z"
+        },
+        {
+          "id": 6,
+          "day_index": 5,
+          "title": "Raid du Boss",
+          "focus": "Corps entier · HIIT",
+          "description": "Affronte le boss de la semaine : un entraînement complet et intense.",
+          "rank_label": "Donjon de rang B",
+          "base_xp": 80,
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1782260716/tapavis_tenant_solo-leveling-training/build_solo-leveling-training_1782260716121.png",
+          "created_at": "2026-06-24T00:46:22.166Z",
+          "updated_at": "2026-06-24T00:46:22.166Z"
+        },
+        {
+          "id": 7,
+          "day_index": 6,
+          "title": "Repos du Monarque",
+          "focus": "Récupération totale",
+          "description": "Le Monarque se repose. Hydratation, sommeil et préparation mentale.",
+          "rank_label": "Sanctuaire",
+          "base_xp": 20,
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1782260713/tapavis_tenant_solo-leveling-training/build_solo-leveling-training_1782260713853.png",
+          "created_at": "2026-06-24T00:46:22.174Z",
+          "updated_at": "2026-06-24T00:46:22.174Z"
+        }
+      ]
+    },
+    "exercises": {
+      "columns": [
+        "id",
+        "day_index",
+        "variation_index",
+        "variation_label",
+        "name",
+        "sets",
+        "reps",
+        "rest_seconds",
+        "notes",
+        "xp_reward",
+        "order_index",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 74,
+      "sampleRows": [
+        {
+          "id": 1,
+          "day_index": 0,
+          "variation_index": 0,
+          "variation_label": "Protocole Alpha",
+          "name": "Pompes classiques",
+          "sets": "4",
+          "reps": "12-15",
+          "rest_seconds": 60,
+          "notes": "Corps gainé, descends jusqu'à frôler le sol.",
+          "xp_reward": 15,
+          "order_index": 0,
+          "image_url": null,
+          "created_at": "2026-06-24T00:46:22.181Z",
+          "updated_at": "2026-06-24T00:46:22.181Z"
+        },
+        {
+          "id": 2,
+          "day_index": 0,
+          "variation_index": 0,
+          "variation_label": "Protocole Alpha",
+          "name": "Tractions assistées",
+          "sets": "4",
+          "reps": "6-10",
+          "rest_seconds": 90,
+          "notes": "Tire avec le dos, contrôle la descente.",
+          "xp_reward": 20,
+          "order_index": 1,
+          "image_url": null,
+          "created_at": "2026-06-24T00:46:22.189Z",
+          "updated_at": "2026-06-24T00:46:22.189Z"
+        },
+        {
+          "id": 3,
+          "day_index": 0,
+          "variation_index": 0,
+          "variation_label": "Protocole Alpha",
+          "name": "Dips sur chaise",
+          "sets": "3",
+          "reps": "10-12",
+          "rest_seconds": 60,
+          "notes": "Coudes vers l'arrière, épaules basses.",
+          "xp_reward": 15,
+          "order_index": 2,
+          "image_url": null,
+          "created_at": "2026-06-24T00:46:22.196Z",
+          "updated_at": "2026-06-24T00:46:22.196Z"
+        },
+        {
+          "id": 4,
+          "day_index": 0,
+          "variation_index": 0,
+          "variation_label": "Protocole Alpha",
+          "name": "Pompes piquées",
+          "sets": "3",
+          "reps": "8-10",
+          "rest_seconds": 60,
+          "notes": "Bassin haut, vise les épaules.",
+          "xp_reward": 15,
+          "order_index": 3,
+          "image_url": null,
+          "created_at": "2026-06-24T00:46:22.202Z",
+          "updated_at": "2026-06-24T00:46:22.202Z"
+        },
+        {
+          "id": 5,
+          "day_index": 0,
+          "variation_index": 1,
+          "variation_label": "Protocole Bêta",
+          "name": "Pompes diamant",
+          "sets": "4",
+          "reps": "10-12",
+          "rest_seconds": 60,
+          "notes": "Mains rapprochées, cible les triceps.",
+          "xp_reward": 15,
+          "order_index": 0,
+          "image_url": null,
+          "created_at": "2026-06-24T00:46:22.209Z",
+          "updated_at": "2026-06-24T00:46:22.209Z"
+        },
+        {
+          "id": 6,
+          "day_index": 0,
+          "variation_index": 1,
+          "variation_label": "Protocole Bêta",
+          "name": "Rowing élastique",
+          "sets": "4",
+          "reps": "12",
+          "rest_seconds": 60,
+          "notes": "Serre les omoplates en fin de mouvement.",
+          "xp_reward": 15,
+          "order_index": 1,
+          "image_url": null,
+          "created_at": "2026-06-24T00:46:22.215Z",
+          "updated_at": "2026-06-24T00:46:22.215Z"
+        },
+        {
+          "id": 7,
+          "day_index": 0,
+          "variation_index": 1,
+          "variation_label": "Protocole Bêta",
+          "name": "Pompes inclinées",
+          "sets": "3",
+          "reps": "15",
+          "rest_seconds": 45,
+          "notes": "Mains surélevées pour plus de volume.",
+          "xp_reward": 12,
+          "order_index": 2,
+          "image_url": null,
+          "created_at": "2026-06-24T00:46:22.224Z",
+          "updated_at": "2026-06-24T00:46:22.224Z"
+        },
+        {
+          "id": 8,
+          "day_index": 0,
+          "variation_index": 1,
+          "variation_label": "Protocole Bêta",
+          "name": "Élévations latérales",
+          "sets": "3",
+          "reps": "15",
+          "rest_seconds": 45,
+          "notes": "Mouvement lent, sans élan.",
+          "xp_reward": 12,
+          "order_index": 3,
+          "image_url": null,
+          "created_at": "2026-06-24T00:46:22.234Z",
+          "updated_at": "2026-06-24T00:46:22.234Z"
+        },
+        {
+          "id": 9,
+          "day_index": 0,
+          "variation_index": 2,
+          "variation_label": "Protocole Gamma",
+          "name": "Pompes larges",
+          "sets": "4",
+          "reps": "12",
+          "rest_seconds": 60,
+          "notes": "Mains plus larges que les épaules.",
+          "xp_reward": 15,
+          "order_index": 0,
+          "image_url": null,
+          "created_at": "2026-06-24T00:46:22.240Z",
+          "updated_at": "2026-06-24T00:46:22.240Z"
+        },
+        {
+          "id": 10,
+          "day_index": 0,
+          "variation_index": 2,
+          "variation_label": "Protocole Gamma",
+          "name": "Tractions négatives",
+          "sets": "4",
+          "reps": "5",
+          "rest_seconds": 90,
+          "notes": "Descends en 5 secondes.",
+          "xp_reward": 20,
+          "order_index": 1,
+          "image_url": null,
+          "created_at": "2026-06-24T00:46:22.248Z",
+          "updated_at": "2026-06-24T00:46:22.248Z"
+        }
+      ]
+    },
+    "quest_completions": {
+      "columns": [
+        "id",
+        "user_id",
+        "day_index",
+        "variation_index",
+        "week_number",
+        "xp_gained",
+        "completed_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "hunter_stats": {
+      "columns": [
+        "user_id",
+        "total_xp",
+        "completions",
+        "current_streak",
+        "longest_streak",
+        "last_completed_date",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "form_submissions": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "message",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    }
+  }
+}

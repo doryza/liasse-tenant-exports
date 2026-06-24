@@ -1,0 +1,57 @@
+<%- include('partials/header') %>
+<div class="wrap">
+<section class="container section-sm" style="padding-top:2.5rem">
+ <div class="eyebrow">[ Statut du chasseur ]</div>
+ <h1 style="font-size:clamp(2rem,5vw,3rem);margin:.5rem 0">Ta progression</h1>
+</section>
+<section class="container">
+ <div data-hunter-locked class="swin" style="text-align:center;padding:3rem 1.5rem">
+   <div class="eyebrow">[ Accès restreint ]</div>
+   <h2 style="margin:.8rem 0">Réveille ton statut</h2>
+   <p class="muted" style="max-width:42ch;margin:0 auto 1.5rem">Connecte-toi pour suivre ton niveau, ton rang et ta série de quêtes complétées.</p>
+   <a href="#" class="btn btn-primary" data-login-btn style="background-color:#6366f1;color:#fff">Se connecter</a>
+ </div>
+ <div data-hunter-active style="display:none">
+   <div class="swin swin-glow" style="display:flex;flex-wrap:wrap;gap:2rem;align-items:center">
+     <div class="rankbadge" data-rank-color><span data-stat="rank">E</span></div>
+     <div style="flex:1;min-width:260px">
+       <div class="eyebrow">Niveau <span data-stat="level">1</span> — <span data-stat="rankname">Éveillé</span></div>
+       <div class="xpbar" style="margin:.8rem 0"><i data-stat="xpbar" style="width:0%"></i></div>
+       <div class="muted"><span data-stat="xp">0</span> XP • prochain palier <span data-stat="next">100</span> XP</div>
+     </div>
+   </div>
+   <div class="grid g3" style="margin-top:1.5rem">
+     <div class="swin tac"><div class="stat-big" data-stat="streak">0</div><div class="eyebrow">Série actuelle</div></div>
+     <div class="swin tac"><div class="stat-big" data-stat="longest">0</div><div class="eyebrow">Meilleure série</div></div>
+     <div class="swin tac"><div class="stat-big" data-stat="completions">0</div><div class="eyebrow">Quêtes complétées</div></div>
+   </div>
+ </div>
+</section>
+<section class="container section-sm">
+ <div class="sec-head"><div class="eyebrow">[ Semaine en cours ]</div><h2>Tes quêtes de la semaine</h2></div>
+ <div class="grid g4" style="margin-top:1.2rem">
+  <% if (days && days.length) { days.forEach(function(d){ %>
+   <a href="jour/<%= d.day_index %>" class="day-check" data-day-check="<%= d.day_index %>">
+     <div class="check-mark">✓</div>
+     <div><div class="daynum"><%= DAY_NAMES[d.day_index] %></div><div style="font-size:.92rem"><%= d.title %></div></div>
+   </a>
+  <% }); } %>
+ </div>
+</section>
+<section class="container section-sm">
+ <div class="sec-head"><div class="eyebrow">[ Journal de bord ]</div><h2>Historique des quêtes</h2></div>
+ <div class="swin" id="historyBox" style="margin-top:1.2rem"><p class="muted">Connecte-toi pour voir ton historique.</p></div>
+</section>
+<section class="container section-sm" style="padding-bottom:4rem">
+ <div class="sec-head"><div class="eyebrow">[ Échelle des rangs ]</div><h2>Les rangs de chasseur</h2></div>
+ <div class="grid g3" style="margin-top:1.2rem">
+  <% ranks.forEach(function(r){ %>
+   <div class="swin" style="display:flex;align-items:center;gap:1rem">
+     <div class="rankbadge" style="width:64px;height:72px;font-size:1.6rem;border-color:<%= r.color %>;color:<%= r.color %>"><%= r.label %></div>
+     <div><h3 style="font-size:1.1rem"><%= r.name %></h3><p class="muted" style="font-size:.88rem">Niveau <%= r.minLevel %>+</p></div>
+   </div>
+  <% }); %>
+ </div>
+</section>
+</div>
+<%- include('partials/footer') %>

@@ -1,0 +1,43 @@
+<%- include('partials/header') %>
+<div class="wrap">
+<section class="container section-sm" style="padding-top:2.5rem">
+ <div class="eyebrow">[ Semaine <%= week %> ]</div>
+ <h1 style="font-size:clamp(2rem,5vw,3rem);margin:.6rem 0">Le Donjon de la semaine</h1>
+ <p class="muted" style="max-width:56ch">Complète chaque quête pour gagner de l'XP. Les protocoles tournent automatiquement chaque semaine — voici ceux actifs en ce moment.</p>
+</section>
+<section class="container" style="padding-bottom:4rem">
+ <% if (days && days.length) { %>
+ <div class="grid g2">
+  <% days.forEach(function(d){ %>
+   <div class="day-card <%= d.day_index===todayIndex ? 'today' : '' %>" data-day-card="<%= d.day_index %>">
+    <% if (d.image_url) { %><img class="day-thumb" src="<%= d.image_url %>" alt="<%= d.title %>"><% } %>
+    <div class="day-body">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem">
+        <div>
+          <div class="daynum"><%= DAY_NAMES[d.day_index] %><%= d.day_index===todayIndex ? " • Aujourd'hui" : "" %></div>
+          <h3 style="margin:.3rem 0"><%= d.title %></h3>
+        </div>
+        <% if (d.rank_label) { %><span class="chip chip-gold"><%= d.rank_label %></span><% } %>
+      </div>
+      <% if (d.variationLabel) { %><div class="eyebrow" style="margin:.3rem 0">Protocole actif : <%= d.variationLabel %></div><% } %>
+      <p class="muted" style="font-size:.9rem;margin:.3rem 0 .8rem"><%= d.focus || '' %></p>
+      <% if (d.exercises.length) { %>
+        <ul class="ex-mini">
+        <% d.exercises.forEach(function(e){ %><li><span><%= e.name %></span><b><%= e.sets || '' %><%= (e.sets && e.reps) ? ' × ' : '' %><%= e.reps || '' %></b></li><% }); %>
+        </ul>
+      <% } else { %><p class="muted" style="font-size:.9rem">Journée de repos. Récupère, hydrate-toi, prépare ton mental.</p><% } %>
+      <div style="display:flex;gap:.6rem;align-items:center;margin-top:1rem;flex-wrap:wrap">
+        <span class="chip"><%= d.xpTotal %> XP</span>
+        <a href="jour/<%= d.day_index %>" class="btn btn-ghost btn-sm">Détails</a>
+        <button class="btn btn-primary btn-sm" data-complete-day="<%= d.day_index %>" style="background-color:#6366f1;color:#fff">Terminer la quête</button>
+      </div>
+    </div>
+   </div>
+  <% }); %>
+ </div>
+ <% } else { %>
+  <div class="swin" style="text-align:center"><p class="muted">Aucune quête configurée pour l'instant.</p></div>
+ <% } %>
+</section>
+</div>
+<%- include('partials/footer') %>

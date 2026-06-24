@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS admin_settings (key TEXT PRIMARY KEY, value TEXT, updated_at TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS site_visits (id SERIAL PRIMARY KEY, path TEXT, created_at TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS posts (id SERIAL PRIMARY KEY, title TEXT NOT NULL, content TEXT, image_url TEXT, category TEXT, published INTEGER DEFAULT 1, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS routine_days (id SERIAL PRIMARY KEY, day_index INTEGER NOT NULL, title TEXT NOT NULL, focus TEXT, description TEXT, rank_label TEXT, base_xp INTEGER DEFAULT 50, image_url TEXT, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS exercises (id SERIAL PRIMARY KEY, day_index INTEGER NOT NULL, variation_index INTEGER DEFAULT 0, variation_label TEXT, name TEXT NOT NULL, sets TEXT, reps TEXT, rest_seconds INTEGER, notes TEXT, xp_reward INTEGER DEFAULT 10, order_index INTEGER DEFAULT 0, image_url TEXT, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS quest_completions (id SERIAL PRIMARY KEY, user_id INTEGER NOT NULL, day_index INTEGER NOT NULL, variation_index INTEGER, week_number INTEGER NOT NULL, xp_gained INTEGER DEFAULT 0, completed_at TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS hunter_stats (user_id INTEGER PRIMARY KEY, total_xp INTEGER DEFAULT 0, completions INTEGER DEFAULT 0, current_streak INTEGER DEFAULT 0, longest_streak INTEGER DEFAULT 0, last_completed_date DATE, updated_at TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS form_submissions (id SERIAL PRIMARY KEY, name TEXT, email TEXT, message TEXT, created_at TIMESTAMPTZ DEFAULT NOW());

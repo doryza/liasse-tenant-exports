@@ -1,0 +1,93 @@
+{
+  "slug": "solo-leveling-training",
+  "displayName": "Solo leveling training",
+  "description": "Use this app to create my app and make it so the weekly routine repeat itself every week and put more variations: https://routine-ascension.lovable.app/",
+  "status": "active",
+  "generationVersion": 1,
+  "primaryColor": "#6366f1",
+  "iconUrl": "https://res.cloudinary.com/duhp69meg/image/upload/v1782261991/tapavis_tenant_solo-leveling-training/icon_solo-leveling-training_1782261991483.png",
+  "enabledAuthMethods": [
+    "webauthn",
+    "sms",
+    "email"
+  ],
+  "notificationsEnabled": true,
+  "geolocationEnabled": true,
+  "customConfig": {
+    "language": "fr",
+    "businessName": "Solo leveling training",
+    "contactEmail": "venenopro6@gmail.com",
+    "contactPhone": null,
+    "designManifest": {
+      "concept": "Fenêtre du Système",
+      "elements": {
+        "blogSurfaced": true,
+        "pages": [
+          "index",
+          "routine",
+          "jour",
+          "progression",
+          "journal",
+          "post",
+          "systeme"
+        ],
+        "userLogin": true
+      },
+      "iconDirection": "A flat emblem mark: a glowing cyan-indigo holographic gate/window glyph with cut corner brackets on a near-black void ground, evoking a System status panel — geometric, sharp, sci-fi.",
+      "palette": {
+        "accents": [
+          "#22d3ee",
+          "#fbbf24",
+          "#34d399"
+        ],
+        "ground": "#0a0e1a",
+        "ink": "#e8ecf8",
+        "primary": "#6366f1"
+      },
+      "signatureMove": "Angular 'system window' panels with cut clip-path corners, cyan corner-bracket marks and a glow, used everywhere alongside an XP bar, hexagonal rank badge and an animated 'Quête complétée' notification overlay on completion.",
+      "summary": "The interface treats the visitor as a Hunter just awakened by The System, presenting every workout as a holographic blue status-window quest with corner brackets, scan glow and an XP/rank ladder.",
+      "typography": "Orbitron (HUD/system display headings) paired with Rajdhani (condensed humanist sans for body and UI)"
+    },
+    "businessAddress": null
+  },
+  "promptHistory": [
+    {
+      "prompt": "Use this app to create my app and make it so the weekly routine repeat itself every week and put more variations: https://routine-ascension.lovable.app/",
+      "timestamp": "2026-06-24T00:46:40.348Z",
+      "changeNotes": "Built ASCENSION, a Solo Leveling-inspired French training PWA. The weekly routine is fixed (7 days/quests) and repeats every week, but each training day now carries multiple rotating protocols (Alpha/Bêta/Gamma) that the System auto-selects per week so the workout never repeats identically. Includes per-user XP, levels, E→S ranks and streaks, full quest-completion round-trip, a Journal, a contact form, and a complete admin backend for managing days, exercises and posts.\n\nAdmin enrichment: (1) Added a full Settings admin page (views/admin-settings.ejs + public/js/admin-settings.js) that lets the owner edit site texts (slogan, hero subtitle, about text, business name), contact email/phone, and hero/about images (with upload + AI generation) via the existing /api/admin/settings endpoint. (2) Added a dedicated Messages page (views/admin-submissions.ejs) reading /api/admin/submissions with readable message cards. (3) Sidebar now includes Réglages + Messages links with active states. (4) Dashboard rebuilt: richer stat cards (now includes Messages count + completions), restructured quick-links with label/count, and a 'Tous les messages' link. (5) admin.js upgraded: non-blocking toast notifications replace alert(), a live search box + per-select-field filter bar (filter exercises by day & variation, posts by category) with a result counter, image thumbnail column, on/off badges for boolean columns, save-button busy state, clearer confirm + empty states. All existing CRUD (create/edit/delete) for posts, routine_days, exercises preserved and still fully functional from each module page. (6) admin-styles.css extended with toast, filter bar, thumbnail, badge, settings, submissions, hover and focus-visible styles for accessibility. (7) styles.css gained a focus-visible outline rule for keyboard accessibility. No functional data flows, routes, schema, seed data or {{IMG_*}} placeholders were altered; functional offering data (routine days, exercises with XP/rest/sets, base XP) remains admin-managed as before.",
+      "generationId": 1396,
+      "filesModified": [
+        "manifest.json",
+        "migrations.sql",
+        "public/css/admin-styles.css",
+        "public/css/styles.css",
+        "public/js/admin-settings.js",
+        "public/js/admin.js",
+        "public/js/app.js",
+        "routes.js",
+        "schema.sql",
+        "seed.js",
+        "views/admin-exercises.ejs",
+        "views/admin-posts.ejs",
+        "views/admin-routine_days.ejs",
+        "views/admin-settings.ejs",
+        "views/admin-submissions.ejs",
+        "views/admin.ejs",
+        "views/index.ejs",
+        "views/jour.ejs",
+        "views/journal.ejs",
+        "views/partials/admin-sidebar.ejs",
+        "views/partials/footer.ejs",
+        "views/partials/header.ejs",
+        "views/post.ejs",
+        "views/progression.ejs",
+        "views/routine.ejs",
+        "views/systeme.ejs"
+      ]
+    }
+  ],
+  "apiVariables": [],
+  "createdAt": "2026-06-24T00:00:11.720Z",
+  "updatedAt": "2026-06-24T00:46:44.101Z",
+  "exportedAt": "2026-06-24T00:46:44.359Z"
+}

@@ -1,0 +1,101 @@
+<%- include('partials/header') %>
+<div class="wrap">
+<section class="hero container">
+ <div class="hero-grid">
+  <div>
+    <div class="eyebrow">[ Notification du Système ]</div>
+    <% if (settings.hero_title) { %><h1 style="margin-top:.8rem"><%= settings.hero_title %></h1><% } else { %><h1 style="margin-top:.8rem">Tu as été <span class="accent">choisi</span> comme Joueur.</h1><% } %>
+    <p class="hero-sub"><%= settings.hero_subtitle || "Suis le protocole d'ascension. Une routine hebdomadaire qui se régénère chaque semaine pour forger le chasseur en toi." %></p>
+    <div style="display:flex;gap:.8rem;flex-wrap:wrap">
+      <a href="routine" class="btn btn-primary" style="background-color:#6366f1;color:#fff">Commencer le protocole</a>
+      <a href="systeme" class="btn btn-ghost">Comprendre le Système</a>
+    </div>
+  </div>
+  <div class="hero-media">
+    <img class="hero-img" src="<%= settings._p_hero_image_url ? settings._p_hero_image_url : 'https://placehold.co/800x600/0a0e1a/6366f1/png?text=Systeme' %>" alt="Arène d'entraînement du Système">
+    <div class="swin hero-notif">
+      <div class="eyebrow">[ Système ]</div>
+      <p style="margin-top:.4rem;font-weight:600">« Refuser cette quête entraînera une pénalité. »</p>
+    </div>
+  </div>
+ </div>
+</section>
+
+<section class="container section-sm">
+ <div class="swin swin-glow">
+   <div data-hunter-locked style="display:flex;flex-wrap:wrap;align-items:center;gap:1.2rem;justify-content:space-between">
+     <div><div class="eyebrow">[ Statut verrouillé ]</div><h3 style="margin-top:.4rem">Connecte-toi pour réveiller ton statut de chasseur</h3><p class="muted">Suis ta progression, ton niveau et ta série de quêtes.</p></div>
+     <a href="#" class="btn btn-primary" data-login-btn style="background-color:#6366f1;color:#fff">Activer mon statut</a>
+   </div>
+   <div data-hunter-active style="display:none">
+     <div style="display:flex;flex-wrap:wrap;gap:2rem;align-items:center">
+       <div class="rankbadge" data-rank-color><span data-stat="rank">E</span></div>
+       <div style="flex:1;min-width:240px">
+         <div class="eyebrow">Niveau <span data-stat="level">1</span> — <span data-stat="rankname">Éveillé</span></div>
+         <div class="xpbar" style="margin:.7rem 0"><i data-stat="xpbar" style="width:0%"></i></div>
+         <div class="muted" style="font-size:.9rem"><span data-stat="xp">0</span> XP • prochain palier <span data-stat="next">100</span> XP</div>
+       </div>
+       <div style="text-align:center"><div style="font-family:Orbitron;font-size:1.8rem;color:#fbbf24" data-stat="streak">0</div><div class="eyebrow">Série (jours)</div></div>
+     </div>
+   </div>
+ </div>
+</section>
+
+<section class="container section">
+ <div class="sec-head"><div class="eyebrow">[ Donjon hebdomadaire ]</div><h2>Ta routine de la semaine</h2><p class="muted">Sept portes. Chaque semaine, les protocoles changent pour que ton corps ne s'habitue jamais.</p></div>
+ <% if (days && days.length) { %>
+ <div class="grid g4" style="margin-top:2rem">
+  <% days.forEach(function(d){ %>
+   <a href="jour/<%= d.day_index %>" class="day-card <%= d.day_index===todayIndex ? 'today' : '' %>" data-day-card="<%= d.day_index %>">
+     <% if (d.image_url) { %><img class="day-thumb" src="<%= d.image_url %>" alt="<%= d.title %>"><% } %>
+     <div class="day-body">
+       <div class="daynum"><%= DAY_NAMES[d.day_index] %><%= d.day_index===todayIndex ? " • Aujourd'hui" : "" %></div>
+       <h3 style="font-size:1.05rem;margin:.4rem 0"><%= d.title %></h3>
+       <p class="muted" style="font-size:.9rem;flex:1"><%= d.focus || '' %></p>
+       <div class="tag-row" style="margin-top:.7rem;display:flex;gap:.4rem;flex-wrap:wrap">
+         <span class="chip"><%= d.exercises.length %> exos</span>
+         <span class="chip chip-gold"><%= d.xpTotal %> XP</span>
+       </div>
+     </div>
+   </a>
+  <% }); %>
+ </div>
+ <% } else { %>
+  <div class="swin" style="margin-top:2rem;text-align:center"><p class="muted">La routine n'a pas encore été configurée. Reviens bientôt, chasseur.</p></div>
+ <% } %>
+</section>
+
+<section class="container section">
+ <div class="sec-head"><div class="eyebrow">[ Protocole ]</div><h2>Comment fonctionne l'ascension</h2></div>
+ <div class="grid g3" style="margin-top:2rem">
+   <div class="swin"><div class="step-num">1</div><h3>Accepte la quête</h3><p class="muted">Chaque jour ouvre une nouvelle porte d'entraînement, adaptée à un objectif précis.</p></div>
+   <div class="swin"><div class="step-num">2</div><h3>Complète &amp; gagne de l'XP</h3><p class="muted">Termine tes exercices, valide la quête et accumule de l'expérience.</p></div>
+   <div class="swin"><div class="step-num">3</div><h3>Monte en rang</h3><p class="muted">Du rang E au rang S — chaque palier te rapproche du statut de Monarque.</p></div>
+ </div>
+</section>
+
+<% if (posts && posts.length) { %>
+<section class="container section">
+ <div class="sec-head"><div class="eyebrow">[ Journal du Système ]</div><h2>Dernières annonces</h2></div>
+ <div class="grid g3" style="margin-top:2rem">
+  <% posts.forEach(function(p){ %>
+   <a href="journal/<%= p.id %>" class="day-card">
+     <% if (p.image_url) { %><img class="day-thumb" src="<%= p.image_url %>" alt="<%= p.title %>"><% } %>
+     <div class="day-body"><% if (p.category) { %><span class="chip"><%= p.category %></span><% } %><h3 style="font-size:1.05rem;margin:.6rem 0"><%= p.title %></h3><span class="muted" style="font-size:.85rem"><%= formatDate(p.created_at) %></span></div>
+   </a>
+  <% }); %>
+ </div>
+ <div class="tac" style="margin-top:1.5rem"><a href="journal" class="btn btn-ghost">Tout le journal</a></div>
+</section>
+<% } %>
+
+<section class="container section">
+ <div class="swin swin-glow" style="text-align:center;padding:3rem 1.5rem">
+   <div class="eyebrow">[ Dernier avertissement ]</div>
+   <h2 style="margin:.8rem 0;font-size:clamp(1.8rem,4vw,2.8rem)">Le Système ne t'attendra pas.</h2>
+   <p class="muted" style="max-width:46ch;margin:0 auto 1.6rem">Commence aujourd'hui. Chaque semaine complétée te rapproche du rang S.</p>
+   <a href="routine" class="btn btn-primary" style="background-color:#6366f1;color:#fff">Voir le donjon de la semaine</a>
+ </div>
+</section>
+</div>
+<%- include('partials/footer') %>

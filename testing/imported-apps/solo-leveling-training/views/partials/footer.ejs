@@ -1,0 +1,26 @@
+<footer class="footer">
+  <div class="footer-inner">
+    <div>
+      <div class="footer-brand"><%= (typeof settings!=='undefined' && settings.business_name) ? settings.business_name : 'ASCENSION' %></div>
+      <p class="footer-tag"><%= (typeof settings!=='undefined' && settings.tagline) ? settings.tagline : 'Réveille le chasseur en toi.' %></p>
+      <button class="btn btn-ghost" data-push-btn style="margin-top:1rem">Activer les notifications</button>
+    </div>
+    <div>
+      <h4>Protocole</h4>
+      <a href="routine">Routine hebdomadaire</a>
+      <a href="progression">Progression</a>
+      <a href="journal">Journal du Système</a>
+      <a href="systeme">Le Système</a>
+    </div>
+    <div>
+      <h4>Contact</h4>
+      <% if (typeof settings!=='undefined' && settings.contact_email) { %><a href="mailto:<%= settings.contact_email %>"><%= settings.contact_email %></a><% } %>
+      <% if (typeof settings!=='undefined' && settings.contact_phone) { %><a href="tel:<%= settings.contact_phone %>"><%= settings.contact_phone %></a><% } %>
+      <a href="systeme">Nous écrire</a>
+    </div>
+  </div>
+  <div class="footer-bottom">© <%= new Date().getFullYear() %> <%= (typeof settings!=='undefined' && settings.business_name) ? settings.business_name : 'ASCENSION' %> — Le Système ne t'attendra pas.</div>
+</footer>
+<script src="public/js/app.js"></script>
+</body>
+</html>
