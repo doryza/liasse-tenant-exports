@@ -1,0 +1,416 @@
+{
+  "exportedAt": "2026-06-26T13:30:40.133Z",
+  "tables": {
+    "admin_users": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "password_hash",
+        "display_name",
+        "role",
+        "active",
+        "activation_token",
+        "invited_by",
+        "invite_token",
+        "invite_expires_at",
+        "last_login_at",
+        "is_active",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_invites": {
+      "columns": [
+        "id",
+        "email",
+        "token",
+        "role",
+        "status",
+        "invited_by",
+        "expires_at",
+        "accepted_at",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_webauthn_credentials": {
+      "columns": [
+        "id",
+        "admin_user_id",
+        "credential_id",
+        "public_key",
+        "counter",
+        "device_name",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_settings": {
+      "columns": [
+        "key",
+        "value",
+        "updated_at"
+      ],
+      "totalRows": 46,
+      "sampleRows": [
+        {
+          "key": "business_name",
+          "value": "AMS Auto Services",
+          "updated_at": "2026-06-26T13:30:11.289Z"
+        },
+        {
+          "key": "tagline",
+          "value": "Le garage qui vient à vous",
+          "updated_at": "2026-06-26T13:30:11.294Z"
+        },
+        {
+          "key": "hero_kicker",
+          "value": "Mécanique mobile · à domicile",
+          "updated_at": "2026-06-26T13:30:11.300Z"
+        },
+        {
+          "key": "hero_title",
+          "value": "La mécanique vient à vous.",
+          "updated_at": "2026-06-26T13:30:11.305Z"
+        },
+        {
+          "key": "hero_subtitle",
+          "value": "Changement d’huile, freins, entretien préventif et lavage complet — réalisés directement dans votre entrée, sans déplacement au garage.",
+          "updated_at": "2026-06-26T13:30:11.310Z"
+        },
+        {
+          "key": "why_title",
+          "value": "Pourquoi choisir le service à domicile",
+          "updated_at": "2026-06-26T13:30:11.315Z"
+        },
+        {
+          "key": "promise_1",
+          "value": "Aucun déplacement : nous venons à votre domicile ou au travail, à l’heure qui vous convient.",
+          "updated_at": "2026-06-26T13:30:11.320Z"
+        },
+        {
+          "key": "promise_2",
+          "value": "Prix clairs annoncés d’avance : pas de surprise sur la facture.",
+          "updated_at": "2026-06-26T13:30:11.325Z"
+        },
+        {
+          "key": "promise_3",
+          "value": "Travail soigné et garanti par un mécanicien expérimenté de confiance.",
+          "updated_at": "2026-06-26T13:30:11.330Z"
+        },
+        {
+          "key": "about_title",
+          "value": "Une inspection transparente, point par point",
+          "updated_at": "2026-06-26T13:30:11.335Z"
+        }
+      ]
+    },
+    "site_visits": {
+      "columns": [
+        "id",
+        "path",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "posts": {
+      "columns": [
+        "id",
+        "title",
+        "content",
+        "image_url",
+        "category",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 5,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Quand changer l’huile de son moteur ?",
+          "content": "La fréquence dépend de votre véhicule et de votre conduite. Avec une huile synthétique, comptez généralement entre 8 000 et 12 000 km.\n\nSi vous faites beaucoup de courts trajets ou conduisez l’hiver, rapprochez les intervalles. Une huile négligée s’encrasse, perd ses propriétés et use prématurément le moteur.\n\nNotre conseil : gardez une trace de votre dernier changement. Lors de chaque rendez-vous à domicile, nous vous indiquons le prochain kilométrage recommandé.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1782479720/tapavis_tenant_ams-auto-services/build_ams-auto-services_1782479720499.png",
+          "category": "Entretien",
+          "published": 1,
+          "created_at": "2026-06-26T13:30:11.454Z",
+          "updated_at": "2026-06-26T13:30:11.454Z"
+        },
+        {
+          "id": 2,
+          "title": "5 signes que vos freins doivent être remplacés",
+          "content": "1. Un grincement ou un crissement métallique au freinage.\n2. Une pédale qui vibre ou descend plus bas que d’habitude.\n3. Une distance de freinage qui s’allonge.\n4. Un voyant de frein allumé au tableau de bord.\n5. Une usure visible des plaquettes (moins de 3 mm).\n\nDès qu’un de ces signes apparaît, faites inspecter vos freins sans tarder — votre sécurité en dépend.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1782479719/tapavis_tenant_ams-auto-services/build_ams-auto-services_1782479719814.png",
+          "category": "Sécurité",
+          "published": 1,
+          "created_at": "2026-06-26T13:30:11.459Z",
+          "updated_at": "2026-06-26T13:30:11.459Z"
+        },
+        {
+          "id": 3,
+          "title": "Préparer sa voiture pour l’hiver québécois",
+          "content": "L’hiver met votre véhicule à rude épreuve. Avant les grands froids, vérifiez la batterie, le liquide lave-glace antigel, l’état des pneus d’hiver et les essuie-glaces.\n\nUne inspection préventive à l’automne évite bien des pannes par -25 °C. Nous nous déplaçons chez vous pour tout vérifier avant la première tempête.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1782479722/tapavis_tenant_ams-auto-services/build_ams-auto-services_1782479722218.png",
+          "category": "Hiver",
+          "published": 1,
+          "created_at": "2026-06-26T13:30:11.464Z",
+          "updated_at": "2026-06-26T13:30:11.464Z"
+        },
+        {
+          "id": 4,
+          "title": "Pourquoi l’entretien préventif vous fait économiser",
+          "content": "Un petit entretien régulier coûte beaucoup moins cher qu’une grosse réparation imprévue. Changer un filtre, surveiller les fluides et inspecter les freins prolonge la vie de votre véhicule.\n\nNotre fiche d’inspection multipoint vous montre exactement où en est votre auto, sans jargon et sans pression.",
+          "image_url": "",
+          "category": "Entretien",
+          "published": 1,
+          "created_at": "2026-06-26T13:30:11.469Z",
+          "updated_at": "2026-06-26T13:30:11.469Z"
+        },
+        {
+          "id": 5,
+          "title": "Garder l’intérieur de votre auto impeccable",
+          "content": "Un habitacle propre, c’est plus agréable et meilleur pour la valeur de revente. Aspirez régulièrement, protégez le tableau de bord du soleil et traitez rapidement les taches.\n\nPour un grand nettoyage, notre service d’esthétique intérieur redonne à votre voiture un fini comme neuf, directement dans votre entrée.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1782479721/tapavis_tenant_ams-auto-services/build_ams-auto-services_1782479721592.png",
+          "category": "Esthétique",
+          "published": 1,
+          "created_at": "2026-06-26T13:30:11.474Z",
+          "updated_at": "2026-06-26T13:30:11.474Z"
+        }
+      ]
+    },
+    "services": {
+      "columns": [
+        "id",
+        "name",
+        "description",
+        "price",
+        "duration",
+        "category",
+        "image_url",
+        "featured",
+        "sort_order",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 6,
+      "sampleRows": [
+        {
+          "id": 1,
+          "name": "Changement d’huile synthétique",
+          "description": "Vidange complète avec huile synthétique de qualité, remplacement du filtre à huile, vérification des niveaux et inspection visuelle rapide.",
+          "price": "À partir de 89 $",
+          "duration": "45 min",
+          "category": "entretien",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1782479722/tapavis_tenant_ams-auto-services/build_ams-auto-services_1782479722165.png",
+          "featured": 1,
+          "sort_order": 1,
+          "created_at": "2026-06-26T13:30:11.416Z",
+          "updated_at": "2026-06-26T13:30:11.416Z"
+        },
+        {
+          "id": 2,
+          "name": "Inspection & entretien préventif",
+          "description": "Inspection multipoint complète : freins, pneus, fluides, batterie, courroies. On vous remet une fiche claire de l’état du véhicule.",
+          "price": "À partir de 69 $",
+          "duration": "1 h",
+          "category": "entretien",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1782479722/tapavis_tenant_ams-auto-services/build_ams-auto-services_1782479722218.png",
+          "featured": 1,
+          "sort_order": 2,
+          "created_at": "2026-06-26T13:30:11.421Z",
+          "updated_at": "2026-06-26T13:30:11.421Z"
+        },
+        {
+          "id": 3,
+          "name": "Remplacement de freins",
+          "description": "Remplacement des plaquettes et inspection des disques avant ou arrière. Pièces de qualité installées chez vous, en toute sécurité.",
+          "price": "À partir de 199 $",
+          "duration": "1 h 30",
+          "category": "reparation",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1782479722/tapavis_tenant_ams-auto-services/build_ams-auto-services_1782479722698.png",
+          "featured": 1,
+          "sort_order": 3,
+          "created_at": "2026-06-26T13:30:11.427Z",
+          "updated_at": "2026-06-26T13:30:11.427Z"
+        },
+        {
+          "id": 4,
+          "name": "Diagnostic & réparation mineure",
+          "description": "Lecture des codes, diagnostic du problème et réparations mécaniques mineures réalisées sur place lorsque possible.",
+          "price": "Sur devis",
+          "duration": "Variable",
+          "category": "reparation",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1782479722/tapavis_tenant_ams-auto-services/build_ams-auto-services_1782479722218.png",
+          "featured": 0,
+          "sort_order": 4,
+          "created_at": "2026-06-26T13:30:11.433Z",
+          "updated_at": "2026-06-26T13:30:11.433Z"
+        },
+        {
+          "id": 5,
+          "name": "Lavage & esthétique intérieur",
+          "description": "Nettoyage en profondeur de l’habitacle : aspirateur, tableau de bord, vitres, sièges et tapis. Votre intérieur comme neuf.",
+          "price": "À partir de 79 $",
+          "duration": "1 h",
+          "category": "esthetique",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1782479721/tapavis_tenant_ams-auto-services/build_ams-auto-services_1782479721592.png",
+          "featured": 1,
+          "sort_order": 5,
+          "created_at": "2026-06-26T13:30:11.439Z",
+          "updated_at": "2026-06-26T13:30:11.439Z"
+        },
+        {
+          "id": 6,
+          "name": "Lavage & cire extérieur",
+          "description": "Lavage extérieur complet, jantes, et application d’une cire protectrice pour un fini brillant et durable.",
+          "price": "À partir de 59 $",
+          "duration": "45 min",
+          "category": "esthetique",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1782479721/tapavis_tenant_ams-auto-services/build_ams-auto-services_1782479721592.png",
+          "featured": 1,
+          "sort_order": 6,
+          "created_at": "2026-06-26T13:30:11.445Z",
+          "updated_at": "2026-06-26T13:30:11.445Z"
+        }
+      ]
+    },
+    "testimonials": {
+      "columns": [
+        "id",
+        "author",
+        "vehicle",
+        "content",
+        "rating",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "author": "Marie L.",
+          "vehicle": "Honda Civic 2018",
+          "content": "Alexis est venu changer mon huile dans mon entrée pendant que je travaillais. Ponctuel, propre et très professionnel. Je recommande à 100 %.",
+          "rating": 5,
+          "image_url": "",
+          "created_at": "2026-06-26T13:30:11.484Z",
+          "updated_at": "2026-06-26T13:30:11.484Z"
+        },
+        {
+          "id": 2,
+          "author": "Jean-François B.",
+          "vehicle": "Ford F-150 2016",
+          "content": "Remplacement de freins fait à la maison, prix annoncé d’avance respecté. Aucun déplacement au garage, un vrai gain de temps.",
+          "rating": 5,
+          "image_url": "",
+          "created_at": "2026-06-26T13:30:11.489Z",
+          "updated_at": "2026-06-26T13:30:11.489Z"
+        },
+        {
+          "id": 3,
+          "author": "Sophie T.",
+          "vehicle": "Toyota RAV4 2020",
+          "content": "Le lavage intérieur était impeccable, ma voiture sentait le neuf. Service courtois et minutieux.",
+          "rating": 5,
+          "image_url": "",
+          "created_at": "2026-06-26T13:30:11.495Z",
+          "updated_at": "2026-06-26T13:30:11.495Z"
+        },
+        {
+          "id": 4,
+          "author": "Marc-André G.",
+          "vehicle": "Mazda 3 2019",
+          "content": "Inspection préventive très complète avec explications claires. On comprend enfin l’état de son auto.",
+          "rating": 4,
+          "image_url": "",
+          "created_at": "2026-06-26T13:30:11.501Z",
+          "updated_at": "2026-06-26T13:30:11.501Z"
+        }
+      ]
+    },
+    "bookings": {
+      "columns": [
+        "id",
+        "user_id",
+        "name",
+        "phone",
+        "email",
+        "vehicle",
+        "service",
+        "preferred_date",
+        "address",
+        "notes",
+        "status",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 2,
+      "sampleRows": [
+        {
+          "id": 1,
+          "user_id": null,
+          "name": "Lucie Tremblay",
+          "phone": "819 555-0142",
+          "email": "lucie@exemple.com",
+          "vehicle": "Subaru Outback 2017",
+          "service": "Changement d’huile synthétique",
+          "preferred_date": "14 juin, avant-midi",
+          "address": "120 rue des Érables",
+          "notes": "Stationnement dans l’entrée",
+          "status": "confirme",
+          "image_url": null,
+          "created_at": "2026-06-26T13:30:11.512Z",
+          "updated_at": "2026-06-26T13:30:11.512Z"
+        },
+        {
+          "id": 2,
+          "user_id": null,
+          "name": "Patrick Roy",
+          "phone": "819 555-0188",
+          "email": "",
+          "vehicle": "Mazda 3 2019",
+          "service": "Remplacement de freins",
+          "preferred_date": "À confirmer",
+          "address": "",
+          "notes": "Bruit de frein à l’avant",
+          "status": "nouveau",
+          "image_url": null,
+          "created_at": "2026-06-26T13:30:11.517Z",
+          "updated_at": "2026-06-26T13:30:11.517Z"
+        }
+      ]
+    },
+    "messages": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "phone",
+        "message",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 1,
+      "sampleRows": [
+        {
+          "id": 1,
+          "name": "Isabelle Caron",
+          "email": "isabelle@exemple.com",
+          "phone": "819 555-0177",
+          "message": "Bonjour, est-ce que vous desservez le secteur de Trois-Rivières pour un changement d’huile ? Merci !",
+          "image_url": null,
+          "created_at": "2026-06-26T13:30:11.527Z",
+          "updated_at": "2026-06-26T13:30:11.527Z"
+        }
+      ]
+    }
+  }
+}

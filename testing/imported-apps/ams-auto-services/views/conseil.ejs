@@ -1,0 +1,43 @@
+<%- include('partials/header') %>
+<main>
+<article class='post'>
+  <div class='container post-narrow'>
+    <a href='conseils' class='back-link mono'>← Tous les conseils</a>
+    <% if(post.category){ %><span class='card-cat mono'><%= post.category %></span><% } %>
+    <h1 class='post-title'><%= post.title %></h1>
+    <span class='card-date mono'><%= formatDate(post.created_at) %></span>
+  </div>
+  <% if(post.image_url){ %>
+  <div class='container post-narrow'><img class='post-img' src='<%= post.image_url %>' alt='<%= post.title %>'></div>
+  <% } %>
+  <div class='container post-narrow'>
+    <div class='post-body'><%= post.content %></div>
+  </div>
+</article>
+<% if(typeof more!=='undefined' && more.length){ %>
+<section class='section'>
+  <div class='container'>
+    <h2 class='sec-title'>À lire aussi</h2>
+    <div class='card-grid'>
+      <% more.forEach(function(p){ %>
+      <a class='card' href='conseils/<%= p.id %>'>
+        <% if(p.image_url){ %><img class='card-img' src='<%= p.image_url %>' alt='<%= p.title %>'><% } %>
+        <div class='card-body'>
+          <% if(p.category){ %><span class='card-cat mono'><%= p.category %></span><% } %>
+          <h3 class='card-t'><%= p.title %></h3>
+        </div>
+      </a>
+      <% }); %>
+    </div>
+  </div>
+</section>
+<% } %>
+<section class='cta'>
+  <div class='container cta-inner'>
+    <h2 class='cta-title'>Besoin d’un entretien ?</h2>
+    <p class='cta-text'>Réservez votre rendez-vous à domicile dès aujourd’hui.</p>
+    <a class='btn btn-primary' href='reservation' style='background-color:#6366f1;color:#fff'>Réserver</a>
+  </div>
+</section>
+</main>
+<%- include('partials/footer') %>

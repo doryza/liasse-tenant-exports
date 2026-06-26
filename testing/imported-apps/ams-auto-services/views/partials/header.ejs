@@ -1,0 +1,48 @@
+<% var S=(typeof settings!=='undefined'&&settings)?settings:{}; %>
+<!DOCTYPE html>
+<html lang='fr'>
+<head>
+<meta charset='UTF-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0'>
+<meta name='theme-color' content='#6366f1'>
+<meta name='apple-mobile-web-app-capable' content='yes'>
+<meta name='apple-mobile-web-app-status-bar-style' content='black-translucent'>
+<meta name='description' content='<%= S.tagline ? S.tagline : "Mécanique mobile à domicile" %>'>
+<meta property='og:type' content='website'>
+<meta property='og:site_name' content='<%= S.business_name ? S.business_name : "AMS Auto Services" %>'>
+<meta property='og:title' content='<%= (typeof pageTitle!=="undefined" && pageTitle ? pageTitle+" · " : "") + (S.business_name ? S.business_name : "AMS Auto Services") %>'>
+<meta property='og:description' content='<%= S.tagline ? S.tagline : "Mécanique mobile à domicile" %>'>
+<% if(S._p_hero_image_url){ %><meta property='og:image' content='<%= S._p_hero_image_url %>'><% } %>
+<meta name='twitter:card' content='summary_large_image'>
+<title><%= (typeof pageTitle!=='undefined' && pageTitle ? pageTitle+' · ' : '') + (S.business_name ? S.business_name : 'AMS Auto Services') %></title>
+<link rel='manifest' href='manifest.json'>
+<link rel='preconnect' href='https://fonts.googleapis.com'>
+<link rel='preconnect' href='https://fonts.gstatic.com' crossorigin>
+<link href='https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@500;700;800&family=Schibsted+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap' rel='stylesheet'>
+<link rel='stylesheet' href='public/css/styles.css'>
+</head>
+<body>
+<header class='site-head'>
+  <div class='container nav'>
+    <a class='brand' href='.'>
+      <% var _logo=(S._p_nav_logo_url)?S._p_nav_logo_url:(typeof appIconUrl!=='undefined'?appIconUrl:''); %>
+      <% if(_logo){ %><img class='brand-mark' src='<%= _logo %>' alt=''><% } %>
+      <span class='brand-word'><%= S.business_name ? S.business_name : 'AMS Auto Services' %></span>
+    </a>
+    <nav class='nav-links' id='navLinks'>
+      <a href='.'>Accueil</a>
+      <a href='services'>Services</a>
+      <a href='reservation'>Réservation</a>
+      <a href='conseils'>Conseils</a>
+      <a href='a-propos'>À propos</a>
+      <a href='contact'>Contact</a>
+      <a href='mes-rendez-vous' data-auth-only style='display:none'>Mes rendez-vous</a>
+      <a href='#' class='nav-login' data-login-btn>Connexion</a>
+      <a class='btn btn-primary btn-sm nav-book' href='reservation' style='background-color:#6366f1;color:#fff'>Réserver</a>
+    </nav>
+    <button class='hamburger' id='hamburger' aria-label='Menu'><span></span><span></span><span></span></button>
+  </div>
+</header>
+<script>
+(function(){var h=document.getElementById('hamburger');var n=document.getElementById('navLinks');if(h&&n){h.addEventListener('click',function(){n.classList.toggle('open');h.classList.toggle('active');});n.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){n.classList.remove('open');h.classList.remove('active');});});}})();
+</script>

@@ -1,0 +1,53 @@
+<%- include('partials/header') %>
+<main>
+<section class='page-head'>
+  <div class='container'>
+    <span class='kicker'>Nous joindre</span>
+    <h1 class='page-title'>Contact</h1>
+    <p class='page-lead'>Une question, une demande de soumission ? Écrivez-nous, on vous répond rapidement.</p>
+  </div>
+</section>
+<div class='container contact-grid'>
+  <div class='info-card'>
+    <h2 class='mono'>Coordonnées</h2>
+    <ul class='info-list'>
+      <% if(settings.contact_phone){ %><li><span class='mono'>Téléphone</span><a href='tel:<%= settings.contact_phone %>'><%= settings.contact_phone %></a></li><% } %>
+      <% if(settings.contact_email){ %><li><span class='mono'>Courriel</span><a href='mailto:<%= settings.contact_email %>'><%= settings.contact_email %></a></li><% } %>
+      <% if(settings.service_area){ %><li><span class='mono'>Zone</span><span><%= settings.service_area %></span></li><% } %>
+      <% if(settings.hours){ %><li><span class='mono'>Heures</span><span><%= settings.hours %></span></li><% } %>
+      <% if(settings.contact_address){ %><li><span class='mono'>Adresse</span><span><%= settings.contact_address %></span></li><% } %>
+    </ul>
+    <a class='btn btn-primary' href='reservation' style='background-color:#6366f1;color:#fff'>Réserver à domicile</a>
+  </div>
+  <div class='form-card'>
+    <div id='ctOk' class='success-card' style='display:none'>
+      <svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' class='ok-ic'><path d='M20 6L9 17l-5-5'/></svg>
+      <h2>Message envoyé !</h2>
+      <p>Merci, nous avons bien reçu votre message et vous répondrons sous peu.</p>
+    </div>
+    <form id='contactForm' class='res-form'>
+      <div class='field'><label for='c_name'>Nom *</label><input id='c_name' name='name' type='text' required placeholder='Votre nom'></div>
+      <div class='field'><label for='c_email'>Courriel</label><input id='c_email' name='email' type='email' placeholder='vous@exemple.com'></div>
+      <div class='field'><label for='c_phone'>Téléphone</label><input id='c_phone' name='phone' type='tel' placeholder='ex. 819 555-0123'></div>
+      <div class='field'><label for='c_msg'>Message *</label><textarea id='c_msg' name='message' rows='5' required placeholder='Votre message…'></textarea></div>
+      <button id='ctBtn' type='submit' class='btn btn-primary btn-block' style='background-color:#6366f1;color:#fff'>Envoyer</button>
+    </form>
+  </div>
+</div>
+</main>
+<%- include('partials/footer') %>
+<script>
+(function(){
+  var f=document.getElementById('contactForm'); if(!f) return;
+  var ok=document.getElementById('ctOk'); var btn=document.getElementById('ctBtn');
+  f.addEventListener('submit',function(e){
+    e.preventDefault();
+    var old=btn.textContent; btn.disabled=true; btn.textContent='Envoi…';
+    var data={}; new FormData(f).forEach(function(v,k){ data[k]=v; });
+    fetch('api/contact',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}).then(function(r){return r.json().then(function(d){return {ok:r.ok,d:d};});}).then(function(x){
+      if(x.ok && x.d.success){ f.style.display='none'; ok.style.display='block'; }
+      else { alert((x.d&&x.d.error)||'Une erreur est survenue.'); btn.disabled=false; btn.textContent=old; }
+    }).catch(function(){ alert('Erreur de connexion. Réessayez.'); btn.disabled=false; btn.textContent=old; });
+  });
+})();
+</script>

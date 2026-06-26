@@ -1,0 +1,38 @@
+<% var F=(typeof settings!=='undefined'&&settings)?settings:{}; %>
+<footer class='site-foot'>
+  <div class='container foot-grid'>
+    <div class='foot-brand'>
+      <span class='foot-word'><%= F.business_name ? F.business_name : 'AMS Auto Services' %></span>
+      <p><%= F.tagline ? F.tagline : 'Mécanique mobile à domicile' %></p>
+      <button class='btn btn-ghost btn-sm' data-push-btn>Activer les notifications</button>
+    </div>
+    <div class='foot-col'>
+      <h4 class='mono'>Navigation</h4>
+      <a href='.'>Accueil</a>
+      <a href='services'>Services</a>
+      <a href='reservation'>Réservation</a>
+      <a href='conseils'>Conseils</a>
+      <a href='a-propos'>À propos</a>
+      <a href='contact'>Contact</a>
+    </div>
+    <div class='foot-col'>
+      <h4 class='mono'>Coordonnées</h4>
+      <% if(F.contact_phone){ %><a href='tel:<%= F.contact_phone %>'><%= F.contact_phone %></a><% } %>
+      <% if(F.contact_email){ %><a href='mailto:<%= F.contact_email %>'><%= F.contact_email %></a><% } %>
+      <% if(F.contact_address){ %><span><%= F.contact_address %></span><% } %>
+      <% if(F.service_area){ %><span><%= F.service_area %></span><% } %>
+      <% if(F.hours){ %><span><%= F.hours %></span><% } %>
+    </div>
+  </div>
+  <div class='container foot-bottom'>
+    <span><%= F.footer_text ? F.footer_text : ('© '+new Date().getFullYear()+' AMS Auto Services') %></span>
+    <a href='admin'>Espace admin</a>
+  </div>
+</footer>
+<div class='action-bar'>
+  <% if(F.contact_phone){ %><a class='ab-btn ab-call' href='tel:<%= F.contact_phone %>'>Appeler</a><% } %>
+  <a class='ab-btn ab-book' href='reservation' style='background-color:#6366f1;color:#fff'>Réserver à domicile</a>
+</div>
+<script src='public/js/app.js'></script>
+</body>
+</html>

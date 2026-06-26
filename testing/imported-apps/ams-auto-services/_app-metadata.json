@@ -1,0 +1,89 @@
+{
+  "slug": "ams-auto-services",
+  "displayName": "AMS Auto Services",
+  "description": "Crée moi une site internet de mécanique à domicile, changement d’huile, frein , entretien voiture et lavage automobile intérieur extérieur",
+  "status": "active",
+  "generationVersion": 1,
+  "primaryColor": "#6366f1",
+  "iconUrl": "https://res.cloudinary.com/duhp69meg/image/upload/v1782480622/tapavis_tenant_ams-auto-services/icon_ams-auto-services_1782480622790.png",
+  "enabledAuthMethods": [
+    "webauthn",
+    "sms",
+    "email"
+  ],
+  "notificationsEnabled": true,
+  "geolocationEnabled": true,
+  "customConfig": {
+    "language": "fr",
+    "designManifest": {
+      "concept": "Inspection multipoint",
+      "elements": {
+        "blogSurfaced": true,
+        "pages": [
+          "Accueil",
+          "Services",
+          "Réservation",
+          "Conseils",
+          "À propos",
+          "Contact",
+          "Mes rendez-vous"
+        ],
+        "userLogin": true
+      },
+      "iconDirection": "A flat emblem combining a wrench arc with a single inspection status dot (indigo) inside a rounded square stamp on warm paper ground — reads as a certified mobile service mark, no text.",
+      "palette": {
+        "accents": [
+          "#2E8B57",
+          "#E0961B",
+          "#D64545"
+        ],
+        "ground": "#F4F1EA",
+        "ink": "#1B1D23",
+        "primary": "#6366f1"
+      },
+      "signatureMove": "A 'code d'inspection' status-light system — each service is a numbered inspection row tagged with a green/amber/indigo pastille for entretien/réparation/esthétique — plus a framed 'fiche de service' hero and a mobile-only fixed Appeler / Réserver à domicile action bar.",
+      "summary": "The mobile mechanic is presented like a transparent multi-point vehicle inspection on warm garage-worksheet paper, with a green/amber/indigo status-light code guiding the eye and a persistent on-site booking bar keeping the next appointment one tap away.",
+      "typography": "Big Shoulders Display (industrial signage headings) + Schibsted Grotesk (humanist body) + DM Mono (worksheet labels & numerals)"
+    }
+  },
+  "promptHistory": [
+    {
+      "prompt": "Crée moi une site internet de mécanique à domicile, changement d’huile, frein , entretien voiture et lavage automobile intérieur extérieur",
+      "timestamp": "2026-06-26T13:30:34.319Z",
+      "changeNotes": "Build initial complet d'un site de mécanique mobile à domicile (huile, freins, entretien, lavage). Identité « Inspection multipoint » : papier-atelier chaud, titres industriels Big Shoulders, pastilles de statut vert/ambre/indigo et barre d'action fixe Appeler/Réserver sur mobile. Pages : accueil, services, réservation (round-trip complet stockée en base + courriel), conseils, à propos, contact, mes rendez-vous (connexion OTP). Backend admin complet avec tableau de bord, CRUD des réservations/services/conseils/témoignages/messages, téléversement et génération IA d'images.\n\nAdmin enrichment: (1) Rebuilt admin module pages (shared admin-shell) with a search/filter toolbar, live count, horizontal-scroll table, status badges for bookings (Nouveau/Confirmé/Complété/Annulé) and star-rating display for testimonials, prioritized columns (status/rating always shown), richer empty state with inline '+ Ajouter' CTA, hover row highlight, '← Tableau de bord' back button and per-item label on the New button. Full CRUD (create/edit/delete modal, image upload + AI generation, all editable columns) preserved and intact. (2) Polished admin dashboard: accent on new-bookings stat, card headers with quick links, status badges in recent bookings, emoji-icon module cards under a 'Gérer le contenu' heading, friendlier empty states. (3) Added visible focus-visible states to admin and public CSS for accessibility; new utility classes (badge variants, stars, toolbar/search, table-scroll, empty-state). (4) Added Open Graph / Twitter social-sharing meta tags to the public header (uses hero image when present). All functional service fields (price, duration, category, featured, sort_order) were already admin-managed and remain so. No files removed; all {{IMG_*}} placeholder tokens preserved byte-for-byte.",
+      "generationId": 1397,
+      "filesModified": [
+        "manifest.json",
+        "migrations.sql",
+        "public/css/admin-styles.css",
+        "public/css/styles.css",
+        "public/js/app.js",
+        "routes.js",
+        "schema.sql",
+        "seed.js",
+        "views/a-propos.ejs",
+        "views/admin-bookings.ejs",
+        "views/admin-messages.ejs",
+        "views/admin-posts.ejs",
+        "views/admin-services.ejs",
+        "views/admin-testimonials.ejs",
+        "views/admin.ejs",
+        "views/conseil.ejs",
+        "views/conseils.ejs",
+        "views/contact.ejs",
+        "views/index.ejs",
+        "views/mes-rendez-vous.ejs",
+        "views/partials/admin-shell.ejs",
+        "views/partials/admin-sidebar.ejs",
+        "views/partials/footer.ejs",
+        "views/partials/header.ejs",
+        "views/reservation.ejs",
+        "views/services.ejs"
+      ]
+    }
+  ],
+  "apiVariables": [],
+  "createdAt": "2026-06-26T12:55:39.615Z",
+  "updatedAt": "2026-06-26T13:30:39.900Z",
+  "exportedAt": "2026-06-26T13:30:40.113Z"
+}

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang='fr'>
+<head>
+<meta charset='UTF-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0'>
+<title>Admin · <%= moduleLabel %></title>
+<link href='https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=Schibsted+Grotesk:wght@400;500;600;700&family=DM+Mono&display=swap' rel='stylesheet'>
+<link rel='stylesheet' href='public/css/admin-styles.css'>
+</head>
+<body class='admin-body'>
+<%- include('admin-sidebar', { active: moduleKey }) %>
+<main class='admin-main'>
+  <button class='adm-burger' id='admBurger' aria-label='Menu'>☰</button>
+  <header class='adm-head'>
+    <div>
+      <div class='adm-eyebrow mono'>Gestion du contenu</div>
+      <h1 class='adm-title'><%= moduleLabel %></h1>
+    </div>
+    <div class='adm-head-actions'>
+      <a class='btn-adm ghost' href='admin'>← Tableau de bord</a>
+      <button class='btn-adm primary' id='newBtn'>+ Nouveau <%= moduleLabelSingular %></button>
+    </div>
+  </header>
+  <div id='msg' class='adm-msg' style='display:none'></div>
+  <div class='adm-card'>
+    <div class='adm-toolbar'>
+      <div class='adm-search'>
+        <svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.7' aria-hidden='true'><circle cx='11' cy='11' r='7'/><path d='M21 21l-4.3-4.3'/></svg>
+        <input type='search' id='searchInput' placeholder='Rechercher…' aria-label='Rechercher'>
+      </div>
+      <span class='adm-count mono' id='countLbl'>—</span>
+    </div>
+    <div id='tableWrap'><p class='adm-empty'>Chargement…</p></div>
+  </div>
+</main>
+<div id='modal' class='adm-modal' style='display:none'>
+  <div class='adm-modal-box'>
+    <div class='adm-modal-head'>
+      <h2 id='modalTitle'>—</h2>
+      <button class='adm-x' id='closeX' aria-label='Fermer'>✕</button>
+    </div>
+    <form id='itemForm' onsubmit='return false'><div id='formFields'></div></form>
+    <div class='adm-modal-foot'>
+      <button class='btn-adm ghost' id='cancelBtn'>Annuler</button>
+      <button class='btn-adm primary' id='saveBtn'>Enregistrer</button>
+    </div>
+  </div>
+</div>
+<script>
+var MODULE_KEY=<%- JSON.stringify(moduleKey) %>;
+var MODULE_LABEL=<%- JSON.stringify(moduleLabelSingular) %>;
+var FIELDS=<%- JSON.stringify(fields) %>;
+var ITEMS=[]; var EDIT_ID=null; var FILTER='';
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]; }); }
+function showMsg(t,ok){ var m=document.getElementById('msg'); m.textContent=t; m.className='adm-msg '+(ok?'ok':'err'); m.style.display='block'; setTimeout(function(){ m.style.display='none'; },3500); }
+function statusBadge(v){ var map={nouveau:['Nouveau','st-new'],confirme:['Confirmé','st-ok'],complete:['Complété','st-done'],annule:['Annulé','st-cancel']}; var m=map[v]; if(m) return '<span class="badge '+m[1]+'">'+m[0]+'</span>'; return '<span class="pill cat">'+esc(v||'—')+'</span>'; }
+function starRow(n){ n=parseInt(n,10)||0; var s=''; for(var i=0;i<5;i++){ s+= i<n?'★':'☆'; } return '<span class="stars" title="'+n+'/5">'+s+'</span>'; }
+function colFields(){ var cols=FIELDS.filter(function(f){ return f.type!=='textarea' && f.type!=='image'; }); var primary=cols.slice(0,4); ['status','rating'].forEach(function(nm){ var f=cols.filter(function(x){return x.name===nm;})[0]; if(f && primary.indexOf(f)<0){ primary.push(f); } }); return primary; }
+function cellVal(f,it){ var v=it[f.name]; if(f.name==='status') return statusBadge(v); if(f.name==='rating') return starRow(v); if(f.type==='boolean') return (v==1||v===true||v==='1')?'<span class="pill on">Oui</span>':'<span class="pill off">Non</span>'; if(f.type==='select') return '<span class="pill cat">'+esc(v||'—')+'</span>'; if(v==null||v==='') return '<span class="muted">—</span>'; v=String(v); return esc(v.length>44?v.slice(0,44)+'…':v); }
+function visibleItems(){ var q=FILTER.trim().toLowerCase(); if(!q) return ITEMS; return ITEMS.filter(function(it){ return FIELDS.some(function(f){ var v=it[f.name]; return v!=null && String(v).toLowerCase().indexOf(q)>=0; }); }); }
+function renderTable(){
+  var list=visibleItems();
+  var cnt=document.getElementById('countLbl'); if(cnt){ cnt.textContent=ITEMS.length+(FILTER?(' · '+list.length+' affiché'+(list.length>1?'s':'')):' au total'); }
+  if(!ITEMS.length){ document.getElementById('tableWrap').innerHTML='<div class="adm-empty-state"><div class="ees-ic">🗂️</div><p>Aucun '+esc(MODULE_LABEL)+' pour l’instant.</p><button class="btn-adm primary" id="emptyNew">+ Ajouter</button></div>'; var en=document.getElementById('emptyNew'); if(en){ en.addEventListener('click',openCreate); } return; }
+  if(!list.length){ document.getElementById('tableWrap').innerHTML='<p class="adm-empty">Aucun résultat pour « '+esc(FILTER)+' ».</p>'; return; }
+  var imgF=FIELDS.filter(function(f){return f.type==='image';})[0]; var cols=colFields();
+  var h='<div class="table-scroll"><table class="adm-table"><thead><tr>';
+  if(imgF) h+='<th></th>';
+  cols.forEach(function(f){ h+='<th>'+esc(f.label||f.name)+'</th>'; });
+  h+='<th class="adm-actions">Actions</th></tr></thead><tbody>';
+  list.forEach(function(it){
+    h+='<tr>';
+    if(imgF){ var u=it[imgF.name]; h+='<td>'+(u?'<img class="adm-thumb" src="'+esc(u)+'" alt="">':'<span class="adm-thumb empty"></span>')+'</td>'; }
+    cols.forEach(function(f){ h+='<td>'+cellVal(f,it)+'</td>'; });
+    h+='<td class="adm-actions"><button class="lnk" data-act="edit" data-id="'+it.id+'">Modifier</button><button class="lnk del" data-act="del" data-id="'+it.id+'">Supprimer</button></td>';
+    h+='</tr>';
+  });
+  h+='</tbody></table></div>';
+  document.getElementById('tableWrap').innerHTML=h;
+}
+function buildForm(item){
+  var h='';
+  FIELDS.forEach(function(f){
+    var v=item[f.name]; if(v==null) v=(f.default!=null?f.default:'');
+    h+='<div class="fld-group">';
+    h+='<label for="fld_'+f.name+'">'+esc(f.label||f.name)+(f.required?' *':'')+'</label>';
+    if(f.type==='textarea'){ h+='<textarea id="fld_'+f.name+'" rows="5" placeholder="'+esc(f.placeholder||'')+'">'+esc(v)+'</textarea>'; }
+    else if(f.type==='boolean'){ h+='<label class="switch"><input type="checkbox" id="fld_'+f.name+'" '+((v==1||v===true||v==='1')?'checked':'')+'><span>Activé</span></label>'; }
+    else if(f.type==='select'){ h+='<select id="fld_'+f.name+'">'; (f.options||[]).forEach(function(o){ var ov=(typeof o==='object')?o.value:o; var ol=(typeof o==='object')?o.label:o; h+='<option value="'+esc(ov)+'"'+(String(v)===String(ov)?' selected':'')+'>'+esc(ol)+'</option>'; }); h+='</select>'; }
+    else if(f.type==='image'){ h+='<div class="img-fld"><img id="prev_'+f.name+'" class="img-prev" src="'+(v?esc(v):'')+'"'+(v?'':' style="display:none"')+'><input type="hidden" id="fld_'+f.name+'" value="'+esc(v)+'"><div class="img-actions"><label class="btn-adm small ghost">Téléverser<input type="file" accept="image/*" data-img="'+f.name+'" style="display:none"></label><button type="button" class="btn-adm small ghost" data-gen="'+f.name+'">Générer (IA)</button></div></div>'; }
+    else { var t=(f.type==='number')?'number':(f.type==='email'?'email':(f.type==='date'?'date':'text')); h+='<input type="'+t+'" id="fld_'+f.name+'" value="'+esc(v)+'" placeholder="'+esc(f.placeholder||'')+'"'+(f.min!=null?' min="'+f.min+'"':'')+(f.max!=null?' max="'+f.max+'"':'')+(f.step!=null?' step="'+f.step+'"':'')+'>'; }
+    if(f.description) h+='<small class="fld-help">'+esc(f.description)+'</small>';
+    h+='</div>';
+  });
+  document.getElementById('formFields').innerHTML=h;
+}
+function openCreate(){ EDIT_ID=null; document.getElementById('modalTitle').textContent='Nouveau '+MODULE_LABEL; buildForm({}); document.getElementById('modal').style.display='flex'; }
+function openEdit(id){ EDIT_ID=id; var it=ITEMS.filter(function(x){return x.id==id;})[0]||{}; document.getElementById('modalTitle').textContent='Modifier '+MODULE_LABEL; buildForm(it); document.getElementById('modal').style.display='flex'; }
+function closeModal(){ document.getElementById('modal').style.display='none'; }
+function collect(){ var o={}; FIELDS.forEach(function(f){ var el=document.getElementById('fld_'+f.name); if(!el) return; if(f.type==='boolean') o[f.name]=el.checked?1:0; else o[f.name]=el.value; }); return o; }
+function saveItem(){
+  var btn=document.getElementById('saveBtn'); btn.disabled=true; btn.textContent='Enregistrement…';
+  var data=collect(); var url='api/admin/'+MODULE_KEY+(EDIT_ID?'/'+EDIT_ID:'');
+  fetch(url,{method:EDIT_ID?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}).then(function(r){return r.json().then(function(d){return {ok:r.ok,d:d};});}).then(function(x){
+    if(!x.ok) throw new Error((x.d&&x.d.error)||'Erreur');
+    closeModal(); loadItems(); showMsg('Enregistré avec succès.',true);
+  }).catch(function(e){ showMsg(e.message||'Erreur',false); }).then(function(){ btn.disabled=false; btn.textContent='Enregistrer'; });
+}
+function askDelete(id){ if(!confirm('Supprimer cet élément ? Cette action est irréversible.')) return; fetch('api/admin/'+MODULE_KEY+'/'+id,{method:'DELETE'}).then(function(r){ if(!r.ok) throw new Error('Erreur'); loadItems(); showMsg('Élément supprimé.',true); }).catch(function(){ showMsg('Suppression impossible.',false); }); }
+function loadItems(){ fetch('api/admin/'+MODULE_KEY).then(function(r){return r.json();}).then(function(d){ ITEMS=d[MODULE_KEY]||[]; renderTable(); }).catch(function(){ document.getElementById('tableWrap').innerHTML='<p class="adm-empty">Erreur de chargement.</p>'; }); }
+function uploadImage(name,input){ var f=input.files[0]; if(!f) return; var rd=new FileReader(); rd.onload=function(){ showMsg('Téléversement…',true); fetch('api/admin/upload-image',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({dataUri:rd.result})}).then(function(r){return r.json().then(function(d){return {ok:r.ok,d:d};});}).then(function(x){ if(!x.ok) throw new Error((x.d&&x.d.error)||'Erreur'); document.getElementById('fld_'+name).value=x.d.url; var p=document.getElementById('prev_'+name); if(p){ p.src=x.d.url; p.style.display='block'; } showMsg('Image téléversée.',true); }).catch(function(e){ showMsg(e.message||'Erreur',false); }); }; rd.readAsDataURL(f); }
+function genImage(name){ var p=prompt('Décrivez l’image à générer :'); if(!p) return; showMsg('Génération IA…',true); fetch('api/admin/generate-image',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:p,aspectRatio:'4:3'})}).then(function(r){return r.json().then(function(d){return {ok:r.ok,d:d};});}).then(function(x){ if(!x.ok) throw new Error((x.d&&x.d.error)||'Erreur'); document.getElementById('fld_'+name).value=x.d.imageUrl; var pr=document.getElementById('prev_'+name); if(pr){ pr.src=x.d.imageUrl; pr.style.display='block'; } showMsg('Image générée.',true); }).catch(function(e){ showMsg(e.message||'Génération impossible.',false); }); }
+document.getElementById('newBtn').addEventListener('click',openCreate);
+document.getElementById('closeX').addEventListener('click',closeModal);
+document.getElementById('cancelBtn').addEventListener('click',closeModal);
+document.getElementById('saveBtn').addEventListener('click',saveItem);
+var ab=document.getElementById('admBurger'); if(ab){ ab.addEventListener('click',function(){ document.body.classList.toggle('sb-open'); }); }
+var si=document.getElementById('searchInput'); if(si){ si.addEventListener('input',function(){ FILTER=si.value; renderTable(); }); }
+document.getElementById('tableWrap').addEventListener('click',function(e){ var b=e.target.closest('button[data-act]'); if(!b) return; if(b.getAttribute('data-act')==='edit') openEdit(+b.getAttribute('data-id')); else askDelete(+b.getAttribute('data-id')); });
+document.getElementById('formFields').addEventListener('change',function(e){ if(e.target.matches('input[type=file][data-img]')) uploadImage(e.target.getAttribute('data-img'),e.target); });
+document.getElementById('formFields').addEventListener('click',function(e){ var b=e.target.closest('button[data-gen]'); if(b) genImage(b.getAttribute('data-gen')); });
+document.getElementById('modal').addEventListener('click',function(e){ if(e.target.id==='modal') closeModal(); });
+loadItems();
+</script>
+</body>
+</html>

@@ -1,0 +1,177 @@
+<%- include('partials/header') %>
+<main>
+<section class='hero'>
+  <div class='container hero-grid'>
+    <div class='hero-copy'>
+      <span class='kicker'><span class='kdot'></span><%= settings.hero_kicker || 'Mécanique mobile · à domicile' %></span>
+      <h1 class='hero-title'><%= settings.hero_title || 'La mécanique vient à vous.' %></h1>
+      <p class='hero-sub'><%= settings.hero_subtitle || 'Changement d’huile, freins, entretien et lavage réalisés dans votre entrée.' %></p>
+      <div class='hero-actions'>
+        <a class='btn btn-primary' href='reservation' style='background-color:#6366f1;color:#fff'>Réserver à domicile</a>
+        <a class='btn btn-ghost' href='services'>Voir les services</a>
+      </div>
+      <ul class='hero-points mono'>
+        <li><span class='dot dot-entretien'></span> Entretien</li>
+        <li><span class='dot dot-reparation'></span> Réparation</li>
+        <li><span class='dot dot-esthetique'></span> Esthétique</li>
+      </ul>
+    </div>
+    <figure class='hero-fig'>
+      <span class='fiche-tab mono'>Fiche de service</span>
+      <img src='<%= settings._p_hero_image_url ? settings._p_hero_image_url : "https://placehold.co/1200x675/1B1D23/F4F1EA/png?text=AMS+Auto" %>' alt='Mécanique mobile à domicile'>
+      <figcaption class='mono'>Service réalisé dans votre entrée</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class='section section-steps'>
+  <div class='container'>
+    <div class='sec-head'>
+      <span class='kicker'>Comment ça marche</span>
+      <h2 class='sec-title'>Trois étapes, zéro déplacement</h2>
+    </div>
+    <div class='steps'>
+      <div class='step'>
+        <span class='step-num mono'>1</span>
+        <svg class='step-ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6'><rect x='3' y='4' width='18' height='17' rx='2'/><path d='M16 2v4M8 2v4M3 10h18'/></svg>
+        <h3 class='step-t'>Réservez en ligne</h3>
+        <p class='step-d'>Choisissez votre service et la plage horaire qui vous convient en quelques secondes.</p>
+      </div>
+      <div class='step'>
+        <span class='step-num mono'>2</span>
+        <svg class='step-ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6'><path d='M3 13l2-5h11l3 4h2v4h-2'/><circle cx='7' cy='17' r='2'/><circle cx='17' cy='17' r='2'/><path d='M5 17h6'/></svg>
+        <h3 class='step-t'>On vient à vous</h3>
+        <p class='step-d'>Notre mécanicien se déplace à votre domicile ou au travail, avec tout l’équipement.</p>
+      </div>
+      <div class='step'>
+        <span class='step-num mono'>3</span>
+        <svg class='step-ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6'><path d='M20 6L9 17l-5-5'/></svg>
+        <h3 class='step-t'>Roulez tranquille</h3>
+        <p class='step-d'>Vous recevez une fiche claire de l’intervention et reprenez la route en confiance.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class='section'>
+  <div class='container'>
+    <div class='sec-head'>
+      <span class='kicker'>Code d’inspection</span>
+      <h2 class='sec-title'>Nos services à domicile</h2>
+      <p class='sec-lead'>Chaque prestation est repérée par une pastille de couleur : entretien, réparation ou esthétique.</p>
+    </div>
+    <% if(typeof featured!=='undefined' && featured.length){ %>
+    <div class='insp-list'>
+      <% featured.forEach(function(s,i){ %>
+      <article class='insp-row'>
+        <span class='insp-num mono'><%= i+1 %></span>
+        <span class='dot dot-<%= s.category || 'entretien' %>'></span>
+        <div class='insp-body'>
+          <h3 class='insp-name'><%= s.name %></h3>
+          <p class='insp-desc'><%= excerpt(s.description,120) %></p>
+          <span class='insp-cat mono'><%= catLabel(s.category) %></span>
+        </div>
+        <div class='insp-meta'>
+          <% if(s.price){ %><span class='insp-price'><%= s.price %></span><% } %>
+          <% if(s.duration){ %><span class='insp-dur mono'><%= s.duration %></span><% } %>
+          <a class='btn btn-ghost btn-sm' href='reservation?service=<%= encodeURIComponent(s.name) %>'>Réserver</a>
+        </div>
+      </article>
+      <% }); %>
+    </div>
+    <div class='center mt'><a class='btn btn-ghost' href='services'>Tous les services</a></div>
+    <% } else { %>
+    <p class='empty'>Nos services seront bientôt affichés ici.</p>
+    <% } %>
+  </div>
+</section>
+
+<section class='section section-why'>
+  <div class='container'>
+    <div class='sec-head'>
+      <span class='kicker'>Confiance</span>
+      <h2 class='sec-title'><%= settings.why_title || 'Pourquoi choisir le service à domicile' %></h2>
+    </div>
+    <div class='why-grid'>
+      <div class='promise'>
+        <svg class='promise-ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6'><path d='M12 21s-7-4.6-7-10a7 7 0 0114 0c0 5.4-7 10-7 10z'/><circle cx='12' cy='11' r='2.5'/></svg>
+        <p class='promise-t'><%= settings.promise_1 || 'Aucun déplacement : nous venons à vous.' %></p>
+      </div>
+      <div class='promise'>
+        <svg class='promise-ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6'><path d='M3 7h18M3 12h12M3 17h18'/></svg>
+        <p class='promise-t'><%= settings.promise_2 || 'Prix clairs annoncés d’avance.' %></p>
+      </div>
+      <div class='promise'>
+        <svg class='promise-ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6'><path d='M12 3l7 3v6c0 4-3 7-7 9-4-2-7-5-7-9V6z'/><path d='M9 12l2 2 4-4'/></svg>
+        <p class='promise-t'><%= settings.promise_3 || 'Travail soigné et garanti.' %></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class='section section-about'>
+  <div class='container about-grid'>
+    <figure class='about-fig'>
+      <img src='<%= settings._p_about_image_url ? settings._p_about_image_url : "https://placehold.co/800x600/1B1D23/F4F1EA/png?text=Atelier" %>' alt='Inspection du véhicule'>
+    </figure>
+    <div class='about-copy'>
+      <span class='kicker'>L’atelier mobile</span>
+      <h2 class='sec-title'><%= settings.about_title || 'Une inspection transparente, point par point' %></h2>
+      <p><%= settings.about_text || '' %></p>
+      <a class='btn btn-ghost' href='a-propos'>En savoir plus</a>
+    </div>
+  </div>
+</section>
+
+<% if(typeof testimonials!=='undefined' && testimonials.length){ %>
+<section class='section'>
+  <div class='container'>
+    <div class='sec-head'>
+      <span class='kicker'>Avis clients</span>
+      <h2 class='sec-title'>Ils nous font confiance</h2>
+    </div>
+    <div class='tms'>
+      <% testimonials.slice(0,3).forEach(function(t){ %>
+      <article class='tm-card'>
+        <div class='tm-stars'><% for(var i=0;i<(t.rating||5);i++){ %>★<% } %></div>
+        <p class='tm-text'>« <%= t.content %> »</p>
+        <div class='tm-author'><%= t.author %><% if(t.vehicle){ %> <span class='tm-veh mono'>· <%= t.vehicle %></span><% } %></div>
+      </article>
+      <% }); %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<% if(typeof posts!=='undefined' && posts.length){ %>
+<section class='section'>
+  <div class='container'>
+    <div class='sec-head'>
+      <span class='kicker'>Conseils d’entretien</span>
+      <h2 class='sec-title'>Le carnet d’entretien</h2>
+    </div>
+    <div class='card-grid'>
+      <% posts.forEach(function(p){ %>
+      <a class='card' href='conseils/<%= p.id %>'>
+        <% if(p.image_url){ %><img class='card-img' src='<%= p.image_url %>' alt='<%= p.title %>'><% } %>
+        <div class='card-body'>
+          <% if(p.category){ %><span class='card-cat mono'><%= p.category %></span><% } %>
+          <h3 class='card-t'><%= p.title %></h3>
+          <p class='card-ex'><%= excerpt(p.content,90) %></p>
+        </div>
+      </a>
+      <% }); %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<section class='cta'>
+  <div class='container cta-inner'>
+    <h2 class='cta-title'><%= settings.cta_title || 'Prêt à réserver votre rendez-vous ?' %></h2>
+    <p class='cta-text'><%= settings.cta_text || 'On vient à vous, vous reprenez la route l’esprit tranquille.' %></p>
+    <a class='btn btn-primary' href='reservation' style='background-color:#6366f1;color:#fff'>Réserver maintenant</a>
+  </div>
+</section>
+</main>
+<%- include('partials/footer') %>

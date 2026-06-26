@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang='fr'>
+<head>
+<meta charset='UTF-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0'>
+<title>Admin · Tableau de bord</title>
+<link href='https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=Schibsted+Grotesk:wght@400;500;600;700&family=DM+Mono&display=swap' rel='stylesheet'>
+<link rel='stylesheet' href='public/css/admin-styles.css'>
+</head>
+<body class='admin-body'>
+<%- include('partials/admin-sidebar', { active: 'dashboard' }) %>
+<% var ICONS={calendar:'🗓️',wrench:'🔧',edit:'📝',star:'⭐',mail:'✉️'}; %>
+<% function stB(s){ var m={nouveau:['Nouveau','st-new'],confirme:['Confirmé','st-ok'],complete:['Complété','st-done'],annule:['Annulé','st-cancel']}[s]; if(!m) m=[s||'—','st-new']; return '<span class="badge '+m[1]+'">'+m[0]+'</span>'; } %>
+<main class='admin-main'>
+  <button class='adm-burger' id='admBurger' aria-label='Menu'>☰</button>
+  <header class='adm-head'>
+    <div>
+      <div class='adm-eyebrow mono'>Tableau de bord</div>
+      <h1 class='adm-title'><%= (settings && settings.business_name) ? settings.business_name : 'AMS Auto Services' %></h1>
+    </div>
+    <a class='btn-adm primary' href='.' target='_blank'>Voir le site ↗</a>
+  </header>
+  <div class='stat-grid'>
+    <div class='stat-card accent'><span class='stat-num'><%= stats.newBookings %></span><span class='stat-lbl'>Nouvelles réservations</span></div>
+    <div class='stat-card'><span class='stat-num'><%= stats.bookings %></span><span class='stat-lbl'>Réservations totales</span></div>
+    <div class='stat-card'><span class='stat-num'><%= stats.messages %></span><span class='stat-lbl'>Messages reçus</span></div>
+    <div class='stat-card'><span class='stat-num'><%= stats.recentVisits %></span><span class='stat-lbl'>Visites (7 jours)</span></div>
+    <div class='stat-card'><span class='stat-num'><%= stats.totalVisits %></span><span class='stat-lbl'>Visites totales</span></div>
+    <div class='stat-card'><span class='stat-num'><%= stats.push %></span><span class='stat-lbl'>Abonnés notifications</span></div>
+  </div>
+  <div class='dash-grid'>
+    <section class='adm-card'>
+      <div class='adm-card-head'><h2 class='adm-card-t'>Réservations récentes</h2><a class='lnk' href='admin/bookings'>Tout gérer →</a></div>
+      <% if(recentBookings && recentBookings.length){ %>
+      <div class='table-scroll'>
+      <table class='adm-table'>
+        <thead><tr><th>Client</th><th>Service</th><th>Date</th><th>Statut</th></tr></thead>
+        <tbody>
+        <% recentBookings.forEach(function(b){ %>
+          <tr><td><%= b.name %></td><td><%= b.service %></td><td class='mono'><%= b.preferred_date || formatDate(b.created_at) %></td><td><%- stB(b.status) %></td></tr>
+        <% }); %>
+        </tbody>
+      </table>
+      </div>
+      <% } else { %><div class='adm-empty-state'><div class='ees-ic'>🗓️</div><p>Aucune réservation pour l’instant.</p></div><% } %>
+    </section>
+    <section class='adm-card'>
+      <div class='adm-card-head'><h2 class='adm-card-t'>Messages récents</h2><a class='lnk' href='admin/messages'>Voir tout →</a></div>
+      <% if(recentMessages && recentMessages.length){ %>
+      <ul class='msg-list'>
+        <% recentMessages.forEach(function(m){ %>
+          <li><strong><%= m.name %></strong><span class='mono'><%= formatDate(m.created_at) %></span><p><%= (m.message||'').slice(0,90) %></p></li>
+        <% }); %>
+      </ul>
+      <% } else { %><div class='adm-empty-state'><div class='ees-ic'>✉️</div><p>Aucun message pour l’instant.</p></div><% } %>
+    </section>
+  </div>
+  <h2 class='dash-sec-t'>Gérer le contenu</h2>
+  <div class='mod-grid'>
+    <% modules.forEach(function(m){ %>
+      <a class='mod-card' href='admin/<%= m.key %>'><span class='mod-ic'><%= ICONS[m.icon] || '📦' %></span><span class='mod-t'><%= m.label %></span><span class='mod-go mono'>Gérer →</span></a>
+    <% }); %>
+  </div>
+</main>
+<script>
+(function(){var b=document.getElementById('admBurger');if(b){b.addEventListener('click',function(){document.body.classList.toggle('sb-open');});}})();
+</script>
+</body>
+</html>

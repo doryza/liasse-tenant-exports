@@ -1,0 +1,42 @@
+<%- include('partials/header') %>
+<main>
+<section class='page-head'>
+  <div class='container'>
+    <span class='kicker'>L’atelier mobile</span>
+    <h1 class='page-title'><%= settings.about_title || 'À propos d’AMS Auto Services' %></h1>
+  </div>
+</section>
+<section class='section section-about'>
+  <div class='container about-grid'>
+    <figure class='about-fig'>
+      <img src='<%= settings._p_about_image_url ? settings._p_about_image_url : "https://placehold.co/800x600/1B1D23/F4F1EA/png?text=Atelier" %>' alt='Atelier mobile'>
+    </figure>
+    <div class='about-copy'>
+      <p><%= settings.about_text || '' %></p>
+      <ul class='about-list'>
+        <li><span class='dot dot-entretien'></span> <%= settings.service_area || 'Service mobile dans votre région' %></li>
+        <li><span class='dot dot-reparation'></span> <%= settings.hours || 'Disponible sur rendez-vous' %></li>
+        <li><span class='dot dot-esthetique'></span> Travail garanti et prix transparents</li>
+      </ul>
+      <a class='btn btn-primary' href='reservation' style='background-color:#6366f1;color:#fff'>Réserver un rendez-vous</a>
+    </div>
+  </div>
+</section>
+<% if(typeof testimonials!=='undefined' && testimonials.length){ %>
+<section class='section'>
+  <div class='container'>
+    <div class='sec-head'><span class='kicker'>Avis clients</span><h2 class='sec-title'>Ce qu’ils en disent</h2></div>
+    <div class='tms'>
+      <% testimonials.forEach(function(t){ %>
+      <article class='tm-card'>
+        <div class='tm-stars'><% for(var i=0;i<(t.rating||5);i++){ %>★<% } %></div>
+        <p class='tm-text'>« <%= t.content %> »</p>
+        <div class='tm-author'><%= t.author %><% if(t.vehicle){ %> <span class='tm-veh mono'>· <%= t.vehicle %></span><% } %></div>
+      </article>
+      <% }); %>
+    </div>
+  </div>
+</section>
+<% } %>
+</main>
+<%- include('partials/footer') %>

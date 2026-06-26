@@ -1,0 +1,79 @@
+<%- include('partials/header') %>
+<main>
+<section class='page-head'>
+  <div class='container'>
+    <span class='kicker'>Fiche de service</span>
+    <h1 class='page-title'>Réserver à domicile</h1>
+    <p class='page-lead'><%= settings.booking_intro || 'Remplissez la fiche ci-dessous et nous confirmons votre rendez-vous rapidement.' %></p>
+  </div>
+</section>
+<div class='container res-wrap'>
+  <div id='bookOk' class='success-card' style='display:none'>
+    <svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' class='ok-ic'><path d='M20 6L9 17l-5-5'/></svg>
+    <h2>Demande envoyée !</h2>
+    <p>Merci, votre demande de rendez-vous a bien été reçue. Nous vous contacterons pour confirmer la date et l’heure.</p>
+    <a class='btn btn-ghost' href='.'>Retour à l’accueil</a>
+  </div>
+  <form id='bookingForm' class='res-form'>
+    <div class='res-grid'>
+      <div class='field'>
+        <label for='f_name'>Nom complet *</label>
+        <input id='f_name' name='name' type='text' required placeholder='Votre nom' value='<%= (typeof user!=="undefined" && user && user.display_name) ? user.display_name : "" %>'>
+      </div>
+      <div class='field'>
+        <label for='f_phone'>Téléphone *</label>
+        <input id='f_phone' name='phone' type='tel' required placeholder='ex. 819 555-0123'>
+      </div>
+      <div class='field'>
+        <label for='f_email'>Courriel</label>
+        <input id='f_email' name='email' type='email' placeholder='vous@exemple.com' value='<%= (typeof user!=="undefined" && user && user.email) ? user.email : "" %>'>
+      </div>
+      <div class='field'>
+        <label for='f_vehicle'>Véhicule</label>
+        <input id='f_vehicle' name='vehicle' type='text' placeholder='ex. Honda Civic 2018'>
+      </div>
+      <div class='field'>
+        <label for='svcSel'>Service souhaité *</label>
+        <select id='svcSel' name='service' required>
+          <option value=''>— Choisir un service —</option>
+          <% (typeof services!=='undefined'?services:[]).forEach(function(s){ %>
+          <option value='<%= s.name %>' <%= (selectedService===s.name)?'selected':'' %>><%= s.name %></option>
+          <% }); %>
+          <option value='Autre / à discuter'>Autre / à discuter</option>
+        </select>
+      </div>
+      <div class='field'>
+        <label for='f_date'>Date souhaitée</label>
+        <input id='f_date' name='preferred_date' type='text' placeholder='ex. 14 juin, avant-midi'>
+      </div>
+      <div class='field field-full'>
+        <label for='f_addr'>Adresse du service à domicile</label>
+        <input id='f_addr' name='address' type='text' placeholder='Numéro, rue, ville'>
+      </div>
+      <div class='field field-full'>
+        <label for='f_notes'>Notes (facultatif)</label>
+        <textarea id='f_notes' name='notes' rows='4' placeholder='Précisions sur votre demande…'></textarea>
+      </div>
+    </div>
+    <button id='bookBtn' type='submit' class='btn btn-primary btn-block' style='background-color:#6366f1;color:#fff'>Envoyer ma demande</button>
+    <p class='form-note mono'>Vous pouvez aussi <a href='mes-rendez-vous'>vous connecter</a> pour suivre vos rendez-vous.</p>
+  </form>
+</div>
+</main>
+<%- include('partials/footer') %>
+<script>
+(function(){
+  var f=document.getElementById('bookingForm'); if(!f) return;
+  var ok=document.getElementById('bookOk'); var btn=document.getElementById('bookBtn');
+  f.addEventListener('submit',function(e){
+    e.preventDefault();
+    var old=btn.textContent; btn.disabled=true; btn.textContent='Envoi…';
+    var data={}; new FormData(f).forEach(function(v,k){ data[k]=v; });
+    var fx=(window.TenantSDK&&TenantSDK.fetch)?TenantSDK.fetch:fetch;
+    fx('api/reservation',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}).then(function(r){return r.json().then(function(d){return {ok:r.ok,d:d};});}).then(function(x){
+      if(x.ok && x.d.success){ f.style.display='none'; ok.style.display='block'; window.scrollTo({top:0,behavior:'smooth'}); }
+      else { alert((x.d&&x.d.error)||'Une erreur est survenue.'); btn.disabled=false; btn.textContent=old; }
+    }).catch(function(){ alert('Erreur de connexion. Réessayez.'); btn.disabled=false; btn.textContent=old; });
+  });
+})();
+</script>

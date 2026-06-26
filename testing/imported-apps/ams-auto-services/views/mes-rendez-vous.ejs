@@ -1,0 +1,33 @@
+<%- include('partials/header') %>
+<main>
+<section class='page-head'>
+  <div class='container'>
+    <span class='kicker'>Suivi</span>
+    <h1 class='page-title'>Mes rendez-vous</h1>
+    <p class='page-lead'>Connectez-vous pour retrouver l’historique de vos réservations.</p>
+  </div>
+</section>
+<div class='container'>
+  <div id='mrvContent'><p class='empty'>Chargement…</p></div>
+</div>
+</main>
+<%- include('partials/footer') %>
+<script>
+(function(){
+  var box=document.getElementById('mrvContent'); if(!box) return;
+  function loginNeeded(){ box.innerHTML='<div class="empty-card"><p>Connectez-vous pour voir vos rendez-vous.</p><button class="btn btn-primary" data-login-btn style="background-color:#6366f1;color:#fff">Connexion</button></div>'; }
+  function esc(s){ return String(s==null?'':s).replace(/[<>&]/g,function(c){return ({'<':'&lt;','>':'&gt;','&':'&amp;'})[c];}); }
+  function render(list){
+    if(!list.length){ box.innerHTML='<div class="empty-card"><p>Aucun rendez-vous pour le moment.</p><a class="btn btn-primary" href="reservation" style="background-color:#6366f1;color:#fff">Réserver</a></div>'; return; }
+    var map={nouveau:'Nouveau',confirme:'Confirmé',complete:'Complété',annule:'Annulé'};
+    var h='<div class="mrv-list">';
+    list.forEach(function(b){ var st=map[b.status]||b.status||''; h+='<article class="mrv-card"><div class="mrv-top"><span class="mono">'+esc(b.service)+'</span><span class="mrv-status st-'+esc(b.status)+'">'+esc(st)+'</span></div>'; if(b.vehicle){ h+='<p class="mrv-meta">'+esc(b.vehicle)+'</p>'; } if(b.preferred_date){ h+='<p class="mrv-meta mono">'+esc(b.preferred_date)+'</p>'; } h+='</article>'; });
+    h+='</div>'; box.innerHTML=h;
+  }
+  function load(){
+    if(!(window.TenantSDK&&TenantSDK.auth&&TenantSDK.auth.isLoggedIn&&TenantSDK.auth.isLoggedIn())){ loginNeeded(); return; }
+    TenantSDK.fetch('api/mes-rendez-vous').then(function(r){ if(r.status===401){ loginNeeded(); return null; } return r.json(); }).then(function(d){ if(d) render(d.bookings||[]); }).catch(function(){ box.innerHTML='<p class="empty">Erreur de chargement.</p>'; });
+  }
+  if(window.TenantSDK&&TenantSDK.ready&&TenantSDK.ready.then){ TenantSDK.ready.then(load); } else { setTimeout(load,500); }
+})();
+</script>
