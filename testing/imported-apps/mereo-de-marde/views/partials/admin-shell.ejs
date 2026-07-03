@@ -42,7 +42,7 @@ var LABEL = '<%- moduleLabel %>';
 var FIELDS = <%- JSON.stringify(fields) %>;
 var items = [];
 var enEdition = null;
-var COND = {soleil:'#e8720c',nuageux:'#5e7387',pluie:'#2e7dd1',orage:'#7c5ce0',neige:'#4a90c4',verglas:'#2a9db5',brouillard:'#6e7c85',canicule:'#e23d2e',frette:'#1e6fa8'};
+var COND = {soleil:'#e8720c',nuit:'#3f4d9b',nuageux:'#5e7387',pluie:'#2e7dd1',orage:'#7c5ce0',neige:'#4a90c4',verglas:'#2a9db5',brouillard:'#6e7c85',canicule:'#e23d2e',frette:'#1e6fa8'};
 var AFFICHER = FIELDS.filter(function(f){ return ['text', 'textarea', 'select', 'number', 'boolean'].indexOf(f.type) >= 0; }).slice(0, 4);
 function ech(s){ return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
 function toast(msg,type){ var z=document.getElementById('toasts'); if(!z)return; var el=document.createElement('div'); el.className='toast '+(type||''); el.textContent=msg; z.appendChild(el); setTimeout(function(){el.remove();},3200); }

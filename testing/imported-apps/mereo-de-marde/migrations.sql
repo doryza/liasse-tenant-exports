@@ -31,3 +31,14 @@ UPDATE admin_settings SET value = 'Des Laurentides jusqu''à Montréal, chaque c
   WHERE key = 'hero_sous' AND value = 'Microclimats vérifiés à l''oeil pis au thermomètre. La seule météo qui te parle comme ta matante.';
 UPDATE admin_settings SET value = 'Météo d''marde, c''est le bulletin météo hyper-local des Laurentides pis d''la couronne nord de Montréal — de Saint-Donat jusqu''à Laval : chaque coin a son microclimat, pis on le dit sans mettre de gants blancs. Des données en direct, des expressions d''icitte, pis zéro langue de bois.', updated_at = NOW()
   WHERE key = 'about_text' AND value = 'Météo d''marde, c''est le bulletin météo hyper-local des Laurentides : chaque village a son microclimat, pis on le dit sans mettre de gants blancs. Des données fraîches, des expressions d''icitte, pis zéro langue de bois.';
+
+-- ============================================================================
+-- Condition « nuit » (ciel clair la nuit — Open-Meteo is_day). Deux expressions
+-- pour le dictionnaire. Idempotent : WHERE NOT EXISTS sur l'expression.
+-- ============================================================================
+INSERT INTO expressions (expression, signification, exemple, condition)
+SELECT 'Un ciel propre comme un char neuf', 'Une nuitte parfaitement claire, pas un nuage pour cacher les étoiles.', 'Sors le télescope, le ciel est propre comme un char neuf à soir.', 'nuit'
+WHERE NOT EXISTS (SELECT 1 FROM expressions WHERE expression = 'Un ciel propre comme un char neuf');
+INSERT INTO expressions (expression, signification, exemple, condition)
+SELECT 'Veiller à'' belle étoile', 'Passer la soirée dehors, en dessous des étoiles, parce que le ciel est trop beau pour rentrer.', 'On a fini la veillée à'' belle étoile, enroulés dans'' doudou su''l perron.', 'nuit'
+WHERE NOT EXISTS (SELECT 1 FROM expressions WHERE expression = 'Veiller à'' belle étoile');
