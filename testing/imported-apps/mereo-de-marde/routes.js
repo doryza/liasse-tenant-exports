@@ -55,6 +55,10 @@ module.exports = function(services) {
 
   function formatDate(d) { try { return new Date(d).toLocaleDateString('fr-CA', { day: 'numeric', month: 'long', year: 'numeric' }); } catch (e) { return ''; } }
   function verdictDuJour(cond) { const c = CONDITIONS[cond] || CONDITIONS.nuageux; return c.verdicts[Math.floor(Date.now() / 86400000) % c.verdicts.length]; }
+  function surchauffeOuFrette(c, temp) {
+    if (c === 'soleil' || c === 'nuageux' || c === 'nuit') { if (temp >= 28) c = 'canicule'; else if (temp <= -15) c = 'frette'; }
+    return c;
+  }
   function wmoToCondition(code, temp, isDay) {
     var c;
     if ([95, 96, 99].indexOf(code) >= 0) c = 'orage';
@@ -65,31 +69,114 @@ module.exports = function(services) {
     else if (code === 2 || code === 3) c = 'nuageux';
     else c = 'soleil';
     if (c === 'soleil' && isDay === 0) c = 'nuit';
-    if (c === 'soleil' || c === 'nuageux' || c === 'nuit') { if (temp >= 28) c = 'canicule'; else if (temp <= -15) c = 'frette'; }
-    return c;
+    return surchauffeOuFrette(c, temp);
+  }
+  function jourCourt(d) { try { return new Date(d + 'T12:00:00').toLocaleDateString('fr-CA', { weekday: 'short', day: 'numeric' }); } catch (e) { return String(d); } }
+
+  // Deux fournisseurs, même forme de sortie. daily est normalisé :
+  // [{ jour, max, min, cond }] — prêt pour les tuiles de prévisions.
+  async function getMeteoOpenMeteo(v) {
+    const r = await services.fetch('https://api.open-meteo.com/v1/forecast?latitude=' + v.lat + '&longitude=' + v.lng + '&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m,wind_gusts_10m,is_day&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=America%2FToronto&forecast_days=7', { signal: AbortSignal.timeout(4000) });
+    const j = await r.json();
+    if (!r.ok || !j.current) throw new Error('station indisponible');
+    const c = j.current;
+    if (![c.temperature_2m, c.apparent_temperature, c.relative_humidity_2m, c.wind_speed_10m, c.wind_gusts_10m, c.weather_code, c.is_day].every(Number.isFinite)) throw new Error('données incomplètes');
+    let daily = [];
+    if (j.daily && Array.isArray(j.daily.time)) {
+      daily = j.daily.time.map(function(d, i) {
+        const dd = j.daily;
+        const max = dd.temperature_2m_max && dd.temperature_2m_max[i];
+        const min = dd.temperature_2m_min && dd.temperature_2m_min[i];
+        const code = dd.weather_code && dd.weather_code[i];
+        if (!d || !Number.isFinite(max) || !Number.isFinite(min) || !Number.isFinite(code)) return null;
+        return { jour: jourCourt(d), max: Math.round(max), min: Math.round(min), cond: wmoToCondition(code, max) };
+      }).filter(Boolean);
+    }
+    return { ok: true, temp: Math.round(c.temperature_2m), ressenti: Math.round(c.apparent_temperature), humidite: Math.round(c.relative_humidity_2m), vent: Math.round(c.wind_speed_10m), rafales: Math.round(c.wind_gusts_10m), condition: wmoToCondition(c.weather_code, c.temperature_2m, c.is_day), daily: daily };
+  }
+
+  // Repli : ECCC citypage weather (GeoJSON), données du gouvernement du Canada.
+  // Licence ECCC : usage commercial permis avec attribution (voir pied de page).
+  const ECCC_API = 'https://api.weather.gc.ca/collections/citypageweather-realtime/items';
+  const ECCC_ENTETES = { 'User-Agent': 'meteo-de-marde/1.0 (liasse.tech)' };
+  // Sites vérifiés à la main — les coordonnées des sites ECCC sont trop
+  // imprécises pour un appariement au plus proche fiable sur les 13 coins.
+  const ECCC_SITES = { 'saint-sauveur': 'qc-c3', 'morin-heights': 'qc-c3', 'mont-tremblant': 'qc-167', 'saint-donat': 'qc-167', 'val-david': 'qc-33', 'sainte-agathe': 'qc-33', 'saint-jerome': 'qc-13', 'blainville': 'qc-52', 'sainte-therese': 'qc-b3', 'saint-eustache': 'qc-b4', 'terrebonne': 'qc-c7', 'laval': 'qc-76', 'montreal': 'qc-147' };
+  const ECCC_ICONES = { 0: 'soleil', 1: 'soleil', 2: 'nuageux', 3: 'nuageux', 4: 'nuageux', 5: 'soleil', 6: 'pluie', 7: 'pluie', 8: 'neige', 9: 'orage', 10: 'nuageux', 11: 'pluie', 12: 'pluie', 13: 'pluie', 14: 'verglas', 15: 'pluie', 16: 'neige', 17: 'neige', 18: 'neige', 19: 'orage', 20: 'brouillard', 21: 'brouillard', 22: 'nuageux', 23: 'brouillard', 24: 'brouillard', 25: 'neige', 26: 'neige', 27: 'verglas', 28: 'pluie', 30: 'nuit', 31: 'nuit', 32: 'nuageux', 33: 'nuageux', 34: 'nuageux', 35: 'nuit', 36: 'pluie', 37: 'pluie', 38: 'neige', 39: 'orage', 40: 'neige', 41: 'orage', 42: 'orage', 43: 'nuageux', 44: 'brouillard', 45: 'brouillard', 46: 'orage', 47: 'orage', 48: 'orage' };
+  function champEn(x) { return (x && typeof x === 'object') ? (x.en != null ? x.en : x.fr) : x; }
+  function valEccc(x) { if (!x) return null; const n = Number(champEn(x.value != null ? x.value : x)); return Number.isFinite(n) ? n : null; }
+
+  const ecccSiteMemo = {};
+  async function resoudreSiteEccc(v) {
+    const cle = v.slug + '|' + v.lat + '|' + v.lng;
+    if (ecccSiteMemo[cle]) return ecccSiteMemo[cle];
+    const lat = Number(v.lat), lng = Number(v.lng);
+    const bbox = (lng - 0.4) + ',' + (lat - 0.4) + ',' + (lng + 0.4) + ',' + (lat + 0.4);
+    const r = await services.fetch(ECCC_API + '?bbox=' + bbox + '&f=json&limit=50', { signal: AbortSignal.timeout(4000), headers: ECCC_ENTETES });
+    const j = await r.json();
+    let meilleur = null;
+    ((j && j.features) || []).forEach(function(f) {
+      const co = f.geometry && f.geometry.coordinates;
+      if (!co || !f.id) return;
+      const d = Math.pow(co[1] - lat, 2) + Math.pow(co[0] - lng, 2);
+      if (!meilleur || d < meilleur.d) meilleur = { d: d, id: f.id };
+    });
+    if (!meilleur) throw new Error('aucun site ECCC dans le coin');
+    ecccSiteMemo[cle] = meilleur.id;
+    return meilleur.id;
+  }
+
+  async function getMeteoEccc(v) {
+    const site = ECCC_SITES[v.slug] || await resoudreSiteEccc(v);
+    const r = await services.fetch(ECCC_API + '/' + site + '?f=json', { signal: AbortSignal.timeout(4000), headers: ECCC_ENTETES });
+    const j = await r.json();
+    const p = j && j.properties;
+    if (!r.ok || !p || !p.currentConditions) throw new Error('citypage indisponible');
+    const cc = p.currentConditions;
+    const temp = valEccc(cc.temperature);
+    if (temp == null) throw new Error('observation incomplète');
+    // ECCC laisse traîner des champs périmés (windChill à -3 en juillet) :
+    // humidex seulement s'il fait chaud, refroidissement éolien seulement s'il fait frette.
+    const humidex = valEccc(cc.humidex), frissons = valEccc(cc.windChill);
+    const ressenti = (temp >= 20 && humidex != null) ? humidex : ((temp <= 5 && frissons != null) ? frissons : temp);
+    const humidite = valEccc(cc.relativeHumidity);
+    const vent = valEccc(cc.wind && cc.wind.speed);
+    const rafales = valEccc(cc.wind && cc.wind.gust);
+    const cond = surchauffeOuFrette(ECCC_ICONES[Number(cc.iconCode && cc.iconCode.value)] || 'nuageux', temp);
+    const daily = [];
+    const periodes = (p.forecastGroup && p.forecastGroup.forecasts) || [];
+    for (let i = 0; i < periodes.length; i++) {
+      const tp = periodes[i].temperatures && periodes[i].temperatures.temperature && periodes[i].temperatures.temperature[0];
+      if (!tp || champEn(tp['class']) !== 'high') continue;
+      const max = valEccc(tp);
+      const ts = periodes[i + 1] && periodes[i + 1].temperatures && periodes[i + 1].temperatures.temperature && periodes[i + 1].temperatures.temperature[0];
+      const min = (ts && champEn(ts['class']) === 'low') ? valEccc(ts) : null;
+      const af = periodes[i].abbreviatedForecast || {};
+      const icone = af.icon ? Number(af.icon.value) : (af.iconCode ? Number(af.iconCode.value) : NaN);
+      const nom = periodes[i].period && periodes[i].period.textForecastName && (periodes[i].period.textForecastName.fr || periodes[i].period.textForecastName.en);
+      if (max == null || !nom) continue;
+      daily.push({ jour: nom, max: Math.round(max), min: min != null ? Math.round(min) : null, cond: surchauffeOuFrette(ECCC_ICONES[icone] || 'nuageux', max) });
+    }
+    return { ok: true, temp: Math.round(temp), ressenti: Math.round(ressenti), humidite: humidite != null ? Math.round(humidite) : null, vent: vent != null ? Math.round(vent) : null, rafales: rafales != null ? Math.round(rafales) : (vent != null ? Math.round(vent) : null), condition: cond, daily: daily };
   }
 
   const meteoCache = {};
+  const meteoEnVol = {};
   async function getMeteo(v) {
     const cle = 'v' + v.id;
     const now = Date.now();
     const hit = meteoCache[cle];
     if (hit && now - hit.ts < (hit.data.ok ? 600000 : 60000)) return hit.data;
-    try {
-      const r = await services.fetch('https://api.open-meteo.com/v1/forecast?latitude=' + v.lat + '&longitude=' + v.lng + '&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m,wind_gusts_10m,is_day&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=America%2FToronto&forecast_days=7', { signal: AbortSignal.timeout(4000) });
-      const j = await r.json();
-      if (!r.ok || !j.current) throw new Error('station indisponible');
-      const c = j.current;
-      if (![c.temperature_2m, c.apparent_temperature, c.relative_humidity_2m, c.wind_speed_10m, c.wind_gusts_10m, c.weather_code, c.is_day].every(Number.isFinite)) throw new Error('données incomplètes');
-      const cond = wmoToCondition(c.weather_code, c.temperature_2m, c.is_day);
-      const data = { ok: true, temp: Math.round(c.temperature_2m), ressenti: Math.round(c.apparent_temperature), humidite: Math.round(c.relative_humidity_2m), vent: Math.round(c.wind_speed_10m), rafales: Math.round(c.wind_gusts_10m), condition: cond, daily: j.daily || null };
-      meteoCache[cle] = { ts: now, data: data };
+    if (meteoEnVol[cle]) return meteoEnVol[cle];
+    meteoEnVol[cle] = (async function() {
+      let data = null;
+      try { data = await getMeteoOpenMeteo(v); }
+      catch (e) { try { data = await getMeteoEccc(v); } catch (e2) {} }
+      if (!data) data = { ok: false, temp: null, ressenti: null, humidite: null, vent: null, rafales: null, condition: 'nuageux', daily: null };
+      meteoCache[cle] = { ts: Date.now(), data: data };
       return data;
-    } catch (e) {
-      const data = { ok: false, temp: null, ressenti: null, humidite: null, vent: null, rafales: null, condition: 'nuageux', daily: null };
-      meteoCache[cle] = { ts: now, data: data };
-      return data;
-    }
+    })();
+    try { return await meteoEnVol[cle]; } finally { delete meteoEnVol[cle]; }
   }
 
   async function getSettings() { try { const rows = await db.all('SELECT key, value FROM admin_settings'); const s = {}; rows.forEach(function(r){ s[r.key] = r.value; }); return s; } catch (e) { return {}; } }
@@ -174,17 +261,7 @@ module.exports = function(services) {
       if (!village) return res.redirect('.');
       const meteo = await getMeteo(village);
       const cond = meteo.ok ? meteo.condition : 'nuageux';
-      let previsions = [];
-      if (meteo.ok && meteo.daily && Array.isArray(meteo.daily.time)) {
-        previsions = meteo.daily.time.map(function(d, i){
-          const dd = meteo.daily;
-          const max = dd.temperature_2m_max && dd.temperature_2m_max[i];
-          const min = dd.temperature_2m_min && dd.temperature_2m_min[i];
-          const code = dd.weather_code && dd.weather_code[i];
-          if (!d || !Number.isFinite(max) || !Number.isFinite(min) || !Number.isFinite(code)) return null;
-          return { jour: new Date(d + 'T12:00:00').toLocaleDateString('fr-CA', { weekday: 'short', day: 'numeric' }), max: Math.round(max), min: Math.round(min), cond: wmoToCondition(code, max) };
-        }).filter(Boolean);
-      }
+      const previsions = (meteo.ok && Array.isArray(meteo.daily)) ? meteo.daily : [];
       const signalements = await db.all('SELECT * FROM signalements WHERE village_id = $1 AND approuve = 1 ORDER BY created_at DESC LIMIT 12', [village.id]);
       res.render('village', await baseLocals({ pageTitle: village.nom, meteoCondition: cond, village: village, meteo: meteo, previsions: previsions, signalements: signalements, verdict: verdictDuJour(cond), nomCondition: CONDITIONS[cond].nom }));
     } catch (e) { res.redirect('.'); }
