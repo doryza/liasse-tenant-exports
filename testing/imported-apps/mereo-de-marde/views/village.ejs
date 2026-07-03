@@ -15,10 +15,10 @@
 <section class="section">
 <% if (meteo && meteo.ok) { %>
 <div class="stats-rangee">
-<div class="stat-boite"><p class="gros"><%= meteo.ressenti %>°</p><p class="petit"><%= t.ressenti %></p></div>
-<div class="stat-boite"><p class="gros"><%= meteo.vent %> km/h</p><p class="petit"><%= t.vent %></p></div>
-<div class="stat-boite"><p class="gros"><%= meteo.rafales %> km/h</p><p class="petit"><%= t.rafales %></p></div>
-<div class="stat-boite"><p class="gros"><%= meteo.humidite %> %</p><p class="petit"><%= t.humidite %></p></div>
+<% if (meteo.ressenti != null) { %><div class="stat-boite"><p class="gros"><%= meteo.ressenti %>°</p><p class="petit"><%= t.ressenti %></p></div><% } %>
+<% if (meteo.vent != null) { %><div class="stat-boite"><p class="gros"><%= meteo.vent %> km/h</p><p class="petit"><%= t.vent %></p></div><% } %>
+<% if (meteo.rafales != null) { %><div class="stat-boite"><p class="gros"><%= meteo.rafales %> km/h</p><p class="petit"><%= t.rafales %></p></div><% } %>
+<% if (meteo.humidite != null) { %><div class="stat-boite"><p class="gros"><%= meteo.humidite %> %</p><p class="petit"><%= t.humidite %></p></div><% } %>
 </div>
 <% } else { %>
 <p class="etat-vide" style="margin-bottom:40px"><%= t.meteo_indispo %></p>
@@ -30,7 +30,7 @@
 <div class="prev-tuile">
 <p class="prev-jour"><%= p.jour %></p>
 <span class="prev-cond" style="background-color:<%= cmp.accent || '#5e7387' %>"><%= cmp.nom || p.cond %></span>
-<p class="prev-temp"><%= p.max %>° <span><%= p.min %>°</span></p>
+<p class="prev-temp"><%= p.max %>°<% if (p.min != null) { %> <span><%= p.min %>°</span><% } %></p>
 </div>
 <% }); %>
 </div>

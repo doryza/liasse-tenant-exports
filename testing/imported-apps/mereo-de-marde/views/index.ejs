@@ -17,7 +17,7 @@
 <% } %>
 </div>
 <% if (vedetteOk) { %>
-<p class="hero-detail"><%= t.ressenti %> <%= vedette.meteo.ressenti %>° · <%= t.vent %> <%= vedette.meteo.vent %> km/h · <%= t.humidite %> <%= vedette.meteo.humidite %> %</p>
+<p class="hero-detail"><%= t.ressenti %> <%= vedette.meteo.ressenti %>°<% if (vedette.meteo.vent != null) { %> · <%= t.vent %> <%= vedette.meteo.vent %> km/h<% } %><% if (vedette.meteo.humidite != null) { %> · <%= t.humidite %> <%= vedette.meteo.humidite %> %<% } %></p>
 <% } %>
 <p class="hero-sous"><%= settings.hero_sous || '' %></p>
 <div class="hero-actions">
