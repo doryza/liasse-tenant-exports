@@ -55,11 +55,12 @@
 <% if (typeof enAttente !== 'undefined' && enAttente.length > 0) { %>
 <div class="admin-table-wrap" style="box-shadow:none">
 <table class="admin-table">
-<thead><tr><th>Nom</th><th>Village</th><th>Condition</th><th>Message</th><th>Reçu</th><th class="td-actions">Actions</th></tr></thead>
+<thead><tr><th>Nom</th><th>Courriel</th><th>Village</th><th>Condition</th><th>Message</th><th>Reçu</th><th class="td-actions">Actions</th></tr></thead>
 <tbody id="corpsAttente">
 <% enAttente.forEach(function(s){ var cm = (typeof conditionsMeta !== 'undefined' && conditionsMeta[s.condition]) ? conditionsMeta[s.condition] : {}; %>
 <tr id="sig-<%= s.id %>">
 <td><%= s.nom %></td>
+<td><%= s.email ? s.email + ' ✓' : '—' %></td>
 <td><%= s.village_nom || '—' %></td>
 <td><span class="pill pill-cond" style="background:<%= cm.accent || '#5e7387' %>"><%= cm.nom || s.condition %></span></td>
 <td><%= s.message %></td>

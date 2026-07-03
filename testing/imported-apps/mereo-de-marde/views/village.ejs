@@ -68,6 +68,7 @@
 <form id="formSignalement" data-merci="<%= t.signal_merci %>">
 <input type="hidden" name="village_id" value="<%= village.id %>">
 <div class="champ-ligne"><label for="sigNom"><%= t.form_nom %></label><input id="sigNom" name="nom" required maxlength="60" placeholder="Ti-Guy de la 117"></div>
+<div class="champ-ligne"><label for="sigCourriel"><%= t.form_email %></label><input id="sigCourriel" name="email" type="email" required maxlength="160" autocomplete="email" placeholder="ti-guy@exemple.ca"><p class="champ-note"><%= t.form_email_note %></p></div>
 <div class="champ-ligne"><label for="sigCond"><%= t.form_condition %></label><select id="sigCond" name="condition"><% Object.keys(conditionsMeta).forEach(function(c){ %><option value="<%= c %>"><%= conditionsMeta[c].nom %></option><% }); %></select></div>
 <div class="champ-ligne"><label for="sigMsg"><%= t.form_message %></label><textarea id="sigMsg" name="message" rows="3" required maxlength="400" placeholder="Y grêle des balles de golf su'a rue Principale..."></textarea></div>
 <div id="sigRetour" class="form-retour"></div>

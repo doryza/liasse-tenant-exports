@@ -1,6 +1,7 @@
 module.exports = function(services) {
   const router = require('express').Router();
   const db = services.db;
+  const crypto = require('crypto');
 
   const CONDITIONS = {
     soleil: { nom: 'Beau en maudit', accent: '#e8720c', verdicts: ["Sors ton char, y fait beau rare", "Un temps parfait pour s'écraser su'l patio", "Le soleil fesse fort, mets d'la crème", "Beau à te faire brailler de joie, mon tabarnouche", "Enweye dehors, la vitamine D t'attend", "Y fait tellement beau que même ton boss sourit", "Un ciel bleu à te réconcilier avec l'existence"] },
@@ -44,7 +45,14 @@ module.exports = function(services) {
     prevision_7: 'Les 7 prochains jours', topo_titre: 'Le topo du coin',
     signalements_titre: 'Le monde du coin rapporte', signaler_titre: 'Signale ta marde',
     form_nom: 'Ton nom (ou ton surnom)', form_message: "Qu'est-ce qui se passe dehors chez vous ?", form_condition: "C'est quoi le portrait ?",
-    btn_signaler: 'Envoyer mon signalement', signal_merci: "Merci ! Ton signalement va s'afficher après approbation par le boss.",
+    form_email: 'Ton courriel', form_email_note: "Juste pour confirmer que c'est ben toé — on le publie pas, pis on t'enverra pas de niaisage.",
+    btn_signaler: 'Envoyer mon signalement', signal_merci: "Presque fini ! Va checker tes courriels : on t'a envoyé un lien magique pour confirmer ton signalement. Après ça, le boss l'approuve pis ta marde s'affiche.",
+    confirme_ok_titre: "C'est confirmé, mon chum !", confirme_ok_texte: "Ton courriel est bon pis ta marde est rendue dans la file du boss. Dès qu'y l'approuve, ton signalement s'affiche sur la page de ton coin.",
+    confirme_deja_titre: 'Déjà confirmé !', confirme_deja_texte: "Ce lien-là a déjà fait sa job : ton signalement est déjà dans la file d'approbation. Lâche le bouton, tout est beau.",
+    confirme_echec_titre: 'Ouin. Ce lien-là marche pu.', confirme_echec_texte: "Le lien est expiré ou ben pas bon. C'est plate, mais re-signaler ta marde prend trente secondes — pis cette fois-là, niaise pas avant de cliquer sur le lien.",
+    confirme_retour: "Retour à l'accueil", confirme_village: 'Voir mon coin',
+    liasse_texte: "Ce site-là a été bâti au grand complet avec Liasse — pas une ligne de code tapée à' mitaine. N'importe qui peut bâtir un site de même, toé avec.",
+    liasse_cta: 'Bâtis ton propre beau projet icitte',
     empty_villages: 'Pas encore de villages dans la liste. Reviens tantôt !', empty_expressions: 'Le dictionnaire se remplit bientôt, promis.', empty_posts: "Pas de chronique pour l'instant. Le chroniqueur pellette encore sa cour.", empty_signalements: 'Personne a encore chialé icitte. Sois le premier !',
     partage_titre: 'Partage ta marde', partage_choix_village: 'Ton coin', partage_choix_condition: 'La marde en cours',
     btn_generer: 'Génère ma carte de marde', btn_partager: 'Partager', btn_telecharger: 'Télécharger', generation_attente: "Deux secondes, l'artiste dessine...",
@@ -185,6 +193,53 @@ module.exports = function(services) {
   function localsSecours(extra) { return Object.assign({ settings: {}, t: Object.assign({}, T), conditionsMeta: conditionsMeta, googleApiKey: services.google.mapsApiKey, formatDate: formatDate }, extra || {}); }
   async function conditionRegionale() { try { const v = await db.get('SELECT * FROM villages ORDER BY ordre, id LIMIT 1'); if (!v) return 'nuageux'; const m = await getMeteo(v); return m.ok ? m.condition : 'nuageux'; } catch (e) { return 'nuageux'; } }
 
+  // --- Confirmation courriel des signalements ---------------------------------
+  function courrielValide(e) { return typeof e === 'string' && e.length <= 160 && /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e); }
+  function echap(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
+  function urlSite(settings) { return String((settings && settings.site_url) || 'https://meteodmarde.com').replace(/\/+$/, ''); }
+  const LOGO_COURRIEL = 'https://res.cloudinary.com/duhp69meg/image/upload/v1783041536/tapavis_tenant_mereo-de-marde/icon_mereo-de-marde_1783041536175.png';
+  const HEROS_COURRIEL = 'https://res.cloudinary.com/duhp69meg/image/upload/v1783039813/tapavis_tenant_mereo-de-marde/build_mereo-de-marde_1783039813099.png';
+
+  // Le courriel de confirmation : même ton que le site, zéro langue de bois.
+  // Tout ce qui vient du public (nom, message, village) passe par echap().
+  function courrielConfirmationHtml(o) {
+    const c = CONDITIONS[o.condition] || CONDITIONS.nuageux;
+    const settings = o.settings || {};
+    const heros = settings._p_hero_image_url || HEROS_COURRIEL;
+    const logo = settings._p_nav_logo_url || LOGO_COURRIEL;
+    const site = urlSite(settings);
+    const nomSite = settings.business_name || "Météo d'marde";
+    const gras = "font-family:'Paytone One','Arial Black',Arial,sans-serif;";
+    return '<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"></head>' +
+      '<body style="margin:0;padding:0;background-color:#eef2f6;font-family:Figtree,Arial,sans-serif;color:#22303d;">' +
+      '<div style="display:none;max-height:0;overflow:hidden;">Un clic pis ta marde est confirmée. Après ça, le boss l\'approuve.</div>' +
+      '<div style="max-width:600px;margin:0 auto;padding:24px 12px;">' +
+      '<div style="background:#22303d;border-radius:18px 18px 0 0;padding:18px 24px;text-align:left;">' +
+      '<img src="' + echap(logo) + '" alt="' + echap(nomSite) + '" width="44" height="44" style="border-radius:12px;vertical-align:middle;border:0;">' +
+      '<span style="' + gras + 'color:#ffffff;font-size:20px;vertical-align:middle;padding-left:12px;">' + echap(nomSite) + '</span>' +
+      '</div>' +
+      '<img src="' + echap(heros) + '" alt="Les Laurentides dans toute leur splendeur douteuse" width="576" style="width:100%;display:block;border:0;background:#dfe7ee;">' +
+      '<div style="background:#ffffff;border-radius:0 0 18px 18px;padding:30px 28px 26px;border:3px solid #22303d;border-top:0;">' +
+      '<span style="display:inline-block;background:' + c.accent + ';color:#ffffff;font-weight:800;font-size:13px;border-radius:10px;padding:4px 12px;margin-bottom:14px;">' + echap(c.nom) + '</span>' +
+      '<h1 style="' + gras + 'font-size:30px;line-height:1.15;margin:0 0 14px;color:#22303d;">Confirme ta marde !</h1>' +
+      '<p style="font-size:16px;line-height:1.6;margin:0 0 6px;">Salut <strong>' + echap(o.nom) + '</strong> !</p>' +
+      '<p style="font-size:16px;line-height:1.6;margin:0 0 16px;">T\'as signalé ça' + (o.villageNom ? ' à <strong>' + echap(o.villageNom) + '</strong>' : '') + ' :</p>' +
+      '<div style="background:#eef2f6;border-left:5px solid ' + c.accent + ';border-radius:10px;padding:14px 16px;font-size:15px;line-height:1.55;margin:0 0 22px;font-style:italic;">« ' + echap(o.message) + ' »</div>' +
+      '<p style="font-size:16px;line-height:1.6;margin:0 0 22px;">Un dernier p\'tit clic pour prouver que c\'est ben toé, pis ton signalement s\'en va direct dans la file du boss :</p>' +
+      '<div style="text-align:center;margin:0 0 24px;">' +
+      '<a href="' + echap(o.lien) + '" style="' + gras + 'display:inline-block;background:' + c.accent + ';color:#ffffff;text-decoration:none;font-size:18px;padding:15px 30px;border-radius:14px;border:3px solid #22303d;">Je confirme mon courriel</a>' +
+      '</div>' +
+      '<p style="font-size:13px;line-height:1.6;color:#5e7387;margin:0 0 8px;">Le bouton marche pas ? Copie ce lien-là dans ton navigateur :<br><a href="' + echap(o.lien) + '" style="color:#2e7dd1;word-break:break-all;">' + echap(o.lien) + '</a></p>' +
+      '<p style="font-size:13px;line-height:1.6;color:#5e7387;margin:0;">Ce lien-là est bon 48 heures — après ça, y vire en citrouille. Si t\'as jamais rien signalé su\' ' + echap(nomSite) + ', ignore ce courriel-là pis continue ta journée.</p>' +
+      '</div>' +
+      '<div style="text-align:center;padding:22px 16px 6px;font-size:13px;color:#5e7387;line-height:1.7;">' +
+      '<a href="' + echap(site) + '" style="color:#22303d;font-weight:800;text-decoration:none;">' + echap(site.replace(/^https?:\/\//, '')) + '</a><br>' +
+      'Ce site-là a été bâti au grand complet avec <strong>Liasse</strong> — n\'importe qui peut bâtir un beau projet de même.<br>' +
+      '<a href="https://liasse.tech" style="color:#2e7dd1;font-weight:700;">Bâtis ton propre beau projet icitte &rarr; liasse.tech</a>' +
+      '</div>' +
+      '</div></body></html>';
+  }
+
   const MODULES = [
     { key: 'posts', label: 'Chroniques', icon: 'edit', fields: [
       { name: 'title', label: 'Titre', type: 'text', required: true, maxLength: 200, description: "Le titre affiché dans la liste des chroniques et en haut de l'article.", placeholder: 'p. ex. Guide de survie de la première bordée' },
@@ -215,6 +270,8 @@ module.exports = function(services) {
       { name: 'village_id', label: 'ID du village', type: 'number', min: 1, step: 1, description: 'Le numéro (ID) du village concerné — consulte la page Villages pour le trouver.', placeholder: 'p. ex. 3' },
       { name: 'condition', label: 'Condition', type: 'select', options: ['soleil', 'nuit', 'nuageux', 'pluie', 'orage', 'neige', 'verglas', 'brouillard', 'canicule', 'frette'], description: 'La météo signalée par le visiteur.' },
       { name: 'message', label: 'Message', type: 'textarea', required: true, description: "Le signalement tel qu'écrit par le visiteur.", placeholder: "p. ex. Y grêle des balles de golf su'a rue Principale..." },
+      { name: 'email', label: 'Courriel', type: 'text', maxLength: 160, description: 'Le courriel laissé par le visiteur. Vide pour les signalements créés icitte.' },
+      { name: 'email_verifie', label: 'Courriel confirmé', type: 'boolean', default: false, description: 'Coché quand le visiteur a cliqué sur son lien magique de confirmation.' },
       { name: 'approuve', label: 'Approuvé', type: 'boolean', default: false, description: 'Coche pour afficher le signalement publiquement sur la fiche du village.' },
       { name: 'image_url', label: 'Image', type: 'image', description: 'Photo optionnelle jointe au signalement.' }
     ] },
@@ -312,17 +369,102 @@ module.exports = function(services) {
     } catch (e) { res.status(500).json({ error: 'La station est dans le champ. Réessaie tantôt.' }); }
   });
 
+  // Publication en deux temps : le signalement est créé non vérifié, un lien
+  // magique part par courriel (validation@meteodmarde.com), et c'est le clic
+  // sur ce lien qui le fait entrer dans la file d'approbation du boss.
+  const limiteSignalements = {};
   router.post('/api/signalements', async function(req, res) {
     try {
       const nom = String(req.body.nom || '').trim().slice(0, 60);
       const message = String(req.body.message || '').trim().slice(0, 400);
+      const email = String(req.body.email || '').trim().toLowerCase();
       const condition = CONDITIONS[req.body.condition] ? String(req.body.condition) : 'nuageux';
       const villageId = req.body.village_id ? Number(req.body.village_id) : null;
       if (!nom || !message) return res.status(400).json({ error: 'Ton nom pis ton message sont obligatoires.' });
-      await db.run('INSERT INTO signalements (nom, village_id, condition, message, approuve) VALUES ($1, $2, $3, $4, 0)', [nom, villageId, condition, message]);
-      try { if (services.config.contactEmail) await services.email.send({ to: services.config.contactEmail, subject: 'Nouveau signalement météo de ' + nom, html: '<p><strong>' + nom + '</strong> (' + CONDITIONS[condition].nom + ') : ' + message + '</p>' }); } catch (e2) { console.error('Courriel non parti :', e2.message); }
+      if (!courrielValide(email)) return res.status(400).json({ error: "Un vrai courriel est obligatoire — c'est lui qui confirme ton signalement." });
+
+      // Garde-fou par adresse IP (mémoire locale, doux mais suffisant) : 5 envois / 15 min.
+      const ip = String(req.headers['x-forwarded-for'] || req.ip || '?').split(',')[0].trim();
+      const maintenant = Date.now();
+      if (Object.keys(limiteSignalements).length > 5000) { for (const k in limiteSignalements) delete limiteSignalements[k]; }
+      limiteSignalements[ip] = (limiteSignalements[ip] || []).filter(function(t) { return maintenant - t < 900000; });
+      if (limiteSignalements[ip].length >= 5) return res.status(429).json({ error: 'Doucement le moulin ! Réessaie dans quinze minutes.' });
+
+      // Garde-fou par courriel : max 3 signalements non confirmés en 24 h.
+      const enSuspens = await db.get("SELECT COUNT(*)::int AS n FROM signalements WHERE email = $1 AND email_verifie = 0 AND created_at > NOW() - INTERVAL '24 hours'", [email]);
+      if (enSuspens && enSuspens.n >= 3) return res.status(429).json({ error: "T'as déjà trois signalements qui attendent leur confirmation. Va checker tes courriels (pis tes indésirables) !" });
+
+      // Ménage : les non-confirmés de plus de 7 jours ont expiré depuis longtemps.
+      try { await db.run("DELETE FROM signalements WHERE email_verifie = 0 AND email IS NOT NULL AND created_at < NOW() - INTERVAL '7 days'"); } catch (eMenage) {}
+
+      const jeton = crypto.randomBytes(32).toString('hex');
+      const jetonHash = crypto.createHash('sha256').update(jeton).digest('hex');
+      const cree = await db.get("INSERT INTO signalements (nom, village_id, condition, message, approuve, email, email_verifie, verif_token_hash, verif_expire) VALUES ($1, $2, $3, $4, 0, $5, 0, $6, NOW() + INTERVAL '48 hours') RETURNING id", [nom, villageId, condition, message, email, jetonHash]);
+
+      const settings = await getSettings();
+      let village = null;
+      if (villageId) { try { village = await db.get('SELECT nom, slug FROM villages WHERE id = $1', [villageId]); } catch (eV) {} }
+      const lien = urlSite(settings) + '/confirmer/' + jeton;
+      const nomApp = services.config.displayName || "Météo d'marde";
+      const resultat = await services.email.send({
+        to: email,
+        from: { email: 'validation@meteodmarde.com', name: "Météo d'marde" },
+        replyTo: { email: services.config.contactEmail || 'validation@meteodmarde.com' },
+        subject: nomApp + ' — Confirme ton signalement',
+        html: courrielConfirmationHtml({ nom: nom, message: message, condition: condition, villageNom: village ? village.nom : null, lien: lien, settings: settings }),
+        trackingSettings: { clickTracking: { enable: false, enable_text: false } }
+      });
+      if (!resultat || resultat.success === false || resultat.error || resultat.skipped) {
+        // Honnête : sans courriel de confirmation, le signalement ne peut pas aboutir.
+        try { if (cree) await db.run('DELETE FROM signalements WHERE id = $1 AND email_verifie = 0', [cree.id]); } catch (eRetrait) {}
+        return res.status(502).json({ error: "On a pas réussi à t'envoyer le courriel de confirmation. Réessaie dans une minute." });
+      }
+      limiteSignalements[ip].push(maintenant);
       res.json({ success: true });
     } catch (e) { res.status(500).json({ error: 'Ça a pas marché, réessaie dans une minute.' }); }
+  });
+
+  // Le lien magique : confirme le courriel pis pousse le signalement dans la
+  // file du boss. Revisiter un lien déjà utilisé reste une bonne nouvelle.
+  router.get('/confirmer/:jeton', async function(req, res) {
+    let etat = 'echec';
+    let sig = null;
+    let village = null;
+    try {
+      const jeton = String(req.params.jeton || '');
+      if (/^[a-f0-9]{64}$/.test(jeton)) {
+        const jetonHash = crypto.createHash('sha256').update(jeton).digest('hex');
+        sig = await db.get('SELECT * FROM signalements WHERE verif_token_hash = $1', [jetonHash]);
+        if (sig && Number(sig.email_verifie) === 1) {
+          etat = 'deja';
+        } else if (sig && (!sig.verif_expire || new Date(sig.verif_expire).getTime() > Date.now())) {
+          await db.run('UPDATE signalements SET email_verifie = 1, verifie_le = NOW(), updated_at = NOW() WHERE id = $1', [sig.id]);
+          etat = 'ok';
+        } else {
+          sig = null;
+        }
+        if (sig && sig.village_id) { try { village = await db.get('SELECT nom, slug FROM villages WHERE id = $1', [sig.village_id]); } catch (eV) {} }
+        if (etat === 'ok') {
+          try {
+            if (services.config.contactEmail) {
+              const reglages = await getSettings();
+              await services.email.send({
+                to: services.config.contactEmail,
+                from: { email: 'validation@meteodmarde.com', name: "Météo d'marde" },
+                subject: (services.config.displayName || "Météo d'marde") + ' — Signalement à approuver',
+                html: '<p><strong>' + echap(sig.nom) + '</strong> (' + echap((CONDITIONS[sig.condition] || CONDITIONS.nuageux).nom) + (village ? ', ' + echap(village.nom) : '') + ') a confirmé son courriel :</p><blockquote>' + echap(sig.message) + '</blockquote><p><a href="' + echap(urlSite(reglages)) + '/admin">Approuver dans le tableau de bord</a></p>',
+                trackingSettings: { clickTracking: { enable: false, enable_text: false } }
+              });
+            }
+          } catch (eBoss) { console.error('Courriel au boss non parti :', eBoss.message); }
+        }
+      }
+      const cond = (sig && CONDITIONS[sig.condition]) ? sig.condition : await conditionRegionale();
+      const titre = etat === 'ok' ? T.confirme_ok_titre : (etat === 'deja' ? T.confirme_deja_titre : T.confirme_echec_titre);
+      res.render('confirmation', await baseLocals({ pageTitle: titre, meteoCondition: cond, etat: etat, sig: sig, village: village }));
+    } catch (e) {
+      res.render('confirmation', localsSecours({ pageTitle: T.confirme_echec_titre, meteoCondition: 'nuageux', etat: 'echec', sig: null, village: null }));
+    }
   });
 
   router.post('/api/partage/generer', async function(req, res) {
@@ -358,7 +500,9 @@ module.exports = function(services) {
       try { stats.push = await services.push.getSubscriptionCount(); } catch (e) {}
       const comptes = {};
       for (const m of MODULES) comptes[m.key] = (await db.get('SELECT COUNT(*)::int AS n FROM ' + m.key)).n;
-      const enAttente = await db.all('SELECT s.*, v.nom AS village_nom FROM signalements s LEFT JOIN villages v ON v.id = s.village_id WHERE s.approuve = 0 ORDER BY s.created_at DESC LIMIT 10');
+      // Seuls les signalements au courriel confirmé (ou créés à la main, sans
+      // courriel) entrent dans la file — les non-confirmés sont du bruit.
+      const enAttente = await db.all("SELECT s.*, v.nom AS village_nom FROM signalements s LEFT JOIN villages v ON v.id = s.village_id WHERE s.approuve = 0 AND (s.email_verifie = 1 OR s.email IS NULL OR s.email = '') ORDER BY s.created_at DESC LIMIT 10");
       const settings = await getSettings();
       res.render('admin', { stats: stats, comptes: comptes, enAttente: enAttente, adminActif: 'tableau', settings: settings, formatDate: formatDate, conditionsMeta: conditionsMeta });
     } catch (e) {

@@ -1,0 +1,42 @@
+<%- include('partials/header') %>
+<section class="page-tete ciel">
+<%- include('partials/ciel') %>
+<div class="page-tete-inner">
+<% if (etat === 'ok') { %>
+<h1><%= t.confirme_ok_titre %></h1>
+<% } else if (etat === 'deja') { %>
+<h1><%= t.confirme_deja_titre %></h1>
+<% } else { %>
+<h1><%= t.confirme_echec_titre %></h1>
+<% } %>
+</div>
+</section>
+<section class="section">
+<div class="confirme-boite">
+<% if (etat === 'ok' || etat === 'deja') { %>
+<p class="confirme-ic"><%= etat === 'ok' ? '🎉' : '👍' %></p>
+<p class="confirme-texte"><%= etat === 'ok' ? t.confirme_ok_texte : t.confirme_deja_texte %></p>
+<% if (sig && sig.message) { var cmc = conditionsMeta[sig.condition] || {}; %>
+<div class="confirme-rappel">
+<div class="sig-tete">
+<span class="sig-nom"><%= sig.nom %></span>
+<span class="expr-cond" style="background-color:<%= cmc.accent || '#5e7387' %>;margin-bottom:0"><%= cmc.nom || sig.condition %></span>
+<% if (village) { %><span class="sig-date"><%= village.nom %></span><% } %>
+</div>
+<p>« <%= sig.message %> »</p>
+</div>
+<% } %>
+<% } else { %>
+<p class="confirme-ic">🤷</p>
+<p class="confirme-texte"><%= t.confirme_echec_texte %></p>
+<% } %>
+<div class="confirme-actions">
+<% if (village && village.slug) { %><a class="btn" href="village/<%= village.slug %>"><%= t.confirme_village %></a><% } %>
+<a class="btn btn-blanc" href="."><%= t.confirme_retour %></a>
+</div>
+</div>
+</section>
+<section class="section" style="padding-top:0">
+<%- include('partials/liasse') %>
+</section>
+<%- include('partials/footer') %>
