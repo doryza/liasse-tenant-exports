@@ -32,6 +32,10 @@ UPDATE admin_settings SET value = 'Des Laurentides jusqu''à Montréal, chaque c
 UPDATE admin_settings SET value = 'Météo d''marde, c''est le bulletin météo hyper-local des Laurentides pis d''la couronne nord de Montréal — de Saint-Donat jusqu''à Laval : chaque coin a son microclimat, pis on le dit sans mettre de gants blancs. Des données en direct, des expressions d''icitte, pis zéro langue de bois.', updated_at = NOW()
   WHERE key = 'about_text' AND value = 'Météo d''marde, c''est le bulletin météo hyper-local des Laurentides : chaque village a son microclimat, pis on le dit sans mettre de gants blancs. Des données fraîches, des expressions d''icitte, pis zéro langue de bois.';
 
+-- URL officielle du site (domaine personnalisé). Sert au canonical/og:url,
+-- au tampon des cartes de partage pis au lien de partage. Modifiable en admin.
+INSERT INTO admin_settings (key, value) VALUES ('site_url', 'https://meteodmarde.com') ON CONFLICT (key) DO NOTHING;
+
 -- ============================================================================
 -- Condition « nuit » (ciel clair la nuit — Open-Meteo is_day). Deux expressions
 -- pour le dictionnaire. Idempotent : WHERE NOT EXISTS sur l'expression.

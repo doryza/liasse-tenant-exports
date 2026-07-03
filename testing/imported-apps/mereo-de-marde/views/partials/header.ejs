@@ -9,6 +9,17 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="description" content="<%= (typeof settings !== 'undefined' && settings.tagline) ? settings.tagline : 'La météo des Laurentides, dite comme du vrai monde.' %>">
 <title><%= (typeof pageTitle !== 'undefined' && pageTitle) ? pageTitle + ' — ' : '' %><%= (typeof settings !== 'undefined' && settings.business_name) ? settings.business_name : "Météo d'marde" %></title>
+<% var siteOfficiel = (typeof settings !== 'undefined' && settings.site_url) ? String(settings.site_url).replace(/\/$/, '') : ''; %>
+<% var urlCanonique = siteOfficiel ? (siteOfficiel + ((typeof cheminPage !== 'undefined' && cheminPage && cheminPage !== '/') ? cheminPage : '/')) : ''; %>
+<% if (urlCanonique) { %>
+<link rel="canonical" href="<%= urlCanonique %>">
+<meta property="og:url" content="<%= urlCanonique %>">
+<% } %>
+<meta property="og:type" content="website">
+<meta property="og:title" content="<%= (typeof pageTitle !== 'undefined' && pageTitle) ? pageTitle + ' — ' : '' %><%= (typeof settings !== 'undefined' && settings.business_name) ? settings.business_name : "Météo d'marde" %>">
+<meta property="og:description" content="<%= (typeof settings !== 'undefined' && settings.tagline) ? settings.tagline : '' %>">
+<meta property="og:locale" content="fr_CA">
+<% if (typeof settings !== 'undefined' && settings._p_hero_image_url) { %><meta property="og:image" content="<%= settings._p_hero_image_url %>"><% } %>
 <link rel="manifest" href="manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

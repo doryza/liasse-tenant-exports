@@ -6,6 +6,7 @@ module.exports = async function(db, services) {
     else await db.run('INSERT INTO admin_settings (key, value) VALUES ($1, $2) ON CONFLICT (key) DO NOTHING', [k, v]);
   }
   await reglage('business_name', cfg.businessName || cfg.displayName || "Météo d'marde");
+  await reglage('site_url', 'https://meteodmarde.com');
   await reglage('tagline', "La météo des Laurentides pis d'la couronne nord, dite comme du vrai monde.");
   await reglage('hero_sous', "Des Laurentides jusqu'à Montréal, chaque coin a sa marde. Données en direct, vérifiées à l'oeil pis au thermomètre — pis dites comme ta matante.");
   await reglage('hero_caption', 'Les Laurentides dans toute leur splendeur douteuse');

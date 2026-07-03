@@ -34,6 +34,7 @@
 <script>
 (function(){
 var TXT_ATTENTE = <%- JSON.stringify(t.generation_attente) %>;
+var SITE_OFFICIEL = <%- JSON.stringify((settings.site_url || '').replace(/\/$/, '')) %>;
 var btn = document.getElementById('btnGenerer');
 var retour = document.getElementById('pRetour');
 var toile = document.getElementById('toile');
@@ -70,7 +71,7 @@ ecrireLignes(x, d.nomCondition, 56, 190, 968, 76);
 x.font = '50px "Paytone One"';
 ecrireLignes(x, '« ' + d.verdict + ' »', 56, 850, 968, 62);
 x.fillStyle = 'rgba(255,255,255,.85)'; x.font = '600 30px Figtree';
-var lienSite = window.location.host + window.location.pathname.replace(/\/partage\/?$/, '');
+var lienSite = SITE_OFFICIEL ? SITE_OFFICIEL.replace(/^https?:\/\//, '') : (window.location.host + window.location.pathname.replace(/\/partage\/?$/, ''));
 x.fillText(lienSite, 56, 1034);
 toile.style.display = 'block'; img.style.display = 'none';
 actions.style.display = 'flex';
@@ -97,7 +98,7 @@ btn.textContent = txt;
 document.getElementById('btnPartager').addEventListener('click', function(){
 if (!derniere) return;
 var texte = derniere.nomCondition + ' à ' + derniere.village + ' : « ' + derniere.verdict + ' »';
-var url = window.location.href;
+var url = SITE_OFFICIEL ? SITE_OFFICIEL + '/partage' : window.location.href;
 function partagerLien(){ if (navigator.share) { navigator.share({ title: document.title, text: texte, url: url }).catch(function(){}); } else if (navigator.clipboard) { navigator.clipboard.writeText(texte + ' ' + url); alert('Texte copié ! Colle-le où tu veux.'); } }
 if (toile.style.display !== 'none') {
 toile.toBlob(function(b){

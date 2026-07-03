@@ -98,7 +98,7 @@ module.exports = function(services) {
   // Repli : ECCC citypage weather (GeoJSON), données du gouvernement du Canada.
   // Licence ECCC : usage commercial permis avec attribution (voir pied de page).
   const ECCC_API = 'https://api.weather.gc.ca/collections/citypageweather-realtime/items';
-  const ECCC_ENTETES = { 'User-Agent': 'meteo-de-marde/1.0 (liasse.tech)' };
+  const ECCC_ENTETES = { 'User-Agent': 'meteo-de-marde/1.0 (meteodmarde.com)' };
   // Sites vérifiés à la main — les coordonnées des sites ECCC sont trop
   // imprécises pour un appariement au plus proche fiable sur les 13 coins.
   const ECCC_SITES = { 'saint-sauveur': 'qc-c3', 'morin-heights': 'qc-c3', 'mont-tremblant': 'qc-167', 'saint-donat': 'qc-167', 'val-david': 'qc-33', 'sainte-agathe': 'qc-33', 'saint-jerome': 'qc-13', 'blainville': 'qc-52', 'sainte-therese': 'qc-b3', 'saint-eustache': 'qc-b4', 'terrebonne': 'qc-c7', 'laval': 'qc-76', 'montreal': 'qc-147' };
@@ -227,6 +227,7 @@ module.exports = function(services) {
   ];
 
   router.use(async function(req, res, next) {
+    res.locals.cheminPage = req.path;
     if (req.method === 'GET' && !req.path.startsWith('/api') && !req.path.startsWith('/admin') && !req.path.includes('.')) {
       try { await db.run('INSERT INTO site_visits (path) VALUES ($1)', [req.path]); } catch (e) {}
     }
