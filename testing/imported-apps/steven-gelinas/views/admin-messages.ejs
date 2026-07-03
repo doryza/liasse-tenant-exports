@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Messages — Administration</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;900&family=Courier+Prime&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body class="adm">
+<%- include('partials/admin-sidebar') %>
+<main class="adm-main">
+<% var IT=(typeof items!=='undefined'&&items)?items:[]; var fd=(typeof formatDate==='function')?formatDate:function(d){return '';}; %>
+<div class="adm-head"><div><h1>Messages</h1><p class="adm-sub">Messages reçus par le formulaire de contact.</p></div><span class="adm-count" id="countInfo"><%= IT.length %> message<%= IT.length>1?'s':'' %></span></div>
+<div class="adm-toolbar"><input id="q" placeholder="Chercher par nom, courriel ou contenu…" oninput="filterRows()" aria-label="Recherche"></div>
+<div class="adm-card">
+<% if (IT.length) { %>
+<table class="adm-table"><thead><tr><th>De</th><th>Message</th><th>Date</th><th></th></tr></thead><tbody id="msgRows">
+<% IT.forEach(function(m){ %>
+<tr data-search="<%= (String(m.name||'')+' '+String(m.email||'')+' '+String(m.message||'')).toLowerCase() %>">
+<td><strong><%= m.name %></strong><br><small class="adm-mono"><%= m.email %></small></td>
+<td><%= m.message %></td>
+<td><small><%= fd(m.created_at) %></small></td>
+<td class="adm-actions"><% if (m.email) { %><a class="adm-btn adm-btn-sm" href="mailto:<%= m.email %>">Répondre</a><% } %><button class="adm-btn adm-btn-sm adm-btn-danger" onclick="delMsg(<%= m.id %>, this)">Supprimer</button></td>
+</tr>
+<% }); %>
+</tbody></table>
+<div id="noMatch" class="adm-empty" style="display:none">Aucun message ne correspond à votre recherche.</div>
+<% } else { %>
+<p class="adm-empty">Aucun message pour l'instant. Les messages du formulaire de contact apparaîtront ici.</p>
+<% } %>
+</div>
+</main>
+<script>
+var toastTimer=null;
+function toast(msg,ok){var t=document.getElementById('admToast');if(!t){t=document.createElement('div');t.id='admToast';t.className='adm-toast';t.setAttribute('role','status');document.body.appendChild(t);}t.textContent=msg;t.classList.toggle('adm-toast-err',ok===false);t.classList.add('show');if(toastTimer)clearTimeout(toastTimer);toastTimer=setTimeout(function(){t.classList.remove('show');},3200);}
+function filterRows(){
+var q=(document.getElementById('q').value||'').toLowerCase();
+var rows=document.querySelectorAll('#msgRows tr');
+var shown=0;
+rows.forEach(function(r){var ok=!q||(r.getAttribute('data-search')||'').indexOf(q)>-1;r.style.display=ok?'':'none';if(ok)shown++;});
+var nm=document.getElementById('noMatch');if(nm)nm.style.display=(rows.length&&!shown)?'block':'none';
+var ci=document.getElementById('countInfo');if(ci)ci.textContent=shown+' message'+(shown>1?'s':'');
+}
+async function delMsg(id,btn){if(!confirm('Supprimer ce message ?'))return;
+try{var r=await fetch('api/admin/submissions/'+id,{method:'DELETE'});if(r.ok){var tr=btn.closest('tr');if(tr)tr.remove();filterRows();toast('Message supprimé.',true);}else toast('Suppression impossible.',false);}catch(e){toast('Erreur de connexion.',false);}
+}
+</script>
+</body>
+</html>

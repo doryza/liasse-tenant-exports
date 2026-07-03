@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tableau de bord — Administration</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;900&family=Courier+Prime&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body class="adm">
+<%- include('partials/admin-sidebar') %>
+<main class="adm-main">
+<% var st=(typeof stats!=='undefined'&&stats)?stats:{products:0,orders:0,pending:0,messages:0,recentVisits:0,visits:0,users:0,push:0};
+var RO=(typeof recentOrders!=='undefined'&&recentOrders)?recentOrders:[];
+var RM=(typeof recentMessages!=='undefined'&&recentMessages)?recentMessages:[];
+var fp=(typeof formatPrice==='function')?formatPrice:function(v){return Number(v||0).toFixed(2).replace('.',',')+' $';};
+var fd=(typeof formatDate==='function')?formatDate:function(d){return '';};
+var stCls=function(s){if(s==='Livrée')return 'adm-badge-green';if(s==='Expédiée')return 'adm-badge-indigo';if(s==='En préparation')return 'adm-badge-amber';if(s==='Annulée')return 'adm-badge-gray';return 'adm-badge-red';};
+%>
+<div class="adm-head"><div><h1>Tableau de bord</h1><p class="adm-sub">Vue d'ensemble du comptoir — commandes, catalogue, bulletin et messages.</p></div><a class="adm-btn" href="." target="_blank" rel="noopener">Voir le site ↗</a></div>
+<div class="adm-stats">
+<a class="adm-stat adm-stat-link adm-stat-hot" href="admin/orders"><span class="adm-stat-n"><%= st.pending %></span><span>Bons à traiter</span></a>
+<a class="adm-stat adm-stat-link" href="admin/orders"><span class="adm-stat-n"><%= st.orders %></span><span>Commandes</span></a>
+<a class="adm-stat adm-stat-link" href="admin/products"><span class="adm-stat-n"><%= st.products %></span><span>Produits</span></a>
+<a class="adm-stat adm-stat-link" href="admin/messages"><span class="adm-stat-n"><%= st.messages %></span><span>Messages</span></a>
+<div class="adm-stat"><span class="adm-stat-n"><%= st.recentVisits %></span><span>Visites (7 jours)</span></div>
+<div class="adm-stat"><span class="adm-stat-n"><%= st.visits %></span><span>Visites totales</span></div>
+<div class="adm-stat"><span class="adm-stat-n"><%= st.users %></span><span>Clients inscrits</span></div>
+<div class="adm-stat"><span class="adm-stat-n"><%= st.push %></span><span>Abonnés aux avis</span></div>
+</div>
+<div class="adm-cols">
+<section class="adm-card">
+<div class="adm-card-head"><h2>Dernières commandes</h2><a href="admin/orders">Gérer les commandes →</a></div>
+<% if (RO.length) { %>
+<table class="adm-table"><thead><tr><th>Bon</th><th>Client</th><th>Total</th><th>Statut</th><th>Date</th></tr></thead><tbody>
+<% RO.forEach(function(o){ %>
+<tr><td class="adm-mono">nº <%= o.id %></td><td><%= o.customer_name %></td><td class="adm-mono"><%= fp(o.total) %></td><td><span class="adm-badge <%= stCls(o.status) %>"><%= o.status %></span></td><td><%= fd(o.created_at) %></td></tr>
+<% }); %>
+</tbody></table>
+<% } else { %>
+<p class="adm-empty">Aucune commande pour l'instant. Elles apparaîtront ici dès qu'un client postera son bon.</p>
+<% } %>
+</section>
+<section class="adm-card">
+<div class="adm-card-head"><h2>Derniers messages</h2><a href="admin/messages">Tous les messages →</a></div>
+<% if (RM.length) { %>
+<ul class="adm-msg-list">
+<% RM.forEach(function(m){ %>
+<li><strong><%= m.name %></strong><small><%= fd(m.created_at) %></small><p><%= m.message %></p></li>
+<% }); %>
+</ul>
+<% } else { %>
+<p class="adm-empty">Aucun message reçu pour l'instant.</p>
+<% } %>
+</section>
+</div>
+<section class="adm-card">
+<div class="adm-card-head"><h2>Gérer le contenu</h2></div>
+<div class="adm-quick">
+<a href="admin/products"><strong>Produits</strong><span>Ajouter, modifier ou retirer des articles — prix, stock, vedette.</span></a>
+<a href="admin/orders"><strong>Commandes</strong><span>Suivre les bons, changer leur statut, corriger une adresse.</span></a>
+<a href="admin/posts"><strong>Bulletin</strong><span>Publier des nouvelles et des annonces du comptoir.</span></a>
+<a href="admin/messages"><strong>Messages</strong><span>Lire et répondre aux messages du formulaire de contact.</span></a>
+<a href="admin/settings"><strong>Réglages</strong><span>Textes du site, note de livraison et coordonnées.</span></a>
+</div>
+</section>
+</main>
+</body>
+</html>

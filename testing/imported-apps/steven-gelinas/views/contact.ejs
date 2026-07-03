@@ -1,0 +1,47 @@
+<%- include('partials/header') %>
+<% var S=(typeof settings!=='undefined'&&settings)?settings:{}; %>
+<section class="section">
+<div class="sec-head"><h2>Écrire au comptoir</h2></div>
+<div class="contact-split">
+<div class="contact-info">
+<p>Une question sur un article, une commande ou la livraison? Écrivez-nous — on vous répond rapidement, et en français.</p>
+<% if (S.contact_email) { %><p class="mono"><%= S.contact_email %></p><% } %>
+<% if (S.contact_phone) { %><p class="mono"><%= S.contact_phone %></p><% } %>
+<% if (S.business_address) { %><p><%= S.business_address %></p><% } %>
+<% if (S.shipping_text) { %><p class="ship-note mono"><%= S.shipping_text %></p><% } %>
+</div>
+<div class="coupon">
+<form id="contactForm">
+<h3 class="mono">Votre message</h3>
+<div class="field"><label for="ct_name">Nom</label><input id="ct_name" required placeholder="ex. Marie Tremblay"></div>
+<div class="field"><label for="ct_email">Courriel</label><input id="ct_email" type="email" required placeholder="ex. marie@exemple.ca"></div>
+<div class="field"><label for="ct_message">Message</label><textarea id="ct_message" rows="5" required placeholder="Écrivez votre question ici…"></textarea></div>
+<p class="form-error" id="ctError" style="display:none"></p>
+<button class="btn btn-primary btn-block" style="background-color:#6366f1;color:#fff" type="submit" id="ctSubmit">Envoyer au comptoir</button>
+</form>
+<div id="ctDone" style="display:none;text-align:center">
+<div class="postmark postmark-anim" style="margin:0 auto 1.2rem"><span class="pm-top">Message</span><span class="pm-mid">REÇU</span><span class="pm-bot">au comptoir</span></div>
+<h3>Bien reçu!</h3>
+<p>Merci pour votre message — nous vous répondrons rapidement.</p>
+</div>
+</div>
+</div>
+</section>
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+var f=document.getElementById('contactForm');if(!f)return;
+f.addEventListener('submit',function(ev){
+ev.preventDefault();
+var err=document.getElementById('ctError');err.style.display='none';
+var btn=document.getElementById('ctSubmit');btn.disabled=true;btn.textContent='Envoi…';
+fetch('./api/contact',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:document.getElementById('ct_name').value.trim(),email:document.getElementById('ct_email').value.trim(),message:document.getElementById('ct_message').value.trim()})})
+.then(function(r){return r.json().then(function(d){return {ok:r.ok,d:d};});})
+.then(function(x){
+if(!x.ok){err.textContent=x.d.error||'Envoi impossible. Réessayez.';err.style.display='block';btn.disabled=false;btn.textContent='Envoyer au comptoir';return;}
+f.style.display='none';document.getElementById('ctDone').style.display='';
+})
+.catch(function(){err.textContent='Erreur de connexion. Réessayez.';err.style.display='block';btn.disabled=false;btn.textContent='Envoyer au comptoir';});
+});
+});
+</script>
+<%- include('partials/footer') %>

@@ -1,0 +1,35 @@
+</main>
+<footer class="footer">
+<div class="airmail" aria-hidden="true"></div>
+<div class="footer-inner">
+<div class="footer-col footer-brand">
+<span class="brand-word light"><%= (typeof settings!=='undefined'&&settings.business_name)?settings.business_name:'Boutique Gélinas' %></span>
+<p><%= (typeof settings!=='undefined'&&settings.tagline)?settings.tagline:'' %></p>
+<button class="btn btn-outline-light" data-push-btn>Recevoir les nouveautés</button>
+</div>
+<div class="footer-col">
+<h3>Navigation</h3>
+<a href=".">Accueil</a>
+<a href="catalogue">Catalogue</a>
+<a href="bulletin">Bulletin</a>
+<a href="bon-de-commande">Bon de commande</a>
+<a href="commandes">Mes commandes</a>
+</div>
+<div class="footer-col">
+<h3>Nous joindre</h3>
+<% if (typeof settings!=='undefined'&&settings.contact_email) { %><p class="mono"><%= settings.contact_email %></p><% } %>
+<% if (typeof settings!=='undefined'&&settings.contact_phone) { %><p class="mono"><%= settings.contact_phone %></p><% } %>
+<% if (typeof settings!=='undefined'&&settings.business_address) { %><p><%= settings.business_address %></p><% } %>
+<a href="contact">Écrire au comptoir →</a>
+</div>
+</div>
+<div class="footer-base"><p>© <%= new Date().getFullYear() %> <%= (typeof settings!=='undefined'&&settings.business_name)?settings.business_name:'Boutique Gélinas' %> — Tous droits réservés.</p></div>
+</footer>
+<script>
+(function(){var b=document.getElementById('menuBtn'),n=document.getElementById('mobileNav');if(b&&n){b.addEventListener('click',function(){var open=n.classList.toggle('open');b.setAttribute('aria-expanded',open?'true':'false');});}})();
+</script>
+<script>
+try{if(window.TenantSDK){TenantSDK.ui.showInstallBanner();setTimeout(function(){try{TenantSDK.ui.showPushPrompt();}catch(e){}},8000);}}catch(e){}
+</script>
+</body>
+</html>

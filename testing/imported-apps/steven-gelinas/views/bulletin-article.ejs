@@ -1,0 +1,17 @@
+<%- include('partials/header') %>
+<section class="section">
+<% if (typeof post!=='undefined' && post) { %>
+<div class="article">
+<p class="crumbs mono"><a href="bulletin">← Retour au bulletin</a></p>
+<p class="tag-no"><%= post.category || 'Bulletin' %> — <%= formatDate(post.created_at) %></p>
+<h1><%= post.title %></h1>
+<% if (post.image_url) { %><div class="stamp"><img src="<%= post.image_url %>" alt="<%= post.title %>"></div><% } %>
+<div class="article-body">
+<% String(post.content||'').split(/\r?\n\r?\n/).forEach(function(par){ if(!par.trim())return; %><p><%= par %></p><% }); %>
+</div>
+</div>
+<% } else { %>
+<div class="empty-note"><p>Ce billet n'existe plus.</p><a class="btn btn-ghost" href="bulletin">Retour au bulletin</a></div>
+<% } %>
+</section>
+<%- include('partials/footer') %>

@@ -1,0 +1,21 @@
+<%- include('partials/header') %>
+<section class="section">
+<div class="sec-head"><h2>Le bulletin</h2><span class="mono sec-note">Nouvelles du comptoir</span></div>
+<% if (typeof posts!=='undefined' && posts && posts.length) { %>
+<div class="grid grid-2">
+<% posts.forEach(function(a){ %>
+<article class="post-card">
+<% if (a.image_url) { %><a class="stamp" href="bulletin/<%= a.id %>"><img src="<%= a.image_url %>" alt="<%= a.title %>" loading="lazy"></a><% } %>
+<div>
+<p class="tag-no"><%= a.category || 'Bulletin' %> — <%= formatDate(a.created_at) %></p>
+<h3><a href="bulletin/<%= a.id %>"><%= a.title %></a></h3>
+<p class="post-excerpt"><%= String(a.content||'').substring(0,150) %><%= String(a.content||'').length>150?'…':'' %></p>
+</div>
+</article>
+<% }); %>
+</div>
+<% } else { %>
+<div class="empty-note"><p>Le bulletin est encore vide — les premières nouvelles du comptoir s'en viennent.</p><a class="btn btn-ghost" href="catalogue">Parcourir le catalogue</a></div>
+<% } %>
+</section>
+<%- include('partials/footer') %>

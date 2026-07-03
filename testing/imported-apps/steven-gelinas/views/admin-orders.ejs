@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Commandes — Administration</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;900&family=Courier+Prime&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body class="adm">
+<%- include('partials/admin-sidebar') %>
+<main class="adm-main">
+<div class="adm-head"><div><h1>Commandes</h1><p class="adm-sub">Suivez les bons, changez leur statut, corrigez une adresse.</p></div><button class="adm-btn adm-btn-primary" onclick="openCreate()">+ Nouvelle commande</button></div>
+<div class="adm-toolbar">
+<input id="q" placeholder="Chercher par client, courriel ou nº de bon…" oninput="renderTable()" aria-label="Recherche">
+<select id="fStatus" onchange="renderTable()" aria-label="Filtrer par statut"><option value="">Tous les statuts</option><option>Reçue</option><option>En préparation</option><option>Expédiée</option><option>Livrée</option><option>Annulée</option></select>
+<span class="adm-count" id="countInfo"></span>
+</div>
+<div class="adm-card">
+<table class="adm-table"><thead><tr><th>Bon</th><th>Client</th><th>Livraison</th><th>Total</th><th>Statut</th><th>Date</th><th></th></tr></thead><tbody id="rows"></tbody></table>
+<div id="empty" class="adm-empty" style="display:none"></div>
+</div>
+</main>
+<div class="adm-modal" id="modal">
+<div class="adm-dialog" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+<h2 id="modalTitle">Nouvelle commande (manuelle)</h2>
+<form id="modalForm" onsubmit="saveItem(event)">
+<p class="adm-hint">Utile pour une commande prise au téléphone ou au comptoir. Les articles ne sont pas rattachés — indiquez le total à la main.</p>
+<div class="adm-field"><label for="f_customer_name">Nom du client</label><input id="f_customer_name" required placeholder="ex. Marie Tremblay"></div>
+<div class="adm-field-row">
+<div class="adm-field"><label for="f_email">Courriel</label><input id="f_email" type="email" placeholder="ex. marie@exemple.ca"></div>
+<div class="adm-field"><label for="f_phone">Téléphone</label><input id="f_phone" placeholder="ex. 819 555-0123"></div>
+</div>
+<div class="adm-field"><label for="f_address">Adresse</label><input id="f_address" placeholder="ex. 123, rue Principale"></div>
+<div class="adm-field-row">
+<div class="adm-field"><label for="f_city">Ville</label><input id="f_city" placeholder="ex. Trois-Rivières"></div>
+<div class="adm-field"><label for="f_postal_code">Code postal</label><input id="f_postal_code" placeholder="ex. G8T 1A1"></div>
+</div>
+<div class="adm-field-row">
+<div class="adm-field"><label for="f_status">Statut</label><select id="f_status"><option>Reçue</option><option>En préparation</option><option>Expédiée</option><option>Livrée</option><option>Annulée</option></select></div>
+<div class="adm-field"><label for="f_total">Total ($)</label><input id="f_total" type="number" min="0" step="0.01" placeholder="ex. 128.00"></div>
+</div>
+<div class="adm-field"><label for="f_note">Note</label><textarea id="f_note" rows="2" placeholder="ex. Laisser le colis sur la galerie"></textarea></div>
+<div class="adm-dialog-foot"><button class="adm-btn" type="button" onclick="showModal(false)">Annuler</button><button class="adm-btn adm-btn-primary" type="submit" id="saveBtn">Enregistrer le bon</button></div>
+</form>
+</div>
+</div>
+<script>
+var ORDERS = <%- JSON.stringify(typeof items!=='undefined'&&items?items:[]).replace(/</g,'\\u003c') %>;
+var STATUSES = ['Reçue','En préparation','Expédiée','Livrée','Annulée'];
+var editingId = null;
+var toastTimer = null;
+function toast(msg,ok){var t=document.getElementById('admToast');if(!t){t=document.createElement('div');t.id='admToast';t.className='adm-toast';t.setAttribute('role','status');document.body.appendChild(t);}t.textContent=msg;t.classList.toggle('adm-toast-err',ok===false);t.classList.add('show');if(toastTimer)clearTimeout(toastTimer);toastTimer=setTimeout(function(){t.classList.remove('show');},3200);}
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function fmtPrice(v){return Number(v||0).toFixed(2).replace('.',',')+' $';}
+function fmtDate(d){try{return new Date(d).toLocaleDateString('fr-CA');}catch(e){return '';}}
+function val(id){return document.getElementById(id).value.trim();}
+function renderTable(){
+var q=(document.getElementById('q').value||'').toLowerCase();
+var st=document.getElementById('fStatus').value;
+var rows=ORDERS.filter(function(o){return (!q||String(o.customer_name||'').toLowerCase().indexOf(q)>-1||String(o.email||'').toLowerCase().indexOf(q)>-1||String(o.id).indexOf(q)>-1)&&(!st||o.status===st);});
+document.getElementById('rows').innerHTML=rows.map(function(o){
+var sel='<select class="adm-select" onchange="updateStatus('+o.id+',this.value)" aria-label="Statut du bon nº '+o.id+'">'+STATUSES.map(function(s){return '<option value="'+s+'"'+(s===o.status?' selected':'')+'>'+s+'</option>';}).join('')+'</select>';
+var its=(o.items||[]).map(function(it){return '<li>'+it.quantity+' × '+esc(it.product_name)+' (nº '+esc(it.item_number||'')+')<span class="adm-mono">'+fmtPrice(Number(it.price)*it.quantity)+'</span></li>';}).join('');
+return '<tr><td class="adm-mono">nº '+o.id+'</td><td><strong>'+esc(o.customer_name||'—')+'</strong><br><small>'+esc(o.email||'')+' '+esc(o.phone||'')+'</small></td><td><small>'+esc(o.address||'')+', '+esc(o.city||'')+' '+esc(o.postal_code||'')+(o.note?'<br>Note : '+esc(o.note):'')+'</small></td><td class="adm-mono">'+fmtPrice(o.total)+'</td><td>'+sel+'</td><td><small>'+fmtDate(o.created_at)+'</small></td><td class="adm-actions"><button class="adm-btn adm-btn-sm" onclick="toggleItems('+o.id+')">Détail</button><button class="adm-btn adm-btn-sm" onclick="openEdit('+o.id+')">Modifier</button><button class="adm-btn adm-btn-sm adm-btn-danger" onclick="delOrder('+o.id+')">Supprimer</button></td></tr>'+
+'<tr id="det'+o.id+'" style="display:none"><td colspan="7"><ul class="adm-order-items">'+(its||'<li>Aucun article — bon créé manuellement.</li>')+'</ul></td></tr>';
+}).join('');
+var total=rows.reduce(function(s,o){return s+Number(o.total||0);},0);
+document.getElementById('countInfo').textContent=rows.length?(rows.length+' bon'+(rows.length>1?'s':'')+' — '+fmtPrice(total)):'';
+var em=document.getElementById('empty');
+em.style.display=rows.length?'none':'block';
+em.textContent=ORDERS.length?'Aucun bon ne correspond à vos filtres.':"Aucune commande pour l'instant. Les bons postés par vos clients apparaîtront ici — vous pouvez aussi en créer un manuellement.";
+}
+function toggleItems(id){var r=document.getElementById('det'+id);if(r)r.style.display=r.style.display==='none'?'':'none';}
+async function updateStatus(id,status){
+try{
+var r=await fetch('api/admin/orders/'+id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:status})});
+var d=await r.json();
+if(!r.ok){toast(d.error||'Mise à jour impossible.',false);renderTable();return;}
+var o=ORDERS.find(function(x){return x.id===id;});if(o)o.status=status;
+renderTable();toast('Bon nº '+id+' — statut « '+status+' » enregistré.',true);
+}catch(e){toast('Erreur de connexion.',false);}
+}
+function showModal(on){document.getElementById('modal').classList.toggle('show',!!on);if(on)setTimeout(function(){var f=document.getElementById('f_customer_name');if(f)f.focus();},60);}
+function fillForm(o){['customer_name','email','phone','address','city','postal_code','note'].forEach(function(k){document.getElementById('f_'+k).value=(o&&o[k]!=null)?o[k]:'';});document.getElementById('f_status').value=(o&&o.status)?o.status:'Reçue';document.getElementById('f_total').value=(o&&o.total!=null)?o.total:'';}
+function openCreate(){editingId=null;document.getElementById('modalTitle').textContent='Nouvelle commande (manuelle)';fillForm(null);showModal(true);}
+function openEdit(id){var o=ORDERS.find(function(x){return x.id===id;});if(!o)return;editingId=id;document.getElementById('modalTitle').textContent='Modifier le bon nº '+id;fillForm(o);showModal(true);}
+async function saveItem(ev){ev.preventDefault();
+var body={customer_name:val('f_customer_name'),email:val('f_email'),phone:val('f_phone'),address:val('f_address'),city:val('f_city'),postal_code:val('f_postal_code'),status:document.getElementById('f_status').value,total:parseFloat(val('f_total'))||0,note:document.getElementById('f_note').value};
+if(!body.customer_name){toast('Le nom du client est requis.',false);return;}
+var sb=document.getElementById('saveBtn');sb.disabled=true;sb.textContent='Enregistrement…';
+try{
+var r=await fetch('api/admin/orders'+(editingId?'/'+editingId:''),{method:editingId?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+var d=await r.json();
+if(!r.ok){toast(d.error||'Enregistrement impossible.',false);}
+else{
+if(editingId){var i=ORDERS.findIndex(function(x){return x.id===editingId;});if(i>-1){d.order.items=ORDERS[i].items||[];ORDERS[i]=d.order;}}
+else{d.order.items=[];ORDERS.unshift(d.order);}
+renderTable();showModal(false);toast(editingId?('Bon nº '+d.order.id+' mis à jour.'):('Bon nº '+d.order.id+' créé.'),true);
+}
+}catch(e){toast('Erreur de connexion.',false);}
+sb.disabled=false;sb.textContent='Enregistrer le bon';
+}
+async function delOrder(id){if(!confirm('Supprimer définitivement ce bon de commande ?'))return;
+try{var r=await fetch('api/admin/orders/'+id,{method:'DELETE'});if(r.ok){ORDERS=ORDERS.filter(function(x){return x.id!==id;});renderTable();toast('Bon supprimé.',true);}else toast('Suppression impossible.',false);}catch(e){toast('Erreur de connexion.',false);}
+}
+document.getElementById('modal').addEventListener('click',function(e){if(e.target===this)showModal(false);});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')showModal(false);});
+renderTable();
+</script>
+</body>
+</html>

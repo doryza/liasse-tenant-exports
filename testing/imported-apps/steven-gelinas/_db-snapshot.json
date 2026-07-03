@@ -1,0 +1,322 @@
+{
+  "exportedAt": "2026-07-03T07:46:56.943Z",
+  "tables": {
+    "admin_invites": {
+      "columns": [
+        "id",
+        "email",
+        "token",
+        "role",
+        "status",
+        "invited_by",
+        "expires_at",
+        "accepted_at",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_webauthn_credentials": {
+      "columns": [
+        "id",
+        "admin_user_id",
+        "credential_id",
+        "public_key",
+        "counter",
+        "device_name",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_users": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "password_hash",
+        "display_name",
+        "role",
+        "active",
+        "activation_token",
+        "invited_by",
+        "invite_token",
+        "invite_expires_at",
+        "last_login_at",
+        "is_active",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "posts": {
+      "columns": [
+        "id",
+        "title",
+        "content",
+        "image_url",
+        "category",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Le catalogue d'automne est arrivé",
+          "content": "La nouvelle édition est en ligne : six pièces choisies pour la saison froide, de la planche d'érable à la couverture de laine.\n\nComme toujours, les quantités sont limitées — quand un numéro est épuisé, il quitte le catalogue jusqu'à la prochaine fournée. Activez les avis pour ne rien manquer.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783063216/tapavis_tenant_steven-gelinas/build_steven-gelinas_1783063216619.png",
+          "category": "Nouveautés",
+          "published": 1,
+          "created_at": "2026-07-03T07:46:36.550Z",
+          "updated_at": "2026-07-03T07:46:36.550Z"
+        },
+        {
+          "id": 2,
+          "title": "Comment nous emballons vos commandes",
+          "content": "Chaque bon de commande est préparé à la main : papier kraft, ficelle de coton, coins renforcés.\n\nPas de plastique bulle, pas de boîte trois fois trop grande. Votre colis part avec son numéro de bon et arrive comme une lettre qu'on a hâte d'ouvrir.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783063216/tapavis_tenant_steven-gelinas/build_steven-gelinas_1783063216770.png",
+          "category": "Coulisses",
+          "published": 1,
+          "created_at": "2026-07-03T07:46:36.556Z",
+          "updated_at": "2026-07-03T07:46:36.556Z"
+        },
+        {
+          "id": 3,
+          "title": "Trois idées-cadeaux à moins de 40 $",
+          "content": "La tasse en grès indigo (nº 1002) et la bougie Forêt boréale (nº 1003) sont des valeurs sûres à offrir, sans se ruiner.\n\nGlissez une note au moment de commander et nous l'ajouterons au colis, écrite à la main.",
+          "image_url": null,
+          "category": "Conseils",
+          "published": 1,
+          "created_at": "2026-07-03T07:46:36.564Z",
+          "updated_at": "2026-07-03T07:46:36.564Z"
+        },
+        {
+          "id": 4,
+          "title": "Les commandes des Fêtes",
+          "content": "Pour recevoir votre colis avant les Fêtes, postez votre bon de commande au plus tard le 15 décembre.\n\nAprès cette date, nous continuons d'expédier, mais la poste fait ce qu'elle peut — et nous aussi.",
+          "image_url": null,
+          "category": "Avis",
+          "published": 1,
+          "created_at": "2026-07-03T07:46:36.570Z",
+          "updated_at": "2026-07-03T07:46:36.570Z"
+        }
+      ]
+    },
+    "admin_settings": {
+      "columns": [
+        "key",
+        "value",
+        "updated_at"
+      ],
+      "totalRows": 36,
+      "sampleRows": [
+        {
+          "key": "business_name",
+          "value": "Boutique Gélinas",
+          "updated_at": "2026-07-03T07:46:36.422Z"
+        },
+        {
+          "key": "tagline",
+          "value": "Des objets utiles et bien faits, vendus par catalogue.",
+          "updated_at": "2026-07-03T07:46:36.428Z"
+        },
+        {
+          "key": "catalogue_edition",
+          "value": "Catalogue — Édition automne-hiver",
+          "updated_at": "2026-07-03T07:46:36.435Z"
+        },
+        {
+          "key": "hero_title",
+          "value": "Des objets utiles, choisis avec soin.",
+          "updated_at": "2026-07-03T07:46:36.441Z"
+        },
+        {
+          "key": "hero_subtitle",
+          "value": "Un petit catalogue d'articles pour la maison et l'atelier — commandés en ligne, emballés à la main, postés chez vous.",
+          "updated_at": "2026-07-03T07:46:36.450Z"
+        },
+        {
+          "key": "about_title",
+          "value": "Le mot du comptoir",
+          "updated_at": "2026-07-03T07:46:36.457Z"
+        },
+        {
+          "key": "about_text",
+          "value": "Boutique Gélinas, c'est un comptoir de vente par catalogue comme dans le temps : peu d'articles, mais des bons. Chaque pièce est choisie pour durer, vérifiée à la main, puis emballée dans du papier kraft et mise à la poste avec soin. Pas d'entrepôt géant, pas de pacotille — juste des objets qu'on est fiers de vous poster.",
+          "updated_at": "2026-07-03T07:46:36.463Z"
+        },
+        {
+          "key": "how_title",
+          "value": "Commander, c'est simple",
+          "updated_at": "2026-07-03T07:46:36.468Z"
+        },
+        {
+          "key": "shipping_text",
+          "value": "Livraison partout au Québec en 2 à 5 jours ouvrables. Emballage kraft recyclable, sans frais cachés.",
+          "updated_at": "2026-07-03T07:46:36.474Z"
+        },
+        {
+          "key": "push_cta_text",
+          "value": "Recevez un avis quand de nouveaux articles entrent au catalogue.",
+          "updated_at": "2026-07-03T07:46:36.480Z"
+        }
+      ]
+    },
+    "site_visits": {
+      "columns": [
+        "id",
+        "path",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "products": {
+      "columns": [
+        "id",
+        "name",
+        "item_number",
+        "description",
+        "price",
+        "category",
+        "image_url",
+        "in_stock",
+        "featured",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 6,
+      "sampleRows": [
+        {
+          "id": 1,
+          "name": "Planche à découper en érable",
+          "item_number": "1001",
+          "description": "Érable massif du Québec, huilée à la main à l'huile de lin. Rainure à jus, 40 × 25 cm. Elle s'use bien et se ressuie d'un coup de torchon.",
+          "price": "68.00",
+          "category": "Cuisine",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783063216/tapavis_tenant_steven-gelinas/build_steven-gelinas_1783063216338.png",
+          "in_stock": 1,
+          "featured": 1,
+          "created_at": "2026-07-03T07:46:36.510Z",
+          "updated_at": "2026-07-03T07:46:36.510Z"
+        },
+        {
+          "id": 2,
+          "name": "Tasse en grès indigo",
+          "item_number": "1002",
+          "description": "Tournée à la main, émail indigo profond, prise franche. 350 ml, va au lave-vaisselle et au micro-ondes.",
+          "price": "32.00",
+          "category": "Cuisine",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783063219/tapavis_tenant_steven-gelinas/build_steven-gelinas_1783063218911.png",
+          "in_stock": 1,
+          "featured": 0,
+          "created_at": "2026-07-03T07:46:36.518Z",
+          "updated_at": "2026-07-03T07:46:36.518Z"
+        },
+        {
+          "id": 3,
+          "name": "Bougie de soya « Forêt boréale »",
+          "item_number": "1003",
+          "description": "Cire de soya pure et huiles essentielles de sapin baumier. Environ 45 heures de combustion, mèche de coton.",
+          "price": "24.00",
+          "category": "Maison",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783063216/tapavis_tenant_steven-gelinas/build_steven-gelinas_1783063216315.png",
+          "in_stock": 1,
+          "featured": 1,
+          "created_at": "2026-07-03T07:46:36.523Z",
+          "updated_at": "2026-07-03T07:46:36.523Z"
+        },
+        {
+          "id": 4,
+          "name": "Couverture de laine tissée",
+          "item_number": "1004",
+          "description": "Laine mérinos tissée serrée, lisière cousue, rayure indigo. 130 × 180 cm — la couverture du salon pour les soirs frisquets.",
+          "price": "145.00",
+          "category": "Maison",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783063215/tapavis_tenant_steven-gelinas/build_steven-gelinas_1783063215409.png",
+          "in_stock": 1,
+          "featured": 0,
+          "created_at": "2026-07-03T07:46:36.529Z",
+          "updated_at": "2026-07-03T07:46:36.529Z"
+        },
+        {
+          "id": 5,
+          "name": "Tablier d'atelier en toile cirée",
+          "item_number": "1005",
+          "description": "Toile cirée 12 oz, sangles de cuir réglables, trois poches renforcées aux rivets. Il vieillit mieux que nous.",
+          "price": "85.00",
+          "category": "Atelier",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783063217/tapavis_tenant_steven-gelinas/build_steven-gelinas_1783063217645.png",
+          "in_stock": 1,
+          "featured": 1,
+          "created_at": "2026-07-03T07:46:36.535Z",
+          "updated_at": "2026-07-03T07:46:36.535Z"
+        },
+        {
+          "id": 6,
+          "name": "Couteau pliant en noyer",
+          "item_number": "1006",
+          "description": "Lame en inox de 8 cm, manche en noyer huilé, cran de sûreté. Livré affûté, prêt à travailler.",
+          "price": "96.00",
+          "category": "Atelier",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783063217/tapavis_tenant_steven-gelinas/build_steven-gelinas_1783063216930.png",
+          "in_stock": 1,
+          "featured": 0,
+          "created_at": "2026-07-03T07:46:36.540Z",
+          "updated_at": "2026-07-03T07:46:36.540Z"
+        }
+      ]
+    },
+    "orders": {
+      "columns": [
+        "id",
+        "user_id",
+        "customer_name",
+        "email",
+        "phone",
+        "address",
+        "city",
+        "postal_code",
+        "note",
+        "status",
+        "total",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "order_items": {
+      "columns": [
+        "id",
+        "order_id",
+        "product_id",
+        "product_name",
+        "item_number",
+        "price",
+        "quantity",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "form_submissions": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "message",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    }
+  }
+}

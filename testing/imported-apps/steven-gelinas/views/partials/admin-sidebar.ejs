@@ -1,0 +1,20 @@
+<aside class="adm-sidebar" id="admSidebar">
+<div class="adm-brand"><span class="adm-brand-mark">BG</span><div><strong>Boutique Gélinas</strong><small>Administration</small></div></div>
+<nav class="adm-nav">
+<a href="admin" class="<%= (typeof active!=='undefined'&&active==='dashboard')?'on':'' %>">Tableau de bord</a>
+<a href="admin/products" class="<%= (typeof active!=='undefined'&&active==='products')?'on':'' %>">Produits</a>
+<a href="admin/orders" class="<%= (typeof active!=='undefined'&&active==='orders')?'on':'' %>">Commandes<% if (typeof badges!=='undefined' && badges && Number(badges.pendingOrders)>0) { %><span class="adm-nav-badge"><%= badges.pendingOrders %></span><% } %></a>
+<a href="admin/posts" class="<%= (typeof active!=='undefined'&&active==='posts')?'on':'' %>">Bulletin</a>
+<a href="admin/messages" class="<%= (typeof active!=='undefined'&&active==='messages')?'on':'' %>">Messages</a>
+<a href="admin/settings" class="<%= (typeof active!=='undefined'&&active==='settings')?'on':'' %>">Réglages</a>
+</nav>
+<div class="adm-side-foot">
+<a href="." target="_blank">Voir le site</a>
+<a href="admin/logout">Déconnexion</a>
+</div>
+</aside>
+<div class="adm-overlay" id="admOverlay"></div>
+<header class="adm-topbar"><button id="admMenuBtn" aria-label="Menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button><span><%= (typeof pageTitle!=='undefined')?pageTitle:'Administration' %></span></header>
+<script>
+(function(){var b=document.getElementById('admMenuBtn'),s=document.getElementById('admSidebar'),o=document.getElementById('admOverlay');if(b&&s){b.addEventListener('click',function(){s.classList.toggle('open');if(o)o.classList.toggle('show');});}if(o&&s){o.addEventListener('click',function(){s.classList.remove('open');o.classList.remove('show');});}})();
+</script>

@@ -1,0 +1,40 @@
+<%- include('partials/header') %>
+<section class="section">
+<div class="sec-head"><h2>Mes commandes</h2><span class="mono sec-note">Suivi de vos bons</span></div>
+<div id="ordLogin" class="empty-note" style="display:none">
+<p>Connectez-vous pour retrouver vos commandes — un code de vérification vous sera envoyé.</p>
+<button class="btn btn-primary" style="background-color:#6366f1;color:#fff" data-login-btn>Connexion</button>
+</div>
+<div id="ordLoading" class="empty-note"><p>Chargement de vos commandes…</p></div>
+<div id="ordEmpty" class="empty-note" style="display:none">
+<p>Aucune commande à votre nom pour l'instant.</p>
+<a class="btn btn-primary" style="background-color:#6366f1;color:#fff" href="catalogue">Ouvrir le catalogue</a>
+</div>
+<div id="ordList"></div>
+</section>
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+function show(id,on){var el=document.getElementById(id);if(el)el.style.display=on?'':'none';}
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function fmtDate(d){try{return new Date(d).toLocaleDateString('fr-CA',{year:'numeric',month:'long',day:'numeric'});}catch(e){return '';}}
+function badge(s){var map={'Reçue':'st-recue','En préparation':'st-prep','Expédiée':'st-exp','Livrée':'st-liv','Annulée':'st-ann'};return '<span class="status '+(map[s]||'st-recue')+'">'+esc(s)+'</span>';}
+function run(){
+if(!window.TenantSDK){show('ordLoading',false);show('ordLogin',true);return;}
+TenantSDK.ready.then(function(){
+var logged=false;try{logged=TenantSDK.auth.isLoggedIn();}catch(e){}
+if(!logged){show('ordLoading',false);show('ordLogin',true);return;}
+TenantSDK.fetch('./api/my-orders').then(function(r){return r.json();}).then(function(d){
+show('ordLoading',false);
+var orders=d.orders||[];
+if(!orders.length){show('ordEmpty',true);return;}
+document.getElementById('ordList').innerHTML=orders.map(function(o){
+var items=(o.items||[]).map(function(it){return '<li><span class="mono">'+it.quantity+' ×</span> '+esc(it.product_name)+' <span class="leader"></span><span class="mono">'+BG.fmtPrice(Number(it.price)*it.quantity)+'</span></li>';}).join('');
+return '<article class="coupon order-card"><div class="order-head"><div><p class="tag-no">Bon nº '+o.id+' — '+fmtDate(o.created_at)+'</p>'+badge(o.status)+'</div><p class="price mono">'+BG.fmtPrice(o.total)+'</p></div><ul class="order-items">'+items+'</ul></article>';
+}).join('');
+}).catch(function(){show('ordLoading',false);var e=document.getElementById('ordEmpty');e.style.display='';e.innerHTML='<p>Impossible de charger vos commandes. Rechargez la page.</p>';});
+}).catch(function(){show('ordLoading',false);show('ordLogin',true);});
+}
+run();
+});
+</script>
+<%- include('partials/footer') %>

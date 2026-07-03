@@ -1,0 +1,90 @@
+{
+  "slug": "steven-gelinas",
+  "displayName": "Steven gelinas",
+  "description": "Type de projet: Site web pour une entreprise.\n\nBut: Vendre des produits.",
+  "status": "active",
+  "generationVersion": 1,
+  "primaryColor": "#6366f1",
+  "iconUrl": "https://res.cloudinary.com/duhp69meg/image/upload/v1783064803/tapavis_tenant_steven-gelinas/icon_steven-gelinas_1783064803566.png",
+  "enabledAuthMethods": [
+    "webauthn",
+    "sms",
+    "email"
+  ],
+  "notificationsEnabled": true,
+  "geolocationEnabled": true,
+  "customConfig": {
+    "language": "fr",
+    "designManifest": {
+      "concept": "Catalogue postal",
+      "copyVoice": "français de bon de commande — courtois, précis, un brin rétro",
+      "elements": {
+        "blogSurfaced": true,
+        "pages": [
+          "accueil",
+          "catalogue",
+          "produit",
+          "bon-de-commande",
+          "commandes",
+          "bulletin",
+          "contact",
+          "admin"
+        ],
+        "userLogin": true
+      },
+      "heroThesis": "La page d'accueil s'ouvre sur la couverture du catalogue de la saison — un timbre perforé géant portant la photo de couverture, oblitéré du cachet de la maison — parce qu'en vente par correspondance, la couverture du catalogue EST le magasin.",
+      "iconDirection": "Emblème plat d'un timbre-poste perforé à l'encre indigo sur papier crème, portant un petit colis ficelé, avec un coin rayé par-avion rouge et indigo.",
+      "palette": {
+        "accents": [
+          "#d6453d",
+          "#efe6d3"
+        ],
+        "ground": "#fafaf7",
+        "ink": "#20244d",
+        "primary": "#6366f1"
+      },
+      "signatureMove": "Chaque photo produit est encadrée en timbre-poste perforé (perforations CSS), les sections sont séparées par des bandes par-avion rouge/indigo, et le paiement se conclut par un tampon caoutchouc « REÇUE » animé sur le bon de commande.",
+      "summary": "La boutique est présentée comme un catalogue de vente par correspondance québécois : chaque produit est une planche-timbre numérotée, le panier est un vrai « bon de commande » à coupon pointillé, et la confirmation reçoit un tampon postal « REÇUE ».",
+      "typography": "Libre Franklin 900 (gothique de catalogue, titres et UI) + Courier Prime (machine à écrire pour numéros d'article, prix et étiquettes de formulaire)"
+    }
+  },
+  "promptHistory": [
+    {
+      "prompt": "Type de projet: Site web pour une entreprise.\n\nBut: Vendre des produits.",
+      "timestamp": "2026-07-03T07:46:53.189Z",
+      "changeNotes": "La description était très large (« vendre des produits »), j'ai donc construit une boutique complète de vente par catalogue « Boutique Gélinas » : catalogue d'objets pour la maison et l'atelier, fiches produits, bon de commande (panier), commande avec connexion OTP, suivi « Mes commandes », bulletin de nouvelles et formulaire de contact. Identité visuelle « Catalogue postal » : photos encadrées comme des timbres perforés, numéros d'article à la machine à écrire, bandes par-avion rouge/indigo et tampon « REÇUE » à la confirmation. Admin complet inclus : tableau de bord, produits, commandes (statuts), bulletin et messages, avec génération d'images par IA.\n\nEnrichissement admin & UX : (1) Tableau de bord modernisé — cartes statistiques cliquables, sous-titres, badges de statut colorés par état de commande, carte Réglages ajoutée aux accès rapides. (2) Page Commandes : CRUD complet — bouton « + Nouvelle commande » (commande manuelle), modale d'édition couvrant tous les champs (client, courriel, téléphone, adresse, ville, code postal, statut, total, note), changement de statut en ligne, barre de résumé (nombre + total filtré), toasts de succès/erreur, mise à jour locale sans rechargement. (3) Pages Produits et Bulletin : filtres supplémentaires (rayon/stock, état publié), compteur de résultats, aperçu d'image dans la modale, datalist des rayons, fermeture de modale par Échap/clic-fond, focus automatique, toasts et rendu local sans rechargement, états vides contextuels (aucun élément vs aucun filtre). (4) Page Messages : recherche instantanée, bouton « Répondre » (mailto), suppression sans rechargement, compteur. (5) Nouvelle page Réglages (views/admin-settings.ejs + route /admin/settings) éditant les paramètres fonctionnels existants (note de livraison affichée au checkout, coordonnées, textes du site) via PUT /api/admin/settings — l'API accepte désormais un enregistrement en lot { settings: {…} } tout en restant rétrocompatible. (6) Barre latérale admin : lien Réglages + pastille rouge « bons à traiter » alimentée par un helper adminBadges() passé à toutes les vues admin. (7) admin-styles.css : toasts, badges de nav, aperçus d'image, fieldsets, survol de lignes, focus visibles, boutons désactivés, badges ambre/gris. (8) Sécurité canary : toutes les variables non-base (items, stats, recentOrders, badges, formatPrice…) sont désormais gardées par typeof dans les vues admin ; JSON injecté dans <script> échappé (\\u003c). (9) Front public : styles.css — état désactivé des boutons et focus des champs ; toutes les URL restent relatives, aucun jeton {{IMG_*}} touché, données et routes existantes intactes. (10) _seoMetadata généré (fr, Store).",
+      "generationId": 1406,
+      "filesModified": [
+        "manifest.json",
+        "public/css/admin-styles.css",
+        "public/css/styles.css",
+        "public/js/app.js",
+        "routes.js",
+        "schema.sql",
+        "seed.js",
+        "views/admin-messages.ejs",
+        "views/admin-orders.ejs",
+        "views/admin-posts.ejs",
+        "views/admin-products.ejs",
+        "views/admin-settings.ejs",
+        "views/admin.ejs",
+        "views/bon-de-commande.ejs",
+        "views/bulletin-article.ejs",
+        "views/bulletin.ejs",
+        "views/catalogue.ejs",
+        "views/commandes.ejs",
+        "views/contact.ejs",
+        "views/index.ejs",
+        "views/partials/admin-sidebar.ejs",
+        "views/partials/footer.ejs",
+        "views/partials/header.ejs",
+        "views/partials/product-card.ejs",
+        "views/produit.ejs"
+      ]
+    }
+  ],
+  "apiVariables": [],
+  "createdAt": "2026-07-03T06:52:35.367Z",
+  "updatedAt": "2026-07-03T07:46:56.595Z",
+  "exportedAt": "2026-07-03T07:46:56.868Z"
+}

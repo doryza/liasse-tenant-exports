@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Produits — Administration</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;900&family=Courier+Prime&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body class="adm">
+<%- include('partials/admin-sidebar') %>
+<main class="adm-main">
+<div class="adm-head"><div><h1>Produits</h1><p class="adm-sub">Le catalogue complet — prix, stock, rayons et articles en vedette.</p></div><button class="adm-btn adm-btn-primary" onclick="openCreate()">+ Nouveau produit</button></div>
+<div class="adm-toolbar">
+<input id="q" placeholder="Chercher par nom ou numéro…" oninput="renderTable()" aria-label="Recherche">
+<select id="fCat" onchange="renderTable()" aria-label="Filtrer par rayon"><option value="">Tous les rayons</option></select>
+<select id="fStock" onchange="renderTable()" aria-label="Filtrer par stock"><option value="">Tout le stock</option><option value="1">En stock</option><option value="0">Épuisé</option></select>
+<span class="adm-count" id="countInfo"></span>
+</div>
+<div class="adm-card">
+<table class="adm-table"><thead><tr><th>Photo</th><th>Nº</th><th>Article</th><th>Prix</th><th>Stock</th><th>Vedette</th><th></th></tr></thead><tbody id="rows"></tbody></table>
+<div id="empty" class="adm-empty" style="display:none"></div>
+</div>
+</main>
+<div class="adm-modal" id="modal">
+<div class="adm-dialog" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+<h2 id="modalTitle">Nouveau produit</h2>
+<form id="modalForm" onsubmit="saveItem(event)">
+<div class="adm-field"><label for="f_name">Nom de l'article</label><input id="f_name" required placeholder="ex. Planche à découper en érable"></div>
+<div class="adm-field-row">
+<div class="adm-field"><label for="f_item_number">Nº de catalogue</label><input id="f_item_number" placeholder="ex. 1007"></div>
+<div class="adm-field"><label for="f_price">Prix ($)</label><input id="f_price" type="number" min="0" step="0.01" required placeholder="ex. 42.00"></div>
+</div>
+<div class="adm-field"><label for="f_category">Rayon</label><input id="f_category" placeholder="ex. Cuisine" list="catList"><small>Sert au filtre de la page Catalogue (ex. Cuisine, Maison, Atelier).</small><datalist id="catList"></datalist></div>
+<div class="adm-field"><label for="f_description">Description</label><textarea id="f_description" rows="4" placeholder="ex. Érable massif du Québec, huilé à la main…"></textarea></div>
+<div class="adm-field"><label for="f_image_url">Adresse de la photo</label><input id="f_image_url" placeholder="https://…" oninput="updPrev()"><small>Format carré recommandé (800 × 800 px). Collez une adresse ou générez une photo par IA.</small>
+<div class="adm-img-preview" id="prevWrap" style="display:none"><img id="prevImg" alt="Aperçu de la photo"></div>
+<div class="adm-gen"><input id="f_prompt" placeholder="Décrivez la photo à générer par IA…"><button class="adm-btn" type="button" id="genBtn" onclick="genImage()">Générer par IA</button></div>
+</div>
+<label class="adm-check"><input type="checkbox" id="f_in_stock"> En stock (commandable)</label>
+<label class="adm-check"><input type="checkbox" id="f_featured"> En vedette sur l'accueil</label>
+<div class="adm-dialog-foot"><button class="adm-btn" type="button" onclick="showModal(false)">Annuler</button><button class="adm-btn adm-btn-primary" type="submit" id="saveBtn">Enregistrer le produit</button></div>
+</form>
+</div>
+</div>
+<script>
+var ITEMS = <%- JSON.stringify(typeof items!=='undefined'&&items?items:[]).replace(/</g,'\\u003c') %>;
+var editingId = null;
+var toastTimer = null;
+function toast(msg,ok){var t=document.getElementById('admToast');if(!t){t=document.createElement('div');t.id='admToast';t.className='adm-toast';t.setAttribute('role','status');document.body.appendChild(t);}t.textContent=msg;t.classList.toggle('adm-toast-err',ok===false);t.classList.add('show');if(toastTimer)clearTimeout(toastTimer);toastTimer=setTimeout(function(){t.classList.remove('show');},3200);}
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function fmtPrice(v){return Number(v||0).toFixed(2).replace('.',',')+' $';}
+function val(id){return document.getElementById(id).value.trim();}
+function buildCats(){var sel=document.getElementById('fCat');var cur=sel.value;var cats={};ITEMS.forEach(function(p){if(p.category)cats[p.category]=1;});var keys=Object.keys(cats).sort();sel.innerHTML='<option value="">Tous les rayons</option>'+keys.map(function(c){return '<option value="'+esc(c)+'">'+esc(c)+'</option>';}).join('');sel.value=cur;if(sel.selectedIndex<0)sel.value='';var dl=document.getElementById('catList');if(dl)dl.innerHTML=keys.map(function(c){return '<option value="'+esc(c)+'">';}).join('');}
+function renderTable(){
+var q=(document.getElementById('q').value||'').toLowerCase();
+var c=document.getElementById('fCat').value;
+var s=document.getElementById('fStock').value;
+var rows=ITEMS.filter(function(p){
+var okQ=!q||String(p.name||'').toLowerCase().indexOf(q)>-1||String(p.item_number||'').indexOf(q)>-1;
+var okC=!c||p.category===c;
+var okS=s===''||String(Number(p.in_stock)?1:0)===s;
+return okQ&&okC&&okS;});
+document.getElementById('rows').innerHTML=rows.map(function(p){
+return '<tr><td>'+(p.image_url?'<img class="adm-thumb" src="'+esc(p.image_url)+'" alt="">':'<span class="adm-thumb adm-thumb-empty"></span>')+'</td><td class="adm-mono">'+esc(p.item_number||p.id)+'</td><td><strong>'+esc(p.name)+'</strong><br><small>'+esc(p.category||'')+'</small></td><td class="adm-mono">'+fmtPrice(p.price)+'</td><td>'+(Number(p.in_stock)?'<span class="adm-badge adm-badge-green">En stock</span>':'<span class="adm-badge adm-badge-red">Épuisé</span>')+'</td><td>'+(Number(p.featured)?'<span class="adm-badge adm-badge-indigo">Vedette</span>':'—')+'</td><td class="adm-actions"><button class="adm-btn adm-btn-sm" onclick="openEdit('+p.id+')">Modifier</button><button class="adm-btn adm-btn-sm adm-btn-danger" onclick="delItem('+p.id+')">Supprimer</button></td></tr>';
+}).join('');
+document.getElementById('countInfo').textContent=rows.length+' article'+(rows.length>1?'s':'');
+var em=document.getElementById('empty');
+em.style.display=rows.length?'none':'block';
+em.textContent=ITEMS.length?'Aucun article ne correspond à vos filtres.':'Aucun produit au catalogue. Cliquez sur « + Nouveau produit » pour ajouter votre premier article.';
+}
+function updPrev(){var u=val('f_image_url');var w=document.getElementById('prevWrap');var im=document.getElementById('prevImg');if(u){im.src=u;w.style.display='';}else{w.style.display='none';im.removeAttribute('src');}}
+function showModal(on){document.getElementById('modal').classList.toggle('show',!!on);if(on)setTimeout(function(){var f=document.getElementById('f_name');if(f)f.focus();},60);}
+function openCreate(){editingId=null;document.getElementById('modalTitle').textContent='Nouveau produit';['f_name','f_item_number','f_price','f_category','f_description','f_image_url','f_prompt'].forEach(function(id){document.getElementById(id).value='';});document.getElementById('f_in_stock').checked=true;document.getElementById('f_featured').checked=false;updPrev();showModal(true);}
+function openEdit(id){var p=ITEMS.find(function(x){return x.id===id;});if(!p)return;editingId=id;document.getElementById('modalTitle').textContent='Modifier le produit';document.getElementById('f_name').value=p.name||'';document.getElementById('f_item_number').value=p.item_number||'';document.getElementById('f_price').value=p.price!=null?p.price:'';document.getElementById('f_category').value=p.category||'';document.getElementById('f_description').value=p.description||'';document.getElementById('f_image_url').value=p.image_url||'';document.getElementById('f_prompt').value='';document.getElementById('f_in_stock').checked=!!Number(p.in_stock);document.getElementById('f_featured').checked=!!Number(p.featured);updPrev();showModal(true);}
+async function saveItem(ev){ev.preventDefault();
+var body={name:val('f_name'),item_number:val('f_item_number'),category:val('f_category'),price:parseFloat(val('f_price'))||0,description:val('f_description'),image_url:val('f_image_url'),in_stock:document.getElementById('f_in_stock').checked?1:0,featured:document.getElementById('f_featured').checked?1:0};
+if(!body.name){toast('Le nom du produit est requis.',false);return;}
+var sb=document.getElementById('saveBtn');sb.disabled=true;sb.textContent='Enregistrement…';
+try{
+var r=await fetch('api/admin/products'+(editingId?'/'+editingId:''),{method:editingId?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+var d=await r.json();
+if(!r.ok){toast(d.error||'Enregistrement impossible.',false);}
+else{
+if(editingId){var i=ITEMS.findIndex(function(x){return x.id===editingId;});if(i>-1)ITEMS[i]=d.product;}else{ITEMS.unshift(d.product);}
+buildCats();renderTable();showModal(false);toast(editingId?'Produit mis à jour.':'Produit ajouté au catalogue.',true);
+}
+}catch(e){toast('Erreur de connexion.',false);}
+sb.disabled=false;sb.textContent='Enregistrer le produit';
+}
+async function delItem(id){if(!confirm('Supprimer ce produit du catalogue ?'))return;
+try{var r=await fetch('api/admin/products/'+id,{method:'DELETE'});if(r.ok){ITEMS=ITEMS.filter(function(x){return x.id!==id;});buildCats();renderTable();toast('Produit supprimé.',true);}else toast('Suppression impossible.',false);}catch(e){toast('Erreur de connexion.',false);}
+}
+async function genImage(){var prompt=val('f_prompt');if(!prompt){toast("Décrivez d'abord la photo à générer.",false);return;}
+var btn=document.getElementById('genBtn');btn.disabled=true;btn.textContent='Génération…';
+try{var r=await fetch('api/admin/generate-image',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:prompt,aspectRatio:'1:1'})});var d=await r.json();
+if(r.ok&&d.imageUrl){document.getElementById('f_image_url').value=d.imageUrl;updPrev();toast('Photo générée — pensez à enregistrer.',true);}else{toast(d.error||'Génération impossible.',false);}
+}catch(e){toast('Erreur de connexion.',false);}
+btn.disabled=false;btn.textContent='Générer par IA';
+}
+document.getElementById('modal').addEventListener('click',function(e){if(e.target===this)showModal(false);});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')showModal(false);});
+buildCats();renderTable();
+</script>
+</body>
+</html>

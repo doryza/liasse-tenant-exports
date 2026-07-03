@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bulletin — Administration</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;900&family=Courier+Prime&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body class="adm">
+<%- include('partials/admin-sidebar') %>
+<main class="adm-main">
+<div class="adm-head"><div><h1>Bulletin</h1><p class="adm-sub">Nouvelles et annonces publiées sur le site.</p></div><button class="adm-btn adm-btn-primary" onclick="openCreate()">+ Nouveau billet</button></div>
+<div class="adm-toolbar">
+<input id="q" placeholder="Chercher un billet…" oninput="renderTable()" aria-label="Recherche">
+<select id="fStatus" onchange="renderTable()" aria-label="Filtrer par état"><option value="">Tous les états</option><option value="1">Publié</option><option value="0">Brouillon</option></select>
+<span class="adm-count" id="countInfo"></span>
+</div>
+<div class="adm-card">
+<table class="adm-table"><thead><tr><th>Image</th><th>Titre</th><th>Rubrique</th><th>État</th><th>Date</th><th></th></tr></thead><tbody id="rows"></tbody></table>
+<div id="empty" class="adm-empty" style="display:none"></div>
+</div>
+</main>
+<div class="adm-modal" id="modal">
+<div class="adm-dialog" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+<h2 id="modalTitle">Nouveau billet</h2>
+<form id="modalForm" onsubmit="saveItem(event)">
+<div class="adm-field"><label for="f_title">Titre</label><input id="f_title" required placeholder="ex. Le catalogue d'automne est arrivé"></div>
+<div class="adm-field"><label for="f_category">Rubrique</label><input id="f_category" placeholder="ex. Nouveautés"></div>
+<div class="adm-field"><label for="f_content">Texte</label><textarea id="f_content" rows="7" placeholder="Écrivez votre nouvelle ici… Séparez les paragraphes par une ligne vide."></textarea></div>
+<div class="adm-field"><label for="f_image_url">Adresse de l'image</label><input id="f_image_url" placeholder="https://…" oninput="updPrev()"><small>Format paysage recommandé (1200 × 800 px).</small>
+<div class="adm-img-preview" id="prevWrap" style="display:none"><img id="prevImg" alt="Aperçu de l'image"></div>
+<div class="adm-gen"><input id="f_prompt" placeholder="Décrivez l'image à générer par IA…"><button class="adm-btn" type="button" id="genBtn" onclick="genImage()">Générer par IA</button></div>
+</div>
+<label class="adm-check"><input type="checkbox" id="f_published"> Publié (visible au bulletin)</label>
+<div class="adm-dialog-foot"><button class="adm-btn" type="button" onclick="showModal(false)">Annuler</button><button class="adm-btn adm-btn-primary" type="submit" id="saveBtn">Enregistrer le billet</button></div>
+</form>
+</div>
+</div>
+<script>
+var ITEMS = <%- JSON.stringify(typeof items!=='undefined'&&items?items:[]).replace(/</g,'\\u003c') %>;
+var editingId = null;
+var toastTimer = null;
+function toast(msg,ok){var t=document.getElementById('admToast');if(!t){t=document.createElement('div');t.id='admToast';t.className='adm-toast';t.setAttribute('role','status');document.body.appendChild(t);}t.textContent=msg;t.classList.toggle('adm-toast-err',ok===false);t.classList.add('show');if(toastTimer)clearTimeout(toastTimer);toastTimer=setTimeout(function(){t.classList.remove('show');},3200);}
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function fmtDate(d){try{return new Date(d).toLocaleDateString('fr-CA');}catch(e){return '';}}
+function val(id){return document.getElementById(id).value.trim();}
+function renderTable(){
+var q=(document.getElementById('q').value||'').toLowerCase();
+var s=document.getElementById('fStatus').value;
+var rows=ITEMS.filter(function(p){var okQ=!q||String(p.title||'').toLowerCase().indexOf(q)>-1||String(p.category||'').toLowerCase().indexOf(q)>-1;var okS=s===''||String(Number(p.published)?1:0)===s;return okQ&&okS;});
+document.getElementById('rows').innerHTML=rows.map(function(p){
+return '<tr><td>'+(p.image_url?'<img class="adm-thumb" src="'+esc(p.image_url)+'" alt="">':'<span class="adm-thumb adm-thumb-empty"></span>')+'</td><td><strong>'+esc(p.title)+'</strong></td><td>'+esc(p.category||'—')+'</td><td>'+(Number(p.published)?'<span class="adm-badge adm-badge-green">Publié</span>':'<span class="adm-badge adm-badge-red">Brouillon</span>')+'</td><td><small>'+fmtDate(p.created_at)+'</small></td><td class="adm-actions"><button class="adm-btn adm-btn-sm" onclick="openEdit('+p.id+')">Modifier</button><button class="adm-btn adm-btn-sm adm-btn-danger" onclick="delItem('+p.id+')">Supprimer</button></td></tr>';
+}).join('');
+document.getElementById('countInfo').textContent=rows.length+' billet'+(rows.length>1?'s':'');
+var em=document.getElementById('empty');
+em.style.display=rows.length?'none':'block';
+em.textContent=ITEMS.length?'Aucun billet ne correspond à vos filtres.':'Aucun billet au bulletin. Cliquez sur « + Nouveau billet » pour publier votre première nouvelle.';
+}
+function updPrev(){var u=val('f_image_url');var w=document.getElementById('prevWrap');var im=document.getElementById('prevImg');if(u){im.src=u;w.style.display='';}else{w.style.display='none';im.removeAttribute('src');}}
+function showModal(on){document.getElementById('modal').classList.toggle('show',!!on);if(on)setTimeout(function(){var f=document.getElementById('f_title');if(f)f.focus();},60);}
+function openCreate(){editingId=null;document.getElementById('modalTitle').textContent='Nouveau billet';['f_title','f_category','f_content','f_image_url','f_prompt'].forEach(function(id){document.getElementById(id).value='';});document.getElementById('f_published').checked=true;updPrev();showModal(true);}
+function openEdit(id){var p=ITEMS.find(function(x){return x.id===id;});if(!p)return;editingId=id;document.getElementById('modalTitle').textContent='Modifier le billet';document.getElementById('f_title').value=p.title||'';document.getElementById('f_category').value=p.category||'';document.getElementById('f_content').value=p.content||'';document.getElementById('f_image_url').value=p.image_url||'';document.getElementById('f_prompt').value='';document.getElementById('f_published').checked=!!Number(p.published);updPrev();showModal(true);}
+async function saveItem(ev){ev.preventDefault();
+var body={title:val('f_title'),category:val('f_category'),content:document.getElementById('f_content').value,image_url:val('f_image_url'),published:document.getElementById('f_published').checked?1:0};
+if(!body.title){toast('Le titre est requis.',false);return;}
+var sb=document.getElementById('saveBtn');sb.disabled=true;sb.textContent='Enregistrement…';
+try{
+var r=await fetch('api/admin/posts'+(editingId?'/'+editingId:''),{method:editingId?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+var d=await r.json();
+if(!r.ok){toast(d.error||'Enregistrement impossible.',false);}
+else{
+if(editingId){var i=ITEMS.findIndex(function(x){return x.id===editingId;});if(i>-1)ITEMS[i]=d.post;}else{ITEMS.unshift(d.post);}
+renderTable();showModal(false);toast(editingId?'Billet mis à jour.':'Billet créé.',true);
+}
+}catch(e){toast('Erreur de connexion.',false);}
+sb.disabled=false;sb.textContent='Enregistrer le billet';
+}
+async function delItem(id){if(!confirm('Supprimer ce billet ?'))return;
+try{var r=await fetch('api/admin/posts/'+id,{method:'DELETE'});if(r.ok){ITEMS=ITEMS.filter(function(x){return x.id!==id;});renderTable();toast('Billet supprimé.',true);}else toast('Suppression impossible.',false);}catch(e){toast('Erreur de connexion.',false);}
+}
+async function genImage(){var prompt=val('f_prompt');if(!prompt){toast("Décrivez d'abord l'image à générer.",false);return;}
+var btn=document.getElementById('genBtn');btn.disabled=true;btn.textContent='Génération…';
+try{var r=await fetch('api/admin/generate-image',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:prompt,aspectRatio:'3:2'})});var d=await r.json();
+if(r.ok&&d.imageUrl){document.getElementById('f_image_url').value=d.imageUrl;updPrev();toast('Image générée — pensez à enregistrer.',true);}else{toast(d.error||'Génération impossible.',false);}
+}catch(e){toast('Erreur de connexion.',false);}
+btn.disabled=false;btn.textContent='Générer par IA';
+}
+document.getElementById('modal').addEventListener('click',function(e){if(e.target===this)showModal(false);});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')showModal(false);});
+renderTable();
+</script>
+</body>
+</html>

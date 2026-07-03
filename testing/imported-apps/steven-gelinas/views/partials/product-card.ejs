@@ -1,0 +1,11 @@
+<article class="product-card">
+<a class="stamp" href="produit/<%= p.id %>"><img src="<%= p.image_url || 'https://placehold.co/600x600/efe6d3/20244d/png?text=Article' %>" alt="<%= p.name %>" loading="lazy"></a>
+<p class="tag-no">Nº <%= p.item_number || p.id %><%= p.category ? ' — ' + p.category : '' %></p>
+<h3 class="product-name"><a href="produit/<%= p.id %>"><%= p.name %></a></h3>
+<div class="price-row"><span class="leader"></span><span class="price"><%= formatPrice(p.price) %></span></div>
+<% if (Number(p.in_stock)) { %>
+<button class="btn btn-primary btn-block" style="background-color:#6366f1;color:#fff" data-add-cart data-id="<%= p.id %>">Ajouter au bon de commande</button>
+<% } else { %>
+<span class="soldout">Épuisé — de retour bientôt</span>
+<% } %>
+</article>

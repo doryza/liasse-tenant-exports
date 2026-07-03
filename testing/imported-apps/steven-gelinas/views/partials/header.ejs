@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#6366f1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="description" content="<%= (typeof settings!=='undefined'&&settings.tagline)?settings.tagline:'Des objets utiles et bien faits, vendus par catalogue.' %>">
+<title><%= (typeof title!=='undefined'&&title)?title+' — ':'' %><%= (typeof settings!=='undefined'&&settings.business_name)?settings.business_name:'Boutique Gélinas' %></title>
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:ital,wght@0,400;0,600;0,700;0,900;1,400&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="public/css/styles.css">
+<script src="public/js/app.js" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#contenu">Aller au contenu</a>
+<header class="masthead">
+<div class="masthead-inner">
+<a class="brand" href=".">
+<% var logoUrl=(typeof settings!=='undefined'&&settings._p_nav_logo_url)?settings._p_nav_logo_url:((typeof appIconUrl!=='undefined'&&appIconUrl)?appIconUrl:''); %>
+<% if (logoUrl) { %><img class="brand-logo" src="<%= logoUrl %>" alt="Logo"><% } %>
+<span class="brand-word"><%= (typeof settings!=='undefined'&&settings.business_name)?settings.business_name:'Boutique Gélinas' %></span>
+</a>
+<nav class="main-nav" aria-label="Navigation principale">
+<a href="." class="<%= (typeof page!=='undefined'&&page==='accueil')?'on':'' %>">Accueil</a>
+<a href="catalogue" class="<%= (typeof page!=='undefined'&&page==='catalogue')?'on':'' %>">Catalogue</a>
+<a href="bulletin" class="<%= (typeof page!=='undefined'&&page==='bulletin')?'on':'' %>">Bulletin</a>
+<a href="contact" class="<%= (typeof page!=='undefined'&&page==='contact')?'on':'' %>">Contact</a>
+</nav>
+<div class="mast-actions">
+<a class="login-link" href="#" data-login-btn>Connexion</a>
+<a class="login-link" href="commandes" data-auth-only style="display:none">Mes commandes</a>
+<a class="cart-link" href="bon-de-commande">Bon de commande <span class="cart-count" data-cart-count>0</span></a>
+<button class="menu-btn" id="menuBtn" aria-label="Menu" aria-expanded="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+</div>
+</div>
+<nav class="mobile-nav" id="mobileNav" aria-label="Menu mobile">
+<a href=".">Accueil</a>
+<a href="catalogue">Catalogue</a>
+<a href="bulletin">Bulletin</a>
+<a href="contact">Contact</a>
+<a href="bon-de-commande">Bon de commande</a>
+<a href="#" data-login-btn>Connexion</a>
+<a href="commandes" data-auth-only style="display:none">Mes commandes</a>
+</nav>
+<div class="airmail" aria-hidden="true"></div>
+</header>
+<main id="contenu">

@@ -1,0 +1,112 @@
+<%- include('partials/header') %>
+<% var S=(typeof settings!=='undefined'&&settings)?settings:{}; %>
+<section class="section">
+<div class="sec-head"><h2>Votre bon de commande</h2><span class="mono sec-note" id="bcCount"></span></div>
+<div id="bcLoading" class="empty-note"><p>Chargement de votre bon…</p></div>
+<div id="bcEmpty" class="empty-note" style="display:none">
+<p>Votre bon de commande est vide pour l'instant.</p>
+<a class="btn btn-primary" style="background-color:#6366f1;color:#fff" href="catalogue">Ouvrir le catalogue</a>
+</div>
+<div id="bcContent" style="display:none">
+<div class="bc-grid">
+<div class="bc-items" id="bcItems"></div>
+<aside>
+<div class="coupon">
+<h3 class="mono">Récapitulatif</h3>
+<div class="price-row"><span>Sous-total</span><span class="leader"></span><span class="price" id="bcSubtotal">—</span></div>
+<% if (S.shipping_text) { %><p class="ship-note mono"><%= S.shipping_text %></p><% } %>
+<div id="loginPrompt" style="display:none">
+<p style="margin:1rem 0">Pour poster votre commande, connectez-vous d'abord — un code de vérification vous sera envoyé.</p>
+<button class="btn btn-primary btn-block" style="background-color:#6366f1;color:#fff" data-login-btn>Connexion</button>
+</div>
+<form id="checkoutForm" style="display:none">
+<h3 class="mono" style="margin-top:1.2rem">Adresse de livraison</h3>
+<div class="field"><label for="cf_name">Nom complet</label><input id="cf_name" required placeholder="ex. Marie Tremblay"></div>
+<div class="field"><label for="cf_phone">Téléphone</label><input id="cf_phone" placeholder="ex. 819 555-0123"></div>
+<div class="field"><label for="cf_address">Adresse</label><input id="cf_address" required placeholder="ex. 123, rue Principale"></div>
+<div class="field-row">
+<div class="field"><label for="cf_city">Ville</label><input id="cf_city" required placeholder="ex. Trois-Rivières"></div>
+<div class="field"><label for="cf_postal">Code postal</label><input id="cf_postal" placeholder="ex. G8T 1A1"></div>
+</div>
+<div class="field"><label for="cf_note">Note (facultatif)</label><textarea id="cf_note" rows="2" placeholder="ex. Laisser le colis sur la galerie"></textarea></div>
+<p class="form-error" id="cfError" style="display:none"></p>
+<button class="btn btn-primary btn-block" style="background-color:#6366f1;color:#fff" type="submit" id="cfSubmit">Poster ma commande</button>
+</form>
+</div>
+</aside>
+</div>
+</div>
+<div id="bcDone" class="bc-done" style="display:none">
+<div class="postmark postmark-anim"><span class="pm-top">Commande</span><span class="pm-mid">REÇUE</span><span class="pm-bot" id="bcOrderNo"></span></div>
+<h2>Votre commande est postée!</h2>
+<p>Merci! Nous préparons votre colis avec soin. Suivez son état dans <a href="commandes">Mes commandes</a>.</p>
+<a class="btn btn-ghost" href="catalogue">Retour au catalogue</a>
+</div>
+</section>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+function show(id,on){var el=document.getElementById(id);if(el)el.style.display=on?'':'none';}
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+var products={};
+function load(){
+var cart=BG.getCart();
+show('bcLoading',false);
+if(!cart.length){show('bcEmpty',true);show('bcContent',false);document.getElementById('bcCount').textContent='';return;}
+fetch('./api/products?ids='+cart.map(function(i){return i.id;}).join(','))
+.then(function(r){return r.json();})
+.then(function(d){
+(d.products||[]).forEach(function(p){products[p.id]=p;});
+var valid=cart.filter(function(i){return products[i.id];});
+if(!valid.length){show('bcEmpty',true);show('bcContent',false);return;}
+show('bcEmpty',false);show('bcContent',true);
+render(valid);
+})
+.catch(function(){var el=document.getElementById('bcLoading');show('bcLoading',true);el.innerHTML='<p>Impossible de charger votre bon. Vérifiez votre connexion puis rechargez la page.</p>';});
+}
+function render(cart){
+var box=document.getElementById('bcItems');var total=0;var count=0;
+box.innerHTML=cart.map(function(i){
+var p=products[i.id];var line=Number(p.price)*i.qty;total+=line;count+=i.qty;
+return '<div class="bc-item">'+
+'<img class="bc-thumb" src="'+esc(p.image_url||'https://placehold.co/200x200/efe6d3/20244d/png?text=Art.')+'" alt="">'+
+'<div><p class="tag-no">Nº '+esc(p.item_number||p.id)+'</p><h4>'+esc(p.name)+'</h4><p class="mono">'+BG.fmtPrice(p.price)+'</p></div>'+
+'<div class="bc-item-side"><div class="qty-stepper"><button type="button" onclick="bcQty('+p.id+',-1)" aria-label="Réduire">−</button><span class="mono">'+i.qty+'</span><button type="button" onclick="bcQty('+p.id+',1)" aria-label="Augmenter">+</button></div>'+
+'<p class="mono bc-line">'+BG.fmtPrice(line)+'</p>'+
+'<button class="bc-remove" type="button" onclick="bcRemove('+p.id+')">Retirer</button></div></div>';
+}).join('');
+document.getElementById('bcSubtotal').textContent=BG.fmtPrice(total);
+document.getElementById('bcCount').textContent=count+' article'+(count>1?'s':'');
+}
+window.bcQty=function(id,delta){var cart=BG.getCart();var it=cart.find(function(i){return i.id===id;});if(!it)return;it.qty=Math.max(1,Math.min(20,it.qty+delta));BG.saveCart(cart);render(cart);};
+window.bcRemove=function(id){var cart=BG.getCart().filter(function(i){return i.id!==id;});BG.saveCart(cart);load();};
+function authUi(){
+try{
+if(!window.TenantSDK){show('loginPrompt',true);return;}
+TenantSDK.ready.then(function(){
+var logged=false;try{logged=TenantSDK.auth.isLoggedIn();}catch(e){}
+show('loginPrompt',!logged);show('checkoutForm',logged);
+if(logged){TenantSDK.auth.getCurrentUser().then(function(u){var f=document.getElementById('cf_name');if(u&&u.display_name&&f&&!f.value)f.value=u.display_name;}).catch(function(){});}
+}).catch(function(){show('loginPrompt',true);});
+}catch(e){show('loginPrompt',true);}
+}
+document.getElementById('checkoutForm').addEventListener('submit',function(ev){
+ev.preventDefault();
+var cart=BG.getCart();if(!cart.length)return;
+var err=document.getElementById('cfError');err.style.display='none';
+var btn=document.getElementById('cfSubmit');btn.disabled=true;btn.textContent='Envoi en cours…';
+var body={items:cart,customer:{name:document.getElementById('cf_name').value.trim(),phone:document.getElementById('cf_phone').value.trim(),address:document.getElementById('cf_address').value.trim(),city:document.getElementById('cf_city').value.trim(),postal_code:document.getElementById('cf_postal').value.trim(),note:document.getElementById('cf_note').value.trim()}};
+TenantSDK.fetch('./api/orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
+.then(function(r){return r.json().then(function(d){return {ok:r.ok,d:d};});})
+.then(function(x){
+if(!x.ok){err.textContent=x.d.error||"La commande n'a pas pu être postée. Réessayez.";err.style.display='block';btn.disabled=false;btn.textContent='Poster ma commande';return;}
+BG.saveCart([]);
+show('bcContent',false);show('bcEmpty',false);show('bcDone',true);
+document.getElementById('bcOrderNo').textContent='Bon nº '+x.d.orderId;
+window.scrollTo({top:0,behavior:'smooth'});
+})
+.catch(function(){err.textContent='Erreur de connexion. Vérifiez votre réseau puis réessayez.';err.style.display='block';btn.disabled=false;btn.textContent='Poster ma commande';});
+});
+load();authUi();
+});
+</script>
+<%- include('partials/footer') %>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Réglages — Administration</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;900&family=Courier+Prime&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body class="adm">
+<%- include('partials/admin-sidebar') %>
+<main class="adm-main">
+<% var S=(typeof settings!=='undefined'&&settings)?settings:{}; %>
+<div class="adm-head"><div><h1>Réglages</h1><p class="adm-sub">Textes du site, note de livraison et coordonnées. Les changements sont visibles immédiatement.</p></div><button class="adm-btn adm-btn-primary" type="submit" form="setForm" id="saveTop">Enregistrer</button></div>
+<form id="setForm" onsubmit="saveSettings(event)">
+<div class="adm-cols">
+<div>
+<fieldset class="adm-fieldset"><legend>Identité</legend>
+<div class="adm-field"><label for="s_business_name">Nom de la boutique</label><input id="s_business_name" data-key="business_name" value="<%= S.business_name||'' %>" placeholder="ex. Boutique Gélinas"></div>
+<div class="adm-field"><label for="s_tagline">Slogan</label><input id="s_tagline" data-key="tagline" value="<%= S.tagline||'' %>" placeholder="ex. Des objets utiles et bien faits…"><small>Affiché dans le pied de page et la description du site.</small></div>
+<div class="adm-field"><label for="s_catalogue_edition">Mention d'édition</label><input id="s_catalogue_edition" data-key="catalogue_edition" value="<%= S.catalogue_edition||'' %>" placeholder="ex. Catalogue — Édition automne-hiver"><small>Petit texte au-dessus du titre de la page d'accueil.</small></div>
+</fieldset>
+<fieldset class="adm-fieldset"><legend>Page d'accueil</legend>
+<div class="adm-field"><label for="s_hero_title">Titre principal</label><input id="s_hero_title" data-key="hero_title" value="<%= S.hero_title||'' %>"></div>
+<div class="adm-field"><label for="s_hero_subtitle">Sous-titre</label><textarea id="s_hero_subtitle" data-key="hero_subtitle" rows="3"><%= S.hero_subtitle||'' %></textarea></div>
+<div class="adm-field"><label for="s_how_title">Titre de la section « Commander »</label><input id="s_how_title" data-key="how_title" value="<%= S.how_title||'' %>"></div>
+<div class="adm-field"><label for="s_about_title">Titre de la section « À propos »</label><input id="s_about_title" data-key="about_title" value="<%= S.about_title||'' %>"></div>
+<div class="adm-field"><label for="s_about_text">Texte « À propos »</label><textarea id="s_about_text" data-key="about_text" rows="5"><%= S.about_text||'' %></textarea></div>
+<div class="adm-field"><label for="s_push_cta_text">Invitation aux avis (bandeau)</label><input id="s_push_cta_text" data-key="push_cta_text" value="<%= S.push_cta_text||'' %>"></div>
+</fieldset>
+</div>
+<div>
+<fieldset class="adm-fieldset"><legend>Commandes et livraison</legend>
+<div class="adm-field"><label for="s_shipping_text">Note de livraison</label><textarea id="s_shipping_text" data-key="shipping_text" rows="3"><%= S.shipping_text||'' %></textarea><small>Affichée sur les fiches produits et au bon de commande — délais, frais, emballage.</small></div>
+</fieldset>
+<fieldset class="adm-fieldset"><legend>Coordonnées</legend>
+<div class="adm-field"><label for="s_contact_email">Courriel</label><input id="s_contact_email" data-key="contact_email" type="email" value="<%= S.contact_email||'' %>" placeholder="ex. info@exemple.ca"><small>Affiché aux pages Contact et pied de page.</small></div>
+<div class="adm-field"><label for="s_contact_phone">Téléphone</label><input id="s_contact_phone" data-key="contact_phone" value="<%= S.contact_phone||'' %>" placeholder="ex. 819 555-0123"></div>
+<div class="adm-field"><label for="s_business_address">Adresse</label><input id="s_business_address" data-key="business_address" value="<%= S.business_address||'' %>" placeholder="ex. 123, rue Principale, Trois-Rivières"></div>
+</fieldset>
+<div class="adm-dialog-foot" style="justify-content:flex-start"><button class="adm-btn adm-btn-primary" type="submit" id="saveBottom">Enregistrer les réglages</button></div>
+</div>
+</div>
+</form>
+</main>
+<script>
+var toastTimer=null;
+function toast(msg,ok){var t=document.getElementById('admToast');if(!t){t=document.createElement('div');t.id='admToast';t.className='adm-toast';t.setAttribute('role','status');document.body.appendChild(t);}t.textContent=msg;t.classList.toggle('adm-toast-err',ok===false);t.classList.add('show');if(toastTimer)clearTimeout(toastTimer);toastTimer=setTimeout(function(){t.classList.remove('show');},3200);}
+async function saveSettings(ev){ev.preventDefault();
+var payload={};
+document.querySelectorAll('#setForm [data-key]').forEach(function(el){payload[el.getAttribute('data-key')]=el.value;});
+var btns=[document.getElementById('saveTop'),document.getElementById('saveBottom')];
+btns.forEach(function(b){if(b){b.disabled=true;b.textContent='Enregistrement…';}});
+try{
+var r=await fetch('api/admin/settings',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({settings:payload})});
+var d=await r.json();
+if(!r.ok)toast(d.error||'Enregistrement impossible.',false);else toast('Réglages enregistrés.',true);
+}catch(e){toast('Erreur de connexion.',false);}
+btns.forEach(function(b,i){if(b){b.disabled=false;b.textContent=i===0?'Enregistrer':'Enregistrer les réglages';}});
+}
+</script>
+</body>
+</html>

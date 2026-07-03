@@ -1,0 +1,26 @@
+<%- include('partials/header') %>
+<section class="section">
+<div class="sec-head"><h2>Le catalogue</h2><span class="mono sec-note"><%= (typeof products!=='undefined'&&products)?products.length:0 %> article<%= (typeof products!=='undefined'&&products&&products.length>1)?'s':'' %></span></div>
+<form class="cat-toolbar" method="GET" action="catalogue">
+<input type="search" name="q" value="<%= (typeof q!=='undefined')?q:'' %>" placeholder="Chercher un article, un numéro…" aria-label="Recherche">
+<% if (typeof cat!=='undefined' && cat) { %><input type="hidden" name="categorie" value="<%= cat %>"><% } %>
+<button class="btn btn-primary" style="background-color:#6366f1;color:#fff" type="submit">Chercher</button>
+</form>
+<div class="cat-tabs">
+<a class="cat-tab <%= (typeof cat==='undefined'||!cat)?'on':'' %>" href="catalogue<%= (typeof q!=='undefined'&&q)?('?q='+encodeURIComponent(q)):'' %>">Tout</a>
+<% if (typeof cats!=='undefined' && cats) { cats.forEach(function(c){ if(!c.category) return; %>
+<a class="cat-tab <%= (typeof cat!=='undefined'&&cat===c.category)?'on':'' %>" href="catalogue?categorie=<%= encodeURIComponent(c.category) %><%= (typeof q!=='undefined'&&q)?('&q='+encodeURIComponent(q)):'' %>"><%= c.category %></a>
+<% }); } %>
+</div>
+<% if (typeof products!=='undefined' && products && products.length) { %>
+<div class="grid grid-3">
+<% products.forEach(function(p){ %><%- include('partials/product-card', { p: p }) %><% }); %>
+</div>
+<% } else { %>
+<div class="empty-note">
+<p>Aucun article ne correspond à votre recherche<%= (typeof q!=='undefined'&&q)?(' pour « '+q+' »'):'' %>.</p>
+<a class="btn btn-ghost" href="catalogue">Revoir tout le catalogue</a>
+</div>
+<% } %>
+</section>
+<%- include('partials/footer') %>

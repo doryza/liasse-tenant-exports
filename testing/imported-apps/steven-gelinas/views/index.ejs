@@ -1,0 +1,69 @@
+<%- include('partials/header') %>
+<% var S=(typeof settings!=='undefined'&&settings)?settings:{}; %>
+<section class="section hero">
+<div class="hero-copy">
+<p class="eyebrow mono"><%= S.catalogue_edition || 'Catalogue — Édition en cours' %></p>
+<h1><%= S.hero_title || 'Des objets utiles, choisis avec soin.' %></h1>
+<p class="hero-sub"><%= S.hero_subtitle || '' %></p>
+<div class="hero-cta">
+<a class="btn btn-primary" style="background-color:#6366f1;color:#fff" href="catalogue">Parcourir le catalogue</a>
+<a class="btn btn-ghost" href="#commander">Comment commander</a>
+</div>
+</div>
+<div class="hero-stamp">
+<div class="stamp stamp-lg"><img src="<%= S._p_hero_image_url || 'https://placehold.co/900x675/efe6d3/20244d/png?text=Catalogue' %>" alt="Les objets de la saison au catalogue"></div>
+<div class="postmark postmark-hero" aria-hidden="true"><span class="pm-top">Boutique Gélinas</span><span class="pm-mid">QC</span><span class="pm-bot">par la poste</span></div>
+</div>
+</section>
+<section class="section">
+<div class="sec-head"><h2>Nouveautés au catalogue</h2><span class="mono sec-note"><%= (typeof productCount!=='undefined')?productCount:0 %> article<%= (typeof productCount!=='undefined'&&productCount>1)?'s':'' %> en stock</span></div>
+<% if (typeof featured!=='undefined' && featured && featured.length) { %>
+<div class="grid grid-3">
+<% featured.forEach(function(p){ %><%- include('partials/product-card', { p: p }) %><% }); %>
+</div>
+<div class="sec-more"><a class="btn btn-ghost" href="catalogue">Voir tout le catalogue →</a></div>
+<% } else { %>
+<div class="empty-note"><p>Le catalogue se garnit bientôt — les premières pièces arrivent au comptoir.</p><a class="btn btn-ghost" href="bulletin">Lire le bulletin</a></div>
+<% } %>
+</section>
+<section class="kraft-band" id="commander">
+<div class="section">
+<div class="sec-head"><h2><%= S.how_title || 'Commander, c’est simple' %></h2></div>
+<div class="steps">
+<div class="step"><span class="step-no mono">1.</span><h3>Choisissez vos articles</h3><p>Parcourez le catalogue et ajoutez ce qui vous plaît à votre bon de commande.</p></div>
+<div class="step"><span class="step-no mono">2.</span><h3>Postez votre bon</h3><p>Vérifiez votre bon, indiquez votre adresse de livraison et confirmez votre commande.</p></div>
+<div class="step"><span class="step-no mono">3.</span><h3>Recevez votre colis</h3><p><%= S.shipping_text || 'Nous préparons et postons votre colis avec soin.' %></p></div>
+</div>
+</div>
+</section>
+<section class="section about-split">
+<div class="stamp stamp-md"><img src="<%= S._p_about_image_url || 'https://placehold.co/800x600/efe6d3/20244d/png?text=Le+comptoir' %>" alt="Le comptoir d'emballage de la boutique"></div>
+<div class="about-copy">
+<h2><%= S.about_title || 'Le mot du comptoir' %></h2>
+<p><%= S.about_text || '' %></p>
+<a class="btn btn-ghost" href="contact">Écrire au comptoir</a>
+</div>
+</section>
+<% if (typeof posts!=='undefined' && posts && posts.length) { %>
+<section class="section">
+<div class="sec-head"><h2>Le bulletin</h2><a class="mono sec-note" href="bulletin">Tout le bulletin →</a></div>
+<div class="grid grid-2">
+<% posts.forEach(function(a){ %>
+<article class="post-card">
+<% if (a.image_url) { %><a class="stamp" href="bulletin/<%= a.id %>"><img src="<%= a.image_url %>" alt="<%= a.title %>" loading="lazy"></a><% } %>
+<div>
+<p class="tag-no"><%= a.category || 'Bulletin' %> — <%= formatDate(a.created_at) %></p>
+<h3><a href="bulletin/<%= a.id %>"><%= a.title %></a></h3>
+</div>
+</article>
+<% }); %>
+</div>
+</section>
+<% } %>
+<section class="push-band">
+<div class="push-inner">
+<div><h2>Un avis dans votre boîte</h2><p><%= S.push_cta_text || 'Recevez un avis quand de nouveaux articles entrent au catalogue.' %></p></div>
+<button class="btn btn-light" data-push-btn>Activer les avis</button>
+</div>
+</section>
+<%- include('partials/footer') %>
