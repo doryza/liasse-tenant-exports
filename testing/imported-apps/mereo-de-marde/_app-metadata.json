@@ -3,7 +3,7 @@
   "displayName": "Meteo de marde",
   "description": "Project type: Website\n\nGoal: Provide specialized weather information for the Laurentians region, focusing on microclimates.\n\nKey features:\n- Rich, interactive map showing local weather data.\n- Original animations for each weather condition.\n- Possible relief view in the map.\n- Content written using colorful Québécois expressions and slang.\n- Dynamic sharing to social media, using exaggerated, funny, or caricature-like AI-generated images that explicitly overlay the local weather jargon.\n\nDesign & brand: Dynamic interface colors that change based on current weather. Very modern, cool, and visual with dynamic effects, aiming for a distinctive (\"hot\") viral feel. The color scheme should adapt automatically to the weather condition being viewed (e.g., warmer colors for sun, cooler for rain).\n\nIntegrations & extras: Hyper-local dynamic weather data source. Social media sharing APIs. AI image generation API with text insertion capabilities.",
   "status": "active",
-  "generationVersion": 1,
+  "generationVersion": 2,
   "primaryColor": "#6366f1",
   "iconUrl": "https://res.cloudinary.com/duhp69meg/image/upload/v1783041536/tapavis_tenant_mereo-de-marde/icon_mereo-de-marde_1783041536175.png",
   "enabledAuthMethods": [
@@ -15,11 +15,31 @@
   "geolocationEnabled": true,
   "customConfig": {
     "language": "fr",
+    "aiSummary": {
+      "en": {
+        "dashboard": "Your admin dashboard is the control room for the app.\n\nTo manage content:\n- Go to Admin to see the main overview.\n- Use Posts to add, edit, or delete written content like weather stories, updates, or funny articles.\n- Use Villages to manage the cities and areas featured on the site, like Saint-Jérôme, Blainville, Sainte-Thérèse, Saint-Eustache, Terrebonne, Laval, and Montréal.\n- Use Expressions to manage the funny phrases and tone used across the app.\n- Use Share Cards to manage the images and shareable content people can post or send.\n- Use Signalements to review reports or submissions sent in by users.\n\nTo add something new, open the matching section and create a new item. To change something, open it and save your edits. To remove something, use the delete option in that section.\n\nTo send notifications to users:\n- Open Admin and look for the notifications or submissions tools.\n- From there, you can prepare updates for users if that feature is enabled in your setup. If you mainly want to publish announcements, the easiest path is to post them as new content so visitors see them right away.\n\nTo change site settings:\n- Go to Settings in the Admin area.\n- There you can update general app details and other site-wide options that affect how the app looks or behaves.\n\nTo check app stats:\n- Open the Admin overview or Stats section.\n- There you can review overall activity and site visits to understand how people are using the app.\n\nBest practice: keep your city list, expressions, and posts fresh so the app feels alive, local, and funny every time someone visits.",
+        "variables": "Great news! Your app is ready to go — no extra setup required.\n\n“Meteo de marde” works out of the box using built-in services, so you do not need to hunt down any outside accounts or keys before launching.\n\nWhat’s already set up:\n- Live weather-style experience for your covered cities and nearby areas\n- A funny, light-hearted tone across the site\n- Public pages for the map, city pages, dictionary, chronicles, and sharing\n- An admin area where you can manage content and settings\n\nThat means you can move straight into reviewing the content, updating the cities and jokes, and making sure the voice matches your brand.\n\nIf you want, the next best step is simply to open the Admin area and:\n- review your city list\n- add or edit posts and chronicles\n- update expressions and share images\n- check your site settings\n\nIn short: no extra setup, no outside keys, no blockers — your app is ready to use."
+      },
+      "fr": {
+        "dashboard": "Le tableau de bord admin, c’est votre centre de contrôle.\n\nPour gérer le contenu :\n- Allez dans Admin pour voir l’ensemble.\n- Dans Posts, vous pouvez ajouter, modifier ou supprimer du contenu écrit, comme des billets, des nouvelles météo ou des textes humoristiques.\n- Dans Villages, vous gérez les villes et secteurs affichés sur le site, comme Saint-Jérôme, Blainville, Sainte-Thérèse, Saint-Eustache, Terrebonne, Laval et Montréal.\n- Dans Expressions, vous gérez les phrases drôles et le ton utilisé un peu partout dans l’appli.\n- Dans Share Cards, vous gérez les visuels et contenus de partage.\n- Dans Signalements, vous pouvez consulter les signalements ou envois faits par les utilisateurs.\n\nPour ajouter quelque chose, ouvrez la bonne section et créez un nouvel élément. Pour modifier, ouvrez l’élément et enregistrez vos changements. Pour supprimer, utilisez l’option prévue dans la section.\n\nPour envoyer des notifications aux utilisateurs :\n- Allez dans l’Admin et cherchez l’outil lié aux notifications ou aux soumissions.\n- Si cette option est activée dans votre version, vous pourrez préparer des messages aux utilisateurs. Sinon, la façon la plus simple d’annoncer quelque chose est de publier un nouveau contenu visible sur le site.\n\nPour changer les réglages du site :\n- Ouvrez Settings dans l’Admin.\n- Vous pourrez y ajuster les informations générales et les options globales qui influencent l’apparence ou le fonctionnement du site.\n\nPour voir les statistiques :\n- Consultez la page d’accueil de l’Admin ou la section Stats.\n- Vous y verrez l’activité générale et les visites du site.\n\nPetit conseil : gardez vos villes, vos expressions et vos publications à jour pour que l’appli reste vivante, locale et mémorable.",
+        "variables": "Bonne nouvelle! Votre appli est prête à partir — aucun réglage supplémentaire n’est nécessaire.\n\n« Meteo de marde » fonctionne déjà avec les services intégrés, donc vous n’avez pas besoin d’aller chercher des clés ou d’ouvrir des comptes externes avant le lancement.\n\nCe qui est déjà en place :\n- une expérience météo en direct pour vos villes couvertes et les alentours\n- un ton drôle, léger et un peu déjanté\n- des pages publiques pour la carte, les villes, le dictionnaire, les chroniques et le partage\n- un espace admin pour gérer le contenu et les réglages\n\nAutrement dit, vous pouvez tout de suite passer à la révision du contenu, ajuster les villes, peaufiner les blagues et valider le ton de la marque.\n\nLa meilleure prochaine étape : aller dans l’Admin pour\n- vérifier la liste des villes\n- ajouter ou modifier les publications et chroniques\n- mettre à jour les expressions et les visuels de partage\n- revoir les réglages du site\n\nBref : pas de clé à ajouter, pas de compte externe à brancher, pas de blocage — votre appli est prête à être utilisée."
+      }
+    },
     "designManifest": {
       "concept": "Ciel d'humeur",
-      "copyVoice": "joual québécois assumé — tutoiement, chialage affectueux, zéro langue de bois",
+      "palette": {
+        "ink": "#22303d",
+        "ground": "#eef2f6",
+        "accents": [
+          "#e8720c",
+          "#2e7dd1",
+          "#e23d2e",
+          "#4a90c4"
+        ],
+        "primary": "#6366f1"
+      },
+      "summary": "The interface is a mood-ring sky: the entire site — palette, header, hero, buttons — repaints itself to the live weather condition of the Laurentians microclimate being viewed, each condition carrying its own joual name, verdict and animated CSS sky.",
       "elements": {
-        "blogSurfaced": true,
         "pages": [
           "accueil",
           "carte interactive relief",
@@ -28,25 +48,16 @@
           "chroniques",
           "partage de cartes IA"
         ],
-        "userLogin": false
+        "userLogin": false,
+        "blogSurfaced": true
       },
+      "copyVoice": "joual québécois assumé — tutoiement, chialage affectueux, zéro langue de bois",
       "heroThesis": "The homepage opens with the sky itself insulting you in joual — a giant daily verdict headline over the live animated sky of the featured village, with the real temperature beside it, because the verdict IS the product.",
+      "typography": "Paytone One (fat meme-sticker display, the shouting voice of the verdicts) + Figtree (sturdy humanist body/UI)",
       "iconDirection": "A flat cartoon emblem of a grumpy storm cloud wearing a Québécois tuque with one fat raindrop and one sun ray escaping it, thick black outlines on indigo #6366f1, comic-sticker style matching the site's caricature language.",
-      "palette": {
-        "accents": [
-          "#e8720c",
-          "#2e7dd1",
-          "#e23d2e",
-          "#4a90c4"
-        ],
-        "ground": "#eef2f6",
-        "ink": "#22303d",
-        "primary": "#6366f1"
-      },
-      "signatureMove": "A whole-page 'météo-mode' theme engine driven by data-meteo on body: nine condition palettes with original CSS-only sky animations (rain streaks, drifting clouds, lightning flashes, falling snow, pea-soup fog, ice shimmer), previewable from a mood-chip rail and set live from real Open-Meteo data per village.",
-      "summary": "The interface is a mood-ring sky: the entire site — palette, header, hero, buttons — repaints itself to the live weather condition of the Laurentians microclimate being viewed, each condition carrying its own joual name, verdict and animated CSS sky.",
-      "typography": "Paytone One (fat meme-sticker display, the shouting voice of the verdicts) + Figtree (sturdy humanist body/UI)"
-    }
+      "signatureMove": "A whole-page 'météo-mode' theme engine driven by data-meteo on body: nine condition palettes with original CSS-only sky animations (rain streaks, drifting clouds, lightning flashes, falling snow, pea-soup fog, ice shimmer), previewable from a mood-chip rail and set live from real Open-Meteo data per village."
+    },
+    "aiSummaryVersion": 2
   },
   "promptHistory": [
     {
@@ -81,10 +92,60 @@
         "views/partials/header.ejs",
         "views/village.ejs"
       ]
+    },
+    {
+      "prompt": "the idea was to deliver actual weather and forecasts for the laurentide regions including st-jerome, blainville and ste-therese. let's widen the scope to adjacent cities like saint-eustache, terrebonne and laval, montreal. etc. if you need to use an api, feel free to do so. I like the design otherwise; but ensure the concept is live weather info in a light hearted, funny and unhinged fashion.",
+      "diffStats": {
+        "added": [
+          "migrations.sql",
+          "package.json"
+        ],
+        "removed": [],
+        "summary": "2 file(s) added, 5 file(s) modified",
+        "modified": [
+          "manifest.json (+1 -0)",
+          "routes.js (+1 -1)",
+          "seed.js (+9 -0)",
+          "views/carte.ejs (+8 -0)",
+          "views/partials/footer.ejs (+1 -1)"
+        ]
+      },
+      "timestamp": "2026-07-03T02:45:40.626Z",
+      "changeNotes": "Élargit la couverture de Météo d'marde des Laurentides vers la couronne nord de Montréal, tout en gardant l'identité 'ciel d'humeur' intacte. La météo était déjà 100 % en direct (Open-Meteo, courant + prévisions 7 jours par coin) — on ajoute maintenant 7 nouveaux coins avec leurs vraies coordonnées GPS, donc ils reçoivent tout de suite les données réelles : Saint-Jérôme, Blainville, Sainte-Thérèse (les priorités demandées), plus Saint-Eustache, Terrebonne, Laval et Montréal. Chaque nouveau coin a une caricature générée (style flat cartoon d'origine) et un topo de microclimat écrit en joual assumé (îlot de chaleur de Laval, la rivière des Mille Îles à Terrebonne, la porte des Laurentides à St-Jérôme, etc.). Pour amplifier le côté funny/unhinged demandé, chaque condition météo passe de 3 à 7 verdicts joual qui tournent au jour le jour (le verdict EST le produit). La carte des microclimats fait maintenant un fitBounds automatique pour cadrer du Nord (Saint-Donat) jusqu'à Montréal. La copie de baseline (tagline, hero, à-propos) est élargie à 'les Laurentides pis la couronne nord', et une ligne d'attribution Open-Meteo est ajoutée au pied de page. Aucune nouvelle table : les coins sont de simples 'villages', déjà entièrement gérables via le module admin Villages existant (créer/modifier/supprimer coordonnées, altitude, microclimat, image). Ajout des coins via seed.js (installation neuve) ET migrations.sql (déploiements existants, ON CONFLICT (slug) DO NOTHING, idempotent et sûr peu importe l'ordre seed/migration). Aucune clé API externe requise : Open-Meteo est gratuit et sans clé, et la carte n'utilise que Maps JavaScript API (couvert par la clé plateforme).\n\nPre-flight smoke repair: Élargit la couverture de Météo d'marde des Laurentides vers la couronne nord de Montréal, tout en gardant l'identité 'ciel d'humeur' intacte. La météo était déjà 100 % en direct (Open-Meteo, courant + prévisions 7 jours par coin) — on ajoute maintenant 7 nouveaux coins avec leurs vraies coordonnées GPS, donc ils reçoivent tout de suite les données réelles : Saint-Jérôme, Blainville, Sainte-Thérèse (les priorités demandées), plus Saint-Eustache, Terrebonne, Laval et Montréal. Chaque nouveau coin a une caricature générée (style flat cartoon d'origine) et un topo de microclimat écrit en joual assumé (îlot de chaleur de Laval, la rivière des Mille Îles à Terrebonne, la porte des Laurentides à St-Jérôme, etc.). Pour amplifier le côté funny/unhinged demandé, chaque condition météo passe de 3 à 7 verdicts joual qui tournent au jour le jour (le verdict EST le produit). La carte des microclimats fait maintenant un fitBounds automatique pour cadrer du Nord (Saint-Donat) jusqu'à Montréal. La copie de baseline (tagline, hero, à-propos) est élargie à 'les Laurentides pis la couronne nord', et une ligne d'attribution Open-Meteo est ajoutée au pied de page. Aucune nouvelle table : les coins sont de simples 'villages', déjà entièrement gérables via le module admin Villages existant. Ajout des coins via seed.js (installation neuve) ET migrations.sql (déploiements existants, ON CONFLICT (slug) DO NOTHING, idempotent). Aucune clé API externe requise : Open-Meteo est gratuit et sans clé, et la carte n'utilise que Maps JavaScript API (couvert par la clé plateforme).",
+      "generationId": 1399,
+      "filesModified": [
+        "manifest.json",
+        "public/css/admin-styles.css",
+        "public/css/styles.css",
+        "public/js/app.js",
+        "routes.js",
+        "schema.sql",
+        "seed.js",
+        "views/admin-expressions.ejs",
+        "views/admin-posts.ejs",
+        "views/admin-share_cards.ejs",
+        "views/admin-signalements.ejs",
+        "views/admin-villages.ejs",
+        "views/admin.ejs",
+        "views/carte.ejs",
+        "views/chronique.ejs",
+        "views/chroniques.ejs",
+        "views/dictionnaire.ejs",
+        "views/index.ejs",
+        "views/partage.ejs",
+        "views/partials/admin-shell.ejs",
+        "views/partials/admin-sidebar.ejs",
+        "views/partials/ciel.ejs",
+        "views/partials/footer.ejs",
+        "views/partials/header.ejs",
+        "views/village.ejs",
+        "migrations.sql",
+        "package.json"
+      ]
     }
   ],
   "apiVariables": [],
   "createdAt": "2026-07-02T23:55:46.753Z",
-  "updatedAt": "2026-07-03T01:19:08.923Z",
-  "exportedAt": "2026-07-03T01:19:09.189Z"
+  "updatedAt": "2026-07-03T02:46:34.792Z",
+  "exportedAt": "2026-07-03T02:48:56.081Z"
 }

@@ -3,15 +3,15 @@ module.exports = function(services) {
   const db = services.db;
 
   const CONDITIONS = {
-    soleil: { nom: 'Beau en maudit', accent: '#e8720c', verdicts: ["Sors ton char, y fait beau rare", "Un temps parfait pour s'écraser su'l patio", "Le soleil fesse fort, mets d'la crème"] },
-    nuageux: { nom: 'Gris comme un lundi', accent: '#5e7387', verdicts: ["Le ciel file un mauvais coton", "Pas laid, pas beau — juste plate", "Un temps parfait pour rester en mou"] },
-    pluie: { nom: 'Y mouille à siaux', accent: '#2e7dd1', verdicts: ["Sors le parapluie pis le canot", "Y tombe des clous, reste en d'dans", "Une vraie journée de canard"] },
-    orage: { nom: "Ça brasse dans l'cabanon", accent: '#7c5ce0', verdicts: ["Débranche tes affaires, ça va péter", "Le bon Dieu déménage ses meubles", "Rentre le trampoline du voisin"] },
-    neige: { nom: 'Y neige en pas pour rire', accent: '#4a90c4', verdicts: ["Sors ta pelle, mon chum", "Une bordée à pu retrouver ton char", "Le gars du déneigement va faire la piastre"] },
-    verglas: { nom: 'Une vraie patinoire', accent: '#2a9db5', verdicts: ["Marche comme un pingouin, ça glisse", "Reste chez vous, c'est du vrai verglas", "Les patins iraient mieux que le char"] },
-    brouillard: { nom: "Épais comme d'la soupe aux pois", accent: '#6e7c85', verdicts: ["On voit pas le boutte de son nez", "Allume tes lumières, ça presse", "La montagne a mis sa doudou"] },
-    canicule: { nom: "Chaud à faire fondre l'asphalte", accent: '#e23d2e', verdicts: ["Colle-toé su'l air climatisé", "Un temps à boire sa piscine", "Y fait chaud à faire suer les mouches"] },
-    frette: { nom: 'Frette en tabarouette', accent: '#1e6fa8', verdicts: ["Habille-toé, on gèle tout rond", "Un frette à fendre les clôtures", "Les sourcils te givrent en deux minutes"] }
+    soleil: { nom: 'Beau en maudit', accent: '#e8720c', verdicts: ["Sors ton char, y fait beau rare", "Un temps parfait pour s'écraser su'l patio", "Le soleil fesse fort, mets d'la crème", "Beau à te faire brailler de joie, mon tabarnouche", "Enweye dehors, la vitamine D t'attend", "Y fait tellement beau que même ton boss sourit", "Un ciel bleu à te réconcilier avec l'existence"] },
+    nuageux: { nom: 'Gris comme un lundi', accent: '#5e7387', verdicts: ["Le ciel file un mauvais coton", "Pas laid, pas beau — juste plate", "Un temps parfait pour rester en mou", "Gris comme le moral d'un lundi de février", "Le soleil a callé malade aujourd'hui", "Un ciel couleur béton d'autoroute 15", "Ni chair ni poisson, comme un mardi ordinaire"] },
+    pluie: { nom: 'Y mouille à siaux', accent: '#2e7dd1', verdicts: ["Sors le parapluie pis le canot", "Y tombe des clous, reste en d'dans", "Une vraie journée de canard", "Y mouille tellement que les poissons chialent", "Garroche tes plans dehors à' poubelle", "Le bon Dieu a pesé su'l mauvais piton", "Apporte tes bottes, ça pisse pour vrai"] },
+    orage: { nom: "Ça brasse dans l'cabanon", accent: '#7c5ce0', verdicts: ["Débranche tes affaires, ça va péter", "Le bon Dieu déménage ses meubles", "Rentre le trampoline du voisin", "Ça gronde comme mononcle après trois bières", "Cache-toé, le ciel est en tabarnak", "Un show de lumière gratis, mais reste pas dessous", "Attache tout c'qui vole, ça va brasser en maudit"] },
+    neige: { nom: 'Y neige en pas pour rire', accent: '#4a90c4', verdicts: ["Sors ta pelle, mon chum", "Une bordée à pu retrouver ton char", "Le gars du déneigement va faire la piastre", "Y neige comme si le ciel avait crevé son oreiller", "Prépare-toé à pelleter jusqu'à Pâques", "Ton entrée vient de disparaître, bonne chance", "Une bordée de bonne femme, pis c'est pas fini"] },
+    verglas: { nom: 'Une vraie patinoire', accent: '#2a9db5', verdicts: ["Marche comme un pingouin, ça glisse", "Reste chez vous, c'est du vrai verglas", "Les patins iraient mieux que le char", "Chaque marche est un pari su'ta vie", "Le trottoir est plus lisse qu'une patinoire du Forum", "Tiens-toé après tout, même après le chien", "Tabarouette, même les corneilles tombent su'l cul"] },
+    brouillard: { nom: "Épais comme d'la soupe aux pois", accent: '#6e7c85', verdicts: ["On voit pas le boutte de son nez", "Allume tes lumières, ça presse", "La montagne a mis sa doudou", "Épais à couper au couteau à steak", "Ton GPS lui-même est perdu", "Le brouillard a mangé le village au complet", "On dirait que quelqu'un a échappé un pot de ouate"] },
+    canicule: { nom: "Chaud à faire fondre l'asphalte", accent: '#e23d2e', verdicts: ["Colle-toé su'l air climatisé", "Un temps à boire sa piscine", "Y fait chaud à faire suer les mouches", "L'asphalte fond, pis tes semelles avec", "Même le popsicle a chaud", "Un humidex à faire brailler un cactus", "Chaud à cuire un oeuf su'l capot du char"] },
+    frette: { nom: 'Frette en tabarouette', accent: '#1e6fa8', verdicts: ["Habille-toé, on gèle tout rond", "Un frette à fendre les clôtures", "Les sourcils te givrent en deux minutes", "Frette à te geler les idées noires", "Ton char va faire semblant de pas te connaître", "Un frette de canard, pis l'canard est parti dans l'Sud", "Mets deux paires de bas, pis prie"] }
   };
   const conditionsMeta = {};
   Object.keys(CONDITIONS).forEach(function(k){ conditionsMeta[k] = { nom: CONDITIONS[k].nom, accent: CONDITIONS[k].accent, verdicts: CONDITIONS[k].verdicts }; });
@@ -33,7 +33,7 @@ module.exports = function(services) {
   const T = {
     nav_accueil: 'Accueil', nav_carte: 'La carte', nav_dico: 'Le dictionnaire', nav_chroniques: 'Chroniques', nav_partage: 'Partage ta marde',
     hero_en_direct: 'En direct de', btn_voir_carte: 'Voir la carte des microclimats',
-    sec_villages: 'La météo, coin par coin', sec_villages_sous: "Chaque village a sa marde bien à lui. Microclimats vérifiés à l'oeil pis au thermomètre.",
+    sec_villages: 'La météo, coin par coin', sec_villages_sous: "Des Laurentides jusqu'à Montréal, chaque coin a sa marde bien à lui. Données en direct, microclimats vérifiés à l'oeil pis au thermomètre.",
     sec_dico: 'Le dictionnaire de la marde', sec_dico_sous: "Parle météo comme du vrai monde d'icitte.",
     sec_chroniques: 'Les dernières chroniques',
     btn_voir_dico: 'Tout le dictionnaire', btn_voir_chroniques: 'Toutes les chroniques',
@@ -490,6 +490,53 @@ module.exports = function(services) {
     if (req.method === 'GET') return res.redirect('.');
     res.status(404).json({ error: 'Route introuvable.' });
   });
+
+// ========== ADMIN BACKEND PAGE ROUTES (auto-injected fallback) ==========
+function requireAdmin(req, res, next) {
+  if (req.query.admin_token) {
+    try {
+      var jwt = require('jsonwebtoken');
+      var payload = jwt.verify(req.query.admin_token, services.jwtSecret);
+      if (payload.admin === true && payload.slug === 'mereo-de-marde') {
+        // Set self-verifying JWT cookie — works across all replicas without Redis
+        try {
+          var adminJwt = jwt.sign({ admin: true, slug: 'mereo-de-marde', userId: payload.userId || 0 }, services.jwtSecret, { expiresIn: '24h' });
+          res.cookie('pwa_admin_mereo-de-marde', adminJwt, {
+            httpOnly: true, secure: req.secure || req.headers['x-forwarded-proto'] === 'https',
+            sameSite: 'lax', maxAge: 24 * 60 * 60 * 1000, path: '/'
+          });
+        } catch (cookieErr) { /* non-fatal */ }
+        return res.redirect(req.tenantPath(req.path));
+      }
+    } catch (e) { /* invalid token */ }
+  }
+  if (services.admin && services.admin.isAdmin(req)) {
+    req.adminUser = { role: 'owner' };
+    return next();
+  }
+  return res.redirect(req.tenantPath('/admin/login'));
+}
+
+router.get('/admin', requireAdmin, async function(req, res) {
+  try {
+    var stats = {};
+    try {
+      var modules = await services.db.all("SELECT table_name FROM information_schema.tables WHERE table_schema = current_schema() AND table_type = 'BASE TABLE' AND table_name NOT IN ('admin_users','admin_invites','admin_webauthn_credentials','admin_settings','site_visits','users','push_subscriptions','webauthn_credentials','user_positions')");
+      for (var m of modules) {
+        try { var c = await services.db.get('SELECT COUNT(*) as c FROM ' + m.table_name); stats[m.table_name] = parseInt(c.c); } catch(e) {}
+      }
+    } catch(e) {}
+    res.render('admin', { adminUser: req.adminUser, stats: stats });
+  } catch(e) { res.render('admin', { adminUser: req.adminUser, stats: {} }); }
+});
+router.get('/admin/:module', requireAdmin, async function(req, res) {
+  var mod = req.params.module;
+  if (mod === 'login' || mod === 'logout' || mod === 'team' || mod === 'invite' || mod === 'activate') return;
+  try { res.render('admin-' + mod, { adminUser: req.adminUser }); }
+  catch(e) { res.status(404).send('Page not found'); }
+});
+// ========== END ADMIN BACKEND PAGE ROUTES ==========
+
 
   return router;
 };

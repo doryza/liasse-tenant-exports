@@ -21,15 +21,23 @@
 <script>
 var carteG;
 window.initCarte = function(){
-carteG = new google.maps.Map(document.getElementById('carte'), { center: { lat: 45.98, lng: -74.35 }, zoom: 9, mapTypeId: 'terrain', mapTypeControl: false, streetViewControl: false });
+carteG = new google.maps.Map(document.getElementById('carte'), { center: { lat: 45.78, lng: -73.9 }, zoom: 8, mapTypeId: 'terrain', mapTypeControl: false, streetViewControl: false });
+var bounds = new google.maps.LatLngBounds();
+var nMarkers = 0;
 fetch('api/meteo-tous').then(function(r){ return r.json(); }).then(function(d){
 (d.villages || []).forEach(function(v){
 if (v.lat == null) return;
 var meta = (window.METEO_META || {})[v.condition] || {};
-var mk = new google.maps.Marker({ position: { lat: Number(v.lat), lng: Number(v.lng) }, map: carteG, title: v.nom, label: { text: (v.temp == null ? '?' : String(v.temp) + '°'), color: '#ffffff', fontWeight: '800', fontSize: '13px' }, icon: { path: google.maps.SymbolPath.CIRCLE, scale: 20, fillColor: meta.accent || '#6366f1', fillOpacity: 1, strokeColor: '#1c2733', strokeWeight: 3 } });
+var pos = { lat: Number(v.lat), lng: Number(v.lng) };
+var mk = new google.maps.Marker({ position: pos, map: carteG, title: v.nom, label: { text: (v.temp == null ? '?' : String(v.temp) + '°'), color: '#ffffff', fontWeight: '800', fontSize: '13px' }, icon: { path: google.maps.SymbolPath.CIRCLE, scale: 20, fillColor: meta.accent || '#6366f1', fillOpacity: 1, strokeColor: '#1c2733', strokeWeight: 3 } });
+bounds.extend(pos); nMarkers++;
 var iw = new google.maps.InfoWindow({ content: '<div class="iw"><strong>' + v.nom + '</strong><br>' + (meta.nom || '') + ' · ' + (v.temp == null ? '?' : v.temp + ' °C') + '<br><em>' + (v.verdict || '') + '</em><br><a href="village/' + v.slug + '">' + <%- JSON.stringify(t.voir_coin) %> + ' →</a></div>' });
 mk.addListener('click', function(){ iw.open({ map: carteG, anchor: mk }); });
 });
+if (nMarkers > 0) {
+carteG.fitBounds(bounds, 64);
+google.maps.event.addListenerOnce(carteG, 'idle', function(){ if (carteG.getZoom() > 11) carteG.setZoom(11); });
+}
 }).catch(function(){ var er = document.getElementById('carteErreur'); if (er) er.style.display = 'block'; });
 };
 document.getElementById('btnRelief').addEventListener('click', function(){

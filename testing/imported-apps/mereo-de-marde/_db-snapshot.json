@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-07-03T01:19:09.221Z",
+  "exportedAt": "2026-07-03T02:48:56.108Z",
   "tables": {
     "admin_invites": {
       "columns": [
@@ -63,24 +63,9 @@
           "updated_at": "2026-07-03T01:18:47.536Z"
         },
         {
-          "key": "tagline",
-          "value": "La météo des Laurentides, dite comme du vrai monde.",
-          "updated_at": "2026-07-03T01:18:47.547Z"
-        },
-        {
-          "key": "hero_sous",
-          "value": "Microclimats vérifiés à l'oeil pis au thermomètre. La seule météo qui te parle comme ta matante.",
-          "updated_at": "2026-07-03T01:18:47.559Z"
-        },
-        {
           "key": "hero_caption",
           "value": "Les Laurentides dans toute leur splendeur douteuse",
           "updated_at": "2026-07-03T01:18:47.572Z"
-        },
-        {
-          "key": "about_text",
-          "value": "Météo d'marde, c'est le bulletin météo hyper-local des Laurentides : chaque village a son microclimat, pis on le dit sans mettre de gants blancs. Des données fraîches, des expressions d'icitte, pis zéro langue de bois.",
-          "updated_at": "2026-07-03T01:18:47.588Z"
         },
         {
           "key": "footer_note",
@@ -106,6 +91,21 @@
           "key": "partage_intro",
           "value": "Choisis ton coin, choisis ta marde, pis l'artiste te dessine une carte à partager. Garantie 100 % exagérée.",
           "updated_at": "2026-07-03T01:18:47.651Z"
+        },
+        {
+          "key": "partage_note",
+          "value": "Les cartes sont gardées en banque : si quelqu'un a déjà généré la même marde pour le même coin, tu reçois la même caricature. Le texte, lui, change chaque jour.",
+          "updated_at": "2026-07-03T01:18:47.666Z"
+        },
+        {
+          "key": "_p_hero_image_url",
+          "value": "https://res.cloudinary.com/duhp69meg/image/upload/v1783039813/tapavis_tenant_mereo-de-marde/build_mereo-de-marde_1783039813099.png",
+          "updated_at": "2026-07-03T01:18:47.682Z"
+        },
+        {
+          "key": "_p_partage_demo_url",
+          "value": "https://res.cloudinary.com/duhp69meg/image/upload/v1783039813/tapavis_tenant_mereo-de-marde/build_mereo-de-marde_1783039813370.png",
+          "updated_at": "2026-07-03T01:18:47.697Z"
         }
       ]
     },
@@ -115,8 +115,59 @@
         "path",
         "created_at"
       ],
-      "totalRows": 0,
-      "sampleRows": []
+      "totalRows": 32,
+      "sampleRows": [
+        {
+          "id": 1,
+          "path": "/",
+          "created_at": "2026-07-03T01:22:05.379Z"
+        },
+        {
+          "id": 2,
+          "path": "/village/val-david",
+          "created_at": "2026-07-03T01:23:31.997Z"
+        },
+        {
+          "id": 3,
+          "path": "/village/val-david",
+          "created_at": "2026-07-03T01:23:33.828Z"
+        },
+        {
+          "id": 4,
+          "path": "/village/val-david",
+          "created_at": "2026-07-03T01:23:34.167Z"
+        },
+        {
+          "id": 5,
+          "path": "/village/val-david",
+          "created_at": "2026-07-03T01:23:34.511Z"
+        },
+        {
+          "id": 6,
+          "path": "/",
+          "created_at": "2026-07-03T01:23:42.884Z"
+        },
+        {
+          "id": 7,
+          "path": "/carte",
+          "created_at": "2026-07-03T01:23:45.060Z"
+        },
+        {
+          "id": 8,
+          "path": "/carte",
+          "created_at": "2026-07-03T01:23:46.562Z"
+        },
+        {
+          "id": 9,
+          "path": "/carte",
+          "created_at": "2026-07-03T01:23:47.188Z"
+        },
+        {
+          "id": 10,
+          "path": "/carte",
+          "created_at": "2026-07-03T01:23:47.206Z"
+        }
+      ]
     },
     "posts": {
       "columns": [
@@ -187,7 +238,7 @@
         "created_at",
         "updated_at"
       ],
-      "totalRows": 6,
+      "totalRows": 13,
       "sampleRows": [
         {
           "id": 1,
@@ -266,6 +317,58 @@
           "ordre": 6,
           "created_at": "2026-07-03T01:18:47.778Z",
           "updated_at": "2026-07-03T01:18:47.778Z"
+        },
+        {
+          "id": 13,
+          "nom": "Saint-Jérôme",
+          "slug": "saint-jerome",
+          "lat": 45.7803,
+          "lng": -74.0037,
+          "altitude": 175,
+          "microclimat": "La porte des Laurentides : là où la plaine se transforme en montagnes. Un pied dans le trafic de la 15, l'autre dans le bois. La météo hésite entre les deux pis fait à sa tête.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783045281/managed_agent_updates/ma_update_image_1783045281491.png",
+          "ordre": 7,
+          "created_at": "2026-07-03T02:45:39.892Z",
+          "updated_at": "2026-07-03T02:45:39.892Z"
+        },
+        {
+          "id": 14,
+          "nom": "Blainville",
+          "slug": "blainville",
+          "lat": 45.6706,
+          "lng": -73.8825,
+          "altitude": 55,
+          "microclimat": "Plate comme une table de cuisine, pis fière de l'être. Pas de montagne pour casser le vent : quand y vente, ça balaye les terrains de golf pis les stationnements d'un boutte à l'autre.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783045288/managed_agent_updates/ma_update_image_1783045288464.png",
+          "ordre": 8,
+          "created_at": "2026-07-03T02:45:39.892Z",
+          "updated_at": "2026-07-03T02:45:39.892Z"
+        },
+        {
+          "id": 15,
+          "nom": "Sainte-Thérèse",
+          "slug": "sainte-therese",
+          "lat": 45.6403,
+          "lng": -73.8478,
+          "altitude": 40,
+          "microclimat": "Coincée dans la couronne nord, entre la rivière des Mille Îles pis l'autoroute. L'humidité de la rivière te colle à peau l'été, pis le smog de Montréal monte visiter de temps en temps.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783045297/managed_agent_updates/ma_update_image_1783045297149.png",
+          "ordre": 9,
+          "created_at": "2026-07-03T02:45:39.892Z",
+          "updated_at": "2026-07-03T02:45:39.892Z"
+        },
+        {
+          "id": 16,
+          "nom": "Saint-Eustache",
+          "slug": "saint-eustache",
+          "lat": 45.5656,
+          "lng": -73.9044,
+          "altitude": 30,
+          "microclimat": "Assis su'l bord du lac des Deux Montagnes : le lac garde la chaleur l'automne pis crache une brume matinale à faire disparaître l'église. Les outardes te donnent la vraie météo avant la radio.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783045305/managed_agent_updates/ma_update_image_1783045305440.png",
+          "ordre": 10,
+          "created_at": "2026-07-03T02:45:39.892Z",
+          "updated_at": "2026-07-03T02:45:39.892Z"
         }
       ]
     },

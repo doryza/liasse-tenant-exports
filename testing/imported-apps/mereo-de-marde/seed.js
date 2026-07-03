@@ -6,14 +6,14 @@ module.exports = async function(db, services) {
     else await db.run('INSERT INTO admin_settings (key, value) VALUES ($1, $2) ON CONFLICT (key) DO NOTHING', [k, v]);
   }
   await reglage('business_name', cfg.businessName || cfg.displayName || "Météo d'marde");
-  await reglage('tagline', 'La météo des Laurentides, dite comme du vrai monde.');
-  await reglage('hero_sous', "Microclimats vérifiés à l'oeil pis au thermomètre. La seule météo qui te parle comme ta matante.");
+  await reglage('tagline', "La météo des Laurentides pis d'la couronne nord, dite comme du vrai monde.");
+  await reglage('hero_sous', "Des Laurentides jusqu'à Montréal, chaque coin a sa marde. Données en direct, vérifiées à l'oeil pis au thermomètre — pis dites comme ta matante.");
   await reglage('hero_caption', 'Les Laurentides dans toute leur splendeur douteuse');
-  await reglage('about_text', "Météo d'marde, c'est le bulletin météo hyper-local des Laurentides : chaque village a son microclimat, pis on le dit sans mettre de gants blancs. Des données fraîches, des expressions d'icitte, pis zéro langue de bois.");
+  await reglage('about_text', "Météo d'marde, c'est le bulletin météo hyper-local des Laurentides pis d'la couronne nord de Montréal — de Saint-Donat jusqu'à Laval : chaque coin a son microclimat, pis on le dit sans mettre de gants blancs. Des données en direct, des expressions d'icitte, pis zéro langue de bois.");
   await reglage('footer_note', 'Fait dans les Laurentides, entre deux bordées.');
   await reglage('cta_titre', 'Écoeure tes chums des autres régions');
   await reglage('cta_texte', "Génère une carte météo exagérée avec le jargon d'icitte pis partage-la. Parce que si on est pour manger d'la marde, aussi ben en rire.");
-  await reglage('carte_sous', "Chaque point, c'est un microclimat qui fait à sa tête. Pèse sur un village pour voir sa marde en direct, pis vire la carte en mode relief pour comprendre pourquoi.");
+  await reglage('carte_sous', "Chaque point, c'est un microclimat qui fait à sa tête — des sommets du Nord jusqu'aux îlots de béton de Laval pis Montréal. Pèse sur un coin pour voir sa marde en direct, pis vire la carte en mode relief pour comprendre pourquoi.");
   await reglage('partage_intro', "Choisis ton coin, choisis ta marde, pis l'artiste te dessine une carte à partager. Garantie 100 % exagérée.");
   await reglage('partage_note', "Les cartes sont gardées en banque : si quelqu'un a déjà généré la même marde pour le même coin, tu reçois la même caricature. Le texte, lui, change chaque jour.");
   if (cfg.contactEmail) await reglage('contact_email', cfg.contactEmail);
@@ -30,7 +30,14 @@ module.exports = async function(db, services) {
       ['Val-David', 'val-david', 46.0295, -74.2153, 335, "Coincé entre deux monts, le village ramasse les averses que les autres échappent. Quand y mouille à Sainte-Adèle, icitte y mouille à siaux.", 'https://res.cloudinary.com/duhp69meg/image/upload/v1783039814/tapavis_tenant_mereo-de-marde/build_mereo-de-marde_1783039814020.png', 3],
       ['Sainte-Agathe-des-Monts', 'sainte-agathe', 46.0448, -74.2817, 395, "Le lac des Sables joue au thermostat : y tempère l'été, mais au printemps pis à l'automne, y crache une brume épaisse comme d'la soupe aux pois.", 'https://res.cloudinary.com/duhp69meg/image/upload/v1783039815/tapavis_tenant_mereo-de-marde/build_mereo-de-marde_1783039815220.png', 4],
       ['Morin-Heights', 'morin-heights', 45.9005, -74.2469, 300, "Le corridor à neige officiel. Les nuages arrivent de l'ouest, frappent les collines pis déchargent tout leur stock icitte. Les bancs de neige ont leur propre code postal.", 'https://res.cloudinary.com/duhp69meg/image/upload/v1783039813/tapavis_tenant_mereo-de-marde/build_mereo-de-marde_1783039813490.png', 5],
-      ['Saint-Donat', 'saint-donat', 46.3186, -74.2211, 400, "Le congélateur des Laurentides. Perché dans le bout, encaissé entre les monts : quand la radio dit moins vingt, icitte c'est moins vingt-huit pis on n'en parle pu.", 'https://res.cloudinary.com/duhp69meg/image/upload/v1783039814/tapavis_tenant_mereo-de-marde/build_mereo-de-marde_1783039813864.png', 6]
+      ['Saint-Donat', 'saint-donat', 46.3186, -74.2211, 400, "Le congélateur des Laurentides. Perché dans le bout, encaissé entre les monts : quand la radio dit moins vingt, icitte c'est moins vingt-huit pis on n'en parle pu.", 'https://res.cloudinary.com/duhp69meg/image/upload/v1783039814/tapavis_tenant_mereo-de-marde/build_mereo-de-marde_1783039813864.png', 6],
+      ['Saint-Jérôme', 'saint-jerome', 45.7803, -74.0037, 175, "La porte des Laurentides : là où la plaine se transforme en montagnes. Un pied dans le trafic de la 15, l'autre dans le bois. La météo hésite entre les deux pis fait à sa tête.", 'https://res.cloudinary.com/duhp69meg/image/upload/v1783045281/managed_agent_updates/ma_update_image_1783045281491.png', 7],
+      ['Blainville', 'blainville', 45.6706, -73.8825, 55, "Plate comme une table de cuisine, pis fière de l'être. Pas de montagne pour casser le vent : quand y vente, ça balaye les terrains de golf pis les stationnements d'un boutte à l'autre.", 'https://res.cloudinary.com/duhp69meg/image/upload/v1783045288/managed_agent_updates/ma_update_image_1783045288464.png', 8],
+      ['Sainte-Thérèse', 'sainte-therese', 45.6403, -73.8478, 40, "Coincée dans la couronne nord, entre la rivière des Mille Îles pis l'autoroute. L'humidité de la rivière te colle à peau l'été, pis le smog de Montréal monte visiter de temps en temps.", 'https://res.cloudinary.com/duhp69meg/image/upload/v1783045297/managed_agent_updates/ma_update_image_1783045297149.png', 9],
+      ['Saint-Eustache', 'saint-eustache', 45.5656, -73.9044, 30, "Assis su'l bord du lac des Deux Montagnes : le lac garde la chaleur l'automne pis crache une brume matinale à faire disparaître l'église. Les outardes te donnent la vraie météo avant la radio.", 'https://res.cloudinary.com/duhp69meg/image/upload/v1783045305/managed_agent_updates/ma_update_image_1783045305440.png', 10],
+      ['Terrebonne', 'terrebonne', 45.7000, -73.6333, 30, "La rivière des Mille Îles fait la pluie pis le beau temps, littéralement. Vieux-Terrebonne ramasse l'humidité, pis les nouveaux quartiers en béton chauffent comme un BBQ l'été.", 'https://res.cloudinary.com/duhp69meg/image/upload/v1783045314/managed_agent_updates/ma_update_image_1783045314388.png', 11],
+      ['Laval', 'laval', 45.6066, -73.7124, 30, "Une île de béton pognée entre deux rivières : l'îlot de chaleur officiel de la couronne nord. Deux-trois degrés de plus qu'ailleurs l'été, pis l'asphalte des Galeries qui te renvoie le soleil en pleine face.", 'https://res.cloudinary.com/duhp69meg/image/upload/v1783045323/managed_agent_updates/ma_update_image_1783045323182.png', 12],
+      ['Montréal', 'montreal', 45.5019, -73.5674, 40, "Le gros village d'en bas : îlot de chaleur assumé, canyon de vent entre les tours, pis un mont-Royal qui fait semblant d'être une montagne. Toujours quelques degrés plus chaud qu'en haut dans le Nord — pis ça sent le bagel.", 'https://res.cloudinary.com/duhp69meg/image/upload/v1783045330/managed_agent_updates/ma_update_image_1783045330842.png', 13]
     ];
     for (const v of villages) await db.run('INSERT INTO villages (nom, slug, lat, lng, altitude, microclimat, image_url, ordre) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) ON CONFLICT (slug) DO NOTHING', v);
   }
@@ -70,7 +77,9 @@ module.exports = async function(db, services) {
       ['Ginette du village', await idVillage('val-david'), 'pluie', 'Y mouille tellement que mon gazon a des vagues. Le chat refuse de sortir depuis mardi.'],
       ['Réal', await idVillage('saint-donat'), 'neige', "J'ai pardu mon char dans l'banc de neige à matin. Si quelqu'un le trouve, y'é bleu. Je pense."],
       ['Mado', await idVillage('sainte-agathe'), 'soleil', "Beau soleil su'l lac, mais le vent m'a décoiffée raide. Ça compte-tu comme une marde partielle ?"],
-      ['Ti-Guy de la 117', await idVillage('morin-heights'), 'frette', 'Mon thermomètre a lâché à moins trente. Je pense qu\'y était juste découragé.']
+      ['Ti-Guy de la 117', await idVillage('morin-heights'), 'frette', 'Mon thermomètre a lâché à moins trente. Je pense qu\'y était juste découragé.'],
+      ['Chantale de Laval', await idVillage('laval'), 'canicule', "L'asphalte du stationnement des Galeries a essayé de manger mes gougounes. Vrai de vrai."],
+      ['Le gars du dep', await idVillage('saint-jerome'), 'orage', "Y'a venté tellement fort su'l boulevard que mon panneau ouvert est rendu chez le voisin d'en face."]
     ];
     for (const s of sigs) await db.run('INSERT INTO signalements (nom, village_id, condition, message, approuve) VALUES ($1, $2, $3, $4, 1)', s);
   }

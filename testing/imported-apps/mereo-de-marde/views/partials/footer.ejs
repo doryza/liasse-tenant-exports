@@ -21,7 +21,7 @@
 <button type="button" class="btn btn-petit" data-push-btn style="background-color:#6366f1;color:#fff"><%= t.footer_alertes %></button>
 </div>
 </div>
-<p class="pied-bas">© <%= new Date().getFullYear() %> <%= settings.business_name || "Météo d'marde" %> — <%= settings.tagline || '' %></p>
+<p class="pied-bas">© <%= new Date().getFullYear() %> <%= settings.business_name || "Météo d'marde" %> — <%= settings.tagline || '' %> · Données météo en direct via <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a>, gratos pis sans BS.</p>
 </footer>
 <script>
 try{if(window.TenantSDK){TenantSDK.ui.showInstallBanner();setTimeout(function(){try{TenantSDK.ui.showPushPrompt({title:"Reste au courant d'la marde",description:"Reçois une alerte quand le ciel vire de bord dans les Laurentides."});}catch(e){}},8000);}}catch(e){}
