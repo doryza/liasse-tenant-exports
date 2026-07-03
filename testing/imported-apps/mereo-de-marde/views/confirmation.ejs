@@ -2,7 +2,9 @@
 <section class="page-tete ciel">
 <%- include('partials/ciel') %>
 <div class="page-tete-inner">
-<% if (etat === 'ok') { %>
+<% if (etat === 'attente') { %>
+<h1><%= t.confirme_attente_titre %></h1>
+<% } else if (etat === 'ok') { %>
 <h1><%= t.confirme_ok_titre %></h1>
 <% } else if (etat === 'deja') { %>
 <h1><%= t.confirme_deja_titre %></h1>
@@ -13,10 +15,11 @@
 </section>
 <section class="section">
 <div class="confirme-boite">
-<% if (etat === 'ok' || etat === 'deja') { %>
-<p class="confirme-ic"><%= etat === 'ok' ? '🎉' : '👍' %></p>
-<p class="confirme-texte"><%= etat === 'ok' ? t.confirme_ok_texte : t.confirme_deja_texte %></p>
-<% if (sig && sig.message) { var cmc = conditionsMeta[sig.condition] || {}; %>
+<% var cmc = (sig && conditionsMeta[sig.condition]) ? conditionsMeta[sig.condition] : {}; %>
+<% if (etat === 'attente') { %>
+<p class="confirme-ic">📬</p>
+<p class="confirme-texte"><%= t.confirme_attente_texte %></p>
+<% if (sig && sig.message) { %>
 <div class="confirme-rappel">
 <div class="sig-tete">
 <span class="sig-nom"><%= sig.nom %></span>
@@ -26,14 +29,33 @@
 <p>« <%= sig.message %> »</p>
 </div>
 <% } %>
-<% } else { %>
-<p class="confirme-ic">🤷</p>
-<p class="confirme-texte"><%= t.confirme_echec_texte %></p>
+<form method="POST" action="confirmer/<%= jeton %>" class="confirme-actions">
+<button type="submit" class="btn"><%= t.btn_confirmer %></button>
+</form>
+<% } else if (etat === 'ok' || etat === 'deja') { %>
+<p class="confirme-ic"><%= etat === 'ok' ? '🎉' : '👍' %></p>
+<p class="confirme-texte"><%= etat === 'ok' ? t.confirme_ok_texte : t.confirme_deja_texte %></p>
+<% if (sig && sig.message) { %>
+<div class="confirme-rappel">
+<div class="sig-tete">
+<span class="sig-nom"><%= sig.nom %></span>
+<span class="expr-cond" style="background-color:<%= cmc.accent || '#5e7387' %>;margin-bottom:0"><%= cmc.nom || sig.condition %></span>
+<% if (village) { %><span class="sig-date"><%= village.nom %></span><% } %>
+</div>
+<p>« <%= sig.message %> »</p>
+</div>
 <% } %>
 <div class="confirme-actions">
 <% if (village && village.slug) { %><a class="btn" href="village/<%= village.slug %>"><%= t.confirme_village %></a><% } %>
 <a class="btn btn-blanc" href="."><%= t.confirme_retour %></a>
 </div>
+<% } else { %>
+<p class="confirme-ic">🤷</p>
+<p class="confirme-texte"><%= t.confirme_echec_texte %></p>
+<div class="confirme-actions">
+<a class="btn btn-blanc" href="."><%= t.confirme_retour %></a>
+</div>
+<% } %>
 </div>
 </section>
 <section class="section" style="padding-top:0">

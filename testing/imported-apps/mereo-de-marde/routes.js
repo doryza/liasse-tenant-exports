@@ -51,8 +51,12 @@ module.exports = function(services) {
     confirme_deja_titre: 'Déjà confirmé !', confirme_deja_texte: "Ce lien-là a déjà fait sa job : ton signalement est déjà dans la file d'approbation. Lâche le bouton, tout est beau.",
     confirme_echec_titre: 'Ouin. Ce lien-là marche pu.', confirme_echec_texte: "Le lien est expiré ou ben pas bon. C'est plate, mais re-signaler ta marde prend trente secondes — pis cette fois-là, niaise pas avant de cliquer sur le lien.",
     confirme_retour: "Retour à l'accueil", confirme_village: 'Voir mon coin',
-    liasse_texte: "Ce site-là a été bâti au grand complet avec Liasse — pas une ligne de code tapée à' mitaine. N'importe qui peut bâtir un site de même, toé avec.",
+    confirme_attente_titre: 'Une dernière pesée de bouton', confirme_attente_texte: "Pèse su'l gros bouton pour confirmer que c'est ben toé qui as signalé ça. C'est toute — après, ta marde s'en va dans la file du boss.",
+    btn_confirmer: "Je confirme, envoye !",
+    liasse_texte: "Ce site-là a été bâti au grand complet avec Liasse — pas une ligne de code tapée à' mitaine. T'as une idée de projet ? Décris-la, pis a se met en ligne quasiment tu-seule. N'importe qui peut bâtir un site de même, toé avec.",
     liasse_cta: 'Bâtis ton propre beau projet icitte',
+    liasse_pied: 'Ce site-là roule sur Liasse — n’importe qui peut bâtir un beau projet de même.',
+    liasse_pied_cta: 'Bâtis le tien',
     empty_villages: 'Pas encore de villages dans la liste. Reviens tantôt !', empty_expressions: 'Le dictionnaire se remplit bientôt, promis.', empty_posts: "Pas de chronique pour l'instant. Le chroniqueur pellette encore sa cour.", empty_signalements: 'Personne a encore chialé icitte. Sois le premier !',
     partage_titre: 'Partage ta marde', partage_choix_village: 'Ton coin', partage_choix_condition: 'La marde en cours',
     btn_generer: 'Génère ma carte de marde', btn_partager: 'Partager', btn_telecharger: 'Télécharger', generation_attente: "Deux secondes, l'artiste dessine...",
@@ -212,7 +216,7 @@ module.exports = function(services) {
     const gras = "font-family:'Paytone One','Arial Black',Arial,sans-serif;";
     return '<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"></head>' +
       '<body style="margin:0;padding:0;background-color:#eef2f6;font-family:Figtree,Arial,sans-serif;color:#22303d;">' +
-      '<div style="display:none;max-height:0;overflow:hidden;">Un clic pis ta marde est confirmée. Après ça, le boss l\'approuve.</div>' +
+      '<div style="display:none;max-height:0;overflow:hidden;">Confirme ton courriel pis ta marde s\'en va dans la file du boss.</div>' +
       '<div style="max-width:600px;margin:0 auto;padding:24px 12px;">' +
       '<div style="background:#22303d;border-radius:18px 18px 0 0;padding:18px 24px;text-align:left;">' +
       '<img src="' + echap(logo) + '" alt="' + echap(nomSite) + '" width="44" height="44" style="border-radius:12px;vertical-align:middle;border:0;">' +
@@ -225,7 +229,7 @@ module.exports = function(services) {
       '<p style="font-size:16px;line-height:1.6;margin:0 0 6px;">Salut <strong>' + echap(o.nom) + '</strong> !</p>' +
       '<p style="font-size:16px;line-height:1.6;margin:0 0 16px;">T\'as signalé ça' + (o.villageNom ? ' à <strong>' + echap(o.villageNom) + '</strong>' : '') + ' :</p>' +
       '<div style="background:#eef2f6;border-left:5px solid ' + c.accent + ';border-radius:10px;padding:14px 16px;font-size:15px;line-height:1.55;margin:0 0 22px;font-style:italic;">« ' + echap(o.message) + ' »</div>' +
-      '<p style="font-size:16px;line-height:1.6;margin:0 0 22px;">Un dernier p\'tit clic pour prouver que c\'est ben toé, pis ton signalement s\'en va direct dans la file du boss :</p>' +
+      '<p style="font-size:16px;line-height:1.6;margin:0 0 22px;">Pèse su\'l bouton pour ouvrir la page de confirmation — un dernier bouton là-bas, pis ton signalement s\'en va dans la file du boss :</p>' +
       '<div style="text-align:center;margin:0 0 24px;">' +
       '<a href="' + echap(o.lien) + '" style="' + gras + 'display:inline-block;background:' + c.accent + ';color:#ffffff;text-decoration:none;font-size:18px;padding:15px 30px;border-radius:14px;border:3px solid #22303d;">Je confirme mon courriel</a>' +
       '</div>' +
@@ -286,7 +290,9 @@ module.exports = function(services) {
   router.use(async function(req, res, next) {
     res.locals.cheminPage = req.path;
     if (req.method === 'GET' && !req.path.startsWith('/api') && !req.path.startsWith('/admin') && !req.path.includes('.')) {
-      try { await db.run('INSERT INTO site_visits (path) VALUES ($1)', [req.path]); } catch (e) {}
+      // Jamais le jeton magique en clair dans les stats de visites.
+      const cheminStat = req.path.startsWith('/confirmer/') ? '/confirmer/(jeton)' : req.path;
+      try { await db.run('INSERT INTO site_visits (path) VALUES ($1)', [cheminStat]); } catch (e) {}
     }
     next();
   });
@@ -383,19 +389,24 @@ module.exports = function(services) {
       if (!nom || !message) return res.status(400).json({ error: 'Ton nom pis ton message sont obligatoires.' });
       if (!courrielValide(email)) return res.status(400).json({ error: "Un vrai courriel est obligatoire — c'est lui qui confirme ton signalement." });
 
-      // Garde-fou par adresse IP (mémoire locale, doux mais suffisant) : 5 envois / 15 min.
-      const ip = String(req.headers['x-forwarded-for'] || req.ip || '?').split(',')[0].trim();
+      // Garde-fou par adresse IP (mémoire locale, doux mais suffisant) : 5 tentatives / 15 min.
+      // cf-connecting-ip est posé par Cloudflare (qui écrase toute valeur fournie par le
+      // client) sur les deux montages — jamais le x-forwarded-for de gauche, falsifiable.
+      const ip = String(req.headers['cf-connecting-ip'] || req.ip || '?').trim();
       const maintenant = Date.now();
       if (Object.keys(limiteSignalements).length > 5000) { for (const k in limiteSignalements) delete limiteSignalements[k]; }
       limiteSignalements[ip] = (limiteSignalements[ip] || []).filter(function(t) { return maintenant - t < 900000; });
       if (limiteSignalements[ip].length >= 5) return res.status(429).json({ error: 'Doucement le moulin ! Réessaie dans quinze minutes.' });
+      // Consommé à la tentative, pas au succès — sinon une panne SendGrid rend la route sans limite.
+      limiteSignalements[ip].push(maintenant);
 
       // Garde-fou par courriel : max 3 signalements non confirmés en 24 h.
       const enSuspens = await db.get("SELECT COUNT(*)::int AS n FROM signalements WHERE email = $1 AND email_verifie = 0 AND created_at > NOW() - INTERVAL '24 hours'", [email]);
       if (enSuspens && enSuspens.n >= 3) return res.status(429).json({ error: "T'as déjà trois signalements qui attendent leur confirmation. Va checker tes courriels (pis tes indésirables) !" });
 
-      // Ménage : les non-confirmés de plus de 7 jours ont expiré depuis longtemps.
-      try { await db.run("DELETE FROM signalements WHERE email_verifie = 0 AND email IS NOT NULL AND created_at < NOW() - INTERVAL '7 days'"); } catch (eMenage) {}
+      // Ménage : seulement les signalements du flot magique (jeton présent), jamais
+      // approuvés — pas touche aux entrées du boss ni à ce qui est affiché publiquement.
+      try { await db.run("DELETE FROM signalements WHERE email_verifie = 0 AND approuve = 0 AND verif_token_hash IS NOT NULL AND created_at < NOW() - INTERVAL '7 days'"); } catch (eMenage) {}
 
       const jeton = crypto.randomBytes(32).toString('hex');
       const jetonHash = crypto.createHash('sha256').update(jeton).digest('hex');
@@ -419,51 +430,68 @@ module.exports = function(services) {
         try { if (cree) await db.run('DELETE FROM signalements WHERE id = $1 AND email_verifie = 0', [cree.id]); } catch (eRetrait) {}
         return res.status(502).json({ error: "On a pas réussi à t'envoyer le courriel de confirmation. Réessaie dans une minute." });
       }
-      limiteSignalements[ip].push(maintenant);
       res.json({ success: true });
     } catch (e) { res.status(500).json({ error: 'Ça a pas marché, réessaie dans une minute.' }); }
   });
 
-  // Le lien magique : confirme le courriel pis pousse le signalement dans la
-  // file du boss. Revisiter un lien déjà utilisé reste une bonne nouvelle.
+  // Le lien magique en deux temps : le GET montre un bouton (les scanneurs de
+  // boîtes courriel suivent les liens — un GET qui confirme tout seul ferait
+  // sauter la barrière anti-pourriel), pis c'est le POST du bouton qui confirme
+  // pour vrai. Revisiter un lien déjà utilisé reste une bonne nouvelle.
+  async function chargerSignalementParJeton(jeton) {
+    if (!/^[a-f0-9]{64}$/.test(String(jeton || ''))) return null;
+    const jetonHash = crypto.createHash('sha256').update(String(jeton)).digest('hex');
+    return db.get('SELECT * FROM signalements WHERE verif_token_hash = $1', [jetonHash]);
+  }
+  async function rendreConfirmation(res, etat, sig, village, jeton) {
+    const cond = (sig && CONDITIONS[sig.condition]) ? sig.condition : await conditionRegionale();
+    const titres = { ok: T.confirme_ok_titre, deja: T.confirme_deja_titre, attente: T.confirme_attente_titre };
+    res.render('confirmation', await baseLocals({ pageTitle: titres[etat] || T.confirme_echec_titre, meteoCondition: cond, etat: etat, sig: sig, village: village, jeton: jeton || null }));
+  }
+  async function villageDeSig(sig) {
+    if (!sig || !sig.village_id) return null;
+    try { return await db.get('SELECT nom, slug FROM villages WHERE id = $1', [sig.village_id]); } catch (eV) { return null; }
+  }
+
   router.get('/confirmer/:jeton', async function(req, res) {
-    let etat = 'echec';
-    let sig = null;
-    let village = null;
     try {
-      const jeton = String(req.params.jeton || '');
-      if (/^[a-f0-9]{64}$/.test(jeton)) {
-        const jetonHash = crypto.createHash('sha256').update(jeton).digest('hex');
-        sig = await db.get('SELECT * FROM signalements WHERE verif_token_hash = $1', [jetonHash]);
-        if (sig && Number(sig.email_verifie) === 1) {
-          etat = 'deja';
-        } else if (sig && (!sig.verif_expire || new Date(sig.verif_expire).getTime() > Date.now())) {
-          await db.run('UPDATE signalements SET email_verifie = 1, verifie_le = NOW(), updated_at = NOW() WHERE id = $1', [sig.id]);
-          etat = 'ok';
-        } else {
-          sig = null;
-        }
-        if (sig && sig.village_id) { try { village = await db.get('SELECT nom, slug FROM villages WHERE id = $1', [sig.village_id]); } catch (eV) {} }
-        if (etat === 'ok') {
-          try {
-            if (services.config.contactEmail) {
-              const reglages = await getSettings();
-              await services.email.send({
-                to: services.config.contactEmail,
-                from: { email: 'validation@meteodmarde.com', name: "Météo d'marde" },
-                subject: (services.config.displayName || "Météo d'marde") + ' — Signalement à approuver',
-                html: '<p><strong>' + echap(sig.nom) + '</strong> (' + echap((CONDITIONS[sig.condition] || CONDITIONS.nuageux).nom) + (village ? ', ' + echap(village.nom) : '') + ') a confirmé son courriel :</p><blockquote>' + echap(sig.message) + '</blockquote><p><a href="' + echap(urlSite(reglages)) + '/admin">Approuver dans le tableau de bord</a></p>',
-                trackingSettings: { clickTracking: { enable: false, enable_text: false } }
-              });
-            }
-          } catch (eBoss) { console.error('Courriel au boss non parti :', eBoss.message); }
-        }
-      }
-      const cond = (sig && CONDITIONS[sig.condition]) ? sig.condition : await conditionRegionale();
-      const titre = etat === 'ok' ? T.confirme_ok_titre : (etat === 'deja' ? T.confirme_deja_titre : T.confirme_echec_titre);
-      res.render('confirmation', await baseLocals({ pageTitle: titre, meteoCondition: cond, etat: etat, sig: sig, village: village }));
+      const sig = await chargerSignalementParJeton(req.params.jeton);
+      if (!sig) return rendreConfirmation(res, 'echec', null, null);
+      const village = await villageDeSig(sig);
+      if (Number(sig.email_verifie) === 1) return rendreConfirmation(res, 'deja', sig, village);
+      if (sig.verif_expire && new Date(sig.verif_expire).getTime() <= Date.now()) return rendreConfirmation(res, 'echec', null, null);
+      return rendreConfirmation(res, 'attente', sig, village, String(req.params.jeton));
     } catch (e) {
-      res.render('confirmation', localsSecours({ pageTitle: T.confirme_echec_titre, meteoCondition: 'nuageux', etat: 'echec', sig: null, village: null }));
+      res.render('confirmation', localsSecours({ pageTitle: T.confirme_echec_titre, meteoCondition: 'nuageux', etat: 'echec', sig: null, village: null, jeton: null }));
+    }
+  });
+
+  router.post('/confirmer/:jeton', async function(req, res) {
+    try {
+      const sig = await chargerSignalementParJeton(req.params.jeton);
+      if (!sig) return rendreConfirmation(res, 'echec', null, null);
+      const village = await villageDeSig(sig);
+      if (sig.verif_expire && Number(sig.email_verifie) !== 1 && new Date(sig.verif_expire).getTime() <= Date.now()) return rendreConfirmation(res, 'echec', null, null);
+      // Bascule conditionnelle : un seul des clics concurrents gagne le « ok »
+      // (pis le courriel au boss part une seule fois).
+      const bascule = await db.get('UPDATE signalements SET email_verifie = 1, verifie_le = NOW(), updated_at = NOW() WHERE id = $1 AND email_verifie = 0 RETURNING id', [sig.id]);
+      if (!bascule) return rendreConfirmation(res, 'deja', sig, village);
+      if (services.config.contactEmail) {
+        try {
+          const reglages = await getSettings();
+          const rBoss = await services.email.send({
+            to: services.config.contactEmail,
+            from: { email: 'validation@meteodmarde.com', name: "Météo d'marde" },
+            subject: (services.config.displayName || "Météo d'marde") + ' — Signalement à approuver',
+            html: '<p><strong>' + echap(sig.nom) + '</strong> (' + echap((CONDITIONS[sig.condition] || CONDITIONS.nuageux).nom) + (village ? ', ' + echap(village.nom) : '') + ') a confirmé son courriel :</p><blockquote>' + echap(sig.message) + '</blockquote><p><a href="' + echap(urlSite(reglages)) + '/admin">Approuver dans le tableau de bord</a></p>',
+            trackingSettings: { clickTracking: { enable: false, enable_text: false } }
+          });
+          if (!rBoss || rBoss.success === false || rBoss.error || rBoss.skipped) console.error('Courriel au boss non parti :', (rBoss && rBoss.error && rBoss.error.message) || 'envoi refusé');
+        } catch (eBoss) { console.error('Courriel au boss non parti :', eBoss.message); }
+      }
+      return rendreConfirmation(res, 'ok', sig, village);
+    } catch (e) {
+      res.render('confirmation', localsSecours({ pageTitle: T.confirme_echec_titre, meteoCondition: 'nuageux', etat: 'echec', sig: null, village: null, jeton: null }));
     }
   });
 
