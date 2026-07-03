@@ -73,9 +73,10 @@ module.exports = function(services) {
   async function getMeteo(v) {
     const cle = 'v' + v.id;
     const now = Date.now();
-    if (meteoCache[cle] && now - meteoCache[cle].ts < 600000) return meteoCache[cle].data;
+    const hit = meteoCache[cle];
+    if (hit && now - hit.ts < (hit.data.ok ? 600000 : 60000)) return hit.data;
     try {
-      const r = await services.fetch('https://api.open-meteo.com/v1/forecast?latitude=' + v.lat + '&longitude=' + v.lng + '&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m,wind_gusts_10m,is_day&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=America%2FToronto&forecast_days=7');
+      const r = await services.fetch('https://api.open-meteo.com/v1/forecast?latitude=' + v.lat + '&longitude=' + v.lng + '&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m,wind_gusts_10m,is_day&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=America%2FToronto&forecast_days=7', { signal: AbortSignal.timeout(4000) });
       const j = await r.json();
       if (!r.ok || !j.current) throw new Error('station indisponible');
       const c = j.current;
@@ -84,7 +85,11 @@ module.exports = function(services) {
       const data = { ok: true, temp: Math.round(c.temperature_2m), ressenti: Math.round(c.apparent_temperature), humidite: Math.round(c.relative_humidity_2m), vent: Math.round(c.wind_speed_10m), rafales: Math.round(c.wind_gusts_10m), condition: cond, daily: j.daily || null };
       meteoCache[cle] = { ts: now, data: data };
       return data;
-    } catch (e) { return { ok: false, temp: null, ressenti: null, humidite: null, vent: null, rafales: null, condition: 'nuageux', daily: null }; }
+    } catch (e) {
+      const data = { ok: false, temp: null, ressenti: null, humidite: null, vent: null, rafales: null, condition: 'nuageux', daily: null };
+      meteoCache[cle] = { ts: now, data: data };
+      return data;
+    }
   }
 
   async function getSettings() { try { const rows = await db.all('SELECT key, value FROM admin_settings'); const s = {}; rows.forEach(function(r){ s[r.key] = r.value; }); return s; } catch (e) { return {}; } }
