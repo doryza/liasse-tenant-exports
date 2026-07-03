@@ -46,3 +46,17 @@ WHERE NOT EXISTS (SELECT 1 FROM expressions WHERE expression = 'Un ciel propre c
 INSERT INTO expressions (expression, signification, exemple, condition)
 SELECT 'Veiller à'' belle étoile', 'Passer la soirée dehors, en dessous des étoiles, parce que le ciel est trop beau pour rentrer.', 'On a fini la veillée à'' belle étoile, enroulés dans'' doudou su''l perron.', 'nuit'
 WHERE NOT EXISTS (SELECT 1 FROM expressions WHERE expression = 'Veiller à'' belle étoile');
+
+-- ============================================================================
+-- Confirmation courriel des signalements (anti-pourriel)
+-- Chaque signalement public doit confirmer son courriel via un lien magique
+-- (envoyé de validation@meteodmarde.com) avant d'entrer dans la file
+-- d'approbation du boss. Les vieux signalements sans courriel restent valides
+-- (la file les accepte quand email IS NULL). Idempotent : IF NOT EXISTS.
+-- ============================================================================
+ALTER TABLE signalements ADD COLUMN IF NOT EXISTS email TEXT;
+ALTER TABLE signalements ADD COLUMN IF NOT EXISTS email_verifie INTEGER DEFAULT 0;
+ALTER TABLE signalements ADD COLUMN IF NOT EXISTS verif_token_hash TEXT;
+ALTER TABLE signalements ADD COLUMN IF NOT EXISTS verif_expire TIMESTAMPTZ;
+ALTER TABLE signalements ADD COLUMN IF NOT EXISTS verifie_le TIMESTAMPTZ;
+CREATE INDEX IF NOT EXISTS idx_signalements_verif_token ON signalements (verif_token_hash);

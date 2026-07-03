@@ -27,7 +27,7 @@ var retour = document.getElementById('sigRetour');
 var btn = f.querySelector('button[type="submit"]');
 btn.disabled = true;
 try {
-var r = await fetch('api/signalements', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nom: f.nom.value, message: f.message.value, condition: f.condition.value, village_id: f.village_id.value }) });
+var r = await fetch('api/signalements', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nom: f.nom.value, email: f.email ? f.email.value : '', message: f.message.value, condition: f.condition.value, village_id: f.village_id.value }) });
 var d = await r.json();
 if (!r.ok) throw new Error(d.error || 'Erreur');
 retour.textContent = f.getAttribute('data-merci');

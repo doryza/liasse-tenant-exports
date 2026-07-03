@@ -201,3 +201,22 @@ a.carte-item:hover{transform:translate(-3px,-3px) rotate(-.5deg);box-shadow:10px
 .hero-cadre img{height:240px}
 }
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+/* --- Confirmation courriel des signalements --- */
+.champ-note{font-size:.82rem;opacity:.65;margin-top:4px;font-weight:600}
+.confirme-boite{max-width:640px;margin:0 auto;background:#fff;border:3px solid var(--encre);border-radius:var(--rayon);box-shadow:var(--ombre);padding:34px 30px;text-align:center}
+.confirme-ic{font-size:3rem;line-height:1;margin-bottom:14px}
+.confirme-texte{font-size:1.08rem;font-weight:600;margin-bottom:20px}
+.confirme-rappel{background:var(--fond);border:2.5px dashed var(--encre);border-radius:12px;padding:16px 18px;margin:0 0 22px;text-align:left}
+.confirme-rappel p{font-style:italic;margin-top:8px}
+.confirme-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+/* --- Bâti avec Liasse --- */
+.liasse-bande{max-width:760px;margin:0 auto;background:var(--encre);color:#fff;border-radius:var(--rayon);box-shadow:var(--ombre);padding:26px 28px;text-align:center;transition:background-color .7s}
+.liasse-eclair{font-size:1.8rem;line-height:1;margin-bottom:8px}
+.liasse-texte{font-weight:700;font-size:1.02rem;margin-bottom:16px;opacity:.95}
+.btn-liasse{background:#fff;color:var(--encre)}
+.pied-liasse{max-width:1160px;margin:0 auto;padding:18px 20px;border-top:1px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.pied-liasse p{font-weight:700;font-size:.95rem;opacity:.95;margin:0}
+.pied-liasse-eclair{margin-right:2px}
+.pied-liasse a{display:inline-block;font-family:'Paytone One',sans-serif;font-size:.9rem;background:#fff;color:var(--encre);border:3px solid var(--encre);border-radius:12px;padding:.5rem 1rem;text-decoration:none;box-shadow:4px 4px 0 rgba(0,0,0,.25)}
+.pied-liasse a:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 rgba(0,0,0,.25);text-decoration:none}
+@media(max-width:640px){.pied-liasse{flex-direction:column;text-align:center}}
