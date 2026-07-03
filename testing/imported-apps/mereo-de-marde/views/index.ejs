@@ -8,15 +8,16 @@
 <% } else { %>
 <p class="hero-lieu"><%= settings.tagline || '' %></p>
 <% } %>
-<h1 id="verdictHero"><%= verdict %></h1>
+<% var vedetteOk = (typeof vedette !== 'undefined' && vedette && vedette.meteo && vedette.meteo.ok); %>
+<h1 id="verdictHero"><%= vedetteOk ? verdict : t.meteo_indispo %></h1>
 <div class="hero-meteo">
 <span class="hero-temp" id="tempHero"><%= (typeof vedette !== 'undefined' && vedette && vedette.meteo && vedette.meteo.temp != null) ? vedette.meteo.temp + '°' : '—' %></span>
+<% if (vedetteOk) { %>
 <span class="hero-cond" id="condHero"><%= nomCondition %></span>
+<% } %>
 </div>
-<% if (typeof vedette !== 'undefined' && vedette && vedette.meteo && vedette.meteo.ok) { %>
+<% if (vedetteOk) { %>
 <p class="hero-detail"><%= t.ressenti %> <%= vedette.meteo.ressenti %>° · <%= t.vent %> <%= vedette.meteo.vent %> km/h · <%= t.humidite %> <%= vedette.meteo.humidite %> %</p>
-<% } else { %>
-<p class="hero-detail"><%= t.meteo_indispo %></p>
 <% } %>
 <p class="hero-sous"><%= settings.hero_sous || '' %></p>
 <div class="hero-actions">
@@ -45,7 +46,7 @@
 <p class="section-sous"><%= t.sec_villages_sous %></p>
 <% if (typeof villages !== 'undefined' && villages.length > 0) { %>
 <div class="grille">
-<% villages.forEach(function(v){ var m = v.meteo || {}; var cm2 = conditionsMeta[m.condition] || {}; %>
+<% villages.forEach(function(v){ var m = v.meteo || {}; var cm2 = (m.ok && conditionsMeta[m.condition]) || {}; %>
 <a class="carte-item" href="village/<%= v.slug %>">
 <div class="v-photo">
 <img src="<%= v.image_url || 'https://placehold.co/640x480/e2e8f0/64748b/png?text=' + encodeURIComponent(v.nom) %>" alt="<%= v.nom %>" loading="lazy">

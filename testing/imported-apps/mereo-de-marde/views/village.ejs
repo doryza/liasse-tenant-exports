@@ -3,10 +3,12 @@
 <%- include('partials/ciel') %>
 <div class="page-tete-inner">
 <p class="hero-lieu"><%= t.hero_en_direct %> <%= village.nom %> · <%= village.altitude %> m</p>
-<h1><%= verdict %></h1>
+<h1><%= (meteo && meteo.ok) ? verdict : t.meteo_indispo %></h1>
 <div class="hero-meteo">
 <span class="hero-temp"><%= (meteo && meteo.temp != null) ? meteo.temp + '°' : '—' %></span>
+<% if (meteo && meteo.ok) { %>
 <span class="hero-cond"><%= nomCondition %></span>
+<% } %>
 </div>
 </div>
 </section>

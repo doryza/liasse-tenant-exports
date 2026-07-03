@@ -31,7 +31,7 @@ var meta = (window.METEO_META || {})[v.condition] || {};
 var pos = { lat: Number(v.lat), lng: Number(v.lng) };
 var mk = new google.maps.Marker({ position: pos, map: carteG, title: v.nom, label: { text: (v.temp == null ? '?' : String(v.temp) + '°'), color: '#ffffff', fontWeight: '800', fontSize: '13px' }, icon: { path: google.maps.SymbolPath.CIRCLE, scale: 20, fillColor: meta.accent || '#6366f1', fillOpacity: 1, strokeColor: '#1c2733', strokeWeight: 3 } });
 bounds.extend(pos); nMarkers++;
-var iw = new google.maps.InfoWindow({ content: '<div class="iw"><strong>' + v.nom + '</strong><br>' + (meta.nom || '') + ' · ' + (v.temp == null ? '?' : v.temp + ' °C') + '<br><em>' + (v.verdict || '') + '</em><br><a href="village/' + v.slug + '">' + <%- JSON.stringify(t.voir_coin) %> + ' →</a></div>' });
+var iw = new google.maps.InfoWindow({ content: '<div class="iw"><strong>' + v.nom + '</strong><br>' + (meta.nom || v.nomCondition || '') + ' · ' + (v.temp == null ? '?' : v.temp + ' °C') + '<br><em>' + (v.verdict || '') + '</em><br><a href="village/' + v.slug + '">' + <%- JSON.stringify(t.voir_coin) %> + ' →</a></div>' });
 mk.addListener('click', function(){ iw.open({ map: carteG, anchor: mk }); });
 });
 if (nMarkers > 0) {

@@ -75,8 +75,10 @@ module.exports = function(services) {
       const r = await services.fetch('https://api.open-meteo.com/v1/forecast?latitude=' + v.lat + '&longitude=' + v.lng + '&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m,wind_gusts_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=America%2FToronto&forecast_days=7');
       const j = await r.json();
       if (!r.ok || !j.current) throw new Error('station indisponible');
-      const cond = wmoToCondition(j.current.weather_code, j.current.temperature_2m);
-      const data = { ok: true, temp: Math.round(j.current.temperature_2m), ressenti: Math.round(j.current.apparent_temperature), humidite: Math.round(j.current.relative_humidity_2m), vent: Math.round(j.current.wind_speed_10m), rafales: Math.round(j.current.wind_gusts_10m), condition: cond, daily: j.daily || null };
+      const c = j.current;
+      if (![c.temperature_2m, c.apparent_temperature, c.relative_humidity_2m, c.wind_speed_10m, c.wind_gusts_10m, c.weather_code].every(Number.isFinite)) throw new Error('données incomplètes');
+      const cond = wmoToCondition(c.weather_code, c.temperature_2m);
+      const data = { ok: true, temp: Math.round(c.temperature_2m), ressenti: Math.round(c.apparent_temperature), humidite: Math.round(c.relative_humidity_2m), vent: Math.round(c.wind_speed_10m), rafales: Math.round(c.wind_gusts_10m), condition: cond, daily: j.daily || null };
       meteoCache[cle] = { ts: now, data: data };
       return data;
     } catch (e) { return { ok: false, temp: null, ressenti: null, humidite: null, vent: null, rafales: null, condition: 'nuageux', daily: null }; }
@@ -165,8 +167,15 @@ module.exports = function(services) {
       const meteo = await getMeteo(village);
       const cond = meteo.ok ? meteo.condition : 'nuageux';
       let previsions = [];
-      if (meteo.ok && meteo.daily && meteo.daily.time) {
-        previsions = meteo.daily.time.map(function(d, i){ return { jour: new Date(d + 'T12:00:00').toLocaleDateString('fr-CA', { weekday: 'short', day: 'numeric' }), max: Math.round(meteo.daily.temperature_2m_max[i]), min: Math.round(meteo.daily.temperature_2m_min[i]), cond: wmoToCondition(meteo.daily.weather_code[i], meteo.daily.temperature_2m_max[i]) }; });
+      if (meteo.ok && meteo.daily && Array.isArray(meteo.daily.time)) {
+        previsions = meteo.daily.time.map(function(d, i){
+          const dd = meteo.daily;
+          const max = dd.temperature_2m_max && dd.temperature_2m_max[i];
+          const min = dd.temperature_2m_min && dd.temperature_2m_min[i];
+          const code = dd.weather_code && dd.weather_code[i];
+          if (!d || !Number.isFinite(max) || !Number.isFinite(min) || !Number.isFinite(code)) return null;
+          return { jour: new Date(d + 'T12:00:00').toLocaleDateString('fr-CA', { weekday: 'short', day: 'numeric' }), max: Math.round(max), min: Math.round(min), cond: wmoToCondition(code, max) };
+        }).filter(Boolean);
       }
       const signalements = await db.all('SELECT * FROM signalements WHERE village_id = $1 AND approuve = 1 ORDER BY created_at DESC LIMIT 12', [village.id]);
       res.render('village', await baseLocals({ pageTitle: village.nom, meteoCondition: cond, village: village, meteo: meteo, previsions: previsions, signalements: signalements, verdict: verdictDuJour(cond), nomCondition: CONDITIONS[cond].nom }));
@@ -211,7 +220,7 @@ module.exports = function(services) {
       const villages = await db.all('SELECT * FROM villages ORDER BY ordre, id');
       const out = await Promise.all(villages.map(async function(v) {
         const m = await getMeteo(v);
-        return { id: v.id, nom: v.nom, slug: v.slug, lat: v.lat, lng: v.lng, altitude: v.altitude, temp: m.temp, condition: m.condition, nomCondition: CONDITIONS[m.condition].nom, verdict: verdictDuJour(m.condition), ok: m.ok };
+        return { id: v.id, nom: v.nom, slug: v.slug, lat: v.lat, lng: v.lng, altitude: v.altitude, temp: m.temp, condition: m.ok ? m.condition : null, nomCondition: m.ok ? CONDITIONS[m.condition].nom : T.meteo_indispo, verdict: m.ok ? verdictDuJour(m.condition) : null, ok: m.ok };
       }));
       res.json({ villages: out });
     } catch (e) { res.status(500).json({ error: 'La station est dans le champ. Réessaie tantôt.' }); }
