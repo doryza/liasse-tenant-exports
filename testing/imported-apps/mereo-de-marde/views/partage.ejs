@@ -70,7 +70,8 @@ ecrireLignes(x, d.nomCondition, 56, 190, 968, 76);
 x.font = '50px "Paytone One"';
 ecrireLignes(x, '« ' + d.verdict + ' »', 56, 850, 968, 62);
 x.fillStyle = 'rgba(255,255,255,.85)'; x.font = '600 30px Figtree';
-x.fillText('liasse.tech/pwa/mereo-de-marde', 56, 1034);
+var lienSite = window.location.host + window.location.pathname.replace(/\/partage\/?$/, '');
+x.fillText(lienSite, 56, 1034);
 toile.style.display = 'block'; img.style.display = 'none';
 actions.style.display = 'flex';
 }
