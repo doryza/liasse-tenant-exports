@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tableau de bord — Administration</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body class="admin-corps">
+<%- include('partials/admin-sidebar') %>
+<main class="admin-main">
+<header class="admin-tete">
+<button id="btnSidebar" aria-label="Menu">☰</button>
+<div class="admin-tete-txt">
+<h1>Tableau de bord</h1>
+<p class="admin-tete-sous">Le pupitre du boss — gère ta marde d'un coup d'oeil.</p>
+</div>
+<a href="." target="_blank" class="btn-admin btn-primaire">Voir le site ↗</a>
+</header>
+<section class="stats-grille">
+<div class="stat"><span class="stat-ic">👀</span><div class="stat-corps"><p class="stat-n"><%= (typeof stats !== 'undefined' && stats) ? stats.visites7 : 0 %></p><p>Visites (7 jours)</p></div></div>
+<div class="stat"><span class="stat-ic">📈</span><div class="stat-corps"><p class="stat-n"><%= (typeof stats !== 'undefined' && stats) ? stats.visites : 0 %></p><p>Visites totales</p></div></div>
+<div class="stat"><span class="stat-ic">🔔</span><div class="stat-corps"><p class="stat-n"><%= (typeof stats !== 'undefined' && stats) ? stats.push : 0 %></p><p>Abonnés aux alertes</p></div></div>
+<div class="stat"><span class="stat-ic">👤</span><div class="stat-corps"><p class="stat-n"><%= (typeof stats !== 'undefined' && stats) ? stats.usagers : 0 %></p><p>Usagers</p></div></div>
+</section>
+<h2 class="admin-section-titre">Gérer le contenu</h2>
+<section class="modules-grille">
+<a class="module-carte" href="admin/posts">
+<div class="module-tete"><span class="module-ic">📝</span><span class="stat-n"><%= (typeof comptes !== 'undefined' && comptes.posts) ? comptes.posts : 0 %></span></div>
+<span class="module-nom">Chroniques</span>
+<span class="module-desc">Billets et chroniques météo publiés sur le site.</span>
+<span class="module-lien">Gérer →</span>
+</a>
+<a class="module-carte" href="admin/villages">
+<div class="module-tete"><span class="module-ic">📍</span><span class="stat-n"><%= (typeof comptes !== 'undefined' && comptes.villages) ? comptes.villages : 0 %></span></div>
+<span class="module-nom">Villages</span>
+<span class="module-desc">Coordonnées, altitude et microclimat de chaque coin.</span>
+<span class="module-lien">Gérer →</span>
+</a>
+<a class="module-carte" href="admin/expressions">
+<div class="module-tete"><span class="module-ic">💬</span><span class="stat-n"><%= (typeof comptes !== 'undefined' && comptes.expressions) ? comptes.expressions : 0 %></span></div>
+<span class="module-nom">Expressions</span>
+<span class="module-desc">Le dictionnaire des expressions québécoises météo.</span>
+<span class="module-lien">Gérer →</span>
+</a>
+<a class="module-carte" href="admin/signalements">
+<div class="module-tete"><span class="module-ic">📣</span><span class="stat-n"><%= (typeof comptes !== 'undefined' && comptes.signalements) ? comptes.signalements : 0 %></span></div>
+<span class="module-nom">Signalements</span>
+<span class="module-desc">Les rapports météo envoyés par le monde du coin.</span>
+<span class="module-lien">Gérer →</span>
+</a>
+</section>
+<section class="admin-bloc" id="blocAttente">
+<div class="admin-bloc-tete"><h2>Signalements en attente</h2><% if (typeof enAttente !== 'undefined' && enAttente.length) { %><span class="compteur-pill"><%= enAttente.length %> à traiter</span><% } %></div>
+<% if (typeof enAttente !== 'undefined' && enAttente.length > 0) { %>
+<div class="admin-table-wrap" style="box-shadow:none">
+<table class="admin-table">
+<thead><tr><th>Nom</th><th>Village</th><th>Condition</th><th>Message</th><th>Reçu</th><th class="td-actions">Actions</th></tr></thead>
+<tbody id="corpsAttente">
+<% enAttente.forEach(function(s){ var cm = (typeof conditionsMeta !== 'undefined' && conditionsMeta[s.condition]) ? conditionsMeta[s.condition] : {}; %>
+<tr id="sig-<%= s.id %>">
+<td><%= s.nom %></td>
+<td><%= s.village_nom || '—' %></td>
+<td><span class="pill pill-cond" style="background:<%= cm.accent || '#5e7387' %>"><%= cm.nom || s.condition %></span></td>
+<td><%= s.message %></td>
+<td><%= formatDate(s.created_at) %></td>
+<td class="td-actions"><button class="btn-admin btn-petit btn-ok" onclick="approuver(<%= s.id %>)">Approuver</button><button class="btn-admin btn-petit btn-danger" onclick="rejeter(<%= s.id %>)">Supprimer</button></td>
+</tr>
+<% }); %>
+</tbody>
+</table>
+</div>
+<% } else { %>
+<div class="admin-vide"><span class="vide-ic">✅</span><strong>Rien en attente</strong>Le monde est tranquille — aucun signalement à approuver.</div>
+<% } %>
+</section>
+</main>
+<div class="toasts" id="toasts"></div>
+<script>
+function toast(msg,type){ var z=document.getElementById('toasts'); if(!z)return; var el=document.createElement('div'); el.className='toast '+(type||''); el.textContent=msg; z.appendChild(el); setTimeout(function(){el.remove();},3200); }
+function majVide(){ var tb=document.getElementById('corpsAttente'); if(tb && tb.children.length===0){ var wrap=document.getElementById('blocAttente'); var t=wrap ? wrap.querySelector('.admin-table-wrap') : null; if(t) t.outerHTML='<div class="admin-vide"><span class="vide-ic">✅</span><strong>Rien en attente</strong>Le monde est tranquille — aucun signalement à approuver.</div>'; var pill=wrap?wrap.querySelector('.compteur-pill'):null; if(pill) pill.remove(); } }
+async function approuver(id){
+try {
+var r = await fetch('api/admin/signalements/' + id, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ approuve: 1 }) });
+if (!r.ok) throw new Error('erreur');
+var tr = document.getElementById('sig-' + id);
+if (tr) tr.remove();
+toast('Signalement approuvé.','ok'); majVide();
+} catch(e) { toast("Impossible d'approuver. Réessaie.",'err'); }
+}
+async function rejeter(id){
+if (!confirm('Supprimer ce signalement ? C\'est final.')) return;
+try {
+var r = await fetch('api/admin/signalements/' + id, { method: 'DELETE' });
+if (!r.ok) throw new Error('erreur');
+var tr = document.getElementById('sig-' + id);
+if (tr) tr.remove();
+toast('Signalement supprimé.','ok'); majVide();
+} catch(e) { toast('Impossible de supprimer. Réessaie.','err'); }
+}
+</script>
+<script>
+var bs = document.getElementById('btnSidebar');
+if (bs) bs.addEventListener('click', function(){ document.body.classList.toggle('sidebar-ouverte'); });
+</script>
+</body>
+</html>

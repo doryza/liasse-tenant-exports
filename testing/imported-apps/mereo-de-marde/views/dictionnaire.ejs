@@ -1,0 +1,34 @@
+<%- include('partials/header') %>
+<section class="page-tete ciel">
+<%- include('partials/ciel') %>
+<div class="page-tete-inner">
+<h1><%= t.sec_dico %></h1>
+<p><%= t.sec_dico_sous %></p>
+</div>
+</section>
+<section class="section">
+<div class="puces-rangee" style="margin-bottom:30px">
+<button type="button" class="puce puce-sombre active" data-filtre="tous">Toutes</button>
+<% Object.keys(conditionsMeta).forEach(function(c){ %>
+<button type="button" class="puce puce-sombre" data-filtre="<%= c %>"><%= conditionsMeta[c].nom %></button>
+<% }); %>
+</div>
+<% if (typeof expressions !== 'undefined' && expressions.length > 0) { %>
+<div class="grille">
+<% expressions.forEach(function(e){ var cme = conditionsMeta[e.condition] || {}; %>
+<article class="carte-item expr-carte" data-cond="<%= e.condition %>">
+<div class="expr-corps">
+<span class="expr-cond" style="background-color:<%= cme.accent || '#5e7387' %>"><%= cme.nom || e.condition %></span>
+<h3>« <%= e.expression %> »</h3>
+<p><%= e.signification %></p>
+<% if (e.exemple) { %><p class="expr-exemple"><%= e.exemple %></p><% } %>
+</div>
+</article>
+<% }); %>
+</div>
+<p class="etat-vide" id="filtreVide" style="display:none;margin-top:26px"><%= t.empty_expressions %></p>
+<% } else { %>
+<p class="etat-vide"><%= t.empty_expressions %></p>
+<% } %>
+</section>
+<%- include('partials/footer') %>

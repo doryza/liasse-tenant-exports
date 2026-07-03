@@ -1,0 +1,90 @@
+{
+  "slug": "mereo-de-marde",
+  "displayName": "Meteo de marde",
+  "description": "Project type: Website\n\nGoal: Provide specialized weather information for the Laurentians region, focusing on microclimates.\n\nKey features:\n- Rich, interactive map showing local weather data.\n- Original animations for each weather condition.\n- Possible relief view in the map.\n- Content written using colorful Québécois expressions and slang.\n- Dynamic sharing to social media, using exaggerated, funny, or caricature-like AI-generated images that explicitly overlay the local weather jargon.\n\nDesign & brand: Dynamic interface colors that change based on current weather. Very modern, cool, and visual with dynamic effects, aiming for a distinctive (\"hot\") viral feel. The color scheme should adapt automatically to the weather condition being viewed (e.g., warmer colors for sun, cooler for rain).\n\nIntegrations & extras: Hyper-local dynamic weather data source. Social media sharing APIs. AI image generation API with text insertion capabilities.",
+  "status": "active",
+  "generationVersion": 1,
+  "primaryColor": "#6366f1",
+  "iconUrl": "https://res.cloudinary.com/duhp69meg/image/upload/v1783041536/tapavis_tenant_mereo-de-marde/icon_mereo-de-marde_1783041536175.png",
+  "enabledAuthMethods": [
+    "webauthn",
+    "sms",
+    "email"
+  ],
+  "notificationsEnabled": true,
+  "geolocationEnabled": true,
+  "customConfig": {
+    "language": "fr",
+    "designManifest": {
+      "concept": "Ciel d'humeur",
+      "copyVoice": "joual québécois assumé — tutoiement, chialage affectueux, zéro langue de bois",
+      "elements": {
+        "blogSurfaced": true,
+        "pages": [
+          "accueil",
+          "carte interactive relief",
+          "fiches villages avec prévisions et signalements",
+          "dictionnaire de la marde",
+          "chroniques",
+          "partage de cartes IA"
+        ],
+        "userLogin": false
+      },
+      "heroThesis": "The homepage opens with the sky itself insulting you in joual — a giant daily verdict headline over the live animated sky of the featured village, with the real temperature beside it, because the verdict IS the product.",
+      "iconDirection": "A flat cartoon emblem of a grumpy storm cloud wearing a Québécois tuque with one fat raindrop and one sun ray escaping it, thick black outlines on indigo #6366f1, comic-sticker style matching the site's caricature language.",
+      "palette": {
+        "accents": [
+          "#e8720c",
+          "#2e7dd1",
+          "#e23d2e",
+          "#4a90c4"
+        ],
+        "ground": "#eef2f6",
+        "ink": "#22303d",
+        "primary": "#6366f1"
+      },
+      "signatureMove": "A whole-page 'météo-mode' theme engine driven by data-meteo on body: nine condition palettes with original CSS-only sky animations (rain streaks, drifting clouds, lightning flashes, falling snow, pea-soup fog, ice shimmer), previewable from a mood-chip rail and set live from real Open-Meteo data per village.",
+      "summary": "The interface is a mood-ring sky: the entire site — palette, header, hero, buttons — repaints itself to the live weather condition of the Laurentians microclimate being viewed, each condition carrying its own joual name, verdict and animated CSS sky.",
+      "typography": "Paytone One (fat meme-sticker display, the shouting voice of the verdicts) + Figtree (sturdy humanist body/UI)"
+    }
+  },
+  "promptHistory": [
+    {
+      "prompt": "Project type: Website\n\nGoal: Provide specialized weather information for the Laurentians region, focusing on microclimates.\n\nKey features:\n- Rich, interactive map showing local weather data.\n- Original animations for each weather condition.\n- Possible relief view in the map.\n- Content written using colorful Québécois expressions and slang.\n- Dynamic sharing to social media, using exaggerated, funny, or caricature-like AI-generated images that explicitly overlay the local weather jargon.\n\nDesign & brand: Dynamic interface colors that change based on current weather. Very modern, cool, and visual with dynamic effects, aiming for a distinctive (\"hot\") viral feel. The color scheme should adapt automatically to the weather condition being viewed (e.g., warmer colors for sun, cooler for rain).\n\nIntegrations & extras: Hyper-local dynamic weather data source. Social media sharing APIs. AI image generation API with text insertion capabilities.",
+      "timestamp": "2026-07-03T01:19:05.758Z",
+      "changeNotes": "Construction initiale de Météo d'marde : bulletin météo hyper-local des Laurentides en joual, avec données en direct d'Open-Meteo par village, thème complet qui change de couleur et d'animation selon la condition (9 humeurs du ciel), carte Google Maps avec vue relief et marqueurs météo, dictionnaire d'expressions filtrable, chroniques, signalements citoyens modérés, et générateur de cartes de partage caricaturales par IA avec superposition de texte via canvas. Backend admin complet (tableau de bord, CRUD chroniques/villages/expressions/signalements, approbation rapide des signalements, génération d'images IA).\n\nAdmin enrichment: (1) Redesigned admin dashboard (views/admin.ejs) with icon stat cards, richer module cards (count + description + 'Gérer →' CTA), condition badges on the pending-signalements table, an empty state, toast feedback for approve/delete, and a live 'majVide' state refresh. (2) Rebuilt admin-styles.css with a polished, higher-contrast system: gradient sidebar with nav icons, focus-visible states, badge/pill styles, toast notifications, hover-elevated cards, uppercase table headers, action-column alignment, and mobile responsiveness. (3) Enriched the shared CRUD shell (views/partials/admin-shell.ejs): search count display, condition/boolean pill rendering in table cells, right-aligned Modify/Delete action column, live image preview in the create/edit modal, AI-generate button, and toast success/error feedback replacing raw alerts — full create/edit/delete retained for every module. (4) Added icons to the admin sidebar and a cleaner brand block. (5) Fixed a broken CSS custom-property value (--accent-fonce:#96niente) in the canicule theme of public/css/styles.css that produced an invalid color. All routes/data flows preserved; functional content (villages, expressions, chroniques, signalements) remains fully admin-manageable. Added conditionsMeta to the admin dashboard render for badge colors. All {{IMG_*}} placeholder tokens preserved. Added _seoMetadata (French).",
+      "generationId": 1398,
+      "filesModified": [
+        "manifest.json",
+        "public/css/admin-styles.css",
+        "public/css/styles.css",
+        "public/js/app.js",
+        "routes.js",
+        "schema.sql",
+        "seed.js",
+        "views/admin-expressions.ejs",
+        "views/admin-posts.ejs",
+        "views/admin-share_cards.ejs",
+        "views/admin-signalements.ejs",
+        "views/admin-villages.ejs",
+        "views/admin.ejs",
+        "views/carte.ejs",
+        "views/chronique.ejs",
+        "views/chroniques.ejs",
+        "views/dictionnaire.ejs",
+        "views/index.ejs",
+        "views/partage.ejs",
+        "views/partials/admin-shell.ejs",
+        "views/partials/admin-sidebar.ejs",
+        "views/partials/ciel.ejs",
+        "views/partials/footer.ejs",
+        "views/partials/header.ejs",
+        "views/village.ejs"
+      ]
+    }
+  ],
+  "apiVariables": [],
+  "createdAt": "2026-07-02T23:55:46.753Z",
+  "updatedAt": "2026-07-03T01:19:08.923Z",
+  "exportedAt": "2026-07-03T01:19:09.189Z"
+}

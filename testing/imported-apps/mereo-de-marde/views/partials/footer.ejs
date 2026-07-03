@@ -1,0 +1,31 @@
+<footer class="pied">
+<div class="pied-inner">
+<div>
+<p class="pied-marque"><%= settings.business_name || "Météo d'marde" %></p>
+<p><%= settings.tagline || '' %></p>
+<p><%= settings.about_text || '' %></p>
+<p class="pied-note"><%= settings.footer_note || '' %></p>
+</div>
+<div>
+<p class="pied-titre"><%= t.footer_naviguer %></p>
+<a href="."><%= t.nav_accueil %></a>
+<a href="carte"><%= t.nav_carte %></a>
+<a href="dictionnaire"><%= t.nav_dico %></a>
+<a href="chroniques"><%= t.nav_chroniques %></a>
+<a href="partage"><%= t.nav_partage %></a>
+</div>
+<div>
+<p class="pied-titre"><%= t.footer_rejoindre %></p>
+<% if (settings.contact_email) { %><a href="mailto:<%= settings.contact_email %>"><%= settings.contact_email %></a><% } %>
+<% if (settings.contact_phone) { %><a href="tel:<%= settings.contact_phone %>"><%= settings.contact_phone %></a><% } %>
+<button type="button" class="btn btn-petit" data-push-btn style="background-color:#6366f1;color:#fff"><%= t.footer_alertes %></button>
+</div>
+</div>
+<p class="pied-bas">© <%= new Date().getFullYear() %> <%= settings.business_name || "Météo d'marde" %> — <%= settings.tagline || '' %></p>
+</footer>
+<script>
+try{if(window.TenantSDK){TenantSDK.ui.showInstallBanner();setTimeout(function(){try{TenantSDK.ui.showPushPrompt({title:"Reste au courant d'la marde",description:"Reçois une alerte quand le ciel vire de bord dans les Laurentides."});}catch(e){}},8000);}}catch(e){}
+</script>
+<script src="public/js/app.js"></script>
+</body>
+</html>

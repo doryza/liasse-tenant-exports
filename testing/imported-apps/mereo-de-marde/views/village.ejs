@@ -1,0 +1,76 @@
+<%- include('partials/header') %>
+<section class="page-tete ciel">
+<%- include('partials/ciel') %>
+<div class="page-tete-inner">
+<p class="hero-lieu"><%= t.hero_en_direct %> <%= village.nom %> · <%= village.altitude %> m</p>
+<h1><%= verdict %></h1>
+<div class="hero-meteo">
+<span class="hero-temp"><%= (meteo && meteo.temp != null) ? meteo.temp + '°' : '—' %></span>
+<span class="hero-cond"><%= nomCondition %></span>
+</div>
+</div>
+</section>
+<section class="section">
+<% if (meteo && meteo.ok) { %>
+<div class="stats-rangee">
+<div class="stat-boite"><p class="gros"><%= meteo.ressenti %>°</p><p class="petit"><%= t.ressenti %></p></div>
+<div class="stat-boite"><p class="gros"><%= meteo.vent %> km/h</p><p class="petit"><%= t.vent %></p></div>
+<div class="stat-boite"><p class="gros"><%= meteo.rafales %> km/h</p><p class="petit"><%= t.rafales %></p></div>
+<div class="stat-boite"><p class="gros"><%= meteo.humidite %> %</p><p class="petit"><%= t.humidite %></p></div>
+</div>
+<% } else { %>
+<p class="etat-vide" style="margin-bottom:40px"><%= t.meteo_indispo %></p>
+<% } %>
+<h2 class="section-titre"><%= t.prevision_7 %></h2>
+<% if (typeof previsions !== 'undefined' && previsions.length > 0) { %>
+<div class="prev-rangee" style="margin-top:24px">
+<% previsions.forEach(function(p){ var cmp = conditionsMeta[p.cond] || {}; %>
+<div class="prev-tuile">
+<p class="prev-jour"><%= p.jour %></p>
+<span class="prev-cond" style="background-color:<%= cmp.accent || '#5e7387' %>"><%= cmp.nom || p.cond %></span>
+<p class="prev-temp"><%= p.max %>° <span><%= p.min %>°</span></p>
+</div>
+<% }); %>
+</div>
+<% } else { %>
+<p class="etat-vide" style="margin-top:24px"><%= t.meteo_indispo %></p>
+<% } %>
+</section>
+<section class="section">
+<h2 class="section-titre"><%= t.topo_titre %></h2>
+<div class="topo" style="margin-top:26px">
+<img src="<%= village.image_url || 'https://placehold.co/800x600/e2e8f0/64748b/png?text=' + encodeURIComponent(village.nom) %>" alt="<%= village.nom %>">
+<div class="topo-texte"><p><%= village.microclimat || settings.about_text || '' %></p></div>
+</div>
+</section>
+<section class="section">
+<h2 class="section-titre"><%= t.signalements_titre %></h2>
+<% if (typeof signalements !== 'undefined' && signalements.length > 0) { %>
+<div class="sig-liste" style="margin-top:26px">
+<% signalements.forEach(function(s){ var cms = conditionsMeta[s.condition] || {}; %>
+<div class="sig-item">
+<div class="sig-tete">
+<span class="sig-nom"><%= s.nom %></span>
+<span class="expr-cond" style="background-color:<%= cms.accent || '#5e7387' %>;margin-bottom:0"><%= cms.nom || s.condition %></span>
+<span class="sig-date"><%= formatDate(s.created_at) %></span>
+</div>
+<p><%= s.message %></p>
+</div>
+<% }); %>
+</div>
+<% } else { %>
+<p class="etat-vide" style="margin:26px 0 40px"><%= t.empty_signalements %></p>
+<% } %>
+<h3 class="section-titre" style="font-size:1.3rem;margin-top:14px"><%= t.signaler_titre %></h3>
+<div class="forme-boite" style="margin-top:18px;max-width:640px">
+<form id="formSignalement" data-merci="<%= t.signal_merci %>">
+<input type="hidden" name="village_id" value="<%= village.id %>">
+<div class="champ-ligne"><label for="sigNom"><%= t.form_nom %></label><input id="sigNom" name="nom" required maxlength="60" placeholder="Ti-Guy de la 117"></div>
+<div class="champ-ligne"><label for="sigCond"><%= t.form_condition %></label><select id="sigCond" name="condition"><% Object.keys(conditionsMeta).forEach(function(c){ %><option value="<%= c %>"><%= conditionsMeta[c].nom %></option><% }); %></select></div>
+<div class="champ-ligne"><label for="sigMsg"><%= t.form_message %></label><textarea id="sigMsg" name="message" rows="3" required maxlength="400" placeholder="Y grêle des balles de golf su'a rue Principale..."></textarea></div>
+<div id="sigRetour" class="form-retour"></div>
+<button type="submit" class="btn"><%= t.btn_signaler %></button>
+</form>
+</div>
+</section>
+<%- include('partials/footer') %>

@@ -1,0 +1,9 @@
+<%- include('partials/header') %>
+<article class="article">
+<a class="retour-lien" href="chroniques">← <%= t.retour %></a>
+<h1><%= post.title %></h1>
+<p class="article-meta"><% if (post.category) { %><span class="chron-cat" style="margin-right:10px"><%= post.category %></span><% } %><%= t.publie_le %> <%= formatDate(post.created_at) %></p>
+<img class="article-img" src="<%= post.image_url || 'https://placehold.co/1200x600/e2e8f0/64748b/png?text=Chronique' %>" alt="<%= post.title %>">
+<% String(post.content || '').split(/\n+/).forEach(function(par){ if (par.trim()) { %><p><%= par %></p><% } }); %>
+</article>
+<%- include('partials/footer') %>

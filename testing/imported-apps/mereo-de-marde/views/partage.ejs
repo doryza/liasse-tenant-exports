@@ -1,0 +1,120 @@
+<%- include('partials/header') %>
+<section class="page-tete ciel">
+<%- include('partials/ciel') %>
+<div class="page-tete-inner">
+<h1><%= t.partage_titre %></h1>
+<p><%= settings.partage_intro || '' %></p>
+</div>
+</section>
+<section class="section partage-grille">
+<div class="forme-boite">
+<div class="champ-ligne"><label for="pVillage"><%= t.partage_choix_village %></label>
+<select id="pVillage">
+<% if (typeof villages !== 'undefined' && villages.length > 0) { villages.forEach(function(v){ %><option value="<%= v.id %>"><%= v.nom %></option><% }); } else { %><option value=""><%= t.empty_villages %></option><% } %>
+</select></div>
+<div class="champ-ligne"><label for="pCond"><%= t.partage_choix_condition %></label>
+<select id="pCond">
+<% Object.keys(conditionsMeta).forEach(function(c){ %><option value="<%= c %>"<%= c === meteoCondition ? ' selected' : '' %>><%= conditionsMeta[c].nom %></option><% }); %>
+</select></div>
+<div id="pRetour" class="form-retour"></div>
+<button type="button" class="btn" id="btnGenerer"><%= t.btn_generer %></button>
+<p class="apercu-note"><%= settings.partage_note || '' %></p>
+</div>
+<div>
+<div class="apercu-cadre">
+<img id="apercuImg" src="<%= (typeof settings !== 'undefined' && settings._p_partage_demo_url) ? settings._p_partage_demo_url : 'https://placehold.co/800x800/e2e8f0/64748b/png?text=Ta+carte+icitte' %>" alt="Exemple de carte météo exagérée à partager">
+<canvas id="toile" style="display:none"></canvas>
+</div>
+<div class="apercu-actions" id="apercuActions">
+<button type="button" class="btn" id="btnPartager"><%= t.btn_partager %></button>
+<button type="button" class="btn btn-blanc" id="btnTelecharger"><%= t.btn_telecharger %></button>
+</div>
+</div>
+</section>
+<script>
+(function(){
+var TXT_ATTENTE = <%- JSON.stringify(t.generation_attente) %>;
+var btn = document.getElementById('btnGenerer');
+var retour = document.getElementById('pRetour');
+var toile = document.getElementById('toile');
+var img = document.getElementById('apercuImg');
+var actions = document.getElementById('apercuActions');
+var derniere = null;
+function ecrireLignes(x, texte, tx, ty, maxW, lh){
+var mots = String(texte).split(' ');
+var ligne = '';
+var lignes = [];
+mots.forEach(function(m){ var test = ligne ? ligne + ' ' + m : m; if (x.measureText(test).width > maxW && ligne) { lignes.push(ligne); ligne = m; } else { ligne = test; } });
+if (ligne) lignes.push(ligne);
+lignes.forEach(function(l, i){ x.fillText(l, tx, ty + i * lh); });
+}
+async function composer(d){
+try { if (document.fonts && document.fonts.load) { await document.fonts.load('64px "Paytone One"'); await document.fonts.load('800 36px Figtree'); } } catch(e) {}
+var image = new Image();
+image.crossOrigin = 'anonymous';
+await new Promise(function(ok, ko){ image.onload = ok; image.onerror = ko; image.src = d.image_url; });
+toile.width = 1080; toile.height = 1080;
+var x = toile.getContext('2d');
+var s = Math.max(1080 / image.width, 1080 / image.height);
+x.drawImage(image, (1080 - image.width * s) / 2, (1080 - image.height * s) / 2, image.width * s, image.height * s);
+var g = x.createLinearGradient(0, 0, 0, 330);
+g.addColorStop(0, 'rgba(12,16,28,.88)'); g.addColorStop(1, 'rgba(12,16,28,0)');
+x.fillStyle = g; x.fillRect(0, 0, 1080, 330);
+g = x.createLinearGradient(0, 630, 0, 1080);
+g.addColorStop(0, 'rgba(12,16,28,0)'); g.addColorStop(1, 'rgba(12,16,28,.94)');
+x.fillStyle = g; x.fillRect(0, 630, 1080, 450);
+x.fillStyle = '#ffd24a'; x.font = '800 36px Figtree';
+x.fillText(("Météo d'marde — " + d.village).toUpperCase(), 56, 96);
+x.fillStyle = '#ffffff'; x.font = '64px "Paytone One"';
+ecrireLignes(x, d.nomCondition, 56, 190, 968, 76);
+x.font = '50px "Paytone One"';
+ecrireLignes(x, '« ' + d.verdict + ' »', 56, 850, 968, 62);
+x.fillStyle = 'rgba(255,255,255,.85)'; x.font = '600 30px Figtree';
+x.fillText('liasse.tech/pwa/mereo-de-marde', 56, 1034);
+toile.style.display = 'block'; img.style.display = 'none';
+actions.style.display = 'flex';
+}
+btn.addEventListener('click', async function(){
+retour.className = 'form-retour'; retour.textContent = '';
+var vid = document.getElementById('pVillage').value;
+if (!vid) { retour.textContent = "Ajoute d'abord un village."; retour.className = 'form-retour erreur'; return; }
+btn.disabled = true;
+var txt = btn.textContent;
+btn.textContent = TXT_ATTENTE;
+try {
+var r = await fetch('api/partage/generer', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ village_id: vid, condition: document.getElementById('pCond').value }) });
+var d = await r.json();
+if (!r.ok) throw new Error(d.error || 'Erreur de génération');
+derniere = d;
+try { await composer(d); } catch(e) { img.src = d.image_url; img.style.display = 'block'; toile.style.display = 'none'; actions.style.display = 'flex'; }
+var condChoisie = document.getElementById('pCond').value;
+if (window.METEO_META && window.METEO_META[condChoisie]) document.body.setAttribute('data-meteo', condChoisie);
+} catch(e) { retour.textContent = e.message; retour.className = 'form-retour erreur'; }
+btn.disabled = false;
+btn.textContent = txt;
+});
+document.getElementById('btnPartager').addEventListener('click', function(){
+if (!derniere) return;
+var texte = derniere.nomCondition + ' à ' + derniere.village + ' : « ' + derniere.verdict + ' »';
+var url = window.location.href;
+function partagerLien(){ if (navigator.share) { navigator.share({ title: document.title, text: texte, url: url }).catch(function(){}); } else if (navigator.clipboard) { navigator.clipboard.writeText(texte + ' ' + url); alert('Texte copié ! Colle-le où tu veux.'); } }
+if (toile.style.display !== 'none') {
+toile.toBlob(function(b){
+if (!b) return partagerLien();
+try {
+var f = new File([b], 'meteo-de-marde.png', { type: 'image/png' });
+if (navigator.canShare && navigator.canShare({ files: [f] })) { navigator.share({ files: [f], title: document.title, text: texte }).catch(function(){}); return; }
+} catch(e) {}
+partagerLien();
+});
+} else { partagerLien(); }
+});
+document.getElementById('btnTelecharger').addEventListener('click', function(){
+var a = document.createElement('a');
+if (toile.style.display !== 'none') { try { a.href = toile.toDataURL('image/png'); } catch(e) { a.href = derniere ? derniere.image_url : img.src; } } else { a.href = derniere ? derniere.image_url : img.src; }
+a.download = 'meteo-de-marde.png';
+document.body.appendChild(a); a.click(); a.remove();
+});
+})();
+</script>
+<%- include('partials/footer') %>

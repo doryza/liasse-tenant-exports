@@ -1,0 +1,14 @@
+<aside class="admin-sidebar">
+<div class="admin-marque"><%= (typeof settings !== 'undefined' && settings.business_name) ? settings.business_name : "Météo d'marde" %><small>Pupitre du boss</small></div>
+<nav>
+<a href="admin" class="<%= (typeof adminActif !== 'undefined' && adminActif === 'tableau') ? 'actif' : '' %>"><span class="ic">📊</span> Tableau de bord</a>
+<a href="admin/posts" class="<%= (typeof adminActif !== 'undefined' && adminActif === 'posts') ? 'actif' : '' %>"><span class="ic">📝</span> Chroniques</a>
+<a href="admin/villages" class="<%= (typeof adminActif !== 'undefined' && adminActif === 'villages') ? 'actif' : '' %>"><span class="ic">📍</span> Villages</a>
+<a href="admin/expressions" class="<%= (typeof adminActif !== 'undefined' && adminActif === 'expressions') ? 'actif' : '' %>"><span class="ic">💬</span> Expressions</a>
+<a href="admin/signalements" class="<%= (typeof adminActif !== 'undefined' && adminActif === 'signalements') ? 'actif' : '' %>"><span class="ic">📣</span> Signalements</a>
+</nav>
+<div class="admin-sidebar-pied">
+<a href="." target="_blank">↗ Voir le site</a>
+<a href="admin/logout">⎋ Déconnexion</a>
+</div>
+</aside>

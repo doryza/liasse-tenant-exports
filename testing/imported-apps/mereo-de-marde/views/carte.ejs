@@ -1,0 +1,43 @@
+<%- include('partials/header') %>
+<section class="page-tete ciel">
+<%- include('partials/ciel') %>
+<div class="page-tete-inner">
+<h1><%= t.carte_titre %></h1>
+<p><%= settings.carte_sous || t.sec_villages_sous %></p>
+</div>
+</section>
+<section class="section">
+<div class="carte-outils">
+<button type="button" class="btn btn-petit" id="btnRelief" style="background-color:#6366f1;color:#fff"><%= t.btn_plan %></button>
+<p class="carte-note" id="carteErreur" style="display:none"><%= t.meteo_indispo %></p>
+</div>
+<div id="carte" class="carte-gmap"></div>
+<div class="legende">
+<% Object.keys(conditionsMeta).forEach(function(c){ %>
+<span class="legende-item"><span class="legende-point" style="background-color:<%= conditionsMeta[c].accent %>"></span><%= conditionsMeta[c].nom %></span>
+<% }); %>
+</div>
+</section>
+<script>
+var carteG;
+window.initCarte = function(){
+carteG = new google.maps.Map(document.getElementById('carte'), { center: { lat: 45.98, lng: -74.35 }, zoom: 9, mapTypeId: 'terrain', mapTypeControl: false, streetViewControl: false });
+fetch('api/meteo-tous').then(function(r){ return r.json(); }).then(function(d){
+(d.villages || []).forEach(function(v){
+if (v.lat == null) return;
+var meta = (window.METEO_META || {})[v.condition] || {};
+var mk = new google.maps.Marker({ position: { lat: Number(v.lat), lng: Number(v.lng) }, map: carteG, title: v.nom, label: { text: (v.temp == null ? '?' : String(v.temp) + '°'), color: '#ffffff', fontWeight: '800', fontSize: '13px' }, icon: { path: google.maps.SymbolPath.CIRCLE, scale: 20, fillColor: meta.accent || '#6366f1', fillOpacity: 1, strokeColor: '#1c2733', strokeWeight: 3 } });
+var iw = new google.maps.InfoWindow({ content: '<div class="iw"><strong>' + v.nom + '</strong><br>' + (meta.nom || '') + ' · ' + (v.temp == null ? '?' : v.temp + ' °C') + '<br><em>' + (v.verdict || '') + '</em><br><a href="village/' + v.slug + '">' + <%- JSON.stringify(t.voir_coin) %> + ' →</a></div>' });
+mk.addListener('click', function(){ iw.open({ map: carteG, anchor: mk }); });
+});
+}).catch(function(){ var er = document.getElementById('carteErreur'); if (er) er.style.display = 'block'; });
+};
+document.getElementById('btnRelief').addEventListener('click', function(){
+if (!carteG) return;
+var estRelief = carteG.getMapTypeId() === 'terrain';
+carteG.setMapTypeId(estRelief ? 'roadmap' : 'terrain');
+this.textContent = estRelief ? <%- JSON.stringify(t.btn_relief) %> : <%- JSON.stringify(t.btn_plan) %>;
+});
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=<%= googleApiKey %>&callback=initCarte" async defer></script>
+<%- include('partials/footer') %>

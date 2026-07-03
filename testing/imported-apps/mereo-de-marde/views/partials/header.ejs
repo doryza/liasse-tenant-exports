@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<% var mc = (typeof meteoCondition !== 'undefined' && meteoCondition) ? meteoCondition : 'nuageux'; var cmTete = (typeof conditionsMeta !== 'undefined' && conditionsMeta[mc]) ? conditionsMeta[mc] : { accent: '#6366f1' }; %>
+<meta name="theme-color" content="<%= cmTete.accent %>">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="description" content="<%= (typeof settings !== 'undefined' && settings.tagline) ? settings.tagline : 'La météo des Laurentides, dite comme du vrai monde.' %>">
+<title><%= (typeof pageTitle !== 'undefined' && pageTitle) ? pageTitle + ' — ' : '' %><%= (typeof settings !== 'undefined' && settings.business_name) ? settings.business_name : "Météo d'marde" %></title>
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Paytone+One&family=Figtree:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="public/css/styles.css">
+<script>window.METEO_META = <%- JSON.stringify(typeof conditionsMeta !== 'undefined' ? conditionsMeta : {}) %>;</script>
+</head>
+<body data-meteo="<%= mc %>">
+<header class="entete">
+<div class="entete-inner">
+<a class="marque" href=".">
+<% var logoUrl = (typeof settings !== 'undefined' && settings._p_nav_logo_url) ? settings._p_nav_logo_url : ((typeof appIconUrl !== 'undefined' && appIconUrl) ? appIconUrl : ''); %>
+<% if (logoUrl) { %><img class="marque-logo" src="<%= logoUrl %>" alt="Logo"><% } %>
+<span class="marque-nom"><%= (typeof settings !== 'undefined' && settings.business_name) ? settings.business_name : "Météo d'marde" %></span>
+</a>
+<nav class="nav-desktop" aria-label="Navigation principale">
+<a href="."><%= t.nav_accueil %></a>
+<a href="carte"><%= t.nav_carte %></a>
+<a href="dictionnaire"><%= t.nav_dico %></a>
+<a href="chroniques"><%= t.nav_chroniques %></a>
+<a class="nav-cta" href="partage"><%= t.nav_partage %></a>
+</nav>
+<button class="hambourgeois" id="btnMenu" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
+</div>
+<nav class="menu-mobile" id="menuMobile" aria-label="Navigation mobile">
+<a href="."><%= t.nav_accueil %></a>
+<a href="carte"><%= t.nav_carte %></a>
+<a href="dictionnaire"><%= t.nav_dico %></a>
+<a href="chroniques"><%= t.nav_chroniques %></a>
+<a href="partage"><%= t.nav_partage %></a>
+</nav>
+</header>
+<script>
+(function(){var b=document.getElementById('btnMenu');var m=document.getElementById('menuMobile');if(b&&m){b.addEventListener('click',function(){var o=m.classList.toggle('ouvert');b.setAttribute('aria-expanded',o?'true':'false');});}})();
+</script>

@@ -1,0 +1,461 @@
+{
+  "exportedAt": "2026-07-03T01:19:09.221Z",
+  "tables": {
+    "admin_invites": {
+      "columns": [
+        "id",
+        "email",
+        "token",
+        "role",
+        "status",
+        "invited_by",
+        "expires_at",
+        "accepted_at",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_webauthn_credentials": {
+      "columns": [
+        "id",
+        "admin_user_id",
+        "credential_id",
+        "public_key",
+        "counter",
+        "device_name",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_users": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "password_hash",
+        "display_name",
+        "role",
+        "active",
+        "activation_token",
+        "invited_by",
+        "invite_token",
+        "invite_expires_at",
+        "last_login_at",
+        "is_active",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_settings": {
+      "columns": [
+        "key",
+        "value",
+        "updated_at"
+      ],
+      "totalRows": 37,
+      "sampleRows": [
+        {
+          "key": "business_name",
+          "value": "Météo d'marde",
+          "updated_at": "2026-07-03T01:18:47.536Z"
+        },
+        {
+          "key": "tagline",
+          "value": "La météo des Laurentides, dite comme du vrai monde.",
+          "updated_at": "2026-07-03T01:18:47.547Z"
+        },
+        {
+          "key": "hero_sous",
+          "value": "Microclimats vérifiés à l'oeil pis au thermomètre. La seule météo qui te parle comme ta matante.",
+          "updated_at": "2026-07-03T01:18:47.559Z"
+        },
+        {
+          "key": "hero_caption",
+          "value": "Les Laurentides dans toute leur splendeur douteuse",
+          "updated_at": "2026-07-03T01:18:47.572Z"
+        },
+        {
+          "key": "about_text",
+          "value": "Météo d'marde, c'est le bulletin météo hyper-local des Laurentides : chaque village a son microclimat, pis on le dit sans mettre de gants blancs. Des données fraîches, des expressions d'icitte, pis zéro langue de bois.",
+          "updated_at": "2026-07-03T01:18:47.588Z"
+        },
+        {
+          "key": "footer_note",
+          "value": "Fait dans les Laurentides, entre deux bordées.",
+          "updated_at": "2026-07-03T01:18:47.603Z"
+        },
+        {
+          "key": "cta_titre",
+          "value": "Écoeure tes chums des autres régions",
+          "updated_at": "2026-07-03T01:18:47.615Z"
+        },
+        {
+          "key": "cta_texte",
+          "value": "Génère une carte météo exagérée avec le jargon d'icitte pis partage-la. Parce que si on est pour manger d'la marde, aussi ben en rire.",
+          "updated_at": "2026-07-03T01:18:47.627Z"
+        },
+        {
+          "key": "carte_sous",
+          "value": "Chaque point, c'est un microclimat qui fait à sa tête. Pèse sur un village pour voir sa marde en direct, pis vire la carte en mode relief pour comprendre pourquoi.",
+          "updated_at": "2026-07-03T01:18:47.638Z"
+        },
+        {
+          "key": "partage_intro",
+          "value": "Choisis ton coin, choisis ta marde, pis l'artiste te dessine une carte à partager. Garantie 100 % exagérée.",
+          "updated_at": "2026-07-03T01:18:47.651Z"
+        }
+      ]
+    },
+    "site_visits": {
+      "columns": [
+        "id",
+        "path",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "posts": {
+      "columns": [
+        "id",
+        "title",
+        "content",
+        "image_url",
+        "category",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Pourquoi Saint-Donat gèle toujours plus que chez vous",
+          "content": "Tout le monde a un chum de Saint-Donat qui se vante d'avoir eu moins trente pendant que toé t'avais moins vingt. C'est pas de la vantardise : c'est de la physique.\n\nLe village est perché à 400 mètres, encaissé entre les monts. La nuit, l'air frette, plus pesant, descend des sommets pis s'accumule dans le fond comme de la mélasse dans un bol. Résultat : un frette de fond de rang qui fait craquer les maisons.\n\nMoralité : si tu veux te sentir en vacances dans le Sud, appelle quelqu'un de Saint-Donat en janvier. Ça règle le moral en deux minutes.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783039814/tapavis_tenant_mereo-de-marde/build_mereo-de-marde_1783039814062.png",
+          "category": "Chialage",
+          "published": 1,
+          "created_at": "2026-07-03T01:18:47.971Z",
+          "updated_at": "2026-07-03T01:18:47.971Z"
+        },
+        {
+          "id": 2,
+          "title": "Guide de survie de la première bordée",
+          "content": "La première bordée, c'est comme la visite des fêtes : tu sais qu'elle s'en vient, pis a te prend toujours par surprise pareil.\n\nRègle numéro un : ta pelle est pas dans le cabanon. Est en dessous de la neige, à côté du barbecue que t'as pas rentré. Règle numéro deux : le premier char pris dans le banc de neige du rang, c'est toujours celui du gars qui a des pneus quatre saisons « encore bons ».\n\nNotre conseil d'expert : sors dix minutes plus de bonne heure, mets tes mitaines les plus laides — c'est les plus chaudes — pis lâche pas ton café.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783039813/tapavis_tenant_mereo-de-marde/build_mereo-de-marde_1783039813573.png",
+          "category": "Conseils",
+          "published": 1,
+          "created_at": "2026-07-03T01:18:47.985Z",
+          "updated_at": "2026-07-03T01:18:47.985Z"
+        },
+        {
+          "id": 3,
+          "title": "Microclimats 101 : pourquoi ton voisin a pas la même météo que toé",
+          "content": "Dans les Laurentides, la météo se joue au coin de rue près. Un versant au soleil, un fond de vallée à l'ombre, un lac qui fait son frais : chaque coin a son caractère.\n\nC'est ça, un microclimat : une petite bulle de météo locale qui fait mentir la moyenne régionale. La radio te dit « quelques flocons », pis Morin-Heights ramasse trente centimètres pendant que Saint-Sauveur voit passer trois flocons de courtoisie.\n\nC'est exactement pour ça qu'on existe : on regarde la météo village par village. Pas de moyenne diluée, pas de cachette.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783039813/tapavis_tenant_mereo-de-marde/build_mereo-de-marde_1783039813194.png",
+          "category": "Bulletin",
+          "published": 1,
+          "created_at": "2026-07-03T01:18:48.018Z",
+          "updated_at": "2026-07-03T01:18:48.018Z"
+        },
+        {
+          "id": 4,
+          "title": "La canicule dans le Nord : mythe ou réalité ?",
+          "content": "On pense aux Laurentides pour le ski pis les bancs de neige, mais nos étés savent fesser fort. Quand l'humidex embarque, le fond de vallée de Saint-Sauveur se transforme en fournaise.\n\nLes lacs sauvent la mise : une saucette au lac des Sables pis la vie recommence. Mais en haut des monts, le vent garde la tête froide — littéralement. Dix degrés de différence entre le stationnement pis le sommet, c'est pas rare.\n\nMoralité : en canicule, monte en altitude ou saute dans le lac. Les deux, c'est encore mieux.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783039813/tapavis_tenant_mereo-de-marde/build_mereo-de-marde_1783039813099.png",
+          "category": "Saison",
+          "published": 1,
+          "created_at": "2026-07-03T01:18:48.032Z",
+          "updated_at": "2026-07-03T01:18:48.032Z"
+        }
+      ]
+    },
+    "villages": {
+      "columns": [
+        "id",
+        "nom",
+        "slug",
+        "lat",
+        "lng",
+        "altitude",
+        "microclimat",
+        "image_url",
+        "ordre",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 6,
+      "sampleRows": [
+        {
+          "id": 1,
+          "nom": "Saint-Sauveur",
+          "slug": "saint-sauveur",
+          "lat": 45.8901,
+          "lng": -74.1699,
+          "altitude": 240,
+          "microclimat": "Le fond de vallée par excellence : l'air frette dévale les pentes le soir pis s'écrase dans le village comme d'la mélasse. Deux degrés de moins que chez le voisin d'en haut, garanti.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783039814/tapavis_tenant_mereo-de-marde/build_mereo-de-marde_1783039814128.png",
+          "ordre": 1,
+          "created_at": "2026-07-03T01:18:47.724Z",
+          "updated_at": "2026-07-03T01:18:47.724Z"
+        },
+        {
+          "id": 2,
+          "nom": "Mont-Tremblant",
+          "slug": "mont-tremblant",
+          "lat": 46.1185,
+          "lng": -74.5962,
+          "altitude": 265,
+          "microclimat": "En bas, c'est vivable. En haut d'la montagne, enlève huit degrés, rajoute un vent qui décoiffe pis un nuage personnel accroché au sommet à l'année.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783039813/tapavis_tenant_mereo-de-marde/build_mereo-de-marde_1783039813194.png",
+          "ordre": 2,
+          "created_at": "2026-07-03T01:18:47.735Z",
+          "updated_at": "2026-07-03T01:18:47.735Z"
+        },
+        {
+          "id": 3,
+          "nom": "Val-David",
+          "slug": "val-david",
+          "lat": 46.0295,
+          "lng": -74.2153,
+          "altitude": 335,
+          "microclimat": "Coincé entre deux monts, le village ramasse les averses que les autres échappent. Quand y mouille à Sainte-Adèle, icitte y mouille à siaux.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783039814/tapavis_tenant_mereo-de-marde/build_mereo-de-marde_1783039814020.png",
+          "ordre": 3,
+          "created_at": "2026-07-03T01:18:47.744Z",
+          "updated_at": "2026-07-03T01:18:47.744Z"
+        },
+        {
+          "id": 4,
+          "nom": "Sainte-Agathe-des-Monts",
+          "slug": "sainte-agathe",
+          "lat": 46.0448,
+          "lng": -74.2817,
+          "altitude": 395,
+          "microclimat": "Le lac des Sables joue au thermostat : y tempère l'été, mais au printemps pis à l'automne, y crache une brume épaisse comme d'la soupe aux pois.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783039815/tapavis_tenant_mereo-de-marde/build_mereo-de-marde_1783039815220.png",
+          "ordre": 4,
+          "created_at": "2026-07-03T01:18:47.755Z",
+          "updated_at": "2026-07-03T01:18:47.755Z"
+        },
+        {
+          "id": 5,
+          "nom": "Morin-Heights",
+          "slug": "morin-heights",
+          "lat": 45.9005,
+          "lng": -74.2469,
+          "altitude": 300,
+          "microclimat": "Le corridor à neige officiel. Les nuages arrivent de l'ouest, frappent les collines pis déchargent tout leur stock icitte. Les bancs de neige ont leur propre code postal.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783039813/tapavis_tenant_mereo-de-marde/build_mereo-de-marde_1783039813490.png",
+          "ordre": 5,
+          "created_at": "2026-07-03T01:18:47.766Z",
+          "updated_at": "2026-07-03T01:18:47.766Z"
+        },
+        {
+          "id": 6,
+          "nom": "Saint-Donat",
+          "slug": "saint-donat",
+          "lat": 46.3186,
+          "lng": -74.2211,
+          "altitude": 400,
+          "microclimat": "Le congélateur des Laurentides. Perché dans le bout, encaissé entre les monts : quand la radio dit moins vingt, icitte c'est moins vingt-huit pis on n'en parle pu.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783039814/tapavis_tenant_mereo-de-marde/build_mereo-de-marde_1783039813864.png",
+          "ordre": 6,
+          "created_at": "2026-07-03T01:18:47.778Z",
+          "updated_at": "2026-07-03T01:18:47.778Z"
+        }
+      ]
+    },
+    "expressions": {
+      "columns": [
+        "id",
+        "expression",
+        "signification",
+        "exemple",
+        "condition",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 10,
+      "sampleRows": [
+        {
+          "id": 1,
+          "expression": "Y mouille à siaux",
+          "signification": "Il pleut abondamment, comme si quelqu'un vidait des seaux d'eau direct sur ta tête.",
+          "exemple": "Annule le golf, y mouille à siaux depuis à matin.",
+          "condition": "pluie",
+          "image_url": null,
+          "created_at": "2026-07-03T01:18:47.802Z",
+          "updated_at": "2026-07-03T01:18:47.802Z"
+        },
+        {
+          "id": 2,
+          "expression": "Frette à fendre les clôtures",
+          "signification": "Un froid intense, sec pis coupant, qui fait craquer le bois pis les moraux.",
+          "exemple": "Rentre le chien, y fait frette à fendre les clôtures.",
+          "condition": "frette",
+          "image_url": null,
+          "created_at": "2026-07-03T01:18:47.814Z",
+          "updated_at": "2026-07-03T01:18:47.814Z"
+        },
+        {
+          "id": 3,
+          "expression": "Chaud à faire suer les mouches",
+          "signification": "Une chaleur écrasante où même les bibittes cherchent de l'ombre.",
+          "exemple": "Le gazon est jaune raide, y fait chaud à faire suer les mouches.",
+          "condition": "canicule",
+          "image_url": null,
+          "created_at": "2026-07-03T01:18:47.832Z",
+          "updated_at": "2026-07-03T01:18:47.832Z"
+        },
+        {
+          "id": 4,
+          "expression": "Une bordée de bonne femme",
+          "signification": "Une chute de neige généreuse qui te remplit l'entrée en criant ciseau.",
+          "exemple": "On a eu une bordée de bonne femme : trente centimètres, pis c'est pas fini.",
+          "condition": "neige",
+          "image_url": null,
+          "created_at": "2026-07-03T01:18:47.843Z",
+          "updated_at": "2026-07-03T01:18:47.843Z"
+        },
+        {
+          "id": 5,
+          "expression": "Épais comme d'la soupe aux pois",
+          "signification": "Un brouillard tellement dense qu'on voit pas le voisin, ni son cabanon.",
+          "exemple": "Prends la 117 tranquillement, c'est épais comme d'la soupe aux pois.",
+          "condition": "brouillard",
+          "image_url": null,
+          "created_at": "2026-07-03T01:18:47.860Z",
+          "updated_at": "2026-07-03T01:18:47.860Z"
+        },
+        {
+          "id": 6,
+          "expression": "Le ciel file un mauvais coton",
+          "signification": "Temps gris, morose, qui donne envie de rien pantoute.",
+          "exemple": "Journée de lavage : le ciel file un mauvais coton anyway.",
+          "condition": "nuageux",
+          "image_url": null,
+          "created_at": "2026-07-03T01:18:47.879Z",
+          "updated_at": "2026-07-03T01:18:47.879Z"
+        },
+        {
+          "id": 7,
+          "expression": "Ça va brasser dans l'cabanon",
+          "signification": "Un orage qui s'en vient, avec du vent pis du tonnerre en masse.",
+          "exemple": "Rentre les coussins du patio, ça va brasser dans l'cabanon à soir.",
+          "condition": "orage",
+          "image_url": null,
+          "created_at": "2026-07-03T01:18:47.892Z",
+          "updated_at": "2026-07-03T01:18:47.892Z"
+        },
+        {
+          "id": 8,
+          "expression": "Beau à pas rester en dedans",
+          "signification": "Un temps splendide qui rend coupable quiconque reste devant la télé.",
+          "exemple": "Sors dehors un peu, y fait beau à pas rester en dedans !",
+          "condition": "soleil",
+          "image_url": null,
+          "created_at": "2026-07-03T01:18:47.911Z",
+          "updated_at": "2026-07-03T01:18:47.911Z"
+        },
+        {
+          "id": 9,
+          "expression": "Une vraie patinoire à ciel ouvert",
+          "signification": "Du verglas partout : les rues, les marches, le perron — tout glisse.",
+          "exemple": "Mets tes crampons, le stationnement est une vraie patinoire à ciel ouvert.",
+          "condition": "verglas",
+          "image_url": null,
+          "created_at": "2026-07-03T01:18:47.927Z",
+          "updated_at": "2026-07-03T01:18:47.927Z"
+        },
+        {
+          "id": 10,
+          "expression": "Un vent à écorner les boeufs",
+          "signification": "Des rafales assez fortes pour arracher ta tuque pis ton orgueil.",
+          "exemple": "Attache ta poubelle, y vente à écorner les boeufs.",
+          "condition": "nuageux",
+          "image_url": null,
+          "created_at": "2026-07-03T01:18:47.939Z",
+          "updated_at": "2026-07-03T01:18:47.939Z"
+        }
+      ]
+    },
+    "signalements": {
+      "columns": [
+        "id",
+        "nom",
+        "village_id",
+        "condition",
+        "message",
+        "approuve",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "nom": "Ginette du village",
+          "village_id": 3,
+          "condition": "pluie",
+          "message": "Y mouille tellement que mon gazon a des vagues. Le chat refuse de sortir depuis mardi.",
+          "approuve": 1,
+          "image_url": null,
+          "created_at": "2026-07-03T01:18:48.085Z",
+          "updated_at": "2026-07-03T01:18:48.085Z"
+        },
+        {
+          "id": 2,
+          "nom": "Réal",
+          "village_id": 6,
+          "condition": "neige",
+          "message": "J'ai pardu mon char dans l'banc de neige à matin. Si quelqu'un le trouve, y'é bleu. Je pense.",
+          "approuve": 1,
+          "image_url": null,
+          "created_at": "2026-07-03T01:18:48.095Z",
+          "updated_at": "2026-07-03T01:18:48.095Z"
+        },
+        {
+          "id": 3,
+          "nom": "Mado",
+          "village_id": 4,
+          "condition": "soleil",
+          "message": "Beau soleil su'l lac, mais le vent m'a décoiffée raide. Ça compte-tu comme une marde partielle ?",
+          "approuve": 1,
+          "image_url": null,
+          "created_at": "2026-07-03T01:18:48.107Z",
+          "updated_at": "2026-07-03T01:18:48.107Z"
+        },
+        {
+          "id": 4,
+          "nom": "Ti-Guy de la 117",
+          "village_id": 5,
+          "condition": "frette",
+          "message": "Mon thermomètre a lâché à moins trente. Je pense qu'y était juste découragé.",
+          "approuve": 1,
+          "image_url": null,
+          "created_at": "2026-07-03T01:18:48.118Z",
+          "updated_at": "2026-07-03T01:18:48.118Z"
+        }
+      ]
+    },
+    "share_cards": {
+      "columns": [
+        "id",
+        "village_id",
+        "condition",
+        "image_url",
+        "texte",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    }
+  }
+}

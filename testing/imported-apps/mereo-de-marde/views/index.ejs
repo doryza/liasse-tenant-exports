@@ -1,0 +1,116 @@
+<%- include('partials/header') %>
+<section class="hero ciel">
+<%- include('partials/ciel') %>
+<div class="hero-inner">
+<div class="hero-texte">
+<% if (typeof vedette !== 'undefined' && vedette) { %>
+<p class="hero-lieu"><%= t.hero_en_direct %> <%= vedette.nom %></p>
+<% } else { %>
+<p class="hero-lieu"><%= settings.tagline || '' %></p>
+<% } %>
+<h1 id="verdictHero"><%= verdict %></h1>
+<div class="hero-meteo">
+<span class="hero-temp" id="tempHero"><%= (typeof vedette !== 'undefined' && vedette && vedette.meteo && vedette.meteo.temp != null) ? vedette.meteo.temp + '°' : '—' %></span>
+<span class="hero-cond" id="condHero"><%= nomCondition %></span>
+</div>
+<% if (typeof vedette !== 'undefined' && vedette && vedette.meteo && vedette.meteo.ok) { %>
+<p class="hero-detail"><%= t.ressenti %> <%= vedette.meteo.ressenti %>° · <%= t.vent %> <%= vedette.meteo.vent %> km/h · <%= t.humidite %> <%= vedette.meteo.humidite %> %</p>
+<% } else { %>
+<p class="hero-detail"><%= t.meteo_indispo %></p>
+<% } %>
+<p class="hero-sous"><%= settings.hero_sous || '' %></p>
+<div class="hero-actions">
+<a class="btn" href="carte"><%= t.btn_voir_carte %></a>
+<a class="btn btn-blanc" href="partage"><%= t.nav_partage %></a>
+</div>
+</div>
+<figure class="hero-cadre">
+<img src="<%= (typeof settings !== 'undefined' && settings._p_hero_image_url) ? settings._p_hero_image_url : 'https://placehold.co/900x600/e2e8f0/64748b/png?text=Les+Laurentides' %>" alt="Caricature des Laurentides frappées par une tempête et une canicule en même temps">
+<figcaption><%= settings.hero_caption || '' %></figcaption>
+</figure>
+</div>
+</section>
+<section class="bande-humeurs">
+<div class="section-serree">
+<p class="humeurs-titre"><%= t.essaie_modes %></p>
+<div class="puces-rangee">
+<% Object.keys(conditionsMeta).forEach(function(c){ %>
+<button type="button" class="puce puce-meteo<%= c === meteoCondition ? ' active' : '' %>"<% if (c === meteoCondition) { %> style="background-color:<%= conditionsMeta[c].accent %>;color:#fff"<% } %> onclick="apercuMeteo('<%= c %>', this)"><%= conditionsMeta[c].nom %></button>
+<% }); %>
+</div>
+</div>
+</section>
+<section class="section">
+<h2 class="section-titre"><%= t.sec_villages %></h2>
+<p class="section-sous"><%= t.sec_villages_sous %></p>
+<% if (typeof villages !== 'undefined' && villages.length > 0) { %>
+<div class="grille">
+<% villages.forEach(function(v){ var m = v.meteo || {}; var cm2 = conditionsMeta[m.condition] || {}; %>
+<a class="carte-item" href="village/<%= v.slug %>">
+<div class="v-photo">
+<img src="<%= v.image_url || 'https://placehold.co/640x480/e2e8f0/64748b/png?text=' + encodeURIComponent(v.nom) %>" alt="<%= v.nom %>" loading="lazy">
+<span class="v-temp" style="background-color:<%= cm2.accent || '#5e7387' %>"><%= m.temp != null ? m.temp + '°' : '?' %></span>
+</div>
+<div class="v-corps">
+<h3><%= v.nom %></h3>
+<p class="v-cond"><%= cm2.nom || t.meteo_indispo %></p>
+<p class="v-alt"><%= t.altitude %> : <%= v.altitude %> m</p>
+</div>
+</a>
+<% }); %>
+</div>
+<% } else { %>
+<p class="etat-vide"><%= t.empty_villages %></p>
+<% } %>
+</section>
+<section class="section">
+<h2 class="section-titre"><%= t.sec_dico %></h2>
+<p class="section-sous"><%= t.sec_dico_sous %></p>
+<% if (typeof expressions !== 'undefined' && expressions.length > 0) { %>
+<div class="grille">
+<% expressions.forEach(function(e){ var cm3 = conditionsMeta[e.condition] || {}; %>
+<article class="carte-item">
+<div class="expr-corps">
+<span class="expr-cond" style="background-color:<%= cm3.accent || '#5e7387' %>"><%= cm3.nom || e.condition %></span>
+<h3>« <%= e.expression %> »</h3>
+<p><%= e.signification %></p>
+</div>
+</article>
+<% }); %>
+</div>
+<% } else { %>
+<p class="etat-vide"><%= t.empty_expressions %></p>
+<% } %>
+<div class="section-pied"><a class="btn btn-blanc" href="dictionnaire"><%= t.btn_voir_dico %></a></div>
+</section>
+<section class="section">
+<h2 class="section-titre"><%= t.sec_chroniques %></h2>
+<% if (typeof posts !== 'undefined' && posts.length > 0) { %>
+<div class="grille" style="margin-top:26px">
+<% posts.forEach(function(p){ %>
+<a class="carte-item" href="chroniques/<%= p.id %>">
+<div class="chron-photo"><img src="<%= p.image_url || 'https://placehold.co/640x480/e2e8f0/64748b/png?text=Chronique' %>" alt="<%= p.title %>" loading="lazy"></div>
+<div class="chron-corps">
+<% if (p.category) { %><span class="chron-cat"><%= p.category %></span><% } %>
+<h3><%= p.title %></h3>
+<p class="chron-date"><%= t.publie_le %> <%= formatDate(p.created_at) %></p>
+</div>
+</a>
+<% }); %>
+</div>
+<% } else { %>
+<p class="etat-vide" style="margin-top:26px"><%= t.empty_posts %></p>
+<% } %>
+<div class="section-pied"><a class="btn btn-blanc" href="chroniques"><%= t.btn_voir_chroniques %></a></div>
+</section>
+<section class="section">
+<div class="cta-bande">
+<h2><%= settings.cta_titre || t.nav_partage %></h2>
+<p><%= settings.cta_texte || '' %></p>
+<div class="cta-actions">
+<a class="btn" href="partage"><%= t.nav_partage %></a>
+<button type="button" class="btn btn-blanc" data-push-btn><%= t.footer_alertes %></button>
+</div>
+</div>
+</section>
+<%- include('partials/footer') %>

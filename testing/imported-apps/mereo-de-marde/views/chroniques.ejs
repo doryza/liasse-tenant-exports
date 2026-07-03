@@ -1,0 +1,27 @@
+<%- include('partials/header') %>
+<section class="page-tete ciel">
+<%- include('partials/ciel') %>
+<div class="page-tete-inner">
+<h1><%= t.sec_chroniques %></h1>
+<p><%= settings.tagline || '' %></p>
+</div>
+</section>
+<section class="section">
+<% if (typeof posts !== 'undefined' && posts.length > 0) { %>
+<div class="grille">
+<% posts.forEach(function(p){ %>
+<a class="carte-item" href="chroniques/<%= p.id %>">
+<div class="chron-photo"><img src="<%= p.image_url || 'https://placehold.co/640x480/e2e8f0/64748b/png?text=Chronique' %>" alt="<%= p.title %>" loading="lazy"></div>
+<div class="chron-corps">
+<% if (p.category) { %><span class="chron-cat"><%= p.category %></span><% } %>
+<h3><%= p.title %></h3>
+<p class="chron-date"><%= t.publie_le %> <%= formatDate(p.created_at) %></p>
+</div>
+</a>
+<% }); %>
+</div>
+<% } else { %>
+<p class="etat-vide"><%= t.empty_posts %></p>
+<% } %>
+</section>
+<%- include('partials/footer') %>

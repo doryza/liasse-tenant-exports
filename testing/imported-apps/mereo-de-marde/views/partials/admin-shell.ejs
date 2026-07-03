@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title><%= title %> — Administration</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body class="admin-corps">
+<%- include('admin-sidebar') %>
+<main class="admin-main">
+<header class="admin-tete">
+<button id="btnSidebar" aria-label="Menu">☰</button>
+<div class="admin-tete-txt">
+<h1><%= title %></h1>
+<p class="admin-tete-sous">Crée, modifie et supprime tes entrées directement icitte.</p>
+</div>
+<button type="button" class="btn-admin btn-primaire" onclick="ouvrirCreation()">+ Ajouter</button>
+</header>
+<div class="admin-outils"><input id="recherche" placeholder="🔎 Filtrer..." oninput="rendre()"><span class="admin-compte" id="compteAff"></span></div>
+<div class="admin-table-wrap">
+<table class="admin-table"><thead id="enteteTable"></thead><tbody id="corpsTable"></tbody></table>
+<div id="listeVide" class="admin-vide" style="display:none"><span class="vide-ic">📭</span><strong>Rien icitte pour l'instant</strong>Clique sur « + Ajouter » pour créer ta première entrée.</div>
+</div>
+</main>
+<div class="modal-fond" id="modalFond" style="display:none">
+<div class="modal">
+<h2 id="modalTitre"></h2>
+<form id="formulaireModal" onsubmit="sauvegarder(event)">
+<div id="champsModal"></div>
+<div class="modal-actions">
+<button type="button" class="btn-admin" onclick="fermerModal()">Annuler</button>
+<button type="submit" class="btn-admin btn-primaire" id="btnSauver">Enregistrer</button>
+</div>
+</form>
+</div>
+</div>
+<div class="toasts" id="toasts"></div>
+<script>
+var KEY = '<%- moduleKey %>';
+var LABEL = '<%- moduleLabel %>';
+var FIELDS = <%- JSON.stringify(fields) %>;
+var items = [];
+var enEdition = null;
+var COND = {soleil:'#e8720c',nuageux:'#5e7387',pluie:'#2e7dd1',orage:'#7c5ce0',neige:'#4a90c4',verglas:'#2a9db5',brouillard:'#6e7c85',canicule:'#e23d2e',frette:'#1e6fa8'};
+var AFFICHER = FIELDS.filter(function(f){ return ['text', 'textarea', 'select', 'number', 'boolean'].indexOf(f.type) >= 0; }).slice(0, 4);
+function ech(s){ return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+function toast(msg,type){ var z=document.getElementById('toasts'); if(!z)return; var el=document.createElement('div'); el.className='toast '+(type||''); el.textContent=msg; z.appendChild(el); setTimeout(function(){el.remove();},3200); }
+function entete(){ document.getElementById('enteteTable').innerHTML = '<tr>' + ['ID'].concat(AFFICHER.map(function(f){ return f.label || f.name; })).concat(['Image', 'Actions']).map(function(h){ return '<th'+(h==='Actions'?' class="td-actions"':'')+'>' + h + '</th>'; }).join('') + '</tr>'; }
+function cellule(f,it){ var v=it[f.name]; if(f.type==='boolean'){ var oui=(v==1||v===true); return '<span class="pill '+(oui?'pill-oui':'pill-non')+'">'+(oui?'Oui':'Non')+'</span>'; } if(f.name==='condition'&&COND[v]){ return '<span class="pill pill-cond" style="background:'+COND[v]+'">'+ech(v)+'</span>'; } return ech(String(v==null?'':v).slice(0,60)); }
+function rendre(){
+var q = (document.getElementById('recherche').value || '').toLowerCase();
+var liste = items.filter(function(it){ return JSON.stringify(it).toLowerCase().indexOf(q) >= 0; });
+document.getElementById('listeVide').style.display = liste.length ? 'none' : 'block';
+document.getElementById('compteAff').textContent = liste.length + ' / ' + items.length + ' entrée' + (items.length > 1 ? 's' : '');
+document.getElementById('corpsTable').innerHTML = liste.map(function(it){
+var tds = '<td>' + it.id + '</td>';
+AFFICHER.forEach(function(f){ tds += '<td>' + cellule(f, it) + '</td>'; });
+tds += '<td>' + (it.image_url ? '<img src="' + ech(it.image_url) + '" class="mini" alt="">' : '—') + '</td>';
+tds += '<td class="td-actions"><button class="btn-admin btn-petit" onclick="modifier(' + it.id + ')">Modifier</button><button class="btn-admin btn-petit btn-danger" onclick="supprimer(' + it.id + ')">Supprimer</button></td>';
+return '<tr>' + tds + '</tr>';
+}).join('');
+}
+async function charger(){
+try { var r = await fetch('api/admin/' + KEY); var d = await r.json(); items = d[KEY] || []; } catch(e) { items = []; toast('Erreur de chargement.','err'); }
+rendre();
+}
+function majApercu(inp){ var c=inp.closest('.champ'); if(!c)return; var box=c.querySelector('.champ-apercu'); if(!box)return; box.innerHTML=inp.value?'<img src="'+ech(inp.value)+'" alt="">':''; }
+function construireChamps(it){
+document.getElementById('champsModal').innerHTML = FIELDS.map(function(f){
+var v = it ? (it[f.name] == null ? '' : it[f.name]) : (f.default != null && f.type !== 'boolean' ? f.default : '');
+var aide = f.description ? '<small>' + ech(f.description) + '</small>' : '';
+var lab = '<label>' + ech(f.label || f.name) + (f.required ? ' *' : '') + '</label>';
+if (f.type === 'textarea') return '<div class="champ">' + lab + '<textarea name="' + f.name + '" rows="4" placeholder="' + ech(f.placeholder || '') + '">' + ech(v) + '</textarea>' + aide + '</div>';
+if (f.type === 'boolean') { var coche = it ? (it[f.name] == 1 || it[f.name] === true) : (f.default === true); return '<div class="champ champ-case"><label><input type="checkbox" name="' + f.name + '"' + (coche ? ' checked' : '') + '> ' + ech(f.label || f.name) + '</label>' + aide + '</div>'; }
+if (f.type === 'select') return '<div class="champ">' + lab + '<select name="' + f.name + '">' + (f.options || []).map(function(o){ return '<option value="' + ech(o) + '"' + (String(v) === String(o) ? ' selected' : '') + '>' + ech(o) + '</option>'; }).join('') + '</select>' + aide + '</div>';
+if (f.type === 'image') return '<div class="champ">' + lab + '<div class="champ-image"><input type="text" name="' + f.name + '" value="' + ech(v) + '" placeholder="https://..." oninput="majApercu(this)"><button type="button" class="btn-admin btn-petit" onclick="genererImage(this)">✨ IA</button></div><div class="champ-apercu">' + (v ? '<img src="' + ech(v) + '" alt="">' : '') + '</div>' + aide + '</div>';
+var type = f.type === 'number' ? 'number' : (f.type === 'date' ? 'date' : 'text');
+return '<div class="champ">' + lab + '<input type="' + type + '" name="' + f.name + '" value="' + ech(v) + '" placeholder="' + ech(f.placeholder || '') + '"' + (f.step ? ' step="' + f.step + '"' : '') + (f.min != null ? ' min="' + f.min + '"' : '') + '>' + aide + '</div>';
+}).join('');
+}
+function ouvrirCreation(){ enEdition = null; document.getElementById('modalTitre').textContent = 'Créer : ' + LABEL; construireChamps(null); document.getElementById('modalFond').style.display = 'flex'; }
+function modifier(id){ var it = items.find(function(x){ return x.id === id; }); if (!it) return; enEdition = id; document.getElementById('modalTitre').textContent = 'Modifier : ' + LABEL + ' #' + id; construireChamps(it); document.getElementById('modalFond').style.display = 'flex'; }
+function fermerModal(){ document.getElementById('modalFond').style.display = 'none'; }
+async function sauvegarder(ev){
+ev.preventDefault();
+var fd = new FormData(document.getElementById('formulaireModal'));
+var donnees = {};
+FIELDS.forEach(function(f){ if (f.type === 'boolean') { donnees[f.name] = fd.get(f.name) ? 1 : 0; } else { donnees[f.name] = fd.get(f.name); } });
+var btn = document.getElementById('btnSauver');
+btn.disabled = true; btn.textContent = 'Enregistrement...';
+try {
+var url = 'api/admin/' + KEY + (enEdition ? '/' + enEdition : '');
+var r = await fetch(url, { method: enEdition ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(donnees) });
+var d = await r.json();
+if (!r.ok) throw new Error(d.error || 'Erreur');
+var etait = enEdition;
+fermerModal();
+await charger();
+toast(etait ? 'Modifications enregistrées.' : 'Entrée créée.','ok');
+} catch(e) { toast('Erreur : ' + e.message,'err'); }
+btn.disabled = false; btn.textContent = 'Enregistrer';
+}
+async function supprimer(id){
+if (!confirm("Supprimer l'entrée #" + id + ' ? C\'est final.')) return;
+try {
+var r = await fetch('api/admin/' + KEY + '/' + id, { method: 'DELETE' });
+if (!r.ok) { var d = await r.json(); throw new Error(d.error || 'Erreur'); }
+await charger();
+toast('Entrée supprimée.','ok');
+} catch(e) { toast('Erreur : ' + e.message,'err'); }
+}
+async function genererImage(btn){
+var desc = prompt("Décris l'image à générer :");
+if (!desc) return;
+btn.disabled = true; var tx = btn.textContent; btn.textContent = '...';
+try {
+var r = await fetch('api/admin/generate-image', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prompt: desc, aspectRatio: '4:3' }) });
+var d = await r.json();
+if (!r.ok) throw new Error(d.error || 'Échec');
+var inp = btn.parentElement.querySelector('input'); inp.value = d.imageUrl; majApercu(inp);
+toast('Image générée !','ok');
+} catch(e) { toast(e.message,'err'); }
+btn.disabled = false; btn.textContent = tx;
+}
+entete();
+charger();
+</script>
+<script>
+var bs = document.getElementById('btnSidebar');
+if (bs) bs.addEventListener('click', function(){ document.body.classList.toggle('sidebar-ouverte'); });
+</script>
+</body>
+</html>
