@@ -54,7 +54,9 @@ module.exports = async function(db, services) {
       ["Ça va brasser dans l'cabanon", "Un orage qui s'en vient, avec du vent pis du tonnerre en masse.", 'Rentre les coussins du patio, ça va brasser dans l\'cabanon à soir.', 'orage'],
       ['Beau à pas rester en dedans', 'Un temps splendide qui rend coupable quiconque reste devant la télé.', 'Sors dehors un peu, y fait beau à pas rester en dedans !', 'soleil'],
       ['Une vraie patinoire à ciel ouvert', 'Du verglas partout : les rues, les marches, le perron — tout glisse.', 'Mets tes crampons, le stationnement est une vraie patinoire à ciel ouvert.', 'verglas'],
-      ['Un vent à écorner les boeufs', 'Des rafales assez fortes pour arracher ta tuque pis ton orgueil.', 'Attache ta poubelle, y vente à écorner les boeufs.', 'nuageux']
+      ['Un vent à écorner les boeufs', 'Des rafales assez fortes pour arracher ta tuque pis ton orgueil.', 'Attache ta poubelle, y vente à écorner les boeufs.', 'nuageux'],
+      ['Un ciel propre comme un char neuf', 'Une nuitte parfaitement claire, pas un nuage pour cacher les étoiles.', 'Sors le télescope, le ciel est propre comme un char neuf à soir.', 'nuit'],
+      ["Veiller à' belle étoile", "Passer la soirée dehors, en dessous des étoiles, parce que le ciel est trop beau pour rentrer.", "On a fini la veillée à' belle étoile, enroulés dans' doudou su'l perron.", 'nuit']
     ];
     for (const e of expressions) await db.run('INSERT INTO expressions (expression, signification, exemple, condition) VALUES ($1, $2, $3, $4)', e);
   }

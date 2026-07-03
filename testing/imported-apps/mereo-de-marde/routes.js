@@ -4,7 +4,8 @@ module.exports = function(services) {
 
   const CONDITIONS = {
     soleil: { nom: 'Beau en maudit', accent: '#e8720c', verdicts: ["Sors ton char, y fait beau rare", "Un temps parfait pour s'écraser su'l patio", "Le soleil fesse fort, mets d'la crème", "Beau à te faire brailler de joie, mon tabarnouche", "Enweye dehors, la vitamine D t'attend", "Y fait tellement beau que même ton boss sourit", "Un ciel bleu à te réconcilier avec l'existence"] },
-    nuageux: { nom: 'Gris comme un lundi', accent: '#5e7387', verdicts: ["Le ciel file un mauvais coton", "Pas laid, pas beau — juste plate", "Un temps parfait pour rester en mou", "Gris comme le moral d'un lundi de février", "Le soleil a callé malade aujourd'hui", "Un ciel couleur béton d'autoroute 15", "Ni chair ni poisson, comme un mardi ordinaire"] },
+    nuit: { nom: "Beau clair d'étoiles", accent: '#3f4d9b', verdicts: ["Une nuitte claire à compter les étoiles", "Le ciel s'est mis su'son trente-six", "Pas un nuage, juste toé pis la Voie lactée", "Sors la doudou, la veillée va être longue", "Un ciel propre comme un char neuf", "La lune fait du zèle à soir", "Beau à veiller su'l perron passé minuit"] },
+    nuageux:{ nom: 'Gris comme un lundi', accent: '#5e7387', verdicts: ["Le ciel file un mauvais coton", "Pas laid, pas beau — juste plate", "Un temps parfait pour rester en mou", "Gris comme le moral d'un lundi de février", "Le soleil a callé malade aujourd'hui", "Un ciel couleur béton d'autoroute 15", "Ni chair ni poisson, comme un mardi ordinaire"] },
     pluie: { nom: 'Y mouille à siaux', accent: '#2e7dd1', verdicts: ["Sors le parapluie pis le canot", "Y tombe des clous, reste en d'dans", "Une vraie journée de canard", "Y mouille tellement que les poissons chialent", "Garroche tes plans dehors à' poubelle", "Le bon Dieu a pesé su'l mauvais piton", "Apporte tes bottes, ça pisse pour vrai"] },
     orage: { nom: "Ça brasse dans l'cabanon", accent: '#7c5ce0', verdicts: ["Débranche tes affaires, ça va péter", "Le bon Dieu déménage ses meubles", "Rentre le trampoline du voisin", "Ça gronde comme mononcle après trois bières", "Cache-toé, le ciel est en tabarnak", "Un show de lumière gratis, mais reste pas dessous", "Attache tout c'qui vole, ça va brasser en maudit"] },
     neige: { nom: 'Y neige en pas pour rire', accent: '#4a90c4', verdicts: ["Sors ta pelle, mon chum", "Une bordée à pu retrouver ton char", "Le gars du déneigement va faire la piastre", "Y neige comme si le ciel avait crevé son oreiller", "Prépare-toé à pelleter jusqu'à Pâques", "Ton entrée vient de disparaître, bonne chance", "Une bordée de bonne femme, pis c'est pas fini"] },
@@ -20,6 +21,7 @@ module.exports = function(services) {
   const AD = 'Bold flat cartoon illustration with thick black ink outlines, saturated comic-book colors, bright light, hard shadows, exaggerated Quebecois caricature humor, Laurentians mountain village scenery. No text, no logos.';
   const SCENES = {
     soleil: 'A gleeful Quebecer lounging in an inflatable kiddie pool on his porch under an enormous grinning sun, sunglasses on the dog too',
+    nuit: 'A crystal-clear starry night over a sleeping village, giant glowing full moon, the Milky Way splashed across the sky, a couple wrapped in plaid blankets stargazing from lawn chairs on their porch, a raccoon on the roof pointing at a shooting star',
     nuageux: 'A whole village street looking bored under one giant flat grey cloud, a man shrugging with his coffee mug on his balcony',
     pluie: 'Rain falling in literal buckets over a village main street, a man calmly paddling a canoe down the flooded road past parked cars',
     orage: 'A dramatic purple thunderstorm over a backyard, lightning bolts everywhere, a panicked man sprinting while carrying his barbecue to safety',
@@ -53,7 +55,7 @@ module.exports = function(services) {
 
   function formatDate(d) { try { return new Date(d).toLocaleDateString('fr-CA', { day: 'numeric', month: 'long', year: 'numeric' }); } catch (e) { return ''; } }
   function verdictDuJour(cond) { const c = CONDITIONS[cond] || CONDITIONS.nuageux; return c.verdicts[Math.floor(Date.now() / 86400000) % c.verdicts.length]; }
-  function wmoToCondition(code, temp) {
+  function wmoToCondition(code, temp, isDay) {
     var c;
     if ([95, 96, 99].indexOf(code) >= 0) c = 'orage';
     else if ([71, 73, 75, 77, 85, 86].indexOf(code) >= 0) c = 'neige';
@@ -62,7 +64,8 @@ module.exports = function(services) {
     else if ([45, 48].indexOf(code) >= 0) c = 'brouillard';
     else if (code === 2 || code === 3) c = 'nuageux';
     else c = 'soleil';
-    if (c === 'soleil' || c === 'nuageux') { if (temp >= 28) c = 'canicule'; else if (temp <= -15) c = 'frette'; }
+    if (c === 'soleil' && isDay === 0) c = 'nuit';
+    if (c === 'soleil' || c === 'nuageux' || c === 'nuit') { if (temp >= 28) c = 'canicule'; else if (temp <= -15) c = 'frette'; }
     return c;
   }
 
@@ -72,12 +75,12 @@ module.exports = function(services) {
     const now = Date.now();
     if (meteoCache[cle] && now - meteoCache[cle].ts < 600000) return meteoCache[cle].data;
     try {
-      const r = await services.fetch('https://api.open-meteo.com/v1/forecast?latitude=' + v.lat + '&longitude=' + v.lng + '&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m,wind_gusts_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=America%2FToronto&forecast_days=7');
+      const r = await services.fetch('https://api.open-meteo.com/v1/forecast?latitude=' + v.lat + '&longitude=' + v.lng + '&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m,wind_gusts_10m,is_day&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=America%2FToronto&forecast_days=7');
       const j = await r.json();
       if (!r.ok || !j.current) throw new Error('station indisponible');
       const c = j.current;
-      if (![c.temperature_2m, c.apparent_temperature, c.relative_humidity_2m, c.wind_speed_10m, c.wind_gusts_10m, c.weather_code].every(Number.isFinite)) throw new Error('données incomplètes');
-      const cond = wmoToCondition(c.weather_code, c.temperature_2m);
+      if (![c.temperature_2m, c.apparent_temperature, c.relative_humidity_2m, c.wind_speed_10m, c.wind_gusts_10m, c.weather_code, c.is_day].every(Number.isFinite)) throw new Error('données incomplètes');
+      const cond = wmoToCondition(c.weather_code, c.temperature_2m, c.is_day);
       const data = { ok: true, temp: Math.round(c.temperature_2m), ressenti: Math.round(c.apparent_temperature), humidite: Math.round(c.relative_humidity_2m), vent: Math.round(c.wind_speed_10m), rafales: Math.round(c.wind_gusts_10m), condition: cond, daily: j.daily || null };
       meteoCache[cle] = { ts: now, data: data };
       return data;
@@ -112,20 +115,20 @@ module.exports = function(services) {
       { name: 'expression', label: 'Expression', type: 'text', required: true, maxLength: 120, description: "L'expression québécoise, telle qu'on la dit.", placeholder: 'p. ex. Y mouille à siaux' },
       { name: 'signification', label: 'Signification', type: 'textarea', description: "Explication de l'expression pour ceux qui viennent d'ailleurs.", placeholder: 'p. ex. Il pleut très fort, à seaux pleins.' },
       { name: 'exemple', label: 'Exemple', type: 'textarea', description: "Une phrase d'exemple qui montre comment l'utiliser.", placeholder: 'p. ex. Annule le golf, y mouille à siaux.' },
-      { name: 'condition', label: 'Condition météo', type: 'select', options: ['soleil', 'nuageux', 'pluie', 'orage', 'neige', 'verglas', 'brouillard', 'canicule', 'frette'], description: 'La condition météo associée. Sert au filtre du dictionnaire.' },
+      { name: 'condition', label: 'Condition météo', type: 'select', options: ['soleil', 'nuit', 'nuageux', 'pluie', 'orage', 'neige', 'verglas', 'brouillard', 'canicule', 'frette'], description: 'La condition météo associée. Sert au filtre du dictionnaire.' },
       { name: 'image_url', label: 'Image', type: 'image', description: 'Illustration optionnelle. Recommandé : 800×600 px.' }
     ] },
     { key: 'signalements', label: 'Signalements', icon: 'users', fields: [
       { name: 'nom', label: 'Nom', type: 'text', required: true, maxLength: 60, description: 'Le nom ou surnom de la personne qui signale.', placeholder: 'p. ex. Ti-Guy de la 117' },
       { name: 'village_id', label: 'ID du village', type: 'number', min: 1, step: 1, description: 'Le numéro (ID) du village concerné — consulte la page Villages pour le trouver.', placeholder: 'p. ex. 3' },
-      { name: 'condition', label: 'Condition', type: 'select', options: ['soleil', 'nuageux', 'pluie', 'orage', 'neige', 'verglas', 'brouillard', 'canicule', 'frette'], description: 'La météo signalée par le visiteur.' },
+      { name: 'condition', label: 'Condition', type: 'select', options: ['soleil', 'nuit', 'nuageux', 'pluie', 'orage', 'neige', 'verglas', 'brouillard', 'canicule', 'frette'], description: 'La météo signalée par le visiteur.' },
       { name: 'message', label: 'Message', type: 'textarea', required: true, description: "Le signalement tel qu'écrit par le visiteur.", placeholder: "p. ex. Y grêle des balles de golf su'a rue Principale..." },
       { name: 'approuve', label: 'Approuvé', type: 'boolean', default: false, description: 'Coche pour afficher le signalement publiquement sur la fiche du village.' },
       { name: 'image_url', label: 'Image', type: 'image', description: 'Photo optionnelle jointe au signalement.' }
     ] },
     { key: 'share_cards', label: 'Cartes de partage', icon: 'share-2', fields: [
       { name: 'village_id', label: 'ID du village', type: 'number', min: 1, step: 1, description: 'Le numéro (ID) du village associé à cette carte.', placeholder: 'p. ex. 3' },
-      { name: 'condition', label: 'Condition météo', type: 'select', options: ['soleil', 'nuageux', 'pluie', 'orage', 'neige', 'verglas', 'brouillard', 'canicule', 'frette'], description: 'La condition météo illustrée sur la carte.' },
+      { name: 'condition', label: 'Condition météo', type: 'select', options: ['soleil', 'nuit', 'nuageux', 'pluie', 'orage', 'neige', 'verglas', 'brouillard', 'canicule', 'frette'], description: 'La condition météo illustrée sur la carte.' },
       { name: 'image_url', label: 'Image', type: 'image', description: 'URL de la carte générée. Recommandé : 1:1.' },
       { name: 'texte', label: 'Texte', type: 'text', maxLength: 200, description: 'Légende de la carte de partage.', placeholder: 'p. ex. Y mouille à siaux — Sors le parapluie pis le canot' }
     ] }

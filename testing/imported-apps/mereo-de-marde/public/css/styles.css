@@ -3,6 +3,7 @@
 html{scroll-behavior:smooth}
 body{--sky1:#8fa3b8;--sky2:#5e7387;--accent:#5e7387;--accent-fonce:#46586a;--fond:#eef2f6;--encre:#22303d;font-family:'Figtree',system-ui,sans-serif;background:var(--fond);color:var(--encre);line-height:1.6;transition:background-color .7s,color .7s;-webkit-font-smoothing:antialiased}
 body[data-meteo="soleil"]{--sky1:#ffc233;--sky2:#ff8a00;--accent:#e8720c;--accent-fonce:#a34b04;--fond:#fff6e6;--encre:#3a2510}
+body[data-meteo="nuit"]{--sky1:#28325e;--sky2:#0b1029;--accent:#3f4d9b;--accent-fonce:#29336e;--fond:#eef0f9;--encre:#1b2140}
 body[data-meteo="pluie"]{--sky1:#4a7fb5;--sky2:#27516f;--accent:#2e7dd1;--accent-fonce:#1c527e;--fond:#e8f0f8;--encre:#16283b}
 body[data-meteo="orage"]{--sky1:#4a3d7d;--sky2:#1e1838;--accent:#7c5ce0;--accent-fonce:#4c33a8;--fond:#edeaf7;--encre:#241c42}
 body[data-meteo="neige"]{--sky1:#b8cee0;--sky2:#8fb2ce;--accent:#4a90c4;--accent-fonce:#2d648e;--fond:#f2f7fb;--encre:#1e3448}
@@ -66,6 +67,19 @@ body[data-meteo="brouillard"] .b2{animation:brume 21s ease-in-out infinite alter
 .c-verglas{inset:0;background:linear-gradient(115deg,transparent 32%,rgba(255,255,255,.45) 46%,rgba(214,242,255,.7) 50%,rgba(255,255,255,.45) 54%,transparent 68%);background-size:280% 100%}
 body[data-meteo="verglas"] .c-verglas{opacity:.85;animation:glisse 5.5s ease-in-out infinite}
 @keyframes glisse{0%{background-position:130% 0}100%{background-position:-30% 0}}
+.c-etoiles{inset:0}
+.c-etoiles::before{content:"";position:absolute;inset:0;background-image:radial-gradient(circle,#fff 1.3px,transparent 2.1px),radial-gradient(circle,rgba(255,255,255,.75) 1px,transparent 1.7px),radial-gradient(circle,rgba(255,255,255,.5) .8px,transparent 1.4px);background-size:190px 190px,120px 120px,80px 80px;background-position:24px 18px,70px 90px,10px 40px}
+.c-etoiles::after{content:"";position:absolute;inset:0;background-image:radial-gradient(circle,#fffbe8 1.8px,transparent 2.8px);background-size:260px 260px;background-position:130px 60px}
+body[data-meteo="nuit"] .c-etoiles{opacity:1}
+body[data-meteo="nuit"] .c-etoiles::before{animation:scintille 4s ease-in-out infinite}
+body[data-meteo="nuit"] .c-etoiles::after{animation:scintille 2.8s ease-in-out infinite reverse}
+@keyframes scintille{0%,100%{opacity:1}50%{opacity:.45}}
+.c-lune{top:-30px;right:7%;width:170px;height:170px;border-radius:50%;background:radial-gradient(circle at 38% 34%,#fffdf4 0%,#efe9d2 52%,rgba(239,233,210,0) 72%);box-shadow:0 0 70px 22px rgba(255,250,230,.22)}
+body[data-meteo="nuit"] .c-lune{opacity:1;animation:lune-flotte 9s ease-in-out infinite}
+@keyframes lune-flotte{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.c-filante{top:16%;left:-10%;width:140px;height:3px;border-radius:3px;background:linear-gradient(90deg,rgba(255,255,255,0),#fff);transform:rotate(12deg)}
+body[data-meteo="nuit"] .c-filante{animation:etoile-filante 8s linear infinite 2s}
+@keyframes etoile-filante{0%,87%{opacity:0;transform:translate(0,0) rotate(12deg)}89%{opacity:.95}100%{opacity:0;transform:translate(65vw,16vh) rotate(12deg)}}
 .hero-inner{position:relative;z-index:2;max-width:1160px;margin:0 auto;display:grid;grid-template-columns:1.15fr .85fr;gap:48px;align-items:center;padding:72px 20px 84px}
 .hero-lieu{font-weight:800;text-transform:uppercase;letter-spacing:.12em;font-size:.85rem;opacity:.92;margin-bottom:10px}
 .hero-texte h1,.page-tete h1{font-family:'Paytone One',sans-serif;font-size:clamp(2rem,4.6vw,3.4rem);line-height:1.12;text-shadow:3px 3px 0 rgba(10,20,35,.28)}
