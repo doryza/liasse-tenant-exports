@@ -1,5 +1,507 @@
 {
-  "exportedAt": "2026-06-19T00:00:00.000Z",
-  "note": "Fresh build (Ali Baba Grillades). No live data captured yet — schema.sql + seed.js + migrations.sql populate the tenant on first materialization.",
-  "tables": {}
+  "exportedAt": "2026-07-04T14:43:24.410Z",
+  "tables": {
+    "admin_invites": {
+      "columns": [
+        "id",
+        "email",
+        "token",
+        "role",
+        "status",
+        "invited_by",
+        "expires_at",
+        "accepted_at",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_webauthn_credentials": {
+      "columns": [
+        "id",
+        "admin_user_id",
+        "credential_id",
+        "public_key",
+        "counter",
+        "device_name",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_users": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "password_hash",
+        "display_name",
+        "role",
+        "active",
+        "activation_token",
+        "invited_by",
+        "invite_token",
+        "invite_expires_at",
+        "last_login_at",
+        "is_active",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_settings": {
+      "columns": [
+        "key",
+        "value",
+        "updated_at"
+      ],
+      "totalRows": 14,
+      "sampleRows": [
+        {
+          "key": "_p_nav_logo_url",
+          "value": "https://res.cloudinary.com/duhp69meg/image/upload/v1771379528/tapavis_logos/ali-baba-boucherie/o2n6ufhn1givosddjvgc.png",
+          "updated_at": "2026-06-19T20:50:15.380Z"
+        },
+        {
+          "key": "_p_about_image_url",
+          "value": "https://res.cloudinary.com/duhp69meg/image/upload/v1781898961/tapavis_menu/296/zkpkruhfiq2vqdzvisx0.jpg",
+          "updated_at": "2026-06-19T20:50:15.387Z"
+        },
+        {
+          "key": "_p_hero_image_url",
+          "value": "https://res.cloudinary.com/duhp69meg/image/upload/v1781932984/subscriber_pwa_content/ali-baba-boucherie/ojgi8en88p2ekxvizmmz.jpg",
+          "updated_at": "2026-06-20T05:23:05.377Z"
+        },
+        {
+          "key": "_p_image_overrides",
+          "value": "{\"setting:_p_hero_image_url\":{\"position\":\"center center\"}}",
+          "updated_at": "2026-06-20T05:23:16.618Z"
+        },
+        {
+          "key": "_p_content_registry_rev",
+          "value": "5",
+          "updated_at": "2026-06-20T05:23:16.656Z"
+        },
+        {
+          "key": "contact_phone",
+          "value": "(450) 420-0003",
+          "updated_at": "2026-06-20T07:11:02.690Z"
+        },
+        {
+          "key": "business_address",
+          "value": "1185 Bd Curé-Labelle, Local 3, Blainville, QC J7C 4K6",
+          "updated_at": "2026-06-20T07:11:02.696Z"
+        },
+        {
+          "key": "hours",
+          "value": "Mer-Dim : 9h - 19h\nLun-Mar : Fermé",
+          "updated_at": "2026-06-20T07:11:02.702Z"
+        },
+        {
+          "key": "hours_json",
+          "value": "[{\"day\":\"mon\",\"open\":\"\",\"close\":\"\",\"closed\":true},{\"day\":\"tue\",\"open\":\"\",\"close\":\"\",\"closed\":true},{\"day\":\"wed\",\"open\":\"09:00\",\"close\":\"19:00\",\"closed\":false},{\"day\":\"thu\",\"open\":\"09:00\",\"close\":\"19:00\",\"closed\":false},{\"day\":\"fri\",\"open\":\"09:00\",\"close\":\"19:00\",\"closed\":false},{\"day\":\"sat\",\"open\":\"09:00\",\"close\":\"19:00\",\"closed\":false},{\"day\":\"sun\",\"open\":\"09:00\",\"close\":\"19:00\",\"closed\":false}]",
+          "updated_at": "2026-06-20T07:11:02.711Z"
+        },
+        {
+          "key": "google_place_id",
+          "value": "ChIJF4-Q7NnXyEwRTorFpzfVkmc",
+          "updated_at": "2026-06-20T07:11:02.715Z"
+        }
+      ]
+    },
+    "site_visits": {
+      "columns": [
+        "id",
+        "path",
+        "visited_at"
+      ],
+      "totalRows": 5089,
+      "sampleRows": [
+        {
+          "id": 1,
+          "path": "/",
+          "visited_at": "2026-06-19T20:50:15.542Z"
+        },
+        {
+          "id": 2,
+          "path": "/",
+          "visited_at": "2026-06-19T20:50:17.848Z"
+        },
+        {
+          "id": 3,
+          "path": "/",
+          "visited_at": "2026-06-19T20:50:18.050Z"
+        },
+        {
+          "id": 4,
+          "path": "/",
+          "visited_at": "2026-06-19T20:50:18.125Z"
+        },
+        {
+          "id": 5,
+          "path": "/",
+          "visited_at": "2026-06-19T20:50:18.651Z"
+        },
+        {
+          "id": 6,
+          "path": "/",
+          "visited_at": "2026-06-19T20:50:18.921Z"
+        },
+        {
+          "id": 7,
+          "path": "/",
+          "visited_at": "2026-06-19T20:50:51.928Z"
+        },
+        {
+          "id": 8,
+          "path": "/",
+          "visited_at": "2026-06-19T21:27:58.832Z"
+        },
+        {
+          "id": 9,
+          "path": "/",
+          "visited_at": "2026-06-19T21:27:59.688Z"
+        },
+        {
+          "id": 10,
+          "path": "/",
+          "visited_at": "2026-06-19T21:27:59.897Z"
+        }
+      ]
+    },
+    "posts": {
+      "columns": [
+        "id",
+        "title",
+        "content",
+        "image_url",
+        "category",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "menu_items": {
+      "columns": [
+        "id",
+        "name_fr",
+        "name_en",
+        "description_fr",
+        "description_en",
+        "price",
+        "category",
+        "image_url",
+        "position",
+        "featured",
+        "available",
+        "sizes_json",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 43,
+      "sampleRows": [
+        {
+          "id": 1,
+          "name_fr": "Babaghanouge",
+          "name_en": "Baba Ghanoush",
+          "description_fr": "Caviar d'aubergine grillée au tahini, citron et ail.",
+          "description_en": "Smoky grilled-eggplant dip with tahini, lemon and garlic.",
+          "price": 7.5,
+          "category": "entrees",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782061795/tapavis_menu/296/babaghanouge_1782061794032.png",
+          "position": 1,
+          "featured": 0,
+          "available": 1,
+          "sizes_json": "[{\"label_fr\":\"Petit\",\"label_en\":\"Small\",\"price\":7.5},{\"label_fr\":\"Grand\",\"label_en\":\"Large\",\"price\":13.99}]",
+          "created_at": "2026-06-21T17:56:22.964Z",
+          "updated_at": "2026-06-21T17:56:22.964Z"
+        },
+        {
+          "id": 2,
+          "name_fr": "Patates à l'ail",
+          "name_en": "Garlic Potatoes",
+          "description_fr": "Pommes de terre sautées à l'ail et coriandre. Format petit ou grand.",
+          "description_en": "Potatoes sautéed in garlic and coriander. Small or large.",
+          "price": 4.99,
+          "category": "entrees",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782061795/tapavis_menu/296/patates_a_l_ail_1782061793656.png",
+          "position": 2,
+          "featured": 0,
+          "available": 1,
+          "sizes_json": "[{\"label_fr\":\"Petit\",\"label_en\":\"Small\",\"price\":4.99},{\"label_fr\":\"Grand\",\"label_en\":\"Large\",\"price\":8.99}]",
+          "created_at": "2026-06-21T17:56:22.970Z",
+          "updated_at": "2026-06-21T17:56:22.970Z"
+        },
+        {
+          "id": 3,
+          "name_fr": "Riz",
+          "name_en": "Rice",
+          "description_fr": "Riz libanais parfumé. Format petit ou grand.",
+          "description_en": "Fragrant Lebanese rice. Small or large.",
+          "price": 3.99,
+          "category": "entrees",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782061828/tapavis_menu/296/riz_1782061826840.png",
+          "position": 3,
+          "featured": 0,
+          "available": 1,
+          "sizes_json": "[{\"label_fr\":\"Petit\",\"label_en\":\"Small\",\"price\":3.99},{\"label_fr\":\"Grand\",\"label_en\":\"Large\",\"price\":8.99}]",
+          "created_at": "2026-06-21T17:56:22.975Z",
+          "updated_at": "2026-06-21T17:56:22.975Z"
+        },
+        {
+          "id": 4,
+          "name_fr": "Hommous",
+          "name_en": "Hummus",
+          "description_fr": "Purée de pois chiches au tahini, citron et huile d'olive. Format petit ou grand.",
+          "description_en": "Chickpea purée with tahini, lemon and olive oil. Small or large.",
+          "price": 7.5,
+          "category": "entrees",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782061793/tapavis_menu/296/hommous_1782061791979.png",
+          "position": 4,
+          "featured": 0,
+          "available": 1,
+          "sizes_json": "[{\"label_fr\":\"Petit\",\"label_en\":\"Small\",\"price\":7.5},{\"label_fr\":\"Grand\",\"label_en\":\"Large\",\"price\":13.99}]",
+          "created_at": "2026-06-21T17:56:22.979Z",
+          "updated_at": "2026-06-21T17:56:22.979Z"
+        },
+        {
+          "id": 5,
+          "name_fr": "Fattouche",
+          "name_en": "Fattoush",
+          "description_fr": "Salade de légumes croquants et pain pita grillé, vinaigrette au sumac.",
+          "description_en": "Crisp vegetable salad with toasted pita and a sumac dressing.",
+          "price": 4.99,
+          "category": "entrees",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782062416/tapavis_menu/296/fattouche_1782062414159.png",
+          "position": 5,
+          "featured": 0,
+          "available": 1,
+          "sizes_json": "[{\"label_fr\":\"Petit\",\"label_en\":\"Small\",\"price\":4.99},{\"label_fr\":\"Grand\",\"label_en\":\"Large\",\"price\":11.99}]",
+          "created_at": "2026-06-21T17:56:22.983Z",
+          "updated_at": "2026-06-21T17:56:22.983Z"
+        },
+        {
+          "id": 6,
+          "name_fr": "Taboulé",
+          "name_en": "Tabbouleh",
+          "description_fr": "Salade de persil, boulgour, tomate et menthe, citron et huile d'olive.",
+          "description_en": "Parsley, bulgur, tomato and mint salad with lemon and olive oil.",
+          "price": 4.99,
+          "category": "entrees",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782062428/tapavis_menu/296/taboule_1782062426682.png",
+          "position": 6,
+          "featured": 0,
+          "available": 1,
+          "sizes_json": "[{\"label_fr\":\"Petit\",\"label_en\":\"Small\",\"price\":4.99},{\"label_fr\":\"Grand\",\"label_en\":\"Large\",\"price\":9.99}]",
+          "created_at": "2026-06-21T17:56:22.987Z",
+          "updated_at": "2026-06-21T17:56:22.987Z"
+        },
+        {
+          "id": 7,
+          "name_fr": "Sauce à l'ail",
+          "name_en": "Garlic Sauce",
+          "description_fr": "Notre sauce à l'ail maison, crémeuse et généreuse.",
+          "description_en": "Our creamy house-made garlic sauce.",
+          "price": 7.5,
+          "category": "entrees",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782061795/tapavis_menu/296/sauce_a_l_ail_1782061794060.png",
+          "position": 7,
+          "featured": 0,
+          "available": 1,
+          "sizes_json": "[{\"label_fr\":\"Petit\",\"label_en\":\"Small\",\"price\":7.5},{\"label_fr\":\"Grand\",\"label_en\":\"Large\",\"price\":13.99}]",
+          "created_at": "2026-06-21T17:56:22.991Z",
+          "updated_at": "2026-06-21T17:56:22.991Z"
+        },
+        {
+          "id": 8,
+          "name_fr": "Pain pita épicé",
+          "name_en": "Spiced Pita Bread",
+          "description_fr": "Pain pita moyen assaisonné de sauce piquante et d'oignons, le tout grillé.",
+          "description_en": "Medium pita seasoned with hot sauce and onions, then grilled.",
+          "price": 3.57,
+          "category": "entrees",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782062440/tapavis_menu/296/pain_pita_epice_1782062438515.png",
+          "position": 8,
+          "featured": 0,
+          "available": 1,
+          "sizes_json": null,
+          "created_at": "2026-06-21T17:56:22.995Z",
+          "updated_at": "2026-06-21T17:56:22.995Z"
+        },
+        {
+          "id": 9,
+          "name_fr": "Sac de 5 pitas moyennes",
+          "name_en": "Bag of 5 Medium Pitas",
+          "description_fr": "Sac de 5 pains pita moyens.",
+          "description_en": "Bag of 5 medium pita breads.",
+          "price": 2.5,
+          "category": "entrees",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782062655/tapavis_menu/296/dgjoct5idueftu4qfxxs.jpg",
+          "position": 9,
+          "featured": 0,
+          "available": 1,
+          "sizes_json": null,
+          "created_at": "2026-06-21T17:56:22.999Z",
+          "updated_at": "2026-06-21T17:56:22.999Z"
+        },
+        {
+          "id": 10,
+          "name_fr": "Sandwich Shish taouk",
+          "name_en": "Shish Taouk Sandwich",
+          "description_fr": "Poitrine de poulet marinée, grillée sur charbon. Garni de tomate, cornichon, oignon, houmous ou sauce à l'ail.",
+          "description_en": "Marinated chicken breast charcoal-grilled. Topped with tomato, pickle, onion, hummus or garlic sauce.",
+          "price": 9.99,
+          "category": "sandwichs",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898972/tapavis_menu/296/zxacvy75nmtgrcl0jd1t.jpg",
+          "position": 1,
+          "featured": 0,
+          "available": 1,
+          "sizes_json": "[{\"label_fr\":\"seul\",\"label_en\":\"Single\",\"price\":9.99},{\"label_fr\":\"trio ou combo\",\"label_en\":\"Trio or combo\",\"price\":16.99}]",
+          "created_at": "2026-06-21T17:56:23.003Z",
+          "updated_at": "2026-06-21T17:56:23.003Z"
+        }
+      ]
+    },
+    "menu_categories": {
+      "columns": [
+        "id",
+        "slug",
+        "name_fr",
+        "name_en",
+        "position",
+        "active",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 6,
+      "sampleRows": [
+        {
+          "id": 4,
+          "slug": "assiettes",
+          "name_fr": "Assiettes",
+          "name_en": "Platters",
+          "position": 1,
+          "active": 1,
+          "created_at": "2026-06-19T20:50:15.272Z",
+          "updated_at": "2026-06-21T17:56:23.159Z"
+        },
+        {
+          "id": 1,
+          "slug": "entrees",
+          "name_fr": "Entrées",
+          "name_en": "Starters",
+          "position": 2,
+          "active": 1,
+          "created_at": "2026-06-19T20:50:15.262Z",
+          "updated_at": "2026-06-21T17:56:23.163Z"
+        },
+        {
+          "id": 2,
+          "slug": "sandwichs",
+          "name_fr": "Sandwichs",
+          "name_en": "Sandwiches",
+          "position": 3,
+          "active": 1,
+          "created_at": "2026-06-19T20:50:15.265Z",
+          "updated_at": "2026-06-21T17:56:23.168Z"
+        },
+        {
+          "id": 3,
+          "slug": "tartares",
+          "name_fr": "Tartares",
+          "name_en": "Tartares",
+          "position": 4,
+          "active": 1,
+          "created_at": "2026-06-19T20:50:15.269Z",
+          "updated_at": "2026-06-21T17:56:23.172Z"
+        },
+        {
+          "id": 5,
+          "slug": "breuvages",
+          "name_fr": "Breuvages",
+          "name_en": "Drinks",
+          "position": 5,
+          "active": 1,
+          "created_at": "2026-06-19T20:50:15.275Z",
+          "updated_at": "2026-06-21T17:56:23.176Z"
+        },
+        {
+          "id": 6,
+          "slug": "dessert",
+          "name_fr": "Dessert",
+          "name_en": "Desserts",
+          "position": 6,
+          "active": 1,
+          "created_at": "2026-06-19T20:50:15.278Z",
+          "updated_at": "2026-06-21T17:56:23.180Z"
+        }
+      ]
+    },
+    "delivery_platforms": {
+      "columns": [
+        "id",
+        "name",
+        "logo_url",
+        "link_url",
+        "position",
+        "active",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "offers": {
+      "columns": [
+        "id",
+        "title_fr",
+        "title_en",
+        "description_fr",
+        "description_en",
+        "image_url",
+        "discount_label",
+        "starts_at",
+        "expires_at",
+        "max_claims",
+        "max_per_user",
+        "position",
+        "active",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "offer_claims": {
+      "columns": [
+        "id",
+        "offer_id",
+        "user_id",
+        "short_code",
+        "status",
+        "claimed_at",
+        "redeemed_at",
+        "redeemed_by_user_id"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "keychain_visitors": {
+      "columns": [
+        "id",
+        "email",
+        "full_name",
+        "keychain_id",
+        "upsell_sent_at",
+        "created_at",
+        "updated_at",
+        "user_id"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    }
+  }
 }
