@@ -1,0 +1,122 @@
+<%- include('partials/header') %>
+<main>
+<section class="hero container" id="top">
+<span class="hero-tc" data-setting-key="hero_timecode"><%= settings.hero_timecode || '00:00:00:00' %></span>
+<h1 class="hero-title"><span data-setting-key="hero_title_1"><%= settings.hero_title_1 || "Le montage qu'on ne voit pas." %></span><br><span class="hl" data-setting-key="hero_title_2"><%= settings.hero_title_2 || "La preuve qu'on peut voir." %></span></h1>
+<p class="hero-sub" data-setting-key="hero_subtitle"><%= settings.hero_subtitle || "Monteur vidéo. YouTube et formats courts. Je coupe, je cale, j'exporte." %></p>
+<div class="hero-actions">
+<a href="#rushs" class="btn btn-primary" style="background-color:#6366F1;color:#fff" data-setting-key="hero_cta"><%= settings.hero_cta || 'Voir les rushs' %></a>
+<a href="#contact" class="btn btn-outline" data-lk="hero-cta2">Demander un montage</a>
+</div>
+</section>
+
+<section class="sec" id="feat-sec">
+<div class="container">
+<div class="sec-head"><span class="sec-tc" data-lk="feat-tc">00:00:12:00 — EN LECTURE</span></div>
+<% var fid = featured ? ytId(featured.youtube_url) : ''; %>
+<% if (featured) { %>
+<div class="feat-frame">
+<span class="rec" aria-hidden="true"><i></i>REC</span>
+<% if (fid) { %>
+<div class="feat-embed"><iframe src="https://www.youtube.com/embed/<%= fid %>" title="<%= featured.title %>" allow="fullscreen" allowfullscreen loading="lazy"></iframe></div>
+<% } else { %>
+<img class="feat-poster" src="<%= featured.image_url || 'https://placehold.co/1280x720/0C0C12/6366F1/png?text=Rush' %>" data-content-source="videos:image_url" data-content-id="<%= featured.id %>" alt="<%= featured.title %>">
+<% } %>
+</div>
+<p class="feat-cap"><span data-content-source="videos:title" data-content-id="<%= featured.id %>"><%= featured.title %></span><% if (featured.duration) { %> — <span data-content-source="videos:duration" data-content-id="<%= featured.id %>"><%= featured.duration %></span><% } %></p>
+<% } else { %>
+<div class="feat-frame"><img class="feat-poster" src="https://placehold.co/1280x720/0C0C12/6366F1/png?text=Vid%C3%A9o+%C3%A0+venir" alt="Vidéo à venir"></div>
+<p class="feat-cap" data-lk="feat-empty">La vidéo à la une arrive. Ajoutez-la depuis l'admin.</p>
+<% } %>
+</div>
+</section>
+
+<section class="sec" id="rushs">
+<div class="container">
+<div class="sec-head"><span class="sec-tc" data-lk="gal-tc">00:01:24:12</span><h2 data-lk="gal-title">Rushs sélectionnés</h2></div>
+<% if (gallery && gallery.length) { %>
+<div class="grid">
+<% gallery.forEach(function(v){ var vid=ytId(v.youtube_url); var thumb=v.image_url || (vid ? ('https://img.youtube.com/vi/'+vid+'/hqdefault.jpg') : 'https://placehold.co/640x360/0C0C12/6366F1/png?text=Rush'); %>
+<button class="vcard" type="button" data-yt="<%= vid %>" data-thumb="<%= thumb %>" data-title="<%= v.title %>">
+<span class="vthumb"><img src="<%= thumb %>" data-content-source="videos:image_url" data-content-id="<%= v.id %>" alt="<%= v.title %>" loading="lazy"><span class="sweep"></span><% if (vid) { %><span class="vplay" aria-hidden="true"></span><% } %></span>
+<span class="vmeta"><span class="vtc" data-content-source="videos:timecode" data-content-id="<%= v.id %>"><%= v.timecode || '' %></span><span class="vtype" data-content-source="videos:video_type" data-content-id="<%= v.id %>"><%= v.video_type || '' %></span></span>
+<span class="vtitle" data-content-source="videos:title" data-content-id="<%= v.id %>"><%= v.title %></span>
+</button>
+<% }); %>
+</div>
+<% } else { %>
+<p class="empty" data-lk="gal-empty">Aucun rush pour l'instant. Ajoutez vos montages depuis l'admin.</p>
+<% } %>
+</div>
+</section>
+
+<section class="sec" id="progression">
+<div class="container">
+<div class="sec-head"><span class="sec-tc" data-lk="tl-tc">00:02:48:00</span><h2 data-lk="tl-title">La Timeline</h2><p class="sec-lead" data-lk="tl-lead">La progression, clip par clip. On voit les coupes se resserrer.</p></div>
+</div>
+<% if (timeline && timeline.length) { %>
+<div class="tl-track" id="tlTrack">
+<% timeline.forEach(function(c){ %>
+<article class="clip">
+<span class="clip-year" data-content-source="timeline_clips:year" data-content-id="<%= c.id %>"><%= c.year %></span>
+<% if (c.title) { %><h3 class="clip-title" data-content-source="timeline_clips:title" data-content-id="<%= c.id %>"><%= c.title %></h3><% } %>
+<% if (c.before_image_url && c.after_image_url) { %>
+<div class="ba" data-ba>
+<img class="ba-after" src="<%= c.after_image_url %>" data-content-source="timeline_clips:after_image_url" data-content-id="<%= c.id %>" alt="Après">
+<img class="ba-before" src="<%= c.before_image_url %>" data-content-source="timeline_clips:before_image_url" data-content-id="<%= c.id %>" alt="Avant">
+<span class="ba-div"></span><span class="ba-tag ba-tag-l">Avant</span><span class="ba-tag ba-tag-r">Après</span>
+<input class="ba-range" type="range" min="0" max="100" value="50" aria-label="Comparer avant et après">
+</div>
+<% } else if (c.image_url) { %>
+<img class="clip-img" src="<%= c.image_url %>" data-content-source="timeline_clips:image_url" data-content-id="<%= c.id %>" alt="<%= c.title || c.year %>">
+<% } %>
+<p class="clip-note" data-content-source="timeline_clips:note" data-content-id="<%= c.id %>"><%= c.note || '' %></p>
+</article>
+<% }); %>
+</div>
+<% } else { %>
+<div class="container"><p class="empty" data-lk="tl-empty">La timeline se remplit bientôt.</p></div>
+<% } %>
+</section>
+
+<section class="sec" id="prestations">
+<div class="container">
+<div class="sec-head"><span class="sec-tc" data-lk="pr-tc">00:03:36:08</span><h2 data-lk="pr-title">Prestations</h2></div>
+<% if (prestations && prestations.length) { %>
+<div class="prest">
+<% prestations.forEach(function(p){ %>
+<div class="prest-block">
+<h3 data-content-source="prestations:name" data-content-id="<%= p.id %>"><%= p.name %></h3>
+<p class="pb-do" data-content-source="prestations:what_i_do" data-content-id="<%= p.id %>"><%= p.what_i_do || '' %></p>
+<p class="pb-meta pb-forwho"><span data-content-source="prestations:for_who" data-content-id="<%= p.id %>"><%= p.for_who || '' %></span></p>
+<p class="pb-meta pb-delay"><span data-content-source="prestations:delay" data-content-id="<%= p.id %>"><%= p.delay || '' %></span></p>
+<% if (p.price) { %><p class="pb-meta pb-price"><span data-content-source="prestations:price" data-content-id="<%= p.id %>"><%= p.price %></span></p><% } %>
+</div>
+<% }); %>
+</div>
+<% } else { %>
+<p class="empty" data-lk="pr-empty">Prestations à venir.</p>
+<% } %>
+</div>
+</section>
+
+<section class="sec" id="contact">
+<div class="container narrow">
+<div class="sec-head"><span class="sec-tc" data-lk="ct-tc">00:04:12:00</span><h2 data-lk="ct-title">Exporter votre projet</h2></div>
+<p class="ct-intro" data-setting-key="contact_intro"><%= settings.contact_intro || "Dites-moi ce que vous montez. Je réponds sous 48 h." %></p>
+<div class="export-box">
+<div class="export-head" data-lk="ct-head">EXPORT — NOUVELLE DEMANDE</div>
+<form id="contactForm" class="export-form">
+<label class="field"><span data-lk="ct-l-name">Nom</span><input name="name" required placeholder="Votre nom"></label>
+<label class="field"><span data-lk="ct-l-email">Courriel</span><input name="email" type="email" required placeholder="vous@exemple.com"></label>
+<label class="field"><span data-lk="ct-l-type">Type de projet</span><select name="project_type"><option>Montage long format</option><option>Format court / Short</option><option>Publicité</option><option>Autre</option></select></label>
+<label class="field"><span data-lk="ct-l-link">Lien vers vos rushs</span><input name="rushes_link" placeholder="Drive, WeTransfer, lien YouTube…"></label>
+<label class="field"><span data-lk="ct-l-msg">Message</span><textarea name="message" required placeholder="Le projet, la durée visée, l'échéance."></textarea></label>
+<button type="submit" class="btn btn-primary" style="background-color:#6366F1;color:#fff" data-lk="ct-submit">Lancer l'export</button>
+</form>
+<p class="export-note"><% if (contactEmail) { %><span data-lk="ct-or">Ou par courriel :</span> <a href="mailto:<%= contactEmail %>"><%= contactEmail %></a><% } else { %><span data-lk="ct-note">Réponse sous 48 h ouvrées.</span><% } %></p>
+</div>
+</div>
+</section>
+</main>
+<%- include('partials/footer') %>

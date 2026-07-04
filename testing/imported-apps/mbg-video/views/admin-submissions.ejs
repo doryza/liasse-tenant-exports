@@ -1,0 +1,23 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Demandes — MBG</title><link rel="stylesheet" href="public/css/admin-styles.css"></head><body class="admin">
+<%- include('partials/admin-sidebar', { active: 'submissions' }) %>
+<% var _items=(typeof items!=='undefined'&&items)?items:[]; %>
+<main class="admin-main">
+<header class="admin-top"><button class="side-toggle" type="button" onclick="document.body.classList.toggle('side-open')" aria-label="Menu">≡</button><div class="tt"><h1>Demandes de travail</h1><p class="admin-sub">Les messages reçus via le formulaire de contact.</p></div></header>
+<div id="msg" class="admin-msg" style="display:none"></div>
+<div class="toolbar">
+<div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg><input id="search" type="search" placeholder="Rechercher par nom, courriel, message…" oninput="applyFilter()"></div>
+<span class="count-pill"><b id="cnt">0</b> demande(s)</span>
+</div>
+<div class="table-wrap"><table class="admin-table"><thead><tr><th>Nom</th><th>Courriel</th><th>Type</th><th>Rushs</th><th>Message</th><th>Reçue</th><th></th></tr></thead><tbody id="tbody"></tbody></table></div>
+<div id="empty" class="admin-empty" style="display:none">Aucune demande.</div>
+</main>
+<script>
+var ITEMS=<%- JSON.stringify(_items) %>;
+var VIEW=ITEMS.slice();
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function render(){ var tb=document.getElementById('tbody'); document.getElementById('cnt').textContent=ITEMS.length; var emp=document.getElementById('empty'); if(!ITEMS.length){ emp.textContent='Aucune demande pour l\'instant.'; emp.style.display='block'; tb.innerHTML=''; return; } if(!VIEW.length){ emp.textContent='Aucun résultat pour cette recherche.'; emp.style.display='block'; tb.innerHTML=''; return; } emp.style.display='none'; tb.innerHTML=VIEW.map(function(s){ return '<tr><td>'+esc(s.name)+'</td><td>'+(s.email?('<a href="mailto:'+esc(s.email)+'">'+esc(s.email)+'</a>'):'—')+'</td><td>'+esc(s.project_type)+'</td><td>'+(s.rushes_link?('<a href="'+esc(s.rushes_link)+'" target="_blank" rel="noopener">lien</a>'):'—')+'</td><td>'+esc(s.message)+'</td><td>'+esc(new Date(s.created_at).toLocaleDateString('fr-CA'))+'</td><td><button type="button" class="danger" onclick="del('+s.id+')">Supprimer</button></td></tr>'; }).join(''); }
+function applyFilter(){ var el=document.getElementById('search'); var q=(el?el.value:'').toLowerCase().trim(); VIEW=!q?ITEMS.slice():ITEMS.filter(function(s){ return ['name','email','project_type','message'].some(function(k){ return s[k] && String(s[k]).toLowerCase().indexOf(q)>-1; }); }); render(); }
+function del(id){ if(!confirm('Supprimer cette demande ?')) return; fetch('api/admin/submissions/'+id,{method:'DELETE'}).then(function(r){ if(!r.ok) throw new Error(); ITEMS=ITEMS.filter(function(x){ return x.id!==id; }); applyFilter(); }).catch(function(){ alert('Suppression impossible.'); }); }
+render();
+</script>
+</body></html>

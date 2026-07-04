@@ -1,0 +1,18 @@
+<footer class="foot" id="foot">
+<div class="container">
+<span class="foot-tc" data-lk="ft-tc">00:04:32:10 — FIN DE SESSION</span>
+<div class="foot-links">
+<% if (typeof settings!=='undefined' && settings.youtube_url) { %><a href="<%= settings.youtube_url %>" target="_blank" rel="noopener" data-lk="ft-yt">YouTube</a><% } else { %><span class="muted" data-lk="ft-yt">YouTube</span><% } %>
+<% if (typeof settings!=='undefined' && settings.instagram_url) { %><a href="<%= settings.instagram_url %>" target="_blank" rel="noopener" data-lk="ft-ig">Instagram</a><% } else { %><span class="muted" data-lk="ft-ig">Instagram</span><% } %>
+<% if (typeof settings!=='undefined' && settings.tiktok_url) { %><a href="<%= settings.tiktok_url %>" target="_blank" rel="noopener" data-lk="ft-tk">TikTok</a><% } else { %><span class="muted" data-lk="ft-tk">TikTok</span><% } %>
+</div>
+<button data-push-btn class="btn-ghost" type="button" data-lk="ft-push">Activer les notifications</button>
+<p class="foot-legal" data-setting-key="legal_text"><%= (typeof settings!=='undefined' && settings.legal_text) ? settings.legal_text : ('© ' + brandName + '. Monteur vidéo.') %></p>
+</div>
+</footer>
+<div id="lb" class="lb" style="display:none" onclick="if(event.target===this)closeLb()"><div class="lb-box"><button class="lb-close" type="button" onclick="closeLb()" aria-label="Fermer">×</button><div id="lbBody"></div></div></div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<script src="public/js/app.js"></script>
+<script>try{if(window.TenantSDK){TenantSDK.ui.showInstallBanner();setTimeout(function(){try{TenantSDK.ui.showPushPrompt();}catch(e){}},8000);}}catch(e){}</script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Réglages — MBG</title><link rel="stylesheet" href="public/css/admin-styles.css"></head><body class="admin">
+<%- include('partials/admin-sidebar', { active: 'settings' }) %>
+<% var _fields=(typeof fields!=='undefined'&&fields)?fields:[]; var _set=(typeof settings!=='undefined'&&settings)?settings:{}; %>
+<main class="admin-main">
+<header class="admin-top"><button class="side-toggle" type="button" onclick="document.body.classList.toggle('side-open')" aria-label="Menu">≡</button><div class="tt"><h1>Réglages</h1><p class="admin-sub">Courriel de réception des demandes et liens sociaux du pied de page.</p></div></header>
+<div id="msg" class="admin-msg" style="display:none"></div>
+<section class="panel">
+<form id="settingsForm">
+<% _fields.forEach(function(f){ %>
+<label class="fld"><span class="fld-lbl"><%= f.label %></span>
+<input type="<%= f.type==='email'?'email':(f.type==='url'?'url':'text') %>" name="<%= f.name %>" value="<%= _set[f.name]||'' %>" placeholder="<%= f.placeholder||'' %>">
+<% if(f.description){ %><span class="fld-help"><%= f.description %></span><% } %>
+</label>
+<% }); %>
+<div class="modal-actions" style="justify-content:flex-start"><button type="submit" class="btn-primary" style="background-color:#6366F1;color:#fff">Enregistrer les réglages</button></div>
+</form>
+</section>
+</main>
+<script>
+document.getElementById('settingsForm').addEventListener('submit',function(e){ e.preventDefault(); var form=this; var btn=form.querySelector('button[type=submit]'); btn.disabled=true; var inputs=Array.prototype.slice.call(form.querySelectorAll('[name]')); var chain=Promise.resolve(); var failed=false; inputs.forEach(function(inp){ chain=chain.then(function(){ return fetch('api/admin/settings',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({key:inp.name,value:inp.value})}).then(function(r){ if(!r.ok) failed=true; }).catch(function(){ failed=true; }); }); }); chain.then(function(){ btn.disabled=false; showMsg(failed?'Certains réglages n\'ont pas pu être enregistrés.':'Réglages enregistrés.',failed); }); });
+function showMsg(t,err){ var m=document.getElementById('msg'); m.textContent=t; m.className='admin-msg '+(err?'err':'ok'); m.style.display='block'; setTimeout(function(){ m.style.display='none'; },3000); }
+</script>
+</body></html>

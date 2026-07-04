@@ -1,0 +1,74 @@
+{
+  "slug": "mbg-video",
+  "displayName": "MBG Vidéo",
+  "description": "Type de projet: Site web pour un créateur de contenu YouTube\n\nObjectif: Présenter des vidéos de montage, montrer sa progression et attirer des clients.\n\nPublic cible: Personnes intéressées par le montage vidéo et clients potentiels.\n\nFonctionnalités:\n- Galerie vidéo (portfolio)\n- Formulaire de contact pour demandes de travail\n- Section pour présenter l'évolution du travail\n\nDesign: Professionnel, carte blanche pour la palette de couleurs.",
+  "status": "active",
+  "generationVersion": 1,
+  "primaryColor": "#6366f1",
+  "iconUrl": "https://res.cloudinary.com/duhp69meg/image/upload/v1783143611/tapavis_tenant_mbg-video/icon_mbg-video_1783143611262.png",
+  "enabledAuthMethods": [
+    "webauthn",
+    "sms",
+    "email"
+  ],
+  "notificationsEnabled": true,
+  "geolocationEnabled": true,
+  "customConfig": {
+    "language": "fr",
+    "designManifest": {
+      "concept": "Banc de Montage",
+      "copyVoice": "Français, première personne, voix de monteur en session : phrases courtes comme des cuts, présent, vocabulaire technique dosé, zéro superlatif, zéro point d'exclamation.",
+      "elements": {
+        "blogSurfaced": false,
+        "pages": [
+          "index (page unique en sections : hero, vidéo à la une, galerie rushs, timeline, prestations, contact, pied de page)",
+          "admin (tableau de bord + modules)"
+        ],
+        "userLogin": false
+      },
+      "heroThesis": "Le hero s'ouvre sur le timecode 00:00:00:00 et un titre en deux temps — « Le montage qu'on ne voit pas / La preuve qu'on peut voir » — sur le vide sombre de l'écran avant lecture, aucune image de fond.",
+      "iconDirection": "Sur fond #0C0C12, une tête de lecture triangulaire indigo #6366F1 posée sur un seul cran d'une règle graduée horizontale en #EDEDF4 — géométrie plate, aucun caméscope, aucun bouton play générique.",
+      "palette": {
+        "accents": [
+          "#FF3B3B"
+        ],
+        "ground": "#0C0C12",
+        "ink": "#EDEDF4",
+        "primary": "#6366F1"
+      },
+      "signatureMove": "La Timeline : chaque section porte un timecode monospace, une fine règle graduée avec tête de lecture indigo suit le scroll, et la progression est une piste NLE horizontale de clips-blocs par année avec comparatif avant/après au curseur.",
+      "summary": "Le site est mis en scène comme une session de montage : sections numérotées par timecodes monospace, tête de lecture indigo qui suit le scroll, et une piste NLE horizontale rendant la progression du monteur visible.",
+      "typography": "Space Grotesk (titres serrés) + Inter (corps 16px/1.6) + JetBrains Mono (timecodes, labels de piste et numéros de section)."
+    }
+  },
+  "promptHistory": [
+    {
+      "prompt": "Type de projet: Site web pour un créateur de contenu YouTube\n\nObjectif: Présenter des vidéos de montage, montrer sa progression et attirer des clients.\n\nPublic cible: Personnes intéressées par le montage vidéo et clients potentiels.\n\nFonctionnalités:\n- Galerie vidéo (portfolio)\n- Formulaire de contact pour demandes de travail\n- Section pour présenter l'évolution du travail\n\nDesign: Professionnel, carte blanche pour la palette de couleurs.",
+      "timestamp": "2026-07-04T05:40:20.660Z",
+      "changeNotes": "Admin enrichment: (1) Rebuilt the dashboard with icon stat cards (6 metrics), a richer 'Gérer le contenu' module-card grid with live counts and descriptions, a 'Réglages' entry, and a fuller 'Dernières demandes' panel with an improved empty state. (2) Added a new Réglages admin page (views/admin-settings.ejs) + route so the owner can edit the reception email and social links (functional footer links) — wired to existing GET/PUT /api/admin/settings. (3) Module pages: added a search/filter toolbar, a live count pill, thumbnail-first smart columns, boolean status badges, hover rows, and clearer empty/no-result states while keeping full create/edit/delete CRUD (modal covers every column, upload + AI generate for images). (4) Submissions page: added search, count, mailto links, and richer empty states. (5) Functional data: added a 'price' (Tarif) field to prestations (module field + migration + schema + seed + public render with data-content-source) so service tiers are fully admin-managed with pricing alongside delay/for-who. (6) Contact route now prefers the admin-set contact_email for delivery. (7) Accessibility & contrast: visible focus-visible states on tabs, video cards, buttons and sidebar links; --admin-brand variable; inline color fallbacks on all critical admin CTAs and count badges; consistent card/button/input styling. (8) Added OG/Twitter meta tags to the public header. All {{IMG_*}} tokens preserved; typeof guards added to admin views for canary safety; no routes or data flows removed.\n\nFixed the mobile menu to pin fixed below the sticky header so it's always visible when opened after scrolling; gated the gallery play-triangle to only show on cards with a real YouTube id; added a secondary outline hero CTA ('Demander un montage') linking to #contact with matching .hero-actions/.btn-outline styles; guarded the featured-video em dash/duration span so it disappears when duration is empty; added an escAttr() helper in app.js and used it for the lightbox iframe/img title and thumb attributes; removed the dead auto-injected /admin/module (queries a nonexistent 'module' table) and duplicate /admin/submissions routes from routes.js; and added role=\"status\" aria-live=\"polite\" to the toast element for screen-reader announcements. All other spec items were straightforward and applied as specified — nothing was skipped.",
+      "generationId": 1410,
+      "filesModified": [
+        "manifest.json",
+        "migrations.sql",
+        "public/css/admin-styles.css",
+        "public/css/styles.css",
+        "public/js/app.js",
+        "routes.js",
+        "schema.sql",
+        "seed.js",
+        "views/admin-module.ejs",
+        "views/admin-settings.ejs",
+        "views/admin-submissions.ejs",
+        "views/admin.ejs",
+        "views/index.ejs",
+        "views/partials/admin-sidebar.ejs",
+        "views/partials/footer.ejs",
+        "views/partials/header.ejs"
+      ]
+    }
+  ],
+  "apiVariables": [],
+  "createdAt": "2026-07-03T18:21:42.571Z",
+  "updatedAt": "2026-07-04T05:40:24.134Z",
+  "exportedAt": "2026-07-04T05:40:24.400Z"
+}

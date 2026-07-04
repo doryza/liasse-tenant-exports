@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS admin_settings (key TEXT PRIMARY KEY, value TEXT, updated_at TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS site_visits (id SERIAL PRIMARY KEY, path TEXT, created_at TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS posts (id SERIAL PRIMARY KEY, title TEXT NOT NULL, content TEXT, image_url TEXT, category TEXT, published INTEGER DEFAULT 1, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS videos (id SERIAL PRIMARY KEY, title TEXT NOT NULL, description TEXT, youtube_url TEXT, video_type TEXT, timecode TEXT, duration TEXT, image_url TEXT, featured INTEGER DEFAULT 0, sort_order INTEGER DEFAULT 0, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS timeline_clips (id SERIAL PRIMARY KEY, year TEXT NOT NULL, title TEXT, note TEXT, before_image_url TEXT, after_image_url TEXT, image_url TEXT, sort_order INTEGER DEFAULT 0, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS prestations (id SERIAL PRIMARY KEY, name TEXT NOT NULL, what_i_do TEXT, for_who TEXT, delay TEXT, price TEXT, image_url TEXT, sort_order INTEGER DEFAULT 0, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS form_submissions (id SERIAL PRIMARY KEY, name TEXT, email TEXT, project_type TEXT, rushes_link TEXT, message TEXT, created_at TIMESTAMPTZ DEFAULT NOW());

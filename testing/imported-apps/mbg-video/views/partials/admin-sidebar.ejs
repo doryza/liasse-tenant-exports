@@ -1,0 +1,13 @@
+<aside class="sidebar">
+<div class="side-brand">MBG · Admin</div>
+<nav class="side-nav">
+<a href="admin" class="<%= (typeof active!=='undefined'&&active==='dashboard')?'on':'' %>">Tableau de bord</a>
+<a href="admin/videos" class="<%= (typeof active!=='undefined'&&active==='videos')?'on':'' %>">Rushs</a>
+<a href="admin/timeline_clips" class="<%= (typeof active!=='undefined'&&active==='timeline_clips')?'on':'' %>">Timeline</a>
+<a href="admin/prestations" class="<%= (typeof active!=='undefined'&&active==='prestations')?'on':'' %>">Prestations</a>
+<a href="admin/posts" class="<%= (typeof active!=='undefined'&&active==='posts')?'on':'' %>">Articles</a>
+<a href="admin/submissions" class="<%= (typeof active!=='undefined'&&active==='submissions')?'on':'' %>">Demandes</a>
+<a href="admin/settings" class="<%= (typeof active!=='undefined'&&active==='settings')?'on':'' %>">Réglages</a>
+</nav>
+<div class="side-foot"><a href="." target="_blank">Voir le site</a><a href="admin/logout">Déconnexion</a></div>
+</aside>
