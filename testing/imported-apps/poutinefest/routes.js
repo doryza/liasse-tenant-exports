@@ -555,7 +555,7 @@ module.exports = function(services) {
   // subdomain rename. Cached per process after the first successful lookup;
   // when the lookup fails the homepage simply hides its order CTAs.
   const ORDER_BUSINESS_ID = 642;
-  const ORDER_ROOT_DOMAIN = 'liasse.tech';
+  const ORDER_HOST = 'order.command.restaurant';
   let orderUrlCache = null;
   async function fetchOrderUrl() {
     if (orderUrlCache) return orderUrlCache;
@@ -565,7 +565,7 @@ module.exports = function(services) {
         [ORDER_BUSINESS_ID]
       );
       if (row && row.subdomain) {
-        orderUrlCache = 'https://' + row.subdomain + '.' + ORDER_ROOT_DOMAIN + '/order';
+        orderUrlCache = 'https://' + ORDER_HOST + '/b/' + row.subdomain + '/order';
         if (!fetchOrderUrl._loggedOnce) {
           console.log('[order-url] resolved ' + orderUrlCache);
           fetchOrderUrl._loggedOnce = true;
