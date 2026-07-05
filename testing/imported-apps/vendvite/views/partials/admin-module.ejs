@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title><%= moduleConfig.label %> — Admin</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body class="admin">
+<%- include('admin-sidebar') %>
+<div class="admin-main">
+  <header class="admin-top">
+    <button class="admin-burger" id="adminBurger" aria-label="Menu">≡</button>
+    <h1><%= moduleConfig.label %></h1>
+    <button class="btn-primary" id="addBtn" type="button">+ Ajouter</button>
+  </header>
+  <div class="admin-content">
+    <div class="admin-toolbar">
+      <div class="search-wrap">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input type="search" id="tableSearch" class="table-search" placeholder="Rechercher…" aria-label="Rechercher">
+      </div>
+      <span class="row-count" id="rowCount"></span>
+    </div>
+    <div class="table-wrap"><table class="admin-table" id="adminTable"><thead id="adminThead"></thead><tbody id="adminTbody"></tbody></table></div>
+  </div>
+</div>
+<div class="modal" id="modal" hidden>
+  <div class="modal-box">
+    <div class="modal-head"><h2 id="modalTitle">Ajouter</h2><button class="modal-close" id="modalClose" type="button" aria-label="Fermer">×</button></div>
+    <form id="adminForm" class="modal-form"></form>
+    <div class="modal-foot"><button class="btn-ghost" id="cancelBtn" type="button">Annuler</button><button class="btn-primary" id="saveBtn" type="button">Enregistrer</button></div>
+  </div>
+</div>
+<div id="adminToast" class="toast"></div>
+<script>window.__ADMIN__=<%- JSON.stringify({ key:moduleConfig.key, label:moduleConfig.label, endpoint:'api/admin/'+moduleConfig.key, columns:moduleConfig.columns, fields:moduleConfig.fields }) %>;</script>
+<script src="public/js/admin.js"></script>
+<script>(function(){ var b=document.getElementById('adminBurger'); var s=document.getElementById('adminSidebar'); if(b&&s){ b.addEventListener('click',function(){ s.classList.toggle('open'); }); } })();</script>
+</body>
+</html>

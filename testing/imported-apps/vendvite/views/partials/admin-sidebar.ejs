@@ -1,0 +1,13 @@
+<aside class="admin-sidebar" id="adminSidebar">
+  <div class="admin-brand"><span class="admin-seal">V</span><span><%= (typeof settings!=='undefined' && settings.agent_name) ? settings.agent_name : 'RE/MAX' %></span></div>
+  <nav class="admin-nav">
+    <a href="admin" class="<%= (typeof active!=='undefined' && active==='dashboard') ? 'active' : '' %>">Tableau de bord</a>
+    <a href="admin/leads" class="<%= (typeof active!=='undefined' && active==='leads') ? 'active' : '' %>">Demandes</a>
+    <a href="admin/testimonials" class="<%= (typeof active!=='undefined' && active==='testimonials') ? 'active' : '' %>">Témoignages</a>
+    <a href="admin/posts" class="<%= (typeof active!=='undefined' && active==='posts') ? 'active' : '' %>">Journal</a>
+    <a href="admin/settings" class="<%= (typeof active!=='undefined' && active==='settings') ? 'active' : '' %>">Réglages</a>
+  </nav>
+  <div class="admin-nav-foot">
+    <a href="." target="_blank">Voir le site</a>
+  </div>
+</aside>

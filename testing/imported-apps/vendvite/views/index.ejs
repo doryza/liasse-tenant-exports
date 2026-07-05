@@ -1,0 +1,183 @@
+<%- include('partials/header') %>
+<main>
+<section class="hero" id="evaluation">
+  <div class="hero-topo" aria-hidden="true"></div>
+  <div class="container hero-inner">
+    <div class="hero-left">
+      <p class="eyebrow" data-lk="t:hero_eyebrow"><%= t.hero_eyebrow %></p>
+      <h1 class="display" data-lk="t:hero_title"><%= t.hero_title %></h1>
+      <p class="hero-sub" data-lk="t:hero_sub"><%= t.hero_sub %></p>
+      <div class="address-slot">
+        <label for="addressInput" data-lk="t:address_label"><%= t.address_label %></label>
+        <input id="addressInput" class="addr-input" type="text" autocomplete="off" placeholder="<%= t.address_ph %>" aria-label="<%= t.address_label %>">
+        <ul id="addressSuggest" class="suggest"></ul>
+      </div>
+      <p class="hero-note" data-lk="t:hero_note"><%= t.hero_note %></p>
+    </div>
+    <div class="hero-right">
+      <div class="fiche" id="fiche">
+        <div class="fiche-topline mono"><span data-lk="t:fiche_label"><%= t.fiche_label %></span><span id="ficheRef">—</span></div>
+        <div class="fiche-photo" id="fichePhoto">
+          <div class="streetview" id="streetview"></div>
+          <div class="fiche-photo-empty" id="fichePhotoEmpty">
+            <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 10.5 12 4l9 6.5"/><path d="M5 9.5V20h14V9.5"/><path d="M10 20v-5h4v5"/></svg>
+            <span data-lk="t:fiche_photo_pending"><%= t.fiche_photo_pending %></span>
+          </div>
+          <div class="fiche-stamp" id="ficheStamp" hidden data-lk="t:stamp_text"><%= t.stamp_text %></div>
+        </div>
+        <div class="fiche-plaque">
+          <div class="fiche-address" id="ficheAddress" data-lk="t:fiche_empty"><%= t.fiche_empty %></div>
+          <div class="fiche-coords mono" id="ficheCoords">—</div>
+        </div>
+        <form class="fiche-form" id="leadForm" hidden>
+          <div class="field"><label for="leadName" data-lk="t:form_name"><%= t.form_name %></label><input id="leadName" type="text" placeholder="<%= t.form_name_ph %>" required></div>
+          <div class="field-row">
+            <div class="field"><label for="leadEmail" data-lk="t:form_email"><%= t.form_email %></label><input id="leadEmail" type="email" placeholder="<%= t.form_email_ph %>"></div>
+            <div class="field"><label for="leadPhone" data-lk="t:form_phone"><%= t.form_phone %></label><input id="leadPhone" type="tel" placeholder="<%= t.form_phone_ph %>"></div>
+          </div>
+          <div class="field"><label for="leadTime" data-lk="t:form_timeframe"><%= t.form_timeframe %></label>
+            <select id="leadTime">
+              <option value=""><%= t.tf_placeholder %></option>
+              <option value="<%= t.tf_asap %>"><%= t.tf_asap %></option>
+              <option value="<%= t.tf_3 %>"><%= t.tf_3 %></option>
+              <option value="<%= t.tf_6 %>"><%= t.tf_6 %></option>
+              <option value="<%= t.tf_explore %>"><%= t.tf_explore %></option>
+            </select>
+          </div>
+          <input type="hidden" id="leadLat"><input type="hidden" id="leadLng">
+          <div class="form-error" id="formError" role="alert"></div>
+          <button type="submit" class="seal-btn" id="sealBtn" style="background-color:#E30B2D;color:#fff" data-lk="t:form_submit"><%= t.form_submit %></button>
+        </form>
+        <div class="fiche-success" id="ficheSuccess" hidden>
+          <h3 id="ficheSuccessTitle" data-lk="t:success_title"><%= t.success_title %></h3>
+          <p id="ficheSuccessText" data-lk="t:success_text"><%= t.success_text %></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section protocole">
+  <div class="container">
+    <div class="section-head">
+      <p class="eyebrow-c" data-lk="t:proto_eyebrow"><%= t.proto_eyebrow %></p>
+      <h2 class="section-title" data-lk="t:proto_title"><%= t.proto_title %></h2>
+      <p class="section-sub" data-lk="t:proto_sub"><%= t.proto_sub %></p>
+    </div>
+    <div class="proto-strip">
+      <div class="proto-step"><div class="proto-num">1</div><h3 class="proto-t" data-lk="t:step1_t"><%= t.step1_t %></h3><p class="proto-d" data-lk="t:step1_d"><%= t.step1_d %></p></div>
+      <div class="proto-step"><div class="proto-num">2</div><h3 class="proto-t" data-lk="t:step2_t"><%= t.step2_t %></h3><p class="proto-d" data-lk="t:step2_d"><%= t.step2_d %></p></div>
+      <div class="proto-step"><div class="proto-num">3</div><h3 class="proto-t" data-lk="t:step3_t"><%= t.step3_t %></h3><p class="proto-d" data-lk="t:step3_d"><%= t.step3_d %></p></div>
+    </div>
+  </div>
+</section>
+
+<section class="stats-band">
+  <div class="container">
+    <h2 class="stats-title" data-lk="t:stats_title"><%= t.stats_title %></h2>
+    <div class="stats-inner">
+      <div class="stat"><div class="stat-val"><span class="stat-num" data-setting-key="stat_homes_sold" data-count="<%= settings.stat_homes_sold || '0' %>"><%= settings.stat_homes_sold || '0' %></span></div><div class="stat-label" data-lk="t:stat_homes_label"><%= t.stat_homes_label %></div></div>
+      <div class="stat"><div class="stat-val"><span class="stat-num" data-setting-key="stat_avg_days" data-count="<%= settings.stat_avg_days || '0' %>"><%= settings.stat_avg_days || '0' %></span><span class="stat-unit" data-lk="t:stat_days_unit"><%= t.stat_days_unit %></span></div><div class="stat-label" data-lk="t:stat_days_label"><%= t.stat_days_label %></div></div>
+      <div class="stat"><div class="stat-val"><span class="stat-num" data-setting-key="stat_list_to_sale" data-count="<%= settings.stat_list_to_sale || '0' %>"><%= settings.stat_list_to_sale || '0' %></span><span class="stat-unit" data-lk="unit_pct">%</span></div><div class="stat-label" data-lk="t:stat_ratio_label"><%= t.stat_ratio_label %></div></div>
+      <div class="stat"><div class="stat-val"><span class="stat-num" data-setting-key="stat_career_volume" data-count="<%= settings.stat_career_volume || '0' %>"><%= settings.stat_career_volume || '0' %></span><span class="stat-unit" data-lk="t:stat_volume_unit"><%= t.stat_volume_unit %></span></div><div class="stat-label" data-lk="t:stat_volume_label"><%= t.stat_volume_label %></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section agent" id="agent">
+  <div class="container agent-inner">
+    <div class="agent-photo">
+      <img src="<%= settings._p_agent_image_url ? settings._p_agent_image_url : 'https://placehold.co/640x800/141011/C79A5B/png?text=Agent' %>" data-setting-key="_p_agent_image_url" alt="<%= settings.agent_name || 'Agent' %>">
+      <span class="clip" aria-hidden="true"></span>
+    </div>
+    <div class="agent-body">
+      <p class="eyebrow-c" data-lk="t:agent_eyebrow"><%= t.agent_eyebrow %></p>
+      <h2 class="agent-name" data-setting-key="agent_name"><%= settings.agent_name || 'RE/MAX' %></h2>
+      <p class="agent-title" data-lk="t:agent_title"><%= t.agent_title %></p>
+      <p class="agent-credo" data-lk="t:agent_credo"><%= t.agent_credo %></p>
+      <p class="agent-remax" data-lk="t:agent_remax"><%= t.agent_remax %></p>
+    </div>
+  </div>
+</section>
+
+<section class="testi" id="temoignages">
+  <div class="container">
+    <div class="section-head">
+      <p class="eyebrow-c" data-lk="t:testi_eyebrow"><%= t.testi_eyebrow %></p>
+      <h2 class="testi-title" data-lk="t:testi_title"><%= t.testi_title %></h2>
+    </div>
+    <% if(typeof testimonials!=='undefined' && testimonials.length>0){ %>
+    <div class="testi-grid">
+      <% testimonials.forEach(function(tm){ %>
+      <article class="testi-card">
+        <p class="testi-quote" data-content-source="testimonials:quote" data-content-id="<%= tm.id %>"><%= tm.quote %></p>
+        <div class="testi-meta">
+          <div class="testi-name" data-content-source="testimonials:author" data-content-id="<%= tm.id %>"><%= tm.author %></div>
+          <% if(tm.neighborhood){ %><div class="testi-hood" data-content-source="testimonials:neighborhood" data-content-id="<%= tm.id %>"><%= tm.neighborhood %></div><% } %>
+          <% if(tm.sale_result){ %><div class="testi-result"><span class="testi-result-label" data-lk="t:testi_result_label"><%= t.testi_result_label %></span><span data-content-source="testimonials:sale_result" data-content-id="<%= tm.id %>"><%= tm.sale_result %></span></div><% } %>
+        </div>
+      </article>
+      <% }); %>
+    </div>
+    <% } else { %>
+    <p class="empty-note" data-lk="t:testi_empty"><%= t.testi_empty %></p>
+    <% } %>
+  </div>
+</section>
+
+<section class="journal" id="journal">
+  <div class="container">
+    <div class="section-head">
+      <p class="eyebrow-c" data-lk="t:journal_eyebrow"><%= t.journal_eyebrow %></p>
+      <h2 class="section-title" data-lk="t:journal_title"><%= t.journal_title %></h2>
+    </div>
+    <% if(typeof posts!=='undefined' && posts.length>0){ %>
+    <div class="journal-grid">
+      <% posts.forEach(function(p){ %>
+      <article class="note-card">
+        <% if(p.image_url){ %><a href="journal/<%= p.id %>"><img class="note-thumb" src="<%= p.image_url %>" alt="" loading="lazy" data-content-source="posts:image_url" data-content-id="<%= p.id %>"></a><% } %>
+        <div class="note-body">
+          <% if(p.category){ %><div class="note-cat" data-content-source="posts:category" data-content-id="<%= p.id %>"><%= p.category %></div><% } %>
+          <h3 class="note-title"><a href="journal/<%= p.id %>" data-content-source="posts:title" data-content-id="<%= p.id %>"><%= p.title %></a></h3>
+          <% if(p.excerpt){ %><p class="note-excerpt" data-content-source="posts:excerpt" data-content-id="<%= p.id %>"><%= p.excerpt %></p><% } %>
+          <div class="note-date"><%= formatDate(p.created_at) %></div>
+          <a class="note-link" href="journal/<%= p.id %>" data-lk="t:journal_read"><%= t.journal_read %></a>
+        </div>
+      </article>
+      <% }); %>
+    </div>
+    <% } else { %>
+    <p class="empty-note" data-lk="t:journal_empty"><%= t.journal_empty %></p>
+    <% } %>
+  </div>
+</section>
+
+<section class="social" id="social">
+  <div class="container">
+    <div class="section-head center">
+      <p class="eyebrow-c" data-lk="t:social_eyebrow"><%= t.social_eyebrow %></p>
+      <h2 class="section-title" data-lk="t:social_title"><%= t.social_title %></h2>
+    </div>
+    <div class="social-grid">
+      <% if(settings.social_facebook){ %><a class="social-tile" href="<%= settings.social_facebook %>" target="_blank" rel="noopener" aria-label="Facebook"><svg viewBox="0 0 24 24"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5 3.66 9.15 8.44 9.94v-7.03H7.9v-2.9h2.54V9.85c0-2.52 1.5-3.9 3.77-3.9 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56v1.87h2.78l-.44 2.9h-2.34V22c4.78-.79 8.44-4.94 8.44-9.94z"/></svg></a><% } %>
+      <% if(settings.social_instagram){ %><a class="social-tile" href="<%= settings.social_instagram %>" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24"><path d="M12 2c2.72 0 3.06.01 4.12.06 1.07.05 1.79.22 2.43.47.66.26 1.22.6 1.77 1.15.55.55.89 1.11 1.15 1.77.25.64.42 1.36.47 2.43.05 1.06.06 1.4.06 4.12s-.01 3.06-.06 4.12c-.05 1.07-.22 1.79-.47 2.43a4.9 4.9 0 0 1-1.15 1.77c-.55.55-1.11.89-1.77 1.15-.64.25-1.36.42-2.43.47-1.06.05-1.4.06-4.12.06s-3.06-.01-4.12-.06c-1.07-.05-1.79-.22-2.43-.47a4.9 4.9 0 0 1-1.77-1.15 4.9 4.9 0 0 1-1.15-1.77c-.25-.64-.42-1.36-.47-2.43C2.01 15.06 2 14.72 2 12s.01-3.06.06-4.12c.05-1.07.22-1.79.47-2.43.26-.66.6-1.22 1.15-1.77.55-.55 1.11-.89 1.77-1.15.64-.25 1.36-.42 2.43-.47C8.94 2.01 9.28 2 12 2zm0 3.06A6.94 6.94 0 1 0 18.94 12 6.94 6.94 0 0 0 12 5.06zm0 11.45A4.51 4.51 0 1 1 16.51 12 4.51 4.51 0 0 1 12 16.51zm7.2-11.73a1.62 1.62 0 1 1-1.62-1.62 1.62 1.62 0 0 1 1.62 1.62z"/></svg></a><% } %>
+      <% if(settings.social_linkedin){ %><a class="social-tile" href="<%= settings.social_linkedin %>" target="_blank" rel="noopener" aria-label="LinkedIn"><svg viewBox="0 0 24 24"><path d="M4.98 3.5A2.5 2.5 0 1 1 5 8.5a2.5 2.5 0 0 1 0-5zM3 9h4v12H3zM9 9h3.8v1.64h.05c.53-.95 1.83-1.95 3.77-1.95 4.03 0 4.78 2.65 4.78 6.1V21h-4v-5.4c0-1.29-.02-2.95-1.8-2.95-1.8 0-2.08 1.4-2.08 2.85V21H9z"/></svg></a><% } %>
+      <% if(settings.social_youtube){ %><a class="social-tile" href="<%= settings.social_youtube %>" target="_blank" rel="noopener" aria-label="YouTube"><svg viewBox="0 0 24 24"><path d="M23.5 6.5a3 3 0 0 0-2.11-2.12C19.5 3.87 12 3.87 12 3.87s-7.5 0-9.39.51A3 3 0 0 0 .5 6.5 31.4 31.4 0 0 0 0 12a31.4 31.4 0 0 0 .5 5.5 3 3 0 0 0 2.11 2.12c1.89.51 9.39.51 9.39.51s7.5 0 9.39-.51a3 3 0 0 0 2.11-2.12A31.4 31.4 0 0 0 24 12a31.4 31.4 0 0 0-.5-5.5zM9.6 15.6V8.4l6.2 3.6z"/></svg></a><% } %>
+      <% if(settings.social_tiktok){ %><a class="social-tile" href="<%= settings.social_tiktok %>" target="_blank" rel="noopener" aria-label="TikTok"><svg viewBox="0 0 24 24"><path d="M16.6 5.82A4.28 4.28 0 0 1 15.54 3h-3.1v12.4a2.6 2.6 0 1 1-2.6-2.6c.27 0 .53.04.78.12v-3.2a5.8 5.8 0 0 0-.78-.05 5.8 5.8 0 1 0 5.8 5.8V9.01a7.35 7.35 0 0 0 4.3 1.38V7.28a4.28 4.28 0 0 1-3.34-1.46z"/></svg></a><% } %>
+    </div>
+  </div>
+</section>
+
+<section class="seal-band">
+  <div class="container center">
+    <h2 class="seal-line" data-lk="t:seal_line"><%= t.seal_line %></h2>
+    <button class="seal-cta" type="button" data-scroll-eval style="background-color:#E30B2D;color:#fff" data-lk="t:seal_btn"><%= t.seal_btn %></button>
+  </div>
+</section>
+</main>
+<%- include('partials/footer') %>
+<% if(googleApiKey){ %>
+<script async src="https://maps.googleapis.com/maps/api/js?key=<%= googleApiKey %>&libraries=places,geometry&callback=initVendvite&v=weekly"></script>
+<% } %>
+</body>
+</html>

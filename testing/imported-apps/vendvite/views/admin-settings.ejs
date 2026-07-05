@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Réglages — Admin</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body class="admin">
+<%- include('partials/admin-sidebar') %>
+<div class="admin-main">
+  <header class="admin-top">
+    <button class="admin-burger" id="adminBurger" aria-label="Menu">≡</button>
+    <h1>Réglages</h1>
+  </header>
+  <div class="admin-content">
+    <p class="admin-intro">Vos coordonnées, statistiques et réseaux sociaux s'affichent sur le site public. Modifiez-les ici puis enregistrez.</p>
+    <form id="settingsForm" class="settings-form">
+      <% if(typeof settingsGroups!=='undefined'){ settingsGroups.forEach(function(g){ %>
+      <section class="settings-card">
+        <h2 class="settings-h2"><%= g.title %></h2>
+        <div class="settings-grid">
+          <% (g.fields||[]).forEach(function(f){ %>
+          <div class="fld">
+            <label for="set_<%= f.key %>"><%= f.label %></label>
+            <input id="set_<%= f.key %>" data-key="<%= f.key %>" type="<%= f.type %>" placeholder="<%= f.placeholder || '' %>">
+          </div>
+          <% }); %>
+        </div>
+      </section>
+      <% }); } %>
+      <div class="settings-actions">
+        <button type="submit" class="btn-primary" id="saveSettings">Enregistrer les réglages</button>
+      </div>
+    </form>
+  </div>
+</div>
+<div id="adminToast" class="toast"></div>
+<script>window.__SETTINGS_KEYS__=<%- JSON.stringify(typeof settingsGroups!=='undefined' ? settingsGroups.reduce(function(a,g){ (g.fields||[]).forEach(function(f){ a.push(f.key); }); return a; }, []) : []) %>;</script>
+<script>
+(function(){
+  var keys = window.__SETTINGS_KEYS__ || [];
+  var form = document.getElementById('settingsForm');
+  var toastEl = document.getElementById('adminToast');
+  function toast(msg, type){ if(!toastEl) return; toastEl.textContent=msg; toastEl.className='toast show '+(type==='error'?'toast-err':'toast-ok'); clearTimeout(toastEl._t); toastEl._t=setTimeout(function(){ toastEl.className='toast'; }, 3000); }
+  function fill(d){ keys.forEach(function(k){ var el=document.getElementById('set_'+k); if(el && d[k]!=null) el.value=d[k]; }); }
+  fetch('api/admin/settings').then(function(r){ return r.json(); }).then(fill).catch(function(){});
+  if(form){ form.addEventListener('submit', function(e){ e.preventDefault(); var btn=document.getElementById('saveSettings'); var old=btn?btn.textContent:''; if(btn){ btn.disabled=true; btn.textContent='Enregistrement…'; } var tasks=keys.map(function(k){ var el=document.getElementById('set_'+k); return fetch('api/admin/settings',{ method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ key:k, value:el?el.value:'' }) }); }); Promise.all(tasks).then(function(){ toast('Réglages enregistrés.','ok'); }).catch(function(){ toast('Erreur lors de l\'enregistrement.','error'); }).then(function(){ if(btn){ btn.disabled=false; btn.textContent=old; } }); }); }
+})();
+</script>
+<script>(function(){ var b=document.getElementById('adminBurger'); var s=document.getElementById('adminSidebar'); if(b&&s){ b.addEventListener('click',function(){ s.classList.toggle('open'); }); } })();</script>
+</body>
+</html>

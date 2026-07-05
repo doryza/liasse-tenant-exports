@@ -1,0 +1,18 @@
+<%- include('partials/header') %>
+<main>
+<article class="article">
+  <a class="back-link" href="." data-lk="t:back_home">← <%= t.back_home %></a>
+  <% if (typeof post !== 'undefined' && post) { %>
+  <% if(post.category){ %><div class="article-meta" data-content-source="posts:category" data-content-id="<%= post.id %>"><%= post.category %></div><% } %>
+  <h1 data-content-source="posts:title" data-content-id="<%= post.id %>"><%= post.title %></h1>
+  <div class="article-date mono"><%= formatDate(post.created_at) %></div>
+  <% if(post.image_url){ %><img class="article-cover" src="<%= post.image_url %>" alt="" data-content-source="posts:image_url" data-content-id="<%= post.id %>"><% } %>
+  <div class="article-body" data-content-source="posts:content" data-content-id="<%= post.id %>">
+    <% (post.content || post.excerpt || '').split(/\n\n+/).forEach(function(par){ if(par.trim()){ %><p><%= par.trim() %></p><% } }); %>
+  </div>
+  <% } %>
+</article>
+</main>
+<%- include('partials/footer') %>
+</body>
+</html>

@@ -1,0 +1,378 @@
+{
+  "exportedAt": "2026-07-05T16:13:29.191Z",
+  "tables": {
+    "admin_users": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "password_hash",
+        "display_name",
+        "role",
+        "active",
+        "activation_token",
+        "invited_by",
+        "invite_token",
+        "invite_expires_at",
+        "last_login_at",
+        "is_active",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_invites": {
+      "columns": [
+        "id",
+        "email",
+        "token",
+        "role",
+        "status",
+        "invited_by",
+        "expires_at",
+        "accepted_at",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_webauthn_credentials": {
+      "columns": [
+        "id",
+        "admin_user_id",
+        "credential_id",
+        "public_key",
+        "counter",
+        "device_name",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_settings": {
+      "columns": [
+        "key",
+        "value",
+        "updated_at"
+      ],
+      "totalRows": 45,
+      "sampleRows": [
+        {
+          "key": "tagline",
+          "value": "Évaluation gratuite de votre propriété",
+          "updated_at": "2026-07-04T05:40:04.888Z"
+        },
+        {
+          "key": "stat_homes_sold",
+          "value": "512",
+          "updated_at": "2026-07-04T05:40:04.902Z"
+        },
+        {
+          "key": "stat_avg_days",
+          "value": "19",
+          "updated_at": "2026-07-04T05:40:04.914Z"
+        },
+        {
+          "key": "stat_list_to_sale",
+          "value": "99",
+          "updated_at": "2026-07-04T05:40:04.926Z"
+        },
+        {
+          "key": "stat_career_volume",
+          "value": "285",
+          "updated_at": "2026-07-04T05:40:04.940Z"
+        },
+        {
+          "key": "social_facebook",
+          "value": "https://facebook.com",
+          "updated_at": "2026-07-04T05:40:04.952Z"
+        },
+        {
+          "key": "social_instagram",
+          "value": "https://instagram.com",
+          "updated_at": "2026-07-04T05:40:04.971Z"
+        },
+        {
+          "key": "social_linkedin",
+          "value": "https://linkedin.com",
+          "updated_at": "2026-07-04T05:40:04.983Z"
+        },
+        {
+          "key": "social_youtube",
+          "value": "https://youtube.com",
+          "updated_at": "2026-07-04T05:40:04.996Z"
+        },
+        {
+          "key": "social_tiktok",
+          "value": "https://tiktok.com",
+          "updated_at": "2026-07-04T05:40:05.009Z"
+        }
+      ]
+    },
+    "site_visits": {
+      "columns": [
+        "id",
+        "path",
+        "created_at"
+      ],
+      "totalRows": 15,
+      "sampleRows": [
+        {
+          "id": 1,
+          "path": "/",
+          "created_at": "2026-07-04T05:45:47.862Z"
+        },
+        {
+          "id": 2,
+          "path": "/",
+          "created_at": "2026-07-04T12:13:03.327Z"
+        },
+        {
+          "id": 3,
+          "path": "/",
+          "created_at": "2026-07-04T12:13:04.524Z"
+        },
+        {
+          "id": 4,
+          "path": "/",
+          "created_at": "2026-07-04T12:13:04.775Z"
+        },
+        {
+          "id": 5,
+          "path": "/",
+          "created_at": "2026-07-04T12:13:04.862Z"
+        },
+        {
+          "id": 6,
+          "path": "/",
+          "created_at": "2026-07-04T12:18:57.294Z"
+        },
+        {
+          "id": 7,
+          "path": "/",
+          "created_at": "2026-07-04T17:00:41.887Z"
+        },
+        {
+          "id": 8,
+          "path": "/",
+          "created_at": "2026-07-04T22:57:10.190Z"
+        },
+        {
+          "id": 9,
+          "path": "/",
+          "created_at": "2026-07-05T00:31:59.976Z"
+        },
+        {
+          "id": 10,
+          "path": "/",
+          "created_at": "2026-07-05T13:59:31.848Z"
+        }
+      ]
+    },
+    "posts": {
+      "columns": [
+        "id",
+        "title",
+        "content",
+        "excerpt",
+        "image_url",
+        "category",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Ce que vaut vraiment votre maison en 2024",
+          "content": "Le prix demandé n'est qu'un point de départ. Ce qui compte, c'est le prix vendu — celui que le marché confirme.\n\nDans la plupart des quartiers, le ratio prix vendu sur prix demandé s'établit aujourd'hui autour de 99 %. Une propriété correctement évaluée se vend près de sa valeur affichée, et souvent plus vite.\n\nUne évaluation sérieuse s'appuie sur les ventes comparables des douze derniers mois, ajustées pour les particularités de votre propriété : superficie, état, exposition, rénovations récentes.",
+          "excerpt": "L'écart entre le prix affiché et le prix vendu s'est resserré. Voici comment lire le marché de votre quartier.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783139713/tapavis_tenant_vendvite/build_vendvite_1783139713856.png",
+          "category": "Marché",
+          "published": 1,
+          "created_at": "2026-07-04T05:40:05.123Z",
+          "updated_at": "2026-07-04T05:40:05.123Z"
+        },
+        {
+          "id": 2,
+          "title": "Cinq gestes qui augmentent la valeur perçue",
+          "content": "La valeur perçue précède la valeur négociée. Voici cinq interventions à faible coût et fort rendement.\n\n1. La lumière : remplacez les ampoules froides par une lumière chaude et uniforme.\n2. La première impression : entrée dégagée, poignées propres, porte fraîchement peinte.\n3. Le désencombrement : chaque pièce doit respirer.\n4. Les petites réparations visibles : robinet qui goutte, joint de silicone jauni.\n5. La mise en valeur de la vue : c'est ce que la fiche révèle en premier.",
+          "excerpt": "Avant la première visite, la perception de valeur se joue en quelques détails. Voici les cinq plus rentables.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783139714/tapavis_tenant_vendvite/build_vendvite_1783139714196.png",
+          "category": "Conseils",
+          "published": 1,
+          "created_at": "2026-07-04T05:40:05.138Z",
+          "updated_at": "2026-07-04T05:40:05.138Z"
+        },
+        {
+          "id": 3,
+          "title": "Vendre au bon moment : lire les saisons du marché",
+          "content": "Le printemps attire le plus d'acheteurs, mais aussi le plus de vendeurs. À l'automne, un inventaire réduit peut jouer en votre faveur.\n\nCe qui compte davantage que la saison : le niveau d'inventaire dans votre secteur précis. Un déséquilibre entre l'offre et la demande locale a plus d'effet sur votre prix que le calendrier.\n\nUne évaluation à jour vous indique si le moment est favorable pour votre adresse en particulier.",
+          "excerpt": "Le meilleur moment pour vendre dépend de votre quartier et de votre type de propriété.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783139715/tapavis_tenant_vendvite/build_vendvite_1783139715010.png",
+          "category": "Marché",
+          "published": 1,
+          "created_at": "2026-07-04T05:40:05.150Z",
+          "updated_at": "2026-07-04T05:40:05.150Z"
+        },
+        {
+          "id": 4,
+          "title": "Pourquoi une fiche visuelle avant la mise en marché",
+          "content": "Un dossier soigné n'est pas un luxe : c'est un signal. Il indique que la propriété est prise au sérieux, ce qui attire des acheteurs sérieux.\n\nLa fiche visuelle — vue de rue, coordonnées, données clés — pose les bases d'une négociation appuyée par des faits plutôt que par des impressions.\n\nC'est l'approche que nous appliquons dès la première adresse saisie.",
+          "excerpt": "Présenter votre propriété comme un actif, dès le premier échange, change la conversation avec les acheteurs.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783139714/tapavis_tenant_vendvite/build_vendvite_1783139714414.png",
+          "category": "Approche",
+          "published": 1,
+          "created_at": "2026-07-04T05:40:05.166Z",
+          "updated_at": "2026-07-04T05:40:05.166Z"
+        }
+      ]
+    },
+    "testimonials": {
+      "columns": [
+        "id",
+        "author",
+        "neighborhood",
+        "quote",
+        "sale_result",
+        "image_url",
+        "sort_order",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "author": "Julie & Marc D.",
+          "neighborhood": "Rosemont, Montréal",
+          "quote": "Notre maison s'est vendue en six jours, bien au-delà de ce que nous espérions. Le dossier préparé avant la mise en marché a tout changé.",
+          "sale_result": "+14 % du prix demandé",
+          "image_url": null,
+          "sort_order": 1,
+          "published": 1,
+          "created_at": "2026-07-04T05:40:05.054Z",
+          "updated_at": "2026-07-04T05:40:05.054Z"
+        },
+        {
+          "id": 2,
+          "author": "Sophie L.",
+          "neighborhood": "Laval-des-Rapides",
+          "quote": "Une approche calme et chiffrée, sans pression. J'ai su exactement ce que valait ma propriété avant de décider.",
+          "sale_result": "Vendu en 9 jours",
+          "image_url": null,
+          "sort_order": 2,
+          "published": 1,
+          "created_at": "2026-07-04T05:40:05.066Z",
+          "updated_at": "2026-07-04T05:40:05.066Z"
+        },
+        {
+          "id": 3,
+          "author": "Ahmed & Nadia",
+          "neighborhood": "Griffintown, Montréal",
+          "quote": "On avait reçu trois évaluations très différentes. Celle-ci était la seule appuyée par des ventes réelles du secteur.",
+          "sale_result": "+8 % du prix demandé",
+          "image_url": null,
+          "sort_order": 3,
+          "published": 1,
+          "created_at": "2026-07-04T05:40:05.081Z",
+          "updated_at": "2026-07-04T05:40:05.081Z"
+        },
+        {
+          "id": 4,
+          "author": "Robert P.",
+          "neighborhood": "Brossard",
+          "quote": "Professionnel du début à la fin. La fiche visuelle de ma maison m'a mis en confiance dès le premier contact.",
+          "sale_result": "Offres multiples",
+          "image_url": null,
+          "sort_order": 4,
+          "published": 1,
+          "created_at": "2026-07-04T05:40:05.096Z",
+          "updated_at": "2026-07-04T05:40:05.096Z"
+        }
+      ]
+    },
+    "leads": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "phone",
+        "address",
+        "lat",
+        "lng",
+        "timeframe",
+        "status",
+        "notes",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "name": "Caroline Bélanger",
+          "email": "caroline.b@exemple.com",
+          "phone": "(514) 555-0142",
+          "address": "450 av. du Parc, Montréal, QC",
+          "lat": null,
+          "lng": null,
+          "timeframe": "D'ici 3 mois",
+          "status": "nouveau",
+          "notes": null,
+          "image_url": null,
+          "created_at": "2026-07-04T05:40:05.192Z",
+          "updated_at": "2026-07-04T05:40:05.192Z"
+        },
+        {
+          "id": 2,
+          "name": "Martin Gagnon",
+          "email": "mgagnon@exemple.com",
+          "phone": "(450) 555-0187",
+          "address": "12 rue des Érables, Laval, QC",
+          "lat": null,
+          "lng": null,
+          "timeframe": "Dès que possible",
+          "status": "contacté",
+          "notes": null,
+          "image_url": null,
+          "created_at": "2026-07-04T05:40:05.204Z",
+          "updated_at": "2026-07-04T05:40:05.204Z"
+        },
+        {
+          "id": 3,
+          "name": "Isabelle Roy",
+          "email": "iroy@exemple.com",
+          "phone": "(438) 555-0110",
+          "address": "88 boul. Taschereau, Brossard, QC",
+          "lat": null,
+          "lng": null,
+          "timeframe": "J'explore simplement",
+          "status": "nouveau",
+          "notes": null,
+          "image_url": null,
+          "created_at": "2026-07-04T05:40:05.218Z",
+          "updated_at": "2026-07-04T05:40:05.218Z"
+        },
+        {
+          "id": 4,
+          "name": "Sheyla Charbel",
+          "email": "sheyla@liasse.tech",
+          "phone": "4387630060",
+          "address": "16 Rue de Calais, Blainville, QC J7C 5C4, Canada",
+          "lat": 45.684224,
+          "lng": -73.9071723,
+          "timeframe": "J'explore simplement",
+          "status": "nouveau",
+          "notes": null,
+          "image_url": null,
+          "created_at": "2026-07-04T17:01:40.223Z",
+          "updated_at": "2026-07-04T17:01:40.223Z"
+        }
+      ]
+    }
+  }
+}

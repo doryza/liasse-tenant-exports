@@ -1,0 +1,94 @@
+{
+  "slug": "vendvite",
+  "displayName": "VendVite",
+  "description": "Project type: Website\n\nGoal: Capture leads for a RE/MAX agent by offering free home valuations.\n\nTarget audience: Homeowners looking to sell.\n\nKey features:\n- Lead capture form featuring an address autocomplete and Street View snapshot for each address, generating a visual card for user review before submission.\n- Social media integration\n\nDesign & brand: Richer, more popping versions of existing RE/MAX colors.\n\nIntegrations & extras: Google Maps Address Autocomplete, Street View.",
+  "status": "active",
+  "generationVersion": 1,
+  "primaryColor": "#6366f1",
+  "iconUrl": "https://res.cloudinary.com/duhp69meg/image/upload/v1783143611/tapavis_tenant_vendvite/icon_vendvite_1783143611558.png",
+  "enabledAuthMethods": [
+    "webauthn",
+    "sms",
+    "email"
+  ],
+  "notificationsEnabled": true,
+  "geolocationEnabled": true,
+  "customConfig": {
+    "language": "both",
+    "aiSummary": {
+      "en": {
+        "dashboard": "Welcome to your new control center! The 'Admin' section is your private area to manage everything for your VendVite app.\n\nHere’s a quick tour:\n\n*   **View Your Leads**: This is the most important part! When a homeowner fills out the form for a free home valuation, their information will appear right here under 'Leads'. You can see all the details they submitted, including the address and property snapshot.\n\n*   **Manage Your Content**: You have two sections to add content that builds trust with visitors. Under 'Testimonials', you can add glowing reviews from happy clients. Under 'Posts', you can write helpful articles, like market updates or tips for sellers. You can add, edit, or remove these anytime.\n\n*   **Update Your Settings**: The 'Settings' area is where you can tweak your site's general information. If you need to update your contact info or other basic details, this is the place to do it.\n\n*   **Check Your Stats**: Curious how many people are visiting your site? Your dashboard gives you a quick look at your visitor statistics, so you can see how your app is performing over time.\n\nIt’s all designed to be simple and straightforward, helping you focus on what you do best: connecting with new clients.",
+        "variables": "Great news! Your new app, VendVite, is all set up and ready to go. You don't need to hunt for any special codes or keys to make it work. Everything it needs, like the Google Maps features for addresses and street views, is already built-in and taken care of. You can jump right in and start using it immediately to connect with homeowners!"
+      },
+      "fr": {
+        "dashboard": "Bienvenue dans votre centre de contrôle! La section 'Admin' est votre espace privé pour tout gérer dans votre application VendVite.\n\nVoici un petit tour du propriétaire :\n\n*   **Consultez vos prospects (Leads)** : C'est la section la plus importante! Lorsqu'un propriétaire remplit le formulaire pour une évaluation gratuite de sa maison, ses informations apparaîtront ici, sous 'Leads'. Vous pourrez voir tous les détails soumis, y compris l'adresse et l'aperçu de la propriété.\n\n*   **Gérez votre contenu** : Vous avez deux sections pour ajouter du contenu qui inspire confiance à vos visiteurs. Sous 'Témoignages', vous pouvez ajouter des commentaires élogieux de clients satisfaits. Sous 'Articles' (Posts), vous pouvez rédiger des articles utiles, comme des nouvelles du marché ou des conseils pour les vendeurs. Vous pouvez en ajouter, les modifier ou les supprimer à tout moment.\n\n*   **Mettez à jour vos paramètres** : La section 'Paramètres' (Settings) est l'endroit où vous pouvez ajuster les informations générales de votre site. Si vous devez mettre à jour vos coordonnées ou d'autres détails de base, c'est ici que ça se passe.\n\n*   **Vérifiez vos statistiques** : Curieux de savoir combien de personnes visitent votre site? Votre tableau de bord vous offre un aperçu rapide des statistiques de visites, vous permettant de suivre la performance de votre application.\n\nTout a été conçu pour être simple et direct, afin que vous puissiez vous concentrer sur ce que vous faites de mieux : créer des liens avec de nouveaux clients.",
+        "variables": "Bonne nouvelle! Votre nouvelle application, VendVite, est entièrement configurée et prête à être utilisée. Vous n'avez pas besoin de chercher des codes spéciaux ou des clés pour la faire fonctionner. Tout ce dont elle a besoin, comme les fonctionnalités de Google Maps pour les adresses et les aperçus de rue, est déjà inclus et fonctionnel. Vous pouvez commencer à l'utiliser dès maintenant pour entrer en contact avec les propriétaires!"
+      }
+    },
+    "designManifest": {
+      "concept": "Dossier Rouge",
+      "palette": {
+        "ink": "#F5EFE6",
+        "ground": "#0D0A0B",
+        "accents": [
+          "#4353F4",
+          "#C79A5B"
+        ],
+        "primary": "#E30B2D"
+      },
+      "summary": "A luxury seller-lead site where typing your address assembles a lacquered property dossier in real time — red wax-seal on black lacquer, treating each home as an asset to be presented rather than a lead to be harvested.",
+      "elements": {
+        "pages": [
+          "index",
+          "journal (post detail)",
+          "admin dashboard",
+          "admin-leads",
+          "admin-testimonials",
+          "admin-posts"
+        ],
+        "userLogin": false,
+        "blogSurfaced": true
+      },
+      "copyVoice": "Notarial confidence — short declarative second-person sentences, no exclamation marks, the register of a private banker who happens to sell houses.",
+      "heroThesis": "Type your address and watch it become a lacquered property dossier before your eyes — the only property imagery is the one the visitor generates.",
+      "typography": "Fraunces (Black, tight tracking) for display and the dossier address plaque; Inter for body and form UI; IBM Plex Mono reserved for coordinates, stats digits and the FR/EN toggle to make the dossier feel official.",
+      "iconDirection": "A black lacquer rounded square bearing a deep-red wax-seal circle embossed with a Fraunces 'V' monogram, one thin gold ring catching light at the seal's edge.",
+      "signatureMove": "La Fiche — the hero's right half is a live-assembling property dossier card: as the visitor types, the Street View slides in, the address stamps on in Fraunces and coordinates tick in mono; sealing the request presses a red wax-seal button that stamps the card 'Reçue' before submission."
+    },
+    "aiSummaryVersion": 1
+  },
+  "promptHistory": [
+    {
+      "prompt": "Project type: Website\n\nGoal: Capture leads for a RE/MAX agent by offering free home valuations.\n\nTarget audience: Homeowners looking to sell.\n\nKey features:\n- Lead capture form featuring an address autocomplete and Street View snapshot for each address, generating a visual card for user review before submission.\n- Social media integration\n\nDesign & brand: Richer, more popping versions of existing RE/MAX colors.\n\nIntegrations & extras: Google Maps Address Autocomplete, Street View.",
+      "timestamp": "2026-07-04T05:40:21.178Z",
+      "changeNotes": "Initial build of the VendVite RE/MAX seller-lead PWA in the Dossier Rouge identity: a single bilingual scrolling page whose hero is a live-assembling property dossier driven by Google Maps Places autocomplete and an in-card Street View panorama (with an interactive-map fallback), a red wax-seal submit that stamps the card on success, a protocol strip, an animated stats band, agent profile, dossier-card testimonials, a market-notes journal, and a five-tile social grid. Includes a full self-contained admin backend (dashboard, leads, testimonials, journal) with CRUD APIs, visit tracking, and inline-editable content.\n\nAdmin & front-end enrichment for VendVite (no functional/data-flow changes broke). ADMIN: (1) Rebuilt the dashboard (views/admin.ejs) with a welcome hero, accented 'new leads' stat card, iconized module cards including a new Réglages card, a section header with 'view all' link, and safer status badges via a shared statusClass() helper. (2) Added a full Settings admin page (views/admin-settings.ejs + /admin/settings route + SETTINGS_GROUPS in routes.js) so the agent can manage functional data — contact details (name/email/phone/licence), homepage stats, and all social-media integration links — via the existing GET/PUT /api/admin/settings API. Added sidebar nav link. (3) Enriched shared module CRUD pages (admin-module.ejs) with a search/filter toolbar + live row count while preserving full create/edit/delete CRUD. (4) Upgraded public/js/admin.js: toast notifications replacing alert(), live client-side search filtering, status rendered as color badges, published/masqué pills, Escape-to-close modal, clearer empty states, and success feedback on save/delete/AI-image generation. ADMIN CSS: added toast, search toolbar, badge/pill color system (nouveau/contacté/évalué/fermé), settings-card grid, dashboard hero/section-head styles, hover states, and visible :focus-visible outlines for accessibility. FRONT-END: added Open Graph + Twitter Card + canonical meta tags (guarded with typeof) in header.ejs for the social-sharing feature, sourced from admin_settings. SEO: emitted bilingual _seoMetadata with RealEstateAgent schema. Preserved all {{IMG_*}} placeholder tokens, data-lk/data-setting-key/data-content-source annotations, i18n t.* pattern, and relative URL contract.\n\nExecuted all 10 spec items: mobile fiche auto-scroll on address selection (with reduced-motion fallback), removed the dead admin 'Déconnexion' link (no matching route existed), made the 'Reçue' stamp visible under reduced-motion via a static opacity fallback, debounced (500ms) the fiche reveal for manual typing while keeping autocomplete selection instant, hid social tiles with unset URLs instead of linking to '#', added color-scheme:dark for native form controls, added Enter-selects-first-suggestion/Escape-dismisses keyboard support to the address autocomplete, added a global focus-visible outline rule, guarded the journal.ejs `post` variable with a typeof check for canary safety, and corrected og:locale to en_CA/fr_CA. No items were skipped.",
+      "generationId": 1407,
+      "filesModified": [
+        "manifest.json",
+        "migrations.sql",
+        "public/css/admin-styles.css",
+        "public/css/styles.css",
+        "public/js/admin.js",
+        "public/js/app.js",
+        "routes.js",
+        "schema.sql",
+        "seed.js",
+        "views/admin-leads.ejs",
+        "views/admin-posts.ejs",
+        "views/admin-settings.ejs",
+        "views/admin-testimonials.ejs",
+        "views/admin.ejs",
+        "views/index.ejs",
+        "views/journal.ejs",
+        "views/partials/admin-module.ejs",
+        "views/partials/admin-sidebar.ejs",
+        "views/partials/footer.ejs",
+        "views/partials/header.ejs"
+      ]
+    }
+  ],
+  "apiVariables": [],
+  "createdAt": "2026-07-03T07:16:35.949Z",
+  "updatedAt": "2026-07-04T12:15:30.477Z",
+  "exportedAt": "2026-07-05T16:13:29.169Z"
+}
