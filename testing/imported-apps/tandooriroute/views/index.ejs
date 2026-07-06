@@ -92,6 +92,7 @@
 <section class="hero hero-squeeze">
   <img src="<%= (typeof settings!=='undefined' && settings._p_hero_image_url) ? settings._p_hero_image_url : 'https://placehold.co/1600x900/0a0806/F5A524/png?text=Tandoori+Route' %>" alt="<%= t.brand %>" class="hero-img">
   <div class="hero-overlay"></div>
+  <%- include('partials/halal-seal') %>
   <div class="hero-banner">
     <div class="hero-banner-inner">
       <img src="<%= (typeof settings!=='undefined' && settings._p_nav_logo_url) ? settings._p_nav_logo_url : (typeof appIconUrl !== 'undefined' ? appIconUrl : '') %>" alt="<%= t.brand %>" class="hero-banner-logo" onerror="this.style.display='none'">
@@ -106,6 +107,7 @@
   <div class="container">
     <h2 class="section-title"><%= t.menu_title %></h2>
     <p class="section-sub"><%= t.menu_subtitle %></p>
+    <%- include('partials/halal-pill', { center: true }) %>
   </div>
   <% if (typeof preview !== 'undefined' && preview && preview.items && preview.items.length > 0) { %>
   <div class="container">
