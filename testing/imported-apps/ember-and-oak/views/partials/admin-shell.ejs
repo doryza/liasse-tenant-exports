@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title><%= (typeof title!=='undefined') ? title : 'Admin' %> — Ember & Oak</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body class="admin-body">
+<button class="admin-menu-btn" id="admMenu" aria-label="Open menu">&#9776;</button>
+<%- include('partials/admin-sidebar') %>
+<main class="admin-main">
+  <div class="admin-head">
+    <div class="admin-head-titles">
+      <p class="admin-eyebrow">Ember &amp; Oak · Roastery admin</p>
+      <h1><%= (typeof title!=='undefined') ? title : 'Content' %></h1>
+    </div>
+    <button class="btn-primary" id="addBtn">+ New <%= (typeof moduleLabel!=='undefined') ? moduleLabel : 'item' %></button>
+  </div>
+  <div class="toolbar">
+    <div class="toolbar-search">
+      <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="M20 20l-3.5-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <input type="text" id="searchInput" placeholder="Search..." aria-label="Search entries">
+    </div>
+    <span class="count-pill" id="countPill"></span>
+  </div>
+  <div id="tableWrap" class="table-wrap"><p class="muted" style="padding:16px">Loading...</p></div>
+</main>
+
+<div class="modal-overlay" id="modal" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-head">
+      <h2 id="modalTitle">Edit</h2>
+      <button id="closeModal" class="icon-btn" aria-label="Close">&times;</button>
+    </div>
+    <form id="itemForm">
+      <div id="formFields"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn-ghost" id="cancelBtn">Cancel</button>
+        <button type="submit" class="btn-primary" id="saveBtn">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+var MODULE_KEY = '<%- (typeof moduleKey!=="undefined") ? moduleKey : "" %>';
+var MODULE_LABEL = '<%- (typeof moduleLabel!=="undefined") ? moduleLabel : "item" %>';
+var FIELDS = [];
+var ITEMS = [];
+var EDIT_ID = null;
+var SEARCH = '';
+
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+
+function toast(msg, type){
+  var w = document.getElementById('toastWrap');
+  if (!w) return;
+  var el = document.createElement('div');
+  el.className = 'toast ' + (type === 'err' ? 'err' : 'ok');
+  el.textContent = msg;
+  w.appendChild(el);
+  setTimeout(function(){ el.style.opacity = '0'; el.style.transform = 'translateX(24px)'; setTimeout(function(){ if (el.parentNode) el.parentNode.removeChild(el); }, 300); }, 3200);
+}
+
+var tableWrap = document.getElementById('tableWrap');
+var modal = document.getElementById('modal');
+var formFields = document.getElementById('formFields');
+var countPill = document.getElementById('countPill');
+var searchInput = document.getElementById('searchInput');
+
+document.getElementById('admMenu').addEventListener('click', function(){ document.getElementById('adminSidebar').classList.toggle('open'); });
+document.getElementById('addBtn').addEventListener('click', function(){ openCreate(); });
+document.getElementById('closeModal').addEventListener('click', closeModal);
+document.getElementById('cancelBtn').addEventListener('click', closeModal);
+modal.addEventListener('click', function(e){ if (e.target === modal) closeModal(); });
+document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && !modal.hidden) closeModal(); });
+searchInput.addEventListener('input', function(){ SEARCH = this.value.toLowerCase().trim(); renderTable(); });
+
+tableWrap.addEventListener('click', function(e){
+  var ed = e.target.closest('.js-edit'); if (ed) { openEdit(parseInt(ed.dataset.id, 10)); return; }
+  var dl = e.target.closest('.js-del'); if (dl) { delItem(parseInt(dl.dataset.id, 10)); return; }
+  var ad = e.target.closest('.js-add'); if (ad) { openCreate(); return; }
+});
+
+formFields.addEventListener('change', function(e){
+  var t = e.target;
+  if (t.classList.contains('js-upload-input')) uploadImg(t, t.dataset.target);
+});
+formFields.addEventListener('click', function(e){
+  var t = e.target.closest('.js-gen');
+  if (t) genImg(t.dataset.target, t.dataset.ar);
+});
+
+async function loadModule(){
+  try {
+    var mres = await fetch('api/admin/modules');
+    var mdata = await mres.json();
+    var mod = (mdata.modules || []).find(function(m){ return m.key === MODULE_KEY; });
+    FIELDS = mod ? mod.fields : [];
+    await loadItems();
+  } catch (e) {
+    tableWrap.innerHTML = '<p class="muted" style="padding:16px">Could not load. Refresh to try again.</p>';
+  }
+}
+
+async function loadItems(){
+  var res = await fetch('api/admin/' + MODULE_KEY);
+  var data = await res.json();
+  ITEMS = data[MODULE_KEY] || [];
+  renderTable();
+}
+
+function filtered(){
+  if (!SEARCH) return ITEMS;
+  return ITEMS.filter(function(it){
+    return Object.keys(it).some(function(k){ return String(it[k] == null ? '' : it[k]).toLowerCase().indexOf(SEARCH) !== -1; });
+  });
+}
+
+function renderTable(){
+  var list = filtered();
+  countPill.textContent = ITEMS.length + ' ' + (ITEMS.length === 1 ? 'entry' : 'entries');
+  if (!ITEMS.length) {
+    tableWrap.innerHTML = '<div class="empty"><p><strong>No ' + esc(MODULE_LABEL.toLowerCase()) + ' entries yet.</strong></p><p class="muted">Add your first one to see it live on the site.</p><button class="btn-primary js-add">+ Add the first one</button></div>';
+    return;
+  }
+  if (!list.length) {
+    tableWrap.innerHTML = '<div class="empty"><p><strong>No matches for "' + esc(SEARCH) + '".</strong></p><p class="muted">Try a different search.</p></div>';
+    return;
+  }
+  var cols = FIELDS.filter(function(f){ return f.type !== 'textarea'; }).slice(0, 4);
+  var h = '<div class="table-scroll"><table class="admin-table"><thead><tr>';
+  cols.forEach(function(c){ h += '<th>' + esc(c.label || c.name) + '</th>'; });
+  h += '<th></th></tr></thead><tbody>';
+  list.forEach(function(it){
+    h += '<tr>';
+    cols.forEach(function(c){
+      var v = it[c.name];
+      if (c.type === 'image') { v = v ? '<img class="thumb" src="' + esc(v) + '" alt="">' : '<span class="muted">—</span>'; }
+      else if (c.type === 'boolean') { v = (v == 1 || v === true || v === '1') ? '<span class="badge on">Live</span>' : '<span class="badge off">Hidden</span>'; }
+      else { v = (v == null || v === '') ? '<span class="muted">—</span>' : esc(String(v)); if (typeof v === 'string' && v.length > 60) v = v.slice(0, 60) + '...'; }
+      h += '<td>' + v + '</td>';
+    });
+    h += '<td class="row-actions"><button class="btn-sm js-edit" data-id="' + it.id + '">Edit</button> <button class="btn-sm danger js-del" data-id="' + it.id + '">Delete</button></td>';
+    h += '</tr>';
+  });
+  h += '</tbody></table></div>';
+  tableWrap.innerHTML = h;
+}
+
+function buildForm(item){
+  formFields.innerHTML = '';
+  var html = '';
+  FIELDS.forEach(function(f){
+    var raw = item ? (item[f.name] != null ? item[f.name] : '') : (f.default != null ? f.default : '');
+    var id = 'f_' + f.name;
+    html += '<div class="field"><label for="' + id + '">' + esc(f.label || f.name) + (f.required ? ' *' : '') + '</label>';
+    if (f.type === 'textarea') {
+      html += '<textarea id="' + id + '" name="' + f.name + '" rows="4"' + (f.placeholder ? ' placeholder="' + esc(f.placeholder) + '"' : '') + '>' + esc(raw) + '</textarea>';
+    } else if (f.type === 'boolean') {
+      html += '<label class="switch"><input type="checkbox" id="' + id + '" name="' + f.name + '"' + ((raw == 1 || raw === true || raw === '1') ? ' checked' : '') + '> Visible on the site</label>';
+    } else if (f.type === 'select') {
+      html += '<select id="' + id + '" name="' + f.name + '">';
+      (f.options || []).forEach(function(o){ html += '<option value="' + esc(o) + '"' + (String(raw) === String(o) ? ' selected' : '') + '>' + esc(o) + '</option>'; });
+      html += '</select>';
+    } else if (f.type === 'number') {
+      html += '<input type="number" id="' + id + '" name="' + f.name + '" value="' + esc(raw) + '"' + (f.min != null ? ' min="' + f.min + '"' : '') + (f.max != null ? ' max="' + f.max + '"' : '') + (f.step != null ? ' step="' + f.step + '"' : '') + (f.placeholder ? ' placeholder="' + esc(f.placeholder) + '"' : '') + '>';
+    } else if (f.type === 'image') {
+      html += '<div class="img-field"><input type="text" id="' + id + '" name="' + f.name + '" value="' + esc(raw) + '" placeholder="Image URL"><div class="img-btns"><label class="btn-sm upload-label">Upload<input type="file" accept="image/*" class="js-upload-input" data-target="' + id + '" hidden></label><button type="button" class="btn-sm js-gen" data-target="' + id + '" data-ar="' + (f.aspectRatio || '4:3') + '">Generate with AI</button></div><div class="img-prev" id="prev_' + id + '">' + (raw ? '<img src="' + esc(raw) + '" alt="">' : '') + '</div></div>';
+    } else {
+      html += '<input type="text" id="' + id + '" name="' + f.name + '" value="' + esc(raw) + '"' + (f.placeholder ? ' placeholder="' + esc(f.placeholder) + '"' : '') + (f.maxLength ? ' maxlength="' + f.maxLength + '"' : '') + '>';
+    }
+    if (f.description) html += '<small class="hint">' + esc(f.description) + '</small>';
+    html += '</div>';
+  });
+  formFields.innerHTML = html;
+}
+
+function openCreate(){
+  EDIT_ID = null;
+  document.getElementById('modalTitle').textContent = 'New ' + MODULE_LABEL;
+  buildForm(null);
+  modal.hidden = false;
+  var first = formFields.querySelector('input,textarea,select');
+  if (first) setTimeout(function(){ first.focus(); }, 40);
+}
+function openEdit(id){
+  var item = ITEMS.find(function(it){ return it.id === id; });
+  if (!item) return;
+  EDIT_ID = id;
+  document.getElementById('modalTitle').textContent = 'Edit ' + MODULE_LABEL;
+  buildForm(item);
+  modal.hidden = false;
+}
+function closeModal(){ modal.hidden = true; }
+
+async function uploadImg(input, targetId){
+  var file = input.files && input.files[0];
+  if (!file) return;
+  var prev = document.getElementById('prev_' + targetId);
+  if (prev) prev.innerHTML = '<span class="muted">Uploading...</span>';
+  var reader = new FileReader();
+  reader.onload = async function(){
+    try {
+      var res = await fetch('api/admin/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ dataUri: reader.result }) });
+      var out = await res.json();
+      if (!res.ok) throw new Error(out.error || 'Upload failed');
+      setImage(targetId, out.url);
+      toast('Image uploaded.', 'ok');
+    } catch (e) { if (prev) prev.innerHTML = ''; toast(e.message, 'err'); }
+  };
+  reader.readAsDataURL(file);
+}
+
+async function genImg(targetId, ar){
+  var prompt = window.prompt('Describe the illustration to draw:');
+  if (!prompt) return;
+  var prev = document.getElementById('prev_' + targetId);
+  if (prev) prev.innerHTML = '<span class="muted">Drawing...</span>';
+  try {
+    var res = await fetch('api/admin/generate-image', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prompt: prompt, aspectRatio: ar || '4:3' }) });
+    var out = await res.json();
+    if (!res.ok) throw new Error(out.error || 'Generation failed');
+    setImage(targetId, out.url);
+    toast('Illustration generated.', 'ok');
+  } catch (e) { if (prev) prev.innerHTML = ''; toast(e.message, 'err'); }
+}
+
+function setImage(targetId, url){
+  var inp = document.getElementById(targetId);
+  if (inp) inp.value = url;
+  var prev = document.getElementById('prev_' + targetId);
+  if (prev) prev.innerHTML = url ? '<img src="' + esc(url) + '" alt="">' : '';
+}
+
+document.getElementById('itemForm').addEventListener('submit', async function(e){
+  e.preventDefault();
+  var payload = {};
+  FIELDS.forEach(function(f){
+    var node = document.getElementById('f_' + f.name);
+    if (!node) return;
+    if (f.type === 'boolean') payload[f.name] = node.checked ? 1 : 0;
+    else payload[f.name] = node.value;
+  });
+  var btn = document.getElementById('saveBtn');
+  btn.disabled = true; btn.textContent = 'Saving...';
+  try {
+    var url = 'api/admin/' + MODULE_KEY + (EDIT_ID ? '/' + EDIT_ID : '');
+    var res = await fetch(url, { method: EDIT_ID ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+    if (!res.ok) { var er = await res.json().catch(function(){ return {}; }); throw new Error(er.error || 'Save failed'); }
+    var wasEdit = !!EDIT_ID;
+    closeModal();
+    await loadItems();
+    toast(wasEdit ? MODULE_LABEL + ' updated.' : MODULE_LABEL + ' added.', 'ok');
+  } catch (err) { toast(err.message, 'err'); }
+  btn.disabled = false; btn.textContent = 'Save';
+});
+
+async function delItem(id){
+  if (!confirm('Delete this ' + MODULE_LABEL.toLowerCase() + '? This cannot be undone.')) return;
+  try {
+    var res = await fetch('api/admin/' + MODULE_KEY + '/' + id, { method: 'DELETE' });
+    if (!res.ok) throw new Error('Delete failed');
+    await loadItems();
+    toast(MODULE_LABEL + ' deleted.', 'ok');
+  } catch (e) { toast(e.message, 'err'); }
+}
+
+loadModule();
+</script>
+</body>
+</html>

@@ -1,0 +1,124 @@
+{
+  "slug": "ember-and-oak",
+  "displayName": "Ember and Oak",
+  "description": "A one-page brochure site for a fictional Montreal coffee roaster Ember & Oak: hero with tagline, our story section, three signature roasts with tasting notes, a wholesale enquiry form, and a visit-us map section. Warm earthy palette (charcoal, ember orange, cream), cozy artisanal mood, memorable for hand-drawn coffee illustrations.",
+  "status": "active",
+  "generationVersion": 1,
+  "primaryColor": "#6366f1",
+  "iconUrl": "https://res.cloudinary.com/duhp69meg/image/upload/v1783457413/tapavis_tenant_ember-and-oak/icon_ember-and-oak_1783457413122.png",
+  "enabledAuthMethods": [
+    "webauthn",
+    "sms",
+    "email"
+  ],
+  "notificationsEnabled": true,
+  "geolocationEnabled": true,
+  "customConfig": {
+    "language": "en",
+    "designManifest": {
+      "concept": "Hearth Ledger",
+      "copyVoice": "First-person plural roaster's journal — warm and sensory with real specifics: five-kilo batches, first-crack temperatures, street names, delivery by bike.",
+      "elements": {
+        "blogSurfaced": false,
+        "pages": [
+          "index (one-page: hero, story, roasts, wholesale, visit, footer)",
+          "admin dashboard",
+          "admin roasts/story/hours/journal",
+          "admin wholesale enquiries"
+        ],
+        "userLogin": false
+      },
+      "heroThesis": "The homepage opens on the drum itself — a hand-drawn roaster with smoke rising — under the tagline 'Roasted small. Drawn by hand. Montreal.', because every bag begins at that one small fire.",
+      "iconDirection": "A single unbroken hand-drawn charcoal line forming a coffee bean whose centre crack becomes a small ember flame, flat on cream #F6EFE3 — no gradients, no container shape.",
+      "palette": {
+        "accents": [
+          "#8A5A33",
+          "#EBDCC3"
+        ],
+        "ground": "#F6EFE3",
+        "ink": "#2B2320",
+        "primary": "#D95B29"
+      },
+      "signatureMove": "The Ember Thread: one hand-drawn charcoal line runs the left margin, drawn on with scroll via stroke-dashoffset, rising as smoke off the hero drum and tracing down through every section.",
+      "summary": "A roaster's hand-kept ledger where one continuous drawn charcoal line — the Ember Thread — carries the visitor from the fire down through the story, the roasts, and out to the shop door, so the whole page reads as made by the same hand that tends the drum.",
+      "typography": "Fraunces (500-700, high SOFT feel) for headlines and roast names set large with tight leading; Karla (400/500/700) for body, labels, and the ledger UI."
+    },
+    "designDirections": {
+      "directions": [
+        {
+          "pitch": "When someone opens the drum door in your shop, the whole room warms up — this direction does that online: your own hand-drawn line literally carries visitors from the fire to your door, so the site feels made by the same hands that roast the beans.",
+          "concept": "Hearth Ledger",
+          "palette": {
+            "ink": "#2B2320",
+            "ground": "#F6EFE3",
+            "accents": [
+              "#8A5A33",
+              "#EBDCC3"
+            ],
+            "primary": "#D95B29"
+          }
+        },
+        {
+          "pitch": "Nobody else in the city is telling the 4 a.m. story — this direction makes your roastery the one warm light on a dark indigo block, and every visitor who scrolls it feels let in on the night shift, which is exactly the intimacy that turns browsers into regulars.",
+          "concept": "Blue Hour Roast",
+          "palette": {
+            "ink": "#F2E9DA",
+            "ground": "#191A33",
+            "accents": [
+              "#F07B3A",
+              "#26284D"
+            ],
+            "primary": "#6366F1"
+          }
+        },
+        {
+          "pitch": "Montreal is a poster city — every pole in Mile End proves it — and this direction makes your site the best broadside on the block: two honest inks, your roasts stamped like real bag labels, and a page people remember the way they remember a great gig poster.",
+          "concept": "Two-Ink Broadside",
+          "palette": {
+            "ink": "#211E1B",
+            "ground": "#EFE6D3",
+            "accents": [
+              "#46509E",
+              "#DCCFB4"
+            ],
+            "primary": "#C7431F"
+          }
+        }
+      ],
+      "recommendedIndex": 0
+    }
+  },
+  "promptHistory": [
+    {
+      "prompt": "A one-page brochure site for a fictional Montreal coffee roaster Ember & Oak: hero with tagline, our story section, three signature roasts with tasting notes, a wholesale enquiry form, and a visit-us map section. Warm earthy palette (charcoal, ember orange, cream), cozy artisanal mood, memorable for hand-drawn coffee illustrations.",
+      "timestamp": "2026-07-07T20:50:23.314Z",
+      "changeNotes": "Initial build of the Ember & Oak one-page roaster brochure with the Hearth Ledger identity: hand-drawn illustration hero, ledger story timeline, three-plus signature roast rows with flame-mark roast levels, a charcoal wholesale enquiry form (stored in the database and emailed to the owner), and a hand-illustrated Mile End visit section. Includes the scroll-drawn Ember Thread, install and push prompts, visit tracking, and a full self-contained admin backend (dashboard plus CRUD for roasts, story timeline, hours, journal, and wholesale enquiries).\n\nAdmin enrichment: (1) Dashboard rebuilt with iconed stat cards, richer module link cards (with icon chips + a live 'new enquiries' badge), a panel subtitle, and a proper empty state for recent enquiries. (2) admin-shell.ejs upgraded — added a search box + entry-count pill, non-blocking toast notifications replacing alert() for save/delete/upload/generate feedback, Escape-to-close and focus-on-open for the modal, boolean columns now render Live/Hidden badges, and richer empty/no-match states while preserving full CRUD (create/edit/delete + image upload/AI generate for every editable column). (3) Wholesale enquiries page gained status filter chips (All/New/Contacted/Archived), an Archive action, a total/new count pill, toasts, and optimistic local updates. (4) admin-styles.css substantially polished: --admin-brand variable, visible focus-visible outlines on all controls, softer shadows, rounded corners, hover states on table rows and module links, toast + modal animation styles, filter chips, count pills, search bar, badge styles, and improved contrast throughout. Functional data (roasts with price/roast-level/publish, hours, story, journal) remains fully admin-managed. No routes/data flows changed; all {{IMG_*}} tokens and editable-content annotations preserved. Frontend CTAs keep inline color fallbacks.",
+      "generationId": 1421,
+      "filesModified": [
+        "manifest.json",
+        "migrations.sql",
+        "public/css/admin-styles.css",
+        "public/css/styles.css",
+        "public/js/app.js",
+        "routes.js",
+        "schema.sql",
+        "seed.js",
+        "views/admin-enquiries.ejs",
+        "views/admin-hours.ejs",
+        "views/admin-posts.ejs",
+        "views/admin-roasts.ejs",
+        "views/admin-story_moments.ejs",
+        "views/admin.ejs",
+        "views/index.ejs",
+        "views/partials/admin-shell.ejs",
+        "views/partials/admin-sidebar.ejs",
+        "views/partials/footer.ejs",
+        "views/partials/header.ejs"
+      ]
+    }
+  ],
+  "apiVariables": [],
+  "createdAt": "2026-07-07T19:56:42.546Z",
+  "updatedAt": "2026-07-07T20:50:27.593Z",
+  "exportedAt": "2026-07-07T20:50:27.810Z"
+}

@@ -1,0 +1,139 @@
+<%- include('partials/header') %>
+
+<section class="hero" id="top">
+  <div class="wrap hero-inner">
+    <div class="hero-art reveal">
+      <img src="<%= (typeof settings!=='undefined' && settings._p_hero_image_url) ? settings._p_hero_image_url : 'https://placehold.co/900x1100/F6EFE3/2B2320/png?text=The+Drum' %>" data-setting-key="_p_hero_image_url" alt="Hand-drawn illustration of our drum roaster with smoke rising">
+    </div>
+    <div class="hero-copy reveal">
+      <span class="eyebrow" data-setting-key="hero_eyebrow"><%= (typeof settings!=='undefined' && settings.hero_eyebrow) ? settings.hero_eyebrow : 'Mile End · Montreal' %></span>
+      <h1 class="display hero-title" data-setting-key="hero_title"><%= (typeof settings!=='undefined' && settings.hero_title) ? settings.hero_title : 'Roasted small. Drawn by hand. Montreal.' %></h1>
+      <p class="lead" data-setting-key="hero_subtitle"><%= (typeof settings!=='undefined' && settings.hero_subtitle) ? settings.hero_subtitle : '' %></p>
+      <a class="btn-primary" href="#roasts" data-setting-key="hero_cta" style="background-color:#D95B29;color:#fff"><%= (typeof settings!=='undefined' && settings.hero_cta) ? settings.hero_cta : 'See the roasts' %></a>
+    </div>
+  </div>
+</section>
+
+<section class="story" id="story">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow" data-lk="story-eyebrow">Our story</span>
+      <h2 class="display" data-setting-key="story_heading"><%= (typeof settings!=='undefined' && settings.story_heading) ? settings.story_heading : 'How the fire got started' %></h2>
+    </div>
+    <div class="story-grid">
+      <div class="story-text reveal">
+        <p data-setting-key="story_text"><%= (typeof settings!=='undefined' && settings.story_text) ? settings.story_text : '' %></p>
+        <div class="story-illus">
+          <img src="<%= (typeof settings!=='undefined' && settings._p_about_image_url) ? settings._p_about_image_url : 'https://placehold.co/800x600/EBDCC3/2B2320/png?text=The+Alley' %>" data-setting-key="_p_about_image_url" alt="Hand-drawn illustration of the first roast in the alley">
+        </div>
+      </div>
+      <ol class="timeline reveal">
+        <% if (typeof story !== 'undefined' && story.length) { story.forEach(function(m){ %>
+          <li class="timeline-item">
+            <span class="tl-year" data-content-source="story_moments:year" data-content-id="<%= m.id %>"><%= m.year %></span>
+            <h3 class="tl-title" data-content-source="story_moments:title" data-content-id="<%= m.id %>"><%= m.title %></h3>
+            <p data-content-source="story_moments:description" data-content-id="<%= m.id %>"><%= m.description %></p>
+          </li>
+        <% }); } else { %>
+          <li class="timeline-item"><p class="muted" data-lk="story-empty">The timeline is being written. Check back soon.</p></li>
+        <% } %>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section class="roasts" id="roasts">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow" data-lk="roasts-eyebrow">Signature roasts</span>
+      <h2 class="display" data-setting-key="roasts_heading"><%= (typeof settings!=='undefined' && settings.roasts_heading) ? settings.roasts_heading : 'Three we roast every week' %></h2>
+      <p class="section-intro" data-setting-key="roasts_intro"><%= (typeof settings!=='undefined' && settings.roasts_intro) ? settings.roasts_intro : '' %></p>
+    </div>
+    <% if (typeof roasts !== 'undefined' && roasts.length) { roasts.forEach(function(r){ var notes=(r.tasting_notes||'').split(',').map(function(n){return n.trim();}).filter(Boolean); var lvl=r.roast_level||2; var lvlName={1:'Light',2:'Medium',3:'Dark'}[lvl]||'Medium'; %>
+    <article class="roast-row reveal">
+      <div class="roast-art">
+        <img src="<%= r.image_url ? r.image_url : 'https://placehold.co/700x525/EBDCC3/2B2320/png?text=Roast' %>" data-content-source="roasts:image_url" data-content-id="<%= r.id %>" alt="Hand-drawn vignette of the <%= r.name %> roast">
+      </div>
+      <div class="roast-body">
+        <div class="roast-name-line">
+          <h3 class="display" data-content-source="roasts:name" data-content-id="<%= r.id %>"><%= r.name %></h3>
+          <% if (r.origin) { %><span class="roast-origin" data-content-source="roasts:origin" data-content-id="<%= r.id %>"><%= r.origin %></span><% } %>
+        </div>
+        <% if (notes.length) { %>
+        <p class="roast-notes" data-content-source="roasts:tasting_notes" data-content-id="<%= r.id %>"><% notes.forEach(function(n,i){ %><span class="note"><%= n %></span><% if (i < notes.length-1) { %><span class="note-sep">·</span><% } %><% }); %></p>
+        <% } %>
+        <p class="roast-desc" data-content-source="roasts:description" data-content-id="<%= r.id %>"><%= r.description %></p>
+        <div class="roast-foot">
+          <span class="roast-level" aria-label="Roast level: <%= lvlName %>">
+            <% for (var i=1;i<=3;i++){ %><span class="flame <%= i<=lvl?'on':'off' %>"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 2c1 3-2 4-2 7a2 2 0 0 0 4 0c2 2 3 4 3 6a5 5 0 0 1-10 0c0-4 4-6 5-13z" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linejoin="round"/></svg></span><% } %>
+            <span class="level-name"><%= lvlName %></span>
+          </span>
+          <% if (r.price) { %><span class="roast-price" data-content-source="roasts:price" data-content-id="<%= r.id %>"><%= r.price %></span><% } %>
+        </div>
+      </div>
+    </article>
+    <% }); } else { %>
+      <div class="empty-block"><p data-lk="roasts-empty">Our roasts are resting. New lots go up here each week — check back soon.</p></div>
+    <% } %>
+  </div>
+</section>
+
+<section class="wholesale" id="wholesale">
+  <div class="wrap wholesale-inner">
+    <div class="wholesale-copy reveal">
+      <span class="eyebrow light" data-lk="wholesale-eyebrow">Wholesale</span>
+      <h2 class="display" data-setting-key="wholesale_heading"><%= (typeof settings!=='undefined' && settings.wholesale_heading) ? settings.wholesale_heading : 'Put our fire behind your bar' %></h2>
+      <p class="lead light" data-setting-key="wholesale_intro"><%= (typeof settings!=='undefined' && settings.wholesale_intro) ? settings.wholesale_intro : '' %></p>
+      <div class="wholesale-illus">
+        <img src="<%= (typeof settings!=='undefined' && settings._p_wholesale_image_url) ? settings._p_wholesale_image_url : 'https://placehold.co/700x525/2B2320/EBDCC3/png?text=Wholesale' %>" data-setting-key="_p_wholesale_image_url" alt="Hand-drawn illustration of stacked wholesale coffee bags">
+      </div>
+    </div>
+    <form class="wholesale-form reveal" id="wholesaleForm" novalidate>
+      <div class="field"><label for="w_name" data-lk="w-name-label">Your name</label><input id="w_name" name="name" type="text" required placeholder="Sam Tremblay"></div>
+      <div class="field"><label for="w_cafe" data-lk="w-cafe-label">Cafe or business</label><input id="w_cafe" name="cafe" type="text" placeholder="Cafe Bernard"></div>
+      <div class="field"><label for="w_volume" data-lk="w-vol-label">Weekly volume</label><input id="w_volume" name="volume" type="text" placeholder="e.g. 10 kg / week"></div>
+      <div class="field"><label for="w_email" data-lk="w-email-label">Email</label><input id="w_email" name="email" type="email" placeholder="you@cafe.ca"></div>
+      <div class="field field-full"><label for="w_message" data-lk="w-msg-label">What do you pour?</label><textarea id="w_message" name="message" rows="4" required placeholder="Tell us about your bar, your grinder, and what you are after."></textarea></div>
+      <div class="field-full form-submit-row">
+        <button type="submit" class="btn-primary" style="background-color:#D95B29;color:#fff" data-lk="w-submit">Send our way</button>
+        <p class="form-status" id="wholesaleStatus" role="status" aria-live="polite"></p>
+      </div>
+    </form>
+  </div>
+</section>
+
+<section class="visit" id="visit">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow" data-lk="visit-eyebrow">Visit us</span>
+      <h2 class="display" data-setting-key="visit_heading"><%= (typeof settings!=='undefined' && settings.visit_heading) ? settings.visit_heading : 'Come stand by the drum' %></h2>
+      <p class="section-intro" data-setting-key="visit_intro"><%= (typeof settings!=='undefined' && settings.visit_intro) ? settings.visit_intro : '' %></p>
+    </div>
+    <div class="visit-grid">
+      <div class="visit-map reveal">
+        <img src="<%= (typeof settings!=='undefined' && settings._p_map_image_url) ? settings._p_map_image_url : 'https://placehold.co/900x675/EBDCC3/2B2320/png?text=Mile+End' %>" data-setting-key="_p_map_image_url" alt="Hand-drawn map of our block in Mile End with the shop marked by a burning ember">
+      </div>
+      <div class="visit-info reveal">
+        <div class="visit-addr">
+          <h3 data-lk="visit-find">Find the drum</h3>
+          <p data-setting-key="visit_address"><%= (typeof settings!=='undefined' && settings.visit_address) ? settings.visit_address : '' %></p>
+          <a class="btn-ghost" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=<%= encodeURIComponent((typeof settings!=='undefined' && settings.visit_address) ? settings.visit_address : 'Mile End Montreal') %>" data-lk="visit-directions">Get directions</a>
+          <% if (typeof settings!=='undefined' && settings.contact_email) { %><p class="visit-contact"><a href="mailto:<%= settings.contact_email %>" data-lk="visit-email"><%= settings.contact_email %></a></p><% } %>
+          <% if (typeof settings!=='undefined' && settings.contact_phone) { %><p class="visit-contact"><a href="tel:<%= settings.contact_phone %>" data-lk="visit-phone"><%= settings.contact_phone %></a></p><% } %>
+        </div>
+        <table class="hours-table">
+          <caption data-lk="hours-cap">Opening hours</caption>
+          <tbody>
+          <% if (typeof hours !== 'undefined' && hours.length) { hours.forEach(function(h){ %>
+            <tr><th scope="row" data-content-source="hours:day" data-content-id="<%= h.id %>"><%= h.day %></th><td data-content-source="hours:hours" data-content-id="<%= h.id %>"><%= h.hours %></td></tr>
+          <% }); } else { %>
+            <tr><th scope="row" data-lk="hours-empty">Hours</th><td>Coming soon</td></tr>
+          <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

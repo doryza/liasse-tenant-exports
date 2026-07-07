@@ -1,0 +1,21 @@
+<aside class="admin-sidebar" id="adminSidebar">
+  <div class="admin-brand">
+    <svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true">
+      <path d="M9 24C4 19 5 9 12 6c6-3 13 1 13 8 0 6-4 10-9 11" fill="none" stroke="#EBDCC3" stroke-width="2" stroke-linecap="round"/>
+      <path d="M16 9c1 2-1 3-1 5s3 2 3 0c1 2 2 4 1 6s-4 2-5 0c-1-3 1-6 2-11z" fill="#D95B29" stroke="#EBDCC3" stroke-width="1" stroke-linejoin="round"/>
+    </svg>
+    <span>Ember &amp; Oak</span>
+  </div>
+  <nav class="admin-nav">
+    <a href="admin" class="<%= (typeof active!=='undefined' && active==='dashboard') ? 'active' : '' %>">Dashboard</a>
+    <a href="admin/roasts" class="<%= (typeof active!=='undefined' && active==='roasts') ? 'active' : '' %>">Roasts</a>
+    <a href="admin/story_moments" class="<%= (typeof active!=='undefined' && active==='story_moments') ? 'active' : '' %>">Story timeline</a>
+    <a href="admin/hours" class="<%= (typeof active!=='undefined' && active==='hours') ? 'active' : '' %>">Opening hours</a>
+    <a href="admin/posts" class="<%= (typeof active!=='undefined' && active==='posts') ? 'active' : '' %>">Journal</a>
+    <a href="admin/enquiries" class="<%= (typeof active!=='undefined' && active==='enquiries') ? 'active' : '' %>">Wholesale enquiries</a>
+  </nav>
+  <div class="admin-side-foot">
+    <a href="." target="_blank">View site</a>
+    <a href="admin/logout">Log out</a>
+  </div>
+</aside>

@@ -1,0 +1,17 @@
+</main>
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <svg class="mark-foot" viewBox="0 0 32 32" width="34" height="34" aria-hidden="true">
+      <path d="M9 24C4 19 5 9 12 6c6-3 13 1 13 8 0 6-4 10-9 11" fill="none" stroke="#EBDCC3" stroke-width="2" stroke-linecap="round"/>
+      <path d="M16 9c1 2-1 3-1 5s3 2 3 0c1 2 2 4 1 6s-4 2-5 0c-1-3 1-6 2-11z" fill="#D95B29" stroke="#EBDCC3" stroke-width="1" stroke-linejoin="round"/>
+    </svg>
+    <p class="foot-tag" data-setting-key="footer_tagline"><%= (typeof settings!=='undefined' && settings.footer_tagline) ? settings.footer_tagline : 'Roasted by hand in Mile End, Montreal.' %></p>
+    <p class="foot-addr" data-setting-key="visit_address"><%= (typeof settings!=='undefined' && settings.visit_address) ? settings.visit_address : '' %></p>
+    <p class="this-week" data-setting-key="this_week"><%= (typeof settings!=='undefined' && settings.this_week) ? settings.this_week : '' %></p>
+    <button class="btn-ghost light" data-push-btn data-lk="footer-push">Get roast drops</button>
+    <p class="copyright" data-lk="footer-copy">&copy; <%= new Date().getFullYear() %> Ember &amp; Oak. Roasted in Montreal.</p>
+  </div>
+</footer>
+<script src="public/js/app.js"></script>
+</body>
+</html>

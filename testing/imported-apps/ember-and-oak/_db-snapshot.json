@@ -1,0 +1,415 @@
+{
+  "exportedAt": "2026-07-07T20:50:27.833Z",
+  "tables": {
+    "admin_invites": {
+      "columns": [
+        "id",
+        "email",
+        "token",
+        "role",
+        "status",
+        "invited_by",
+        "expires_at",
+        "accepted_at",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_webauthn_credentials": {
+      "columns": [
+        "id",
+        "admin_user_id",
+        "credential_id",
+        "public_key",
+        "counter",
+        "device_name",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_users": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "password_hash",
+        "display_name",
+        "role",
+        "active",
+        "activation_token",
+        "invited_by",
+        "invite_token",
+        "invite_expires_at",
+        "last_login_at",
+        "is_active",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_settings": {
+      "columns": [
+        "key",
+        "value",
+        "updated_at"
+      ],
+      "totalRows": 45,
+      "sampleRows": [
+        {
+          "key": "business_name",
+          "value": "Ember & Oak",
+          "updated_at": "2026-07-07T20:50:05.046Z"
+        },
+        {
+          "key": "tagline",
+          "value": "Montreal micro-roastery",
+          "updated_at": "2026-07-07T20:50:05.054Z"
+        },
+        {
+          "key": "hero_eyebrow",
+          "value": "Mile End · Montreal",
+          "updated_at": "2026-07-07T20:50:05.062Z"
+        },
+        {
+          "key": "hero_title",
+          "value": "Roasted small. Drawn by hand. Montreal.",
+          "updated_at": "2026-07-07T20:50:05.069Z"
+        },
+        {
+          "key": "hero_subtitle",
+          "value": "We roast in five-kilo batches on a single drum, pulling each one by eye and ear until the cherry shows up. One fire, one hand, from green bean to your cup.",
+          "updated_at": "2026-07-07T20:50:05.077Z"
+        },
+        {
+          "key": "hero_cta",
+          "value": "See the roasts",
+          "updated_at": "2026-07-07T20:50:05.086Z"
+        },
+        {
+          "key": "story_heading",
+          "value": "How the fire got started",
+          "updated_at": "2026-07-07T20:50:05.094Z"
+        },
+        {
+          "key": "story_text",
+          "value": "It began in a narrow alley off Saint-Laurent in 2016, with a secondhand five-kilo drum and a stack of green Ethiopian we could barely afford. We roasted at night, cracked the door to let the smoke out, and handed bags to anyone who would take one. The neighbours started knocking. A cafe on Bernard asked for a standing order. Then a corner storefront came up for lease, two blocks from that first alley — so we moved the fire in, and never looked back.",
+          "updated_at": "2026-07-07T20:50:05.101Z"
+        },
+        {
+          "key": "roasts_heading",
+          "value": "Three we roast every week",
+          "updated_at": "2026-07-07T20:50:05.109Z"
+        },
+        {
+          "key": "roasts_intro",
+          "value": "Small lots, turned around fast. What is in the hopper this week, and where each one lands in the cup.",
+          "updated_at": "2026-07-07T20:50:05.123Z"
+        }
+      ]
+    },
+    "site_visits": {
+      "columns": [
+        "id",
+        "path",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "posts": {
+      "columns": [
+        "id",
+        "title",
+        "content",
+        "image_url",
+        "category",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Lot 47 is on the drum",
+          "content": "This week we are running Lot 47, a washed Guji we cupped last Thursday and could not put down. Blueberry up front, jasmine on the finish. On the shelf until it sells out.",
+          "image_url": null,
+          "category": "This week",
+          "published": 1,
+          "created_at": "2026-07-07T20:50:05.387Z",
+          "updated_at": "2026-07-07T20:50:05.387Z"
+        },
+        {
+          "id": 2,
+          "title": "Why we drop the Alleyway at 198C",
+          "content": "A few degrees past first crack is where this Guji shows its florals without turning grassy. Any hotter and the jasmine folds into toast. It is a narrow window, and we chase it every batch.",
+          "image_url": null,
+          "category": "Roasting notes",
+          "published": 1,
+          "created_at": "2026-07-07T20:50:05.395Z",
+          "updated_at": "2026-07-07T20:50:05.395Z"
+        },
+        {
+          "id": 3,
+          "title": "Cupping the new Guatemala",
+          "content": "Six lots on the table this morning, one clear winner: an Antigua with dried fig and brown butter. It becomes this month Ember Seasonal starting Friday.",
+          "image_url": null,
+          "category": "Cupping",
+          "published": 1,
+          "created_at": "2026-07-07T20:50:05.403Z",
+          "updated_at": "2026-07-07T20:50:05.403Z"
+        },
+        {
+          "id": 4,
+          "title": "Delivering by bike all summer",
+          "content": "Every wholesale order inside the neighbourhood goes out by cargo bike, roasted the morning it ships. No idling vans, no day-old beans.",
+          "image_url": null,
+          "category": "News",
+          "published": 1,
+          "created_at": "2026-07-07T20:50:05.411Z",
+          "updated_at": "2026-07-07T20:50:05.411Z"
+        }
+      ]
+    },
+    "roasts": {
+      "columns": [
+        "id",
+        "name",
+        "origin",
+        "tasting_notes",
+        "roast_level",
+        "description",
+        "price",
+        "image_url",
+        "sort_order",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "name": "Alleyway",
+          "origin": "Guji, Ethiopia",
+          "tasting_notes": "Blueberry, Jasmine, Cane sugar",
+          "roast_level": 1,
+          "description": "Our first-ever profile, and still the one people come back for. A washed Guji dropped just past first crack at 198C, so the florals stay loud and the sweetness stays clean.",
+          "price": "$21 / 340g",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783455918/tapavis_tenant_ember-and-oak/build_ember-and-oak_1783455918099.png",
+          "sort_order": 1,
+          "published": 1,
+          "created_at": "2026-07-07T20:50:05.239Z",
+          "updated_at": "2026-07-07T20:50:05.239Z"
+        },
+        {
+          "id": 2,
+          "name": "Bernard",
+          "origin": "Huila, Colombia",
+          "tasting_notes": "Red apple, Toffee, Cocoa nib",
+          "roast_level": 2,
+          "description": "The cafe order that turned a hobby into a shop. Balanced and forgiving, built to shine in milk and to hold its own black. We pull the batch at 205C.",
+          "price": "$19 / 340g",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783455917/tapavis_tenant_ember-and-oak/build_ember-and-oak_1783455917634.png",
+          "sort_order": 2,
+          "published": 1,
+          "created_at": "2026-07-07T20:50:05.248Z",
+          "updated_at": "2026-07-07T20:50:05.248Z"
+        },
+        {
+          "id": 3,
+          "name": "Nightshift",
+          "origin": "Sumatra + Brazil",
+          "tasting_notes": "Dark cocoa, Molasses, Toasted walnut",
+          "roast_level": 3,
+          "description": "Roasted long into second crack for the espresso bar. Heavy body, low acidity, and enough backbone to carry a double through a busy morning.",
+          "price": "$18 / 340g",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783455917/tapavis_tenant_ember-and-oak/build_ember-and-oak_1783455917238.png",
+          "sort_order": 3,
+          "published": 1,
+          "created_at": "2026-07-07T20:50:05.256Z",
+          "updated_at": "2026-07-07T20:50:05.256Z"
+        },
+        {
+          "id": 4,
+          "name": "Ember Seasonal",
+          "origin": "Antigua, Guatemala",
+          "tasting_notes": "Dried fig, Brown butter, Orange peel",
+          "roast_level": 2,
+          "description": "This month rotating lot. Whatever is singing loudest on the cupping table gets the ember mark and a spot in the hopper.",
+          "price": "$22 / 340g",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783455916/tapavis_tenant_ember-and-oak/build_ember-and-oak_1783455916667.png",
+          "sort_order": 4,
+          "published": 1,
+          "created_at": "2026-07-07T20:50:05.264Z",
+          "updated_at": "2026-07-07T20:50:05.264Z"
+        }
+      ]
+    },
+    "story_moments": {
+      "columns": [
+        "id",
+        "year",
+        "title",
+        "description",
+        "image_url",
+        "sort_order",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 3,
+      "sampleRows": [
+        {
+          "id": 1,
+          "year": "2016",
+          "title": "The first roast",
+          "description": "A secondhand five-kilo drum in an alley off Saint-Laurent. We cracked the door for the smoke and roasted after dark.",
+          "image_url": null,
+          "sort_order": 1,
+          "created_at": "2026-07-07T20:50:05.282Z",
+          "updated_at": "2026-07-07T20:50:05.282Z"
+        },
+        {
+          "id": 2,
+          "year": "2018",
+          "title": "The first cafe",
+          "description": "A standing order on Bernard turned nights of roasting into mornings of deliveries, one crate of bags at a time.",
+          "image_url": null,
+          "sort_order": 2,
+          "created_at": "2026-07-07T20:50:05.292Z",
+          "updated_at": "2026-07-07T20:50:05.292Z"
+        },
+        {
+          "id": 3,
+          "year": "2021",
+          "title": "The shop",
+          "description": "A storefront two blocks from the alley. The fire moved in for good, and the door has stayed open since.",
+          "image_url": null,
+          "sort_order": 3,
+          "created_at": "2026-07-07T20:50:05.301Z",
+          "updated_at": "2026-07-07T20:50:05.301Z"
+        }
+      ]
+    },
+    "hours": {
+      "columns": [
+        "id",
+        "day",
+        "hours",
+        "image_url",
+        "sort_order",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 7,
+      "sampleRows": [
+        {
+          "id": 1,
+          "day": "Monday",
+          "hours": "7:00 - 17:00",
+          "image_url": null,
+          "sort_order": 1,
+          "created_at": "2026-07-07T20:50:05.318Z",
+          "updated_at": "2026-07-07T20:50:05.318Z"
+        },
+        {
+          "id": 2,
+          "day": "Tuesday",
+          "hours": "7:00 - 17:00",
+          "image_url": null,
+          "sort_order": 2,
+          "created_at": "2026-07-07T20:50:05.326Z",
+          "updated_at": "2026-07-07T20:50:05.326Z"
+        },
+        {
+          "id": 3,
+          "day": "Wednesday",
+          "hours": "7:00 - 17:00",
+          "image_url": null,
+          "sort_order": 3,
+          "created_at": "2026-07-07T20:50:05.334Z",
+          "updated_at": "2026-07-07T20:50:05.334Z"
+        },
+        {
+          "id": 4,
+          "day": "Thursday",
+          "hours": "7:00 - 18:00",
+          "image_url": null,
+          "sort_order": 4,
+          "created_at": "2026-07-07T20:50:05.342Z",
+          "updated_at": "2026-07-07T20:50:05.342Z"
+        },
+        {
+          "id": 5,
+          "day": "Friday",
+          "hours": "7:00 - 18:00",
+          "image_url": null,
+          "sort_order": 5,
+          "created_at": "2026-07-07T20:50:05.350Z",
+          "updated_at": "2026-07-07T20:50:05.350Z"
+        },
+        {
+          "id": 6,
+          "day": "Saturday",
+          "hours": "8:00 - 18:00",
+          "image_url": null,
+          "sort_order": 6,
+          "created_at": "2026-07-07T20:50:05.362Z",
+          "updated_at": "2026-07-07T20:50:05.362Z"
+        },
+        {
+          "id": 7,
+          "day": "Sunday",
+          "hours": "8:00 - 16:00",
+          "image_url": null,
+          "sort_order": 7,
+          "created_at": "2026-07-07T20:50:05.370Z",
+          "updated_at": "2026-07-07T20:50:05.370Z"
+        }
+      ]
+    },
+    "wholesale_enquiries": {
+      "columns": [
+        "id",
+        "name",
+        "cafe",
+        "volume",
+        "email",
+        "message",
+        "status",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 2,
+      "sampleRows": [
+        {
+          "id": 1,
+          "name": "Marie Lavoie",
+          "cafe": "Cafe Résonance",
+          "volume": "12 kg / week",
+          "email": "marie@resonance.example",
+          "message": "We are switching roasters and loved the Bernard on a tasting. Could we set up a standing weekly order and talk espresso profiles?",
+          "status": "new",
+          "image_url": null,
+          "created_at": "2026-07-07T20:50:05.425Z",
+          "updated_at": "2026-07-07T20:50:05.425Z"
+        },
+        {
+          "id": 2,
+          "name": "Devon Clarke",
+          "cafe": "The Reading Room",
+          "volume": "5 kg / week",
+          "email": "hello@readingroom.example",
+          "message": "Small bookshop cafe near Laurier. Looking for one filter roast to pour by the cup. The Alleyway sounds perfect.",
+          "status": "contacted",
+          "image_url": null,
+          "created_at": "2026-07-07T20:50:05.435Z",
+          "updated_at": "2026-07-07T20:50:05.435Z"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wholesale enquiries — Ember & Oak</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body class="admin-body">
+<button class="admin-menu-btn" id="admMenu" aria-label="Open menu">&#9776;</button>
+<%- include('partials/admin-sidebar') %>
+<main class="admin-main">
+  <div class="admin-head">
+    <div class="admin-head-titles">
+      <p class="admin-eyebrow">Ember &amp; Oak · Roastery admin</p>
+      <h1>Wholesale enquiries</h1>
+    </div>
+    <span class="count-pill" id="countPill"></span>
+  </div>
+  <div class="filter-bar" id="filterBar" role="tablist" aria-label="Filter enquiries">
+    <button class="filter-chip active" data-filter="all">All</button>
+    <button class="filter-chip" data-filter="new">New</button>
+    <button class="filter-chip" data-filter="contacted">Contacted</button>
+    <button class="filter-chip" data-filter="archived">Archived</button>
+  </div>
+  <div id="tableWrap" class="table-wrap plain"><p class="muted">Loading...</p></div>
+</main>
+<div class="toast-wrap" id="toastWrap"></div>
+<script>
+var wrap = document.getElementById('tableWrap');
+var countPill = document.getElementById('countPill');
+var ALL = [];
+var FILTER = 'all';
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+
+function toast(msg, type){
+  var w = document.getElementById('toastWrap');
+  if (!w) return;
+  var el = document.createElement('div');
+  el.className = 'toast ' + (type === 'err' ? 'err' : 'ok');
+  el.textContent = msg;
+  w.appendChild(el);
+  setTimeout(function(){ el.style.opacity = '0'; el.style.transform = 'translateX(24px)'; setTimeout(function(){ if (el.parentNode) el.parentNode.removeChild(el); }, 300); }, 3200);
+}
+
+document.getElementById('admMenu').addEventListener('click', function(){ document.getElementById('adminSidebar').classList.toggle('open'); });
+
+document.getElementById('filterBar').addEventListener('click', function(e){
+  var b = e.target.closest('.filter-chip'); if (!b) return;
+  FILTER = b.dataset.filter;
+  document.querySelectorAll('.filter-chip').forEach(function(c){ c.classList.toggle('active', c === b); });
+  render();
+});
+
+wrap.addEventListener('click', function(e){
+  var s = e.target.closest('.js-status'); if (s) { setStatus(s.dataset.id, s.dataset.next); return; }
+  var d = e.target.closest('.js-del'); if (d) { del(d.dataset.id); return; }
+});
+
+async function load(){
+  try {
+    var r = await fetch('api/admin/wholesale_enquiries');
+    var d = await r.json();
+    ALL = d.wholesale_enquiries || [];
+    render();
+  } catch (e) {
+    wrap.innerHTML = '<p class="muted">Could not load enquiries. Refresh to try again.</p>';
+  }
+}
+
+function render(){
+  var items = FILTER === 'all' ? ALL : ALL.filter(function(it){ return (it.status || 'new') === FILTER; });
+  var newCount = ALL.filter(function(it){ return (it.status || 'new') === 'new'; }).length;
+  countPill.textContent = ALL.length + ' total' + (newCount ? ' · ' + newCount + ' new' : '');
+  if (!items.length) {
+    wrap.innerHTML = '<div class="empty"><p><strong>No ' + (FILTER === 'all' ? '' : esc(FILTER) + ' ') + 'enquiries.</strong></p><p class="muted">When a cafe uses the wholesale form on your site, their message shows up here.</p></div>';
+    return;
+  }
+  var h = '';
+  items.forEach(function(it){
+    var status = it.status || 'new';
+    var next = status === 'contacted' ? 'new' : 'contacted';
+    var label = status === 'contacted' ? 'Mark as new' : 'Mark contacted';
+    h += '<div class="enq-card' + (status === 'new' ? ' is-new' : '') + '">';
+    h += '<div class="enq-top"><div class="enq-who"><strong>' + esc(it.name) + '</strong>' + (it.cafe ? ' · ' + esc(it.cafe) : '') + '</div><span class="enq-date">' + new Date(it.created_at).toLocaleString('en-CA') + '</span></div>';
+    h += '<div class="enq-meta">';
+    if (it.volume) h += '<span>Volume: ' + esc(it.volume) + '</span>';
+    if (it.email) h += '<span>Email: <a href="mailto:' + esc(it.email) + '">' + esc(it.email) + '</a></span>';
+    h += '<span class="enq-status enq-status-' + esc(status) + '">' + esc(status) + '</span>';
+    h += '</div>';
+    h += '<p class="enq-msg">' + esc(it.message) + '</p>';
+    h += '<div class="enq-actions"><button class="btn-sm js-status" data-id="' + it.id + '" data-next="' + next + '">' + label + '</button>';
+    if (status !== 'archived') h += ' <button class="btn-sm js-status" data-id="' + it.id + '" data-next="archived">Archive</button>';
+    h += ' <button class="btn-sm danger js-del" data-id="' + it.id + '">Delete</button></div>';
+    h += '</div>';
+  });
+  wrap.innerHTML = h;
+}
+
+async function setStatus(id, next){
+  try {
+    var r = await fetch('api/admin/wholesale_enquiries/' + id, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: next }) });
+    if (!r.ok) throw new Error('update failed');
+    var it = ALL.find(function(x){ return String(x.id) === String(id); });
+    if (it) it.status = next;
+    render();
+    toast('Marked as ' + next + '.', 'ok');
+  } catch (e) { toast('Could not update this enquiry.', 'err'); }
+}
+
+async function del(id){
+  if (!confirm('Delete this enquiry? This cannot be undone.')) return;
+  try {
+    var r = await fetch('api/admin/wholesale_enquiries/' + id, { method: 'DELETE' });
+    if (!r.ok) throw new Error('delete failed');
+    ALL = ALL.filter(function(x){ return String(x.id) !== String(id); });
+    render();
+    toast('Enquiry deleted.', 'ok');
+  } catch (e) { toast('Could not delete this enquiry.', 'err'); }
+}
+
+load();
+</script>
+</body>
+</html>
