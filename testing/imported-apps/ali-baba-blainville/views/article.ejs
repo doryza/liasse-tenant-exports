@@ -1,0 +1,10 @@
+<%- include('partials/header') %>
+<article class='post'>
+ <a class='back-link' href='actualites' data-lk='t:back_news'>← <%= t.back_news %></a>
+ <% if(post.category){ %><p class='label' data-content-source='posts:category' data-content-id='<%= post.id %>'><%= post.category %></p><% } %>
+ <h1 class='display' data-content-source='posts:title' data-content-id='<%= post.id %>'><%= post.title %></h1>
+ <span class='news-date'><%= formatDate(post.created_at, lang) %></span>
+ <% if(post.image_url){ %><img class='post-img' src='<%= post.image_url %>' data-content-source='posts:image_url' data-content-id='<%= post.id %>' alt='<%= post.title %>'><% } %>
+ <div class='post-content' data-content-source='posts:content' data-content-id='<%= post.id %>'><%- postHtml %></div>
+</article>
+<%- include('partials/footer') %>

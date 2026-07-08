@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tableau de bord — Alibaba Grillade</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body>
+<div class="admin-wrap">
+<%- include('partials/admin-sidebar') %>
+<main class="admin-main">
+ <header class="admin-top">
+  <button class="menu-toggle" id="sideToggle" aria-label="Menu">≡</button>
+  <div class="top-titles"><h1>Tableau de bord</h1><p class="top-sub">Gérez votre menu, vos commandes en ligne et vos actualités.</p></div>
+  <a class="btn-ghost" href="." target="_blank" rel="noopener">Voir le site ↗</a>
+ </header>
+ <% if(!settings.order_url){ %>
+ <div class="alert alert-warn">
+  <strong>⚠ Lien de commande manquant</strong>
+  <p>Tant qu'aucun lien n'est configuré, le bouton « Commander » mène simplement au menu. Ajoutez votre lien de commande en ligne ci-dessous pour activer les commandes pour emporter.</p>
+ </div>
+ <% } else { %>
+ <div class="alert alert-ok">
+  <strong>✓ Commandes en ligne actives</strong>
+  <p>Le bouton « Commander » redirige vos clients vers votre plateforme de commande.</p>
+ </div>
+ <% } %>
+ <div class="stat-grid">
+  <div class="stat"><span class="stat-ic">🍢</span><span class="stat-txt"><span class="stat-n"><%= stats.menuCount %></span><span class="stat-l">Plats au menu</span></span></div>
+  <div class="stat"><span class="stat-ic">📰</span><span class="stat-txt"><span class="stat-n"><%= stats.postCount %></span><span class="stat-l">Actualités</span></span></div>
+  <div class="stat"><span class="stat-ic">✉️</span><span class="stat-txt"><span class="stat-n"><%= stats.subCount %></span><span class="stat-l">Messages</span></span></div>
+  <div class="stat"><span class="stat-ic">📈</span><span class="stat-txt"><span class="stat-n"><%= stats.recentVisits %></span><span class="stat-l">Visites (7 j)</span></span></div>
+  <div class="stat"><span class="stat-ic">👁</span><span class="stat-txt"><span class="stat-n"><%= stats.totalVisits %></span><span class="stat-l">Visites totales</span></span></div>
+ </div>
+ <div class="mod-grid">
+  <a class="mod-card" href="admin/menu"><span class="mod-ic">🍢</span><h3>Menu</h3><p>Ajoutez, modifiez et retirez des plats, prix, catégories et photos.</p><span class="mod-count"><%= stats.menuCount %> plats</span></a>
+  <a class="mod-card" href="admin/posts"><span class="mod-ic">📰</span><h3>Actualités</h3><p>Publiez des nouvelles, promotions et annonces.</p><span class="mod-count"><%= stats.postCount %> publications</span></a>
+ </div>
+ <section class="card">
+  <div class="card-head"><h2>Commande en ligne</h2><p class="muted">Le bouton doré « Commander » de votre site mène directement à ce lien.</p></div>
+  <div class="settings-grid">
+   <div class="fld fld-wide"><label for="s_order_url">URL de commande</label><input id="s_order_url" data-setting="order_url" type="url" value="<%= settings.order_url||'' %>" placeholder="https://..."></div>
+   <div class="fld"><label for="s_pn">Nom de la plateforme</label><input id="s_pn" data-setting="order_platform_name" type="text" value="<%= settings.order_platform_name||'' %>" placeholder="ex. UberEats, DoorDash"></div>
+   <div class="fld"><label for="s_pt">Temps de préparation</label><input id="s_pt" data-setting="order_pickup_time" type="text" value="<%= settings.order_pickup_time||'' %>" placeholder="ex. Prêt en 20–30 min"></div>
+  </div>
+  <button class="btn-primary" data-save-card>Enregistrer</button><span class="save-msg"></span>
+ </section>
+ <section class="card">
+  <div class="card-head"><h2>Coordonnées &amp; heures</h2><p class="muted">Informations opérationnelles affichées aux clients (pied de page, page d'accueil).</p></div>
+  <div class="settings-grid">
+   <div class="fld"><label for="s_bn">Nom du restaurant</label><input id="s_bn" data-setting="business_name" type="text" value="<%= settings.business_name||'' %>"></div>
+   <div class="fld"><label for="s_ph">Téléphone</label><input id="s_ph" data-setting="contact_phone" type="tel" value="<%= settings.contact_phone||'' %>" placeholder="ex. 450 000-0000"></div>
+   <div class="fld"><label for="s_em">Courriel de contact</label><input id="s_em" data-setting="contact_email" type="email" value="<%= settings.contact_email||'' %>"></div>
+   <div class="fld"><label for="s_ad">Adresse</label><input id="s_ad" data-setting="business_address" type="text" value="<%= settings.business_address||'' %>"></div>
+   <div class="fld fld-wide"><label for="s_hr">Heures d'ouverture</label><textarea id="s_hr" data-setting="hours" rows="4"><%= settings.hours||'' %></textarea><span class="hint">Une ligne par période. Ex. « Lun – Jeu : 11 h – 22 h ».</span></div>
+  </div>
+  <button class="btn-primary" data-save-card>Enregistrer</button><span class="save-msg"></span>
+ </section>
+ <section class="card">
+  <div class="card-head"><h2>Messages récents</h2><p class="muted">Les messages envoyés via le formulaire de contact apparaissent ici.</p></div>
+  <% if(submissions && submissions.length){ %>
+   <ul class="msg-list">
+   <% submissions.forEach(function(m){ %>
+    <li><strong><%= m.name %></strong> <span class="muted small"><%= m.email %></span><br><%= m.message %><br><span class="muted small"><%= formatDate(m.created_at,'fr') %></span></li>
+   <% }); %>
+   </ul>
+  <% } else { %>
+   <p class="muted">Aucun message pour l'instant.</p>
+  <% } %>
+ </section>
+</main>
+</div>
+<script>
+(function(){
+function put(k,v){return fetch('api/admin/settings',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({key:k,value:v})});}
+document.querySelectorAll('[data-save-card]').forEach(function(btn){btn.addEventListener('click',function(){var card=btn.closest('.card');var msg=card.querySelector('.save-msg');var inputs=card.querySelectorAll('[data-setting]');if(msg){msg.textContent='…';msg.className='save-msg';}var ps=[];inputs.forEach(function(inp){ps.push(put(inp.getAttribute('data-setting'),inp.value));});Promise.all(ps).then(function(){if(msg){msg.textContent='Enregistré ✓';msg.className='save-msg ok';}setTimeout(function(){if(msg){msg.textContent='';}},2200);}).catch(function(){if(msg){msg.textContent='Erreur';msg.className='save-msg err';}});});});
+})();
+</script>
+<script>(function(){var t=document.getElementById('sideToggle'),s=document.querySelector('.admin-side');if(t&&s){t.addEventListener('click',function(){s.classList.toggle('open');});}})();</script>
+</body>
+</html>

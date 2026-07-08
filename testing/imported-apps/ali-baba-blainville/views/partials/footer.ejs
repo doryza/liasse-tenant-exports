@@ -1,0 +1,15 @@
+<footer class='site-foot'>
+ <div class='container'><div class='grate hot'><span></span><span></span></div></div>
+ <div class='foot-inner'>
+  <div class='foot-mono'>A</div>
+  <p class='foot-claim display' data-lk='t:footer_claim'><%= t.footer_claim %></p>
+  <p class='foot-echo' data-lk='t:footer_claim_echo'><%= t.footer_claim_echo %></p>
+  <a class='foot-order' href='<%= settings.order_url?settings.order_url:"menu" %>' <%- settings.order_url?'target=_blank rel=noopener':'' %> data-lk='t:nav_order'><%= t.nav_order %></a>
+  <% if(settings.business_address){ %><p class='foot-addr' data-setting-key='business_address'><%= settings.business_address %></p><% } %>
+  <button class='push-link' data-push-btn data-lk='t:enable_notif'><%= t.enable_notif %></button>
+  <p class='foot-copy'><span data-setting-key='business_name'><%= businessName %></span> · <%= new Date().getFullYear() %></p>
+ </div>
+</footer>
+<script src='public/js/app.js'></script>
+</body>
+</html>

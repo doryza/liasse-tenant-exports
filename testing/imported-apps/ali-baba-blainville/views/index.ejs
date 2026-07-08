@@ -1,0 +1,102 @@
+<%- include('partials/header') %>
+<section class='hero'>
+ <img class='hero-bg' src='<%= settings._p_hero_image_url?settings._p_hero_image_url:"https://placehold.co/1600x900/0B0A08/C9A24B/png?text=Alibaba+Grillade" %>' data-setting-key='_p_hero_image_url' alt='<%= t.hero_img_alt %>' fetchpriority='high'>
+ <div class='veil'></div>
+ <div class='container hero-inner'>
+  <p class='label hero-eyebrow' data-lk='t:hero_eyebrow'><%= t.hero_eyebrow %></p>
+  <h1 class='display hero-title' data-lk='t:hero_title'><%= t.hero_title %></h1>
+  <p class='hero-echo' data-lk='t:hero_title_echo'><%= t.hero_title_echo %></p>
+  <div class='hero-cta'>
+   <a class='btn-gold btn-lg' style='background-color:#C9A24B;color:#120d05' href='<%= settings.order_url?settings.order_url:"menu" %>' <%- settings.order_url?'target=_blank rel=noopener':'' %> data-lk='t:hero_cta'><%= t.hero_cta %></a>
+   <a class='link-underline' href='menu' data-lk='t:hero_secondary'><%= t.hero_secondary %></a>
+  </div>
+ </div>
+</section>
+<div class='container'><div class='grate'><span></span><span></span></div></div>
+<section class='signature container' data-reveal>
+ <div class='sig-head'>
+  <p class='label' data-lk='t:sig_label'><%= t.sig_label %></p>
+  <h2 class='display' data-lk='t:sig_title'><%= t.sig_title %></h2>
+  <p class='sig-echo' data-lk='t:sig_title_echo'><%= t.sig_title_echo %></p>
+ </div>
+ <div class='sig-grid'>
+  <article class='sig-col'>
+   <img src='<%= settings._p_sig_wood_url?settings._p_sig_wood_url:"https://placehold.co/600x600/14110C/C9A24B/png?text=Le+bois" %>' data-setting-key='_p_sig_wood_url' alt='<%= t.sig_wood_title %>' loading='lazy' decoding='async'>
+   <h3 class='display' data-lk='t:sig_wood_title'><%= t.sig_wood_title %></h3>
+   <p data-lk='t:sig_wood_text'><%= t.sig_wood_text %></p>
+  </article>
+  <article class='sig-col'>
+   <img src='<%= settings._p_sig_braise_url?settings._p_sig_braise_url:"https://placehold.co/600x600/14110C/E8722C/png?text=La+braise" %>' data-setting-key='_p_sig_braise_url' alt='<%= t.sig_braise_title %>' loading='lazy' decoding='async'>
+   <h3 class='display' data-lk='t:sig_braise_title'><%= t.sig_braise_title %></h3>
+   <p data-lk='t:sig_braise_text'><%= t.sig_braise_text %></p>
+  </article>
+  <article class='sig-col'>
+   <img src='<%= settings._p_sig_fumee_url?settings._p_sig_fumee_url:"https://placehold.co/600x600/14110C/C9A24B/png?text=La+fumee" %>' data-setting-key='_p_sig_fumee_url' alt='<%= t.sig_fumee_title %>' loading='lazy' decoding='async'>
+   <h3 class='display' data-lk='t:sig_fumee_title'><%= t.sig_fumee_title %></h3>
+   <p data-lk='t:sig_fumee_text'><%= t.sig_fumee_text %></p>
+  </article>
+ </div>
+</section>
+<% if(featured && featured.length){ %>
+<section class='vedettes container' data-reveal>
+ <p class='label' data-lk='t:ved_label'><%= t.ved_label %></p>
+ <h2 class='display' data-lk='t:ved_title'><%= t.ved_title %></h2>
+ <p class='ved-echo' data-lk='t:ved_echo'><%= t.ved_echo %></p>
+ <div class='ved-grid'>
+  <% featured.forEach(function(it){ %>
+  <article class='vedette-card'>
+   <img src='<%= it.image_url?it.image_url:"https://placehold.co/800x600/14110C/C9A24B/png?text=Alibaba" %>' data-content-source='menu_items:image_url' data-content-id='<%= it.id %>' alt='<%= (lang==="en"&&it.name_en)?it.name_en:it.name %>' loading='lazy' decoding='async'>
+   <div class='vedette-body'>
+    <h3 class='display' data-content-source='menu_items:name' data-content-id='<%= it.id %>'><%= (lang==="en"&&it.name_en)?it.name_en:it.name %></h3>
+    <% var vd=(lang==="en"&&it.description_en)?it.description_en:it.description; if(vd){ %><p data-content-source='menu_items:description' data-content-id='<%= it.id %>'><%= vd %></p><% } %>
+    <span class='dish-price'><%= formatPrice(it.price) %></span>
+   </div>
+  </article>
+  <% }); %>
+ </div>
+</section>
+<% } %>
+<div class='container'><div class='grate hot'><span></span><span></span></div></div>
+<%- include('partials/order-band') %>
+<div class='container'><div class='grate'><span></span><span></span></div></div>
+<section class='menu-preview container' data-reveal>
+ <p class='label' data-lk='t:menu_label'><%= t.menu_label %></p>
+ <h2 class='display' data-lk='t:menu_title'><%= t.menu_title %></h2>
+ <p class='page-echo' data-lk='t:menu_title_echo'><%= t.menu_title_echo %></p>
+ <div style='margin-top:34px'>
+ <% var trimmed={}; categories.forEach(function(c){ var a=(menuGrouped[c.key]||[]).slice(0,2); if(a.length){ trimmed[c.key]=a; } }); %>
+ <%- include('partials/menu-list', {menuGrouped: trimmed}) %>
+ </div>
+ <p style='margin-top:28px;text-align:center'><a class='link-underline' href='menu' data-lk='t:hero_secondary'><%= t.hero_secondary %></a></p>
+</section>
+<div class='container'><div class='grate'><span></span><span></span></div></div>
+<section class='hours container' data-reveal>
+ <div class='hours-grid'>
+  <div class='map-card'>
+   <div class='map-mono'>A</div>
+   <p class='map-addr' data-setting-key='business_address'><%= settings.business_address||t.address_tbd %></p>
+   <a class='link-underline' target='_blank' rel='noopener' href='https://www.google.com/maps/search/?api=1&query=<%= encodeURIComponent(settings.business_address||"Blainville, QC") %>' data-lk='t:directions'><%= t.directions %></a>
+  </div>
+  <div class='hours-info'>
+   <p class='label' data-lk='t:hours_label'><%= t.hours_label %></p>
+   <h2 class='display' data-lk='t:hours_title'><%= t.hours_title %></h2>
+   <p class='page-echo' data-lk='t:hours_echo'><%= t.hours_echo %></p>
+   <h3 class='hours-sub' data-lk='t:hours_open'><%= t.hours_open %></h3>
+   <p class='hours-list' data-setting-key='hours'><%= settings.hours||'' %></p>
+   <% if(settings.contact_phone){ %><a class='foot-phone' href='tel:<%= settings.contact_phone.replace(/[^0-9+]/g,"") %>' data-setting-key='contact_phone'><%= settings.contact_phone %></a><% } else { %><span class='foot-phone' data-setting-key='contact_phone'><%= t.phone_tbd %></span><% } %>
+  </div>
+ </div>
+</section>
+<div class='container'><div class='grate'><span></span><span></span></div></div>
+<section class='contact' data-reveal>
+ <h2 class='display' data-lk='t:contact_title'><%= t.contact_title %></h2>
+ <p data-lk='t:contact_sub'><%= t.contact_sub %></p>
+ <form id='contactForm' class='c-form' data-ok='<%= t.form_ok %>' data-err='<%= t.form_err %>'>
+  <label data-lk='t:form_name'><%= t.form_name %><input type='text' name='name' required></label>
+  <label data-lk='t:form_email'><%= t.form_email %><input type='email' name='email'></label>
+  <label data-lk='t:form_message'><%= t.form_message %><textarea name='message' required></textarea></label>
+  <button type='submit' class='btn-gold' style='background-color:#C9A24B;color:#120d05' data-lk='t:form_send'><%= t.form_send %></button>
+  <p class='form-status' id='formStatus' role='status'></p>
+ </form>
+</section>
+<%- include('partials/footer') %>

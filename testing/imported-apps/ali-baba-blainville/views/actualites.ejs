@@ -1,0 +1,27 @@
+<%- include('partials/header') %>
+<section class='page-head container'>
+ <p class='label' data-lk='t:news_label'><%= t.news_label %></p>
+ <h1 class='display' data-lk='t:news_title'><%= t.news_title %></h1>
+</section>
+<div class='container'><div class='grate'><span></span><span></span></div></div>
+<section class='news container'>
+<% if(posts && posts.length){ %>
+ <div class='news-grid'>
+ <% posts.forEach(function(p){ %>
+  <article class='news-card'>
+   <a href='actualites/<%= p.id %>'>
+    <% if(p.image_url){ %><img src='<%= p.image_url %>' data-content-source='posts:image_url' data-content-id='<%= p.id %>' alt='<%= p.title %>' loading='lazy' decoding='async'><% } %>
+    <div class='news-body'>
+     <% if(p.category){ %><p class='label' data-content-source='posts:category' data-content-id='<%= p.id %>'><%= p.category %></p><% } %>
+     <h3 class='display' data-content-source='posts:title' data-content-id='<%= p.id %>'><%= p.title %></h3>
+     <span class='news-date'><%= formatDate(p.created_at, lang) %></span>
+    </div>
+   </a>
+  </article>
+ <% }); %>
+ </div>
+<% } else { %>
+ <p class='empty' data-lk='t:news_empty'><%= t.news_empty %></p>
+<% } %>
+</section>
+<%- include('partials/footer') %>

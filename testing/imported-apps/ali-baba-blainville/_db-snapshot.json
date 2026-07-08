@@ -1,0 +1,318 @@
+{
+  "exportedAt": "2026-07-08T03:35:24.472Z",
+  "tables": {
+    "admin_invites": {
+      "columns": [
+        "id",
+        "email",
+        "token",
+        "role",
+        "status",
+        "invited_by",
+        "expires_at",
+        "accepted_at",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_webauthn_credentials": {
+      "columns": [
+        "id",
+        "admin_user_id",
+        "credential_id",
+        "public_key",
+        "counter",
+        "device_name",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_users": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "password_hash",
+        "display_name",
+        "role",
+        "active",
+        "activation_token",
+        "invited_by",
+        "invite_token",
+        "invite_expires_at",
+        "last_login_at",
+        "is_active",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_settings": {
+      "columns": [
+        "key",
+        "value",
+        "updated_at"
+      ],
+      "totalRows": 44,
+      "sampleRows": [
+        {
+          "key": "business_name",
+          "value": "Alibaba Grillade",
+          "updated_at": "2026-07-08T03:35:04.769Z"
+        },
+        {
+          "key": "tagline",
+          "value": "Grillé au bois. Rien d’autre.",
+          "updated_at": "2026-07-08T03:35:04.774Z"
+        },
+        {
+          "key": "contact_email",
+          "value": "alibaba@liasse.tech",
+          "updated_at": "2026-07-08T03:35:04.777Z"
+        },
+        {
+          "key": "contact_phone",
+          "value": "",
+          "updated_at": "2026-07-08T03:35:04.782Z"
+        },
+        {
+          "key": "business_address",
+          "value": "Blainville, Québec",
+          "updated_at": "2026-07-08T03:35:04.785Z"
+        },
+        {
+          "key": "order_url",
+          "value": "",
+          "updated_at": "2026-07-08T03:35:04.789Z"
+        },
+        {
+          "key": "order_platform_name",
+          "value": "Commande en ligne",
+          "updated_at": "2026-07-08T03:35:04.793Z"
+        },
+        {
+          "key": "order_pickup_time",
+          "value": "Prêt en 20–30 min",
+          "updated_at": "2026-07-08T03:35:04.796Z"
+        },
+        {
+          "key": "hours",
+          "value": "Lun – Jeu : 11 h – 22 h\nVen – Sam : 11 h – 23 h\nDim : 12 h – 22 h",
+          "updated_at": "2026-07-08T03:35:04.802Z"
+        },
+        {
+          "key": "_p_hero_image_url",
+          "value": "https://res.cloudinary.com/duhp69meg/image/upload/v1783479017/tapavis_tenant_ali-baba-blainville/build_ali-baba-blainville_1783479017152.png",
+          "updated_at": "2026-07-08T03:35:04.806Z"
+        }
+      ]
+    },
+    "site_visits": {
+      "columns": [
+        "id",
+        "path",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "posts": {
+      "columns": [
+        "id",
+        "title",
+        "content",
+        "image_url",
+        "category",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 3,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Grillé au feu de bois, comme nulle part ailleurs",
+          "content": "Chez Alibaba Grillade, tout passe par notre gril au bois franc — le seul dans les Laurentides. La fumée du charbon donne à nos viandes un goût que le gaz ne pourra jamais imiter. On allume le bois à la main, on attend la braise, puis on saisit.",
+          "image_url": null,
+          "category": "Notre histoire",
+          "published": 1,
+          "created_at": "2026-07-08T03:35:04.863Z",
+          "updated_at": "2026-07-08T03:35:04.863Z"
+        },
+        {
+          "id": 2,
+          "title": "Commandez en ligne pour emporter",
+          "content": "Passez votre commande en quelques clics et venez la chercher bien chaude. Filet mignon, shish taouk, poulet, kafta et maaneh vous attendent, grillés à la commande.",
+          "image_url": null,
+          "category": "Commande",
+          "published": 1,
+          "created_at": "2026-07-08T03:35:04.867Z",
+          "updated_at": "2026-07-08T03:35:04.867Z"
+        },
+        {
+          "id": 3,
+          "title": "Nos brochettes, du marinage à la braise",
+          "content": "Nos viandes marinent de longues heures avant d’être saisies sur la braise vive. C’est long, c’est manuel, et ça goûte la différence à chaque bouchée.",
+          "image_url": null,
+          "category": "Cuisine",
+          "published": 1,
+          "created_at": "2026-07-08T03:35:04.872Z",
+          "updated_at": "2026-07-08T03:35:04.872Z"
+        }
+      ]
+    },
+    "menu_items": {
+      "columns": [
+        "id",
+        "name",
+        "name_en",
+        "description",
+        "description_en",
+        "price",
+        "category",
+        "image_url",
+        "sort_order",
+        "featured",
+        "available",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 8,
+      "sampleRows": [
+        {
+          "id": 1,
+          "name": "Filet Mignon Grillé",
+          "name_en": "Grilled Filet Mignon",
+          "description": "Filet mignon mariné, saisi sur la braise vive, servi avec riz, salade et ail toum.",
+          "description_en": "Marinated filet mignon seared over live coals, served with rice, salad and garlic toum.",
+          "price": 24.99,
+          "category": "Filet Mignon",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783479018/tapavis_tenant_ali-baba-blainville/build_ali-baba-blainville_1783479018246.png",
+          "sort_order": 1,
+          "featured": 1,
+          "available": 1,
+          "created_at": "2026-07-08T03:35:04.828Z",
+          "updated_at": "2026-07-08T03:35:04.828Z"
+        },
+        {
+          "id": 2,
+          "name": "Shish Taouk",
+          "name_en": "Shish Taouk",
+          "description": "Cubes de poulet marinés à l’ail et au citron, grillés au feu de bois.",
+          "description_en": "Chicken cubes marinated in garlic and lemon, grilled over wood fire.",
+          "price": 18.99,
+          "category": "Shish Taouk",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783479019/tapavis_tenant_ali-baba-blainville/build_ali-baba-blainville_1783479019672.png",
+          "sort_order": 1,
+          "featured": 1,
+          "available": 1,
+          "created_at": "2026-07-08T03:35:04.832Z",
+          "updated_at": "2026-07-08T03:35:04.832Z"
+        },
+        {
+          "id": 3,
+          "name": "Assiette Shish Taouk",
+          "name_en": "Shish Taouk Plate",
+          "description": "Généreuse portion avec riz, salade, navets marinés et ail toum.",
+          "description_en": "Generous portion with rice, salad, pickled turnips and garlic toum.",
+          "price": 21.99,
+          "category": "Shish Taouk",
+          "image_url": "",
+          "sort_order": 2,
+          "featured": 0,
+          "available": 1,
+          "created_at": "2026-07-08T03:35:04.835Z",
+          "updated_at": "2026-07-08T03:35:04.835Z"
+        },
+        {
+          "id": 4,
+          "name": "Demi-Poulet Grillé",
+          "name_en": "Half Grilled Chicken",
+          "description": "Demi-poulet mariné, doré lentement sur charbon de bois.",
+          "description_en": "Marinated half chicken, slowly charred over wood charcoal.",
+          "price": 16.99,
+          "category": "Poulet",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783479016/tapavis_tenant_ali-baba-blainville/build_ali-baba-blainville_1783479016834.png",
+          "sort_order": 1,
+          "featured": 1,
+          "available": 1,
+          "created_at": "2026-07-08T03:35:04.839Z",
+          "updated_at": "2026-07-08T03:35:04.839Z"
+        },
+        {
+          "id": 5,
+          "name": "Ailes de Poulet",
+          "name_en": "Chicken Wings",
+          "description": "Ailes marinées et grillées, sauce à l’ail ou piquante.",
+          "description_en": "Marinated grilled wings, garlic or hot sauce.",
+          "price": 13.99,
+          "category": "Poulet",
+          "image_url": "",
+          "sort_order": 2,
+          "featured": 0,
+          "available": 1,
+          "created_at": "2026-07-08T03:35:04.842Z",
+          "updated_at": "2026-07-08T03:35:04.842Z"
+        },
+        {
+          "id": 6,
+          "name": "Kafta Grillée",
+          "name_en": "Grilled Kafta",
+          "description": "Bœuf haché, persil et épices, façonné à la main et grillé au bois.",
+          "description_en": "Ground beef, parsley and spices, hand-shaped and wood-grilled.",
+          "price": 17.99,
+          "category": "Kafta",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783479017/tapavis_tenant_ali-baba-blainville/build_ali-baba-blainville_1783479017787.png",
+          "sort_order": 1,
+          "featured": 1,
+          "available": 1,
+          "created_at": "2026-07-08T03:35:04.849Z",
+          "updated_at": "2026-07-08T03:35:04.849Z"
+        },
+        {
+          "id": 7,
+          "name": "Assiette Kafta",
+          "name_en": "Kafta Plate",
+          "description": "Brochettes de kafta avec riz, salade et pain grillé.",
+          "description_en": "Kafta skewers with rice, salad and grilled bread.",
+          "price": 20.99,
+          "category": "Kafta",
+          "image_url": "",
+          "sort_order": 2,
+          "featured": 0,
+          "available": 1,
+          "created_at": "2026-07-08T03:35:04.854Z",
+          "updated_at": "2026-07-08T03:35:04.854Z"
+        },
+        {
+          "id": 8,
+          "name": "Maaneh",
+          "name_en": "Maaneh",
+          "description": "Saucisse d’agneau épicée, notre spécialité grillée au feu de bois.",
+          "description_en": "Spiced lamb sausage, our wood-fire grilled specialty.",
+          "price": 15.99,
+          "category": "Maaneh",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783479017/tapavis_tenant_ali-baba-blainville/build_ali-baba-blainville_1783479017399.png",
+          "sort_order": 1,
+          "featured": 1,
+          "available": 1,
+          "created_at": "2026-07-08T03:35:04.858Z",
+          "updated_at": "2026-07-08T03:35:04.858Z"
+        }
+      ]
+    },
+    "form_submissions": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "message",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    }
+  }
+}

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Actualités — Admin</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body>
+<div class="admin-wrap">
+<%- include('partials/admin-sidebar') %>
+<main class="admin-main">
+ <header class="admin-top">
+  <button class="menu-toggle" id="sideToggle" aria-label="Menu">≡</button>
+  <div class="top-titles"><h1><%= moduleLabel %></h1><p class="top-sub">Publiez et gérez vos nouvelles, promotions et annonces.</p></div>
+  <button class="btn-primary" id="newBtn">+ Nouvelle actualité</button>
+ </header>
+ <div class="list-toolbar"><input type="search" id="itemSearch" class="search-input" placeholder="Rechercher une actualité..."></div>
+ <div id="itemList" class="list-wrap"></div>
+</main>
+</div>
+<div class="modal" id="modal">
+ <div class="modal-box">
+  <div class="modal-head"><h2 id="modalTitle">Nouveau</h2><button id="closeModal" class="x" aria-label="Fermer">×</button></div>
+  <form id="itemForm"><div id="formFields"></div><div class="modal-actions"><button type="button" class="btn-ghost" id="cancelModal">Annuler</button><button type="submit" class="btn-primary">Enregistrer</button></div></form>
+ </div>
+</div>
+<script>window.ADMIN_CONFIG=<%- JSON.stringify({key:moduleKey,label:moduleLabel,fields:fields,items:items}) %>;</script>
+<script src="public/js/admin.js"></script>
+<script>(function(){var t=document.getElementById('sideToggle'),s=document.querySelector('.admin-side');if(t&&s){t.addEventListener('click',function(){s.classList.toggle('open');});}})();</script>
+</body>
+</html>

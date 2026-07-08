@@ -1,0 +1,126 @@
+{
+  "slug": "ali-baba-blainville",
+  "displayName": "Ali Baba Blainville",
+  "description": "Project: website — Restaurant with online ordering\n\nBusiness: Alibaba Grillade, serving Arabic style grilled meats like filet mignon, shish taouk, chicken, kafta, and maaneh.\n\nGoal: Drive takeout orders.\n\nTarget audience: Hungry customers looking for grilled Arabic food.\n\nKey features:\n- Prominent direct link to third-party ordering platform for takeout.\n- Menu display.\n\nDesign & brand:\n- Colors: Black, gold, and a bit of white.\n- Mood: Modern, luxurious.\n- Signature: The unique, smoky flavor from their special wood grill setup — the only one in the Laurentides.\n- First impression / photos & logo: A bold first impression featuring a high-quality photo of meats grilling on the unique wood charcoal setup.",
+  "status": "active",
+  "generationVersion": 1,
+  "primaryColor": "#6366f1",
+  "iconUrl": "https://res.cloudinary.com/duhp69meg/image/upload/v1783481711/tapavis_tenant_ali-baba-blainville/icon_ali-baba-blainville_1783481711184.png",
+  "enabledAuthMethods": [
+    "webauthn",
+    "sms",
+    "email"
+  ],
+  "notificationsEnabled": true,
+  "geolocationEnabled": true,
+  "customConfig": {
+    "language": "both",
+    "designManifest": {
+      "concept": "Braise Royale",
+      "copyVoice": "Low, confident maître-de-braise French declaratives with a smaller English echo beneath ('Grillé au bois. Rien d’autre. / Wood-grilled. Nothing else.') — no adjective the food can't prove.",
+      "elements": {
+        "blogSurfaced": true,
+        "pages": [
+          "index",
+          "menu",
+          "actualites",
+          "article",
+          "admin"
+        ],
+        "userLogin": false
+      },
+      "heroThesis": "A full-bleed photo of marinated skewers over live wood coals with a headline naming the one true claim — the only wood grill in the Laurentides — and a single gold order button, nothing else between the visitor and dinner.",
+      "iconDirection": "Charcoal-black tile with three thin gold grate lines interrupted by a Fraunces 'A' monogram sitting on the middle rule like a piece of meat on the grill.",
+      "palette": {
+        "accents": [
+          "#E8722C",
+          "#1A1712"
+        ],
+        "ground": "#0B0A08",
+        "ink": "#F5EFE4",
+        "primary": "#C9A24B"
+      },
+      "signatureMove": "The Grate Rule System: every section is separated by twin 1px gold rules spaced like grill grates, carrying a heat gradient (#C9A24B → #E8722C) that intensifies to full heat as it approaches an order CTA, so the whole page feels like one continuous grill.",
+      "summary": "The page reads as one long wood-charcoal grill — black as the coals, gold as the flame — with twin gold grate rules dividing every section and a single gold order button standing between the customer and dinner.",
+      "typography": "Fraunces (700/900, high optical size) for display headlines and dish names — carved and luxurious; Work Sans (400/500) for body and the bilingual echo lines; all-caps Work Sans 600 tracked for labels and the CTA."
+    },
+    "designDirections": {
+      "directions": [
+        {
+          "pitch": "Votre gril au bois est le seul dans les Laurentides — cette direction le met en pleine page dès la première seconde, noir et or comme la braise elle-même, avec un seul bouton doré qui mène directement à la commande.",
+          "concept": "Braise Royale",
+          "palette": {
+            "ink": "#F5EFE4",
+            "ground": "#0B0A08",
+            "accents": [
+              "#E8722C",
+              "#1A1712"
+            ],
+            "primary": "#C9A24B"
+          }
+        },
+        {
+          "pitch": "Cette direction vend le moment — la soirée où toute la rue sent votre fumée — avec une nuit indigo qui fait briller votre feu comme aucun fond noir ordinaire ne le peut, pour que commander chez Alibaba devienne le rituel du vendredi soir.",
+          "concept": "Nuit Indigo",
+          "palette": {
+            "ink": "#ECEAF6",
+            "ground": "#0E0E24",
+            "accents": [
+              "#D4A643",
+              "#F0703A"
+            ],
+            "primary": "#6366F1"
+          }
+        },
+        {
+          "pitch": "Ici, c'est votre menu qui devient l'affiche de luxe — filet mignon, shish taouk, kafta en lettres immenses sur fond papier boucher, lisible en trois secondes par un client affamé, avec le prix et le bouton commander toujours à portée de pouce.",
+          "concept": "Le Grand Menu",
+          "palette": {
+            "ink": "#141210",
+            "ground": "#F7F2E9",
+            "accents": [
+              "#2B2723",
+              "#C1440E"
+            ],
+            "primary": "#B8892E"
+          }
+        }
+      ],
+      "recommendedIndex": 0
+    }
+  },
+  "promptHistory": [
+    {
+      "prompt": "Project: website — Restaurant with online ordering\n\nBusiness: Alibaba Grillade, serving Arabic style grilled meats like filet mignon, shish taouk, chicken, kafta, and maaneh.\n\nGoal: Drive takeout orders.\n\nTarget audience: Hungry customers looking for grilled Arabic food.\n\nKey features:\n- Prominent direct link to third-party ordering platform for takeout.\n- Menu display.\n\nDesign & brand:\n- Colors: Black, gold, and a bit of white.\n- Mood: Modern, luxurious.\n- Signature: The unique, smoky flavor from their special wood grill setup — the only one in the Laurentides.\n- First impression / photos & logo: A bold first impression featuring a high-quality photo of meats grilling on the unique wood charcoal setup.",
+      "timestamp": "2026-07-08T03:35:20.360Z",
+      "changeNotes": "Admin enrichment: (1) Dashboard rebuilt with icon stat cards, a prominent order-link status alert (warns when the online-order URL is missing, confirms when active), richer module cards with live counts, and two grouped settings cards — order settings (URL/platform/pickup time) and operational settings (business name, phone, email, address, hours) all editable via a generic per-card saver hitting PUT /api/admin/settings. (2) Module admin pages (menu + posts) gained descriptive subheaders, a live search/filter, an Annuler button in the modal, and clearer '+ New' CTAs. (3) admin.js upgraded: image thumbnails, status pills for boolean fields (En vedette/Disponible/Publié), formatted price cells, non-blocking toast feedback replacing alert(), in-place list refresh after create/edit/delete (no full reload flicker), confirm-before-delete, focus management, and attribute-safe escaping (escAttr) plus placeholder/hint support in generated forms. (4) admin-styles.css fully modernized with an --admin-brand token, accessible focus-visible states, pills, toasts, alerts, ghost buttons, sticky sidebar/modal header, and responsive grids. All existing routes, data flows, i18n public views, editable-content annotations, and {{IMG_*}} tokens preserved. Menu items (with price/availability/featured) remain fully admin-manageable — the functional CRUD contract is met. No new external keys added.\n\nFixed the routing catch-all so /admin/login and /admin/logout now fall through to the platform's admin handler instead of bouncing to the homepage; removed the dead duplicate catch-all block. Homepage menu section now shows only a 2-dish teaser per category (via a trimmed grouping passed into partials/menu-list) plus a 'see full menu' link, restoring rhythm above the hours/contact sections. Prices now format as $24.99 in English and 24,99 $ in French. Added dotted price leaders and heat-gradient category dividers to the menu, gold focus-visible outlines site-wide, fetchpriority/lazy-loading hints on homepage and news images.",
+      "generationId": 1425,
+      "filesModified": [
+        "manifest.json",
+        "public/css/admin-styles.css",
+        "public/css/styles.css",
+        "public/js/admin.js",
+        "public/js/app.js",
+        "routes.js",
+        "schema.sql",
+        "seed.js",
+        "views/actualites.ejs",
+        "views/admin-menu.ejs",
+        "views/admin-posts.ejs",
+        "views/admin.ejs",
+        "views/article.ejs",
+        "views/index.ejs",
+        "views/menu.ejs",
+        "views/partials/admin-sidebar.ejs",
+        "views/partials/footer.ejs",
+        "views/partials/header.ejs",
+        "views/partials/menu-list.ejs",
+        "views/partials/order-band.ejs"
+      ]
+    }
+  ],
+  "apiVariables": [],
+  "createdAt": "2026-07-08T02:20:07.088Z",
+  "updatedAt": "2026-07-08T03:35:24.264Z",
+  "exportedAt": "2026-07-08T03:35:24.458Z"
+}

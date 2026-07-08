@@ -1,0 +1,13 @@
+<%- include('partials/header') %>
+<section class='page-head container'>
+ <p class='label' data-lk='t:menu_label'><%= t.menu_label %></p>
+ <h1 class='display' data-lk='t:menu_title'><%= t.menu_title %></h1>
+ <p class='page-echo' data-lk='t:menu_title_echo'><%= t.menu_title_echo %></p>
+</section>
+<div class='container'><div class='grate hot'><span></span><span></span></div></div>
+<section class='menu-full container'>
+ <%- include('partials/menu-list') %>
+</section>
+<div class='container'><div class='grate hot'><span></span><span></span></div></div>
+<%- include('partials/order-band') %>
+<%- include('partials/footer') %>

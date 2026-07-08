@@ -1,0 +1,13 @@
+<section class='order-band'>
+ <img class='ob-bg' src='<%= settings._p_about_image_url?settings._p_about_image_url:"https://placehold.co/1600x900/0B0A08/E8722C/png?text=Alibaba" %>' data-setting-key='_p_about_image_url' alt='<%= t.order_img_alt %>'>
+ <div class='ob-veil'></div>
+ <div class='grate hot ob-grate'><span></span><span></span></div>
+ <div class='ob-inner'>
+  <p class='label' data-lk='t:ob_label'><%= t.ob_label %></p>
+  <h2 class='display' data-lk='t:ob_title'><%= t.ob_title %></h2>
+  <p class='ob-echo' data-lk='t:ob_title_echo'><%= t.ob_title_echo %></p>
+  <a class='btn-gold btn-lg' style='background-color:#C9A24B;color:#120d05' href='<%= settings.order_url?settings.order_url:"menu" %>' <%- settings.order_url?'target=_blank rel=noopener':'' %> data-lk='t:ob_cta'><%= t.ob_cta %></a>
+  <p class='ob-meta'><span data-setting-key='order_platform_name'><%= settings.order_platform_name||t.ob_platform_default %></span> · <span data-setting-key='order_pickup_time'><%= settings.order_pickup_time||t.ob_pickup_default %></span></p>
+ </div>
+ <div class='grate hot ob-grate'><span></span><span></span></div>
+</section>

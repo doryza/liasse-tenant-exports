@@ -1,0 +1,19 @@
+<% var __total=0; categories.forEach(function(c){ __total+=((menuGrouped[c.key]||[]).length); }); %>
+<% if(__total===0){ %>
+ <p class='empty' data-lk='t:menu_empty'><%= t.menu_empty %></p>
+<% } else { %>
+ <% categories.forEach(function(cat){ var arr=(menuGrouped[cat.key]||[]); if(arr.length){ %>
+ <div class='menu-cat'>
+  <div class='menu-cat-head'><h3 class='display' data-lk='mcat-<%= menuScope %>-<%= cat.slug %>'><%= lang==="en"?cat.en:cat.fr %></h3></div>
+  <% arr.forEach(function(it){ %>
+  <div class='dish'>
+   <div class='dish-main'>
+    <span class='dish-name display' data-content-source='menu_items:name' data-content-id='<%= it.id %>'><%= (lang==="en"&&it.name_en)?it.name_en:it.name %></span>
+    <% var dd=(lang==="en"&&it.description_en)?it.description_en:it.description; if(dd){ %><span class='dish-desc' data-content-source='menu_items:description' data-content-id='<%= it.id %>'><%= dd %></span><% } %>
+   </div>
+   <span class='dish-price'><%= formatPrice(it.price) %></span>
+  </div>
+  <% }); %>
+ </div>
+ <% } }); %>
+<% } %>
