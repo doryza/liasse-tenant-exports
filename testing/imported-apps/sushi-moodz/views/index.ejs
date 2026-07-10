@@ -8,11 +8,14 @@
         <p class="hero-thesis" data-setting-key="hero_thesis_<%= lang %>"><%= sv('hero_thesis') %></p>
         <div class="hero-cta">
           <a class="btn btn-primary" href="<%= orderUrl %>" <%= orderExternal?'target="_blank" rel="noopener"':'' %> data-lk="t:cta_order" style="background-color:#FF3E4D;color:#fff"><%= t.cta_order %></a>
-          <a class="btn btn-outline" href="reserver" data-lk="t:cta_reserve"><%= t.cta_reserve %></a>
+          <a class="text-link" href="reserver" data-lk="t:cta_reserve"><%= t.cta_reserve %><span aria-hidden="true">↗</span></a>
         </div>
+        <div class="hero-note" aria-hidden="true"><span>鮨</span><i></i><small>Montréal · Québec</small></div>
       </div>
       <div class="hero-media">
         <img src="<%= settings._p_hero_image_url ? settings._p_hero_image_url : 'https://placehold.co/900x1100/0C0D12/FF3E4D/png?text=Sushi+Moodz' %>" data-setting-key="_p_hero_image_url" alt="<%= sv('hero_title')||'Sushi Moodz' %>">
+        <span class="hero-media-label" aria-hidden="true">一貫ずつ、丁寧に<br><small>Façonné à la main</small></span>
+        <span class="hero-stamp" aria-hidden="true">寿<br>司</span>
       </div>
     </div>
   </section>
@@ -31,15 +34,8 @@
   <section class="philosophy">
     <div class="container philo-inner">
       <svg class="enso" viewBox="0 0 200 200" aria-hidden="true"><path d="M150 44 A70 70 0 1 0 168 96" fill="none" stroke="currentColor" stroke-width="15" stroke-linecap="round"/></svg>
+      <span class="philo-kicker" aria-hidden="true">私たちの哲学 · Notre philosophie</span>
       <p class="philo-text" data-setting-key="philosophy_<%= lang %>"><%= sv('philosophy') %></p>
-    </div>
-  </section>
-
-  <section class="sec" id="carte">
-    <div class="container">
-      <div class="kana-crop" aria-hidden="true"><span class="kana-divider">メニュー</span></div>
-      <div class="sec-head"><h2 class="sec-title" data-lk="t:menu_title"><%= t.menu_title %></h2><span class="sec-en"><%= t.menu_en %></span></div>
-      <%- include('partials/menu') %>
     </div>
   </section>
 
@@ -47,8 +43,10 @@
   <% if(sigs.length){ %>
   <section class="sec signatures-sec" id="signatures">
     <div class="container">
-      <div class="sec-head"><h2 class="sec-title" data-lk="t:sig_title"><%= t.sig_title %></h2><span class="sec-en"><%= t.sig_en %></span></div>
-      <p class="sec-intro" data-lk="t:sig_intro"><%= t.sig_intro %></p>
+      <div class="section-intro-row">
+        <div><span class="section-index">01 · おすすめ</span><div class="sec-head"><h2 class="sec-title" data-lk="t:sig_title"><%= t.sig_title %></h2><span class="sec-en"><%= t.sig_en %></span></div></div>
+        <div><p class="sec-intro" data-lk="t:sig_intro"><%= t.sig_intro %></p><a class="text-link" href="carte" data-lk="t:nav_menu"><%= t.nav_menu %><span aria-hidden="true">↗</span></a></div>
+      </div>
       <div class="signatures">
         <% sigs.forEach(function(s,i){ %>
         <article class="sig">
@@ -63,6 +61,7 @@
 
   <section class="order-band">
     <div class="container order-band-inner">
+      <span class="order-kana" aria-hidden="true">今夜は寿司</span>
       <h2 data-setting-key="order_band_<%= lang %>"><%= sv('order_band') || t.order_band_title %></h2>
       <a class="btn btn-white" href="<%= orderUrl %>" <%= orderExternal?'target="_blank" rel="noopener"':'' %> data-lk="t:order_band_cta"><%= t.order_band_cta %></a>
     </div>
@@ -70,7 +69,7 @@
 
   <section class="sec" id="galerie">
     <div class="container">
-      <div class="kana-crop" aria-hidden="true"><span class="kana-divider blue">ギャラリー</span></div>
+      <span class="section-index">02 · ギャラリー</span>
       <div class="sec-head"><h2 class="sec-title" data-lk="t:gallery_title"><%= t.gallery_title %></h2><span class="sec-en"><%= t.gallery_en %></span></div>
       <% if(typeof galleryItems!=='undefined' && galleryItems.length){ %>
       <div class="gallery-grid">
@@ -85,6 +84,7 @@
 
   <section class="sec reserve-sec" id="reserver">
     <div class="container narrow">
+      <span class="section-index">03 · ご予約</span>
       <div class="sec-head"><h2 class="sec-title" data-lk="t:reserve_title"><%= t.reserve_title %></h2><span class="sec-en"><%= t.reserve_en %></span></div>
       <p class="sec-intro" data-lk="t:reserve_intro"><%= t.reserve_intro %></p>
       <%- include('partials/reserve-form') %>
@@ -93,6 +93,7 @@
 
   <section class="sec" id="contact">
     <div class="container">
+      <span class="section-index">04 · アクセス</span>
       <div class="sec-head"><h2 class="sec-title" data-lk="t:contact_title"><%= t.contact_title %></h2><span class="sec-en"><%= t.contact_en %></span></div>
       <div class="contact-split">
         <div><%- include('partials/contact-form') %></div>
