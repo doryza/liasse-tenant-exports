@@ -1,0 +1,19 @@
+<% var cats = CATS.filter(function(c){ return (typeof menuItems!=='undefined') && menuItems.some(function(m){return m.category===c.key;}); }); %>
+<% if(typeof menuItems!=='undefined' && menuItems.length){ %>
+<div class="menu-filter">
+  <button class="chip active js-cat-chip" data-cat="all"><%= t.menu_all %></button>
+  <% cats.forEach(function(c){ %><button class="chip js-cat-chip" data-cat="<%= c.key %>"><%= (lang==='en')?c.en:c.fr %></button><% }); %>
+</div>
+<div class="menu-list">
+  <% menuItems.forEach(function(m){ %>
+  <div class="menu-item" data-category="<%= m.category %>">
+    <div class="mi-main">
+      <span class="mi-name" data-content-source="menu_items:name_fr" data-content-id="<%= m.id %>"><%= (lang==='en'&&m.name_en)?m.name_en:m.name_fr %></span>
+      <span class="mi-leader" aria-hidden="true"></span>
+      <span class="mi-price"><%= formatPrice(m.price) %></span>
+    </div>
+    <% var d=(lang==='en'&&m.description_en)?m.description_en:(m.description_fr||''); if(d){ %><p class="mi-desc" data-content-source="menu_items:description_fr" data-content-id="<%= m.id %>"><%= d %><% if(m.dietary){ %> <span class="mi-diet"><%= m.dietary %></span><% } %></p><% } else if(m.dietary){ %><p class="mi-desc"><span class="mi-diet"><%= m.dietary %></span></p><% } %>
+  </div>
+  <% }); %>
+</div>
+<% } else { %><p class="empty" data-lk="t:empty_menu"><%= t.empty_menu %></p><% } %>

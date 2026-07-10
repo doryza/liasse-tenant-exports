@@ -1,0 +1,525 @@
+{
+  "exportedAt": "2026-07-10T05:05:30.830Z",
+  "tables": {
+    "admin_invites": {
+      "columns": [
+        "id",
+        "email",
+        "token",
+        "role",
+        "status",
+        "invited_by",
+        "expires_at",
+        "accepted_at",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_users": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "password_hash",
+        "display_name",
+        "role",
+        "active",
+        "activation_token",
+        "invited_by",
+        "invite_token",
+        "invite_expires_at",
+        "last_login_at",
+        "is_active",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_webauthn_credentials": {
+      "columns": [
+        "id",
+        "admin_user_id",
+        "credential_id",
+        "public_key",
+        "counter",
+        "device_name",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_settings": {
+      "columns": [
+        "key",
+        "value",
+        "updated_at"
+      ],
+      "totalRows": 48,
+      "sampleRows": [
+        {
+          "key": "business_name",
+          "value": "Sushi Moodz",
+          "updated_at": "2026-07-10T05:05:07.980Z"
+        },
+        {
+          "key": "tagline_fr",
+          "value": "Sushi · Nigiri · Maki — table japonaise",
+          "updated_at": "2026-07-10T05:05:07.984Z"
+        },
+        {
+          "key": "tagline_en",
+          "value": "Sushi · Nigiri · Maki — a Japanese table",
+          "updated_at": "2026-07-10T05:05:07.989Z"
+        },
+        {
+          "key": "hero_title_fr",
+          "value": "Sushi Moodz",
+          "updated_at": "2026-07-10T05:05:07.994Z"
+        },
+        {
+          "key": "hero_title_en",
+          "value": "Sushi Moodz",
+          "updated_at": "2026-07-10T05:05:07.999Z"
+        },
+        {
+          "key": "hero_thesis_fr",
+          "value": "Le riz est tiède, le poisson est froid. Le sushi comme une calligraphie : précis, épuré, inoubliable.",
+          "updated_at": "2026-07-10T05:05:08.005Z"
+        },
+        {
+          "key": "hero_thesis_en",
+          "value": "Warm rice, cold fish. Sushi treated like calligraphy — precise, spare, unforgettable.",
+          "updated_at": "2026-07-10T05:05:08.013Z"
+        },
+        {
+          "key": "philosophy_fr",
+          "value": "Chaque pièce est façonnée à la main, à l’instant. Rien de superflu, rien qui manque.",
+          "updated_at": "2026-07-10T05:05:08.018Z"
+        },
+        {
+          "key": "philosophy_en",
+          "value": "Every piece is shaped by hand, to order. Nothing extra, nothing missing.",
+          "updated_at": "2026-07-10T05:05:08.023Z"
+        },
+        {
+          "key": "order_band_fr",
+          "value": "L’envie ne se discute pas.",
+          "updated_at": "2026-07-10T05:05:08.027Z"
+        }
+      ]
+    },
+    "site_visits": {
+      "columns": [
+        "id",
+        "path",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "posts": {
+      "columns": [
+        "id",
+        "title",
+        "content",
+        "image_url",
+        "category",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Un nouveau menu de saison",
+          "content": "Le chef renouvelle la carte au rythme de la pêche. Ce mois-ci : sériole, saint-jacques et oursin quand la mer le permet.",
+          "image_url": "",
+          "category": "Nouvelles",
+          "published": 1,
+          "created_at": "2026-07-10T05:05:08.198Z",
+          "updated_at": "2026-07-10T05:05:08.198Z"
+        },
+        {
+          "id": 2,
+          "title": "Nos poissons, notre exigence",
+          "content": "Livraison quotidienne, découpe le matin, service le soir. Nous ne travaillons que le poisson que nous servirions à notre propre table.",
+          "image_url": "",
+          "category": "Coulisses",
+          "published": 1,
+          "created_at": "2026-07-10T05:05:08.203Z",
+          "updated_at": "2026-07-10T05:05:08.203Z"
+        },
+        {
+          "id": 3,
+          "title": "Réservez pour les fêtes",
+          "content": "Les plateaux de partage se réservent 48 h à l’avance pour les grandes tablées. Écrivez-nous ou utilisez le formulaire de réservation.",
+          "image_url": "",
+          "category": "Annonces",
+          "published": 1,
+          "created_at": "2026-07-10T05:05:08.209Z",
+          "updated_at": "2026-07-10T05:05:08.209Z"
+        },
+        {
+          "id": 4,
+          "title": "Atelier makis — bientôt",
+          "content": "Une soirée pour apprendre à rouler ses propres makis avec le chef. Places limitées, détails à venir.",
+          "image_url": "",
+          "category": "Événements",
+          "published": 1,
+          "created_at": "2026-07-10T05:05:08.213Z",
+          "updated_at": "2026-07-10T05:05:08.213Z"
+        }
+      ]
+    },
+    "menu_items": {
+      "columns": [
+        "id",
+        "name_fr",
+        "name_en",
+        "description_fr",
+        "description_en",
+        "price",
+        "category",
+        "image_url",
+        "dietary",
+        "featured",
+        "available",
+        "sort_order",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 17,
+      "sampleRows": [
+        {
+          "id": 1,
+          "name_fr": "Nigiri saumon",
+          "name_en": "Salmon nigiri",
+          "description_fr": "Saumon frais, riz vinaigré tiède.",
+          "description_en": "Fresh salmon over warm seasoned rice.",
+          "price": 4.25,
+          "category": "nigiri",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783657217/tapavis_tenant_sushi-moodz/build_sushi-moodz_1783657217689.png",
+          "dietary": "",
+          "featured": 1,
+          "available": 1,
+          "sort_order": 10,
+          "created_at": "2026-07-10T05:05:08.079Z",
+          "updated_at": "2026-07-10T05:05:08.079Z"
+        },
+        {
+          "id": 2,
+          "name_fr": "Nigiri thon",
+          "name_en": "Tuna nigiri",
+          "description_fr": "Thon rouge, une pointe de wasabi frais.",
+          "description_en": "Bluefin tuna, a touch of fresh wasabi.",
+          "price": 4.75,
+          "category": "nigiri",
+          "image_url": "",
+          "dietary": "",
+          "featured": 0,
+          "available": 1,
+          "sort_order": 20,
+          "created_at": "2026-07-10T05:05:08.083Z",
+          "updated_at": "2026-07-10T05:05:08.083Z"
+        },
+        {
+          "id": 3,
+          "name_fr": "Nigiri crevette",
+          "name_en": "Shrimp nigiri",
+          "description_fr": "Crevette pochée, riz tiède.",
+          "description_en": "Poached shrimp, warm rice.",
+          "price": 3.95,
+          "category": "nigiri",
+          "image_url": "",
+          "dietary": "",
+          "featured": 0,
+          "available": 1,
+          "sort_order": 30,
+          "created_at": "2026-07-10T05:05:08.088Z",
+          "updated_at": "2026-07-10T05:05:08.088Z"
+        },
+        {
+          "id": 4,
+          "name_fr": "Nigiri anguille",
+          "name_en": "Eel nigiri",
+          "description_fr": "Anguille grillée, sauce unagi.",
+          "description_en": "Grilled eel, unagi glaze.",
+          "price": 5.25,
+          "category": "nigiri",
+          "image_url": "",
+          "dietary": "grillé",
+          "featured": 0,
+          "available": 1,
+          "sort_order": 40,
+          "created_at": "2026-07-10T05:05:08.094Z",
+          "updated_at": "2026-07-10T05:05:08.094Z"
+        },
+        {
+          "id": 5,
+          "name_fr": "Rouleau California",
+          "name_en": "California roll",
+          "description_fr": "Crabe, avocat, concombre, sésame.",
+          "description_en": "Crab, avocado, cucumber, sesame.",
+          "price": 6.5,
+          "category": "maki",
+          "image_url": "",
+          "dietary": "",
+          "featured": 0,
+          "available": 1,
+          "sort_order": 50,
+          "created_at": "2026-07-10T05:05:08.098Z",
+          "updated_at": "2026-07-10T05:05:08.098Z"
+        },
+        {
+          "id": 6,
+          "name_fr": "Maki épicé au thon",
+          "name_en": "Spicy tuna roll",
+          "description_fr": "Thon, mayo épicée, ciboule.",
+          "description_en": "Tuna, spicy mayo, scallion.",
+          "price": 7.25,
+          "category": "maki",
+          "image_url": "",
+          "dietary": "épicé",
+          "featured": 0,
+          "available": 1,
+          "sort_order": 60,
+          "created_at": "2026-07-10T05:05:08.103Z",
+          "updated_at": "2026-07-10T05:05:08.103Z"
+        },
+        {
+          "id": 7,
+          "name_fr": "Maki concombre-avocat",
+          "name_en": "Cucumber-avocado roll",
+          "description_fr": "Concombre croquant, avocat.",
+          "description_en": "Crisp cucumber, avocado.",
+          "price": 5.5,
+          "category": "maki",
+          "image_url": "",
+          "dietary": "végé",
+          "featured": 0,
+          "available": 1,
+          "sort_order": 70,
+          "created_at": "2026-07-10T05:05:08.107Z",
+          "updated_at": "2026-07-10T05:05:08.107Z"
+        },
+        {
+          "id": 8,
+          "name_fr": "Dragon roll",
+          "name_en": "Dragon roll",
+          "description_fr": "Crevette tempura, anguille, avocat.",
+          "description_en": "Tempura shrimp, eel, avocado.",
+          "price": 12.95,
+          "category": "maki",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783657219/tapavis_tenant_sushi-moodz/build_sushi-moodz_1783657219415.png",
+          "dietary": "",
+          "featured": 1,
+          "available": 1,
+          "sort_order": 80,
+          "created_at": "2026-07-10T05:05:08.111Z",
+          "updated_at": "2026-07-10T05:05:08.111Z"
+        },
+        {
+          "id": 9,
+          "name_fr": "Sashimi de saumon (5 mcx)",
+          "name_en": "Salmon sashimi (5 pc)",
+          "description_fr": "Cinq tranches épaisses de saumon.",
+          "description_en": "Five thick slices of salmon.",
+          "price": 11.5,
+          "category": "sashimi",
+          "image_url": "",
+          "dietary": "",
+          "featured": 0,
+          "available": 1,
+          "sort_order": 90,
+          "created_at": "2026-07-10T05:05:08.115Z",
+          "updated_at": "2026-07-10T05:05:08.115Z"
+        },
+        {
+          "id": 10,
+          "name_fr": "Sashimi assorti (9 mcx)",
+          "name_en": "Assorted sashimi (9 pc)",
+          "description_fr": "Saumon, thon, poisson blanc du jour.",
+          "description_en": "Salmon, tuna, white fish of the day.",
+          "price": 18.95,
+          "category": "sashimi",
+          "image_url": "",
+          "dietary": "",
+          "featured": 0,
+          "available": 1,
+          "sort_order": 100,
+          "created_at": "2026-07-10T05:05:08.119Z",
+          "updated_at": "2026-07-10T05:05:08.119Z"
+        }
+      ]
+    },
+    "gallery": {
+      "columns": [
+        "id",
+        "title",
+        "caption_fr",
+        "caption_en",
+        "image_url",
+        "sort_order",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 8,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Comptoir",
+          "caption_fr": "Le comptoir",
+          "caption_en": "The counter",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783657218/tapavis_tenant_sushi-moodz/build_sushi-moodz_1783657218110.png",
+          "sort_order": 10,
+          "created_at": "2026-07-10T05:05:08.159Z",
+          "updated_at": "2026-07-10T05:05:08.159Z"
+        },
+        {
+          "id": 2,
+          "title": "Mains",
+          "caption_fr": "Les mains",
+          "caption_en": "The hands",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783657218/tapavis_tenant_sushi-moodz/build_sushi-moodz_1783657218072.png",
+          "sort_order": 20,
+          "created_at": "2026-07-10T05:05:08.163Z",
+          "updated_at": "2026-07-10T05:05:08.163Z"
+        },
+        {
+          "id": 3,
+          "title": "Sashimi",
+          "caption_fr": "Sashimi",
+          "caption_en": "Sashimi",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783657217/tapavis_tenant_sushi-moodz/build_sushi-moodz_1783657217111.png",
+          "sort_order": 30,
+          "created_at": "2026-07-10T05:05:08.167Z",
+          "updated_at": "2026-07-10T05:05:08.167Z"
+        },
+        {
+          "id": 4,
+          "title": "Découpe",
+          "caption_fr": "La découpe",
+          "caption_en": "The cut",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783657218/tapavis_tenant_sushi-moodz/build_sushi-moodz_1783657218152.png",
+          "sort_order": 40,
+          "created_at": "2026-07-10T05:05:08.173Z",
+          "updated_at": "2026-07-10T05:05:08.173Z"
+        },
+        {
+          "id": 5,
+          "title": "Saké",
+          "caption_fr": "Le saké",
+          "caption_en": "The sake",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783657217/tapavis_tenant_sushi-moodz/build_sushi-moodz_1783657217523.png",
+          "sort_order": 50,
+          "created_at": "2026-07-10T05:05:08.178Z",
+          "updated_at": "2026-07-10T05:05:08.178Z"
+        },
+        {
+          "id": 6,
+          "title": "Mochi",
+          "caption_fr": "Le mochi",
+          "caption_en": "The mochi",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783657217/tapavis_tenant_sushi-moodz/build_sushi-moodz_1783657217331.png",
+          "sort_order": 60,
+          "created_at": "2026-07-10T05:05:08.182Z",
+          "updated_at": "2026-07-10T05:05:08.182Z"
+        },
+        {
+          "id": 7,
+          "title": "Salle",
+          "caption_fr": "La salle",
+          "caption_en": "The room",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783657218/tapavis_tenant_sushi-moodz/build_sushi-moodz_1783657218791.png",
+          "sort_order": 70,
+          "created_at": "2026-07-10T05:05:08.186Z",
+          "updated_at": "2026-07-10T05:05:08.186Z"
+        },
+        {
+          "id": 8,
+          "title": "Nigiri",
+          "caption_fr": "Nigiri",
+          "caption_en": "Nigiri",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783657217/tapavis_tenant_sushi-moodz/build_sushi-moodz_1783657217689.png",
+          "sort_order": 80,
+          "created_at": "2026-07-10T05:05:08.191Z",
+          "updated_at": "2026-07-10T05:05:08.191Z"
+        }
+      ]
+    },
+    "reservations": {
+      "columns": [
+        "id",
+        "name",
+        "phone",
+        "email",
+        "res_date",
+        "res_time",
+        "guests",
+        "notes",
+        "status",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 2,
+      "sampleRows": [
+        {
+          "id": 1,
+          "name": "Marie Tremblay",
+          "phone": "514 555 0110",
+          "email": "",
+          "res_date": "2024-12-31",
+          "res_time": "19:30",
+          "guests": 4,
+          "notes": "Table près de la fenêtre si possible",
+          "status": "nouvelle",
+          "image_url": null,
+          "created_at": "2026-07-10T05:05:08.220Z",
+          "updated_at": "2026-07-10T05:05:08.220Z"
+        },
+        {
+          "id": 2,
+          "name": "Alex Nguyen",
+          "phone": "514 555 0198",
+          "email": "",
+          "res_date": "2025-01-04",
+          "res_time": "18:00",
+          "guests": 2,
+          "notes": "Allergie aux arachides",
+          "status": "confirmée",
+          "image_url": null,
+          "created_at": "2026-07-10T05:05:08.225Z",
+          "updated_at": "2026-07-10T05:05:08.225Z"
+        }
+      ]
+    },
+    "form_submissions": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "phone",
+        "message",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 1,
+      "sampleRows": [
+        {
+          "id": 1,
+          "name": "Julien Roy",
+          "email": "julien@exemple.com",
+          "phone": "",
+          "message": "Faites-vous des plateaux végétariens pour un groupe de six ?",
+          "image_url": null,
+          "created_at": "2026-07-10T05:05:08.232Z",
+          "updated_at": "2026-07-10T05:05:08.232Z"
+        }
+      ]
+    }
+  }
+}

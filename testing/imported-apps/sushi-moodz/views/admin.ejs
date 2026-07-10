@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tableau de bord — <%= (settings.business_name||'Sushi Moodz') %></title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+<link href="https://fonts.googleapis.com/css2?family=Karla:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="admin-body">
+<%- include('partials/admin-sidebar') %>
+<main class="admin-main">
+  <button class="a-hb" id="ahb" aria-label="Menu">☰</button>
+  <header class="a-head">
+    <div><h1>Tableau de bord</h1><p class="a-sub">Aperçu de votre restaurant et de l’activité récente.</p></div>
+    <a class="a-btn ghost" href="." target="_blank">↗ Voir le site</a>
+  </header>
+  <div class="stat-grid">
+    <a class="stat-card" href="admin/menu_items"><span class="stat-num"><%= stats.menu %></span><span class="stat-lbl">Plats au menu</span></a>
+    <a class="stat-card" href="admin/gallery"><span class="stat-num"><%= stats.gallery %></span><span class="stat-lbl">Photos</span></a>
+    <a class="stat-card" href="admin/reservations"><span class="stat-num"><%= stats.reservations %></span><span class="stat-lbl">Réservations</span></a>
+    <a class="stat-card" href="admin/form_submissions"><span class="stat-num"><%= stats.messages %></span><span class="stat-lbl">Messages</span></a>
+    <div class="stat-card"><span class="stat-num"><%= stats.totalVisits %></span><span class="stat-lbl">Visites totales</span></div>
+    <div class="stat-card"><span class="stat-num"><%= stats.recentVisits %></span><span class="stat-lbl">Visites (7 j)</span></div>
+    <div class="stat-card"><span class="stat-num"><%= stats.pushCount %></span><span class="stat-lbl">Abonnés push</span></div>
+    <a class="stat-card" href="admin/posts"><span class="stat-num"><%= stats.posts %></span><span class="stat-lbl">Actualités</span></a>
+  </div>
+  <section class="a-panel">
+    <h2>Actions rapides</h2>
+    <div class="a-quick">
+      <a class="a-btn primary" href="admin/menu_items">+ Gérer le menu</a>
+      <a class="a-btn ghost" href="admin/gallery">Ajouter des photos</a>
+      <a class="a-btn ghost" href="admin/reservations">Réservations</a>
+      <a class="a-btn ghost" href="admin/posts">Publier une actualité</a>
+    </div>
+  </section>
+  <div class="a-cols">
+    <section class="a-panel"><h2>Réservations récentes</h2>
+      <% if(recentRes && recentRes.length){ %><table class="a-table"><thead><tr><th>Nom</th><th>Quand</th><th>Couv.</th><th>Statut</th></tr></thead><tbody>
+        <% recentRes.forEach(function(r){ var st=(r.status||'nouvelle'); var cls=st==='confirmée'?'ok':(st==='annulée'?'no':'new'); %><tr><td><%= r.name %></td><td><%= r.res_date %> <%= r.res_time %></td><td><%= r.guests %></td><td><span class="a-badge <%= cls %>"><%= st %></span></td></tr><% }); %>
+      </tbody></table><a class="a-link" href="admin/reservations">Gérer les réservations →</a><% } else { %><p class="a-empty">Aucune réservation pour l’instant.</p><% } %>
+    </section>
+    <section class="a-panel"><h2>Messages récents</h2>
+      <% if(recentMsg && recentMsg.length){ %><ul class="a-list"><% recentMsg.forEach(function(m){ %><li><strong><%= m.name %></strong><% if(m.email){ %> · <span class="a-muted"><%= m.email %></span><% } %><br><span class="a-muted"><%= (m.message||'').slice(0,110) %></span></li><% }); %></ul><a class="a-link" href="admin/form_submissions">Voir les messages →</a><% } else { %><p class="a-empty">Aucun message pour l’instant.</p><% } %>
+    </section>
+  </div>
+  <section class="a-panel">
+    <h2>Réglages du restaurant</h2>
+    <p class="a-hint">Ces réglages alimentent directement le site public : lien de commande, coordonnées, heures et carte.</p>
+    <div class="settings-form">
+      <label>Lien de commande (plateforme tierce)<input id="set-order_url" value="<%= settings.order_url||'' %>" placeholder="https://…"><small class="a-desc">Le bouton « Commander » du site renvoie vers ce lien. Laissez vide pour rediriger vers la réservation.</small></label>
+      <div class="two"><label>Téléphone<input id="set-contact_phone" value="<%= settings.contact_phone||'' %>"></label><label>Adresse<input id="set-business_address" value="<%= settings.business_address||'' %>"></label></div>
+      <div class="two"><label>Heures (FR)<textarea id="set-hours_fr" rows="3"><%= settings.hours_fr||'' %></textarea></label><label>Heures (EN)<textarea id="set-hours_en" rows="3"><%= settings.hours_en||'' %></textarea></label></div>
+      <div class="two"><label>Latitude carte<input id="set-map_lat" value="<%= settings.map_lat||'' %>"></label><label>Longitude carte<input id="set-map_lng" value="<%= settings.map_lng||'' %>"></label></div>
+      <div class="settings-actions"><button class="a-btn primary" id="saveSettings">Enregistrer les réglages</button> <span id="setmsg" class="a-savemsg"></span></div>
+    </div>
+  </section>
+</main>
+<script>
+var ahb=document.getElementById('ahb'); if(ahb) ahb.addEventListener('click',function(){document.body.classList.toggle('sb-open');});
+document.getElementById('saveSettings').addEventListener('click',async function(){
+  var keys=['order_url','contact_phone','business_address','hours_fr','hours_en','map_lat','map_lng'];
+  var el=document.getElementById('setmsg'); el.textContent='Enregistrement…'; el.className='a-savemsg';
+  try{ for(var i=0;i<keys.length;i++){ var k=keys[i]; var v=document.getElementById('set-'+k).value; await fetch('api/admin/settings',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({key:k,value:v})}); } el.textContent='Enregistré ✓'; }
+  catch(e){ el.textContent='Erreur — réessayez'; }
+});
+</script>
+</body>
+</html>

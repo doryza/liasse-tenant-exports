@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title><%= title %> — Admin</title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+<link href="https://fonts.googleapis.com/css2?family=Karla:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="admin-body">
+<%- include('partials/admin-sidebar') %>
+<main class="admin-main">
+  <button class="a-hb" id="ahb" aria-label="Menu">☰</button>
+  <header class="a-head"><div><h1><%= title %></h1><p class="a-sub">Créez, modifiez et supprimez vos éléments directement ici.</p></div><button class="a-btn primary" id="btnNew">+ Nouveau</button></header>
+  <div class="a-toolbar"><input id="search" class="a-search" placeholder="Rechercher…"><select id="filter" class="a-filter" style="display:none"></select><span id="count" class="a-count"></span></div>
+  <div class="a-tablewrap"><table class="a-table"><thead id="thead"></thead><tbody id="tbody"><tr><td class="a-empty">Chargement…</td></tr></tbody></table></div>
+</main>
+<div class="a-modal" id="modal"><div class="a-modal-box"><div class="a-modal-head"><h3 id="modalTitle">Nouveau</h3><button id="mClose" class="a-x" aria-label="Fermer">×</button></div><form id="mForm" class="a-form"></form><div class="a-modal-foot"><button class="a-btn ghost" id="mCancel">Annuler</button><button class="a-btn primary" id="mSave">Enregistrer</button></div></div></div>
+<div class="a-toast" id="toast"></div>
+<script>var MODULE_KEY='<%- moduleKey %>', MODULE_LABEL='<%- moduleLabel %>';</script>
+<script src="public/js/admin.js"></script>
+</body>
+</html>

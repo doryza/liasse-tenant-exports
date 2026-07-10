@@ -1,0 +1,10 @@
+<form class="form-card js-contact-form" novalidate>
+  <div class="form-row">
+    <div class="field"><label data-lk="t:f_name"><%= t.f_name %> *</label><input name="name" required placeholder="<%= t.ph_name %>"></div>
+    <div class="field"><label data-lk="t:f_email"><%= t.f_email %></label><input type="email" name="email" placeholder="<%= t.ph_email %>"></div>
+  </div>
+  <div class="field"><label data-lk="t:f_phone"><%= t.f_phone %></label><input name="phone" placeholder="<%= t.ph_phone %>"></div>
+  <div class="field"><label data-lk="t:f_message"><%= t.f_message %> *</label><textarea name="message" rows="5" required placeholder="<%= t.ph_message %>"></textarea></div>
+  <button type="submit" class="btn btn-primary" style="background-color:#B8232F;color:#fff"><%= t.submit_contact %></button>
+  <p class="form-msg" hidden></p>
+</form>

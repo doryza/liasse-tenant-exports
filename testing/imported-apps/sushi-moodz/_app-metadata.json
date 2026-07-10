@@ -1,0 +1,139 @@
+{
+  "slug": "sushi-moodz",
+  "displayName": "Sushi Moodz",
+  "description": "Project: website — Restaurant de sushis\n\nBusiness: Restaurant de sushis avec un menu à présenter.\n\nGoal: Présenter le menu, permettre les commandes en ligne via une plateforme tierce, et faciliter le contact/réservation.\n\nTarget audience: Clients locaux souhaitant commander ou visiter.\n\nKey features:\n- Présentation du menu complet\n- Bouton de commande vers plateforme tierce\n- Carte avec emplacement\n- Formulaire de contact\n- Formulaire de réservation\n- Galerie de photos\n\nDesign & brand:\n- Colors: Rouge et blanc.\n- Mood: Style japonais, dessins ou style anime.\n- Signature: Plats mémorables mis en valeur par des photos (galerie).\n- First impression: Unspecified.",
+  "status": "active",
+  "generationVersion": 1,
+  "primaryColor": "#2858ef",
+  "iconUrl": "https://res.cloudinary.com/duhp69meg/image/upload/v1783659915/tapavis_tenant_sushi-moodz/icon_sushi-moodz_1783659915340.png",
+  "enabledAuthMethods": [
+    "webauthn",
+    "sms",
+    "email"
+  ],
+  "notificationsEnabled": true,
+  "geolocationEnabled": true,
+  "customConfig": {
+    "language": "both",
+    "businessName": "Sushi Moodz",
+    "contactEmail": "dorysol@liasse.tech",
+    "contactPhone": "4387630060",
+    "designManifest": {
+      "concept": "Sumi & Vermillon",
+      "copyVoice": "Quiet omakase host — short declarative present-tense French, sensory but never gushing, English following in a lighter register.",
+      "elements": {
+        "blogSurfaced": false,
+        "pages": [
+          "index",
+          "carte",
+          "galerie",
+          "reserver",
+          "contact",
+          "admin"
+        ],
+        "userLogin": false
+      },
+      "heroThesis": "The homepage opens on one perfect nigiri on warm washi white in 65% negative space — proof the kitchen treats sushi as calligraphy: precise, spare, unforgettable.",
+      "iconDirection": "A vermilion hanko-stamp rounded square on washi white, with a negative-space 'S' carved as a single confident brushstroke.",
+      "palette": {
+        "accents": [
+          "#E9E2D3",
+          "#2858EF"
+        ],
+        "ground": "#FCFAF5",
+        "ink": "#1A1A1A",
+        "primary": "#B8232F"
+      },
+      "signatureMove": "Every section title pairs a horizontal French headline with its English translation set as a thin vertical ink rail (writing-mode: vertical-rl), and menu categories are chosen via vermilion hanko-stamp chips that press to a filled seal on click.",
+      "summary": "A washi-white gallery where each dish is treated like an ink-print exhibit — calm negative space, a single deep vermilion sealing the identity, and a bilingual vertical rail turning translation itself into ornament.",
+      "typography": "Shippori Mincho 600/700 for display headlines, the wordmark and prices (its Japanese-serif bones carry the culture); Karla 400/600 for body, menu and forms."
+    },
+    "businessAddress": null,
+    "designDirections": {
+      "directions": [
+        {
+          "pitch": "Vos assiettes deviennent des estampes : un blanc washi calme, un rouge vermillon posé comme un sceau, et chaque photo de plat qui respire — c'est exactement l'expérience japonaise raffinée que vos clients viennent chercher, en salle comme à l'écran.",
+          "concept": "Sumi & Vermillon",
+          "palette": {
+            "ink": "#1A1A1A",
+            "ground": "#FCFAF5",
+            "accents": [
+              "#E9E2D3",
+              "#2858EF"
+            ],
+            "primary": "#B8232F"
+          }
+        },
+        {
+          "pitch": "Pour les fringales de 21h : un site sombre et lumineux comme une izakaya de Tokyo, où le bouton Commander brille littéralement dans la nuit — pensé pour transformer l'envie du soir en commande en deux clics.",
+          "concept": "Néon Izakaya",
+          "palette": {
+            "ink": "#F5F3EE",
+            "ground": "#0C0D12",
+            "accents": [
+              "#2858EF",
+              "#15161C"
+            ],
+            "primary": "#FF3E4D"
+          }
+        },
+        {
+          "pitch": "L'indigo sur porcelaine blanche vous distingue de tous les restos sushi rouge-et-blanc de la ville : chaque plat est présenté comme une pièce de collection, et le rouge — réservé aux prix et au bouton Commander — guide l'œil exactement là où votre chiffre d'affaires se joue.",
+          "concept": "Porcelaine Indigo",
+          "palette": {
+            "ink": "#10213F",
+            "ground": "#F7F8FA",
+            "accents": [
+              "#B8232F",
+              "#DDE4F5"
+            ],
+            "primary": "#2858EF"
+          }
+        }
+      ],
+      "recommendedIndex": 0
+    }
+  },
+  "promptHistory": [
+    {
+      "prompt": "Project: website — Restaurant de sushis\n\nBusiness: Restaurant de sushis avec un menu à présenter.\n\nGoal: Présenter le menu, permettre les commandes en ligne via une plateforme tierce, et faciliter le contact/réservation.\n\nTarget audience: Clients locaux souhaitant commander ou visiter.\n\nKey features:\n- Présentation du menu complet\n- Bouton de commande vers plateforme tierce\n- Carte avec emplacement\n- Formulaire de contact\n- Formulaire de réservation\n- Galerie de photos\n\nDesign & brand:\n- Colors: Rouge et blanc.\n- Mood: Style japonais, dessins ou style anime.\n- Signature: Plats mémorables mis en valeur par des photos (galerie).\n- First impression: Unspecified.",
+      "timestamp": "2026-07-10T05:05:23.906Z",
+      "changeNotes": "Build initial complet du PWA « Sushi Moodz » : identité Sumi & Vermillon (blanc washi, vermillon, encre) avec Shippori Mincho + Karla, rail bilingue vertical et filtres de menu en sceaux hanko. Pages : accueil, carte interactive, galerie, réservation, contact avec carte Google. Backend admin complet (menu, galerie, actualités, réservations, messages) via un shell générique, suivi des visites, formulaires réservation/contact reliés à la base et à l’email, bannières PWA/notifications, i18n FR/EN côté serveur.\n\nAdmin enrichment: (1) Dashboard now has a descriptive subtitle, clickable stat cards that link to their module, a 'Quick actions' panel, reservation status badges, richer 'recent messages' rows (email + longer excerpt), and clearer grouped/hinted settings form with per-field help. (2) Module CRUD pages (admin-shell + admin.js) upgraded: search retained, added a smart filter dropdown driven by the module's select field (e.g. reservation status, menu category), a live result counter, status/boolean rendered as colored badges, select values shown as human labels, better empty states, image thumbnails with placeholder, backdrop + Escape-to-close on the modal, disabled save button during submit, and prioritized inclusion of the status/category column so it's always visible. Full create/edit/delete remains intact for every module. (3) admin-styles.css: added focus-visible outlines, hover states, badge styles (ok/no/new), toolbar/filter/count styling, table row hover, modal shadow, button disabled state, --admin-brand alias, and improved responsive rules. (4) styles.css: added global focus-visible outlines for accessibility. All existing routes, data flow, i18n keys, editable-content annotations and {{IMG_*}} placeholder tokens preserved byte-for-byte. No functional collections were hardcoded — menu items (with price, category, availability, featured, sort order) and other operational data were already fully admin-managed.\n\nRemoved the duplicated full-carte section from the homepage (rank 1) and replaced it with a single outlined 'La carte' link inside the Signatures section; fixed the sticky menu filter's top offset to clear the sticky header on mobile and added a hover:none rule so gallery captions render on touch devices (rank 2/4, same file); added a native min date to the reservation form to block past dates (rank 3); wired active-page highlighting into the admin sidebar via a typeof-guarded moduleKey (rank 5); added inline color fallback + aria-pressed toggling to the menu category chips in both the EJS partial and app.js click handler (rank 6/7); localized the carte/galerie/reserver page titles by req.lang while leaving contact as-is (rank 8); and added inline white/vermilion fallback styles to the order-band CTAs on both index.ejs and carte.ejs (rank 9/10). All image placeholders, data-* annotations, and platform wiring were preserved untouched.",
+      "generationId": 1663,
+      "filesModified": [
+        "manifest.json",
+        "migrations.sql",
+        "public/css/admin-styles.css",
+        "public/css/styles.css",
+        "public/js/admin.js",
+        "public/js/app.js",
+        "routes.js",
+        "schema.sql",
+        "seed.js",
+        "views/admin-form_submissions.ejs",
+        "views/admin-gallery.ejs",
+        "views/admin-menu_items.ejs",
+        "views/admin-posts.ejs",
+        "views/admin-reservations.ejs",
+        "views/admin.ejs",
+        "views/carte.ejs",
+        "views/contact.ejs",
+        "views/galerie.ejs",
+        "views/index.ejs",
+        "views/partials/admin-shell.ejs",
+        "views/partials/admin-sidebar.ejs",
+        "views/partials/contact-form.ejs",
+        "views/partials/footer.ejs",
+        "views/partials/header.ejs",
+        "views/partials/map.ejs",
+        "views/partials/menu.ejs",
+        "views/partials/reserve-form.ejs",
+        "views/reserver.ejs"
+      ]
+    }
+  ],
+  "apiVariables": [],
+  "createdAt": "2026-07-10T02:27:36.746Z",
+  "updatedAt": "2026-07-10T05:05:30.636Z",
+  "exportedAt": "2026-07-10T05:05:30.818Z"
+}

@@ -1,0 +1,15 @@
+<form class="form-card js-reserve-form" novalidate>
+  <div class="form-row">
+    <div class="field"><label data-lk="t:f_name"><%= t.f_name %> *</label><input name="name" required placeholder="<%= t.ph_name %>"></div>
+    <div class="field"><label data-lk="t:f_phone"><%= t.f_phone %> *</label><input name="phone" required placeholder="<%= t.ph_phone %>"></div>
+  </div>
+  <div class="form-row">
+    <div class="field"><label data-lk="t:f_date"><%= t.f_date %> *</label><input type="date" name="res_date" required></div>
+    <div class="field"><label data-lk="t:f_time"><%= t.f_time %> *</label><input type="time" name="res_time" required></div>
+    <div class="field"><label data-lk="t:f_guests"><%= t.f_guests %> *</label><select name="guests"><% for(var i=1;i<=12;i++){ %><option value="<%= i %>" <%= i===2?'selected':'' %>><%= i %></option><% } %></select></div>
+  </div>
+  <div class="field"><label data-lk="t:f_email"><%= t.f_email %></label><input type="email" name="email" placeholder="<%= t.ph_email %>"></div>
+  <div class="field"><label data-lk="t:f_notes"><%= t.f_notes %></label><textarea name="notes" rows="3" placeholder="<%= t.ph_notes %>"></textarea></div>
+  <button type="submit" class="btn btn-primary hanko-btn" style="background-color:#B8232F;color:#fff"><%= t.submit_reserve %></button>
+  <p class="form-msg" hidden></p>
+</form>

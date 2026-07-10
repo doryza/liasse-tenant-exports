@@ -1,0 +1,14 @@
+<%- include('partials/header') %>
+<main>
+  <section class="page-hero"><div class="container"><span class="eyebrow" data-lk="t:gallery_en"><%= t.gallery_en %></span><h1 class="page-title" data-lk="t:gallery_title"><%= t.gallery_title %></h1><p data-lk="t:gallery_intro"><%= t.gallery_intro %></p></div></section>
+  <section class="sec"><div class="container">
+    <% if(typeof galleryItems!=='undefined' && galleryItems.length){ %>
+    <div class="gallery-grid">
+      <% galleryItems.forEach(function(g){ %>
+      <figure class="g-item"><img src="<%= g.image_url ? g.image_url : 'https://placehold.co/600x600/E9E2D3/1A1A1A/png?text=Photo' %>" data-content-source="gallery:image_url" data-content-id="<%= g.id %>" alt="<%= g.title||'' %>" loading="lazy"><% var gc=(lang==='en'&&g.caption_en)?g.caption_en:g.caption_fr; if(gc){ %><figcaption class="g-cap"><%= gc %></figcaption><% } %></figure>
+      <% }); %>
+    </div>
+    <% } else { %><p class="empty" data-lk="t:empty_gallery"><%= t.empty_gallery %></p><% } %>
+  </div></section>
+</main>
+<%- include('partials/footer') %>

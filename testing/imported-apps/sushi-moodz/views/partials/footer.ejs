@@ -1,0 +1,28 @@
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div class="foot-brand">
+      <div class="foot-mark"><%= settings.business_name||'Sushi Moodz' %><span class="brand-dot"></span></div>
+      <p data-setting-key="tagline_<%= lang %>"><%= sv('tagline') %></p>
+    </div>
+    <div class="foot-col">
+      <h4 data-lk="t:footer_nav"><%= t.footer_nav %></h4>
+      <a href="."><%= t.nav_home %></a><a href="carte"><%= t.nav_menu %></a><a href="galerie"><%= t.nav_gallery %></a><a href="reserver"><%= t.nav_reserve %></a><a href="contact"><%= t.nav_contact %></a>
+    </div>
+    <div class="foot-col">
+      <h4 data-lk="t:footer_hours"><%= t.footer_hours %></h4>
+      <p data-setting-key="hours_<%= lang %>" style="white-space:pre-line"><%= sv('hours') || t.hours_tba %></p>
+    </div>
+    <div class="foot-col">
+      <h4 data-lk="t:nav_contact"><%= t.nav_contact %></h4>
+      <% if(settings.business_address){ %><p data-setting-key="business_address"><%= settings.business_address %></p><% } %>
+      <% if(settings.contact_phone){ %><a href="tel:<%= settings.contact_phone %>" data-setting-key="contact_phone"><%= settings.contact_phone %></a><% } %>
+      <% if(settings.contact_email){ %><a href="mailto:<%= settings.contact_email %>" data-setting-key="contact_email"><%= settings.contact_email %></a><% } %>
+      <button data-push-btn class="btn btn-ghost" style="margin-top:12px" data-lk="t:enable_notif"><%= t.enable_notif %></button>
+    </div>
+  </div>
+  <div class="foot-base container"><span>© <%= new Date().getFullYear() %> <%= settings.business_name||'Sushi Moodz' %>. <%= t.footer_rights %>.</span></div>
+</footer>
+<script>window.__MSG={reserve:<%- JSON.stringify(t.reserve_success) %>,contact:<%- JSON.stringify(t.contact_success) %>};</script>
+<script src="public/js/app.js"></script>
+</body>
+</html>

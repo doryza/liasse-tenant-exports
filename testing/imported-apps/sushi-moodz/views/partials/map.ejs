@@ -1,0 +1,11 @@
+<div class="map-wrap"><div id="map" data-lat="<%= settings.map_lat||'45.5019' %>" data-lng="<%= settings.map_lng||'-73.5674' %>" data-zoom="<%= settings.map_zoom||'15' %>"></div></div>
+<% if(typeof googleApiKey!=='undefined' && googleApiKey){ %>
+<script>
+var SUSHI_GRAY=[{elementType:'geometry',stylers:[{saturation:-100}]},{elementType:'labels.text.fill',stylers:[{color:'#5a5650'}]},{elementType:'labels.text.stroke',stylers:[{color:'#fcfaf5'}]},{featureType:'water',stylers:[{color:'#e9e2d3'}]},{featureType:'poi',stylers:[{visibility:'off'}]}];
+function initSushiMap(){var el=document.getElementById('map');if(!el||!window.google)return;var pos={lat:parseFloat(el.dataset.lat),lng:parseFloat(el.dataset.lng)};var map=new google.maps.Map(el,{center:pos,zoom:parseInt(el.dataset.zoom)||15,disableDefaultUI:true,zoomControl:true,styles:SUSHI_GRAY});new google.maps.Marker({position:pos,map:map,icon:{path:'M12 0C7 0 3 4 3 9c0 6 9 15 9 15s9-9 9-15c0-5-4-9-9-9z',fillColor:'#B8232F',fillOpacity:1,strokeColor:'#fff',strokeWeight:1.5,scale:1.6,anchor:new google.maps.Point(12,24)}});}
+window.initSushiMap=initSushiMap;
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=<%= googleApiKey %>&callback=initSushiMap&loading=async" async defer></script>
+<% } else { %>
+<div class="map-fallback"><p>Carte indisponible pour le moment.</p></div>
+<% } %>

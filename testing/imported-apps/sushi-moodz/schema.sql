@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS admin_settings (key TEXT PRIMARY KEY, value TEXT, updated_at TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS site_visits (id SERIAL PRIMARY KEY, path TEXT, created_at TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS posts (id SERIAL PRIMARY KEY, title TEXT NOT NULL, content TEXT, image_url TEXT, category TEXT, published INTEGER DEFAULT 1, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS menu_items (id SERIAL PRIMARY KEY, name_fr TEXT NOT NULL, name_en TEXT, description_fr TEXT, description_en TEXT, price DOUBLE PRECISION, category TEXT, image_url TEXT, dietary TEXT, featured INTEGER DEFAULT 0, available INTEGER DEFAULT 1, sort_order INTEGER DEFAULT 0, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS gallery (id SERIAL PRIMARY KEY, title TEXT, caption_fr TEXT, caption_en TEXT, image_url TEXT, sort_order INTEGER DEFAULT 0, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS reservations (id SERIAL PRIMARY KEY, name TEXT, phone TEXT, email TEXT, res_date TEXT, res_time TEXT, guests INTEGER, notes TEXT, status TEXT DEFAULT 'nouvelle', image_url TEXT, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS form_submissions (id SERIAL PRIMARY KEY, name TEXT, email TEXT, phone TEXT, message TEXT, image_url TEXT, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW());

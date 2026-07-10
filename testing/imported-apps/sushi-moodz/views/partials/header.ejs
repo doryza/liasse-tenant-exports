@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#B8232F">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="description" content="<%= sv('tagline') || t.footer_tag %>">
+<title><%= (settings.business_name||'Sushi Moodz') %><%= (typeof pageTitle!=='undefined') ? ' — '+pageTitle : '' %></title>
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;600;700;800&family=Karla:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="public/css/styles.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="nav-inner container">
+    <a class="brand" href="." data-setting-key="business_name"><%= settings.business_name||'Sushi Moodz' %><span class="brand-dot" aria-hidden="true"></span></a>
+    <nav class="nav-links">
+      <a class="nav-link" href="." data-lk="t:nav_home"><%= t.nav_home %></a>
+      <a class="nav-link" href="carte" data-lk="t:nav_menu"><%= t.nav_menu %></a>
+      <a class="nav-link" href="galerie" data-lk="t:nav_gallery"><%= t.nav_gallery %></a>
+      <a class="nav-link" href="reserver" data-lk="t:nav_reserve"><%= t.nav_reserve %></a>
+      <a class="nav-link" href="contact" data-lk="t:nav_contact"><%= t.nav_contact %></a>
+      <span class="lang-tog"><a href="<%= langBase %>?lang=fr" class="<%= lang==='fr'?'on':'' %>">FR</a><i>·</i><a href="<%= langBase %>?lang=en" class="<%= lang==='en'?'on':'' %>">EN</a></span>
+      <a class="btn btn-primary nav-order" href="<%= orderUrl %>" <%= orderExternal?'target="_blank" rel="noopener"':'' %> data-lk="t:order_now" style="background-color:#B8232F;color:#fff"><%= t.order_now %></a>
+    </nav>
+    <button class="hamburger" id="hbtn" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+  <div class="mobile-menu" id="mmenu">
+    <a href="." data-lk="t:nav_home"><%= t.nav_home %></a>
+    <a href="carte" data-lk="t:nav_menu"><%= t.nav_menu %></a>
+    <a href="galerie" data-lk="t:nav_gallery"><%= t.nav_gallery %></a>
+    <a href="reserver" data-lk="t:nav_reserve"><%= t.nav_reserve %></a>
+    <a href="contact" data-lk="t:nav_contact"><%= t.nav_contact %></a>
+    <a href="<%= orderUrl %>" <%= orderExternal?'target="_blank" rel="noopener"':'' %> class="mm-order" data-lk="t:order_now"><%= t.order_now %></a>
+    <span class="lang-tog"><a href="<%= langBase %>?lang=fr" class="<%= lang==='fr'?'on':'' %>">FR</a><i>·</i><a href="<%= langBase %>?lang=en" class="<%= lang==='en'?'on':'' %>">EN</a></span>
+  </div>
+</header>
+<script>
+(function(){var b=document.getElementById('hbtn'),m=document.getElementById('mmenu');if(b&&m){b.addEventListener('click',function(){m.classList.toggle('open');b.classList.toggle('active');});}})();
+</script>
