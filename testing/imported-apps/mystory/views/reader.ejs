@@ -1,0 +1,56 @@
+<%- include('partials/header') %>
+<main class="flex-1 bg-brand-soft">
+  <% if (story && access) { %>
+    <section class="max-w-3xl mx-auto px-4 py-10">
+      <a href="library" data-lk="t:reader_back" class="text-sm text-brand-accent hover:text-brand-deep">← <%= t.reader_back %></a>
+      <header class="mt-6 pb-8 border-b border-brand-accent/20 text-center">
+        <% if (story.genre) { %><span data-content-source="stories:genre" data-content-id="<%= story.id %>" class="text-[11px] uppercase tracking-widest text-brand-accent"><%= story.genre %></span><% } %>
+        <h1 data-content-source="stories:title" data-content-id="<%= story.id %>" class="serif text-4xl md:text-5xl font-semibold text-brand-ink mt-2"><%= story.title %></h1>
+        <% if (story.subtitle) { %><p data-content-source="stories:subtitle" data-content-id="<%= story.id %>" class="serif italic text-xl text-brand-ink/70 mt-2"><%= story.subtitle %></p><% } %>
+        <% if (story.author_name) { %><p class="text-sm text-brand-ink/60 mt-4"><%= t.by_author %> <strong data-content-source="stories:author_name" data-content-id="<%= story.id %>"><%= story.author_name %></strong></p><% } %>
+      </header>
+      <% if (chapters && chapters.length > 0) { %>
+        <article class="prose-reader mt-10">
+          <% chapters.forEach(function(ch){ %>
+            <h2 data-content-source="chapters:title" data-content-id="<%= ch.id %>"><%= ch.title || ('Chapitre '+ch.position) %></h2>
+            <% (ch.content||'').split(/\n\n+/).forEach(function(p){ %>
+              <% if (p.trim()) { %><p data-content-source="chapters:content" data-content-id="<%= ch.id %>"><%= p %></p><% } %>
+            <% }); %>
+          <% }); %>
+        </article>
+      <% } else if (story.full_text) { %>
+        <article class="prose-reader mt-10">
+          <% story.full_text.split(/\n\n+/).forEach(function(p){ %>
+            <% if (p.trim().startsWith('## ')) { %><h2 data-content-source="stories:full_text" data-content-id="<%= story.id %>"><%= p.trim().substring(3) %></h2><% } else if (p.trim()) { %><p data-content-source="stories:full_text" data-content-id="<%= story.id %>"><%= p %></p><% } %>
+          <% }); %>
+        </article>
+      <% } else { %>
+        <div class="mt-10 text-center py-12 bg-white rounded-xl border border-brand-accent/20">
+          <p data-lk="reader-preparing-msg" class="text-brand-ink/60"><%= lang==='en'?'This book is being prepared. Please check back shortly.':'Ce livre est en préparation. Revenez bientôt.' %></p>
+        </div>
+      <% } %>
+      <footer class="mt-16 pt-8 border-t border-brand-accent/20 text-center text-xs text-brand-ink/50">
+        <p data-lk="reader-thanks">— <%= lang==='en'?'Thank you for reading':'Merci de votre lecture' %> —</p>
+        <p data-lk="t:copyright_notice" class="mt-2"><%= t.copyright_notice %></p>
+      </footer>
+    </section>
+  <% } else if (story && !access) { %>
+    <section class="max-w-2xl mx-auto px-4 py-20 text-center">
+      <div class="text-5xl mb-4">🔒</div>
+      <h1 data-lk="reader-access-required-title" class="serif text-2xl font-semibold mb-3"><%= lang==='en'?'Access required':'Accès requis' %></h1>
+      <p data-lk="reader-access-msg" class="text-brand-ink/70 mb-6"><%= purchase ? t.access_pending : t.login_required %></p>
+      <% if (!user) { %>
+        <button data-login-btn data-lk="t:nav_login" class="btn-primary px-6 py-3 rounded-full text-sm font-medium" style="background-color:#1f2a0e;color:#f1ffd6"><%= t.nav_login %></button>
+      <% } else { %>
+        <a href="library" data-lk="t:nav_library" class="btn-primary inline-block px-6 py-3 rounded-full text-sm font-medium" style="background-color:#1f2a0e;color:#f1ffd6"><%= t.nav_library %></a>
+      <% } %>
+    </section>
+  <% } else { %>
+    <section class="max-w-2xl mx-auto px-4 py-20 text-center">
+      <div class="text-5xl mb-4">📖</div>
+      <h1 data-lk="t:story_not_found" class="serif text-2xl font-semibold"><%= t.story_not_found %></h1>
+      <a href="library" data-lk="t:reader_back" class="mt-6 btn-primary inline-block px-6 py-3 rounded-full text-sm" style="background-color:#1f2a0e;color:#f1ffd6"><%= t.reader_back %></a>
+    </section>
+  <% } %>
+</main>
+<%- include('partials/footer') %>

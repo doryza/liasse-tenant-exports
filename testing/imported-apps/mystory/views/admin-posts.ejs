@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Articles — Admin</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body class="bg-slate-50 min-h-screen">
+<%- include('partials/admin-sidebar', { active: 'posts' }) %>
+<main class="admin-main">
+  <header class="admin-header">
+    <button class="admin-burger" onclick="document.querySelector('.admin-sidebar').classList.toggle('open')" aria-label="Menu">☰</button>
+    <div class="flex-1">
+      <h1 class="text-xl font-semibold text-slate-900">Articles & Annonces</h1>
+      <p class="text-xs text-slate-500">Coulisses, inspirations et nouvelles parutions.</p>
+    </div>
+    <button onclick="openModal()" class="btn-emerald">+ Nouvel article</button>
+  </header>
+  <div class="p-6 max-w-5xl">
+    <% if (posts && posts.length > 0) { %>
+      <ul class="space-y-3">
+        <% posts.forEach(function(p){ %>
+          <li class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 flex items-start gap-4 hover:shadow-md transition">
+            <% if (p.image_url) { %><img src="<%= p.image_url %>" class="w-24 h-24 rounded-lg object-cover flex-none" alt=""><% } else { %><div class="w-24 h-24 rounded-lg bg-slate-100 flex items-center justify-center text-3xl flex-none">📝</div><% } %>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 mb-1 flex-wrap">
+                <% if (p.category) { %><span class="badge badge-slate"><%= p.category %></span><% } %>
+                <span class="badge <%= p.published?'badge-green':'badge-slate' %>"><%= p.published?'Publié':'Brouillon' %></span>
+                <span class="text-xs text-slate-400"><%= new Date(p.created_at).toLocaleDateString('fr-CA') %></span>
+              </div>
+              <h3 class="font-semibold text-slate-900"><%= p.title %></h3>
+              <p class="text-sm text-slate-600 line-clamp-2 mt-1"><%= (p.content||'').substring(0,200) %></p>
+            </div>
+            <div class="flex flex-col gap-2 flex-none">
+              <button onclick='editPost(<%= JSON.stringify(p) %>)' title="Modifier" class="icon-btn">✏️</button>
+              <button onclick="deletePost(<%= p.id %>)" title="Supprimer" class="icon-btn icon-btn-danger">🗑</button>
+            </div>
+          </li>
+        <% }); %>
+      </ul>
+    <% } else { %>
+      <div class="empty-state-large">
+        <div class="text-6xl mb-3">📝</div>
+        <h3 class="text-lg font-semibold text-slate-700 mb-1">Aucun article</h3>
+        <p class="text-sm text-slate-500 mb-5">Partagez les coulisses de votre travail avec vos lectrices.</p>
+        <button onclick="openModal()" class="btn-emerald">+ Créer un article</button>
+      </div>
+    <% } %>
+  </div>
+</main>
+<div id="modal" class="modal-overlay hidden">
+  <div class="modal-card">
+    <div class="modal-header"><h3 id="mt" class="font-semibold">Nouvel article</h3><button onclick="closeModal()" class="modal-close" aria-label="Fermer">×</button></div>
+    <form id="f" class="p-6 space-y-4">
+      <input type="hidden" name="id">
+      <div><label class="form-label">Titre *</label><input name="title" required class="form-input"></div>
+      <div class="grid grid-cols-2 gap-3">
+        <div><label class="form-label">Catégorie</label><input name="category" class="form-input" placeholder="ex. Annonce"></div>
+        <label class="flex items-end pb-2"><span class="form-label !mb-0 mr-3">Publié</span><input name="published" type="checkbox" checked class="w-5 h-5"></label>
+      </div>
+      <div><label class="form-label">Image (URL)</label><input name="image_url" class="form-input" placeholder="https://..."></div>
+      <div><label class="form-label">Contenu</label><textarea name="content" rows="8" class="form-input font-serif" placeholder="Écrivez votre article ici..."></textarea></div>
+      <div class="flex gap-3 pt-3 border-t border-slate-200">
+        <button type="submit" class="flex-1 btn-emerald">💾 Sauvegarder</button>
+        <button type="button" onclick="closeModal()" class="btn-ghost">Annuler</button>
+      </div>
+    </form>
+  </div>
+</div>
+<div id="toast" class="toast hidden"></div>
+<script>
+function toast(msg, type){const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+(type||'success');t.classList.remove('hidden');setTimeout(()=>t.classList.add('hidden'),2200);}
+function openModal(){const f=document.getElementById('f');f.reset();f.querySelector('[name=published]').checked=true;f.querySelector('[name=id]').value='';document.getElementById('mt').textContent='Nouvel article';document.getElementById('modal').classList.remove('hidden');}
+function closeModal(){document.getElementById('modal').classList.add('hidden');}
+function editPost(p){const f=document.getElementById('f');f.reset();f.querySelector('[name=id]').value=p.id;f.querySelector('[name=title]').value=p.title||'';f.querySelector('[name=category]').value=p.category||'';f.querySelector('[name=image_url]').value=p.image_url||'';f.querySelector('[name=content]').value=p.content||'';f.querySelector('[name=published]').checked=!!p.published;document.getElementById('mt').textContent='Modifier l\'article';document.getElementById('modal').classList.remove('hidden');}
+async function deletePost(id){if(!confirm('Supprimer cet article ?'))return;const r=await fetch('./api/admin/posts/'+id,{method:'DELETE'});if(r.ok){toast('Supprimé');setTimeout(()=>location.reload(),600);}else toast('Erreur','error');}
+document.getElementById('f').addEventListener('submit',async function(e){e.preventDefault();const f=e.target;const data=Object.fromEntries(new FormData(f));data.published=f.querySelector('[name=published]').checked;const id=data.id;delete data.id;const r=await fetch('./api/admin/posts'+(id?'/'+id:''),{method:id?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});if(r.ok){toast(id?'Article modifié':'Article créé');setTimeout(()=>location.reload(),700);}else{const j=await r.json().catch(()=>({}));toast(j.error||'Erreur','error');}});
+</script>
+</body>
+</html>

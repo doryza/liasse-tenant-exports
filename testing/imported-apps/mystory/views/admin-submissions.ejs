@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Messages — Admin</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body class="bg-slate-50 min-h-screen">
+<%- include('partials/admin-sidebar', { active: 'submissions' }) %>
+<main class="admin-main">
+  <header class="admin-header">
+    <button class="admin-burger" onclick="document.querySelector('.admin-sidebar').classList.toggle('open')" aria-label="Menu">☰</button>
+    <div class="flex-1">
+      <h1 class="text-xl font-semibold text-slate-900">Messages reçus</h1>
+      <p class="text-xs text-slate-500">Questions, suggestions et retours de vos lectrices.</p>
+    </div>
+    <input id="filter" placeholder="Filtrer..." class="hidden md:block px-3 py-2 border border-slate-300 rounded-lg text-sm w-44 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 focus:outline-none">
+  </header>
+  <div class="p-6 max-w-4xl">
+    <% if (submissions && submissions.length > 0) { %>
+      <ul id="subList" class="space-y-3">
+        <% submissions.forEach(function(s){ %>
+          <li data-search="<%= ((s.name||'')+' '+(s.email||'')+' '+(s.message||'')).toLowerCase() %>" class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 hover:shadow-md transition">
+            <div class="flex items-start justify-between gap-4 flex-wrap">
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-3 mb-2 flex-wrap">
+                  <strong class="text-slate-900"><%= s.name || 'Anonyme' %></strong>
+                  <% if (s.email) { %><a href="mailto:<%= s.email %>" class="text-sm text-emerald-700 hover:underline font-medium"><%= s.email %></a><% } %>
+                  <span class="text-xs text-slate-400"><%= new Date(s.created_at).toLocaleString(lang==='en'?'en-CA':'fr-CA') %></span>
+                </div>
+                <p class="text-sm text-slate-700 whitespace-pre-line bg-slate-50 p-3 rounded-lg"><%= s.message %></p>
+              </div>
+              <div class="flex flex-col gap-2 flex-none">
+                <% if (s.email) { %><a href="mailto:<%= s.email %>?subject=Re%3A%20My%20Story" class="icon-btn" title="Répondre par courriel">↩️</a><% } %>
+                <button onclick="deleteSub(<%= s.id %>)" class="icon-btn icon-btn-danger" title="Supprimer">🗑</button>
+              </div>
+            </div>
+          </li>
+        <% }); %>
+      </ul>
+    <% } else { %>
+      <div class="empty-state-large">
+        <div class="text-6xl mb-3">📨</div>
+        <h3 class="text-lg font-semibold text-slate-700 mb-1">Aucun message</h3>
+        <p class="text-sm text-slate-500">Les messages envoyés depuis le formulaire de contact apparaîtront ici.</p>
+      </div>
+    <% } %>
+  </div>
+</main>
+<div id="toast" class="toast hidden"></div>
+<script>
+function toast(msg, type){const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+(type||'success');t.classList.remove('hidden');setTimeout(()=>t.classList.add('hidden'),2200);}
+async function deleteSub(id){ if (!confirm('Supprimer ce message ?')) return; const r=await fetch('./api/admin/submissions/'+id, { method:'DELETE' }); if(r.ok){toast('Supprimé');setTimeout(()=>location.reload(),600);} else toast('Erreur','error'); }
+const f=document.getElementById('filter');if(f){f.addEventListener('input',function(e){const q=e.target.value.toLowerCase();document.querySelectorAll('#subList li').forEach(li=>{li.style.display=li.dataset.search.includes(q)?'':'none';});});}
+</script>
+</body>
+</html>

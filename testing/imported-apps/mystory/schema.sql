@@ -1,0 +1,12 @@
+CREATE TABLE IF NOT EXISTS admin_settings (key TEXT PRIMARY KEY, value TEXT, updated_at TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS site_visits (id SERIAL PRIMARY KEY, path TEXT, created_at TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS posts (id SERIAL PRIMARY KEY, title TEXT NOT NULL, content TEXT, image_url TEXT, category TEXT, published INTEGER DEFAULT 1, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS stories (id SERIAL PRIMARY KEY, title TEXT NOT NULL, subtitle TEXT, description TEXT, excerpt TEXT, full_text TEXT, image_url TEXT, price_cents INTEGER DEFAULT 0, genre TEXT, language TEXT DEFAULT 'fr', author_name TEXT, status TEXT DEFAULT 'draft', word_count INTEGER DEFAULT 0, featured INTEGER DEFAULT 0, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS chapters (id SERIAL PRIMARY KEY, story_id INTEGER REFERENCES stories(id) ON DELETE CASCADE, position INTEGER DEFAULT 0, title TEXT, content TEXT, image_url TEXT, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS story_segments (id SERIAL PRIMARY KEY, story_id INTEGER REFERENCES stories(id) ON DELETE CASCADE, chapter_id INTEGER REFERENCES chapters(id) ON DELETE SET NULL, position INTEGER DEFAULT 0, audio_url TEXT, transcript TEXT, edited_text TEXT, duration_seconds INTEGER, language TEXT DEFAULT 'fr', kind TEXT DEFAULT 'voice', status TEXT DEFAULT 'ready', image_url TEXT, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS purchases (id SERIAL PRIMARY KEY, user_id INTEGER, story_id INTEGER REFERENCES stories(id) ON DELETE CASCADE, amount_cents INTEGER, status TEXT DEFAULT 'pending', payment_reference TEXT, customer_email TEXT, customer_name TEXT, customer_phone TEXT, customer_message TEXT, image_url TEXT, paid_at TIMESTAMPTZ, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS form_submissions (id SERIAL PRIMARY KEY, name TEXT, email TEXT, message TEXT, image_url TEXT, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW());
+CREATE INDEX IF NOT EXISTS idx_stories_status ON stories(status);
+CREATE INDEX IF NOT EXISTS idx_chapters_story ON chapters(story_id, position);
+CREATE INDEX IF NOT EXISTS idx_segments_story ON story_segments(story_id, position);
+CREATE INDEX IF NOT EXISTS idx_purchases_email ON purchases(customer_email);

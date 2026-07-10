@@ -1,0 +1,49 @@
+<%- include('partials/header') %>
+<main class="flex-1">
+  <section class="max-w-5xl mx-auto px-4 py-12">
+    <h1 data-lk="t:library_title" class="serif text-3xl md:text-4xl font-semibold text-brand-ink"><%= t.library_title %></h1>
+    <% if (user) { %>
+      <p class="text-sm text-brand-ink/60 mt-1"><%= lang==='en'?'Signed in as':'Connectée comme' %> <strong><%= user.email || user.phone || '' %></strong></p>
+      <% if (purchases && purchases.length > 0) { %>
+        <div class="mt-8 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <% purchases.forEach(function(p){ %>
+            <div class="bg-white rounded-xl overflow-hidden shadow-sm border border-brand-accent/20">
+              <img data-content-source="stories:image_url" data-content-id="<%= p.story_id %>" src="<%= p.story_image || 'https://placehold.co/600x800/3a4d1a/f1ffd6/png?text='+encodeURIComponent(p.story_title) %>" alt="<%= p.story_title %>" class="book-cover w-full">
+              <div class="p-5">
+                <h3 data-content-source="stories:title" data-content-id="<%= p.story_id %>" class="serif text-lg font-semibold text-brand-ink"><%= p.story_title %></h3>
+                <% if (p.story_subtitle) { %><p data-content-source="stories:subtitle" data-content-id="<%= p.story_id %>" class="text-xs italic text-brand-ink/60 mt-1"><%= p.story_subtitle %></p><% } %>
+                <div class="mt-3 flex items-center justify-between">
+                  <% if (p.status === 'paid') { %>
+                    <span data-lk="t:paid" class="text-xs uppercase tracking-wider text-green-700 font-semibold">✓ <%= t.paid %></span>
+                    <a href="reader/<%= p.story_id %>" data-lk="t:open_book" class="btn-primary px-4 py-2 rounded-full text-xs font-medium" style="background-color:#1f2a0e;color:#f1ffd6"><%= t.open_book %> →</a>
+                  <% } else if (p.status === 'pending') { %>
+                    <span data-lk="t:pending" class="text-xs uppercase tracking-wider text-orange-600 font-semibold">⏳ <%= t.pending %></span>
+                    <span class="text-xs font-mono text-brand-ink/60"><%= p.payment_reference %></span>
+                  <% } else { %>
+                    <span data-lk="t:cancelled" class="text-xs uppercase tracking-wider text-red-600 font-semibold"><%= t.cancelled %></span>
+                  <% } %>
+                </div>
+                <% if (p.status === 'pending') { %>
+                  <p data-lk="t:access_pending" class="text-xs text-brand-ink/60 mt-3"><%= t.access_pending %></p>
+                <% } %>
+              </div>
+            </div>
+          <% }); %>
+        </div>
+      <% } else { %>
+        <div class="mt-10 text-center py-16 bg-brand-soft rounded-xl border border-brand-accent/20">
+          <div class="text-5xl mb-4">📚</div>
+          <p data-lk="t:library_empty" class="text-brand-ink/70 mb-6 max-w-md mx-auto"><%= t.library_empty %></p>
+          <a href="." data-lk="library-explore-cta" class="btn-primary inline-block px-6 py-3 rounded-full text-sm" style="background-color:#1f2a0e;color:#f1ffd6"><%= t.explore %> <%= t.catalog.toLowerCase() %> →</a>
+        </div>
+      <% } %>
+    <% } else { %>
+      <div class="mt-10 text-center py-16 bg-brand-soft rounded-xl border border-brand-accent/20">
+        <div class="text-5xl mb-4">🔐</div>
+        <p data-lk="t:login_required" class="text-brand-ink/70 mb-6 max-w-md mx-auto"><%= t.login_required %></p>
+        <button data-login-btn data-lk="t:nav_login" class="btn-primary inline-block px-6 py-3 rounded-full text-sm font-medium" style="background-color:#1f2a0e;color:#f1ffd6"><%= t.nav_login %></button>
+      </div>
+    <% } %>
+  </section>
+</main>
+<%- include('partials/footer') %>

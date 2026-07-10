@@ -1,0 +1,68 @@
+<%- include('partials/header') %>
+<main class="flex-1">
+  <% if (story) { %>
+    <section class="max-w-5xl mx-auto px-4 py-10">
+      <a href="." data-lk="t:back_home" class="text-sm text-brand-accent hover:text-brand-deep">← <%= t.back_home %></a>
+      <div class="grid md:grid-cols-[300px_1fr] gap-10 mt-6">
+        <div>
+          <img data-content-source="stories:image_url" data-content-id="<%= story.id %>" src="<%= story.image_url || 'https://placehold.co/600x800/3a4d1a/f1ffd6/png?text='+encodeURIComponent(story.title) %>" alt="<%= story.title %>" class="book-cover w-full rounded-lg">
+          <div class="mt-5 space-y-2 text-sm">
+            <% if (story.author_name) { %><div class="flex justify-between"><span data-lk="t:by_author" class="text-brand-ink/60"><%= t.by_author %></span><span data-content-source="stories:author_name" data-content-id="<%= story.id %>" class="font-medium"><%= story.author_name %></span></div><% } %>
+            <% if (story.genre) { %><div class="flex justify-between"><span data-lk="story-meta-genre-label" class="text-brand-ink/60"><%= lang==='en'?'Genre':'Genre' %></span><span data-content-source="stories:genre" data-content-id="<%= story.id %>" class="font-medium"><%= story.genre %></span></div><% } %>
+            <% if (chapterCount > 0) { %><div class="flex justify-between"><span data-lk="t:chapters_count" class="text-brand-ink/60"><%= t.chapters_count %></span><span class="font-medium"><%= chapterCount %></span></div><% } %>
+            <% if (story.word_count > 0) { %><div class="flex justify-between"><span data-lk="t:words" class="text-brand-ink/60"><%= t.words %></span><span class="font-medium"><%= story.word_count.toLocaleString() %></span></div><% } %>
+            <div class="flex justify-between"><span data-lk="story-meta-format-label" class="text-brand-ink/60"><%= lang==='en'?'Format':'Format' %></span><span data-lk="t:ebook" class="font-medium"><%= t.ebook %></span></div>
+          </div>
+        </div>
+        <div>
+          <% if (story.genre) { %><span data-content-source="stories:genre" data-content-id="<%= story.id %>" class="text-[11px] uppercase tracking-widest text-brand-accent"><%= story.genre %></span><% } %>
+          <h1 data-content-source="stories:title" data-content-id="<%= story.id %>" class="serif text-4xl md:text-5xl font-semibold text-brand-ink mt-1"><%= story.title %></h1>
+          <% if (story.subtitle) { %><p data-content-source="stories:subtitle" data-content-id="<%= story.id %>" class="serif italic text-xl text-brand-ink/70 mt-2"><%= story.subtitle %></p><% } %>
+          <% if (story.status === 'published') { %>
+            <div class="flex items-center gap-4 mt-6 pt-6 border-t border-brand-accent/20">
+              <span class="text-3xl serif font-semibold text-brand-deep"><%= fmtPrice(story.price_cents) %></span>
+              <a href="checkout/<%= story.id %>" data-lk="t:buy_now" class="btn-primary px-6 py-3 rounded-full text-sm font-medium" style="background-color:#1f2a0e;color:#f1ffd6"><%= t.buy_now %> →</a>
+            </div>
+          <% } else { %>
+            <div class="mt-6 pt-6 border-t border-brand-accent/20"><span data-lk="story-coming-soon" class="inline-block bg-brand-soft border border-brand-accent/30 px-4 py-2 rounded-full text-sm"><%= lang==='en'?'Coming soon':'Bientôt disponible' %></span></div>
+          <% } %>
+          <% if (story.description) { %>
+            <h2 data-lk="t:synopsis" class="serif text-xl font-semibold text-brand-ink mt-10 mb-3"><%= t.synopsis %></h2>
+            <p data-content-source="stories:description" data-content-id="<%= story.id %>" class="text-brand-ink/80 leading-relaxed whitespace-pre-line"><%= story.description %></p>
+          <% } %>
+          <% if (story.excerpt) { %>
+            <h2 data-lk="t:preview" class="serif text-xl font-semibold text-brand-ink mt-10 mb-3"><%= t.preview %></h2>
+            <div class="bg-brand-soft border-l-4 border-brand-accent p-5 rounded-r-lg">
+              <p data-content-source="stories:excerpt" data-content-id="<%= story.id %>" class="prose-reader text-brand-ink whitespace-pre-line"><%= story.excerpt %></p>
+            </div>
+          <% } %>
+          <% if (chapters && chapters.length > 0) { %>
+            <h2 data-lk="t:table_of_contents" class="serif text-xl font-semibold text-brand-ink mt-10 mb-3"><%= t.table_of_contents %></h2>
+            <ul class="divide-y divide-brand-accent/20 border border-brand-accent/20 rounded-lg overflow-hidden bg-white">
+              <% chapters.forEach(function(ch, idx){ %>
+                <li class="px-5 py-4 flex items-center justify-between">
+                  <span class="flex items-center gap-3"><span class="text-xs text-brand-accent w-6"><%= idx+1 %>.</span><span data-content-source="chapters:title" data-content-id="<%= ch.id %>" class="serif font-medium"><%= ch.title || ('Chapitre '+(idx+1)) %></span></span>
+                  <span class="text-xs text-brand-ink/40"><%= idx === 0 ? (lang==='en'?'Free preview':'Aperçu gratuit') : '🔒' %></span>
+                </li>
+              <% }); %>
+            </ul>
+          <% } %>
+          <% if (story.status === 'published') { %>
+            <div class="mt-10 p-6 bg-brand rounded-xl" style="background-color:#f1ffd6">
+              <h3 data-lk="story-ready-title" class="serif font-semibold text-brand-ink mb-2"><%= lang==='en'?'Ready to read?':'Prête à lire ?' %></h3>
+              <p data-lk="story-ready-desc" class="text-sm text-brand-ink/70 mb-4"><%= lang==='en'?'Your book will be added to your private library after the author confirms your payment.':'Votre livre sera ajouté à votre bibliothèque privée après confirmation du paiement par l\'auteure.' %></p>
+              <a href="checkout/<%= story.id %>" data-lk="story-ready-cta" class="btn-primary inline-block px-6 py-3 rounded-full text-sm font-medium" style="background-color:#1f2a0e;color:#f1ffd6"><%= t.buy_now %> — <%= fmtPrice(story.price_cents) %></a>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </section>
+  <% } else { %>
+    <section class="max-w-2xl mx-auto px-4 py-20 text-center">
+      <div class="text-5xl mb-4">📖</div>
+      <h1 data-lk="t:story_not_found" class="serif text-2xl font-semibold mb-3"><%= t.story_not_found %></h1>
+      <a href="." data-lk="t:back_home" class="btn-primary inline-block px-6 py-3 rounded-full text-sm" style="background-color:#1f2a0e;color:#f1ffd6"><%= t.back_home %></a>
+    </section>
+  <% } %>
+</main>
+<%- include('partials/footer') %>

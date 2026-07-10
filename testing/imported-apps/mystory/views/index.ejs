@@ -1,0 +1,100 @@
+<%- include('partials/header') %>
+<main class="flex-1">
+  <section class="relative">
+    <img data-setting-key="_p_hero_image_url" src="<%= (typeof settings!=='undefined' && settings._p_hero_image_url) ? settings._p_hero_image_url : 'https://placehold.co/1600x900/f1ffd6/3a4d1a/png?text=My+Story' %>" alt="Hero" class="w-full h-[480px] md:h-[600px] object-cover">
+    <div class="absolute inset-0 bg-gradient-to-r from-brand-ink/85 via-brand-ink/45 to-transparent flex items-center">
+      <div class="max-w-6xl mx-auto px-4 w-full text-brand-soft">
+        <span data-setting-key="tagline_<%= lang %>" class="inline-block bg-brand text-brand-ink px-3 py-1 text-[11px] uppercase tracking-widest font-semibold rounded-full mb-5" style="background-color:#f1ffd6;color:#1f2a0e"><%= t.tagline %></span>
+        <h1 data-setting-key="hero_title_<%= lang %>" class="serif text-4xl md:text-6xl font-semibold leading-tight max-w-2xl" style="color:#fbfff0"><%= t.hero_title %></h1>
+        <p data-setting-key="hero_subtitle_<%= lang %>" class="mt-5 text-lg md:text-xl max-w-xl leading-relaxed" style="color:#fbfff0;opacity:.92"><%= t.hero_subtitle %></p>
+        <div class="mt-7 flex flex-wrap gap-3">
+          <a href="#catalog" data-setting-key="hero_cta_<%= lang %>" class="px-6 py-3 rounded-full text-sm font-medium hover:scale-105 transition-transform" style="background-color:#f1ffd6;color:#1f2a0e"><%= t.hero_cta %></a>
+          <a href="about" data-lk="t:nav_about" class="px-6 py-3 rounded-full text-sm font-medium border border-brand-soft/40 hover:bg-brand-soft/10" style="color:#fbfff0"><%= t.nav_about %></a>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="max-w-6xl mx-auto px-4 py-14 grid md:grid-cols-3 gap-6 text-center">
+    <div class="p-6"><div class="text-3xl mb-2">🎙️</div><h3 data-lk="t:stories_made_with_love" class="serif text-lg font-semibold mb-1"><%= t.stories_made_with_love %></h3><p data-lk="home-feature-1-desc" class="text-sm text-brand-ink/70"><%= lang==='en'?'Each chapter starts as a whispered recording, then becomes prose.':'Chaque chapitre commence comme un murmure enregistré, puis devient prose.' %></p></div>
+    <div class="p-6"><div class="text-3xl mb-2">📚</div><h3 data-lk="t:read_anytime" class="serif text-lg font-semibold mb-1"><%= t.read_anytime %></h3><p data-lk="home-feature-2-desc" class="text-sm text-brand-ink/70"><%= lang==='en'?'Once purchased, your books live in your private library.':'Une fois acheté, votre livre vit dans votre bibliothèque privée.' %></p></div>
+    <div class="p-6"><div class="text-3xl mb-2">💌</div><h3 data-lk="t:signed_author" class="serif text-lg font-semibold mb-1"><%= t.signed_author %></h3><p data-lk="home-feature-3-desc" class="text-sm text-brand-ink/70"><%= lang==='en'?'Each order is processed personally — no automated stores.':'Chaque commande est traitée personnellement — pas de boutique automatisée.' %></p></div>
+  </section>
+  <% if (featured && featured.length > 0) { %>
+  <section class="bg-brand py-14" style="background-color:#f1ffd6">
+    <div class="max-w-6xl mx-auto px-4">
+      <div class="flex items-end justify-between mb-8">
+        <h2 data-setting-key="featured_label_<%= lang %>" class="serif text-3xl md:text-4xl font-semibold text-brand-ink"><%= t.featured_label %></h2>
+        <a href="#catalog" data-lk="t:all_stories" class="text-sm hover:underline text-brand-deep"><%= t.all_stories %> →</a>
+      </div>
+      <div class="grid md:grid-cols-3 gap-8">
+        <% featured.forEach(function(s){ %>
+          <a href="story/<%= s.id %>" class="group block">
+            <div class="overflow-hidden rounded-lg bg-brand-soft">
+              <img data-content-source="stories:image_url" data-content-id="<%= s.id %>" src="<%= s.image_url || 'https://placehold.co/600x800/3a4d1a/f1ffd6/png?text='+encodeURIComponent(s.title) %>" alt="<%= s.title %>" class="book-cover w-full group-hover:scale-105 transition-transform duration-500">
+            </div>
+            <div class="mt-4">
+              <% if (s.genre) { %><span data-content-source="stories:genre" data-content-id="<%= s.id %>" class="text-[11px] uppercase tracking-widest text-brand-accent"><%= s.genre %></span><% } %>
+              <h3 data-content-source="stories:title" data-content-id="<%= s.id %>" class="serif text-xl font-semibold text-brand-ink mt-1"><%= s.title %></h3>
+              <% if (s.subtitle) { %><p data-content-source="stories:subtitle" data-content-id="<%= s.id %>" class="text-sm italic text-brand-ink/70"><%= s.subtitle %></p><% } %>
+              <div class="flex items-center justify-between mt-3">
+                <span class="text-sm font-medium text-brand-deep"><%= fmtPrice(s.price_cents) %></span>
+                <span data-lk="t:read_more" class="text-xs text-brand-accent"><%= t.read_more %> →</span>
+              </div>
+            </div>
+          </a>
+        <% }); %>
+      </div>
+    </div>
+  </section>
+  <% } %>
+  <section id="catalog" class="max-w-6xl mx-auto px-4 py-16">
+    <div class="flex items-end justify-between mb-8">
+      <div>
+        <span data-lk="t:catalog" class="text-[11px] uppercase tracking-widest text-brand-accent"><%= t.catalog %></span>
+        <h2 data-lk="t:all_stories" class="serif text-3xl md:text-4xl font-semibold text-brand-ink mt-1"><%= t.all_stories %></h2>
+      </div>
+    </div>
+    <% if (allStories && allStories.length > 0) { %>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <% allStories.forEach(function(s){ %>
+          <a href="story/<%= s.id %>" class="group block bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-brand-accent/10">
+            <div class="overflow-hidden">
+              <img data-content-source="stories:image_url" data-content-id="<%= s.id %>" src="<%= s.image_url || 'https://placehold.co/600x800/3a4d1a/f1ffd6/png?text='+encodeURIComponent(s.title) %>" alt="<%= s.title %>" class="book-cover w-full group-hover:scale-105 transition-transform duration-500">
+            </div>
+            <div class="p-5">
+              <% if (s.genre) { %><span data-content-source="stories:genre" data-content-id="<%= s.id %>" class="text-[11px] uppercase tracking-widest text-brand-accent"><%= s.genre %></span><% } %>
+              <h3 data-content-source="stories:title" data-content-id="<%= s.id %>" class="serif text-xl font-semibold text-brand-ink mt-1"><%= s.title %></h3>
+              <% if (s.subtitle) { %><p data-content-source="stories:subtitle" data-content-id="<%= s.id %>" class="text-sm italic text-brand-ink/70 mt-1"><%= s.subtitle %></p><% } %>
+              <p data-content-source="stories:description" data-content-id="<%= s.id %>" class="text-sm text-brand-ink/70 mt-3 line-clamp-3"><%= (s.description||'').substring(0,140) %><%= (s.description||'').length>140?'…':'' %></p>
+              <div class="flex items-center justify-between mt-4 pt-4 border-t border-brand-accent/10">
+                <span class="text-sm font-semibold text-brand-deep"><%= fmtPrice(s.price_cents) %></span>
+                <span data-lk="t:read_more" class="text-xs text-brand-accent group-hover:text-brand-deep"><%= t.read_more %> →</span>
+              </div>
+            </div>
+          </a>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <div class="text-center py-16 bg-brand-soft rounded-xl border border-brand-accent/20">
+        <div class="text-5xl mb-4">📖</div>
+        <p data-lk="t:no_stories" class="text-brand-ink/70"><%= t.no_stories %></p>
+      </div>
+    <% } %>
+  </section>
+  <% if (upcoming && upcoming.length > 0) { %>
+  <section class="max-w-6xl mx-auto px-4 pb-16">
+    <h2 data-lk="home-upcoming-title" class="serif text-2xl font-semibold text-brand-ink mb-6"><%= lang==='en'?'In progress':'En préparation' %></h2>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <% upcoming.forEach(function(s){ %>
+        <div class="bg-brand-soft rounded-lg p-5 border border-brand-accent/20 opacity-80">
+          <span data-lk="t:draft" class="text-[10px] uppercase tracking-widest text-brand-accent"><%= t.draft %></span>
+          <h3 data-content-source="stories:title" data-content-id="<%= s.id %>" class="serif text-lg font-semibold text-brand-ink mt-1"><%= s.title %></h3>
+          <% if (s.subtitle) { %><p data-content-source="stories:subtitle" data-content-id="<%= s.id %>" class="text-sm italic text-brand-ink/60 mt-1"><%= s.subtitle %></p><% } %>
+          <% if (s.description) { %><p data-content-source="stories:description" data-content-id="<%= s.id %>" class="text-xs text-brand-ink/60 mt-2 line-clamp-2"><%= s.description.substring(0,100) %></p><% } %>
+        </div>
+      <% }); %>
+    </div>
+  </section>
+  <% } %>
+</main>
+<%- include('partials/footer') %>

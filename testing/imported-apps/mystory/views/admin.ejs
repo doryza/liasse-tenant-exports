@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tableau de bord — My Story Admin</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body class="bg-slate-50 min-h-screen">
+<%- include('partials/admin-sidebar', { active: 'dashboard' }) %>
+<main class="admin-main">
+  <header class="admin-header">
+    <button class="admin-burger" onclick="document.querySelector('.admin-sidebar').classList.toggle('open')" aria-label="Menu">☰</button>
+    <div class="flex-1">
+      <h1 class="text-xl font-semibold text-slate-900">Tableau de bord</h1>
+      <p class="text-xs text-slate-500">Bonjour <%= adminUser.name || adminUser.email || '' %> — voici l'état de votre studio aujourd'hui.</p>
+    </div>
+    <a href="." target="_blank" class="hidden md:inline-flex items-center gap-1 text-sm text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100">👁 Voir le site</a>
+  </header>
+  <div class="p-6 max-w-7xl">
+    <section class="mb-8">
+      <h2 class="text-xs uppercase tracking-wider font-semibold text-slate-500 mb-3">Vue d'ensemble</h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="stat-card">
+          <div class="stat-card-icon" style="background:#ecfdf5;color:#047857">📚</div>
+          <div><div class="stat-label">Histoires</div><div class="stat-value"><%= stats.storyCount %></div><div class="stat-hint"><span class="text-emerald-700"><%= stats.publishedCount %></span> publiée<%= stats.publishedCount>1?'s':'' %></div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon" style="background:#fff7ed;color:#c2410c">🛒</div>
+          <div><div class="stat-label">En attente</div><div class="stat-value text-orange-600"><%= stats.purchasesPending %></div><div class="stat-hint"><%= stats.purchasesPaid %> confirmée<%= stats.purchasesPaid>1?'s':'' %></div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon" style="background:#f0fdf4;color:#15803d">💰</div>
+          <div><div class="stat-label">Revenus</div><div class="stat-value text-green-700"><%= (stats.revenue/100).toFixed(2) %> $</div><div class="stat-hint">Total payé</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-icon" style="background:#eff6ff;color:#1d4ed8">📈</div>
+          <div><div class="stat-label">Visites (7j)</div><div class="stat-value"><%= stats.visitsRecent %></div><div class="stat-hint"><%= stats.visitsTotal %> au total</div></div>
+        </div>
+      </div>
+    </section>
+    <section class="mb-8">
+      <h2 class="text-xs uppercase tracking-wider font-semibold text-slate-500 mb-3">Audience</h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="stat-card-mini"><div class="stat-label">Utilisateurs</div><div class="stat-value-sm"><%= stats.userCount %></div></div>
+        <div class="stat-card-mini"><div class="stat-label">Abonnés push</div><div class="stat-value-sm"><%= stats.pushCount %></div></div>
+        <div class="stat-card-mini"><div class="stat-label">Messages reçus</div><div class="stat-value-sm"><%= stats.submissionCount %></div></div>
+        <a href="admin/stories" class="quick-action">
+          <div class="text-2xl">🎙️</div>
+          <div class="text-sm font-semibold mt-1">Studio de dictée</div>
+          <div class="text-[11px] opacity-70">Enregistrer un nouveau chapitre</div>
+        </a>
+      </div>
+    </section>
+    <div class="grid lg:grid-cols-5 gap-6">
+      <div class="lg:col-span-3 admin-panel">
+        <div class="admin-panel-header">
+          <h3 class="font-semibold text-slate-900">Commandes récentes</h3>
+          <a href="admin/purchases" class="text-xs text-emerald-700 hover:underline font-medium">Tout voir →</a>
+        </div>
+        <% if (recentPurchases && recentPurchases.length > 0) { %>
+          <ul class="divide-y divide-slate-100">
+            <% recentPurchases.forEach(function(p){ %>
+              <li class="px-5 py-3 flex items-center justify-between gap-3 hover:bg-slate-50 transition">
+                <div class="min-w-0">
+                  <div class="font-medium text-sm text-slate-900 truncate"><%= p.story_title || '—' %></div>
+                  <div class="text-xs text-slate-500 truncate"><%= p.customer_name %> · <%= p.customer_email %></div>
+                </div>
+                <div class="flex items-center gap-2 flex-none">
+                  <span class="text-xs font-mono text-slate-400 hidden sm:inline"><%= p.payment_reference %></span>
+                  <span class="badge <%= p.status==='paid'?'badge-green':p.status==='pending'?'badge-orange':'badge-slate' %>"><%= p.status %></span>
+                </div>
+              </li>
+            <% }); %>
+          </ul>
+        <% } else { %>
+          <div class="empty-state">
+            <div class="text-4xl mb-2">🛒</div>
+            <p class="text-sm text-slate-500">Aucune commande pour le moment.</p>
+          </div>
+        <% } %>
+      </div>
+      <div class="lg:col-span-2 admin-panel p-5">
+        <h3 class="font-semibold text-slate-900 mb-1">Démarrage rapide</h3>
+        <p class="text-xs text-slate-500 mb-4">Suivez ces étapes pour créer votre premier livre.</p>
+        <ol class="space-y-3">
+          <li class="checklist-item"><span class="checklist-num">1</span><div><strong class="text-slate-800">Configurer Gemini</strong><p class="text-xs text-slate-500 mt-0.5">Ajoutez la clé <code class="bg-slate-100 px-1 rounded text-[11px]">GOOGLE_GEMINI_API_KEY</code> dans l'onglet Admin pour activer la transcription.</p></div></li>
+          <li class="checklist-item"><span class="checklist-num">2</span><div><strong class="text-slate-800">Créer une histoire</strong><p class="text-xs text-slate-500 mt-0.5">Allez dans <a href="admin/stories" class="text-emerald-700 underline font-medium">Histoires</a> → <em>Nouvelle histoire</em>.</p></div></li>
+          <li class="checklist-item"><span class="checklist-num">3</span><div><strong class="text-slate-800">Dicter & transcrire</strong><p class="text-xs text-slate-500 mt-0.5">Ouvrez le studio, enregistrez vos segments, laissez Gemini transcrire.</p></div></li>
+          <li class="checklist-item"><span class="checklist-num">4</span><div><strong class="text-slate-800">Assembler & publier</strong><p class="text-xs text-slate-500 mt-0.5">Liez les segments aux chapitres, assemblez, puis publiez.</p></div></li>
+          <li class="checklist-item"><span class="checklist-num">5</span><div><strong class="text-slate-800">Valider les commandes</strong><p class="text-xs text-slate-500 mt-0.5">Marquez chaque virement reçu comme payé — la lectrice reçoit l'accès automatiquement.</p></div></li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Studio — <%= story.title %></title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+<style>
+.recording{animation:pulse 1.5s infinite;background:#dc2626!important;color:#fff!important}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.65}}
+.seg-card{transition:all .2s;background:#fff}
+.seg-card:hover{background:#fafbfc}
+.studio-section{background:#fff;border-radius:14px;border:1px solid var(--admin-line);overflow:hidden}
+.studio-section-header{padding:14px 18px;border-bottom:1px solid var(--admin-line);display:flex;align-items:center;gap:8px;font-weight:600;background:#fafbfc}
+.studio-section-body{padding:18px}
+</style>
+</head>
+<body class="bg-slate-50 min-h-screen">
+<%- include('partials/admin-sidebar', { active: 'stories' }) %>
+<main class="admin-main">
+  <header class="admin-header">
+    <button class="admin-burger" onclick="document.querySelector('.admin-sidebar').classList.toggle('open')" aria-label="Menu">☰</button>
+    <div class="flex-1 min-w-0">
+      <a href="admin/stories" class="text-xs text-slate-500 hover:text-slate-700">← Histoires</a>
+      <h1 class="text-lg md:text-xl font-semibold text-slate-900 truncate">🎙️ <%= story.title %></h1>
+    </div>
+    <span class="badge <%= story.status==='published'?'badge-green':'badge-slate' %>"><%= story.status==='published'?'✓ Publié':'Brouillon' %></span>
+    <button onclick="assembleStory()" class="btn-emerald">📚 Assembler</button>
+  </header>
+  <% if (!hasGemini) { %>
+  <div class="mx-6 mt-6 p-4 bg-yellow-50 border border-yellow-300 rounded-xl text-sm text-yellow-900 flex items-start gap-3">
+    <span class="text-xl">⚠️</span>
+    <div><strong>Gemini non configuré.</strong> Ajoutez la variable <code class="bg-yellow-100 px-1.5 py-0.5 rounded text-xs">GOOGLE_GEMINI_API_KEY</code> dans l'onglet Admin de votre tableau de bord Liasse pour activer la transcription vocale et la correction IA.</div>
+  </div>
+  <% } %>
+  <div class="p-6 grid lg:grid-cols-[400px_1fr] gap-6">
+    <section class="space-y-5">
+      <div class="studio-section">
+        <div class="studio-section-header"><span>🎙️</span><span>Dictée vocale</span></div>
+        <div class="studio-section-body space-y-3">
+          <div>
+            <label class="form-label">Chapitre cible <span class="form-hint">(optionnel)</span></label>
+            <select id="targetChapter" class="form-input">
+              <option value="">— Non assigné —</option>
+              <% chapters.forEach(function(c){ %><option value="<%= c.id %>"><%= c.position %>. <%= c.title || ('Chapitre '+c.position) %></option><% }); %>
+            </select>
+          </div>
+          <div>
+            <label class="form-label">Langue de l'enregistrement</label>
+            <select id="recordLang" class="form-input"><option value="fr">🇫🇷 Français</option><option value="en">🇬🇧 English</option></select>
+          </div>
+          <button id="recordBtn" onclick="toggleRecord()" class="w-full py-4 bg-rose-600 text-white rounded-xl font-medium text-lg hover:bg-rose-700 transition">🎙️ Démarrer l'enregistrement</button>
+          <div id="timer" class="text-center text-3xl font-mono text-slate-700 hidden font-bold">00:00</div>
+          <div id="recordingStatus" class="text-center text-xs text-slate-500"></div>
+          <audio id="preview" controls class="w-full hidden"></audio>
+          <div id="saveActions" class="hidden space-y-2">
+            <button onclick="uploadRecording()" class="w-full py-3 bg-emerald-600 text-white rounded-lg font-medium hover:bg-emerald-700 transition">💾 Enregistrer & transcrire</button>
+            <button onclick="discardRecording()" class="w-full py-2 text-sm text-slate-600 hover:text-slate-900">Jeter</button>
+          </div>
+          <div id="uploadStatus" class="text-xs text-center hidden p-3 rounded-lg"></div>
+        </div>
+      </div>
+      <div class="studio-section">
+        <div class="studio-section-header"><span>✍️</span><span>Texte direct</span></div>
+        <div class="studio-section-body">
+          <p class="text-xs text-slate-500 mb-3">Ajoutez un segment textuel sans enregistrement.</p>
+          <textarea id="directText" rows="4" placeholder="Tapez ou collez du texte ici..." class="form-input font-serif"></textarea>
+          <button onclick="addTextSegment()" class="mt-2 w-full py-2 bg-slate-700 text-white rounded-lg text-sm hover:bg-slate-800 transition">+ Ajouter ce texte</button>
+        </div>
+      </div>
+      <div class="studio-section">
+        <div class="studio-section-header"><span>📑</span><span>Chapitres (<%= chapters.length %>)</span></div>
+        <div class="studio-section-body">
+          <ul id="chaptersList" class="space-y-2 mb-3">
+            <% if (chapters.length === 0) { %>
+              <li class="text-xs text-slate-500 text-center py-3">Aucun chapitre. Ajoutez-en un ci-dessous.</li>
+            <% } %>
+            <% chapters.forEach(function(c){ %>
+              <li class="flex items-center gap-2 p-2 bg-slate-50 hover:bg-slate-100 rounded-lg transition">
+                <span class="text-xs font-mono text-slate-400 w-6 flex-none"><%= c.position %></span>
+                <span class="flex-1 text-sm truncate"><%= c.title || ('Chapitre '+c.position) %></span>
+                <button onclick="renameChapter(<%= c.id %>, <%= JSON.stringify(c.title||'') %>)" class="text-xs text-blue-600 hover:bg-blue-50 px-2 py-0.5 rounded" title="Renommer">✏️</button>
+                <button onclick="deleteChapter(<%= c.id %>)" class="text-xs text-red-600 hover:bg-red-50 px-2 py-0.5 rounded" title="Supprimer">🗑</button>
+              </li>
+            <% }); %>
+          </ul>
+          <div class="flex gap-2">
+            <input id="newChapterTitle" placeholder="Titre du chapitre" class="flex-1 form-input text-sm">
+            <button onclick="addChapter()" class="px-4 py-2 bg-slate-700 text-white rounded-lg text-sm hover:bg-slate-800 transition">+</button>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section>
+      <div class="studio-section">
+        <div class="studio-section-header justify-between">
+          <span>📝 Segments (<%= segments.length %>)</span>
+          <span class="text-xs text-slate-500 font-normal">Le texte ci-dessous formera votre livre.</span>
+        </div>
+        <% if (segments.length > 0) { %>
+          <ul id="segmentsList" class="divide-y divide-slate-100">
+            <% segments.forEach(function(seg, idx){ %>
+              <li class="seg-card p-5" data-id="<%= seg.id %>">
+                <div class="flex items-start justify-between gap-3 mb-3 flex-wrap">
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <span class="text-xs font-mono text-slate-400">#<%= seg.position %></span>
+                    <span class="badge badge-slate"><%= seg.kind === 'voice' ? '🎙️ Voix' : '✍️ Texte' %></span>
+                    <% if (seg.status === 'error') { %><span class="badge badge-red">⚠️ Erreur transcription</span><% } %>
+                    <% if (seg.duration_seconds && seg.duration_seconds > 0) { %><span class="text-xs text-slate-400"><%= Math.floor(seg.duration_seconds/60) %>:<%= String(seg.duration_seconds%60).padStart(2,'0') %></span><% } %>
+                  </div>
+                  <select onchange="assignSegment(<%= seg.id %>, this.value)" class="text-xs px-2 py-1 border border-slate-300 rounded-lg">
+                    <option value="">— Sans chapitre —</option>
+                    <% chapters.forEach(function(c){ %><option value="<%= c.id %>" <%= seg.chapter_id===c.id?'selected':'' %>><%= c.position %>. <%= c.title || ('Ch.'+c.position) %></option><% }); %>
+                  </select>
+                </div>
+                <% if (seg.audio_url) { %><audio controls src="<%= seg.audio_url %>" class="w-full mb-3"></audio><% } %>
+                <textarea id="seg-<%= seg.id %>" class="form-input font-serif leading-relaxed" rows="<%= Math.max(3, Math.ceil((seg.edited_text||seg.transcript||'').length/80)) %>"><%= seg.edited_text || seg.transcript || '' %></textarea>
+                <div class="mt-3 flex flex-wrap gap-2">
+                  <button onclick="saveSegment(<%= seg.id %>, this)" class="px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-medium hover:bg-emerald-700 transition">💾 Sauver</button>
+                  <% if (seg.audio_url) { %><button onclick="retranscribe(<%= seg.id %>, this)" class="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-medium hover:bg-blue-700 transition">🔁 Retranscrire</button><% } %>
+                  <button onclick="polishSegment(<%= seg.id %>, this)" class="px-3 py-1.5 bg-purple-600 text-white rounded-lg text-xs font-medium hover:bg-purple-700 transition">✨ Polir avec IA</button>
+                  <button onclick="deleteSegment(<%= seg.id %>)" class="px-3 py-1.5 text-red-600 hover:bg-red-50 rounded-lg text-xs ml-auto transition">Supprimer</button>
+                </div>
+              </li>
+            <% }); %>
+          </ul>
+        <% } else { %>
+          <div class="p-12 text-center">
+            <div class="text-6xl mb-3">🎙️</div>
+            <h3 class="font-semibold text-slate-700 mb-1">Aucun segment encore</h3>
+            <p class="text-sm text-slate-500">Cliquez sur <strong>Démarrer l'enregistrement</strong> à gauche pour dicter votre première phrase.</p>
+          </div>
+        <% } %>
+      </div>
+      <div class="mt-6 studio-section">
+        <div class="studio-section-header"><span>📚</span><span>Assembler & publier</span></div>
+        <div class="studio-section-body">
+          <p class="text-sm text-slate-600 mb-4">Cliquez sur <strong>Assembler</strong> pour compiler tous les segments en chapitres complets, puis publiez l'histoire pour la rendre visible aux lectrices.</p>
+          <div class="flex flex-wrap gap-3">
+            <button onclick="assembleStory()" class="btn-emerald">📚 Assembler les chapitres</button>
+            <% if (story.status !== 'published') { %>
+              <button onclick="publishStory()" class="px-5 py-2 bg-slate-900 text-white rounded-full text-sm font-medium hover:bg-slate-800 transition">🚀 Publier le livre</button>
+            <% } else { %>
+              <button onclick="unpublishStory()" class="px-5 py-2 bg-orange-600 text-white rounded-full text-sm font-medium hover:bg-orange-700 transition">↩️ Repasser en brouillon</button>
+              <a href="story/<%= story.id %>" target="_blank" class="px-5 py-2 bg-blue-600 text-white rounded-full text-sm font-medium hover:bg-blue-700 transition">👁 Voir publié →</a>
+            <% } %>
+          </div>
+          <div id="assembleStatus" class="mt-3 text-sm hidden p-3 rounded-lg"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+<div id="toast" class="toast hidden"></div>
+<script>
+const STORY_ID = <%- story.id %>;
+let recorder = null, chunks = [], audioBlob = null, mimeType = 'audio/webm', startTime = 0, timerInt = null;
+function toast(msg, type){const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+(type||'success');t.classList.remove('hidden');setTimeout(()=>t.classList.add('hidden'),2400);}
+function flashBtn(btn, txt, ms){if(!btn)return;const o=btn.textContent;btn.textContent=txt;setTimeout(()=>{btn.textContent=o;},ms||1400);}
+async function toggleRecord(){
+  const btn = document.getElementById('recordBtn');
+  if (recorder && recorder.state === 'recording') { recorder.stop(); return; }
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    chunks = [];
+    let mt = 'audio/webm;codecs=opus';
+    if (!MediaRecorder.isTypeSupported(mt)) mt = 'audio/webm';
+    if (!MediaRecorder.isTypeSupported(mt)) mt = 'audio/mp4';
+    mimeType = mt;
+    recorder = new MediaRecorder(stream, { mimeType: mt });
+    recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+    recorder.onstop = () => {
+      stream.getTracks().forEach(t => t.stop());
+      audioBlob = new Blob(chunks, { type: mimeType });
+      const url = URL.createObjectURL(audioBlob);
+      const audio = document.getElementById('preview');
+      audio.src = url; audio.classList.remove('hidden');
+      document.getElementById('saveActions').classList.remove('hidden');
+      btn.classList.remove('recording');
+      btn.textContent = '🎙️ Démarrer l\'enregistrement';
+      clearInterval(timerInt);
+      document.getElementById('recordingStatus').textContent = '✓ Enregistrement prêt — écoutez puis sauvegardez.';
+    };
+    recorder.start();
+    startTime = Date.now();
+    btn.classList.add('recording');
+    btn.textContent = '⏹ Arrêter';
+    document.getElementById('timer').classList.remove('hidden');
+    document.getElementById('preview').classList.add('hidden');
+    document.getElementById('saveActions').classList.add('hidden');
+    document.getElementById('recordingStatus').textContent = '🔴 Enregistrement en cours...';
+    timerInt = setInterval(() => {
+      const s = Math.floor((Date.now() - startTime) / 1000);
+      document.getElementById('timer').textContent = String(Math.floor(s/60)).padStart(2,'0') + ':' + String(s%60).padStart(2,'0');
+    }, 200);
+  } catch(err) { toast('Microphone non accessible : ' + err.message, 'error'); }
+}
+function discardRecording(){ audioBlob = null; document.getElementById('preview').classList.add('hidden'); document.getElementById('saveActions').classList.add('hidden'); document.getElementById('timer').classList.add('hidden'); document.getElementById('recordingStatus').textContent = ''; }
+function blobToBase64(blob){ return new Promise((resolve, reject) => { const r = new FileReader(); r.onloadend = () => resolve(r.result.split(',')[1]); r.onerror = reject; r.readAsDataURL(blob); }); }
+async function uploadRecording(){
+  if (!audioBlob) return;
+  const status = document.getElementById('uploadStatus');
+  status.classList.remove('hidden'); status.className = 'text-xs text-center p-3 rounded-lg bg-blue-50 text-blue-800';
+  status.textContent = '⏳ Téléversement et transcription en cours... (peut prendre 10-30s)';
+  try {
+    const b64 = await blobToBase64(audioBlob);
+    const duration = Math.floor((Date.now() - startTime) / 1000);
+    const r = await fetch('./api/admin/segments/record', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ story_id: STORY_ID, chapter_id: document.getElementById('targetChapter').value || null, audio_base64: b64, mime_type: mimeType, duration: duration, language: document.getElementById('recordLang').value }) });
+    const j = await r.json();
+    if (!r.ok) throw new Error(j.error || 'Échec');
+    if (j.transcribeError) { status.className = 'text-xs text-center p-3 rounded-lg bg-yellow-50 text-yellow-800'; status.textContent = '⚠️ Audio enregistré mais transcription échouée : ' + j.transcribeError; }
+    else { status.className = 'text-xs text-center p-3 rounded-lg bg-green-50 text-green-800'; status.textContent = '✓ Segment ajouté avec transcription'; }
+    setTimeout(() => location.reload(), 1500);
+  } catch(err) { status.className = 'text-xs text-center p-3 rounded-lg bg-red-50 text-red-800'; status.textContent = '✗ ' + err.message; }
+}
+async function addTextSegment(){
+  const text = document.getElementById('directText').value.trim();
+  if (!text) { toast('Aucun texte','error'); return; }
+  const r = await fetch('./api/admin/segments/text', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ story_id: STORY_ID, chapter_id: document.getElementById('targetChapter').value || null, text, language: document.getElementById('recordLang').value }) });
+  if (r.ok) { toast('Segment texte ajouté'); setTimeout(()=>location.reload(),700); } else toast('Erreur','error');
+}
+async function saveSegment(id, btn){
+  const text = document.getElementById('seg-' + id).value;
+  const r = await fetch('./api/admin/segments/' + id, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ edited_text: text }) });
+  if (r.ok) { flashBtn(btn,'✓ Sauvegardé'); toast('Segment sauvegardé'); }
+  else toast('Erreur','error');
+}
+async function assignSegment(id, chapterId){ const r=await fetch('./api/admin/segments/' + id, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ chapter_id: chapterId || null }) }); if(r.ok) toast('Chapitre assigné'); }
+async function retranscribe(id, btn){
+  if (!confirm('Retranscrire ce segment ? Le texte actuel sera remplacé.')) return;
+  const orig = btn.textContent; btn.textContent = '⏳'; btn.disabled = true;
+  const r = await fetch('./api/admin/segments/' + id + '/retranscribe', { method:'POST' });
+  const j = await r.json();
+  if (r.ok) { document.getElementById('seg-' + id).value = j.segment.edited_text || j.segment.transcript || ''; flashBtn(btn,'✓'); toast('Retranscrit'); }
+  else toast(j.error || 'Erreur','error');
+  btn.textContent = orig; btn.disabled = false;
+}
+async function polishSegment(id, btn){
+  const orig = btn.textContent; btn.textContent = '⏳ Polissage...'; btn.disabled = true;
+  const r = await fetch('./api/admin/segments/' + id + '/polish', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({}) });
+  const j = await r.json();
+  if (r.ok) { document.getElementById('seg-' + id).value = j.segment.edited_text || ''; flashBtn(btn,'✓ Poli'); toast('Texte poli ✨'); }
+  else toast(j.error || 'Erreur','error');
+  btn.textContent = orig; btn.disabled = false;
+}
+async function deleteSegment(id){ if (!confirm('Supprimer ce segment ?')) return; const r=await fetch('./api/admin/segments/' + id, { method:'DELETE' }); if(r.ok){toast('Supprimé');setTimeout(()=>location.reload(),600);} else toast('Erreur','error'); }
+async function addChapter(){
+  const title = document.getElementById('newChapterTitle').value.trim();
+  if (!title) { toast('Titre requis','error'); return; }
+  const r = await fetch('./api/admin/chapters', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ story_id: STORY_ID, title }) });
+  if (r.ok) { toast('Chapitre ajouté'); setTimeout(()=>location.reload(),600); } else toast('Erreur','error');
+}
+async function renameChapter(id, currentTitle){
+  const t = prompt('Nouveau titre :', currentTitle);
+  if (t === null) return;
+  const r=await fetch('./api/admin/chapters/' + id, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ title: t }) });
+  if(r.ok){toast('Renommé');setTimeout(()=>location.reload(),600);}
+}
+async function deleteChapter(id){ if (!confirm('Supprimer ce chapitre ? Les segments seront détachés.')) return; const r=await fetch('./api/admin/chapters/' + id, { method:'DELETE' }); if(r.ok){toast('Supprimé');setTimeout(()=>location.reload(),600);} }
+async function assembleStory(){
+  const status = document.getElementById('assembleStatus');
+  status.classList.remove('hidden'); status.className = 'mt-3 text-sm p-3 rounded-lg bg-blue-50 text-blue-800';
+  status.textContent = '⏳ Assemblage en cours...';
+  const r = await fetch('./api/admin/stories/' + STORY_ID + '/assemble', { method:'POST' });
+  const j = await r.json();
+  if (r.ok) { status.className = 'mt-3 text-sm p-3 rounded-lg bg-green-50 text-green-800'; status.textContent = '✓ Livre assemblé : ' + j.chapterCount + ' chapitres, ' + j.wordCount + ' mots.'; toast('Livre assemblé'); }
+  else { status.className = 'mt-3 text-sm p-3 rounded-lg bg-red-50 text-red-800'; status.textContent = '✗ ' + (j.error || 'Erreur'); toast('Erreur','error'); }
+}
+async function publishStory(){
+  if (!confirm('Publier ce livre ? Il deviendra visible et achetable par les lectrices.')) return;
+  await fetch('./api/admin/stories/' + STORY_ID + '/assemble', { method:'POST' });
+  const r=await fetch('./api/admin/stories/' + STORY_ID, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ status: 'published' }) });
+  if(r.ok){toast('🚀 Publié !');setTimeout(()=>location.reload(),900);}
+}
+async function unpublishStory(){
+  if (!confirm('Repasser ce livre en brouillon ? Il ne sera plus visible publiquement.')) return;
+  const r=await fetch('./api/admin/stories/' + STORY_ID, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ status: 'draft' }) });
+  if(r.ok){toast('Repassé en brouillon');setTimeout(()=>location.reload(),700);}
+}
+</script>
+</body>
+</html>

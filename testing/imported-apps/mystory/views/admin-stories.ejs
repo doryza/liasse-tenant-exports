@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Histoires — Admin</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body class="bg-slate-50 min-h-screen">
+<%- include('partials/admin-sidebar', { active: 'stories' }) %>
+<main class="admin-main">
+  <header class="admin-header">
+    <button class="admin-burger" onclick="document.querySelector('.admin-sidebar').classList.toggle('open')" aria-label="Menu">☰</button>
+    <div class="flex-1">
+      <h1 class="text-xl font-semibold text-slate-900">Mes histoires</h1>
+      <p class="text-xs text-slate-500">Créez, dictez et publiez vos livres numériques.</p>
+    </div>
+    <input id="searchBox" placeholder="Filtrer..." class="hidden md:block px-3 py-2 border border-slate-300 rounded-lg text-sm w-44 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 focus:outline-none">
+    <button onclick="openModal()" class="btn-emerald">+ Nouvelle histoire</button>
+  </header>
+  <div class="p-6">
+    <% if (stories && stories.length > 0) { %>
+      <div id="storyGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+        <% stories.forEach(function(s){ %>
+          <div data-search="<%= (s.title+' '+(s.subtitle||'')+' '+(s.genre||'')+' '+s.status).toLowerCase() %>" class="story-card bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-lg transition">
+            <div class="aspect-[3/4] bg-gradient-to-br from-slate-200 to-slate-300 overflow-hidden relative">
+              <img src="<%= s.image_url || 'https://placehold.co/600x800/cbd5e1/64748b/png?text='+encodeURIComponent(s.title) %>" class="w-full h-full object-cover" alt="">
+              <span class="absolute top-3 left-3 badge <%= s.status==='published'?'badge-green-solid':'badge-dark-solid' %>"><%= s.status==='published'?'✓ Publié':'Brouillon' %></span>
+              <% if (s.featured) { %><span class="absolute top-3 right-3 badge badge-yellow-solid">★ À la une</span><% } %>
+            </div>
+            <div class="p-4">
+              <h3 class="font-semibold text-slate-900 line-clamp-1"><%= s.title %></h3>
+              <% if (s.subtitle) { %><p class="text-xs italic text-slate-500 line-clamp-1"><%= s.subtitle %></p><% } %>
+              <div class="mt-2 text-xs text-slate-500 flex justify-between items-center">
+                <span><%= s.chapter_count %> chap. · <%= s.segment_count %> seg.</span>
+                <span class="font-semibold text-emerald-700"><%= ((s.price_cents||0)/100).toFixed(2) %> $</span>
+              </div>
+              <div class="mt-3 grid grid-cols-3 gap-2">
+                <a href="admin/stories/<%= s.id %>/editor" class="col-span-2 text-center px-3 py-2 bg-emerald-600 text-white rounded-lg text-xs font-medium hover:bg-emerald-700 transition">🎙️ Studio</a>
+                <button onclick='editStory(<%= JSON.stringify(s) %>)' title="Modifier" class="px-3 py-2 bg-slate-100 text-slate-700 rounded-lg text-xs font-medium hover:bg-slate-200 transition">✏️</button>
+                <button onclick="deleteStory(<%= s.id %>)" class="col-span-3 px-3 py-1.5 text-xs text-red-600 hover:bg-red-50 rounded-lg transition">Supprimer</button>
+              </div>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <div class="empty-state-large">
+        <div class="text-6xl mb-3">📖</div>
+        <h3 class="text-lg font-semibold text-slate-700 mb-1">Aucune histoire encore</h3>
+        <p class="text-sm text-slate-500 mb-5">Créez votre première histoire pour commencer à dicter.</p>
+        <button onclick="openModal()" class="btn-emerald">+ Créer une histoire</button>
+      </div>
+    <% } %>
+  </div>
+</main>
+<div id="modal" class="modal-overlay hidden">
+  <div class="modal-card max-w-2xl">
+    <div class="modal-header sticky top-0"><h3 id="modalTitle" class="font-semibold">Nouvelle histoire</h3><button onclick="closeModal()" class="modal-close" aria-label="Fermer">×</button></div>
+    <form id="storyForm" class="p-6 space-y-4">
+      <input type="hidden" name="id">
+      <div><label class="form-label">Titre *</label><input name="title" required class="form-input"></div>
+      <div><label class="form-label">Sous-titre</label><input name="subtitle" class="form-input" placeholder="ex. Un récit d'automne"></div>
+      <div><label class="form-label">Synopsis <span class="form-hint">(affiché sur la page de détail)</span></label><textarea name="description" rows="3" class="form-input"></textarea></div>
+      <div><label class="form-label">Extrait gratuit <span class="form-hint">(montré aux visiteurs avant l'achat)</span></label><textarea name="excerpt" rows="3" class="form-input font-serif" placeholder="Premières lignes..."></textarea></div>
+      <div>
+        <label class="form-label">Image de couverture <span class="form-hint">(URL ou générée par IA)</span></label>
+        <input name="image_url" class="form-input" placeholder="https://...">
+        <div class="mt-2 flex gap-2">
+          <input id="aiPrompt" placeholder="Décrire la couverture en français..." class="flex-1 form-input text-sm">
+          <button type="button" onclick="genCover()" class="px-4 py-2 bg-purple-600 text-white rounded-lg text-sm font-medium hover:bg-purple-700 transition whitespace-nowrap">✨ Générer IA</button>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div><label class="form-label">Prix (cents)</label><input name="price_cents" type="number" min="0" step="1" class="form-input" placeholder="499"><p class="form-hint mt-1">499 = 4,99 $</p></div>
+        <div><label class="form-label">Genre</label><input name="genre" class="form-input" placeholder="Roman court"></div>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div><label class="form-label">Statut</label><select name="status" class="form-input"><option value="draft">📝 Brouillon (invisible)</option><option value="published">✓ Publié (visible)</option></select></div>
+        <div><label class="form-label">Langue</label><select name="language" class="form-input"><option value="fr">🇫🇷 Français</option><option value="en">🇬🇧 English</option></select></div>
+      </div>
+      <label class="flex items-center gap-2 text-sm bg-yellow-50 border border-yellow-200 px-3 py-2 rounded-lg"><input name="featured" type="checkbox"><span>★ Mettre en vedette à l'accueil</span></label>
+      <div class="flex gap-3 pt-3 border-t border-slate-200">
+        <button type="submit" class="flex-1 btn-emerald">💾 Enregistrer</button>
+        <button type="button" onclick="closeModal()" class="btn-ghost">Annuler</button>
+      </div>
+    </form>
+  </div>
+</div>
+<div id="toast" class="toast hidden"></div>
+<script>
+function toast(msg, type){const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+(type||'success');t.classList.remove('hidden');setTimeout(()=>t.classList.add('hidden'),2200);}
+function openModal(){const f=document.getElementById('storyForm');f.reset();f.querySelector('[name=id]').value='';document.getElementById('modalTitle').textContent='Nouvelle histoire';document.getElementById('modal').classList.remove('hidden');}
+function closeModal(){document.getElementById('modal').classList.add('hidden');}
+function editStory(s){const f=document.getElementById('storyForm');f.reset();f.querySelector('[name=id]').value=s.id;f.querySelector('[name=title]').value=s.title||'';f.querySelector('[name=subtitle]').value=s.subtitle||'';f.querySelector('[name=description]').value=s.description||'';f.querySelector('[name=excerpt]').value=s.excerpt||'';f.querySelector('[name=image_url]').value=s.image_url||'';f.querySelector('[name=price_cents]').value=s.price_cents||0;f.querySelector('[name=genre]').value=s.genre||'';f.querySelector('[name=status]').value=s.status||'draft';f.querySelector('[name=language]').value=s.language||'fr';f.querySelector('[name=featured]').checked=!!s.featured;document.getElementById('modalTitle').textContent='Modifier l\'histoire';document.getElementById('modal').classList.remove('hidden');}
+async function deleteStory(id){if(!confirm('Supprimer cette histoire ainsi que ses chapitres et segments ? Cette action est irréversible.'))return;const r=await fetch('./api/admin/stories/'+id,{method:'DELETE'});if(r.ok){toast('Histoire supprimée');setTimeout(()=>location.reload(),600);}else toast('Erreur','error');}
+async function genCover(){const p=document.getElementById('aiPrompt').value;if(!p){toast('Décrivez la couverture','error');return;}const btn=event.target;const orig=btn.textContent;btn.textContent='⏳ Génération...';btn.disabled=true;try{const r=await fetch('./api/admin/generate-image',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:p,aspectRatio:'3:4'})});const j=await r.json();if(!r.ok)throw new Error(j.error);document.querySelector('input[name=image_url]').value=j.imageUrl;toast('Couverture générée ✨');}catch(e){toast(e.message,'error');}finally{btn.textContent=orig;btn.disabled=false;}}
+document.getElementById('storyForm').addEventListener('submit',async function(e){e.preventDefault();const f=e.target;const data=Object.fromEntries(new FormData(f));data.featured=f.querySelector('[name=featured]').checked;data.price_cents=parseInt(data.price_cents||0,10);const id=data.id;delete data.id;const url=id?'./api/admin/stories/'+id:'./api/admin/stories';const method=id?'PUT':'POST';const r=await fetch(url,{method,headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});if(r.ok){toast(id?'Histoire modifiée':'Histoire créée');setTimeout(()=>location.reload(),700);}else{const j=await r.json().catch(()=>({}));toast(j.error||'Erreur','error');}});
+const sb=document.getElementById('searchBox');if(sb){sb.addEventListener('input',function(e){const q=e.target.value.toLowerCase();document.querySelectorAll('.story-card').forEach(c=>{c.style.display=c.dataset.search.includes(q)?'':'none';});});}
+</script>
+</body>
+</html>

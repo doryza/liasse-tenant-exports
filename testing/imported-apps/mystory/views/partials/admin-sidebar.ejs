@@ -1,0 +1,23 @@
+<aside class="admin-sidebar">
+  <div class="admin-brand">
+    <span class="text-xl">📖</span>
+    <div class="flex flex-col">
+      <span class="font-semibold leading-tight">My Story</span>
+      <span class="text-[10px] text-slate-400 uppercase tracking-wider">Studio admin</span>
+    </div>
+  </div>
+  <nav class="admin-nav">
+    <div class="admin-nav-section">Aperçu</div>
+    <a href="admin" class="<%= active==='dashboard'?'active':'' %>"><span>📊</span> Tableau de bord</a>
+    <div class="admin-nav-section">Contenu</div>
+    <a href="admin/stories" class="<%= active==='stories'?'active':'' %>"><span>📚</span> Histoires</a>
+    <a href="admin/posts" class="<%= active==='posts'?'active':'' %>"><span>📝</span> Articles</a>
+    <div class="admin-nav-section">Lectorat</div>
+    <a href="admin/purchases" class="<%= active==='purchases'?'active':'' %>"><span>🛒</span> Commandes</a>
+    <a href="admin/submissions" class="<%= active==='submissions'?'active':'' %>"><span>📨</span> Messages</a>
+  </nav>
+  <div class="admin-foot">
+    <a href="." target="_blank">↗ Voir le site public</a>
+    <a href="admin/logout">⎋ Déconnexion</a>
+  </div>
+</aside>

@@ -1,0 +1,66 @@
+{
+  "slug": "mystory",
+  "displayName": "MyStory",
+  "description": "create an app where I can use a gemini voice model to dictate parts of a story and record them to later assemble a book story. use ai to transcribe. this is for my own private usage, only I as an admin can create a story. the front end will be to sell my finalized story, sort of like an ebook",
+  "status": "active",
+  "generationVersion": 2,
+  "primaryColor": "#f1ffd6",
+  "iconUrl": "https://res.cloudinary.com/duhp69meg/image/upload/v1777143569/tapavis_tenant_mystory/icon_mystory_1777143569163.png",
+  "enabledAuthMethods": [
+    "webauthn",
+    "sms",
+    "email"
+  ],
+  "notificationsEnabled": true,
+  "geolocationEnabled": true,
+  "customConfig": {
+    "language": "both",
+    "aiSummary": {
+      "en": {
+        "dashboard": "Welcome to your control center! The 'Admin' section is your private backstage area where you bring your stories to life and manage your shop. Only you can see this area.\n\nHere’s a quick tour of what you can do:\n\n**Create Your Stories:** This is the heart of your app!\n- Go to 'Admin' → 'Stories' to start a new book.\n- Inside the Story Editor, you can dictate parts of your story. Just speak, and the app will type it out for you! These are your 'segments'.\n- You can edit the text, ask the AI to polish it, and then arrange your segments into chapters to build your complete book.\n\n**Manage Your Shop:**\n- **See Your Sales:** The 'Purchases' tab shows you a list of all your customers and which stories they've bought.\n- **Read Messages:** If someone uses the contact form on your website, their message will appear in the 'Submissions' area for you to read.\n\n**Connect with Readers:**\n- You have a 'Posts' section, which works like a blog. You can write articles, share news about upcoming books, or connect with your audience here.\n\n**Check Your Stats:**\n- Your main admin page will give you a quick overview of how your app is doing, like how many people have visited your site.\n\nThink of this as your writer's studio and business office, all in one place. Have fun creating!",
+        "variables": "Welcome to your new 'MyStory' app! We're so excited for you to start creating. There's just one small step to get the most important feature working: the voice-to-text story creation.\n\nYour app uses a special tool from Google to listen to your voice and automatically write down what you say. To turn this on, it needs a special password, called an API key.\n\nThink of it like giving your app a library card to access Google's AI library.\n\n**What it's for:** The Google Gemini API Key is what powers your voice recording and transcription feature. Without it, you won't be able to dictate your story segments.\n\n**Where to get it:** You can get this key by signing up on the Google AI Studio website.\n\n**How to add it:** Once you have your key, just go to your app's 'Admin' area. You'll find a 'Settings' or 'Required API Keys' section where you can paste it in.\n\nOnce that's done, you'll be all set to bring your stories to life, just by speaking them!"
+      },
+      "fr": {
+        "dashboard": "Bienvenue dans votre centre de contrôle! La section 'Admin' est votre atelier personnel, là où vous donnez vie à vos histoires et gérez votre boutique. C'est un espace privé juste pour vous.\n\nVoici un petit tour de ce que vous pouvez y faire :\n\n**Créez vos histoires :** C'est le cœur de votre application!\n- Allez dans 'Admin' → 'Histoires' pour commencer un nouveau livre.\n- Dans l'Éditeur d'histoire, vous pouvez dicter des passages. Parlez, et l'application écrira pour vous! Ce sont vos 'segments'.\n- Vous pouvez ensuite modifier le texte, demander à l'IA de le peaufiner, puis organiser vos segments en chapitres pour assembler votre livre final.\n\n**Gérez votre boutique :**\n- **Consultez vos ventes :** L'onglet 'Achats' vous montre la liste de tous vos clients et les histoires qu'ils ont achetées.\n- **Lisez vos messages :** Si quelqu'un utilise le formulaire de contact sur votre site web, son message apparaîtra dans la section 'Soumissions'.\n\n**Communiquez avec vos lecteurs :**\n- Vous disposez d'une section 'Publications', qui fonctionne comme un blogue.",
+        "variables": "Bienvenue dans votre nouvelle application 'MyStory'! Nous sommes ravis que vous commenciez à créer. Il ne reste qu'une petite étape pour activer la fonctionnalité la plus importante : la création d'histoires par la voix.\n\nVotre application utilise un outil spécial de Google pour écouter votre voix et retranscrire automatiquement ce que vous dites. Pour l'activer, elle a besoin d'un mot de passe spécial, qu'on appelle une clé d'API.\n\nImaginez que c'est comme donner à votre application une carte de bibliothèque pour accéder à l'intelligence artificielle de Google.\n\n**À quoi ça sert :** La clé d'API Google Gemini est ce qui alimente votre fonction d'enregistrement et de transcription vocale. Sans elle, vous ne pourrez pas dicter les passages de votre histoire.\n\n**Où l'obtenir :** Vous pouvez obtenir cette clé en vous inscrivant sur le site web de Google AI Studio.\n\n**Comment l'ajouter :** Une fois que vous avez votre clé, revenez simplement dans la section 'Admin' de votre application. Vous y trouverez une section 'Paramètres' ou 'Clés d'API requises' où vous pourrez la coller.\n\nUne fois cela fait, vous serez prêt(e) à donner vie à vos histoires, simplement en les racontant!"
+      }
+    },
+    "aiSummaryVersion": 1
+  },
+  "promptHistory": [
+    {
+      "prompt": "create an app where I can use a gemini voice model to dictate parts of a story and record them to later assemble a book story. use ai to transcribe. this is for my own private usage, only I as an admin can create a story. the front end will be to sell my finalized story, sort of like an ebook",
+      "timestamp": "2026-04-25T18:59:36.984Z",
+      "changeNotes": "Initial build of My Story — a private dictation studio for the admin paired with a public ebook storefront. Admin records voice segments, Gemini transcribes them, then assembles segments into chapters and publishes a full story. Public readers buy ebooks via a manual checkout flow (e-transfer reference) and access them in their library after the admin marks the purchase as paid.\n\nAdmin UX/UI enrichment pass: (1) Upgraded admin-styles.css with polished design tokens, focus states, button system, toast component, empty states, badges, table styling, and accessible color contrast. (2) Rebuilt admin dashboard with richer metric cards, inline trend hints, quick action grid, and clearer onboarding checklist. (3) Improved admin-stories with hover states, action menus, image fallback, and clearer status badges. (4) Polished admin-purchases with sticky table header, status filter buttons, and inline message viewer modal (replacing alert). (5) Enhanced admin-posts with thumbnail preview, two-column form, status pills. (6) Refreshed admin-submissions with mailto/copy controls, hover affordances. (7) Refined admin-story-editor toolbar, better recording UI feedback, inline toast on save/polish/transcribe instead of alert(), keyboard-accessible buttons, improved chapter list density. (8) Strengthened admin-sidebar with section headers, active indicator, better contrast. (9) Added subtle hover/transition polish to public pages without altering functionality. (10) Generated SEO metadata for bilingual FR/EN with Organization schema. No data model or route changes; all existing CRUD endpoints preserved.",
+      "generationId": 898,
+      "filesModified": [
+        "manifest.json",
+        "public/css/admin-styles.css",
+        "public/js/app.js",
+        "routes.js",
+        "schema.sql",
+        "seed.js",
+        "views/about.ejs",
+        "views/admin-posts.ejs",
+        "views/admin-purchases.ejs",
+        "views/admin-stories.ejs",
+        "views/admin-story-editor.ejs",
+        "views/admin-submissions.ejs",
+        "views/admin.ejs",
+        "views/checkout.ejs",
+        "views/contact.ejs",
+        "views/index.ejs",
+        "views/library.ejs",
+        "views/partials/admin-sidebar.ejs",
+        "views/partials/footer.ejs",
+        "views/partials/header.ejs",
+        "views/reader.ejs",
+        "views/story.ejs"
+      ]
+    }
+  ],
+  "apiVariables": [],
+  "createdAt": "2026-04-25T17:57:18.834Z",
+  "updatedAt": "2026-07-08T14:32:57.447Z",
+  "exportedAt": "2026-07-10T03:27:31.664Z"
+}

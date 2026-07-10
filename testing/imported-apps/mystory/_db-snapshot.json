@@ -1,0 +1,416 @@
+{
+  "exportedAt": "2026-07-10T03:27:31.696Z",
+  "tables": {
+    "admin_invites": {
+      "columns": [
+        "id",
+        "email",
+        "token",
+        "role",
+        "status",
+        "invited_by",
+        "expires_at",
+        "accepted_at",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_settings": {
+      "columns": [
+        "key",
+        "value",
+        "updated_at"
+      ],
+      "totalRows": 36,
+      "sampleRows": [
+        {
+          "key": "business_name",
+          "value": "Mon Histoire",
+          "updated_at": "2026-04-12T14:10:49.696Z"
+        },
+        {
+          "key": "contact_email",
+          "value": "mystory@tapcontact.ca",
+          "updated_at": "2026-04-12T14:10:49.700Z"
+        },
+        {
+          "key": "tagline",
+          "value": "Vos histoires, dictées et transcrites par l'IA.",
+          "updated_at": "2026-04-12T14:10:49.710Z"
+        },
+        {
+          "key": "hero_title",
+          "value": "Donnez vie à vos histoires",
+          "updated_at": "2026-04-12T14:10:49.724Z"
+        },
+        {
+          "key": "hero_subtitle",
+          "value": "Dictez vos récits, laissez l'IA transcrire et assemblez votre livre.",
+          "updated_at": "2026-04-12T14:10:49.731Z"
+        },
+        {
+          "key": "about_text",
+          "value": "MyStory est une plateforme innovante qui transforme votre voix en texte grâce à l'intelligence artificielle. Créez vos histoires en les dictant simplement.",
+          "updated_at": "2026-04-12T14:10:49.737Z"
+        },
+        {
+          "key": "mission_text",
+          "value": "Rendre l'écriture accessible à tous grâce à la technologie vocale et l'intelligence artificielle.",
+          "updated_at": "2026-04-12T14:10:49.743Z"
+        },
+        {
+          "key": "_p_hero_image_url",
+          "value": "{{IMG_HERO}}",
+          "updated_at": "2026-04-12T14:10:49.751Z"
+        },
+        {
+          "key": "_p_seo_title_fr",
+          "value": "My Story — Histoires originales dictées à la voix",
+          "updated_at": "2026-04-25T18:59:05.365Z"
+        },
+        {
+          "key": "_p_seo_source_title_fr",
+          "value": "ai",
+          "updated_at": "2026-04-25T18:59:05.375Z"
+        }
+      ]
+    },
+    "stories": {
+      "columns": [
+        "id",
+        "user_id",
+        "title",
+        "description",
+        "cover_image_url",
+        "status",
+        "genre",
+        "language",
+        "word_count",
+        "image_url",
+        "created_at",
+        "updated_at",
+        "subtitle",
+        "excerpt",
+        "full_text",
+        "price_cents",
+        "author_name",
+        "featured"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "chapters": {
+      "columns": [
+        "id",
+        "story_id",
+        "title",
+        "content",
+        "order_num",
+        "word_count",
+        "image_url",
+        "created_at",
+        "updated_at",
+        "position"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "form_submissions": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "message",
+        "created_at",
+        "image_url",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "plans": {
+      "columns": [
+        "id",
+        "name",
+        "name_en",
+        "description",
+        "description_en",
+        "price",
+        "currency",
+        "duration_days",
+        "story_limit",
+        "chapter_limit",
+        "features",
+        "features_en",
+        "popular",
+        "active",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 3,
+      "sampleRows": [
+        {
+          "id": 1,
+          "name": "Gratuit",
+          "name_en": "Free",
+          "description": "Pour découvrir la plateforme",
+          "description_en": "Discover the platform",
+          "price": 0,
+          "currency": "CAD",
+          "duration_days": 0,
+          "story_limit": 3,
+          "chapter_limit": 5,
+          "features": "3 histoires|5 chapitres par histoire|Dictée vocale|Transcription IA",
+          "features_en": "3 stories|5 chapters per story|Voice dictation|AI transcription",
+          "popular": 0,
+          "active": 1,
+          "image_url": null,
+          "created_at": "2026-04-12T14:10:49.771Z",
+          "updated_at": "2026-04-12T14:10:49.771Z"
+        },
+        {
+          "id": 2,
+          "name": "Premium Mensuel",
+          "name_en": "Premium Monthly",
+          "description": "Tout illimité, mois par mois",
+          "description_en": "Unlimited, month by month",
+          "price": 9.99,
+          "currency": "CAD",
+          "duration_days": 30,
+          "story_limit": -1,
+          "chapter_limit": -1,
+          "features": "Histoires illimitées|Chapitres illimités|Dictée vocale|Transcription IA|Polissage IA|Export texte",
+          "features_en": "Unlimited stories|Unlimited chapters|Voice dictation|AI transcription|AI polishing|Text export",
+          "popular": 1,
+          "active": 1,
+          "image_url": null,
+          "created_at": "2026-04-12T14:10:49.774Z",
+          "updated_at": "2026-04-12T14:10:49.774Z"
+        },
+        {
+          "id": 3,
+          "name": "Premium Annuel",
+          "name_en": "Premium Annual",
+          "description": "Le meilleur rapport qualité-prix",
+          "description_en": "Best value",
+          "price": 79.99,
+          "currency": "CAD",
+          "duration_days": 365,
+          "story_limit": -1,
+          "chapter_limit": -1,
+          "features": "Histoires illimitées|Chapitres illimités|Dictée vocale|Transcription IA|Polissage IA|Export texte|Économisez 33%",
+          "features_en": "Unlimited stories|Unlimited chapters|Voice dictation|AI transcription|AI polishing|Text export|Save 33%",
+          "popular": 0,
+          "active": 1,
+          "image_url": null,
+          "created_at": "2026-04-12T14:10:49.782Z",
+          "updated_at": "2026-04-12T14:10:49.782Z"
+        }
+      ]
+    },
+    "posts": {
+      "columns": [
+        "id",
+        "title",
+        "content",
+        "image_url",
+        "category",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "5 conseils pour améliorer votre écriture",
+          "content": "Écrire est un art qui se perfectionne avec la pratique. Voici cinq conseils essentiels : lisez régulièrement et diversement, écrivez chaque jour même quelques lignes, relisez et révisez vos textes, acceptez les critiques constructives, et explorez différents genres littéraires.",
+          "image_url": "{{IMG_POST1}}",
+          "category": "Conseils",
+          "published": 1,
+          "created_at": "2026-04-12T14:10:49.788Z",
+          "updated_at": "2026-04-12T14:10:49.788Z"
+        },
+        {
+          "id": 2,
+          "title": "La dictée vocale transforme la création littéraire",
+          "content": "La technologie de reconnaissance vocale permet aux auteurs de capturer leurs idées naturellement. En dictant vos histoires, vous libérez votre créativité des contraintes de la frappe. L'IA moderne transcrit avec une précision remarquable, préservant le rythme et le ton de votre narration.",
+          "image_url": "{{IMG_POST2}}",
+          "category": "Technologie",
+          "published": 1,
+          "created_at": "2026-04-12T14:10:49.804Z",
+          "updated_at": "2026-04-12T14:10:49.804Z"
+        },
+        {
+          "id": 3,
+          "title": "L'intelligence artificielle au service des auteurs",
+          "content": "L'IA ne remplace pas l'auteur, elle l'accompagne. Du polissage grammatical à la suggestion de style, les outils d'IA offrent un assistant d'écriture disponible à tout moment. Découvrez comment intégrer ces technologies dans votre processus créatif.",
+          "image_url": "{{IMG_POST3}}",
+          "category": "Technologie",
+          "published": 1,
+          "created_at": "2026-04-12T14:10:49.811Z",
+          "updated_at": "2026-04-12T14:10:49.811Z"
+        },
+        {
+          "id": 4,
+          "title": "Guide du débutant : écrire votre premier livre",
+          "content": "Écrire un livre peut sembler intimidant, mais avec la bonne méthode, c'est à la portée de tous. Commencez par un plan simple, définissez vos personnages principaux, et avancez chapitre par chapitre. MyStory facilite ce processus en vous permettant de dicter vos idées.",
+          "image_url": "{{IMG_POST4}}",
+          "category": "Guides",
+          "published": 1,
+          "created_at": "2026-04-12T14:10:49.816Z",
+          "updated_at": "2026-04-12T14:10:49.816Z"
+        }
+      ]
+    },
+    "site_visits": {
+      "columns": [
+        "id",
+        "path",
+        "created_at"
+      ],
+      "totalRows": 27,
+      "sampleRows": [
+        {
+          "id": 1,
+          "path": "/",
+          "created_at": "2026-04-25T21:47:40.018Z"
+        },
+        {
+          "id": 2,
+          "path": "/%7B%7BIMG_HERO%7D%7D",
+          "created_at": "2026-04-25T21:47:40.608Z"
+        },
+        {
+          "id": 3,
+          "path": "/",
+          "created_at": "2026-04-25T21:47:40.696Z"
+        },
+        {
+          "id": 4,
+          "path": "/",
+          "created_at": "2026-04-25T21:47:44.766Z"
+        },
+        {
+          "id": 5,
+          "path": "/%7B%7BIMG_HERO%7D%7D",
+          "created_at": "2026-04-25T21:47:44.965Z"
+        },
+        {
+          "id": 6,
+          "path": "/",
+          "created_at": "2026-04-25T21:47:45.057Z"
+        },
+        {
+          "id": 7,
+          "path": "/",
+          "created_at": "2026-04-25T21:47:48.051Z"
+        },
+        {
+          "id": 8,
+          "path": "/library",
+          "created_at": "2026-04-25T21:47:50.107Z"
+        },
+        {
+          "id": 9,
+          "path": "/library",
+          "created_at": "2026-04-25T21:48:17.356Z"
+        },
+        {
+          "id": 10,
+          "path": "/library",
+          "created_at": "2026-04-25T21:48:19.355Z"
+        }
+      ]
+    },
+    "user_memberships": {
+      "columns": [
+        "id",
+        "user_id",
+        "plan_id",
+        "status",
+        "paypal_order_id",
+        "started_at",
+        "expires_at",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_users": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "password_hash",
+        "display_name",
+        "role",
+        "active",
+        "activation_token",
+        "invited_by",
+        "invite_token",
+        "invite_expires_at",
+        "last_login_at",
+        "is_active",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_webauthn_credentials": {
+      "columns": [
+        "id",
+        "admin_user_id",
+        "credential_id",
+        "public_key",
+        "counter",
+        "device_name",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "story_segments": {
+      "columns": [
+        "id",
+        "story_id",
+        "chapter_id",
+        "position",
+        "audio_url",
+        "transcript",
+        "edited_text",
+        "duration_seconds",
+        "language",
+        "kind",
+        "status",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "purchases": {
+      "columns": [
+        "id",
+        "user_id",
+        "story_id",
+        "amount_cents",
+        "status",
+        "payment_reference",
+        "customer_email",
+        "customer_name",
+        "customer_phone",
+        "customer_message",
+        "image_url",
+        "paid_at",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    }
+  }
+}

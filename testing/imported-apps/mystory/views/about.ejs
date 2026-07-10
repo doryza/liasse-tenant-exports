@@ -1,0 +1,26 @@
+<%- include('partials/header') %>
+<main class="flex-1">
+  <section class="max-w-4xl mx-auto px-4 py-14">
+    <h1 data-setting-key="about_title_<%= lang %>" class="serif text-4xl md:text-5xl font-semibold text-brand-ink text-center"><%= t.about_title %></h1>
+    <div class="mt-10 grid md:grid-cols-[280px_1fr] gap-10 items-start">
+      <img data-setting-key="_p_about_image_url" src="<%= (typeof settings!=='undefined' && settings._p_about_image_url) ? settings._p_about_image_url : 'https://placehold.co/600x800/3a4d1a/f1ffd6/png?text=Author' %>" alt="Author" class="w-full rounded-xl shadow-lg" style="aspect-ratio:3/4;object-fit:cover">
+      <div data-setting-key="about_text_<%= lang %>" class="prose-reader">
+        <% (t.about_text || '').split(/\n\n+/).forEach(function(p){ %>
+          <% if (p.trim()) { %><p><%= p %></p><% } %>
+        <% }); %>
+        <% if (!t.about_text) { %>
+          <p><%= lang==='en'?'I write out loud. Stories begin as whispered recordings, then become books.':'J’écris à voix haute. Les histoires commencent comme des murmures enregistrés, puis deviennent des livres.' %></p>
+        <% } %>
+      </div>
+    </div>
+    <div class="mt-14 grid md:grid-cols-3 gap-6">
+      <div class="bg-brand-soft p-6 rounded-xl border border-brand-accent/20"><div class="text-2xl mb-2">🎙️</div><h3 data-lk="about-feature-1-title" class="serif font-semibold mb-1"><%= lang==='en'?'Dictated':'Dictée' %></h3><p data-lk="about-feature-1-desc" class="text-sm text-brand-ink/70"><%= lang==='en'?'Each chapter starts as a voice recording, capturing rhythm and breath.':'Chaque chapitre commence comme un enregistrement vocal, captant rythme et souffle.' %></p></div>
+      <div class="bg-brand-soft p-6 rounded-xl border border-brand-accent/20"><div class="text-2xl mb-2">✍️</div><h3 data-lk="about-feature-2-title" class="serif font-semibold mb-1"><%= lang==='en'?'Polished':'Affinée' %></h3><p data-lk="about-feature-2-desc" class="text-sm text-brand-ink/70"><%= lang==='en'?'Drafts are transcribed and shaped by hand into the final book.':'Les brouillons sont transcrits puis ciselés à la main pour devenir le livre final.' %></p></div>
+      <div class="bg-brand-soft p-6 rounded-xl border border-brand-accent/20"><div class="text-2xl mb-2">📬</div><h3 data-lk="about-feature-3-title" class="serif font-semibold mb-1"><%= lang==='en'?'Sent personally':'Envoyée personnellement' %></h3><p data-lk="about-feature-3-desc" class="text-sm text-brand-ink/70"><%= lang==='en'?'Every order is reviewed and granted by the author herself.':'Chaque commande est validée personnellement par l’auteure.' %></p></div>
+    </div>
+    <div class="mt-14 text-center">
+      <a href="contact" data-lk="t:contact_title" class="btn-primary inline-block px-6 py-3 rounded-full text-sm font-medium" style="background-color:#1f2a0e;color:#f1ffd6"><%= t.contact_title %> →</a>
+    </div>
+  </section>
+</main>
+<%- include('partials/footer') %>
