@@ -1,0 +1,512 @@
+{
+  "exportedAt": "2026-07-10T17:18:43.151Z",
+  "tables": {
+    "admin_invites": {
+      "columns": [
+        "id",
+        "email",
+        "token",
+        "role",
+        "status",
+        "invited_by",
+        "expires_at",
+        "accepted_at",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_users": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "password_hash",
+        "display_name",
+        "role",
+        "active",
+        "activation_token",
+        "invited_by",
+        "invite_token",
+        "invite_expires_at",
+        "last_login_at",
+        "is_active",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_webauthn_credentials": {
+      "columns": [
+        "id",
+        "admin_user_id",
+        "credential_id",
+        "public_key",
+        "counter",
+        "device_name",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_settings": {
+      "columns": [
+        "key",
+        "value",
+        "updated_at"
+      ],
+      "totalRows": 39,
+      "sampleRows": [
+        {
+          "key": "booking_days",
+          "value": "1,2,3,4,5,6",
+          "updated_at": "2026-07-10T17:16:53.354Z"
+        },
+        {
+          "key": "booking_start",
+          "value": "09:00",
+          "updated_at": "2026-07-10T17:16:53.365Z"
+        },
+        {
+          "key": "booking_end",
+          "value": "19:00",
+          "updated_at": "2026-07-10T17:16:53.375Z"
+        },
+        {
+          "key": "slot_minutes",
+          "value": "60",
+          "updated_at": "2026-07-10T17:16:53.385Z"
+        },
+        {
+          "key": "max_days_ahead",
+          "value": "60",
+          "updated_at": "2026-07-10T17:16:53.395Z"
+        },
+        {
+          "key": "min_hours_ahead",
+          "value": "24",
+          "updated_at": "2026-07-10T17:16:53.405Z"
+        },
+        {
+          "key": "_p_hero_image_url",
+          "value": "https://res.cloudinary.com/duhp69meg/image/upload/v1783701926/tapavis_tenant_parenthese-detente/build_parenthese-detente_1783701926182.png",
+          "updated_at": "2026-07-10T17:16:53.418Z"
+        },
+        {
+          "key": "_p_table_image_url",
+          "value": "https://res.cloudinary.com/duhp69meg/image/upload/v1783701923/tapavis_tenant_parenthese-detente/build_parenthese-detente_1783701923583.png",
+          "updated_at": "2026-07-10T17:16:53.433Z"
+        },
+        {
+          "key": "_p_about_image_url",
+          "value": "https://res.cloudinary.com/duhp69meg/image/upload/v1783701924/tapavis_tenant_parenthese-detente/build_parenthese-detente_1783701924540.png",
+          "updated_at": "2026-07-10T17:16:53.448Z"
+        },
+        {
+          "key": "_seed_version",
+          "value": "fa08aaff9188",
+          "updated_at": "2026-07-10T17:16:53.893Z"
+        }
+      ]
+    },
+    "site_visits": {
+      "columns": [
+        "id",
+        "path",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "posts": {
+      "columns": [
+        "id",
+        "title",
+        "content",
+        "image_url",
+        "category",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Trois minutes de respiration avant de dormir",
+          "content": "Avant de fermer les yeux, offrez-vous trois minutes. Inspirez lentement par le nez pendant quatre temps, retenez un instant, puis relâchez pendant six temps.\n\nRépété quelques soirs, ce petit rituel apprend au corps à reconnaître le signal du repos. Le sommeil vient plus doucement.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783701924/tapavis_tenant_parenthese-detente/build_parenthese-detente_1783701924450.png",
+          "category": "Rituels",
+          "published": 1,
+          "created_at": "2026-07-10T17:16:53.670Z",
+          "updated_at": "2026-07-10T17:16:53.670Z"
+        },
+        {
+          "id": 2,
+          "title": "Pourquoi le massage à domicile change tout",
+          "content": "Le vrai luxe, ce n’est pas seulement le soin — c’est de ne rien avoir à organiser autour. Pas de trajet, pas de salle d’attente, pas de retour à faire une fois détendu·e.\n\nJe viens à vous avec tout le nécessaire. Vous n’avez qu’à rester là où le calme vous attend déjà : chez vous.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783701924/tapavis_tenant_parenthese-detente/build_parenthese-detente_1783701924229.png",
+          "category": "À la maison",
+          "published": 1,
+          "created_at": "2026-07-09T17:16:53.682Z",
+          "updated_at": "2026-07-10T17:16:53.682Z"
+        },
+        {
+          "id": 3,
+          "title": "Préparer votre espace pour un massage",
+          "content": "Un coin tranquille, un peu de place pour la table, une prise à proximité : c’est tout ce qu’il faut. Je m’occupe du reste, du drap chaud à la lumière tamisée.\n\nUn conseil : prévoyez un grand verre d’eau pour après le soin. Votre corps vous remerciera.",
+          "image_url": null,
+          "category": "Conseils",
+          "published": 1,
+          "created_at": "2026-07-08T17:16:53.692Z",
+          "updated_at": "2026-07-10T17:16:53.692Z"
+        },
+        {
+          "id": 4,
+          "title": "Le confort d’une grande table",
+          "content": "Ma table de massage est le cœur de mon travail. Rembourrage épais, surface chauffante, habillage de lin lavé changé à chaque visite.\n\nC’est ce détail, souvent invisible, qui transforme un bon massage en un vrai moment de lâcher-prise.",
+          "image_url": null,
+          "category": "Coulisses",
+          "published": 1,
+          "created_at": "2026-07-07T17:16:53.705Z",
+          "updated_at": "2026-07-10T17:16:53.705Z"
+        }
+      ]
+    },
+    "services": {
+      "columns": [
+        "id",
+        "name_fr",
+        "name_en",
+        "tagline_fr",
+        "tagline_en",
+        "description_fr",
+        "description_en",
+        "duration_min",
+        "price",
+        "image_url",
+        "category",
+        "featured",
+        "sort_order",
+        "active",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 5,
+      "sampleRows": [
+        {
+          "id": 1,
+          "name_fr": "Massage suédois",
+          "name_en": "Swedish massage",
+          "tagline_fr": "Détente profonde, de la nuque aux pieds.",
+          "tagline_en": "Deep relaxation, from neck to toes.",
+          "description_fr": "Des manœuvres lentes et enveloppantes pour relâcher les tensions et calmer le système nerveux. Le soin par excellence pour décrocher complètement.",
+          "description_en": "Slow, enveloping strokes that release tension and calm the nervous system. The treatment of choice to fully unwind.",
+          "duration_min": 60,
+          "price": 120,
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783701924/tapavis_tenant_parenthese-detente/build_parenthese-detente_1783701924792.png",
+          "category": "Détente",
+          "featured": true,
+          "sort_order": 1,
+          "active": true,
+          "created_at": "2026-07-10T17:16:53.471Z",
+          "updated_at": "2026-07-10T17:16:53.471Z"
+        },
+        {
+          "id": 2,
+          "name_fr": "Massage thérapeutique",
+          "name_en": "Therapeutic massage",
+          "tagline_fr": "Soulagement ciblé des douleurs.",
+          "tagline_en": "Targeted relief for pain.",
+          "description_fr": "Un travail en profondeur sur les zones de tension et les douleurs chroniques, adapté à votre condition. Vous repartez plus léger.",
+          "description_en": "Deep work on tension zones and chronic pain, tailored to your condition. You leave lighter.",
+          "duration_min": 75,
+          "price": 150,
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783701923/tapavis_tenant_parenthese-detente/build_parenthese-detente_1783701923471.png",
+          "category": "Thérapeutique",
+          "featured": true,
+          "sort_order": 2,
+          "active": true,
+          "created_at": "2026-07-10T17:16:53.480Z",
+          "updated_at": "2026-07-10T17:16:53.480Z"
+        },
+        {
+          "id": 3,
+          "name_fr": "Massage duo & couples",
+          "name_en": "Duo & couples massage",
+          "tagline_fr": "À deux, côte à côte, au même moment.",
+          "tagline_en": "Together, side by side, at the same time.",
+          "description_fr": "Deux tables installées côte à côte pour partager un moment de calme. Avec une ou deux massothérapeutes, selon vos préférences.",
+          "description_en": "Two tables set side by side to share a moment of calm. With one or two therapists, as you prefer.",
+          "duration_min": 60,
+          "price": 260,
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783701926/tapavis_tenant_parenthese-detente/build_parenthese-detente_1783701925625.png",
+          "category": "Duo",
+          "featured": true,
+          "sort_order": 3,
+          "active": true,
+          "created_at": "2026-07-10T17:16:53.491Z",
+          "updated_at": "2026-07-10T17:16:53.491Z"
+        },
+        {
+          "id": 4,
+          "name_fr": "Massage prénatal",
+          "name_en": "Prenatal massage",
+          "tagline_fr": "Douceur et soutien pour la future maman.",
+          "tagline_en": "Gentle support for the mother-to-be.",
+          "description_fr": "Un soin tout en douceur, dans une position confortable et sécuritaire, pour soulager le dos, les jambes et l’esprit.",
+          "description_en": "A gentle treatment in a safe, comfortable position to ease the back, legs and mind.",
+          "duration_min": 60,
+          "price": 130,
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783701923/tapavis_tenant_parenthese-detente/build_parenthese-detente_1783701923317.png",
+          "category": "Spécialisé",
+          "featured": false,
+          "sort_order": 4,
+          "active": true,
+          "created_at": "2026-07-10T17:16:53.501Z",
+          "updated_at": "2026-07-10T17:16:53.501Z"
+        },
+        {
+          "id": 5,
+          "name_fr": "Massage aux pierres chaudes",
+          "name_en": "Hot stone massage",
+          "tagline_fr": "La chaleur qui dénoue tout.",
+          "tagline_en": "Warmth that melts it all.",
+          "description_fr": "Des pierres de basalte chauffées glissent sur le corps pour une détente enveloppante et une chaleur qui pénètre les muscles.",
+          "description_en": "Heated basalt stones glide over the body for enveloping relaxation and warmth that reaches deep into the muscles.",
+          "duration_min": 90,
+          "price": 175,
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783701923/tapavis_tenant_parenthese-detente/build_parenthese-detente_1783701923745.png",
+          "category": "Détente",
+          "featured": false,
+          "sort_order": 5,
+          "active": true,
+          "created_at": "2026-07-10T17:16:53.511Z",
+          "updated_at": "2026-07-10T17:16:53.511Z"
+        }
+      ]
+    },
+    "zones": {
+      "columns": [
+        "id",
+        "name",
+        "region",
+        "sort_order",
+        "active",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 12,
+      "sampleRows": [
+        {
+          "id": 1,
+          "name": "Saint-Sauveur",
+          "region": "Laurentides",
+          "sort_order": 1,
+          "active": true,
+          "image_url": null,
+          "created_at": "2026-07-10T17:16:53.528Z",
+          "updated_at": "2026-07-10T17:16:53.528Z"
+        },
+        {
+          "id": 2,
+          "name": "Sainte-Adèle",
+          "region": "Laurentides",
+          "sort_order": 2,
+          "active": true,
+          "image_url": null,
+          "created_at": "2026-07-10T17:16:53.539Z",
+          "updated_at": "2026-07-10T17:16:53.539Z"
+        },
+        {
+          "id": 3,
+          "name": "Morin-Heights",
+          "region": "Laurentides",
+          "sort_order": 3,
+          "active": true,
+          "image_url": null,
+          "created_at": "2026-07-10T17:16:53.549Z",
+          "updated_at": "2026-07-10T17:16:53.549Z"
+        },
+        {
+          "id": 4,
+          "name": "Piedmont",
+          "region": "Laurentides",
+          "sort_order": 4,
+          "active": true,
+          "image_url": null,
+          "created_at": "2026-07-10T17:16:53.559Z",
+          "updated_at": "2026-07-10T17:16:53.559Z"
+        },
+        {
+          "id": 5,
+          "name": "Prévost",
+          "region": "Laurentides",
+          "sort_order": 5,
+          "active": true,
+          "image_url": null,
+          "created_at": "2026-07-10T17:16:53.571Z",
+          "updated_at": "2026-07-10T17:16:53.571Z"
+        },
+        {
+          "id": 6,
+          "name": "Saint-Jérôme",
+          "region": "Laurentides",
+          "sort_order": 6,
+          "active": true,
+          "image_url": null,
+          "created_at": "2026-07-10T17:16:53.584Z",
+          "updated_at": "2026-07-10T17:16:53.584Z"
+        },
+        {
+          "id": 7,
+          "name": "Sainte-Agathe-des-Monts",
+          "region": "Laurentides",
+          "sort_order": 7,
+          "active": true,
+          "image_url": null,
+          "created_at": "2026-07-10T17:16:53.595Z",
+          "updated_at": "2026-07-10T17:16:53.595Z"
+        },
+        {
+          "id": 8,
+          "name": "Val-David",
+          "region": "Laurentides",
+          "sort_order": 8,
+          "active": true,
+          "image_url": null,
+          "created_at": "2026-07-10T17:16:53.606Z",
+          "updated_at": "2026-07-10T17:16:53.606Z"
+        },
+        {
+          "id": 9,
+          "name": "Val-Morin",
+          "region": "Laurentides",
+          "sort_order": 9,
+          "active": true,
+          "image_url": null,
+          "created_at": "2026-07-10T17:16:53.619Z",
+          "updated_at": "2026-07-10T17:16:53.619Z"
+        },
+        {
+          "id": 10,
+          "name": "Mont-Tremblant",
+          "region": "Laurentides",
+          "sort_order": 10,
+          "active": true,
+          "image_url": null,
+          "created_at": "2026-07-10T17:16:53.631Z",
+          "updated_at": "2026-07-10T17:16:53.631Z"
+        }
+      ]
+    },
+    "bookings": {
+      "columns": [
+        "id",
+        "service_id",
+        "service_name",
+        "customer_name",
+        "customer_email",
+        "customer_phone",
+        "customer_address",
+        "city",
+        "booking_date",
+        "booking_time",
+        "duration_min",
+        "price",
+        "status",
+        "payment_status",
+        "payment_id",
+        "notes",
+        "user_id",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 3,
+      "sampleRows": [
+        {
+          "id": 1,
+          "service_id": null,
+          "service_name": "Massage suédois",
+          "customer_name": "Claire Bélanger",
+          "customer_email": "claire@exemple.com",
+          "customer_phone": "(450) 555-0142",
+          "customer_address": "128 rue des Érables",
+          "city": "Saint-Sauveur",
+          "booking_date": "2026-07-13T00:00:00.000Z",
+          "booking_time": "10:00",
+          "duration_min": 60,
+          "price": 120,
+          "status": "confirmed",
+          "payment_status": "paid",
+          "payment_id": null,
+          "notes": "Préférence pour une ambiance très calme.",
+          "user_id": null,
+          "image_url": null,
+          "created_at": "2026-07-10T17:16:53.724Z",
+          "updated_at": "2026-07-10T17:16:53.724Z"
+        },
+        {
+          "id": 2,
+          "service_id": null,
+          "service_name": "Massage thérapeutique",
+          "customer_name": "Marc Tremblay",
+          "customer_email": "marc@exemple.com",
+          "customer_phone": "(450) 555-0188",
+          "customer_address": "54 chemin du Lac",
+          "city": "Sainte-Adèle",
+          "booking_date": "2026-07-16T00:00:00.000Z",
+          "booking_time": "14:00",
+          "duration_min": 75,
+          "price": 150,
+          "status": "pending",
+          "payment_status": "unpaid",
+          "payment_id": null,
+          "notes": "Douleur au bas du dos.",
+          "user_id": null,
+          "image_url": null,
+          "created_at": "2026-07-10T17:16:53.734Z",
+          "updated_at": "2026-07-10T17:16:53.734Z"
+        },
+        {
+          "id": 3,
+          "service_id": null,
+          "service_name": "Massage aux pierres chaudes",
+          "customer_name": "Julie Rousseau",
+          "customer_email": "julie@exemple.com",
+          "customer_phone": "(819) 555-0110",
+          "customer_address": "9 allée des Pins",
+          "city": "Val-David",
+          "booking_date": "2026-07-06T00:00:00.000Z",
+          "booking_time": "16:00",
+          "duration_min": 90,
+          "price": 175,
+          "status": "completed",
+          "payment_status": "paid",
+          "payment_id": null,
+          "notes": "",
+          "user_id": null,
+          "image_url": null,
+          "created_at": "2026-07-10T17:16:53.744Z",
+          "updated_at": "2026-07-10T17:16:53.744Z"
+        }
+      ]
+    },
+    "form_submissions": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "phone",
+        "message",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    }
+  }
+}

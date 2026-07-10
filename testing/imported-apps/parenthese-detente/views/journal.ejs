@@ -1,0 +1,28 @@
+<%- include('partials/header') %>
+<div class='pagehead'>
+ <p class='eyebrow'><%= t.journal_title %></p>
+ <h1><%= t.journal_title %></h1>
+ <p><%= t.journal_intro %></p>
+</div>
+<section class='section' style='padding-top:1rem'>
+ <div class='wrap'>
+  <% if(typeof posts!=='undefined'&&posts.length>0){ %>
+  <div class='soins-grid'>
+   <% posts.forEach(function(p){ %>
+   <article class='soin-card' data-reveal>
+    <% if(p.image_url){ %><img class='soin-img' src='<%= p.image_url %>' data-content-source='posts:image_url' data-content-id='<%= p.id %>' alt='<%= p.title %>'><% } %>
+    <div class='soin-body'>
+     <% if(p.category){ %><p class='soin-meta'><%= p.category %></p><% } %>
+     <h3 data-content-source='posts:title' data-content-id='<%= p.id %>'><%= p.title %></h3>
+     <p><%= (p.content||'').slice(0,120) %><%= (p.content&&p.content.length>120)?'…':'' %></p>
+     <a href='journal/<%= p.id %>' class='link-paren'>( <%= t.journal_read %> )</a>
+    </div>
+   </article>
+   <% }); %>
+  </div>
+  <% } else { %>
+  <p class='empty center'><%= t.journal_empty %></p>
+  <% } %>
+ </div>
+</section>
+<%- include('partials/footer') %>

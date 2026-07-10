@@ -1,0 +1,20 @@
+<!DOCTYPE html><html lang='fr'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1'><title>Messages — Admin</title><link rel='stylesheet' href='public/css/admin-styles.css'><link href='https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Figtree:wght@400;500;600;700&display=swap' rel='stylesheet'></head><body class='admin'>
+<%- include('partials/admin-sidebar', { active: 'messages' }) %>
+<main class='admin-main'>
+ <header class='admin-top'><button class='side-toggle' id='sideToggle' aria-label='Menu'>≡</button><div class='admin-top-titles'><h1>Messages</h1><p class='admin-sub'>Messages reçus via le formulaire de contact.</p></div><button class='btn ghost' id='refreshBtn'>Actualiser</button></header>
+ <div id='msg' class='admin-msg' style='display:none'></div>
+ <div id='list' class='msg-list'></div>
+ <div id='empty' class='admin-empty' style='display:none'>Aucun message pour le moment.</div>
+</main>
+<script>
+(function(){var st=document.getElementById('sideToggle');if(st){st.addEventListener('click',function(){document.querySelector('.admin-sidebar').classList.toggle('open');});}})();
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/'/g,'&#39;');}
+function m(t,ok){var e=document.getElementById('msg');e.style.display='block';e.textContent=t;e.className='admin-msg '+(ok?'ok':'err');setTimeout(function(){e.style.display='none';},3000);}
+function fmt(d){try{return new Date(d).toLocaleString('fr-CA',{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});}catch(e){return d;}}
+function render(subs){var list=document.getElementById('list');if(!subs||!subs.length){document.getElementById('empty').style.display='block';list.innerHTML='';return;}document.getElementById('empty').style.display='none';list.innerHTML=subs.map(function(s){var mail=s.email?'<a class="btn tiny" href="mailto:'+esc(s.email)+'">Répondre</a>':'';return '<div class="msg-card"><div class="msg-card-head"><div><span class="msg-from">'+esc(s.name||'—')+'</span>'+(s.email?' <span class="msg-meta">'+esc(s.email)+'</span>':'')+(s.phone?' <span class="msg-meta">· '+esc(s.phone)+'</span>':'')+'</div><span class="msg-meta">'+esc(fmt(s.created_at))+'</span></div><div class="msg-body">'+esc(s.message||'')+'</div><div class="msg-actions">'+mail+'<button class="btn tiny danger" data-id="'+s.id+'">Supprimer</button></div></div>';}).join('');bindDelete();}
+function bindDelete(){document.querySelectorAll('.msg-actions .danger').forEach(function(b){b.addEventListener('click',function(){var id=b.getAttribute('data-id');if(!confirm('Supprimer ce message ?'))return;fetch('api/admin/submissions/'+id,{method:'DELETE'}).then(function(r){return r.json();}).then(function(){m('Message supprimé',true);load();}).catch(function(){m('Erreur',false);});});});}
+function load(){fetch('api/admin/submissions').then(function(r){return r.json();}).then(function(d){render(d.submissions||[]);}).catch(function(){m('Erreur de chargement',false);});}
+document.getElementById('refreshBtn').addEventListener('click',load);
+load();
+</script>
+</body></html>

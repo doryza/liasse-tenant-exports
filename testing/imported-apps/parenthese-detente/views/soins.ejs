@@ -1,0 +1,30 @@
+<%- include('partials/header') %>
+<div class='pagehead'>
+ <p class='eyebrow'><%= t.soins_eyebrow %></p>
+ <h1><%= t.soins_title %></h1>
+ <p><%= t.soins_intro %></p>
+</div>
+<section class='section' style='padding-top:1rem'>
+ <div class='wrap'>
+  <% if(typeof services!=='undefined'&&services.length>0){ %>
+  <div class='soins-grid'>
+   <% services.forEach(function(s){ var nm=lang==='en'?(s.name_en||s.name_fr):s.name_fr; var tg=lang==='en'?(s.tagline_en||s.tagline_fr):s.tagline_fr; var ds=lang==='en'?(s.description_en||s.description_fr):s.description_fr; %>
+   <article class='soin-card' data-reveal>
+    <img class='soin-img' src='<%= s.image_url || "https://placehold.co/1000x750/e9e2d3/9C7B54/png?text=Soin" %>' data-content-source='services:image_url' data-content-id='<%= s.id %>' alt='<%= nm %>'>
+    <div class='soin-body'>
+     <h3 data-content-source='services:name_<%= lang %>' data-content-id='<%= s.id %>'><%= nm %></h3>
+     <p class='soin-tag' data-content-source='services:tagline_<%= lang %>' data-content-id='<%= s.id %>'><%= tg %></p>
+     <p data-content-source='services:description_<%= lang %>' data-content-id='<%= s.id %>'><%= ds %></p>
+     <p class='soin-meta'><%= s.duration_min %> <%= t.min %> · <%= formatPrice(s.price) %></p>
+     <a href='reservation?service=<%= s.id %>' class='btn-paren' style='margin-top:.4rem'>( <%= t.soins_choose %> )</a>
+    </div>
+   </article>
+   <% }); %>
+  </div>
+  <% } else { %>
+  <p class='empty center'><%= t.empty_soins %></p>
+  <% } %>
+ </div>
+</section>
+<section class='pay-band'><div class='wrap pay-row'><span class='paypal-mark'>Pay<span>Pal</span></span><span aria-hidden='true'>·</span><span><%= t.pay_line %></span></div></section>
+<%- include('partials/footer') %>

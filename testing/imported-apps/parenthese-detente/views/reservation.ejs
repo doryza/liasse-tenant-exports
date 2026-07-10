@@ -1,0 +1,56 @@
+<%- include('partials/header') %>
+<section class='section'>
+ <div class='wrap book-wrap'>
+  <div class='center'><p class='eyebrow'><%= t.book_eyebrow %></p><h1 class='sec-title'><%= t.book_title %></h1></div>
+  <div class='steps'><span><%= t.book_step1 %></span><span>·</span><span><%= t.book_step2 %></span><span>·</span><span><%= t.book_step3 %></span></div>
+  <p class='book-login center muted'><a href='#' data-login-btn class='link-paren'>( <%= t.nav_login %> )</a> — <%= t.book_prefill %></p>
+  <div class='book-frame'>
+   <span class='fb l' aria-hidden='true'>(</span><span class='fb r' aria-hidden='true'>)</span>
+   <% if(typeof services!=='undefined'&&services.length>0){ %>
+   <div id='bookingForm'>
+    <div class='book-block'><h3><%= t.book_choose_service %></h3><div class='svc-list'>
+     <% services.forEach(function(s){ var nm=lang==='en'?(s.name_en||s.name_fr):s.name_fr; %>
+     <button type='button' class='svc-opt' data-id='<%= s.id %>' data-price='<%= s.price %>' data-duration='<%= s.duration_min %>'><span class='svc-opt-name'><%= nm %></span><span class='svc-opt-meta'><%= s.duration_min %> <%= t.min %> · <%= formatPrice(s.price) %></span></button>
+     <% }); %>
+    </div></div>
+    <div class='book-block'><h3><%= t.book_choose_date %></h3><label class='field' style='max-width:280px'><span><%= t.sum_date %></span><input type='date' id='bkDate' min='<%= minDate %>' max='<%= maxDate %>'></label></div>
+    <div class='book-block'><h3><%= t.book_choose_time %></h3><div class='slots' id='slots'><p class='muted'><%= t.book_pick_date %></p></div></div>
+    <div class='book-block'><h3><%= t.book_your_info %></h3>
+     <div class='grid2'>
+      <label class='field'><span><%= t.book_name %> *</span><input type='text' id='bk_name'></label>
+      <label class='field'><span><%= t.book_phone %> *</span><input type='tel' id='bk_phone'></label>
+      <label class='field'><span><%= t.book_email %> *</span><input type='email' id='bk_email'></label>
+      <label class='field'><span><%= t.book_city %></span><input type='text' id='bk_city'></label>
+     </div>
+     <label class='field'><span><%= t.book_address %> *</span><input type='text' id='bk_address'></label>
+     <label class='field'><span><%= t.book_notes %></span><textarea id='bk_notes' rows='3'></textarea></label>
+    </div>
+    <div class='summary' id='summary'>
+     <div class='summary-row'><span><%= t.sum_service %></span><span id='sumService'>—</span></div>
+     <div class='summary-row'><span><%= t.sum_date %></span><span id='sumDate'>—</span></div>
+     <div class='summary-row'><span><%= t.sum_time %></span><span id='sumTime'>—</span></div>
+     <div class='summary-row summary-total'><span><%= t.book_total %></span><span id='sumTotal'>—</span></div>
+    </div>
+    <p id='bkMsg' class='form-err'></p>
+    <button type='button' id='confirmBtn' class='btn-paren solid' style='background-color:#9C7B54;color:#FBF8F2'>( <%= t.book_confirm %> )</button>
+    <% if(!paypalConfigured){ %><p class='muted' style='margin-top:1rem'><%= t.book_pay_later %></p><% } %>
+   </div>
+   <div id='payBox' style='display:none'>
+    <div class='summary' id='paySummary'></div>
+    <p class='center' style='margin:1rem 0'><%= t.book_pay_secure %></p>
+    <div id='paypal-buttons'></div>
+    <p id='payMsg' class='form-err center'></p>
+   </div>
+   <div id='successPanel' class='success-panel' style='display:none'><h2><%= t.book_success_title %></h2><p id='successMsg'><%= t.book_success_msg %></p><a href='.' class='link-paren'>( <%= t.nav_home %> )</a></div>
+   <% } else { %>
+   <p class='empty center'><%= t.empty_soins %></p>
+   <% } %>
+  </div>
+ </div>
+</section>
+<% if(paypalConfigured){ %><script src='https://www.paypal.com/sdk/js?client-id=<%= paypalClientId %>&currency=CAD&intent=capture'></script><% } %>
+<script>var SERVICES=<%- JSON.stringify(svcJson) %>;var LANG=<%- JSON.stringify(lang) %>;var PAYPAL=<%- JSON.stringify(paypalConfigured) %>;var PRESEL=<%- JSON.stringify(selectedService) %>;var USER=<%- JSON.stringify(userPrefill) %>;var TT=<%- JSON.stringify(bookT) %>;</script>
+<script>
+(function(){var SVC=SERVICES,state={service:null,price:null,duration:null,date:null,time:null,bookingId:null};function $(id){return document.getElementById(id);}function findSvc(id){for(var i=0;i<SVC.length;i++){if(String(SVC[i].id)===String(id))return SVC[i];}return null;}function fmtMoney(v){var n=Number(v);return (n%1===0?n:n.toFixed(2))+' $';}function fmtDate(d){try{return new Date(d+'T00:00:00').toLocaleDateString(LANG==='en'?'en-CA':'fr-CA',{weekday:'long',year:'numeric',month:'long',day:'numeric'});}catch(e){return d;}}var opts=document.querySelectorAll('.svc-opt');function selectService(id){state.service=id;var s=findSvc(id);if(s){state.price=Number(s.price);state.duration=Number(s.duration);}opts.forEach(function(o){o.classList.toggle('sel',o.getAttribute('data-id')===String(id));});updateSummary();if(state.date)loadSlots();}opts.forEach(function(o){o.addEventListener('click',function(){selectService(o.getAttribute('data-id'));});});var dateEl=$('bkDate');if(dateEl){dateEl.addEventListener('change',function(){state.date=dateEl.value;state.time=null;updateSummary();if(!state.service){$('slots').innerHTML=`<p class='muted'>${TT.pick_service}</p>`;return;}loadSlots();});}function loadSlots(){var box=$('slots');box.innerHTML=`<p class='muted'>${TT.loading}</p>`;fetch('api/availability?date='+encodeURIComponent(state.date)+'&service_id='+encodeURIComponent(state.service)).then(function(r){return r.json();}).then(function(d){renderSlots(d);}).catch(function(){box.innerHTML=`<p class='muted'>${TT.error}</p>`;});}function renderSlots(d){var box=$('slots');if(d.closed){box.innerHTML=`<p class='muted'>${TT.closed}</p>`;return;}var av=(d.slots||[]).filter(function(s){return s.available;});if(!av.length){box.innerHTML=`<p class='muted'>${TT.no_slots}</p>`;return;}box.innerHTML='';av.forEach(function(s){var b=document.createElement('button');b.type='button';b.className='slot';b.textContent=s.time;b.addEventListener('click',function(){state.time=s.time;Array.prototype.forEach.call(box.children,function(c){c.classList.remove('sel');});b.classList.add('sel');updateSummary();});box.appendChild(b);});}function updateSummary(){var s=state.service?findSvc(state.service):null;$('sumService').textContent=s?s.name:'—';$('sumDate').textContent=state.date?fmtDate(state.date):'—';$('sumTime').textContent=state.time||'—';$('sumTotal').textContent=state.price!=null?fmtMoney(state.price):'—';}function val(id){var e=$(id);return e?e.value.trim():'';}var cbtn=$('confirmBtn');if(cbtn){cbtn.addEventListener('click',submitBooking);}function submitBooking(){var msg=$('bkMsg');msg.textContent='';if(!state.service){msg.textContent=TT.pick_service;return;}if(!state.date){msg.textContent=TT.pick_date;return;}if(!state.time){msg.textContent=TT.pick_time;return;}var body={service_id:state.service,date:state.date,time:state.time,name:val('bk_name'),email:val('bk_email'),phone:val('bk_phone'),address:val('bk_address'),city:val('bk_city'),notes:val('bk_notes')};if(!body.name||!body.email||!body.phone||!body.address){msg.textContent=TT.fill;return;}cbtn.disabled=true;var old=cbtn.textContent;cbtn.textContent=TT.loading;fetch('api/bookings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}).then(function(r){return r.json().then(function(d){return{ok:r.ok,d:d};});}).then(function(res){cbtn.disabled=false;cbtn.textContent=old;if(!res.ok){if(res.d&&res.d.error==='taken'){msg.textContent=TT.taken;loadSlots();}else{msg.textContent=TT.fill;}return;}state.bookingId=res.d.booking.id;if(PAYPAL){startPay();}else{showSuccess(false);}}).catch(function(){cbtn.disabled=false;cbtn.textContent=old;msg.textContent=TT.error;});}function startPay(){$('bookingForm').style.display='none';$('paySummary').innerHTML=$('summary').innerHTML;$('payBox').style.display='block';if(window.paypal){paypal.Buttons({style:{color:'gold',shape:'rect',label:'pay',height:48},createOrder:function(){return fetch('api/paypal/create-order',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({bookingId:state.bookingId})}).then(function(r){return r.json();}).then(function(d){if(d.error)throw new Error(d.error);return d.id;});},onApprove:function(data){return fetch('api/paypal/capture-order',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({bookingId:state.bookingId,orderID:data.orderID})}).then(function(r){return r.json();}).then(function(d){if(d.success){showSuccess(true);}else{$('payMsg').textContent=TT.error;}});},onError:function(){$('payMsg').textContent=TT.error;}}).render('#paypal-buttons');}else{showSuccess(false);}}function showSuccess(paid){$('bookingForm').style.display='none';$('payBox').style.display='none';var sc=$('successPanel');sc.style.display='block';$('successMsg').textContent=paid?TT.success_paid:TT.success;sc.scrollIntoView({behavior:'smooth'});}if(USER){if(USER.name&&$('bk_name')&&!$('bk_name').value)$('bk_name').value=USER.name;if(USER.email&&$('bk_email')&&!$('bk_email').value)$('bk_email').value=USER.email;if(USER.phone&&$('bk_phone')&&!$('bk_phone').value)$('bk_phone').value=USER.phone;}if(PRESEL){selectService(PRESEL);}})();
+</script>
+<%- include('partials/footer') %>

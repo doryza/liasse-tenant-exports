@@ -1,0 +1,36 @@
+<%- include('partials/header') %>
+<div class='pagehead'>
+ <p class='eyebrow'><%= t.about_eyebrow %></p>
+ <h1><%= t.about_title %></h1>
+</div>
+<section class='section' style='padding-top:1rem'>
+ <div class='wrap about-grid'>
+  <img class='about-img' src='<%= settings._p_about_image_url || "https://placehold.co/900x1200/e9e2d3/9C7B54/png?text=Portrait" %>' data-setting-key='_p_about_image_url' alt='Portrait de la massothérapeute' data-reveal>
+  <div data-reveal>
+   <p data-lk='about-page-p1'><%= t.about_p1 %></p>
+   <p class='about-p2' data-lk='about-page-p2'><%= t.about_p2 %></p>
+   <h4 class='certs-title' data-lk='about-certs-title'><%= t.about_certs_title %></h4>
+   <ul class='certs'>
+    <li data-lk='about-page-cert1'><%= t.about_cert1 %></li>
+    <li data-lk='about-page-cert2'><%= t.about_cert2 %></li>
+    <li data-lk='about-page-cert3'><%= t.about_cert3 %></li>
+   </ul>
+   <p style='margin-top:1.8rem'><a href='reservation' class='btn-paren solid' style='background-color:#9C7B54;color:#FBF8F2'>( <%= t.hero_cta %> )</a></p>
+  </div>
+ </div>
+</section>
+<section class='section' style='background:#FBF8F2;border-top:1px solid rgba(51,41,31,.12)'>
+ <div class='wrap' style='max-width:680px'>
+  <div class='center'><p class='eyebrow'><%= t.contact_title %></p><h2 class='sec-title'><%= t.contact_intro %></h2></div>
+  <form id='contactForm' style='margin-top:2rem'>
+   <label class='field'><span><%= t.contact_name %> *</span><input type='text' id='c_name'></label>
+   <label class='field'><span><%= t.contact_email %></span><input type='email' id='c_email'></label>
+   <label class='field'><span><%= t.contact_phone %></span><input type='tel' id='c_phone'></label>
+   <label class='field'><span><%= t.contact_message %> *</span><textarea id='c_message' rows='4'></textarea></label>
+   <button type='submit' class='btn-paren solid' style='background-color:#9C7B54;color:#FBF8F2'>( <%= t.contact_send %> )</button>
+   <p id='contactMsg' style='margin-top:1rem'></p>
+  </form>
+ </div>
+</section>
+<script>var CT={fill:<%- JSON.stringify(t.book_fill) %>,ok:<%- JSON.stringify(t.contact_success) %>,err:<%- JSON.stringify(t.contact_error) %>};(function(){var f=document.getElementById('contactForm');if(!f)return;f.addEventListener('submit',function(e){e.preventDefault();var m=document.getElementById('contactMsg');var b={name:(document.getElementById('c_name').value||'').trim(),email:(document.getElementById('c_email').value||'').trim(),phone:(document.getElementById('c_phone').value||'').trim(),message:(document.getElementById('c_message').value||'').trim()};if(!b.name||!b.message){m.className='form-err';m.textContent=CT.fill;return;}fetch('api/contact',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)}).then(function(r){return r.json();}).then(function(d){if(d.success){f.reset();m.className='form-ok';m.textContent=CT.ok;}else{m.className='form-err';m.textContent=CT.err;}}).catch(function(){m.className='form-err';m.textContent=CT.err;});});})();</script>
+<%- include('partials/footer') %>

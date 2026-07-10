@@ -1,0 +1,34 @@
+</main>
+<footer class='site-footer'>
+ <div class='wrap'>
+  <div class='footer-grid'>
+   <div class='footer-brand'>
+    <h3 data-lk='footer-brand'><%= t.brand_name %></h3>
+    <p class='footer-closing' data-lk='footer-closing'><%= t.footer_closing %></p>
+    <button data-push-btn class='footer-notif' data-lk='notif-enable'><%= t.notif_enable %></button>
+   </div>
+   <div class='footer-col'>
+    <h4 data-lk='footer-contact-title'><%= t.footer_contact_title %></h4>
+    <% var cEmail=settings.contact_email||cfg.email; var cPhone=settings.contact_phone||cfg.phone; var cAddr=settings.business_address||cfg.address; %>
+    <% if(cPhone){ %><p><a href='tel:<%= cPhone.replace(/[^0-9+]/g,"") %>'><%= cPhone %></a></p><% } %>
+    <% if(cEmail){ %><p><a href='mailto:<%= cEmail %>'><%= cEmail %></a></p><% } %>
+    <% if(cAddr){ %><p><%= cAddr %></p><% } %>
+    <% if(!cEmail&&!cPhone&&!cAddr){ %><p class='muted'><%= t.contact_no %></p><% } %>
+    <p><a href='#' data-login-btn class='link-paren'>( <%= t.nav_login %> )</a></p>
+   </div>
+   <div class='footer-col'>
+    <h4 data-lk='footer-hours-title'><%= t.footer_hours_title %></h4>
+    <p data-lk='footer-hours'><%= t.footer_hours %></p>
+    <h4 style='margin-top:1.4rem' data-lk='footer-zone-title'><%= t.footer_zone_title %></h4>
+    <p data-lk='footer-zone-line'><%= t.zone_title %></p>
+   </div>
+  </div>
+  <div class='footer-bottom'>
+   <span>© <%= new Date().getFullYear() %> <%= settings.business_name||cfg.name %>. <%= t.footer_rights %></span>
+   <span class='lang-toggle'>( <a href='<%= pagePath %>?lang=fr' class='<%= lang==="fr"?"active":"" %>'>FR</a> | <a href='<%= pagePath %>?lang=en' class='<%= lang==="en"?"active":"" %>'>EN</a> )</span>
+  </div>
+ </div>
+</footer>
+<script src='public/js/app.js'></script>
+</body>
+</html>

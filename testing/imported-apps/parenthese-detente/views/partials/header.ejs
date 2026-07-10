@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang='<%= typeof lang!=="undefined"?lang:"fr" %>'>
+<head>
+<meta charset='UTF-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1, viewport-fit=cover'>
+<meta name='theme-color' content='#9C7B54'>
+<meta name='apple-mobile-web-app-capable' content='yes'>
+<meta name='apple-mobile-web-app-status-bar-style' content='default'>
+<meta name='description' content='<%= typeof t!=="undefined"?t.meta_desc:"" %>'>
+<% var _pt=(typeof pageTitle!=='undefined'&&pageTitle)?pageTitle:((typeof pageTitleKey!=='undefined'&&pageTitleKey&&t[pageTitleKey])?t[pageTitleKey]:''); %>
+<title><%= _pt?_pt+' — ':'' %><%= t.brand_name %></title>
+<% var _ogimg=(typeof settings!=='undefined'&&settings&&settings._p_hero_image_url)?settings._p_hero_image_url:''; %>
+<meta property='og:type' content='website'>
+<meta property='og:site_name' content='<%= t.brand_name %>'>
+<meta property='og:title' content='<%= _pt?_pt+" — "+t.brand_name:t.brand_name %>'>
+<meta property='og:description' content='<%= typeof t!=="undefined"?t.meta_desc:"" %>'>
+<meta property='og:locale' content='<%= (typeof lang!=="undefined"&&lang==="en")?"en_US":"fr_FR" %>'>
+<% if(_ogimg){ %><meta property='og:image' content='<%= _ogimg %>'><% } %>
+<meta name='twitter:card' content='summary_large_image'>
+<meta name='twitter:title' content='<%= _pt?_pt+" — "+t.brand_name:t.brand_name %>'>
+<meta name='twitter:description' content='<%= typeof t!=="undefined"?t.meta_desc:"" %>'>
+<% if(_ogimg){ %><meta name='twitter:image' content='<%= _ogimg %>'><% } %>
+<link rel='manifest' href='manifest.json'>
+<link rel='preconnect' href='https://fonts.googleapis.com'>
+<link rel='preconnect' href='https://fonts.gstatic.com' crossorigin>
+<link href='https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Figtree:wght@300;400;500;600&display=swap' rel='stylesheet'>
+<link rel='stylesheet' href='public/css/styles.css'>
+</head>
+<body>
+<a href='#main' class='skip'>Aller au contenu</a>
+<header class='site-header' id='siteHeader'>
+ <div class='nav-wrap'>
+  <a href='.' class='brand'>
+   <% var logo=(settings._p_nav_logo_url)?settings._p_nav_logo_url:(typeof appIconUrl!=='undefined'?appIconUrl:''); %>
+   <% if(logo){ %><img class='brand-mark' src='<%= logo %>' data-setting-key='_p_nav_logo_url' alt=''><% } %>
+   <span class='brand-name' data-lk='brand-name'><%= t.brand_name %></span>
+  </a>
+  <button class='nav-toggle' id='navToggle' aria-label='Menu' aria-expanded='false'>≡</button>
+  <nav class='nav-links' id='navLinks'>
+   <a href='.' data-lk='nav-home'><%= t.nav_home %></a>
+   <a href='soins' data-lk='nav-soins'><%= t.nav_soins %></a>
+   <a href='a-propos' data-lk='nav-about'><%= t.nav_about %></a>
+   <a href='journal' data-lk='nav-journal'><%= t.nav_journal %></a>
+   <a href='reservation' class='nav-cta' data-lk='nav-reserve'>( <%= t.nav_reserve %> )</a>
+   <span class='lang-toggle'><a href='<%= pagePath %>?lang=fr' class='<%= lang==="fr"?"active":"" %>'>FR</a> <span>|</span> <a href='<%= pagePath %>?lang=en' class='<%= lang==="en"?"active":"" %>'>EN</a></span>
+  </nav>
+ </div>
+</header>
+<script>(function(){var t=document.getElementById('navToggle'),n=document.getElementById('navLinks');if(t&&n){t.addEventListener('click',function(){var o=n.classList.toggle('open');t.setAttribute('aria-expanded',o?'true':'false');});}})();</script>
+<main id='main'>

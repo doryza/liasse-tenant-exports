@@ -1,0 +1,13 @@
+<%- include('partials/header') %>
+<article class='section' style='padding-top:clamp(3rem,7vw,6rem)'>
+ <div class='wrap' style='max-width:760px'>
+  <p style='margin-bottom:1.5rem'><a href='journal' class='link-paren'>( <%= t.journal_back %> )</a></p>
+  <% if(post.category){ %><p class='eyebrow'><%= post.category %></p><% } %>
+  <h1 class='post-title' data-content-source='posts:title' data-content-id='<%= post.id %>'><%= post.title %></h1>
+  <p class='muted' style='margin-bottom:2rem'><%= formatDate(post.created_at) %></p>
+  <% if(post.image_url){ %><img src='<%= post.image_url %>' data-content-source='posts:image_url' data-content-id='<%= post.id %>' alt='<%= post.title %>' style='width:100%;margin-bottom:2rem'><% } %>
+  <div class='post-body' data-content-source='posts:content' data-content-id='<%= post.id %>'><%- nl2br(post.content||'') %></div>
+  <p style='margin-top:2.5rem'><a href='reservation' class='btn-paren solid' style='background-color:#9C7B54;color:#FBF8F2'>( <%= t.hero_cta %> )</a></p>
+ </div>
+</article>
+<%- include('partials/footer') %>

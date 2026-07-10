@@ -1,0 +1,115 @@
+<%- include('partials/header') %>
+<section class='hero'>
+ <img class='hero-img' src='<%= settings._p_hero_image_url || "https://placehold.co/1600x900/e9e2d3/9C7B54/png?text=Parenthese" %>' data-setting-key='_p_hero_image_url' alt='Table de massage habillée de lin près d’une fenêtre lumineuse'>
+ <div class='hero-veil'></div>
+ <div class='hero-inner'>
+  <p class='hero-eyebrow' data-lk='hero-eyebrow'><%= t.hero_eyebrow %></p>
+  <h1 class='hero-title'><span class='paren' aria-hidden='true'>(</span><span class='hero-title-text' data-lk='hero-headline'><%= t.hero_headline %></span><span class='paren' aria-hidden='true'>)</span></h1>
+  <p class='hero-sub' data-lk='hero-sub'><%= t.hero_sub %></p>
+  <a href='reservation' class='btn-paren solid' style='background-color:#9C7B54;color:#FBF8F2' data-lk='hero-cta'>( <%= t.hero_cta %> )</a>
+ </div>
+</section>
+
+<section class='section promise'>
+ <div class='wrap center'>
+  <div class='rule'></div>
+  <p class='eyebrow' data-lk='promise-eyebrow'><%= t.promise_eyebrow %></p>
+  <p class='promise-lines'><span data-lk='promise-1'><%= t.promise_1 %></span> <span data-lk='promise-2'><%= t.promise_2 %></span> <span data-lk='promise-3'><%= t.promise_3 %></span></p>
+  <div class='rule'></div>
+ </div>
+</section>
+
+<section class='section'>
+ <div class='wrap'>
+  <div class='center' data-reveal>
+   <p class='eyebrow' data-lk='soins-eyebrow'><%= t.soins_eyebrow %></p>
+   <h2 class='sec-title' data-lk='soins-title'><%= t.soins_title %></h2>
+   <p class='sec-intro' data-lk='soins-intro'><%= t.soins_intro %></p>
+  </div>
+  <% if(typeof services!=='undefined'&&services.length>0){ %>
+  <div class='soins-grid'>
+   <% services.forEach(function(s){ var nm=lang==='en'?(s.name_en||s.name_fr):s.name_fr; var tg=lang==='en'?(s.tagline_en||s.tagline_fr):s.tagline_fr; %>
+   <article class='soin-card' data-reveal>
+    <img class='soin-img' src='<%= s.image_url || "https://placehold.co/1000x750/e9e2d3/9C7B54/png?text=Soin" %>' data-content-source='services:image_url' data-content-id='<%= s.id %>' alt='<%= nm %>'>
+    <div class='soin-body'>
+     <h3 data-content-source='services:name_<%= lang %>' data-content-id='<%= s.id %>'><%= nm %></h3>
+     <p data-content-source='services:tagline_<%= lang %>' data-content-id='<%= s.id %>'><%= tg %></p>
+     <p class='soin-meta'><%= s.duration_min %> <%= t.min %> · <%= t.from_word %> <%= formatPrice(s.price) %></p>
+     <a href='reservation?service=<%= s.id %>' class='link-paren'>( <%= t.soins_choose %> )</a>
+    </div>
+   </article>
+   <% }); %>
+  </div>
+  <div class='center' style='margin-top:2.5rem'><a href='soins' class='btn-paren' data-lk='see-all-soins'>( <%= t.see_all_soins %> )</a></div>
+  <% } else { %>
+  <p class='empty center'><%= t.empty_soins %></p>
+  <% } %>
+ </div>
+</section>
+
+<section class='table-sec'>
+ <img class='table-img' src='<%= settings._p_table_image_url || "https://placehold.co/1600x1000/33291f/c9bba4/png?text=Table" %>' data-setting-key='_p_table_image_url' alt='Gros plan sur la table de massage moelleuse et son habillage de lin'>
+ <div class='table-veil'></div>
+ <div class='wrap'>
+  <div class='table-inner' data-reveal>
+   <p class='eyebrow' style='color:#C9BBA4' data-lk='table-eyebrow'><%= t.table_eyebrow %></p>
+   <h2 data-lk='table-title'><%= t.table_title %></h2>
+   <p data-lk='table-desc'><%= t.table_desc %></p>
+   <ul class='colophon'>
+    <li data-lk='table-spec1'><%= t.table_spec1 %></li>
+    <li data-lk='table-spec2'><%= t.table_spec2 %></li>
+    <li data-lk='table-spec3'><%= t.table_spec3 %></li>
+   </ul>
+  </div>
+ </div>
+</section>
+
+<section class='section'>
+ <div class='wrap about-grid'>
+  <img class='about-img' src='<%= settings._p_about_image_url || "https://placehold.co/900x1200/e9e2d3/9C7B54/png?text=Portrait" %>' data-setting-key='_p_about_image_url' alt='Portrait de la massothérapeute' data-reveal>
+  <div data-reveal>
+   <p class='eyebrow' data-lk='about-eyebrow'><%= t.about_eyebrow %></p>
+   <h2 class='about-title' data-lk='about-title'><%= t.about_title %></h2>
+   <p data-lk='about-p1'><%= t.about_p1 %></p>
+   <ul class='certs'>
+    <li data-lk='about-cert1'><%= t.about_cert1 %></li>
+    <li data-lk='about-cert2'><%= t.about_cert2 %></li>
+    <li data-lk='about-cert3'><%= t.about_cert3 %></li>
+   </ul>
+   <p style='margin-top:1.8rem'><a href='a-propos' class='link-paren' data-lk='about-more'>( <%= t.about_more %> )</a></p>
+  </div>
+ </div>
+</section>
+
+<section class='section zone'>
+ <div class='wrap'>
+  <div class='center' data-reveal>
+   <p class='eyebrow' style='color:#C9BBA4' data-lk='zone-eyebrow'><%= t.zone_eyebrow %></p>
+   <h2 data-lk='zone-title'><%= t.zone_title %></h2>
+   <p style='opacity:.85' data-lk='zone-intro'><%= t.zone_intro %></p>
+  </div>
+  <% if(typeof zones!=='undefined'&&zones.length>0){ %>
+  <div class='zone-list'><span class='zb l' aria-hidden='true'>(</span><%= zones.map(function(z){return z.name;}).join(' · ') %><span class='zb r' aria-hidden='true'>)</span></div>
+  <p class='zone-note center' data-lk='zone-note'><%= t.zone_note %></p>
+  <% } else { %>
+  <p class='center' style='color:#F6F1E8;opacity:.8'><%= t.empty_zone %></p>
+  <% } %>
+ </div>
+</section>
+
+<section class='pay-band'>
+ <div class='wrap pay-row'>
+  <span class='paypal-mark'>Pay<span>Pal</span></span>
+  <span aria-hidden='true'>·</span>
+  <span data-lk='pay-line'><%= t.pay_line %></span>
+ </div>
+</section>
+
+<section class='section cta'>
+ <div class='wrap center'>
+  <h2 data-lk='cta-title'><%= t.cta_title %></h2>
+  <p style='opacity:.85' data-lk='cta-sub'><%= t.cta_sub %></p>
+  <a href='reservation' class='btn-paren' data-lk='cta-btn'>( <%= t.hero_cta %> )</a>
+ </div>
+</section>
+<%- include('partials/footer') %>
