@@ -5,8 +5,8 @@
   var chips=document.querySelectorAll('.js-cat-chip');
   if(chips.length){
     chips.forEach(function(ch){ ch.addEventListener('click',function(){
-      chips.forEach(function(c){ c.classList.remove('active'); c.style.backgroundColor=''; c.style.color=''; });
-      ch.classList.add('active'); ch.style.backgroundColor='#B8232F'; ch.style.color='#fff';
+      chips.forEach(function(c){ c.classList.remove('active'); c.style.backgroundColor=''; c.style.color=''; c.style.boxShadow=''; });
+      ch.classList.add('active'); ch.style.backgroundColor='#FF3E4D'; ch.style.color='#fff'; ch.style.boxShadow='0 0 16px rgba(255,62,77,.55)';
       var cat=ch.getAttribute('data-cat');
       document.querySelectorAll('.menu-item').forEach(function(it){ it.style.display=(cat==='all'||it.getAttribute('data-category')===cat)?'':'none'; });
     }); });

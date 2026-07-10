@@ -7,25 +7,37 @@
         <h1 class="hero-title" data-setting-key="hero_title_<%= lang %>"><%= sv('hero_title') || (settings.business_name||'Sushi Moodz') %></h1>
         <p class="hero-thesis" data-setting-key="hero_thesis_<%= lang %>"><%= sv('hero_thesis') %></p>
         <div class="hero-cta">
-          <a class="btn btn-primary" href="<%= orderUrl %>" <%= orderExternal?'target="_blank" rel="noopener"':'' %> data-lk="t:cta_order" style="background-color:#B8232F;color:#fff"><%= t.cta_order %></a>
+          <a class="btn btn-primary" href="<%= orderUrl %>" <%= orderExternal?'target="_blank" rel="noopener"':'' %> data-lk="t:cta_order" style="background-color:#FF3E4D;color:#fff"><%= t.cta_order %></a>
           <a class="btn btn-outline" href="reserver" data-lk="t:cta_reserve"><%= t.cta_reserve %></a>
         </div>
       </div>
       <div class="hero-media">
-        <img src="<%= settings._p_hero_image_url ? settings._p_hero_image_url : 'https://placehold.co/900x1100/FCFAF5/B8232F/png?text=Sushi+Moodz' %>" data-setting-key="_p_hero_image_url" alt="<%= sv('hero_title')||'Sushi Moodz' %>">
+        <img src="<%= settings._p_hero_image_url ? settings._p_hero_image_url : 'https://placehold.co/900x1100/0C0D12/FF3E4D/png?text=Sushi+Moodz' %>" data-setting-key="_p_hero_image_url" alt="<%= sv('hero_title')||'Sushi Moodz' %>">
       </div>
     </div>
   </section>
 
+  <% var tItems = (typeof menuItems!=='undefined') ? menuItems.slice(0,10) : []; %>
+  <% if(tItems.length){ %>
+  <section class="ticker">
+    <div class="ticker-track">
+      <% tItems.concat(tItems).forEach(function(m){ %>
+      <a class="ticker-item" href="#mi-<%= m.id %>"><%= (lang==='en'&&m.name_en)?m.name_en:m.name_fr %></a><span class="ticker-dot" aria-hidden="true">●</span>
+      <% }); %>
+    </div>
+  </section>
+  <% } %>
+
   <section class="philosophy">
     <div class="container philo-inner">
-      <svg class="enso" viewBox="0 0 200 200" aria-hidden="true"><path d="M150 44 A70 70 0 1 0 168 96" fill="none" stroke="#1A1A1A" stroke-width="15" stroke-linecap="round"/></svg>
+      <svg class="enso" viewBox="0 0 200 200" aria-hidden="true"><path d="M150 44 A70 70 0 1 0 168 96" fill="none" stroke="currentColor" stroke-width="15" stroke-linecap="round"/></svg>
       <p class="philo-text" data-setting-key="philosophy_<%= lang %>"><%= sv('philosophy') %></p>
     </div>
   </section>
 
   <section class="sec" id="carte">
     <div class="container">
+      <div class="kana-crop" aria-hidden="true"><span class="kana-divider">メニュー</span></div>
       <div class="sec-head"><h2 class="sec-title" data-lk="t:menu_title"><%= t.menu_title %></h2><span class="sec-en"><%= t.menu_en %></span></div>
       <%- include('partials/menu') %>
     </div>
@@ -40,7 +52,7 @@
       <div class="signatures">
         <% sigs.forEach(function(s,i){ %>
         <article class="sig">
-          <div class="sig-img"><img src="<%= s.image_url ? s.image_url : 'https://placehold.co/800x600/E9E2D3/1A1A1A/png?text=Plat' %>" data-content-source="menu_items:image_url" data-content-id="<%= s.id %>" alt="<%= (lang==='en'&&s.name_en)?s.name_en:s.name_fr %>" loading="lazy"></div>
+          <div class="sig-img"><img src="<%= s.image_url ? s.image_url : 'https://placehold.co/800x600/15161C/F5F3EE/png?text=Plat' %>" data-content-source="menu_items:image_url" data-content-id="<%= s.id %>" alt="<%= (lang==='en'&&s.name_en)?s.name_en:s.name_fr %>" loading="lazy"></div>
           <div class="sig-meta"><span class="sig-num"><%= (i+1) %></span><h3 data-content-source="menu_items:name_fr" data-content-id="<%= s.id %>"><%= (lang==='en'&&s.name_en)?s.name_en:s.name_fr %></h3><% var sd=(lang==='en'&&s.description_en)?s.description_en:(s.description_fr||''); if(sd){ %><p><%= sd %></p><% } %><span class="sig-price"><%= formatPrice(s.price) %></span></div>
         </article>
         <% }); %>
@@ -58,11 +70,12 @@
 
   <section class="sec" id="galerie">
     <div class="container">
+      <div class="kana-crop" aria-hidden="true"><span class="kana-divider blue">ギャラリー</span></div>
       <div class="sec-head"><h2 class="sec-title" data-lk="t:gallery_title"><%= t.gallery_title %></h2><span class="sec-en"><%= t.gallery_en %></span></div>
       <% if(typeof galleryItems!=='undefined' && galleryItems.length){ %>
       <div class="gallery-grid">
         <% galleryItems.forEach(function(g){ %>
-        <figure class="g-item"><img src="<%= g.image_url ? g.image_url : 'https://placehold.co/600x600/E9E2D3/1A1A1A/png?text=Photo' %>" data-content-source="gallery:image_url" data-content-id="<%= g.id %>" alt="<%= g.title||'' %>" loading="lazy"><% var gc=(lang==='en'&&g.caption_en)?g.caption_en:g.caption_fr; if(gc){ %><figcaption class="g-cap"><%= gc %></figcaption><% } %></figure>
+        <figure class="g-item"><img src="<%= g.image_url ? g.image_url : 'https://placehold.co/600x600/15161C/F5F3EE/png?text=Photo' %>" data-content-source="gallery:image_url" data-content-id="<%= g.id %>" alt="<%= g.title||'' %>" loading="lazy"><% var gc=(lang==='en'&&g.caption_en)?g.caption_en:g.caption_fr; if(gc){ %><figcaption class="g-cap"><%= gc %></figcaption><% } %></figure>
         <% }); %>
       </div>
       <div class="center"><a class="btn btn-outline" href="galerie" data-lk="t:view_gallery"><%= t.view_gallery %></a></div>

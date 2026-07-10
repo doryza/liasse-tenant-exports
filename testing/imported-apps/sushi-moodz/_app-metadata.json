@@ -3,7 +3,7 @@
   "displayName": "Sushi Moodz",
   "description": "Project: website — Restaurant de sushis\n\nBusiness: Restaurant de sushis avec un menu à présenter.\n\nGoal: Présenter le menu, permettre les commandes en ligne via une plateforme tierce, et faciliter le contact/réservation.\n\nTarget audience: Clients locaux souhaitant commander ou visiter.\n\nKey features:\n- Présentation du menu complet\n- Bouton de commande vers plateforme tierce\n- Carte avec emplacement\n- Formulaire de contact\n- Formulaire de réservation\n- Galerie de photos\n\nDesign & brand:\n- Colors: Rouge et blanc.\n- Mood: Style japonais, dessins ou style anime.\n- Signature: Plats mémorables mis en valeur par des photos (galerie).\n- First impression: Unspecified.",
   "status": "active",
-  "generationVersion": 1,
+  "generationVersion": 2,
   "primaryColor": "#2858ef",
   "iconUrl": "https://res.cloudinary.com/duhp69meg/image/upload/v1783659915/tapavis_tenant_sushi-moodz/icon_sushi-moodz_1783659915340.png",
   "enabledAuthMethods": [
@@ -15,14 +15,32 @@
   "geolocationEnabled": true,
   "customConfig": {
     "language": "both",
+    "aiSummary": {
+      "en": {
+        "dashboard": "Your admin dashboard is the control center for Sushi Moodz.\n\nFrom the Admin area, you can manage your main content:\n- Menu items: add, update, or remove dishes, prices, and descriptions\n- Gallery: add, replace, or delete photos\n- Reservations: view incoming booking requests and keep track of them\n- Contact submissions: read messages sent from the contact form\n- Posts: manage any news, updates, or featured content if you want to use them\n\nTo add something new, go to the matching section in Admin and choose the option to create a new item. To make changes, open an existing item and save your updates. To remove something, use the delete option in that section.\n\nYou can also change general site settings in Admin, such as business information and other basic site details.\n\nFor stats, the dashboard includes an overview area where you can check activity like site visits and incoming submissions.\n\nIf you want to send notifications to customers, use the contact details they submitted in their reservation or contact request. For example, you can follow up with them by phone or email from the information they provided.\n\nA simple setup plan:\n1. Add your menu\n2. Add gallery photos\n3. Review reservations and contact messages\n4. Update your site settings\n5. Check dashboard stats regularly",
+        "variables": "Great news! Your app is ready to go — no extra setup required.\n\nSushi Moodz already includes the main pieces you asked for: a menu page, photo gallery, contact form, reservation form, map section, and an admin area to manage everything. Your online ordering button can point to your preferred ordering platform whenever you're ready.\n\nBefore launching, we recommend doing a quick review of your content:\n- Add your full sushi menu\n- Add your best food and restaurant photos\n- Check your address, contact details, and reservation info\n- Add the link for online ordering\n\nOnce that’s done, your site is ready to welcome local customers and help them order, book, or get in touch."
+      },
+      "fr": {
+        "dashboard": "Le tableau de bord admin, c’est l’endroit où vous gérez tout pour Sushi Moodz.\n\nDans l’onglet Admin, vous pouvez gérer les sections principales du site :\n- Menu : ajouter, modifier ou retirer des plats, prix et descriptions\n- Galerie : téléverser, remplacer ou supprimer des photos\n- Réservations : consulter les demandes reçues et faire le suivi\n- Formulaires de contact : lire les messages envoyés par les clients\n- Publications : ajouter ou modifier des nouvelles, promotions ou contenu vedette si vous voulez en afficher\n\nPour ajouter du contenu, allez dans la section voulue dans Admin puis choisissez l’option pour créer un nouvel élément. Pour modifier quelque chose, ouvrez l’élément existant, faites vos changements et enregistrez. Pour supprimer, utilisez l’option prévue dans cette section.\n\nVous pouvez aussi ajuster les réglages généraux du site dans Admin, par exemple les informations de l’entreprise et certains détails affichés sur le site.\n\nCôté suivi, le tableau de bord vous permet de voir un aperçu de l’activité, comme les visites sur le site et les demandes reçues.\n\nPour aviser vos clients, utilisez les coordonnées qu’ils ont laissées dans leur demande de réservation ou leur message de contact. Vous pourrez ensuite faire le suivi avec eux par téléphone ou par courriel.\n\nPetit plan simple pour démarrer :\n1. Entrer le menu\n2. Téléverser la galerie photo\n3. Vérifier les réservations et messages\n4. Mettre à jour les réglages du site\n5. Consulter les statistiques de temps en temps",
+        "variables": "Bonne nouvelle — votre application est prête à être utilisée, sans configuration supplémentaire.\n\nSushi Moodz inclut déjà l’essentiel que vous aviez demandé : la présentation du menu, une galerie de photos, un formulaire de contact, un formulaire de réservation, une section avec l’emplacement, ainsi qu’un espace admin pour tout gérer facilement. Le bouton de commande en ligne peut aussi mener vers la plateforme tierce de votre choix.\n\nAvant la mise en ligne, on vous conseille de faire une petite vérification :\n- ajouter votre menu complet\n- téléverser vos plus belles photos de plats et du restaurant\n- valider l’adresse et vos coordonnées\n- ajouter le lien vers votre plateforme de commande\n\nAprès ça, votre site sera prêt à accueillir vos clients locaux, prendre des réservations et faciliter les commandes."
+      }
+    },
     "businessName": "Sushi Moodz",
     "contactEmail": "dorysol@liasse.tech",
     "contactPhone": "4387630060",
     "designManifest": {
       "concept": "Sumi & Vermillon",
-      "copyVoice": "Quiet omakase host — short declarative present-tense French, sensory but never gushing, English following in a lighter register.",
+      "palette": {
+        "ink": "#1A1A1A",
+        "ground": "#FCFAF5",
+        "accents": [
+          "#E9E2D3",
+          "#2858EF"
+        ],
+        "primary": "#B8232F"
+      },
+      "summary": "A washi-white gallery where each dish is treated like an ink-print exhibit — calm negative space, a single deep vermilion sealing the identity, and a bilingual vertical rail turning translation itself into ornament.",
       "elements": {
-        "blogSurfaced": false,
         "pages": [
           "index",
           "carte",
@@ -31,24 +49,17 @@
           "contact",
           "admin"
         ],
-        "userLogin": false
+        "userLogin": false,
+        "blogSurfaced": false
       },
+      "copyVoice": "Quiet omakase host — short declarative present-tense French, sensory but never gushing, English following in a lighter register.",
       "heroThesis": "The homepage opens on one perfect nigiri on warm washi white in 65% negative space — proof the kitchen treats sushi as calligraphy: precise, spare, unforgettable.",
+      "typography": "Shippori Mincho 600/700 for display headlines, the wordmark and prices (its Japanese-serif bones carry the culture); Karla 400/600 for body, menu and forms.",
       "iconDirection": "A vermilion hanko-stamp rounded square on washi white, with a negative-space 'S' carved as a single confident brushstroke.",
-      "palette": {
-        "accents": [
-          "#E9E2D3",
-          "#2858EF"
-        ],
-        "ground": "#FCFAF5",
-        "ink": "#1A1A1A",
-        "primary": "#B8232F"
-      },
-      "signatureMove": "Every section title pairs a horizontal French headline with its English translation set as a thin vertical ink rail (writing-mode: vertical-rl), and menu categories are chosen via vermilion hanko-stamp chips that press to a filled seal on click.",
-      "summary": "A washi-white gallery where each dish is treated like an ink-print exhibit — calm negative space, a single deep vermilion sealing the identity, and a bilingual vertical rail turning translation itself into ornament.",
-      "typography": "Shippori Mincho 600/700 for display headlines, the wordmark and prices (its Japanese-serif bones carry the culture); Karla 400/600 for body, menu and forms."
+      "signatureMove": "Every section title pairs a horizontal French headline with its English translation set as a thin vertical ink rail (writing-mode: vertical-rl), and menu categories are chosen via vermilion hanko-stamp chips that press to a filled seal on click."
     },
     "businessAddress": null,
+    "aiSummaryVersion": 2,
     "designDirections": {
       "directions": [
         {
@@ -92,7 +103,9 @@
         }
       ],
       "recommendedIndex": 0
-    }
+    },
+    "designConfirmedAt": "2026-07-10T05:56:00.937Z",
+    "designConfirmedVariantId": 8
   },
   "promptHistory": [
     {
@@ -134,6 +147,6 @@
   ],
   "apiVariables": [],
   "createdAt": "2026-07-10T02:27:36.746Z",
-  "updatedAt": "2026-07-10T05:05:30.636Z",
-  "exportedAt": "2026-07-10T05:05:30.818Z"
+  "updatedAt": "2026-07-10T05:56:13.752Z",
+  "exportedAt": "2026-07-10T05:56:32.359Z"
 }

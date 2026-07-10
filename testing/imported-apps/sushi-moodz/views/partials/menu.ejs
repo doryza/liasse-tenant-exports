@@ -6,7 +6,7 @@
 </div>
 <div class="menu-list">
   <% menuItems.forEach(function(m){ %>
-  <div class="menu-item" data-category="<%= m.category %>">
+  <div class="menu-item" id="mi-<%= m.id %>" data-category="<%= m.category %>">
     <div class="mi-main">
       <span class="mi-name" data-content-source="menu_items:name_fr" data-content-id="<%= m.id %>"><%= (lang==='en'&&m.name_en)?m.name_en:m.name_fr %></span>
       <span class="mi-leader" aria-hidden="true"></span>

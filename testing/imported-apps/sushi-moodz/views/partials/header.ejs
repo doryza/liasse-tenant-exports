@@ -3,15 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#B8232F">
+<meta name="theme-color" content="#0C0D12">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="description" content="<%= sv('tagline') || t.footer_tag %>">
 <title><%= (settings.business_name||'Sushi Moodz') %><%= (typeof pageTitle!=='undefined') ? ' — '+pageTitle : '' %></title>
 <link rel="manifest" href="manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;600;700;800&family=Karla:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=IBM+Plex+Sans:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="public/css/styles.css">
 </head>
 <body>
@@ -25,7 +25,7 @@
       <a class="nav-link" href="reserver" data-lk="t:nav_reserve"><%= t.nav_reserve %></a>
       <a class="nav-link" href="contact" data-lk="t:nav_contact"><%= t.nav_contact %></a>
       <span class="lang-tog"><a href="<%= langBase %>?lang=fr" class="<%= lang==='fr'?'on':'' %>">FR</a><i>·</i><a href="<%= langBase %>?lang=en" class="<%= lang==='en'?'on':'' %>">EN</a></span>
-      <a class="btn btn-primary nav-order" href="<%= orderUrl %>" <%= orderExternal?'target="_blank" rel="noopener"':'' %> data-lk="t:order_now" style="background-color:#B8232F;color:#fff"><%= t.order_now %></a>
+      <a class="btn btn-primary nav-order" href="<%= orderUrl %>" <%= orderExternal?'target="_blank" rel="noopener"':'' %> data-lk="t:order_now" style="background-color:#FF3E4D;color:#fff"><%= t.order_now %></a>
     </nav>
     <button class="hamburger" id="hbtn" aria-label="Menu"><span></span><span></span><span></span></button>
   </div>
