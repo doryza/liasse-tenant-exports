@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang='fr'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1'><title>Tableau de bord — Admin</title><link rel='stylesheet' href='public/css/admin-styles.css'><link href='https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Figtree:wght@400;500;600;700&display=swap' rel='stylesheet'></head><body class='admin'>
 <%- include('partials/admin-sidebar', { active: 'dashboard' }) %>
-<% var _stats=(typeof stats!=='undefined'&&stats)?stats:{pending:0,bookings:0,revenue:0,services:0,posts:0,submissions:0,visits7:0,visitsTotal:0,windows:0,blackouts:0}; var _recent=(typeof recent!=='undefined'&&recent)?recent:[]; var _fp=(typeof formatPrice!=='undefined')?formatPrice:function(v){return (v||0)+' $';}; var _fd=(typeof formatDate!=='undefined')?formatDate:function(d){return d;}; %>
+<% var _stats=(typeof stats!=='undefined'&&stats)?stats:{pending:0,bookings:0,revenue:0,services:0,posts:0,submissions:0,visits7:0,visitsTotal:0,windows:0,blackouts:0}; var _recent=(typeof recent!=='undefined'&&recent)?recent:[]; var _fp=(typeof formatPrice!=='undefined')?formatPrice:function(v){return (v||0)+' $';}; var _fd=(typeof formatDate!=='undefined')?formatDate:function(d){return d;}; var _smsPhone=(typeof smsPhone!=='undefined'&&smsPhone)?smsPhone:''; var _smsEnabled=(typeof smsEnabled!=='undefined')?smsEnabled:false; %>
 <main class='admin-main'>
  <header class='admin-top'><button class='side-toggle' id='sideToggle' aria-label='Menu'>≡</button><div class='admin-top-titles'><h1>Tableau de bord</h1><p class='admin-sub'>Aperçu de votre activité — Parenthèse Détente.</p></div><a class='btn ghost' href='.' target='_blank'>Voir le site ↗</a></header>
  <div class='stat-grid'>
@@ -13,9 +13,15 @@
  </div>
  <section class='panel'>
   <div class='panel-head'><h2>Réservations récentes</h2><a class='link' href='admin/bookings'>Tout gérer →</a></div>
+  <% if(_smsPhone){ %>
+  <p class='admin-sub' style='margin:-.4rem 0 1rem'>📱 Avis SMS <%= _smsEnabled?'activés':'en pause' %> vers <strong><%= _smsPhone %></strong>. « Envoyer à mon agenda » ajoute le rendez-vous à votre Google Agenda. <a class='link' href='admin/settings'>Modifier</a></p>
+  <% } else { %>
+  <p class='admin-sub' style='margin:-.4rem 0 1rem'>📱 Recevez chaque rendez-vous par SMS avec un lien Google Agenda. <a class='link' href='admin/settings'>Ajouter mon numéro →</a></p>
+  <% } %>
+  <div id='dashMsg' class='admin-msg' style='display:none'></div>
   <% if(_recent&&_recent.length){ %>
-  <div class='table-wrap'><table><thead><tr><th>Date</th><th>Heure</th><th>Soin</th><th>Client</th><th>Statut</th><th>Paiement</th></tr></thead><tbody>
-   <% _recent.forEach(function(b){ %><tr><td><%= _fd(b.booking_date) %></td><td><%= b.booking_time %></td><td><%= b.service_name %></td><td><%= b.customer_name %></td><td><span class='badge s-<%= b.status %>'><%= b.status %></span></td><td><span class='badge s-<%= b.payment_status %>'><%= b.payment_status %></span></td></tr><% }); %>
+  <div class='table-wrap'><table><thead><tr><th>Date</th><th>Heure</th><th>Soin</th><th>Client</th><th>Statut</th><th>Paiement</th><th>Agenda</th></tr></thead><tbody>
+   <% _recent.forEach(function(b){ %><tr><td><%= _fd(b.booking_date) %></td><td><%= b.booking_time %></td><td><%= b.service_name %></td><td><%= b.customer_name %></td><td><span class='badge s-<%= b.status %>'><%= b.status %></span></td><td><span class='badge s-<%= b.payment_status %>'><%= b.payment_status %></span></td><td class='row-actions'><button class='btn tiny' data-notify='<%= b.id %>'>Envoyer à mon agenda</button></td></tr><% }); %>
   </tbody></table></div>
   <% } else { %><div class='admin-empty'><p>Aucune réservation pour le moment.</p><a class='btn primary' href='admin/bookings' style='margin-top:.8rem;display:inline-block'>Ajouter une réservation</a></div><% } %>
  </section>
@@ -27,9 +33,15 @@
    <a class='mod-card' href='admin/zones'><span class='mod-ico' aria-hidden='true'>📍</span><span class='mod-t'>Zone de service</span><span class='mod-d'>Villes et secteurs desservis dans les Laurentides.</span></a>
    <a class='mod-card' href='admin/posts'><span class='mod-ico' aria-hidden='true'>📝</span><span class='mod-t'>Journal</span><span class='mod-d'>Articles, notes et conseils publiés sur le site.</span></a>
    <a class='mod-card' href='admin/messages'><span class='mod-ico' aria-hidden='true'>✉️</span><span class='mod-t'>Messages</span><span class='mod-d'>Messages reçus via le formulaire de contact.</span></a>
-   <a class='mod-card' href='admin/settings'><span class='mod-ico' aria-hidden='true'>⚙️</span><span class='mod-t'>Réglages</span><span class='mod-d'>Coordonnées et informations de contact.</span></a>
+   <a class='mod-card' href='admin/settings'><span class='mod-ico' aria-hidden='true'>⚙️</span><span class='mod-t'>Réglages</span><span class='mod-d'>Coordonnées, contact et notifications SMS d’agenda.</span></a>
   </div>
  </section>
 </main>
-<script>(function(){var st=document.getElementById('sideToggle');if(st){st.addEventListener('click',function(){document.querySelector('.admin-sidebar').classList.toggle('open');});}})();</script>
+<script>
+(function(){var st=document.getElementById('sideToggle');if(st){st.addEventListener('click',function(){document.querySelector('.admin-sidebar').classList.toggle('open');});}})();
+(function(){
+ function dmsg(t,ok){var e=document.getElementById('dashMsg');if(!e)return;e.style.display='block';e.textContent=t;e.className='admin-msg '+(ok?'ok':'err');window.scrollTo({top:0,behavior:'smooth'});setTimeout(function(){e.style.display='none';},3600);}
+ document.addEventListener('click',function(ev){var el=ev.target.closest('[data-notify]');if(!el)return;var id=el.getAttribute('data-notify');var old=el.textContent;el.disabled=true;el.textContent='Envoi…';fetch('api/admin/bookings/'+id+'/notify',{method:'POST',headers:{'Content-Type':'application/json'}}).then(function(r){return r.json().then(function(d){return{ok:r.ok,d:d};});}).then(function(res){el.disabled=false;el.textContent=old;if(res.ok){dmsg('SMS envoyé — vérifiez votre téléphone.',true);}else{dmsg((res.d&&res.d.error)||'L’envoi a échoué.',false);}}).catch(function(){el.disabled=false;el.textContent=old;dmsg('L’envoi a échoué. Réessayez.',false);});});
+})();
+</script>
 </body></html>

@@ -10,6 +10,14 @@
    <label class='fld'><span class='fld-label'>Adresse / secteur</span><input id='s_business_address' value='<%= settings.business_address||"" %>' placeholder='Laurentides, QC'></label>
   </div>
  </section>
+ <section class='panel'><div class='panel-head'><h2>Notifications SMS · Agenda</h2></div>
+  <p class='admin-sub' style='margin:0 0 1.1rem'>Recevez un texto à chaque nouvelle réservation, avec un lien pour ajouter le rendez-vous à votre Google Agenda en un clic. Entrez le numéro qui recevra les avis.</p>
+  <div class='set-grid'>
+   <label class='fld'><span class='fld-label'>Numéro qui reçoit les avis</span><input id='s_admin_sms_phone' type='tel' value='<%= settings.admin_sms_phone||"" %>' placeholder='+1 450 000 0000'><span class='fld-help'>Format international recommandé (ex. +14500000000). C’est votre numéro, jamais affiché aux clients.</span></label>
+   <label class='fld'><span class='fld-label'>Avis automatiques</span><label class='chk'><input type='checkbox' id='s_admin_sms_enabled' <%= (settings.admin_sms_enabled==='1'||settings.admin_sms_enabled==='true')?'checked':'' %>> <span>M’envoyer un SMS à chaque nouvelle réservation</span></label><span class='fld-help'>Décoché : aucun texto automatique. Vous pouvez toujours envoyer un rendez-vous depuis le tableau de bord.</span></label>
+  </div>
+  <p style='margin-top:1rem'><button class='btn ghost' id='testSms' type='button'>Envoyer un SMS test</button></p>
+ </section>
  <section class='panel'><div class='panel-head'><h2>Disponibilités de réservation</h2><a class='link' href='admin/availability'>Ouvrir →</a></div>
   <p class='admin-sub' style='margin:0'>Les horaires par jour, les plages par soin et les dates de fermeture se gèrent maintenant dans une page dédiée, plus granulaire. Cliquez « Ouvrir » pour configurer vos créneaux hebdomadaires, vos fermetures et l’intervalle des rendez-vous.</p>
   <p style='margin-top:1rem'><a class='btn primary' href='admin/availability'>Gérer les disponibilités</a></p>
@@ -17,8 +25,11 @@
 </main>
 <script>
 (function(){var st=document.getElementById('sideToggle');if(st){st.addEventListener('click',function(){document.querySelector('.admin-sidebar').classList.toggle('open');});}})();
-function m(t,ok){var e=document.getElementById('msg');e.style.display='block';e.textContent=t;e.className='admin-msg '+(ok?'ok':'err');setTimeout(function(){e.style.display='none';},3000);}
-var KEYS=['contact_email','contact_phone','business_address'];
-document.getElementById('saveAll').addEventListener('click',function(){var btn=this;btn.disabled=true;var done=0;KEYS.forEach(function(k){var el=document.getElementById('s_'+k);if(!el){done++;return;}fetch('api/admin/settings',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({key:k,value:el.value})}).then(function(){done++;if(done===KEYS.length){btn.disabled=false;m('Réglages enregistrés',true);}}).catch(function(){done++;if(done===KEYS.length){btn.disabled=false;m('Réglages enregistrés',true);}});});});
+function m(t,ok){var e=document.getElementById('msg');e.style.display='block';e.textContent=t;e.className='admin-msg '+(ok?'ok':'err');window.scrollTo({top:0,behavior:'smooth'});setTimeout(function(){e.style.display='none';},3200);}
+var TEXT_KEYS=['contact_email','contact_phone','business_address','admin_sms_phone'];
+var BOOL_KEYS=['admin_sms_enabled'];
+function putSetting(key,value){return fetch('api/admin/settings',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({key:key,value:value})});}
+document.getElementById('saveAll').addEventListener('click',function(){var btn=this;btn.disabled=true;var jobs=[];TEXT_KEYS.forEach(function(k){var el=document.getElementById('s_'+k);if(el)jobs.push(putSetting(k,el.value));});BOOL_KEYS.forEach(function(k){var el=document.getElementById('s_'+k);if(el)jobs.push(putSetting(k,el.checked?'1':'0'));});Promise.all(jobs).then(function(){btn.disabled=false;m('Réglages enregistrés',true);}).catch(function(){btn.disabled=false;m('Une partie n’a pu être enregistrée. Réessayez.',false);});});
+document.getElementById('testSms').addEventListener('click',function(){var btn=this;var phone=(document.getElementById('s_admin_sms_phone').value||'').trim();if(!phone){m('Entrez d’abord votre numéro de téléphone.',false);return;}btn.disabled=true;var old=btn.textContent;btn.textContent='Envoi…';putSetting('admin_sms_phone',phone).then(function(){return fetch('api/admin/sms/test',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:phone})});}).then(function(r){return r.json().then(function(d){return{ok:r.ok,d:d};});}).then(function(res){btn.disabled=false;btn.textContent=old;if(res.ok){m('SMS test envoyé. Vérifiez votre téléphone.',true);}else{m((res.d&&res.d.error)||'L’envoi a échoué.',false);}}).catch(function(){btn.disabled=false;btn.textContent=old;m('L’envoi a échoué. Réessayez.',false);});});
 </script>
 </body></html>
