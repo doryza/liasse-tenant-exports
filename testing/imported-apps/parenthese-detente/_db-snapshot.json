@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-07-10T17:18:43.151Z",
+  "exportedAt": "2026-07-11T05:29:08.452Z",
   "tables": {
     "admin_invites": {
       "columns": [
@@ -115,8 +115,59 @@
         "path",
         "created_at"
       ],
-      "totalRows": 0,
-      "sampleRows": []
+      "totalRows": 89,
+      "sampleRows": [
+        {
+          "id": 1,
+          "path": "/",
+          "created_at": "2026-07-10T17:19:52.314Z"
+        },
+        {
+          "id": 2,
+          "path": "/",
+          "created_at": "2026-07-10T17:20:52.302Z"
+        },
+        {
+          "id": 3,
+          "path": "/",
+          "created_at": "2026-07-10T17:21:52.277Z"
+        },
+        {
+          "id": 4,
+          "path": "/",
+          "created_at": "2026-07-10T17:22:52.278Z"
+        },
+        {
+          "id": 5,
+          "path": "/",
+          "created_at": "2026-07-10T17:23:52.295Z"
+        },
+        {
+          "id": 6,
+          "path": "/",
+          "created_at": "2026-07-10T17:24:52.223Z"
+        },
+        {
+          "id": 7,
+          "path": "/",
+          "created_at": "2026-07-10T17:25:52.158Z"
+        },
+        {
+          "id": 8,
+          "path": "/",
+          "created_at": "2026-07-10T17:26:53.164Z"
+        },
+        {
+          "id": 9,
+          "path": "/",
+          "created_at": "2026-07-10T19:31:27.031Z"
+        },
+        {
+          "id": 10,
+          "path": "/",
+          "created_at": "2026-07-10T19:31:31.539Z"
+        }
+      ]
     },
     "posts": {
       "columns": [
@@ -502,6 +553,123 @@
         "phone",
         "message",
         "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "availability_rules": {
+      "columns": [
+        "id",
+        "day_of_week",
+        "start_time",
+        "end_time",
+        "service_id",
+        "label",
+        "valid_from",
+        "valid_to",
+        "active",
+        "sort_order",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 6,
+      "sampleRows": [
+        {
+          "id": 1,
+          "day_of_week": 1,
+          "start_time": "09:00",
+          "end_time": "19:00",
+          "service_id": null,
+          "label": null,
+          "valid_from": null,
+          "valid_to": null,
+          "active": true,
+          "sort_order": 1,
+          "created_at": "2026-07-10T23:33:55.870Z",
+          "updated_at": "2026-07-10T23:33:55.870Z"
+        },
+        {
+          "id": 2,
+          "day_of_week": 2,
+          "start_time": "09:00",
+          "end_time": "19:00",
+          "service_id": null,
+          "label": null,
+          "valid_from": null,
+          "valid_to": null,
+          "active": true,
+          "sort_order": 2,
+          "created_at": "2026-07-10T23:33:55.870Z",
+          "updated_at": "2026-07-10T23:33:55.870Z"
+        },
+        {
+          "id": 3,
+          "day_of_week": 3,
+          "start_time": "09:00",
+          "end_time": "19:00",
+          "service_id": null,
+          "label": null,
+          "valid_from": null,
+          "valid_to": null,
+          "active": true,
+          "sort_order": 3,
+          "created_at": "2026-07-10T23:33:55.870Z",
+          "updated_at": "2026-07-10T23:33:55.870Z"
+        },
+        {
+          "id": 4,
+          "day_of_week": 4,
+          "start_time": "09:00",
+          "end_time": "19:00",
+          "service_id": null,
+          "label": null,
+          "valid_from": null,
+          "valid_to": null,
+          "active": true,
+          "sort_order": 4,
+          "created_at": "2026-07-10T23:33:55.870Z",
+          "updated_at": "2026-07-10T23:33:55.870Z"
+        },
+        {
+          "id": 5,
+          "day_of_week": 5,
+          "start_time": "09:00",
+          "end_time": "19:00",
+          "service_id": null,
+          "label": null,
+          "valid_from": null,
+          "valid_to": null,
+          "active": true,
+          "sort_order": 5,
+          "created_at": "2026-07-10T23:33:55.870Z",
+          "updated_at": "2026-07-10T23:33:55.870Z"
+        },
+        {
+          "id": 6,
+          "day_of_week": 6,
+          "start_time": "09:00",
+          "end_time": "19:00",
+          "service_id": null,
+          "label": null,
+          "valid_from": null,
+          "valid_to": null,
+          "active": true,
+          "sort_order": 6,
+          "created_at": "2026-07-10T23:33:55.870Z",
+          "updated_at": "2026-07-10T23:33:55.870Z"
+        }
+      ]
+    },
+    "blackout_dates": {
+      "columns": [
+        "id",
+        "start_date",
+        "end_date",
+        "reason",
+        "service_id",
+        "active",
         "created_at",
         "updated_at"
       ],

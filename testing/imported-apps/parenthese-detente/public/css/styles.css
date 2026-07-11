@@ -129,6 +129,24 @@ p{margin:0 0 1rem}
 .slot{background:var(--paper);border:1px solid var(--line);padding:.7rem 1.1rem;cursor:pointer;font-family:inherit;font-size:.95rem;color:inherit;transition:.2s}
 .slot:hover{border-color:var(--primary)}
 .slot.sel{background:var(--primary);color:var(--paper);border-color:var(--primary)}
+.calendar{width:100%;max-width:360px;background:var(--paper);border:1px solid var(--line);padding:1.2rem 1.3rem 1.5rem}
+.cal-head{display:flex;align-items:center;justify-content:space-between;gap:.6rem;margin-bottom:1rem}
+.cal-title{font-family:'Cormorant Garamond';font-size:1.55rem;font-weight:400;letter-spacing:.01em;text-transform:capitalize;color:var(--ink)}
+.cal-nav{width:40px;height:40px;display:flex;align-items:center;justify-content:center;background:transparent;border:1px solid var(--line);color:var(--primary);font-family:'Cormorant Garamond',serif;font-size:1.5rem;line-height:1;cursor:pointer;transition:.25s;padding:0}
+.cal-nav:hover:not([disabled]){background:var(--primary);color:var(--paper);border-color:var(--primary)}
+.cal-nav:focus-visible{outline:2px solid var(--primary-d);outline-offset:2px}
+.cal-nav[disabled]{opacity:.25;cursor:not-allowed}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:.3rem}
+.cal-dow{margin-bottom:.4rem}
+.cal-dow-cell{text-align:center;font-family:'Figtree';font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--sage);font-weight:600;padding:.2rem 0}
+.cal-cell{aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;font-family:'Figtree';font-size:.95rem}
+.cal-empty{visibility:hidden}
+.cal-day{padding:0;background:transparent;border:1px solid transparent;color:var(--ink);cursor:pointer;transition:.15s;font-family:inherit;font-size:.95rem}
+.cal-day:hover{border-color:var(--primary);color:var(--primary)}
+.cal-day:focus-visible{outline:2px solid var(--primary-d);outline-offset:1px}
+.cal-day.sel{background:var(--primary);color:var(--paper);border-color:var(--primary)}
+.cal-day.sel:hover{background:var(--primary-d);color:var(--paper);border-color:var(--primary-d)}
+.cal-disabled{color:rgba(51,41,31,.26);cursor:default}
 .summary{background:var(--paper);border:1px solid var(--line);padding:1.5rem;margin-bottom:1.5rem}
 .summary-row{display:flex;justify-content:space-between;padding:.4rem 0;font-size:.95rem}
 .summary-total{border-top:1px solid var(--line);margin-top:.6rem;padding-top:.8rem;font-size:1.1rem;font-weight:600}

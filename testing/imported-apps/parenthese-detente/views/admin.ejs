@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang='fr'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1'><title>Tableau de bord — Admin</title><link rel='stylesheet' href='public/css/admin-styles.css'><link href='https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Figtree:wght@400;500;600;700&display=swap' rel='stylesheet'></head><body class='admin'>
 <%- include('partials/admin-sidebar', { active: 'dashboard' }) %>
-<% var _stats=(typeof stats!=='undefined'&&stats)?stats:{pending:0,bookings:0,revenue:0,services:0,posts:0,submissions:0,visits7:0,visitsTotal:0}; var _recent=(typeof recent!=='undefined'&&recent)?recent:[]; var _fp=(typeof formatPrice!=='undefined')?formatPrice:function(v){return (v||0)+' $';}; var _fd=(typeof formatDate!=='undefined')?formatDate:function(d){return d;}; %>
+<% var _stats=(typeof stats!=='undefined'&&stats)?stats:{pending:0,bookings:0,revenue:0,services:0,posts:0,submissions:0,visits7:0,visitsTotal:0,windows:0,blackouts:0}; var _recent=(typeof recent!=='undefined'&&recent)?recent:[]; var _fp=(typeof formatPrice!=='undefined')?formatPrice:function(v){return (v||0)+' $';}; var _fd=(typeof formatDate!=='undefined')?formatDate:function(d){return d;}; %>
 <main class='admin-main'>
  <header class='admin-top'><button class='side-toggle' id='sideToggle' aria-label='Menu'>≡</button><div class='admin-top-titles'><h1>Tableau de bord</h1><p class='admin-sub'>Aperçu de votre activité — Parenthèse Détente.</p></div><a class='btn ghost' href='.' target='_blank'>Voir le site ↗</a></header>
  <div class='stat-grid'>
@@ -8,7 +8,7 @@
   <div class='stat'><span class='stat-ico' aria-hidden='true'>📅</span><span class='stat-num'><%= _stats.bookings %></span><span class='stat-lbl'>Réservations totales</span></div>
   <div class='stat'><span class='stat-ico' aria-hidden='true'>💰</span><span class='stat-num'><%= _fp(_stats.revenue) %></span><span class='stat-lbl'>Revenus encaissés</span></div>
   <div class='stat'><span class='stat-ico' aria-hidden='true'>✨</span><span class='stat-num'><%= _stats.services %></span><span class='stat-lbl'>Soins actifs</span></div>
-  <div class='stat'><span class='stat-ico' aria-hidden='true'>✉️</span><span class='stat-num'><%= (typeof _stats.submissions!=='undefined'?_stats.submissions:0) %></span><span class='stat-lbl'>Messages reçus</span></div>
+  <div class='stat'><span class='stat-ico' aria-hidden='true'>🚫</span><span class='stat-num'><%= (typeof _stats.blackouts!=='undefined'?_stats.blackouts:0) %></span><span class='stat-lbl'>Fermetures à venir</span></div>
   <div class='stat'><span class='stat-ico' aria-hidden='true'>👁️</span><span class='stat-num'><%= _stats.visits7 %></span><span class='stat-lbl'>Visites (7 jours)</span></div>
  </div>
  <section class='panel'>
@@ -22,11 +22,12 @@
  <section class='panel'><div class='panel-head'><h2>Gérer le contenu</h2></div>
   <div class='mod-grid rich'>
    <a class='mod-card' href='admin/bookings'><span class='mod-ico' aria-hidden='true'>🗓️</span><span class='mod-t'>Réservations</span><span class='mod-d'>Consultez et gérez tous les rendez-vous, statuts et paiements.</span></a>
+   <a class='mod-card' href='admin/availability'><span class='mod-ico' aria-hidden='true'>⏱️</span><span class='mod-t'>Disponibilités</span><span class='mod-d'><%= (typeof _stats.windows!=='undefined'?_stats.windows:0) %> plage<%= ((typeof _stats.windows!=='undefined'?_stats.windows:0)>1?'s':'') %> hebdomadaire<%= ((typeof _stats.windows!=='undefined'?_stats.windows:0)>1?'s':'') %> · <%= (typeof _stats.blackouts!=='undefined'?_stats.blackouts:0) %> fermeture<%= ((typeof _stats.blackouts!=='undefined'?_stats.blackouts:0)>1?'s':'') %> à venir.</span></a>
    <a class='mod-card' href='admin/services'><span class='mod-ico' aria-hidden='true'>✨</span><span class='mod-t'>Soins</span><span class='mod-d'>Prix, durée, description et disponibilité de chaque soin.</span></a>
    <a class='mod-card' href='admin/zones'><span class='mod-ico' aria-hidden='true'>📍</span><span class='mod-t'>Zone de service</span><span class='mod-d'>Villes et secteurs desservis dans les Laurentides.</span></a>
    <a class='mod-card' href='admin/posts'><span class='mod-ico' aria-hidden='true'>📝</span><span class='mod-t'>Journal</span><span class='mod-d'>Articles, notes et conseils publiés sur le site.</span></a>
    <a class='mod-card' href='admin/messages'><span class='mod-ico' aria-hidden='true'>✉️</span><span class='mod-t'>Messages</span><span class='mod-d'>Messages reçus via le formulaire de contact.</span></a>
-   <a class='mod-card' href='admin/settings'><span class='mod-ico' aria-hidden='true'>⚙️</span><span class='mod-t'>Réglages</span><span class='mod-d'>Disponibilités de réservation et coordonnées.</span></a>
+   <a class='mod-card' href='admin/settings'><span class='mod-ico' aria-hidden='true'>⚙️</span><span class='mod-t'>Réglages</span><span class='mod-d'>Coordonnées et informations de contact.</span></a>
   </div>
  </section>
 </main>

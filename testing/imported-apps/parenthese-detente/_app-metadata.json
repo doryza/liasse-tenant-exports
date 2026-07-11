@@ -3,7 +3,7 @@
   "displayName": "Parenthèse Détente",
   "description": "Project: website — Services with online booking\n\nBusiness: « Parenthèse Détente », a mobile massotherapy business offering high-end services.\n\nGoal: Allow clients to discover services, book, and pay for appointments online.\n\nTarget audience: People looking for relaxation, luxury, and pain relief at home. Serving only the Laurentides with at home services (I come to your home/office)\n\nKey features:\n- Online booking calendar.\n- Secure payments via PayPal.\n\nDesign & brand:\n- Colors: Soothing beige (exact palette open).\n- Mood: Relaxant, zen, luxueux.\n- Signature: Utmost comfort provided by an exceptionally luxurious, high-end massage table.\n- First impression: Emphasize top-tier mobile service and unparalleled comfort. Logo and real photos needed, or designer can propose.",
   "status": "active",
-  "generationVersion": 1,
+  "generationVersion": 3,
   "primaryColor": "#2858ef",
   "iconUrl": "https://res.cloudinary.com/duhp69meg/image/upload/v1783703823/tapavis_tenant_parenthese-detente/icon_parenthese-detente_1783703823390.png",
   "enabledAuthMethods": [
@@ -15,14 +15,32 @@
   "geolocationEnabled": true,
   "customConfig": {
     "language": "both",
+    "aiSummary": {
+      "en": {
+        "dashboard": "Your admin dashboard is where you manage the whole site.\n\nTo update your content:\n- Go to Services to add, change, or remove treatments.\n- Go to Posts to manage journal articles.\n- Go to Zones to edit the areas you serve.\n- Go to Messages to read contact form submissions from visitors.\n- Go to Bookings to view, confirm, update, or remove reservations.\n\nTo manage booking availability:\n- Go to Availability.\n- There, you can set your regular booking hours by day of the week.\n- You can also block specific dates when you are unavailable.\n- You can choose whether a time slot applies to all services or only certain services, giving you more detailed control.\n\nTo change general site settings:\n- Go to Settings.\n- Update your business information, site text, and other general options from there.\n\nTo check performance and activity:\n- In the admin area, you can view site stats and activity summaries, including visits, bookings, and incoming messages.\n\nTo delete or edit anything, open the matching section and select the item you want to change.\n\nIf you want to keep clients informed, the easiest built-in way is through the booking and contact management sections: review requests quickly, follow up with clients, and keep reservation details up to date. In short, everything important is managed from the admin menu: services, bookings, availability, journal posts, service zones, messages, settings, and stats.",
+        "variables": "Great news! Your app is ready to go — no extra setup required.\n\nParenthèse Détente works out of the box with the tools already built in. That means you can start adding your services, setting your booking availability, and managing client requests right away.\n\nYour updated booking system now gives you much more control over when people can book. You can set availability by day of the week, block specific dates, and choose whether certain time slots apply to all services or only selected ones.\n\nIf you’d like, your next step is simply to open the admin area and fill in your business content: services, availability, journal posts, zones served, and site settings."
+      },
+      "fr": {
+        "dashboard": "Le tableau de bord admin est l’endroit où vous gérez tout votre site.\n\nPour modifier votre contenu :\n- Allez dans Services pour ajouter, modifier ou supprimer vos soins.\n- Allez dans Posts / Journal pour gérer vos articles.\n- Allez dans Zones pour mettre à jour les secteurs que vous desservez.\n- Allez dans Messages pour lire les demandes envoyées par le formulaire de contact.\n- Allez dans Bookings / Réservations pour voir, confirmer, modifier ou annuler des réservations.\n\nPour gérer les disponibilités de réservation :\n- Allez dans Availability / Disponibilités.\n- Vous pouvez y établir vos heures régulières selon les jours de la semaine.\n- Vous pouvez aussi bloquer des dates précises où vous n’êtes pas disponible.\n- Vous pouvez choisir si une plage horaire s’applique à tous les soins ou seulement à certains, pour un contrôle beaucoup plus précis.\n\nPour changer les réglages généraux du site :\n- Allez dans Settings / Réglages.\n- Vous pourrez y ajuster les informations de votre entreprise et les options générales du site.\n\nPour suivre l’activité du site :\n- Dans l’admin, vous pouvez consulter les statistiques et les résumés d’activité, comme les visites, les réservations et les messages reçus.\n\nPour modifier ou supprimer un élément, ouvrez simplement la section correspondante et choisissez l’élément à mettre à jour.\n\nPour aviser vos clients, la façon la plus simple dans l’outil actuel est de faire le suivi des demandes et des réservations à partir des sections Messages et Réservations. Bref, tout se gère à partir du menu admin : soins, réservations, disponibilités, journal, zones desservies, messages, réglages et statistiques.",
+        "variables": "Bonne nouvelle! Votre application est prête à être utilisée — aucune configuration supplémentaire n’est nécessaire.\n\nParenthèse Détente fonctionne déjà avec les outils intégrés. Vous pouvez donc commencer tout de suite à ajouter vos soins, configurer vos disponibilités et gérer les demandes de réservation.\n\nLe système de réservation a été amélioré pour vous donner beaucoup plus de contrôle. Vous pouvez maintenant définir les disponibilités par jour de la semaine, bloquer des dates précises, et décider si certaines plages horaires s’appliquent à tous les soins ou seulement à certains.\n\nLa prochaine étape est simple : ouvrez l’espace admin et ajoutez votre contenu principal — soins, disponibilités, articles de journal, zones desservies et réglages du site."
+      }
+    },
     "businessName": "Parenthèse Détente",
     "contactEmail": "richg@liasse.tech",
     "contactPhone": null,
     "designManifest": {
       "concept": "La Parenthèse Crème",
-      "copyVoice": "Hushed editorial French elegance in second person — short whispered lines like 'Je viens à vous. J’installe le calme.' — with English mirrored at the same brevity, prices and durations stated plainly like a fine menu, no exclamation points, no superlatives.",
+      "palette": {
+        "ink": "#33291F",
+        "ground": "#F6F1E8",
+        "accents": [
+          "#C9BBA4",
+          "#5C6653"
+        ],
+        "primary": "#9C7B54"
+      },
+      "summary": "The business name becomes the visual system: oversized bronze parentheses frame the hero, recur as section brackets, and enclose every call to action, so the brand mark, the pause and the click are one gesture across airy cream space.",
       "elements": {
-        "blogSurfaced": true,
         "pages": [
           "index",
           "soins",
@@ -31,24 +49,17 @@
           "journal-post",
           "reservation"
         ],
-        "userLogin": true
+        "userLogin": true,
+        "blogSurfaced": true
       },
+      "copyVoice": "Hushed editorial French elegance in second person — short whispered lines like 'Je viens à vous. J’installe le calme.' — with English mirrored at the same brevity, prices and durations stated plainly like a fine menu, no exclamation points, no superlatives.",
       "heroThesis": "The homepage opens with a literal typographic parenthesis wrapped around a photograph of the luxurious linen-dressed table in golden home light, arguing that booking here means inserting a protected pause into your life.",
+      "typography": "Cormorant Garamond Light for display and the giant parenthesis glyphs (italic for French flourishes) paired with Figtree for body and wide-tracked UI labels.",
       "iconDirection": "A single bronze parenthesis pair enclosing one small dot, centered on warm cream — the pause distilled into a mark, flat and emblematic.",
-      "palette": {
-        "accents": [
-          "#C9BBA4",
-          "#5C6653"
-        ],
-        "ground": "#F6F1E8",
-        "ink": "#33291F",
-        "primary": "#9C7B54"
-      },
-      "signatureMove": "The parenthesis as architecture — two outsized Cormorant parentheses in bronze frame the hero headline, thin bronze brackets frame the booking flow and service zone, and every CTA is set inside literal parentheses like '( Réserver )'.",
-      "summary": "The business name becomes the visual system: oversized bronze parentheses frame the hero, recur as section brackets, and enclose every call to action, so the brand mark, the pause and the click are one gesture across airy cream space.",
-      "typography": "Cormorant Garamond Light for display and the giant parenthesis glyphs (italic for French flourishes) paired with Figtree for body and wide-tracked UI labels."
+      "signatureMove": "The parenthesis as architecture — two outsized Cormorant parentheses in bronze frame the hero headline, thin bronze brackets frame the booking flow and service zone, and every CTA is set inside literal parentheses like '( Réserver )'."
     },
     "businessAddress": null,
+    "aiSummaryVersion": 3,
     "designDirections": {
       "directions": [
         {
@@ -93,7 +104,17 @@
       ],
       "recommendedIndex": 0
     },
-    "consultationPresentedAt": null
+    "designConfirmedAt": "2026-07-10T20:56:45.149Z",
+    "_designLastConfirmedAt": "2026-07-10T20:56:45.149Z",
+    "consultationPresentedAt": null,
+    "designConfirmedVariantId": 10,
+    "_designConfirmationHistory": [
+      {
+        "at": "2026-07-10T20:56:45.149Z",
+        "variantId": 10
+      }
+    ],
+    "_designLastConfirmedVariantId": 10
   },
   "promptHistory": [
     {
@@ -129,10 +150,107 @@
         "views/reservation.ejs",
         "views/soins.ejs"
       ]
+    },
+    {
+      "prompt": "Remplacer le champ date standard dans la réservation par un calendrier complet et stylé intégré directement dans la page. Afficher les dates futures, griser les dates passées, et permettre la navigation entre les mois.",
+      "diffStats": {
+        "added": [],
+        "removed": [],
+        "summary": "2 file(s) modified",
+        "modified": [
+          "public/css/styles.css (+18 -0)",
+          "views/reservation.ejs (+4 -0)"
+        ]
+      },
+      "timestamp": "2026-07-10T22:19:20.392Z",
+      "changeNotes": "Remplacé le champ date natif de la page Réservation par un calendrier complet, stylé et intégré directement dans la page. Le calendrier affiche les dates futures cliquables, grise les dates passées (et celles au-delà de la fenêtre de réservation), et permet la navigation entre les mois (‹ / ›, désactivés aux limites min/max). Le titre du mois et les jours sont localisés FR/EN. Aucune donnée nouvelle : pas de nouvelle table, route serveur, module admin ni clé API — la logique de disponibilité des plages (min_hours_ahead, jours fermés) reste gérée côté serveur par /api/availability.\n\nPre-flight smoke repair: Remplacé le champ date natif de la page Réservation par un calendrier complet, stylé et intégré directement dans la page. Le calendrier affiche les dates futures cliquables, grise les dates passées (et celles au-delà de la fenêtre de réservation), et permet la navigation entre les mois (‹ / ›, désactivés aux limites min/max). Le titre du mois et les jours sont localisés FR/EN. Aucune donnée nouvelle : pas de nouvelle table, route serveur, module admin ni clé API — la logique de disponibilité des plages (min_hours_ahead, jours fermés) reste gérée côté serveur par /api/availability.",
+      "generationId": 1679,
+      "filesModified": [
+        "crons.js",
+        "manifest.json",
+        "migrations.sql",
+        "public/css/admin-styles.css",
+        "public/css/styles.css",
+        "public/js/app.js",
+        "routes.js",
+        "schema.sql",
+        "seed.js",
+        "views/a-propos.ejs",
+        "views/admin-bookings.ejs",
+        "views/admin-messages.ejs",
+        "views/admin-posts.ejs",
+        "views/admin-services.ejs",
+        "views/admin-settings.ejs",
+        "views/admin-zones.ejs",
+        "views/admin.ejs",
+        "views/index.ejs",
+        "views/journal-post.ejs",
+        "views/journal.ejs",
+        "views/partials/admin-shell.ejs",
+        "views/partials/admin-sidebar.ejs",
+        "views/partials/footer.ejs",
+        "views/partials/header.ejs",
+        "views/reservation.ejs",
+        "views/soins.ejs"
+      ]
+    },
+    {
+      "prompt": "the \"Disponibilités de réservation\" should be more versatile, by day of the week, with blackout dates, and by services or all for certain time slots. much more granular and versatile control on when, which service, which days/dates/weeks, etc. etc.",
+      "diffStats": {
+        "added": [
+          "package.json",
+          "views/admin-availability.ejs"
+        ],
+        "removed": [],
+        "summary": "2 file(s) added, 8 file(s) modified",
+        "modified": [
+          "migrations.sql (+16 -0)",
+          "routes.js (+45 -0)",
+          "schema.sql (+2 -0)",
+          "seed.js (+4 -0)",
+          "views/admin-settings.ejs (+0 -6)",
+          "views/admin.ejs (+1 -0)",
+          "views/partials/admin-sidebar.ejs (+1 -0)",
+          "views/reservation.ejs (+4 -0)"
+        ]
+      },
+      "timestamp": "2026-07-10T23:33:56.454Z",
+      "changeNotes": "Replaced the old six-field booking-availability model with a granular, versatile scheduling system. Added two tables (availability_rules for weekly time windows and blackout_dates for closures), a new admin page 'Disponibilités' (/admin/availability) that manages weekly windows per day, per-service or all-services windows, optional validity date ranges (e.g. summer hours), blackout dates/ranges (per-service or all), plus the global slot interval, days-ahead and minimum-lead-time. The public reservation calendar now greys out closed weekdays, out-of-window dates and blackouts per selected service; the server (computeAvailability) is the authoritative gate for /api/availability and rejects bookings on blacked-out/closed slots. Existing tenants: migrations.sql auto-seeds Mon-Sat 09:00-19:00 windows from the previous hours if none exist. No tenant API keys are required for this change.\n\nPre-flight smoke repair: Replaced the old six-field booking-availability model with a granular, versatile scheduling system. Added two tables (availability_rules for weekly time windows and blackout_dates for closures), a new admin page 'Disponibilités' (/admin/availability) that manages weekly windows per day, per-service or all-services windows, optional validity date ranges (e.g. summer hours), blackout dates/ranges (per-service or all), plus the global slot interval, days-ahead and minimum-lead-time. The public reservation calendar now greys out closed weekdays, out-of-window dates and blackouts per selected service; the server (computeAvailability) is the authoritative gate for /api/availability and rejects bookings on blacked-out/closed slots. Existing tenants: migrations.sql auto-seeds Mon-Sat 09:00-19:00 windows from the previous hours if none exist. No tenant API keys are required for this change. Smoke-repair: added package.json declaring the Express 4 + EJS 3 runtime dependencies so the sandbox can boot (fixes the load_deps blocker where 'Cannot find module express').",
+      "generationId": 1680,
+      "filesModified": [
+        "crons.js",
+        "manifest.json",
+        "migrations.sql",
+        "package.json",
+        "public/css/admin-styles.css",
+        "public/css/styles.css",
+        "public/js/app.js",
+        "routes.js",
+        "schema.sql",
+        "seed.js",
+        "views/a-propos.ejs",
+        "views/admin-availability.ejs",
+        "views/admin-bookings.ejs",
+        "views/admin-messages.ejs",
+        "views/admin-posts.ejs",
+        "views/admin-services.ejs",
+        "views/admin-settings.ejs",
+        "views/admin-zones.ejs",
+        "views/admin.ejs",
+        "views/index.ejs",
+        "views/journal-post.ejs",
+        "views/journal.ejs",
+        "views/partials/admin-shell.ejs",
+        "views/partials/admin-sidebar.ejs",
+        "views/partials/footer.ejs",
+        "views/partials/header.ejs",
+        "views/reservation.ejs",
+        "views/soins.ejs"
+      ]
     }
   ],
   "apiVariables": [],
   "createdAt": "2026-07-10T16:16:54.796Z",
-  "updatedAt": "2026-07-10T17:18:42.900Z",
-  "exportedAt": "2026-07-10T17:18:43.121Z"
+  "updatedAt": "2026-07-10T23:34:16.740Z",
+  "exportedAt": "2026-07-11T05:29:08.426Z"
 }

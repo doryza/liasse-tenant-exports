@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang='fr'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1'><title>Réglages — Admin</title><link rel='stylesheet' href='public/css/admin-styles.css'><link href='https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Figtree:wght@400;500;600;700&display=swap' rel='stylesheet'></head><body class='admin'>
 <%- include('partials/admin-sidebar', { active: 'settings' }) %>
 <main class='admin-main'>
- <header class='admin-top'><button class='side-toggle' id='sideToggle' aria-label='Menu'>≡</button><div class='admin-top-titles'><h1>Réglages</h1><p class='admin-sub'>Disponibilités de réservation et coordonnées.</p></div><button class='btn primary' id='saveAll'>Enregistrer</button></header>
+ <header class='admin-top'><button class='side-toggle' id='sideToggle' aria-label='Menu'>≡</button><div class='admin-top-titles'><h1>Réglages</h1><p class='admin-sub'>Coordonnées et informations de contact.</p></div><button class='btn primary' id='saveAll'>Enregistrer</button></header>
  <div id='msg' class='admin-msg' style='display:none'></div>
  <section class='panel'><div class='panel-head'><h2>Coordonnées</h2></div>
   <div class='set-grid'>
@@ -10,21 +10,15 @@
    <label class='fld'><span class='fld-label'>Adresse / secteur</span><input id='s_business_address' value='<%= settings.business_address||"" %>' placeholder='Laurentides, QC'></label>
   </div>
  </section>
- <section class='panel'><div class='panel-head'><h2>Disponibilités de réservation</h2></div>
-  <div class='set-grid'>
-   <label class='fld'><span class='fld-label'>Jours disponibles</span><input id='s_booking_days' value='<%= settings.booking_days||"1,2,3,4,5,6" %>'><span class='fld-help'>0=dimanche … 6=samedi, séparés par des virgules.</span></label>
-   <label class='fld'><span class='fld-label'>Heure de début</span><input id='s_booking_start' value='<%= settings.booking_start||"09:00" %>' placeholder='09:00'></label>
-   <label class='fld'><span class='fld-label'>Heure de fin</span><input id='s_booking_end' value='<%= settings.booking_end||"19:00" %>' placeholder='19:00'></label>
-   <label class='fld'><span class='fld-label'>Intervalle des plages (min)</span><input id='s_slot_minutes' type='number' value='<%= settings.slot_minutes||"60" %>'></label>
-   <label class='fld'><span class='fld-label'>Réservation à l’avance (jours)</span><input id='s_max_days_ahead' type='number' value='<%= settings.max_days_ahead||"60" %>'></label>
-   <label class='fld'><span class='fld-label'>Délai minimum (heures)</span><input id='s_min_hours_ahead' type='number' value='<%= settings.min_hours_ahead||"24" %>'></label>
-  </div>
+ <section class='panel'><div class='panel-head'><h2>Disponibilités de réservation</h2><a class='link' href='admin/availability'>Ouvrir →</a></div>
+  <p class='admin-sub' style='margin:0'>Les horaires par jour, les plages par soin et les dates de fermeture se gèrent maintenant dans une page dédiée, plus granulaire. Cliquez « Ouvrir » pour configurer vos créneaux hebdomadaires, vos fermetures et l’intervalle des rendez-vous.</p>
+  <p style='margin-top:1rem'><a class='btn primary' href='admin/availability'>Gérer les disponibilités</a></p>
  </section>
 </main>
 <script>
 (function(){var st=document.getElementById('sideToggle');if(st){st.addEventListener('click',function(){document.querySelector('.admin-sidebar').classList.toggle('open');});}})();
 function m(t,ok){var e=document.getElementById('msg');e.style.display='block';e.textContent=t;e.className='admin-msg '+(ok?'ok':'err');setTimeout(function(){e.style.display='none';},3000);}
-var KEYS=['contact_email','contact_phone','business_address','booking_days','booking_start','booking_end','slot_minutes','max_days_ahead','min_hours_ahead'];
+var KEYS=['contact_email','contact_phone','business_address'];
 document.getElementById('saveAll').addEventListener('click',function(){var btn=this;btn.disabled=true;var done=0;KEYS.forEach(function(k){var el=document.getElementById('s_'+k);if(!el){done++;return;}fetch('api/admin/settings',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({key:k,value:el.value})}).then(function(){done++;if(done===KEYS.length){btn.disabled=false;m('Réglages enregistrés',true);}}).catch(function(){done++;if(done===KEYS.length){btn.disabled=false;m('Réglages enregistrés',true);}});});});
 </script>
 </body></html>

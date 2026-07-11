@@ -1,0 +1,130 @@
+<!DOCTYPE html><html lang='fr'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1'><title>Disponibilités — Admin</title><link rel='stylesheet' href='public/css/admin-styles.css'><link href='https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Figtree:wght@400;500;600;700&display=swap' rel='stylesheet'>
+<style>
+.avail-intro{font-size:.9rem;color:#8a8172;margin:0 0 1.2rem;line-height:1.6}
+.day-block{border:1px solid var(--a-line);border-radius:10px;margin-bottom:.9rem;overflow:hidden;background:#fff}
+.day-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.85rem 1.1rem;background:#faf7f0;border-bottom:1px solid var(--a-line)}
+.day-name{font-family:'Cormorant Garamond',serif;font-size:1.35rem;line-height:1;color:var(--a-ink)}
+.day-count{font-size:.78rem;color:#8a8172}
+.win-row{display:flex;align-items:center;gap:.8rem;padding:.7rem 1.1rem;border-bottom:1px solid var(--a-line);flex-wrap:wrap}
+.win-row:last-child{border-bottom:0}
+.win-time{font-weight:600;font-variant-numeric:tabular-nums;color:var(--a-ink);min-width:118px}
+.win-meta{font-size:.82rem;color:#8a8172;flex:1;min-width:120px}
+.win-actions{white-space:nowrap;margin-left:auto}
+.day-empty{padding:.7rem 1.1rem;color:#8a8172;font-size:.85rem;font-style:italic}
+.day-foot{padding:.6rem 1.1rem;background:#fcfaf5}
+.bo-item{display:flex;align-items:center;gap:.9rem;padding:.85rem 1.1rem;border:1px solid var(--a-line);border-radius:10px;margin-bottom:.7rem;background:#fff;flex-wrap:wrap}
+.bo-dates{font-weight:600;color:var(--a-ink);min-width:170px}
+.bo-meta{font-size:.82rem;color:#8a8172;flex:1;min-width:120px}
+.bo-actions{white-space:nowrap;margin-left:auto}
+.tag-all{display:inline-block;padding:.12rem .55rem;border-radius:20px;font-size:.72rem;background:#e0e6d9;color:#4a5540;font-weight:600}
+.tag-svc{display:inline-block;padding:.12rem .55rem;border-radius:20px;font-size:.72rem;background:#f4ecdd;color:#7d6141;font-weight:600}
+.tag-off{display:inline-block;padding:.12rem .55rem;border-radius:20px;font-size:.72rem;background:#f4d9d2;color:#a23d29;font-weight:600;margin-left:.4rem}
+.grid2fld{display:grid;grid-template-columns:1fr 1fr;gap:0 1rem}
+@media(max-width:520px){.grid2fld{grid-template-columns:1fr}}
+</style>
+</head><body class='admin'>
+<%- include('partials/admin-sidebar', { active: 'availability' }) %>
+<main class='admin-main'>
+ <header class='admin-top'><button class='side-toggle' id='sideToggle' aria-label='Menu'>≡</button><div class='admin-top-titles'><h1>Disponibilités</h1><p class='admin-sub'>Contrôlez quand, quels jours et pour quels soins vous acceptez des rendez-vous.</p></div></header>
+ <div id='msg' class='admin-msg' style='display:none'></div>
+
+ <section class='panel'>
+  <div class='panel-head'><h2>Paramètres généraux</h2><button class='btn primary' id='saveGlobal'>Enregistrer</button></div>
+  <div class='set-grid'>
+   <label class='fld'><span class='fld-label'>Intervalle des plages (min)</span><input id='g_slot_minutes' type='number' min='15' step='15' value='60'><span class='fld-help'>Écart entre deux débuts de rendez-vous possibles.</span></label>
+   <label class='fld'><span class='fld-label'>Réservation à l’avance (jours)</span><input id='g_max_days_ahead' type='number' min='1' step='1' value='60'><span class='fld-help'>Combien de jours dans le futur un client peut réserver.</span></label>
+   <label class='fld'><span class='fld-label'>Délai minimum (heures)</span><input id='g_min_hours_ahead' type='number' min='0' step='1' value='24'><span class='fld-help'>Temps minimum requis avant un rendez-vous.</span></label>
+  </div>
+ </section>
+
+ <section class='panel'>
+  <div class='panel-head'><h2>Créneaux hebdomadaires</h2><button class='btn primary' data-action='add-rule'>+ Ajouter une plage</button></div>
+  <p class='avail-intro'>Définissez vos plages de disponibilité pour chaque jour. Une plage s’applique à <strong>tous les soins</strong> ou peut être réservée à un soin précis. Une plage peut aussi n’être active que sur une période (ex. horaire d’été).</p>
+  <div id='weekGrid'></div>
+ </section>
+
+ <section class='panel'>
+  <div class='panel-head'><h2>Fermetures (dates bloquées)</h2><button class='btn primary' data-action='add-blackout'>+ Ajouter une fermeture</button></div>
+  <p class='avail-intro'>Bloquez une journée ou une période (vacances, congé) pour <strong>tous les soins</strong> ou pour un soin en particulier. Les dates bloquées n’apparaissent pas dans le calendrier de réservation.</p>
+  <div id='blackoutList'></div>
+  <div id='blackoutEmpty' class='admin-empty' style='display:none'>Aucune fermeture programmée.</div>
+ </section>
+</main>
+
+<div class='modal' id='ruleModal'><div class='modal-card'><div class='modal-head'><h2 id='ruleTitle'>Plage horaire</h2><button class='xbtn' data-action='close-modal' aria-label='Fermer'>×</button></div>
+ <div class='modal-body'>
+  <label class='fld'><span class='fld-label'>Jour de la semaine *</span><select id='r_day'></select></label>
+  <div class='grid2fld'>
+   <label class='fld'><span class='fld-label'>Heure de début *</span><input type='time' id='r_start' value='09:00' step='900'></label>
+   <label class='fld'><span class='fld-label'>Heure de fin *</span><input type='time' id='r_end' value='19:00' step='900'></label>
+  </div>
+  <label class='fld'><span class='fld-label'>Soin concerné</span><select id='r_service'></select><span class='fld-help'>« Tous les soins » = la plage vaut pour n’importe quel soin.</span></label>
+  <label class='fld'><span class='fld-label'>Étiquette (facultatif)</span><input type='text' id='r_label' placeholder='ex. Matinées, Horaire d’été'></label>
+  <div class='grid2fld'>
+   <label class='fld'><span class='fld-label'>Active à partir du (facultatif)</span><input type='date' id='r_valid_from'></label>
+   <label class='fld'><span class='fld-label'>Active jusqu’au (facultatif)</span><input type='date' id='r_valid_to'></label>
+  </div>
+  <label class='fld'><span class='fld-label'>Statut</span><label class='chk'><input type='checkbox' id='r_active' checked> <span>Plage active</span></label></label>
+ </div>
+ <div class='modal-foot'><button class='btn ghost' data-action='close-modal'>Annuler</button><button class='btn primary' id='saveRule'>Enregistrer</button></div>
+</div></div>
+
+<div class='modal' id='blackoutModal'><div class='modal-card'><div class='modal-head'><h2 id='boTitle'>Fermeture</h2><button class='xbtn' data-action='close-modal' aria-label='Fermer'>×</button></div>
+ <div class='modal-body'>
+  <div class='grid2fld'>
+   <label class='fld'><span class='fld-label'>Du *</span><input type='date' id='b_start'></label>
+   <label class='fld'><span class='fld-label'>Au (facultatif)</span><input type='date' id='b_end'><span class='fld-help'>Laissez vide pour une seule journée.</span></label>
+  </div>
+  <label class='fld'><span class='fld-label'>Soin concerné</span><select id='b_service'></select><span class='fld-help'>« Tous les soins » ferme la journée entière.</span></label>
+  <label class='fld'><span class='fld-label'>Motif (facultatif)</span><input type='text' id='b_reason' placeholder='ex. Vacances, Formation'></label>
+  <label class='fld'><span class='fld-label'>Statut</span><label class='chk'><input type='checkbox' id='b_active' checked> <span>Fermeture active</span></label></label>
+ </div>
+ <div class='modal-foot'><button class='btn ghost' data-action='close-modal'>Annuler</button><button class='btn primary' id='saveBlackout'>Enregistrer</button></div>
+</div></div>
+
+<script>
+(function(){var st=document.getElementById('sideToggle');if(st){st.addEventListener('click',function(){document.querySelector('.admin-sidebar').classList.toggle('open');});}})();
+var DAYS=['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+var DAY_ORDER=[1,2,3,4,5,6,0];
+var rules=[],blackouts=[],services=[],editRuleId=null,editBoId=null;
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/'/g,'&#39;');}
+function msg(t,ok){var e=document.getElementById('msg');e.style.display='block';e.textContent=t;e.className='admin-msg '+(ok?'ok':'err');window.scrollTo({top:0,behavior:'smooth'});setTimeout(function(){e.style.display='none';},3200);}
+function svcName(sid){if(sid==null||sid==='')return null;var s=services.filter(function(x){return String(x.id)===String(sid);})[0];return s?(s.name_fr||('#'+sid)):'(soin supprimé)';}
+function svcTag(sid){var n=svcName(sid);return n?('<span class="tag-svc">'+esc(n)+'</span>'):'<span class="tag-all">Tous les soins</span>';}
+function fmtDate(d){if(!d)return '';try{return new Date(d+'T00:00:00').toLocaleDateString('fr-CA',{year:'numeric',month:'short',day:'numeric'});}catch(e){return d;}}
+function svcOptions(sel,val){sel.innerHTML='';var all=document.createElement('option');all.value='';all.textContent='— Tous les soins —';sel.appendChild(all);services.forEach(function(s){var o=document.createElement('option');o.value=String(s.id);o.textContent=(s.name_fr||('#'+s.id))+(s.active?'':' (inactif)');sel.appendChild(o);});sel.value=(val==null?'':String(val));}
+function dayOptions(sel,val){sel.innerHTML='';DAY_ORDER.forEach(function(d){var o=document.createElement('option');o.value=String(d);o.textContent=DAYS[d];sel.appendChild(o);});sel.value=(val==null?'1':String(val));}
+function findRule(id){return rules.filter(function(r){return r.id===id;})[0];}
+function findBo(id){return blackouts.filter(function(b){return b.id===id;})[0];}
+
+function renderWeek(){var box=document.getElementById('weekGrid');var html='';DAY_ORDER.forEach(function(d){var dayRules=rules.filter(function(r){return Number(r.day_of_week)===d;}).sort(function(a,b){return String(a.start_time).localeCompare(String(b.start_time));});html+="<div class='day-block'><div class='day-head'><span class='day-name'>"+DAYS[d]+"</span><span class='day-count'>"+(dayRules.length?dayRules.length+' plage'+(dayRules.length>1?'s':''):'Fermé')+"</span></div>";if(dayRules.length){dayRules.forEach(function(r){var range='';if(r.valid_from||r.valid_to){range=" · "+(r.valid_from?('dès '+fmtDate(r.valid_from)):'')+(r.valid_to?(' jusqu’au '+fmtDate(r.valid_to)):'');}var lbl=r.label?(' · '+esc(r.label)):'';var off=(r.active===false)?'<span class="tag-off">Inactive</span>':'';html+="<div class='win-row'><span class='win-time'>"+esc(r.start_time)+" – "+esc(r.end_time)+"</span><span class='win-meta'>"+svcTag(r.service_id)+lbl+range+off+"</span><span class='win-actions'><button class='btn tiny' data-action='edit-rule' data-id='"+r.id+"'>Modifier</button> <button class='btn tiny danger' data-action='del-rule' data-id='"+r.id+"'>Supprimer</button></span></div>";});}else{html+="<div class='day-empty'>Aucune plage — les clients ne peuvent pas réserver ce jour.</div>";}html+="<div class='day-foot'><button class='btn tiny' data-action='add-rule' data-day='"+d+"'>+ Ajouter une plage</button></div></div>";});box.innerHTML=html;}
+
+function renderBlackouts(){var box=document.getElementById('blackoutList');var emp=document.getElementById('blackoutEmpty');if(!blackouts.length){box.innerHTML='';emp.style.display='block';return;}emp.style.display='none';var sorted=blackouts.slice().sort(function(a,b){return String(a.start_date).localeCompare(String(b.start_date));});box.innerHTML=sorted.map(function(b){var dates=fmtDate(b.start_date)+(b.end_date&&b.end_date!==b.start_date?(' → '+fmtDate(b.end_date)):'');var reason=b.reason?(' · '+esc(b.reason)):'';var off=(b.active===false)?'<span class="tag-off">Inactive</span>':'';return "<div class='bo-item'><span class='bo-dates'>"+esc(dates)+"</span><span class='bo-meta'>"+svcTag(b.service_id)+reason+off+"</span><span class='bo-actions'><button class='btn tiny' data-action='edit-blackout' data-id='"+b.id+"'>Modifier</button> <button class='btn tiny danger' data-action='del-blackout' data-id='"+b.id+"'>Supprimer</button></span></div>";}).join('');}
+
+function load(){fetch('api/admin/availability').then(function(r){return r.json();}).then(function(d){rules=d.rules||[];blackouts=d.blackouts||[];services=d.services||[];var s=d.settings||{};document.getElementById('g_slot_minutes').value=s.slot_minutes||'60';document.getElementById('g_max_days_ahead').value=s.max_days_ahead||'60';document.getElementById('g_min_hours_ahead').value=s.min_hours_ahead||'24';renderWeek();renderBlackouts();}).catch(function(){msg('Erreur de chargement',false);});}
+
+function closeModals(){document.getElementById('ruleModal').classList.remove('open');document.getElementById('blackoutModal').classList.remove('open');}
+
+function openRuleModal(rule,presetDay){editRuleId=rule?rule.id:null;dayOptions(document.getElementById('r_day'),rule?rule.day_of_week:(presetDay!=null?presetDay:1));document.getElementById('r_start').value=rule?rule.start_time:'09:00';document.getElementById('r_end').value=rule?rule.end_time:'19:00';svcOptions(document.getElementById('r_service'),rule?rule.service_id:'');document.getElementById('r_label').value=rule&&rule.label?rule.label:'';document.getElementById('r_valid_from').value=rule&&rule.valid_from?rule.valid_from:'';document.getElementById('r_valid_to').value=rule&&rule.valid_to?rule.valid_to:'';document.getElementById('r_active').checked=rule?(rule.active!==false):true;document.getElementById('ruleTitle').textContent=rule?'Modifier la plage':'Nouvelle plage';document.getElementById('ruleModal').classList.add('open');}
+
+function saveRule(){var start=document.getElementById('r_start').value,end=document.getElementById('r_end').value;if(!start||!end){msg('Indiquez une heure de début et de fin.',false);return;}if(end<=start){msg('L’heure de fin doit être après l’heure de début.',false);return;}var vf=document.getElementById('r_valid_from').value||null,vt=document.getElementById('r_valid_to').value||null;if(vf&&vt&&vt<vf){msg('La date de fin de validité doit suivre la date de début.',false);return;}var sv=document.getElementById('r_service').value;var body={day_of_week:Number(document.getElementById('r_day').value),start_time:start,end_time:end,service_id:(sv===''?null:Number(sv)),label:document.getElementById('r_label').value.trim()||null,valid_from:vf,valid_to:vt,active:document.getElementById('r_active').checked};var btn=document.getElementById('saveRule');btn.disabled=true;var url='api/admin/availability_rules'+(editRuleId?'/'+editRuleId:'');fetch(url,{method:editRuleId?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}).then(function(r){return r.json().then(function(d){return{ok:r.ok,d:d};});}).then(function(res){btn.disabled=false;if(!res.ok){msg((res.d&&res.d.error)||'Erreur',false);return;}closeModals();msg('Plage enregistrée',true);load();}).catch(function(){btn.disabled=false;msg('Erreur',false);});}
+
+function deleteRule(id){if(!confirm('Supprimer cette plage horaire ?'))return;fetch('api/admin/availability_rules/'+id,{method:'DELETE'}).then(function(r){return r.json();}).then(function(){msg('Plage supprimée',true);load();}).catch(function(){msg('Erreur',false);});}
+
+function openBlackoutModal(bo){editBoId=bo?bo.id:null;document.getElementById('b_start').value=bo?bo.start_date:'';document.getElementById('b_end').value=bo&&bo.end_date?bo.end_date:'';svcOptions(document.getElementById('b_service'),bo?bo.service_id:'');document.getElementById('b_reason').value=bo&&bo.reason?bo.reason:'';document.getElementById('b_active').checked=bo?(bo.active!==false):true;document.getElementById('boTitle').textContent=bo?'Modifier la fermeture':'Nouvelle fermeture';document.getElementById('blackoutModal').classList.add('open');}
+
+function saveBlackout(){var start=document.getElementById('b_start').value;if(!start){msg('Indiquez une date de début.',false);return;}var end=document.getElementById('b_end').value||null;if(end&&end<start){msg('La date de fin doit suivre la date de début.',false);return;}var sv=document.getElementById('b_service').value;var body={start_date:start,end_date:end,service_id:(sv===''?null:Number(sv)),reason:document.getElementById('b_reason').value.trim()||null,active:document.getElementById('b_active').checked};var btn=document.getElementById('saveBlackout');btn.disabled=true;var url='api/admin/blackout_dates'+(editBoId?'/'+editBoId:'');fetch(url,{method:editBoId?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}).then(function(r){return r.json().then(function(d){return{ok:r.ok,d:d};});}).then(function(res){btn.disabled=false;if(!res.ok){msg((res.d&&res.d.error)||'Erreur',false);return;}closeModals();msg('Fermeture enregistrée',true);load();}).catch(function(){btn.disabled=false;msg('Erreur',false);});}
+
+function deleteBlackout(id){if(!confirm('Supprimer cette fermeture ?'))return;fetch('api/admin/blackout_dates/'+id,{method:'DELETE'}).then(function(r){return r.json();}).then(function(){msg('Fermeture supprimée',true);load();}).catch(function(){msg('Erreur',false);});}
+
+function saveGlobal(){var btn=document.getElementById('saveGlobal');btn.disabled=true;var pairs=[['slot_minutes','g_slot_minutes'],['max_days_ahead','g_max_days_ahead'],['min_hours_ahead','g_min_hours_ahead']];var done=0;function fin(){done++;if(done===pairs.length){btn.disabled=false;msg('Paramètres enregistrés',true);}}pairs.forEach(function(p){var el=document.getElementById(p[1]);if(!el){fin();return;}fetch('api/admin/settings',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({key:p[0],value:el.value})}).then(fin).catch(fin);});}
+
+document.addEventListener('click',function(e){var el=e.target.closest('[data-action]');if(!el)return;var a=el.getAttribute('data-action');if(a==='add-rule'){openRuleModal(null,el.getAttribute('data-day'));}else if(a==='edit-rule'){openRuleModal(findRule(Number(el.getAttribute('data-id'))),null);}else if(a==='del-rule'){deleteRule(Number(el.getAttribute('data-id')));}else if(a==='add-blackout'){openBlackoutModal(null);}else if(a==='edit-blackout'){openBlackoutModal(findBo(Number(el.getAttribute('data-id'))));}else if(a==='del-blackout'){deleteBlackout(Number(el.getAttribute('data-id')));}else if(a==='close-modal'){closeModals();}});
+document.getElementById('saveRule').addEventListener('click',saveRule);
+document.getElementById('saveBlackout').addEventListener('click',saveBlackout);
+document.getElementById('saveGlobal').addEventListener('click',saveGlobal);
+[document.getElementById('ruleModal'),document.getElementById('blackoutModal')].forEach(function(m){m.addEventListener('click',function(e){if(e.target===m)closeModals();});});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeModals();});
+load();
+</script>
+</body></html>
