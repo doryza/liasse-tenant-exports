@@ -90,23 +90,23 @@
 <% } %>
 
 <section class="hero hero-squeeze">
-  <img src="<%= (typeof settings!=='undefined' && settings._p_hero_image_url) ? settings._p_hero_image_url : 'https://placehold.co/1600x900/0a0806/F5A524/png?text=Tandoori+Route' %>" alt="<%= t.brand %>" class="hero-img">
+  <img src="<%= (typeof settings!=='undefined' && settings._p_hero_image_url) ? settings._p_hero_image_url : 'https://placehold.co/1600x900/0a0806/F5A524/png?text=Tandoori+Route' %>" alt="<%= t.brand %>" class="hero-img" data-setting-key="_p_hero_image_url">
   <div class="hero-overlay"></div>
   <%- include('partials/halal-seal') %>
   <div class="hero-banner">
     <div class="hero-banner-inner">
-      <img src="<%= (typeof settings!=='undefined' && settings._p_nav_logo_url) ? settings._p_nav_logo_url : (typeof appIconUrl !== 'undefined' ? appIconUrl : '') %>" alt="<%= t.brand %>" class="hero-banner-logo" onerror="this.style.display='none'">
+      <img src="<%= (typeof settings!=='undefined' && settings._p_nav_logo_url) ? settings._p_nav_logo_url : (typeof appIconUrl !== 'undefined' ? appIconUrl : '') %>" alt="<%= t.brand %>" class="hero-banner-logo" onerror="this.style.display='none'" data-setting-key="_p_nav_logo_url">
       <span class="hero-banner-divider"></span>
-      <span class="hero-banner-name"><%= settings.business_name || t.brand %></span>
+      <span class="hero-banner-name" data-setting-key="business_name"><%= settings.business_name || t.brand %></span>
     </div>
   </div>
-  <h1 class="hero-slogan"><%= lang === 'en' ? 'Your Route to Flavor' : 'Votre route vers les saveurs' %></h1>
+  <h1 class="hero-slogan" data-lk="hero-slogan"><%= lang === 'en' ? 'Your Route to Flavor' : 'Votre route vers les saveurs' %></h1>
 </section>
 
 <section class="section squeeze-section" id="menu">
   <div class="container">
-    <h2 class="section-title"><%= t.menu_title %></h2>
-    <p class="section-sub"><%= t.menu_subtitle %></p>
+    <h2 class="section-title" data-lk="t:menu_title"><%= t.menu_title %></h2>
+    <p class="section-sub" data-lk="t:menu_subtitle"><%= t.menu_subtitle %></p>
     <%- include('partials/halal-pill', { center: true }) %>
   </div>
   <% if (typeof preview !== 'undefined' && preview && preview.items && preview.items.length > 0) { %>
@@ -142,29 +142,29 @@
     <div class="slider-progress"><span id="sliderBar"></span></div>
   </div>
   <% } else { %>
-  <div class="container"><p class="empty-state"><%= t.no_menu %></p></div>
+  <div class="container"><p class="empty-state" data-lk="t:no_menu"><%= t.no_menu %></p></div>
   <% } %>
 </section>
 
 <section class="section squeeze-section alt-section">
   <div class="container order-band">
     <div class="order-band-text">
-      <h2><%= lang === 'en' ? 'Your next meal is waiting.' : 'Votre prochain repas vous attend.' %></h2>
-      <p><%= lang === 'en' ? 'Flavor-rich curries, fresh naan and traditional recipes made with passion.' : 'Currys riches en saveurs, naan frais et recettes traditionnelles préparés avec passion.' %></p>
+      <h2 data-lk="order-band-title"><%= lang === 'en' ? 'Your next meal is waiting.' : 'Votre prochain repas vous attend.' %></h2>
+      <p data-lk="order-band-subtitle"><%= lang === 'en' ? 'Flavor-rich curries, fresh naan and traditional recipes made with passion.' : 'Currys riches en saveurs, naan frais et recettes traditionnelles préparés avec passion.' %></p>
     </div>
-    <a href="<%= ORDER_URL %>" target="_blank" rel="noopener" class="btn btn-primary btn-order"><%= lang === 'en' ? 'Order now' : 'Commander maintenant' %> →</a>
+    <a href="<%= ORDER_URL %>" target="_blank" rel="noopener" class="btn btn-primary btn-order" data-lk="order-band-cta"><%= lang === 'en' ? 'Order now' : 'Commander maintenant' %> →</a>
     <% if (typeof platforms !== 'undefined' && platforms && platforms.length > 0) { %>
     <div class="order-band-platforms">
-      <span><%= lang === 'en' ? 'Also on' : 'Aussi sur' %></span>
+      <span data-lk="order-band-also-on"><%= lang === 'en' ? 'Also on' : 'Aussi sur' %></span>
       <% platforms.forEach(function(p) { %>
-        <a href="<%= p.link_url %>" target="_blank" rel="noopener" title="<%= p.name %>"><% if (p.logo_url) { %><img src="<%= p.logo_url %>" alt="<%= p.name %>"><% } else { %><%= p.name %><% } %></a>
+        <a href="<%= p.link_url %>" target="_blank" rel="noopener" title="<%= p.name %>"><% if (p.logo_url) { %><img src="<%= p.logo_url %>" alt="<%= p.name %>" data-content-source="delivery_platforms:logo_url" data-content-id="<%= p.id %>"><% } else { %><%= p.name %><% } %></a>
       <% }); %>
     </div>
     <% } %>
   </div>
 </section>
 
-<a href="<%= ORDER_URL %>" target="_blank" rel="noopener" class="sticky-order-cta"><%= lang === 'en' ? 'Order now' : 'Commander' %> →</a>
+<a href="<%= ORDER_URL %>" target="_blank" rel="noopener" class="sticky-order-cta" data-lk="sticky-order-cta"><%= lang === 'en' ? 'Order now' : 'Commander' %> →</a>
 
 <script>
 (function(){

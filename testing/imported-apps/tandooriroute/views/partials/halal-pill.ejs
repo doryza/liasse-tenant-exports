@@ -1,7 +1,7 @@
 <%# Small halal badge pill — mini crescent + label. Pass { center: true } to
     render it centered as a block (menu section headers). %>
 <span class="halal-pill<%= (typeof center !== 'undefined' && center) ? ' halal-pill--center' : '' %>"
-      title="<%= lang === 'en' ? 'All our meats are certified halal' : 'Toutes nos viandes sont certifiées halal' %>">
+      title="<%= lang === 'en' ? 'All our meats are certified halal' : 'Toutes nos viandes sont certifiées halal' %>" data-lk="halal-pill">
   <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path fill-rule="evenodd" fill="currentColor" d="M 12 2 a 10 10 0 1 0 0.01 0 z M 15 4.5 a 7 7 0 1 0 0.01 0 z"/></svg>
   100% HALAL
 </span>

@@ -1,26 +1,6 @@
 {
-  "exportedAt": "2026-07-06T07:51:11.267Z",
+  "exportedAt": "2026-07-17T19:03:59.575Z",
   "tables": {
-    "admin_users": {
-      "columns": [
-        "id",
-        "name",
-        "email",
-        "password_hash",
-        "display_name",
-        "role",
-        "active",
-        "activation_token",
-        "invited_by",
-        "invite_token",
-        "invite_expires_at",
-        "last_login_at",
-        "is_active",
-        "created_at"
-      ],
-      "totalRows": 0,
-      "sampleRows": []
-    },
     "admin_invites": {
       "columns": [
         "id",
@@ -47,6 +27,26 @@
           "created_at": "2026-06-10T18:57:00.756Z"
         }
       ]
+    },
+    "admin_users": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "password_hash",
+        "display_name",
+        "role",
+        "active",
+        "activation_token",
+        "invited_by",
+        "invite_token",
+        "invite_expires_at",
+        "last_login_at",
+        "is_active",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
     },
     "admin_webauthn_credentials": {
       "columns": [
@@ -127,7 +127,7 @@
         "path",
         "visited_at"
       ],
-      "totalRows": 6661,
+      "totalRows": 8601,
       "sampleRows": [
         {
           "id": 1,

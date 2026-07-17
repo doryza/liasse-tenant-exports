@@ -1,22 +1,22 @@
 <%- include('partials/header') %>
 <section class="section" style="padding-top:3rem">
   <div class="container">
-    <h1 class="section-title"><%= t.delivery_title %></h1>
-    <p class="section-sub"><%= t.delivery_intro %></p>
+    <h1 class="section-title" data-lk="t:delivery_title"><%= t.delivery_title %></h1>
+    <p class="section-sub" data-lk="t:delivery_intro"><%= t.delivery_intro %></p>
     <% if (typeof platforms !== 'undefined' && platforms && platforms.length > 0) { %>
       <div class="delivery-grid">
         <% platforms.forEach(function(p) { %>
         <div class="delivery-card">
-          <% if (p.logo_url) { %><img src="<%= p.logo_url %>" alt="<%= p.name %>"><% } else { %><div class="logo-placeholder">🚚</div><% } %>
-          <h3><%= p.name %></h3>
-          <a href="<%= p.link_url %>" target="_blank" rel="noopener" class="btn btn-primary" style="background-color:#F5A524;color:#000"><%= t.order_now %> →</a>
+          <% if (p.logo_url) { %><img src="<%= p.logo_url %>" alt="<%= p.name %>" data-content-source="delivery_platforms:logo_url" data-content-id="<%= p.id %>"><% } else { %><div class="logo-placeholder">🚚</div><% } %>
+          <h3 data-content-source="delivery_platforms:name" data-content-id="<%= p.id %>"><%= p.name %></h3>
+          <a href="<%= p.link_url %>" target="_blank" rel="noopener" class="btn btn-primary" style="background-color:#F5A524;color:#000" data-lk="delivery-order-cta"><%= t.order_now %> →</a>
         </div>
         <% }); %>
       </div>
     <% } else { %>
       <div class="empty-state">
-        <p><%= t.no_platforms %></p>
-        <% if (settings.contact_phone) { %><p style="margin-top:1rem"><%= t.phone %> : <a href="tel:<%= settings.contact_phone %>" style="color:#F5A524"><%= settings.contact_phone %></a></p><% } %>
+        <p data-lk="t:no_platforms"><%= t.no_platforms %></p>
+        <% if (settings.contact_phone) { %><p style="margin-top:1rem"><%= t.phone %> : <a href="tel:<%= settings.contact_phone %>" style="color:#F5A524" data-setting-key="contact_phone"><%= settings.contact_phone %></a></p><% } %>
       </div>
     <% } %>
   </div>

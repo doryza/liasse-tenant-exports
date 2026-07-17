@@ -1,8 +1,8 @@
 <%- include('partials/header') %>
 <section class="section" style="padding-top:3rem">
   <div class="container">
-    <h1 class="section-title"><%= t.menu_title %></h1>
-    <p class="section-sub"><%= t.menu_subtitle %></p>
+    <h1 class="section-title" data-lk="t:menu_title"><%= t.menu_title %></h1>
+    <p class="section-sub" data-lk="t:menu_subtitle"><%= t.menu_subtitle %></p>
     <%- include('partials/halal-pill', { center: true }) %>
     <% if (typeof menu !== 'undefined' && menu && menu.length > 0) { %>
       <% var cats = (typeof categories !== 'undefined' && categories) ? categories : []; %>
@@ -22,10 +22,10 @@
           var _sizes = (typeof parseSizes === 'function') ? parseSizes(m.sizes_json) : null;
         %>
         <div class="menu-card <%= m.available ? '' : 'unavailable' %>" data-cat="<%= m.category || '' %>">
-          <% if (m.image_url) { %><img src="<%= m.image_url %>" alt="<%= pickLang(m,'name',lang) %>" class="menu-card-img"><% } else { %><div class="menu-card-img"></div><% } %>
+          <% if (m.image_url) { %><img src="<%= m.image_url %>" alt="<%= pickLang(m,'name',lang) %>" class="menu-card-img" data-content-source="menu_items:image_url" data-content-id="<%= m.id %>"><% } else { %><div class="menu-card-img"></div><% } %>
           <div class="menu-card-body">
-            <h3><%= pickLang(m, 'name', lang) %></h3>
-            <p class="desc"><%= pickLang(m, 'description', lang) %></p>
+            <h3 data-content-source="menu_items:name_<%= lang %>" data-content-id="<%= m.id %>"><%= pickLang(m, 'name', lang) %></h3>
+            <p class="desc" data-content-source="menu_items:description_<%= lang %>" data-content-id="<%= m.id %>"><%= pickLang(m, 'description', lang) %></p>
             <% if (_sizes && _sizes.length > 0) { %>
               <div class="sizes-list">
                 <% _sizes.forEach(function(s){ %>
@@ -41,7 +41,7 @@
             <% } else { %>
               <div class="row">
                 <span class="cat-badge"><%= catName || m.category || '' %></span>
-                <span class="price"><%= formatPrice(m.price) %></span>
+                <span class="price" data-content-source="menu_items:price" data-content-id="<%= m.id %>"><%= formatPrice(m.price) %></span>
               </div>
             <% } %>
           </div>
@@ -49,7 +49,7 @@
         <% }); %>
       </div>
     <% } else { %>
-      <p class="empty-state"><%= t.no_menu %></p>
+      <p class="empty-state" data-lk="t:no_menu"><%= t.no_menu %></p>
     <% } %>
   </div>
 </section>

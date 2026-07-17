@@ -2,9 +2,9 @@
   <div class="container">
     <div class="footer-grid">
       <div>
-        <h4><%= t.brand %></h4>
+        <h4 data-lk="t:brand"><%= t.brand %></h4>
         <% var footerIntro = settings['footer_intro_' + lang] || settings.footer_intro_fr || settings.tagline || t.hero_subtitle; %>
-        <p><%= footerIntro %></p>
+        <p data-setting-key="footer_intro_<%= lang %>"><%= footerIntro %></p>
         <p style="margin-top:0.85rem"><%- include('halal-pill') %></p>
         <% var socials = [
           { key: 'social_facebook',  label: 'Facebook',  icon: 'M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.879V14.89H7.898V12H10.438V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195V8.562h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89H13.563v6.989C18.343 21.128 22 16.991 22 12z' },
@@ -25,14 +25,14 @@
         <% } %>
       </div>
       <div>
-        <h4><%= t.contact_us %></h4>
-        <% if (settings.business_address) { %><p><%= settings.business_address %></p><% } %>
-        <% if (settings.contact_phone) { %><p><%= t.phone %> : <a href="tel:<%= settings.contact_phone %>" style="color:#ccc"><%= settings.contact_phone %></a></p><% } %>
+        <h4 data-lk="t:contact_us"><%= t.contact_us %></h4>
+        <% if (settings.business_address) { %><p data-setting-key="business_address"><%= settings.business_address %></p><% } %>
+        <% if (settings.contact_phone) { %><p><%= t.phone %> : <a href="tel:<%= settings.contact_phone %>" style="color:#ccc" data-setting-key="contact_phone"><%= settings.contact_phone %></a></p><% } %>
         <% var publicEmail = settings.contact_email || ''; %>
-        <% if (publicEmail) { %><p><%= t.email %> : <a href="mailto:<%= publicEmail %>" style="color:#ccc"><%= publicEmail %></a></p><% } %>
+        <% if (publicEmail) { %><p><%= t.email %> : <a href="mailto:<%= publicEmail %>" style="color:#ccc" data-setting-key="contact_email"><%= publicEmail %></a></p><% } %>
       </div>
       <div>
-        <h4><%= t.open_hours %></h4>
+        <h4 data-lk="t:open_hours"><%= t.open_hours %></h4>
         <% if (typeof hours !== 'undefined' && hours && hours.length) { %>
           <table class="hours-grid" style="color:#bbb;font-size:0.88rem;width:100%;border-collapse:collapse">
             <% hours.forEach(function(row){ %>
@@ -40,13 +40,13 @@
             <% }); %>
           </table>
         <% } else if (settings.hours) { %>
-          <pre class="hours-pre"><%= settings.hours %></pre>
+          <pre class="hours-pre" data-setting-key="hours"><%= settings.hours %></pre>
         <% } else { %>
           <p style="color:#777;font-size:0.88rem">—</p>
         <% } %>
       </div>
       <div>
-        <h4><%= t.enable_notif %></h4>
+        <h4 data-lk="t:enable_notif"><%= t.enable_notif %></h4>
         <button class="btn btn-secondary" data-push-btn style="border-color:#F5A524;color:#F5A524"><%= t.enable_notif %></button>
       </div>
     </div>
