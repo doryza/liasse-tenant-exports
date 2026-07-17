@@ -68,6 +68,8 @@ INSERT INTO menu_categories (slug, name_fr, name_en, position) VALUES ('desserts
 INSERT INTO menu_categories (slug, name_fr, name_en, position) VALUES ('boissons', 'Chai / Boissons', 'Chai / Drinks', 7) ON CONFLICT (slug) DO NOTHING;
 INSERT INTO menu_categories (slug, name_fr, name_en, position) VALUES ('thali', 'Midi Special Thali', 'Lunch Thali Special', 8) ON CONFLICT (slug) DO NOTHING;
 INSERT INTO menu_categories (slug, name_fr, name_en, position) VALUES ('wraps', 'Wraps', 'Wraps', 9) ON CONFLICT (slug) DO NOTHING;
+-- 2026-07-17: new "Crevette" (shrimp) category, added to the live Liasse menu (business 639).
+INSERT INTO menu_categories (slug, name_fr, name_en, position) VALUES ('crevette', 'Crevette', 'Shrimp', 10) ON CONFLICT (slug) DO NOTHING;
 
 CREATE TABLE IF NOT EXISTS delivery_platforms (
   id SERIAL PRIMARY KEY,

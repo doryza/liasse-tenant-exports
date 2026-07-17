@@ -173,6 +173,34 @@ INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,cate
   WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v3_done');
 INSERT INTO admin_settings (key, value) VALUES ('_menu_v3_done', '1') ON CONFLICT (key) DO NOTHING;
 
+-- 2026-07-17 menu refresh v4 — re-sync /menu (menu_items) to the latest Liasse
+-- Restaurants ordering-menu export (business 639): new "Crevette" (shrimp)
+-- category with 5 dishes, and removal of the now-discontinued Chana Bhatura.
+-- ADDITIVE (unlike v3's full DELETE) so operator edits to other dishes survive.
+-- Sentinel-guarded (_menu_v4_done) so it applies once on the next Push-to-Live
+-- and then no-ops on re-materialization, preserving later operator edits.
+-- The category insert is unconditionally idempotent (ON CONFLICT DO NOTHING).
+INSERT INTO menu_categories (slug, name_fr, name_en, position) VALUES ('crevette', 'Crevette', 'Shrimp', 10) ON CONFLICT (slug) DO NOTHING;
+DELETE FROM menu_items
+  WHERE name_fr = 'Chana Bhatura' AND category = 'vegetarien'
+  AND NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v4_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,featured,available)
+  SELECT 'Crevette au beurre', 'Butter Shrimp', 'Crevette dans une sauce crémeuse et onctueuse à la tomate, préparée avec beurre et épices traditionnelles', 'Shrimp in a smooth, creamy tomato sauce made with butter and traditional spices.', 18.99, 'crevette', NULL, 1, 0, 1
+  WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v4_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,featured,available)
+  SELECT 'Crevette Cari', 'Shrimp Curry', 'Crevette mijotée dans une sauce curry savoureuse aux épices, riche et bien relevée', 'Shrimp simmered in a savoury, well-spiced curry sauce — rich and bold.', 18.99, 'crevette', NULL, 2, 0, 1
+  WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v4_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,featured,available)
+  SELECT 'Crevette Korma', 'Shrimp Korma', 'Crevette braisée dans une sauce curry et crémeuse au yogourt, aux épices, riche et savoureuse', 'Shrimp braised in a creamy yogurt curry sauce with spices — rich and flavourful.', 18.99, 'crevette', NULL, 3, 0, 1
+  WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v4_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,featured,available)
+  SELECT 'Crevette Tikka Masala', 'Shrimp Tikka Masala', 'Morceaux de crevette marinés et grillés, servis dans une sauce tomate crémeuse et épicée.', 'Marinated, grilled shrimp pieces served in a creamy, spiced tomato sauce.', 19.99, 'crevette', NULL, 4, 0, 1
+  WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v4_done');
+INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,featured,available)
+  SELECT 'Karahi Crevette', 'Karahi Shrimp', 'Crevette mijotée dans une sauce tomate épicée avec des herbes fraîches et des épices', 'Shrimp simmered in a spiced tomato sauce with fresh herbs and spices.', 22.99, 'crevette', NULL, 5, 0, 1
+  WHERE NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v4_done');
+INSERT INTO admin_settings (key, value) VALUES ('_menu_v4_done', '1') ON CONFLICT (key) DO NOTHING;
+
 -- posts (update by title — seed inserts have no image_url column, so first run sets them)
 UPDATE posts SET image_url = 'https://res.cloudinary.com/duhp69meg/image/upload/v1779561532/tandooriroute/posts/post_opening_1779561532294.png' WHERE title = 'Tandoori Route ouvre ses portes à Blainville !';
 UPDATE posts SET image_url = 'https://res.cloudinary.com/duhp69meg/image/upload/v1779561537/tandooriroute/posts/post_marinade_1779561537213.png' WHERE title = 'Notre Biryani au poulet : 24 heures de patience';

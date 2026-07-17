@@ -118,11 +118,13 @@ module.exports = function(services) {
   function pickLang(item, field, lang) { if (!item) return ''; return item[field + '_' + lang] || item[field + '_fr'] || item[field] || ''; }
 
   // Static menu preview for the one-pager homepage slider. Baked from the
-  // Liasse Restaurants ordering-system export (Tandoori Route, 2026-06-10).
+  // Liasse Restaurants ordering-system export (Tandoori Route). Last refreshed
+  // 2026-07-17: added the new "Crevette" (shrimp) category + 5 dishes and
+  // removed the discontinued Chana Bhatura, mirroring GET /order/menu.json.
   // The live source of truth for ordering is
   // https://order.command.restaurant/b/tandoori-route-blain/order — the tenant menu_items
   // table no longer feeds the homepage. Image URLs carry a Cloudinary
-  // w_640,h_480,c_fill transform so the 48-card slider stays light.
+  // w_640,h_480,c_fill transform so the slider stays light.
   const MENU_PREVIEW = {
     "categories": [
       "Poulet",
@@ -133,7 +135,8 @@ module.exports = function(services) {
       "Dessert",
       "Chai / Boissons",
       "Midi Special Thali",
-      "Wraps"
+      "Wraps",
+      "Crevette"
     ],
     "items": [
       {
@@ -268,14 +271,6 @@ module.exports = function(services) {
         "category": "Végétarien",
         "description": "Curry savoureux de pois chiches épicé avec des assaisonnements traditionnels.",
         "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780800108/tapavis_menu/639/d23drzv8c4fzsgp57mcp.jpg"
-      },
-      {
-        "id": "52zefiej7mv",
-        "name": "Chana Bhatura",
-        "price": 13.99,
-        "category": "Végétarien",
-        "description": "Pois Chiches épicés avec 2 bhaturas frits.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780760059/tapavis_menu/639/ase8aaw1x2qtvhl0loeo.jpg"
       },
       {
         "id": "e94jzitgo2",
@@ -506,10 +501,45 @@ module.exports = function(services) {
         "description": "Ajoutez des frites et une canette à votre wrap.",
         "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781375648/tapavis_menu/639/pnwttp264baz1fcaspgj.jpg",
         "note": true
+      },
+      {
+        "id": "ymul5c3n2b",
+        "name": "Crevette au beurre",
+        "price": 18.99,
+        "category": "Crevette",
+        "description": "Crevette dans une sauce crémeuse et onctueuse à la tomate, préparée avec beurre et épices traditionnelles"
+      },
+      {
+        "id": "vlhwwfucflc",
+        "name": "Crevette Cari",
+        "price": 18.99,
+        "category": "Crevette",
+        "description": "Crevette mijotée dans une sauce curry savoureuse aux épices, riche et bien relevée"
+      },
+      {
+        "id": "j7fl10xmvl",
+        "name": "Crevette Korma",
+        "price": 18.99,
+        "category": "Crevette",
+        "description": "Crevette braisée dans une sauce curry et crémeuse au yogourt, aux épices, riche et savoureuse"
+      },
+      {
+        "id": "jn224ti7dlj",
+        "name": "Crevette Tikka Masala",
+        "price": 19.99,
+        "category": "Crevette",
+        "description": "Morceaux de crevette marinés et grillés, servis dans une sauce tomate crémeuse et épicée."
+      },
+      {
+        "id": "njpndzt172g",
+        "name": "Karahi Crevette",
+        "price": 22.99,
+        "category": "Crevette",
+        "description": "Crevette mijotée dans une sauce tomate épicée avec des herbes fraîches et des épices"
       }
     ]
   };
-  const MENU_PREVIEW_CAT_EN = { 'Poulet': 'Chicken', 'Agneau': 'Lamb', 'Végétarien': 'Vegetarian', 'À la carte': 'À la carte', 'Poutine': 'Poutine', 'Dessert': 'Desserts', 'Chai / Boissons': 'Chai / Drinks', 'Midi Special Thali': 'Lunch Thali Special', 'Wraps': 'Wraps' };
+  const MENU_PREVIEW_CAT_EN = { 'Poulet': 'Chicken', 'Agneau': 'Lamb', 'Végétarien': 'Vegetarian', 'À la carte': 'À la carte', 'Poutine': 'Poutine', 'Dessert': 'Desserts', 'Chai / Boissons': 'Chai / Drinks', 'Midi Special Thali': 'Lunch Thali Special', 'Wraps': 'Wraps', 'Crevette': 'Shrimp' };
 
   // Short-code generation: 8 chars, no ambiguous (0/O, 1/I/L, U/V)
   const SHORT_CODE_ALPHABET = 'BCDFGHJKMNPQRSTWXYZ23456789';
