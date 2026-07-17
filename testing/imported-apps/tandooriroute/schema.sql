@@ -60,16 +60,19 @@ INSERT INTO menu_categories (slug, name_fr, name_en, position) VALUES ('dessert'
 -- (business 639). The 6 original categories above are deactivated by migrations.sql
 -- (sentinel-guarded) since no items reference them anymore.
 INSERT INTO menu_categories (slug, name_fr, name_en, position) VALUES ('poulet', 'Poulet', 'Chicken', 1) ON CONFLICT (slug) DO NOTHING;
-INSERT INTO menu_categories (slug, name_fr, name_en, position) VALUES ('agneau', 'Agneau', 'Lamb', 2) ON CONFLICT (slug) DO NOTHING;
-INSERT INTO menu_categories (slug, name_fr, name_en, position) VALUES ('vegetarien', 'Végétarien', 'Vegetarian', 3) ON CONFLICT (slug) DO NOTHING;
-INSERT INTO menu_categories (slug, name_fr, name_en, position) VALUES ('alacarte', 'À la carte', 'À la carte', 4) ON CONFLICT (slug) DO NOTHING;
-INSERT INTO menu_categories (slug, name_fr, name_en, position) VALUES ('poutine', 'Poutine', 'Poutine', 5) ON CONFLICT (slug) DO NOTHING;
-INSERT INTO menu_categories (slug, name_fr, name_en, position) VALUES ('desserts', 'Dessert', 'Desserts', 6) ON CONFLICT (slug) DO NOTHING;
-INSERT INTO menu_categories (slug, name_fr, name_en, position) VALUES ('boissons', 'Chai / Boissons', 'Chai / Drinks', 7) ON CONFLICT (slug) DO NOTHING;
-INSERT INTO menu_categories (slug, name_fr, name_en, position) VALUES ('thali', 'Midi Special Thali', 'Lunch Thali Special', 8) ON CONFLICT (slug) DO NOTHING;
-INSERT INTO menu_categories (slug, name_fr, name_en, position) VALUES ('wraps', 'Wraps', 'Wraps', 9) ON CONFLICT (slug) DO NOTHING;
--- 2026-07-17: new "Crevette" (shrimp) category, added to the live Liasse menu (business 639).
-INSERT INTO menu_categories (slug, name_fr, name_en, position) VALUES ('crevette', 'Crevette', 'Shrimp', 10) ON CONFLICT (slug) DO NOTHING;
+-- 2026-07-17: new "Crevette" (shrimp) category (added to the live Liasse menu, business 639).
+-- Placed 2nd on the tenant website only (before Agneau) per operator request; the
+-- command.restaurant ordering menu keeps its own order. Category order is driven by
+-- the `position` column (menu.ejs / getMenuCategories order by position).
+INSERT INTO menu_categories (slug, name_fr, name_en, position) VALUES ('crevette', 'Crevette', 'Shrimp', 2) ON CONFLICT (slug) DO NOTHING;
+INSERT INTO menu_categories (slug, name_fr, name_en, position) VALUES ('agneau', 'Agneau', 'Lamb', 3) ON CONFLICT (slug) DO NOTHING;
+INSERT INTO menu_categories (slug, name_fr, name_en, position) VALUES ('vegetarien', 'Végétarien', 'Vegetarian', 4) ON CONFLICT (slug) DO NOTHING;
+INSERT INTO menu_categories (slug, name_fr, name_en, position) VALUES ('alacarte', 'À la carte', 'À la carte', 5) ON CONFLICT (slug) DO NOTHING;
+INSERT INTO menu_categories (slug, name_fr, name_en, position) VALUES ('poutine', 'Poutine', 'Poutine', 6) ON CONFLICT (slug) DO NOTHING;
+INSERT INTO menu_categories (slug, name_fr, name_en, position) VALUES ('desserts', 'Dessert', 'Desserts', 7) ON CONFLICT (slug) DO NOTHING;
+INSERT INTO menu_categories (slug, name_fr, name_en, position) VALUES ('boissons', 'Chai / Boissons', 'Chai / Drinks', 8) ON CONFLICT (slug) DO NOTHING;
+INSERT INTO menu_categories (slug, name_fr, name_en, position) VALUES ('thali', 'Midi Special Thali', 'Lunch Thali Special', 9) ON CONFLICT (slug) DO NOTHING;
+INSERT INTO menu_categories (slug, name_fr, name_en, position) VALUES ('wraps', 'Wraps', 'Wraps', 10) ON CONFLICT (slug) DO NOTHING;
 
 CREATE TABLE IF NOT EXISTS delivery_platforms (
   id SERIAL PRIMARY KEY,

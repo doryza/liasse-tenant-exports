@@ -176,11 +176,25 @@ INSERT INTO admin_settings (key, value) VALUES ('_menu_v3_done', '1') ON CONFLIC
 -- 2026-07-17 menu refresh v4 — re-sync /menu (menu_items) to the latest Liasse
 -- Restaurants ordering-menu export (business 639): new "Crevette" (shrimp)
 -- category with 5 dishes, and removal of the now-discontinued Chana Bhatura.
+-- Also reorders the website category filter so Crevette shows 2nd (before
+-- Agneau) — operator request, tenant website ONLY (the command.restaurant
+-- ordering menu keeps its own order). Category order is driven by
+-- menu_categories.position (getMenuCategories / the /menu query order by it).
 -- ADDITIVE (unlike v3's full DELETE) so operator edits to other dishes survive.
 -- Sentinel-guarded (_menu_v4_done) so it applies once on the next Push-to-Live
 -- and then no-ops on re-materialization, preserving later operator edits.
 -- The category insert is unconditionally idempotent (ON CONFLICT DO NOTHING).
-INSERT INTO menu_categories (slug, name_fr, name_en, position) VALUES ('crevette', 'Crevette', 'Shrimp', 10) ON CONFLICT (slug) DO NOTHING;
+INSERT INTO menu_categories (slug, name_fr, name_en, position) VALUES ('crevette', 'Crevette', 'Shrimp', 2) ON CONFLICT (slug) DO NOTHING;
+-- Renumber the active category positions once so Crevette=2 slots before Agneau.
+-- Existing prod rows were created id-ordered (poulet<agneau<…); only `position`
+-- moves. Guarded so a later operator reordering survives re-materialization.
+UPDATE menu_categories AS mc SET position = v.pos, updated_at = NOW()
+  FROM (VALUES
+    ('poulet', 1), ('crevette', 2), ('agneau', 3), ('vegetarien', 4), ('alacarte', 5),
+    ('poutine', 6), ('desserts', 7), ('boissons', 8), ('thali', 9), ('wraps', 10)
+  ) AS v(slug, pos)
+  WHERE mc.slug = v.slug
+  AND NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v4_done');
 DELETE FROM menu_items
   WHERE name_fr = 'Chana Bhatura' AND category = 'vegetarien'
   AND NOT EXISTS (SELECT 1 FROM admin_settings WHERE key = '_menu_v4_done');

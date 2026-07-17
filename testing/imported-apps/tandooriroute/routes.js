@@ -128,6 +128,7 @@ module.exports = function(services) {
   const MENU_PREVIEW = {
     "categories": [
       "Poulet",
+      "Crevette",
       "Agneau",
       "Végétarien",
       "À la carte",
@@ -135,8 +136,7 @@ module.exports = function(services) {
       "Dessert",
       "Chai / Boissons",
       "Midi Special Thali",
-      "Wraps",
-      "Crevette"
+      "Wraps"
     ],
     "items": [
       {
@@ -193,6 +193,41 @@ module.exports = function(services) {
         "category": "Poulet",
         "description": "Cuisse de poulet marinée dans du yogourt, de l'ail, du gingembre et un mélange traditionnel d'épices indiennes.",
         "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781383461/tapavis_menu/639/lkmwv9jltjnulpdcwzap.jpg"
+      },
+      {
+        "id": "ymul5c3n2b",
+        "name": "Crevette au beurre",
+        "price": 18.99,
+        "category": "Crevette",
+        "description": "Crevette dans une sauce crémeuse et onctueuse à la tomate, préparée avec beurre et épices traditionnelles"
+      },
+      {
+        "id": "vlhwwfucflc",
+        "name": "Crevette Cari",
+        "price": 18.99,
+        "category": "Crevette",
+        "description": "Crevette mijotée dans une sauce curry savoureuse aux épices, riche et bien relevée"
+      },
+      {
+        "id": "j7fl10xmvl",
+        "name": "Crevette Korma",
+        "price": 18.99,
+        "category": "Crevette",
+        "description": "Crevette braisée dans une sauce curry et crémeuse au yogourt, aux épices, riche et savoureuse"
+      },
+      {
+        "id": "jn224ti7dlj",
+        "name": "Crevette Tikka Masala",
+        "price": 19.99,
+        "category": "Crevette",
+        "description": "Morceaux de crevette marinés et grillés, servis dans une sauce tomate crémeuse et épicée."
+      },
+      {
+        "id": "njpndzt172g",
+        "name": "Karahi Crevette",
+        "price": 22.99,
+        "category": "Crevette",
+        "description": "Crevette mijotée dans une sauce tomate épicée avec des herbes fraîches et des épices"
       },
       {
         "id": "0jz0ytrj9jet",
@@ -501,41 +536,6 @@ module.exports = function(services) {
         "description": "Ajoutez des frites et une canette à votre wrap.",
         "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781375648/tapavis_menu/639/pnwttp264baz1fcaspgj.jpg",
         "note": true
-      },
-      {
-        "id": "ymul5c3n2b",
-        "name": "Crevette au beurre",
-        "price": 18.99,
-        "category": "Crevette",
-        "description": "Crevette dans une sauce crémeuse et onctueuse à la tomate, préparée avec beurre et épices traditionnelles"
-      },
-      {
-        "id": "vlhwwfucflc",
-        "name": "Crevette Cari",
-        "price": 18.99,
-        "category": "Crevette",
-        "description": "Crevette mijotée dans une sauce curry savoureuse aux épices, riche et bien relevée"
-      },
-      {
-        "id": "j7fl10xmvl",
-        "name": "Crevette Korma",
-        "price": 18.99,
-        "category": "Crevette",
-        "description": "Crevette braisée dans une sauce curry et crémeuse au yogourt, aux épices, riche et savoureuse"
-      },
-      {
-        "id": "jn224ti7dlj",
-        "name": "Crevette Tikka Masala",
-        "price": 19.99,
-        "category": "Crevette",
-        "description": "Morceaux de crevette marinés et grillés, servis dans une sauce tomate crémeuse et épicée."
-      },
-      {
-        "id": "njpndzt172g",
-        "name": "Karahi Crevette",
-        "price": 22.99,
-        "category": "Crevette",
-        "description": "Crevette mijotée dans une sauce tomate épicée avec des herbes fraîches et des épices"
       }
     ]
   };
@@ -594,7 +594,7 @@ module.exports = function(services) {
   }
 
   async function getMenuCategories() {
-    try { return await db.all('SELECT * FROM menu_categories WHERE active = 1 ORDER BY id ASC'); }
+    try { return await db.all('SELECT * FROM menu_categories WHERE active = 1 ORDER BY position ASC, id ASC'); }
     catch(e) { return []; }
   }
 
@@ -896,7 +896,7 @@ module.exports = function(services) {
   router.get('/menu', async function(req, res) {
     try {
       const ctx = await renderCtx(req);
-      const menu = await db.all('SELECT m.* FROM menu_items m LEFT JOIN menu_categories c ON c.slug = m.category ORDER BY COALESCE(c.id, 999999) ASC, m.position ASC, m.id ASC').catch(function(){ return []; });
+      const menu = await db.all('SELECT m.* FROM menu_items m LEFT JOIN menu_categories c ON c.slug = m.category ORDER BY COALESCE(c.position, 999999) ASC, m.position ASC, m.id ASC').catch(function(){ return []; });
       const categories = await getMenuCategories();
       res.render('menu', Object.assign(ctx, { menu: menu, categories: categories }));
     } catch(e) { res.status(500).send('Erreur'); }
@@ -1352,7 +1352,7 @@ module.exports = function(services) {
   // --- CRUD: menu_items ---
   router.get('/api/admin/menu_items', isAdminApi, async function(req, res) {
     try {
-      const rows = await db.all('SELECT m.* FROM menu_items m LEFT JOIN menu_categories c ON c.slug = m.category ORDER BY COALESCE(c.id, 999999) ASC, m.position ASC, m.id ASC');
+      const rows = await db.all('SELECT m.* FROM menu_items m LEFT JOIN menu_categories c ON c.slug = m.category ORDER BY COALESCE(c.position, 999999) ASC, m.position ASC, m.id ASC');
       res.json({ menu_items: rows });
     } catch(e) { res.status(500).json({ error: e.message }); }
   });
