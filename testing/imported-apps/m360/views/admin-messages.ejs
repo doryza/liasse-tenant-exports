@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang='fr'>
+<head>
+<meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<title>Messages — M360 Admin</title>
+<link href='https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap' rel='stylesheet'>
+<link rel='stylesheet' href='public/css/admin-styles.css'>
+</head>
+<body class='admin'>
+<%- include('partials/admin-sidebar') %>
+<main class='admin-main'>
+ <div class='admin-panel'>
+  <h1 class='admin-h1'>Messages reçus</h1>
+  <p class='admin-note'>Messages envoyés depuis le formulaire de contact du site public.</p>
+  <div id='msgBox'><div class='empty'>Chargement…</div></div>
+ </div>
+</main>
+<script>
+(function(){
+  var box=document.getElementById('msgBox');
+  function esc(t){ return (t==null?'':String(t)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function fmt(d){ if(!d) return '—'; try{ var dt=new Date(d); return dt.toLocaleString('fr-CA'); }catch(e){ return d; } }
+  fetch('api/admin/submissions').then(function(r){ return r.json(); }).then(function(d){
+    var rows=(d.submissions)||[];
+    if(!rows.length){ box.innerHTML="<div class='empty'>Aucun message pour le moment.</div>"; return; }
+    var html='';
+    rows.forEach(function(m){
+      html+="<div class='msg-card'><div class='msg-head'><span class='msg-name'>"+esc(m.name||'—')+"</span><span class='mono msg-date'>"+esc(fmt(m.created_at))+"</span></div><div class='msg-meta mono'>"+(m.email?("<a href='mailto:"+esc(m.email)+"'>"+esc(m.email)+"</a>"):'')+(m.phone?(" · <a href='tel:"+esc(m.phone)+"'>"+esc(m.phone)+"</a>"):'')+"</div><p class='msg-body'>"+esc(m.message||'')+"</p></div>";
+    });
+    box.innerHTML=html;
+  }).catch(function(){ box.innerHTML="<div class='empty'>Impossible de charger les messages.</div>"; });
+})();
+</script>
+</body>
+</html>

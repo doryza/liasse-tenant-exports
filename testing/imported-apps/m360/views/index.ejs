@@ -1,0 +1,77 @@
+<%- include('partials/header') %>
+<main>
+ <section class='hero'><div class='wrap hero-grid'>
+  <div class='hero-copy'>
+   <span class='kicker' data-lk='t:hero_kicker'><%= t.hero_kicker %></span>
+   <h1 class='hero-title' data-lk='t:hero_title'><%= t.hero_title %></h1>
+   <p class='hero-sub' data-lk='t:hero_sub'><%= t.hero_sub %></p>
+   <div class='hero-actions'>
+    <a class='btn btn-primary' href='rendez-vous' style='background-color:#39FF6E;color:#0A0E1A' data-lk='t:hero_cta'><%= t.hero_cta %></a>
+    <a class='btn btn-ghost' href='services' data-lk='t:hero_secondary'><%= t.hero_secondary %></a>
+   </div>
+  </div>
+  <div class='hero-media'>
+   <img src='<%= (typeof settings!=='undefined' && settings._p_hero_image_url) ? settings._p_hero_image_url : 'https://placehold.co/1200x800/0A0E1A/39FF6E/png?text=M360' %>' data-setting-key='_p_hero_image_url' alt='M360'>
+   <span class='media-tag mono'>M360 · PIT WALL</span>
+  </div>
+ </div></section>
+
+ <section class='section'><div class='wrap'>
+  <div class='sec-head sec-head-row'><div><span class='kicker'><%= t.rates_kicker %></span><h2 class='h2'><%= t.rates_title %></h2></div><a class='link-more' href='services'><%= t.rates_view_all %> →</a></div>
+  <%- include('partials/rates') %>
+ </div></section>
+
+ <section class='section' id='rdv'><div class='wrap wrap-narrow'>
+  <div class='sec-head'><span class='kicker'><%= t.booking_kicker %></span><h2 class='h2'><%= t.booking_title %></h2><p class='lead'><%= t.booking_sub %></p></div>
+  <%- include('partials/booking') %>
+ </div></section>
+
+ <section class='section'><div class='wrap'>
+  <div class='sec-head sec-head-row'><div><span class='kicker'><%= t.gallery_kicker %></span><h2 class='h2'><%= t.gallery_title %></h2></div><a class='link-more' href='galerie'><%= t.gallery_view_all %> →</a></div>
+  <% if((typeof gallery!=='undefined')&&gallery.length){ %>
+  <div class='gallery-grid'>
+   <% gallery.forEach(function(g){ %>
+   <figure class='g-card'><img src='<%= g.image_url || 'https://placehold.co/800x600/131C33/39FF6E/png?text=M360' %>' data-content-source='gallery:image_url' data-content-id='<%= g.id %>' alt='<%= g.title || 'M360' %>' loading='lazy'><figcaption class='g-plate mono'><span class='g-bay'><%= t.gallery_bay %> <%= g.bay_number || '—' %></span><span class='g-eq' data-content-source='gallery:equipment' data-content-id='<%= g.id %>'><%= g.equipment || g.title || '' %></span></figcaption></figure>
+   <% }); %>
+  </div>
+  <% } else { %><div class='empty'><%= t.gallery_empty %></div><% } %>
+ </div></section>
+
+ <section class='section'><div class='wrap why-grid'>
+  <div class='why-media'><img src='<%= (typeof settings!=='undefined'&&settings._p_about_image_url) ? settings._p_about_image_url : 'https://placehold.co/900x700/131C33/39FF6E/png?text=M360' %>' data-setting-key='_p_about_image_url' alt='M360'></div>
+  <div>
+   <span class='kicker'><%= t.why_kicker %></span>
+   <h2 class='h2'><%= t.why_title %></h2>
+   <div class='stats-grid stats-col'>
+    <div class='stat-card'><div><span class='stat-num mono' data-setting-key='stat_avg_delay'><%= (typeof settings!=='undefined'&&settings.stat_avg_delay)?settings.stat_avg_delay:'45' %></span><span class='stat-unit mono'><%= t.stat_delay_unit %></span></div><span class='stat-label'><%= t.stat_delay %></span></div>
+    <div class='stat-card'><div><span class='stat-num mono' data-setting-key='stat_years'><%= (typeof settings!=='undefined'&&settings.stat_years)?settings.stat_years:'18' %></span><span class='stat-unit mono'><%= t.stat_exp_unit %></span></div><span class='stat-label'><%= t.stat_exp %></span></div>
+    <div class='stat-card'><div><span class='stat-num mono' data-setting-key='stat_reviews'><%= (typeof settings!=='undefined'&&settings.stat_reviews)?settings.stat_reviews:'4.9' %></span><span class='stat-unit mono'><%= t.stat_reviews_unit %></span></div><span class='stat-label'><%= t.stat_reviews %></span></div>
+   </div>
+  </div>
+ </div></section>
+
+ <% if((typeof posts!=='undefined')&&posts.length){ %>
+ <section class='section'><div class='wrap'>
+  <div class='sec-head sec-head-row'><div><span class='kicker'><%= t.news_kicker %></span><h2 class='h2'><%= t.news_title %></h2></div><a class='link-more' href='actualites'><%= t.news_read %> →</a></div>
+  <div class='news-grid'>
+   <% posts.forEach(function(p){ %>
+   <a class='news-card' href='actualites/<%= p.id %>'><% if(p.image_url){ %><img src='<%= p.image_url %>' data-content-source='posts:image_url' data-content-id='<%= p.id %>' alt='<%= p.title %>' loading='lazy'><% } %><div class='news-body'><% if(p.category){ %><span class='news-cat mono'><%= p.category %></span><% } %><h3 data-content-source='posts:title' data-content-id='<%= p.id %>'><%= p.title %></h3><span class='news-read mono'><%= t.news_read %> →</span></div></a>
+   <% }); %>
+  </div>
+ </div></section>
+ <% } %>
+
+ <section class='section'><div class='wrap'>
+  <div class='sec-head'><span class='kicker'><%= t.loc_kicker %></span><h2 class='h2'><%= t.loc_title %></h2></div>
+  <% if(typeof settings!=='undefined' && settings.business_address){ %>
+   <div class='map-wrap'><div id='map' data-address='<%= settings.business_address %>'></div></div>
+   <div class='loc-bar'>
+    <div class='loc-info'><span class='mono'><%= settings.business_address %></span><% if(settings.contact_phone){ %> · <a class='mono' href='tel:<%= settings.contact_phone %>'><%= settings.contact_phone %></a><% } %></div>
+    <a class='btn btn-ghost' target='_blank' href='https://www.google.com/maps/dir/?api=1&destination=<%= encodeURIComponent(settings.business_address) %>'><%= t.loc_directions %></a>
+   </div>
+  <% } else { %><div class='empty'><%= t.loc_no_address %></div><% } %>
+ </div></section>
+
+ <section class='section cta-band'><div class='wrap center'><span class='kicker'><%= t.booking_kicker %></span><h2 class='h2'><%= t.booking_title %></h2><a class='btn btn-primary' href='rendez-vous' style='background-color:#39FF6E;color:#0A0E1A'><%= t.hero_cta %></a></div></section>
+</main>
+<%- include('partials/footer') %>

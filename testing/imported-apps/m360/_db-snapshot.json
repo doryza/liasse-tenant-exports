@@ -1,0 +1,510 @@
+{
+  "exportedAt": "2026-08-30T17:20:29.357Z",
+  "tables": {
+    "admin_invites": {
+      "columns": [
+        "id",
+        "email",
+        "token",
+        "role",
+        "status",
+        "invited_by",
+        "expires_at",
+        "accepted_at",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "services": {
+      "columns": [
+        "id",
+        "name",
+        "description",
+        "price",
+        "price_type",
+        "duration_min",
+        "category",
+        "image_url",
+        "featured",
+        "sort_order",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 8,
+      "sampleRows": [
+        {
+          "id": 1,
+          "name": "Diagnostic électronique",
+          "description": "Lecture des codes, test des capteurs et rapport clair avant toute réparation.",
+          "price": 65,
+          "price_type": "flat",
+          "duration_min": 45,
+          "category": "Diagnostic",
+          "image_url": null,
+          "featured": 1,
+          "sort_order": 1,
+          "published": 1,
+          "created_at": "2026-08-30T17:20:06.975Z",
+          "updated_at": "2026-08-30T17:20:06.975Z"
+        },
+        {
+          "id": 2,
+          "name": "Changement d'huile et filtre",
+          "description": "Huile synthétique, filtre neuf et inspection visuelle en 30 minutes.",
+          "price": 55,
+          "price_type": "flat",
+          "duration_min": 30,
+          "category": "Entretien",
+          "image_url": null,
+          "featured": 1,
+          "sort_order": 2,
+          "published": 1,
+          "created_at": "2026-08-30T17:20:06.983Z",
+          "updated_at": "2026-08-30T17:20:06.983Z"
+        },
+        {
+          "id": 3,
+          "name": "Remplacement des freins",
+          "description": "Plaquettes neuves et inspection des disques, par essieu.",
+          "price": 189,
+          "price_type": "from",
+          "duration_min": 90,
+          "category": "Freins",
+          "image_url": null,
+          "featured": 1,
+          "sort_order": 3,
+          "published": 1,
+          "created_at": "2026-08-30T17:20:06.991Z",
+          "updated_at": "2026-08-30T17:20:06.991Z"
+        },
+        {
+          "id": 4,
+          "name": "Alignement 4 roues",
+          "description": "Réglage de la géométrie sur banc laser avec rapport avant/après.",
+          "price": 99,
+          "price_type": "flat",
+          "duration_min": 60,
+          "category": "Direction",
+          "image_url": null,
+          "featured": 0,
+          "sort_order": 4,
+          "published": 1,
+          "created_at": "2026-08-30T17:20:06.999Z",
+          "updated_at": "2026-08-30T17:20:06.999Z"
+        },
+        {
+          "id": 5,
+          "name": "Pneus et balancement",
+          "description": "Montage, balancement et valve pour un jeu de 4 pneus.",
+          "price": 80,
+          "price_type": "flat",
+          "duration_min": 45,
+          "category": "Pneus",
+          "image_url": null,
+          "featured": 0,
+          "sort_order": 5,
+          "published": 1,
+          "created_at": "2026-08-30T17:20:07.012Z",
+          "updated_at": "2026-08-30T17:20:07.012Z"
+        },
+        {
+          "id": 6,
+          "name": "Mise au point complète",
+          "description": "Bougies, filtres et vérification des systèmes clés.",
+          "price": 149,
+          "price_type": "flat",
+          "duration_min": 90,
+          "category": "Entretien",
+          "image_url": null,
+          "featured": 0,
+          "sort_order": 6,
+          "published": 1,
+          "created_at": "2026-08-30T17:20:07.024Z",
+          "updated_at": "2026-08-30T17:20:07.024Z"
+        },
+        {
+          "id": 7,
+          "name": "Inspection pré-achat",
+          "description": "Évaluation complète avant l'achat d'un véhicule usagé.",
+          "price": 120,
+          "price_type": "flat",
+          "duration_min": 60,
+          "category": "Diagnostic",
+          "image_url": null,
+          "featured": 0,
+          "sort_order": 7,
+          "published": 1,
+          "created_at": "2026-08-30T17:20:07.034Z",
+          "updated_at": "2026-08-30T17:20:07.034Z"
+        },
+        {
+          "id": 8,
+          "name": "Main-d'oeuvre générale",
+          "description": "Taux horaire pour diagnostics et réparations sur mesure.",
+          "price": 110,
+          "price_type": "hourly",
+          "duration_min": 60,
+          "category": "Atelier",
+          "image_url": null,
+          "featured": 0,
+          "sort_order": 8,
+          "published": 1,
+          "created_at": "2026-08-30T17:20:07.047Z",
+          "updated_at": "2026-08-30T17:20:07.047Z"
+        }
+      ]
+    },
+    "admin_users": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "password_hash",
+        "display_name",
+        "role",
+        "active",
+        "activation_token",
+        "invited_by",
+        "invite_token",
+        "invite_expires_at",
+        "last_login_at",
+        "is_active",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_webauthn_credentials": {
+      "columns": [
+        "id",
+        "admin_user_id",
+        "credential_id",
+        "public_key",
+        "counter",
+        "device_name",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_settings": {
+      "columns": [
+        "key",
+        "value",
+        "updated_at"
+      ],
+      "totalRows": 37,
+      "sampleRows": [
+        {
+          "key": "meta_desc",
+          "value": "M360, garage mécanique. Diagnostic honnête et service rapide. Réservez en ligne et consultez nos taux.",
+          "updated_at": "2026-08-30T17:20:06.797Z"
+        },
+        {
+          "key": "stat_avg_delay",
+          "value": "45",
+          "updated_at": "2026-08-30T17:20:06.810Z"
+        },
+        {
+          "key": "stat_years",
+          "value": "18",
+          "updated_at": "2026-08-30T17:20:06.818Z"
+        },
+        {
+          "key": "stat_reviews",
+          "value": "4.9",
+          "updated_at": "2026-08-30T17:20:06.827Z"
+        },
+        {
+          "key": "booking_slot_minutes",
+          "value": "60",
+          "updated_at": "2026-08-30T17:20:06.835Z"
+        },
+        {
+          "key": "_p_hero_image_url",
+          "value": "https://res.cloudinary.com/duhp69meg/image/upload/v1788106519/tapavis_tenant_m360/build_m360_1788106519808.png",
+          "updated_at": "2026-08-30T17:20:06.846Z"
+        },
+        {
+          "key": "_p_about_image_url",
+          "value": "https://res.cloudinary.com/duhp69meg/image/upload/v1788106519/tapavis_tenant_m360/build_m360_1788106519585.png",
+          "updated_at": "2026-08-30T17:20:06.854Z"
+        },
+        {
+          "key": "_seed_version",
+          "value": "224a1d9c8708",
+          "updated_at": "2026-08-30T17:20:07.295Z"
+        },
+        {
+          "key": "_seeded_at",
+          "value": "2026-08-30 17:20:07.306904+00",
+          "updated_at": "2026-08-30T17:20:07.306Z"
+        },
+        {
+          "key": "_p_seo_title_fr",
+          "value": "M360 — Garage mécanique | RDV en ligne",
+          "updated_at": "2026-08-30T17:20:07.475Z"
+        }
+      ]
+    },
+    "site_visits": {
+      "columns": [
+        "id",
+        "path",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "posts": {
+      "columns": [
+        "id",
+        "title",
+        "content",
+        "image_url",
+        "category",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Nouveau banc d'alignement laser",
+          "content": "On vient d'installer un banc d'alignement laser dernière génération. Résultat: une géométrie plus précise et un rapport avant/après remis à chaque client. Prenez rendez-vous pour vérifier l'usure de vos pneus.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1788106519/tapavis_tenant_m360/build_m360_1788106519486.png",
+          "category": "Équipement",
+          "published": 1,
+          "created_at": "2026-08-30T17:20:07.122Z",
+          "updated_at": "2026-08-30T17:20:07.122Z"
+        },
+        {
+          "id": 2,
+          "title": "Préparez votre véhicule pour l'hiver",
+          "content": "Batterie, pneus, liquide lave-glace et freins: quatre points à vérifier avant les premiers froids. Réservez une inspection saisonnière, on s'occupe du reste.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1788106519/tapavis_tenant_m360/build_m360_1788106519332.png",
+          "category": "Conseil",
+          "published": 1,
+          "created_at": "2026-08-30T17:20:07.131Z",
+          "updated_at": "2026-08-30T17:20:07.131Z"
+        },
+        {
+          "id": 3,
+          "title": "Pourquoi nos taux sont affichés",
+          "content": "Un garage rapide n'a rien à cacher. Nos taux sont publics et la durée estimée aussi. Vous savez à quoi vous attendre avant même d'arriver.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1788106519/tapavis_tenant_m360/build_m360_1788106519585.png",
+          "category": "Nouvelle",
+          "published": 1,
+          "created_at": "2026-08-30T17:20:07.138Z",
+          "updated_at": "2026-08-30T17:20:07.138Z"
+        },
+        {
+          "id": 4,
+          "title": "Le diagnostic honnête, notre signature",
+          "content": "Avant toute réparation, on lit les codes et on vous explique clairement le problème. Aucune surprise sur la facture, aucune réparation inutile.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1788106519/tapavis_tenant_m360/build_m360_1788106519558.png",
+          "category": "Nouvelle",
+          "published": 1,
+          "created_at": "2026-08-30T17:20:07.145Z",
+          "updated_at": "2026-08-30T17:20:07.145Z"
+        }
+      ]
+    },
+    "gallery": {
+      "columns": [
+        "id",
+        "title",
+        "bay_number",
+        "equipment",
+        "image_url",
+        "sort_order",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 6,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Aire de diagnostic",
+          "bay_number": "1",
+          "equipment": "Banc de diagnostic électronique",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1788106519/tapavis_tenant_m360/build_m360_1788106519558.png",
+          "sort_order": 1,
+          "created_at": "2026-08-30T17:20:07.063Z",
+          "updated_at": "2026-08-30T17:20:07.063Z"
+        },
+        {
+          "id": 2,
+          "title": "Levage lourd",
+          "bay_number": "2",
+          "equipment": "Pont élévateur 4 tonnes",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1788106519/tapavis_tenant_m360/build_m360_1788106519732.png",
+          "sort_order": 2,
+          "created_at": "2026-08-30T17:20:07.072Z",
+          "updated_at": "2026-08-30T17:20:07.072Z"
+        },
+        {
+          "id": 3,
+          "title": "Atelier de freins",
+          "bay_number": "3",
+          "equipment": "Poste de rectification",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1788106519/tapavis_tenant_m360/build_m360_1788106519332.png",
+          "sort_order": 3,
+          "created_at": "2026-08-30T17:20:07.080Z",
+          "updated_at": "2026-08-30T17:20:07.080Z"
+        },
+        {
+          "id": 4,
+          "title": "Montage de pneus",
+          "bay_number": "4",
+          "equipment": "Équilibreuse numérique",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1788106519/tapavis_tenant_m360/build_m360_1788106519773.png",
+          "sort_order": 4,
+          "created_at": "2026-08-30T17:20:07.089Z",
+          "updated_at": "2026-08-30T17:20:07.089Z"
+        },
+        {
+          "id": 5,
+          "title": "Banc d'alignement",
+          "bay_number": "5",
+          "equipment": "Système de géométrie laser",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1788106519/tapavis_tenant_m360/build_m360_1788106519486.png",
+          "sort_order": 5,
+          "created_at": "2026-08-30T17:20:07.099Z",
+          "updated_at": "2026-08-30T17:20:07.099Z"
+        },
+        {
+          "id": 6,
+          "title": "Comptoir client",
+          "bay_number": "6",
+          "equipment": "Accueil et suivi en direct",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1788106518/tapavis_tenant_m360/build_m360_1788106518405.png",
+          "sort_order": 6,
+          "created_at": "2026-08-30T17:20:07.107Z",
+          "updated_at": "2026-08-30T17:20:07.107Z"
+        }
+      ]
+    },
+    "appointments": {
+      "columns": [
+        "id",
+        "customer_name",
+        "email",
+        "phone",
+        "vehicle",
+        "service_id",
+        "service_name",
+        "appt_date",
+        "appt_time",
+        "notes",
+        "status",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "business_hours": {
+      "columns": [
+        "id",
+        "day_of_week",
+        "open_time",
+        "close_time",
+        "closed",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 7,
+      "sampleRows": [
+        {
+          "id": 1,
+          "day_of_week": 0,
+          "open_time": null,
+          "close_time": null,
+          "closed": 1,
+          "image_url": null,
+          "created_at": "2026-08-30T17:20:06.875Z",
+          "updated_at": "2026-08-30T17:20:06.875Z"
+        },
+        {
+          "id": 2,
+          "day_of_week": 1,
+          "open_time": "08:00",
+          "close_time": "18:00",
+          "closed": 0,
+          "image_url": null,
+          "created_at": "2026-08-30T17:20:06.887Z",
+          "updated_at": "2026-08-30T17:20:06.887Z"
+        },
+        {
+          "id": 3,
+          "day_of_week": 2,
+          "open_time": "08:00",
+          "close_time": "18:00",
+          "closed": 0,
+          "image_url": null,
+          "created_at": "2026-08-30T17:20:06.903Z",
+          "updated_at": "2026-08-30T17:20:06.903Z"
+        },
+        {
+          "id": 4,
+          "day_of_week": 3,
+          "open_time": "08:00",
+          "close_time": "18:00",
+          "closed": 0,
+          "image_url": null,
+          "created_at": "2026-08-30T17:20:06.917Z",
+          "updated_at": "2026-08-30T17:20:06.917Z"
+        },
+        {
+          "id": 5,
+          "day_of_week": 4,
+          "open_time": "08:00",
+          "close_time": "18:00",
+          "closed": 0,
+          "image_url": null,
+          "created_at": "2026-08-30T17:20:06.935Z",
+          "updated_at": "2026-08-30T17:20:06.935Z"
+        },
+        {
+          "id": 6,
+          "day_of_week": 5,
+          "open_time": "08:00",
+          "close_time": "18:00",
+          "closed": 0,
+          "image_url": null,
+          "created_at": "2026-08-30T17:20:06.950Z",
+          "updated_at": "2026-08-30T17:20:06.950Z"
+        },
+        {
+          "id": 7,
+          "day_of_week": 6,
+          "open_time": "09:00",
+          "close_time": "13:00",
+          "closed": 0,
+          "image_url": null,
+          "created_at": "2026-08-30T17:20:06.959Z",
+          "updated_at": "2026-08-30T17:20:06.959Z"
+        }
+      ]
+    },
+    "form_submissions": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "phone",
+        "message",
+        "image_url",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    }
+  }
+}

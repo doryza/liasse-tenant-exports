@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang='fr'>
+<head>
+<meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<title><%= title %> — M360 Admin</title>
+<link href='https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap' rel='stylesheet'>
+<link rel='stylesheet' href='public/css/admin-styles.css'>
+</head>
+<body class='admin'>
+<%- include('admin-sidebar') %>
+<main class='admin-main'>
+ <div id='adminTable' class='admin-panel'></div>
+</main>
+<div id='adminModal' class='amodal'><div class='amodal-box'><div class='amodal-head'><h3 id='adminModalTitle'></h3><button id='adminCancel' class='aclose' aria-label='Fermer'>×</button></div><div id='adminForm' class='amodal-body'></div><div class='amodal-foot'><button id='adminSave' class='abtn abtn-primary'>Enregistrer</button></div></div></div>
+<script>window.ADMIN_MODULE={ key:'<%- moduleKey %>', label:'<%- moduleLabel %>' };</script>
+<script src='public/js/admin.js'></script>
+</body>
+</html>

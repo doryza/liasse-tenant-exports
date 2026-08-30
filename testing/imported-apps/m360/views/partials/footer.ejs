@@ -1,0 +1,38 @@
+<footer class='footer'>
+ <div class='wrap foot-grid'>
+  <div class='foot-col'>
+   <div class='foot-brand'>M360</div>
+   <p class='muted' data-lk='footer-tagline'><%= t.footer_tagline %></p>
+   <a class='btn btn-primary' href='rendez-vous' style='background-color:#39FF6E;color:#0A0E1A'><%= t.footer_book %></a>
+   <button class='btn btn-ghost btn-sm' data-push-btn><%= t.push_enable %></button>
+  </div>
+  <div class='foot-col'>
+   <h4 class='foot-h mono'><%= t.footer_hours %></h4>
+   <div class='hours-table'>
+    <% var order=[1,2,3,4,5,6,0]; order.forEach(function(dw){ var hh=(typeof hours!=='undefined'?hours:[]).find(function(r){return r.day_of_week===dw;}); %>
+    <div class='hours-row <%= (typeof status!=='undefined'&&status.dow===dw)?'today':'' %>'>
+     <span><%= t.days[dw] %></span>
+     <span class='mono'><%= (hh && hh.closed!=1 && hh.open_time) ? (hh.open_time+' – '+hh.close_time) : t.status_closed %></span>
+    </div>
+    <% }); %>
+   </div>
+  </div>
+  <div class='foot-col'>
+   <h4 class='foot-h mono'><%= t.loc_title %></h4>
+   <% if(typeof settings!=='undefined' && settings.business_address){ %><p class='mono foot-line' data-setting-key='business_address'><%= settings.business_address %></p><% } %>
+   <% if(typeof settings!=='undefined' && settings.contact_phone){ %><p class='mono foot-line'><a href='tel:<%= settings.contact_phone %>' data-setting-key='contact_phone'><%= settings.contact_phone %></a></p><% } %>
+   <% if(typeof settings!=='undefined' && settings.contact_email){ %><p class='mono foot-line'><a href='mailto:<%= settings.contact_email %>' data-setting-key='contact_email'><%= settings.contact_email %></a></p><% } %>
+   <div class='foot-lang mono'><a href='?lang=fr' class='<%= lang==='fr'?'on':'' %>'>FR</a> · <a href='?lang=en' class='<%= lang==='en'?'on':'' %>'>EN</a></div>
+  </div>
+ </div>
+ <div class='wrap foot-bottom'><span class='mono muted'>© <span id='yr'></span> M360. <%= t.footer_rights %></span></div>
+</footer>
+<script>
+window.initM360Map=function(){var el=document.getElementById('map');if(!el||!window.google||!window.google.maps)return;var addr=el.getAttribute('data-address');var styles=[{elementType:'geometry',stylers:[{color:'#0A0E1A'}]},{elementType:'labels.text.fill',stylers:[{color:'#8A93A8'}]},{elementType:'labels.text.stroke',stylers:[{color:'#0A0E1A'}]},{featureType:'road',elementType:'geometry',stylers:[{color:'#131C33'}]},{featureType:'water',elementType:'geometry',stylers:[{color:'#0b1020'}]},{featureType:'poi',stylers:[{visibility:'off'}]}];var map=new google.maps.Map(el,{center:{lat:45.5019,lng:-73.5674},zoom:14,styles:styles,disableDefaultUI:true,zoomControl:true});if(addr){new google.maps.Geocoder().geocode({address:addr},function(r,s){if(s==='OK'&&r[0]){map.setCenter(r[0].geometry.location);new google.maps.Marker({map:map,position:r[0].geometry.location,icon:{path:google.maps.SymbolPath.CIRCLE,scale:9,fillColor:'#39FF6E',fillOpacity:1,strokeColor:'#0A0E1A',strokeWeight:3}});}});}};
+if(document.getElementById('yr'))document.getElementById('yr').textContent=new Date().getFullYear();
+</script>
+<script src='public/js/app.js'></script>
+<% if((typeof page!=='undefined')&&(page==='home'||page==='booking')){ %><script src='public/js/booking.js'></script><% } %>
+<% if((typeof page!=='undefined')&&(page==='home'||page==='contact')){ if(typeof googleApiKey!=='undefined' && googleApiKey && (typeof settings!=='undefined') && settings.business_address){ %><script src='https://maps.googleapis.com/maps/api/js?key=<%= googleApiKey %>&libraries=places&callback=initM360Map' async defer></script><% } } %>
+</body>
+</html>

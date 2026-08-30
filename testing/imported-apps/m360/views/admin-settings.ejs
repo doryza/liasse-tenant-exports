@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang='fr'>
+<head>
+<meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<title>Réglages — M360 Admin</title>
+<link href='https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap' rel='stylesheet'>
+<link rel='stylesheet' href='public/css/admin-styles.css'>
+</head>
+<body class='admin'>
+<%- include('partials/admin-sidebar') %>
+<main class='admin-main'>
+ <div class='admin-panel'>
+  <h1 class='admin-h1'>Réglages</h1>
+  <p class='admin-note'>Ces informations alimentent le site public : coordonnées, carte Google, itinéraire et durée des créneaux de rendez-vous.</p>
+  <div id='setForm' class='set-form'><div class='empty'>Chargement…</div></div>
+ </div>
+</main>
+<script>
+(function(){
+  var box=document.getElementById('setForm');
+  var FIELDS=[
+    {key:'business_name',label:'Nom de l’entreprise',type:'text'},
+    {key:'business_address',label:'Adresse (utilisée pour la carte Google)',type:'text',help:'Adresse complète pour afficher la carte et l’itinéraire.'},
+    {key:'contact_phone',label:'Téléphone',type:'text'},
+    {key:'contact_email',label:'Courriel de contact',type:'text',help:'Reçoit les demandes de rendez-vous et les messages du site.'},
+    {key:'booking_slot_minutes',label:'Durée des créneaux de rendez-vous (min)',type:'number',help:'Longueur de chaque plage réservable en ligne.'},
+    {key:'stat_avg_delay',label:'Délai moyen affiché (min)',type:'number'},
+    {key:'stat_years',label:'Années d’expérience affichées',type:'number'},
+    {key:'stat_reviews',label:'Note clients affichée (sur 5)',type:'text'},
+    {key:'meta_desc',label:'Description SEO',type:'textarea',help:'Texte affiché dans les résultats des moteurs de recherche.'}
+  ];
+  function esc(t){ return (t==null?'':String(t)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+  function toast(msg,type){ var c=document.getElementById('adminToast'); if(!c){ c=document.createElement('div'); c.id='adminToast'; c.className='atoast-wrap'; document.body.appendChild(c); } var el=document.createElement('div'); el.className='atoast '+(type==='err'?'atoast-err':'atoast-ok'); el.textContent=msg; c.appendChild(el); setTimeout(function(){ el.classList.add('show'); },10); setTimeout(function(){ el.classList.remove('show'); setTimeout(function(){ if(el.parentNode) el.parentNode.removeChild(el); },300); },2800); }
+  function build(s){
+    var html='';
+    FIELDS.forEach(function(f){ var v=s[f.key]||''; html+="<div class='afield'><label>"+esc(f.label)+"</label>"; if(f.type==='textarea') html+="<textarea data-k='"+f.key+"'>"+esc(v)+"</textarea>"; else html+="<input type='"+(f.type==='number'?'number':'text')+"' data-k='"+f.key+"' value='"+esc(v)+"'>"; if(f.help) html+="<small>"+esc(f.help)+"</small>"; html+="</div>"; });
+    html+="<button class='abtn abtn-primary' id='setSave'>Enregistrer les réglages</button>";
+    box.innerHTML=html;
+    document.getElementById('setSave').onclick=saveAll;
+  }
+  function saveAll(){
+    var inputs=box.querySelectorAll('[data-k]');
+    var btn=document.getElementById('setSave'); btn.disabled=true; var orig=btn.textContent; btn.textContent='Enregistrement…';
+    var tasks=[]; inputs.forEach(function(inp){ tasks.push(fetch('api/admin/settings',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({key:inp.getAttribute('data-k'),value:inp.value})})); });
+    Promise.all(tasks).then(function(){ btn.disabled=false; btn.textContent=orig; toast('Réglages enregistrés'); }).catch(function(){ btn.disabled=false; btn.textContent=orig; toast('Erreur lors de l’enregistrement','err'); });
+  }
+  fetch('api/admin/settings').then(function(r){ return r.json(); }).then(build).catch(function(){ box.innerHTML="<div class='empty'>Impossible de charger les réglages.</div>"; });
+})();
+</script>
+</body>
+</html>

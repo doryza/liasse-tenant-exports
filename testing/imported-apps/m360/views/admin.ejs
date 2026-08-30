@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang='fr'>
+<head>
+<meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<title>Tableau de bord — M360 Admin</title>
+<link href='https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap' rel='stylesheet'>
+<link rel='stylesheet' href='public/css/admin-styles.css'>
+</head>
+<body class='admin'>
+<%- include('partials/admin-sidebar') %>
+<main class='admin-main'>
+ <div class='admin-panel'>
+  <% var SL={pending:'En attente',confirmed:'Confirmé',completed:'Terminé',cancelled:'Annulé'}; %>
+  <div class='admin-topbar'>
+   <div><h1 class='admin-h1'>Tableau de bord</h1><p class='admin-note'>Vue d'ensemble de M360 — rendez-vous, activité et contenu du site.</p></div>
+   <div class='top-actions'>
+    <a class='abtn' href='.' target='_blank'>Voir le site ↗</a>
+    <a class='abtn abtn-primary' href='admin/appointments'>Gérer les RDV</a>
+   </div>
+  </div>
+  <div class='stat-cards'>
+   <div class='scard scard-hi'><span class='scard-n mono'><%= stats.pending %></span><span class='scard-l'>RDV en attente</span></div>
+   <div class='scard'><span class='scard-n mono'><%= stats.appointments %></span><span class='scard-l'>RDV total</span></div>
+   <div class='scard'><span class='scard-n mono'><%= stats.visits7 %></span><span class='scard-l'>Visites (7j)</span></div>
+   <div class='scard'><span class='scard-n mono'><%= stats.visitsTotal %></span><span class='scard-l'>Visites total</span></div>
+   <div class='scard'><span class='scard-n mono'><%= stats.push %></span><span class='scard-l'>Abonnés push</span></div>
+   <div class='scard'><span class='scard-n mono'><%= stats.services %></span><span class='scard-l'>Services</span></div>
+   <div class='scard'><span class='scard-n mono'><%= stats.gallery %></span><span class='scard-l'>Photos</span></div>
+   <div class='scard'><span class='scard-n mono'><%= stats.submissions %></span><span class='scard-l'>Messages</span></div>
+  </div>
+  <div class='dash-section'>
+   <div class='dash-head'><h2 class='admin-h2'>Derniers rendez-vous</h2><a class='link-mini' href='admin/appointments'>Tout voir →</a></div>
+   <div class='atable-wrap'>
+    <table class='atable'><thead><tr><th>Client</th><th>Service</th><th>Date</th><th>Heure</th><th>Statut</th></tr></thead><tbody>
+    <% if(recent && recent.length){ recent.forEach(function(a){ %>
+     <tr><td><%= a.customer_name %></td><td><%= a.service_name || '—' %></td><td class='mono'><%= a.appt_date || '—' %></td><td class='mono'><%= a.appt_time || '—' %></td><td><span class='badge b-<%= a.status %>'><%= SL[a.status] || a.status %></span></td></tr>
+    <% }); } else { %><tr><td colspan='5' class='empty'>Aucun rendez-vous pour l'instant.</td></tr><% } %>
+    </tbody></table>
+   </div>
+  </div>
+  <div class='dash-section'>
+   <h2 class='admin-h2'>Gestion rapide</h2>
+   <div class='quick-grid'>
+    <a class='qcard' href='admin/appointments'><span class='qc-t'>Rendez-vous</span><span class='qc-d'>Confirmer, modifier ou annuler les demandes.</span></a>
+    <a class='qcard' href='admin/services'><span class='qc-t'>Taux et services</span><span class='qc-d'>Prix, durées et disponibilité des services.</span></a>
+    <a class='qcard' href='admin/hours'><span class='qc-t'>Horaire</span><span class='qc-d'>Heures d'ouverture affichées et créneaux.</span></a>
+    <a class='qcard' href='admin/gallery'><span class='qc-t'>Galerie</span><span class='qc-d'>Photos du garage et des baies.</span></a>
+    <a class='qcard' href='admin/posts'><span class='qc-t'>Actualités</span><span class='qc-d'>Nouvelles et conseils pour vos clients.</span></a>
+    <a class='qcard' href='admin/settings'><span class='qc-t'>Réglages</span><span class='qc-d'>Coordonnées, carte et durée des créneaux.</span></a>
+   </div>
+  </div>
+ </div>
+</main>
+</body>
+</html>

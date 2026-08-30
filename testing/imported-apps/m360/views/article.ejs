@@ -1,0 +1,14 @@
+<%- include('partials/header') %>
+<main>
+ <section class='section'><div class='wrap wrap-narrow'>
+  <a href='actualites' class='back-link mono'>← <%= t.news_back %></a>
+  <% if((typeof post!=='undefined') && post){ %>
+   <% if(post.category){ %><span class='news-cat mono'><%= post.category %></span><% } %>
+   <% if(post.created_at){ var _d=new Date(post.created_at); %><span class='news-cat mono' style='color:var(--muted);margin-left:12px'><%= _d.getDate() %> <%= t.months[_d.getMonth()] %> <%= _d.getFullYear() %></span><% } %>
+   <h1 class='h1' data-content-source='posts:title' data-content-id='<%= post.id %>'><%= post.title %></h1>
+   <% if(post.image_url){ %><img class='article-img' src='<%= post.image_url %>' data-content-source='posts:image_url' data-content-id='<%= post.id %>' alt='<%= post.title %>'><% } %>
+   <div class='article-body' data-content-source='posts:content' data-content-id='<%= post.id %>'><%= post.content || '' %></div>
+  <% } else { %><div class='empty'><%= t.news_empty %></div><% } %>
+ </div></section>
+</main>
+<%- include('partials/footer') %>

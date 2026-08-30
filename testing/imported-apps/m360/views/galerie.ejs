@@ -1,0 +1,14 @@
+<%- include('partials/header') %>
+<main>
+ <section class='page-head'><div class='wrap'><span class='kicker'><%= t.gallery_kicker %></span><h1 class='h1'><%= t.gallery_title %></h1></div></section>
+ <section class='section'><div class='wrap'>
+  <% if((typeof gallery!=='undefined')&&gallery.length){ %>
+  <div class='gallery-grid'>
+   <% gallery.forEach(function(g){ %>
+   <figure class='g-card'><img src='<%= g.image_url || 'https://placehold.co/800x600/131C33/39FF6E/png?text=M360' %>' data-content-source='gallery:image_url' data-content-id='<%= g.id %>' alt='<%= g.title || 'M360' %>' loading='lazy'><figcaption class='g-plate mono'><span class='g-bay'><%= t.gallery_bay %> <%= g.bay_number || '—' %></span><span class='g-eq' data-content-source='gallery:equipment' data-content-id='<%= g.id %>'><%= g.equipment || g.title || '' %></span></figcaption></figure>
+   <% }); %>
+  </div>
+  <% } else { %><div class='empty'><%= t.gallery_empty %></div><% } %>
+ </div></section>
+</main>
+<%- include('partials/footer') %>

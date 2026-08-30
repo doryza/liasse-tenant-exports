@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang='fr'>
+<head>
+<meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<title>Horaire — M360 Admin</title>
+<link href='https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap' rel='stylesheet'>
+<link rel='stylesheet' href='public/css/admin-styles.css'>
+</head>
+<body class='admin'>
+<%- include('partials/admin-sidebar') %>
+<main class='admin-main'>
+ <div class='admin-panel'>
+  <h1 class='admin-h1'>Horaire de la semaine</h1>
+  <p class='admin-note'>Format 24h (ex. 08:00). Cochez « Fermé » pour un jour sans service. Cet horaire alimente la barre d'état, le pied de page et les créneaux de rendez-vous.</p>
+  <div id='hoursBox' class='hours-editor'></div>
+ </div>
+</main>
+<script>
+(function(){
+  var days=['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+  var order=[1,2,3,4,5,6,0];
+  var box=document.getElementById('hoursBox');
+  var rows=[];
+  function findRow(dw){ for(var i=0;i<rows.length;i++){ if(rows[i].day_of_week===dw) return rows[i]; } return null; }
+  function render(){
+    box.innerHTML='';
+    order.forEach(function(dw){
+      var h=findRow(dw)||{};
+      var el=document.createElement('div');
+      el.className='hedit-row';
+      el.innerHTML=`<span class='hedit-day'>${days[dw]}</span><label class='hedit-cl'><input type='checkbox' data-cl ${(h.closed==1||h.closed===true)?'checked':''}> Fermé</label><input type='time' data-open value='${h.open_time||'08:00'}'><span class='hedit-sep'>–</span><input type='time' data-close value='${h.close_time||'18:00'}'><button class='abtn abtn-sm abtn-primary' data-save>Enregistrer</button><span class='hedit-msg mono' data-msg></span>`;
+      el.querySelector('[data-save]').addEventListener('click',function(){
+        var payload={ day_of_week:dw, open_time:el.querySelector('[data-open]').value, close_time:el.querySelector('[data-close]').value, closed: el.querySelector('[data-cl]').checked?1:0 };
+        var msg=el.querySelector('[data-msg]');
+        var url='api/admin/business_hours'+((h&&h.id)?('/'+h.id):'');
+        var method=(h&&h.id)?'PUT':'POST';
+        fetch(url,{method:method,headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).then(function(r){ if(r.ok){ msg.textContent='✓ Enregistré'; load(); setTimeout(function(){msg.textContent='';},1800); } else { msg.textContent='Erreur'; } }).catch(function(){ msg.textContent='Erreur'; });
+      });
+      box.appendChild(el);
+    });
+  }
+  function load(){ fetch('api/admin/business_hours').then(function(r){return r.json();}).then(function(d){ rows=d.business_hours||[]; render(); }).catch(function(){ rows=[]; render(); }); }
+  load();
+})();
+</script>
+</body>
+</html>

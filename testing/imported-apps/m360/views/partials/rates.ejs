@@ -1,0 +1,12 @@
+<div class='rates'>
+ <div class='rate-head mono'><span><%= t.rates_col_service %></span><span><%= t.rates_col_rate %></span><span><%= t.rates_col_time %></span></div>
+ <% if((typeof svcs!=='undefined') && svcs.length){ svcs.forEach(function(s){ %>
+ <a class='rate-row' href='rendez-vous?service=<%= s.id %>'>
+  <span class='rate-name'><span data-content-source='services:name' data-content-id='<%= s.id %>'><%= s.name %></span><% if(s.description){ %><small class='rate-desc' data-content-source='services:description' data-content-id='<%= s.id %>'><%= s.description %></small><% } %></span>
+  <span class='rate-price mono'><%= formatServicePrice(s,t) %></span>
+  <span class='rate-dur mono'><% if(s.duration_min){ %><%= s.duration_min %> <%= t.rates_min %><% } else { %>—<% } %></span>
+ </a>
+ <% }); } else { %>
+ <div class='empty'><%= t.rates_empty %></div>
+ <% } %>
+</div>

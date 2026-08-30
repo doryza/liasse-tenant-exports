@@ -1,0 +1,14 @@
+<%- include('partials/header') %>
+<main>
+ <section class='page-head'><div class='wrap'><span class='kicker'><%= t.news_kicker %></span><h1 class='h1'><%= t.news_title %></h1></div></section>
+ <section class='section'><div class='wrap'>
+  <% if((typeof posts!=='undefined')&&posts.length){ %>
+  <div class='news-grid'>
+   <% posts.forEach(function(p){ %>
+   <a class='news-card' href='actualites/<%= p.id %>'><% if(p.image_url){ %><img src='<%= p.image_url %>' data-content-source='posts:image_url' data-content-id='<%= p.id %>' alt='<%= p.title %>' loading='lazy'><% } %><div class='news-body'><% if(p.category){ %><span class='news-cat mono'><%= p.category %></span><% } %><h3 data-content-source='posts:title' data-content-id='<%= p.id %>'><%= p.title %></h3><span class='news-read mono'><%= t.news_read %> →</span></div></a>
+   <% }); %>
+  </div>
+  <% } else { %><div class='empty'><%= t.news_empty %></div><% } %>
+ </div></section>
+</main>
+<%- include('partials/footer') %>

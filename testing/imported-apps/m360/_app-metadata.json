@@ -1,0 +1,144 @@
+{
+  "slug": "m360",
+  "displayName": "M360",
+  "description": "Project: website — Garage de mécanique\n\nBusiness: M360, un garage mécanique\n\nGoal: Permettre aux clients de prendre rendez-vous en ligne et voir les services\n\nTarget audience: Propriétaires de véhicules cherchant des services mécaniques\n\nKey features:\n- Prise de rendez-vous en ligne (sans paiement)\n- Affichage des taux et services\n- Galerie photo du garage\n- Affichage de l'horaire de la journée bien en vue\n\nDesign & brand:\n- Colors: Bleu et vert fluo\n- Mood: Moderne, punchy et dynamique\n- Signature: Un service rapide et transparent\n- First impression: L'horaire de la journée, utilise le logo existant\n\nIntegrations & extras:\n- Calendrier pour la prise de rendez-vous\n- Google Maps avec directions pour localisation",
+  "status": "active",
+  "generationVersion": 1,
+  "primaryColor": "#2858ef",
+  "iconUrl": "https://res.cloudinary.com/duhp69meg/image/upload/v1788110417/tapavis_tenant_m360/icon_m360_1788110417332.png",
+  "enabledAuthMethods": [
+    "webauthn",
+    "sms",
+    "email"
+  ],
+  "notificationsEnabled": true,
+  "geolocationEnabled": true,
+  "customConfig": {
+    "language": "both",
+    "businessName": "M360",
+    "contactEmail": "dorytyrw@liasse.tech",
+    "contactPhone": "4384356829",
+    "designManifest": {
+      "concept": "Telemetry Pit Wall",
+      "copyVoice": "Clipped pit-crew radio: short imperative sentences, numbers stated proudly, no filler, no exclamation marks; French leads and English mirrors it in equal weight.",
+      "elements": {
+        "blogSurfaced": true,
+        "pages": [
+          "home",
+          "services",
+          "galerie",
+          "rendez-vous",
+          "actualites",
+          "contact"
+        ],
+        "userLogin": false
+      },
+      "heroThesis": "The homepage opens on the thesis line 'Diagnostic honnête. Service rapide.' beside the garage's own bay, with the rates timing-sheet and the next open slot already visible above the fold — the most characteristic promise of a transparent shop.",
+      "iconDirection": "Rounded square in #0A0E1A with the M360 wordmark centered and a single 2px fluo-green horizontal speed line clipping through the '0', reading as a timing beacon even at 48px.",
+      "palette": {
+        "accents": [
+          "#39FF6E",
+          "#131C33"
+        ],
+        "ground": "#0A0E1A",
+        "ink": "#F2F5FF",
+        "primary": "#2858EF"
+      },
+      "signatureMove": "A sticky top status rail on every page rendered like a race timing tower: live OUVERT/FERMÉ pill in fluo green, today's date and hours in mono, and the computed next available appointment slot — recalculated per day of week from the real business-hours table and booked appointments.",
+      "summary": "M360 is presented like a race team's pit wall — a persistent status rail shows today's hours, an OUVERT/FERMÉ beacon and the next open bay the second you land, and every number on the site reads as live instrumentation, arguing that a fast garage has nothing to hide.",
+      "typography": "Space Grotesk (600/700, tight tracking) for display and section heads; Inter (400/500) for body; JetBrains Mono for every number — hours, rates, dates, slots, references — so data reads as telemetry."
+    },
+    "businessAddress": "saint-jerome",
+    "designDirections": {
+      "directions": [
+        {
+          "pitch": "",
+          "concept": "Telemetry Pit Wall",
+          "palette": {
+            "ink": "#F2F5FF",
+            "ground": "#0A0E1A",
+            "accents": [
+              "#39FF6E",
+              "#131C33"
+            ],
+            "primary": "#2858EF"
+          }
+        },
+        {
+          "pitch": "",
+          "concept": "Bon de Travail",
+          "palette": {
+            "ink": "#111827",
+            "ground": "#F7F8F3",
+            "accents": [
+              "#1FD25F",
+              "#E4E8F5"
+            ],
+            "primary": "#2858EF"
+          }
+        },
+        {
+          "pitch": "",
+          "concept": "Chrono Poster",
+          "palette": {
+            "ink": "#FFFFFF",
+            "ground": "#2858EF",
+            "accents": [
+              "#1B3ACB",
+              "#0E1E6B"
+            ],
+            "primary": "#C8FF3D"
+          }
+        }
+      ],
+      "recommendedIndex": 0
+    },
+    "consultationPresentedAt": null
+  },
+  "promptHistory": [
+    {
+      "prompt": "Project: website — Garage de mécanique\n\nBusiness: M360, un garage mécanique\n\nGoal: Permettre aux clients de prendre rendez-vous en ligne et voir les services\n\nTarget audience: Propriétaires de véhicules cherchant des services mécaniques\n\nKey features:\n- Prise de rendez-vous en ligne (sans paiement)\n- Affichage des taux et services\n- Galerie photo du garage\n- Affichage de l'horaire de la journée bien en vue\n\nDesign & brand:\n- Colors: Bleu et vert fluo\n- Mood: Moderne, punchy et dynamique\n- Signature: Un service rapide et transparent\n- First impression: L'horaire de la journée, utilise le logo existant\n\nIntegrations & extras:\n- Calendrier pour la prise de rendez-vous\n- Google Maps avec directions pour localisation",
+      "timestamp": "2026-08-30T17:20:24.754Z",
+      "changeNotes": "Admin enrichment: (1) Rebuilt public/js/admin.js with French field labels, live search, status filter chips with counts, richer table cells (image thumbnails, boolean/status/price/day badges), toast notifications replacing alerts, inline required-field validation, image upload/AI-generate loading states + live preview, and Escape-to-close on modals — all module pages (RDV, services, galerie, actualités) keep full create/edit/delete CRUD. (2) Redesigned admin dashboard (views/admin.ejs) with a top bar, highlighted pending-RDV card, French status labels, section headers and a 'Gestion rapide' card grid linking every module. (3) Added two new admin pages: admin/settings (functional business info, contact, Google-Maps address, booking slot duration + SEO description — all affect app behavior) and admin/messages (contact-form inbox), plus their routes and sidebar links. (4) Enhanced admin-styles.css: topbar, quick cards, search/filter chips, table hover, thumbnails, cell badges, toast system, focus-visible states, settings form and message-card styling. (5) admin-hours page now shows clearer save feedback. (6) Added focus-visible accessibility outlines to public styles.css. No functional routes/data flows removed; all image placeholder tokens preserved; contrast fallbacks (green bg + dark ink) kept on CTAs.\n\nFixed the /admin redirect loop by pointing pageAdmin at the site root (there is no /admin/login route) and removed the now-redundant duplicate admin check inside the /admin handler. Hardened mobile layout: status rail no longer wraps under the sticky nav (nowrap + horizontal scroll, FR/EN toggle hidden on mobile since it's still in the footer), added dark color-scheme for native date/time pickers, added hover affordances to rate rows/nav CTA and bumped slot button font size. Removed the dead Déconnexion link from the admin sidebar, added page-specific document titles via existing translation keys, de-duplicated the homepage's closing CTA heading to use booking_title instead of repeating hero_title, and added a mono date stamp to article pages using the existing t.months localization array.",
+      "generationId": 1727,
+      "filesModified": [
+        "crons.js",
+        "manifest.json",
+        "migrations.sql",
+        "public/css/admin-styles.css",
+        "public/css/styles.css",
+        "public/js/admin.js",
+        "public/js/app.js",
+        "public/js/booking.js",
+        "routes.js",
+        "schema.sql",
+        "seed.js",
+        "views/actualites.ejs",
+        "views/admin-appointments.ejs",
+        "views/admin-gallery.ejs",
+        "views/admin-hours.ejs",
+        "views/admin-messages.ejs",
+        "views/admin-posts.ejs",
+        "views/admin-services.ejs",
+        "views/admin-settings.ejs",
+        "views/admin.ejs",
+        "views/article.ejs",
+        "views/contact.ejs",
+        "views/galerie.ejs",
+        "views/index.ejs",
+        "views/partials/admin-shell.ejs",
+        "views/partials/admin-sidebar.ejs",
+        "views/partials/booking.ejs",
+        "views/partials/footer.ejs",
+        "views/partials/header.ejs",
+        "views/partials/rates.ejs",
+        "views/rendez-vous.ejs",
+        "views/services.ejs"
+      ]
+    }
+  ],
+  "apiVariables": [],
+  "createdAt": "2026-08-30T15:49:26.581Z",
+  "updatedAt": "2026-08-30T17:20:29.095Z",
+  "exportedAt": "2026-08-30T17:20:29.326Z"
+}

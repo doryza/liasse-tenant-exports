@@ -1,0 +1,44 @@
+<% var bk={ pickDate:t.book_pick_date, pickTime:t.book_pick_time, noSlots:t.book_no_slots, selectDateFirst:t.book_select_date_first, sending:t.book_sending, successTitle:t.book_success_title, ref:t.book_pass_ref, error:t.generic_error, required:t.form_required, submit:t.book_submit, loading:t.book_loading }; %>
+<div id='bkModule' class='booking-module'>
+ <div class='steps'>
+  <button type='button' class='step-tab active' data-tab='1'><span class='step-n'>1</span> <%= t.book_step1 %></button>
+  <button type='button' class='step-tab' data-tab='2'><span class='step-n'>2</span> <%= t.book_step2 %></button>
+  <button type='button' class='step-tab' data-tab='3'><span class='step-n'>3</span> <%= t.book_step3 %></button>
+ </div>
+ <div class='bk-panel' data-step='1'>
+  <p class='bk-label'><%= t.book_pick_service %></p>
+  <div class='bk-services'>
+   <% if(typeof svcs!=='undefined'){ svcs.forEach(function(s){ %>
+   <button type='button' class='bk-service' data-id='<%= s.id %>' data-name='<%= s.name %>'><span class='bks-name'><%= s.name %></span><span class='bks-meta mono'><%= formatServicePrice(s,t) %><% if(s.duration_min){ %> · <%= s.duration_min %> <%= t.rates_min %><% } %></span></button>
+   <% }); } %>
+   <button type='button' class='bk-service' data-id='' data-name='<%= t.rates_quote %>'><span class='bks-name'><%= t.rates_quote %></span><span class='bks-meta mono'>—</span></button>
+  </div>
+  <div class='bk-nav'><span></span><button type='button' class='btn btn-primary' id='bkNext1' style='background-color:#39FF6E;color:#0A0E1A' disabled><%= t.book_next %></button></div>
+ </div>
+ <div class='bk-panel' data-step='2' style='display:none'>
+  <div class='field'><label><%= t.book_pick_date %></label><input type='date' id='bkDate'></div>
+  <p class='bk-label'><%= t.book_pick_time %></p>
+  <div id='bkSlots' class='slots'><p class='bk-hint'><%= t.book_select_date_first %></p></div>
+  <div class='bk-nav'><button type='button' class='btn btn-ghost' id='bkBack2'><%= t.book_back %></button><button type='button' class='btn btn-primary' id='bkNext2' style='background-color:#39FF6E;color:#0A0E1A' disabled><%= t.book_next %></button></div>
+ </div>
+ <div class='bk-panel' data-step='3' style='display:none'>
+  <div class='field'><label><%= t.book_name %></label><input type='text' id='bkName' placeholder='<%= t.book_name %>'></div>
+  <div class='field'><label><%= t.book_phone %></label><input type='tel' id='bkPhone' placeholder='<%= t.book_phone %>'></div>
+  <div class='field'><label><%= t.book_email %></label><input type='email' id='bkEmail' placeholder='<%= t.book_email %>'></div>
+  <div class='field'><label><%= t.book_vehicle %></label><input type='text' id='bkVehicle' placeholder='<%= t.book_vehicle %>'></div>
+  <div class='field'><label><%= t.book_notes %></label><textarea id='bkNotes' placeholder='<%= t.book_notes %>'></textarea></div>
+  <div class='bk-nav'><button type='button' class='btn btn-ghost' id='bkBack3'><%= t.book_back %></button><button type='button' class='btn btn-primary' id='bkSubmit' style='background-color:#39FF6E;color:#0A0E1A'><%= t.book_submit %></button></div>
+ </div>
+ <div id='bkSuccess' class='bk-pass' style='display:none'>
+  <div class='pass-top'><span class='pass-title mono'><%= t.book_success_title %></span><span class='pass-dot'></span></div>
+  <p class='pass-sub'><%= t.book_success_sub %></p>
+  <div class='pass-grid'>
+   <div><span class='pass-k mono'><%= t.book_pass_ref %></span><span class='pass-v mono' id='pRef'></span></div>
+   <div><span class='pass-k mono'><%= t.book_pass_service %></span><span class='pass-v' id='pService'></span></div>
+   <div><span class='pass-k mono'><%= t.book_pass_when %></span><span class='pass-v mono' id='pWhen'></span></div>
+   <div><span class='pass-k mono'><%= t.book_pass_name %></span><span class='pass-v' id='pName'></span></div>
+  </div>
+  <button type='button' class='btn btn-ghost' id='bkAnother'><%= t.book_another %></button>
+ </div>
+ <script>window.M360_BK=<%- JSON.stringify(bk) %>;</script>
+</div>
