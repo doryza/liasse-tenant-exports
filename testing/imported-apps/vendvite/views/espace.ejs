@@ -71,6 +71,11 @@
             <div class="esp-f"><label for="f_agent_email">Courriel</label><input id="f_agent_email" data-k="agent_email" value="<%= profile.agent_email || broker.email %>">
               <p class="esp-help">C'est ici que chaque nouvelle piste vous est envoyée — jamais affiché publiquement.</p></div>
           </div>
+
+          <h2 class="esp-h">À propos de vous</h2>
+          <div class="esp-f"><label for="f_about">Votre présentation</label>
+            <textarea id="f_about" data-k="about" rows="4" placeholder="<%= t.agent_credo %>"><%= profile.about || '' %></textarea>
+            <p class="esp-help">Le paragraphe de la section «&nbsp;L'agent&nbsp;» de votre page — votre philosophie, votre approche, en une ou deux phrases. Vide = le texte grisé ci-dessus reste affiché.</p></div>
         </div>
 
         <div class="esp-col">

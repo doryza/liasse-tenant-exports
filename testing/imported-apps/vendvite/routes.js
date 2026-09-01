@@ -1060,6 +1060,7 @@ module.exports = function(services){
     // Identity into the « Votre courtier » section (t-keys, not settings)
     if (prof.agent_title) t.agent_title = prof.agent_title;
     if (prof.agency || broker.agency) t.agent_remax = prof.agency || broker.agency;
+    if (prof.about) t.agent_credo = prof.about;
     // Footer socials are the BROKER's own — never the template's seeded
     // placeholders. Recognized platforms become footer icons; the rest render
     // as link pills; none at all → nothing shows.
