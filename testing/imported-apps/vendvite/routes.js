@@ -101,7 +101,7 @@ module.exports = function(services){
       inv_f_sending:"Envoi…",
       inv_fineprint:"Aucun engagement à cette étape. Votre invitation vous donne accès à votre page, que vous pourrez bâtir avant toute activation.",
       inv_done_title:"Votre demande est scellée.",
-      inv_done_text:"Vérifiez votre courriel : votre invitation contient le lien privé vers votre page VendVite.",
+      inv_done_text:"Votre demande est à l’étude. Si votre secteur est libre, votre invitation arrivera par courriel sous peu.",
       inv_mark_1:"Une page privée, à votre nom et à vos couleurs.",
       inv_mark_2:"Chaque adresse saisie devient une piste qualifiée.",
       inv_mark_3:"Les pistes vous parviennent instantanément, à vous seul.",
@@ -203,7 +203,7 @@ module.exports = function(services){
       inv_f_sending:"Sending…",
       inv_fineprint:"No commitment at this stage. Your invitation unlocks your page, which you can build before any activation.",
       inv_done_title:"Your request is sealed.",
-      inv_done_text:"Check your inbox: your invitation holds the private link to your VendVite page.",
+      inv_done_text:"Your request is under review. If your territory is open, your invitation will arrive by email shortly.",
       inv_mark_1:"A private page, in your name and your colours.",
       inv_mark_2:"Every address entered becomes a qualified lead.",
       inv_mark_3:"Leads reach you instantly, and you alone.",
@@ -380,7 +380,15 @@ module.exports = function(services){
   router.get('/admin/leads', requireAdmin, async function(req,res){ var L=await baseLocals(req); res.render('admin-leads', Object.assign(L, { active:'leads', moduleConfig:findModule('leads') })); });
   router.get('/admin/testimonials', requireAdmin, async function(req,res){ var L=await baseLocals(req); res.render('admin-testimonials', Object.assign(L, { active:'testimonials', moduleConfig:findModule('testimonials') })); });
   router.get('/admin/posts', requireAdmin, async function(req,res){ var L=await baseLocals(req); res.render('admin-posts', Object.assign(L, { active:'posts', moduleConfig:findModule('posts') })); });
-  router.get('/admin/settings', requireAdmin, async function(req,res){ var L=await baseLocals(req); res.render('admin-settings', Object.assign(L, { active:'settings', settingsGroups:SETTINGS_GROUPS })); });
+  router.get('/admin/courtiers', requireAdmin, async function(req,res){
+    var L=await baseLocals(req);
+    var courtiers=await db.all(
+      'SELECT b.*, (SELECT COUNT(*)::int FROM broker_leads l WHERE l.broker_id=b.id) AS lead_count FROM brokers b ORDER BY (b.status=\'applied\') DESC, b.created_at DESC');
+    var cc={ applied:0, invited:0, active:0, other:0 };
+    (courtiers||[]).forEach(function(b){ if(cc[b.status]!=null) cc[b.status]++; else cc.other++; });
+    res.render('admin-courtiers', Object.assign(L, { active:'courtiers', courtiers:courtiers||[], cc:cc }));
+  });
+    router.get('/admin/settings', requireAdmin, async function(req,res){ var L=await baseLocals(req); res.render('admin-settings', Object.assign(L, { active:'settings', settingsGroups:SETTINGS_GROUPS })); });
 
   router.get('/api/admin/stats', async function(req,res){ if(!apiAdmin(req,res))return; try{ var s=await gatherStats(); res.json({ userCount:s.userCount, pushSubscriberCount:s.pushCount, totalVisits:s.visits, recentVisits:s.recentVisits, leads:s.leads, newLeads:s.newLeads, testimonials:s.testimonials, posts:s.posts }); }catch(e){ res.status(500).json({ error:'server' }); } });
 
@@ -613,6 +621,55 @@ module.exports = function(services){
     return await services.email.send({ to: broker.email, subject: subject, html: html, text: text });
   }
 
+  // Acknowledgement to the applicant — no link, the review is human.
+  async function sendAckEmail(req, broker, lang){
+    var fr = (lang !== 'en');
+    var html = ''
+      + '<div style="background:#0D0A0B;padding:34px 20px;font-family:Inter,-apple-system,Segoe UI,Roboto,sans-serif">'
+      + '<div style="max-width:520px;margin:0 auto;background:linear-gradient(165deg,#171213,#0f0b0c);border:1px solid rgba(245,239,230,.12);border-radius:10px;padding:32px 28px;color:#F5EFE6">'
+      + '<div style="font-family:IBM Plex Mono,monospace;font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:#C79A5B;margin-bottom:18px">'
+      + (fr ? 'Sur invitation seulement' : 'By invitation only') + '</div>'
+      + '<h1 style="font-family:Georgia,serif;font-size:24px;line-height:1.2;margin:0 0 14px;color:#F5EFE6">'
+      + (fr ? 'Votre demande est scellée, ' : 'Your request is sealed, ') + escapeHtml(broker.full_name.split(' ')[0]) + '.</h1>'
+      + '<p style="color:rgba(245,239,230,.64);font-size:15px;line-height:1.6;margin:0">'
+      + (fr
+        ? 'Nous vérifions la disponibilité de votre secteur. Si votre place dans le cercle est libre, votre invitation — et le lien privé vers votre page — arrivera dans cette boîte.'
+        : 'We are checking your territory. If your place in the circle is open, your invitation — and the private link to your page — will land in this inbox.')
+      + '</p></div></div>';
+    return await services.email.send({
+      to: broker.email,
+      subject: fr ? 'Votre demande est à l’étude' : 'Your request is under review',
+      html: html,
+      text: fr ? 'Votre demande VendVite est à l’étude.' : 'Your VendVite request is under review.'
+    });
+  }
+
+  // Ping the vendvite operator that a candidature awaits review.
+  async function sendOwnerNewApplicationEmail(req, broker){
+    var to = (services.config && (services.config.contactEmail || services.config.ownerEmail)) || null;
+    if (!to) return { skipped: true };
+    var esc = escapeHtml;
+    var adminUrl = absoluteUrl(req, '/admin/courtiers');
+    var html = ''
+      + '<div style="background:#0D0A0B;padding:30px 20px;font-family:Inter,-apple-system,Segoe UI,Roboto,sans-serif">'
+      + '<div style="max-width:520px;margin:0 auto;background:linear-gradient(165deg,#171213,#0f0b0c);border:1px solid rgba(245,239,230,.12);border-radius:10px;padding:28px;color:#F5EFE6">'
+      + '<div style="font-family:IBM Plex Mono,monospace;font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:#C79A5B;margin-bottom:14px">Nouvelle candidature</div>'
+      + '<h1 style="font-family:Georgia,serif;font-size:22px;margin:0 0 16px">' + esc(broker.full_name) + '</h1>'
+      + '<table style="width:100%;border-collapse:collapse;font-size:14px">'
+      + [['Agence', broker.agency], ['Courriel', broker.email], ['Téléphone', formatPhone(broker.phone)], ['Page réservée', '/' + broker.slug]]
+          .filter(function(r){ return r[1]; })
+          .map(function(r){ return '<tr><td style="padding:7px 0;color:rgba(245,239,230,.42);width:38%">' + esc(r[0]) + '</td><td style="padding:7px 0;color:#F5EFE6">' + esc(r[1]) + '</td></tr>'; }).join('')
+      + '</table>'
+      + '<a href="' + adminUrl + '" style="display:block;text-align:center;margin-top:22px;padding:14px;border-radius:4px;background:#E30B2D;color:#fff;text-decoration:none;font-family:Georgia,serif;font-weight:bold">Examiner la candidature</a>'
+      + '</div></div>';
+    return await services.email.send({
+      to: to,
+      subject: 'Nouvelle candidature — ' + broker.full_name,
+      html: html,
+      text: 'Nouvelle candidature: ' + broker.full_name + ' (' + (broker.agency || '') + ') — ' + adminUrl
+    });
+  }
+
   function escapeHtml(s){
     return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
       return ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[c];
@@ -634,17 +691,22 @@ module.exports = function(services){
 
       var existing = await db.get('SELECT * FROM brokers WHERE LOWER(email)=$1', [email]);
       if (existing) {
-        // Re-invite rather than leak whether the address is already enrolled.
-        var reToken = await mintBrokerToken(existing.id, 'access');
-        try { await sendInviteEmail(req, existing, reToken, lang); } catch(e){ console.error('invite resend', e); }
-        await logBrokerEvent(existing.id, 'invite_resent', email);
+        // Same generic answer whatever the state — never leak enrolment.
+        if (existing.status === 'invited' || existing.status === 'active' || existing.status === 'cancelled' || existing.status === 'expired') {
+          // Already past review: a fresh access link is genuinely helpful.
+          var reToken = await mintBrokerToken(existing.id, 'access');
+          try { await sendInviteEmail(req, existing, reToken, lang); } catch(e){ console.error('invite resend', e); }
+          await logBrokerEvent(existing.id, 'invite_resent', email);
+        } else {
+          await logBrokerEvent(existing.id, 'reapplied', email);
+        }
         return res.json({ success: true, message: TT.inv_done_text });
       }
 
       var slug = await uniqueBrokerSlug(name, agency);
       var ins = await db.get(
         'INSERT INTO brokers (slug,full_name,agency,phone,email,status,profile) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *',
-        [slug, name, agency, phone, email, 'invited', JSON.stringify({
+        [slug, name, agency, phone, email, 'applied', JSON.stringify({
           agent_name: name,
           agency: agency,
           agent_phone: phone,
@@ -653,9 +715,10 @@ module.exports = function(services){
           links: []
         })]
       );
-      var raw = await mintBrokerToken(ins.id, 'access');
-      try { await sendInviteEmail(req, ins, raw, lang); }
-      catch(e){ console.error('invite email', e); }
+      // Manual review gate: NO magic link yet. The broker gets a sealed
+      // acknowledgement; the vendvite operator gets pinged to review.
+      try { await sendAckEmail(req, ins, lang); } catch(e){ console.error('ack email', e); }
+      try { await sendOwnerNewApplicationEmail(req, ins); } catch(e){ console.error('owner notify', e); }
       await logBrokerEvent(ins.id, 'applied', agency + ' / ' + email);
       res.json({ success: true, message: TT.inv_done_text, slug: slug });
     }catch(e){
@@ -1072,6 +1135,39 @@ module.exports = function(services){
       );
       res.json({ courtiers: rows || [] });
     }catch(e){ res.status(500).json({ error: 'server' }); }
+  });
+
+  // Approve a candidature: the manual-review gate opens here and ONLY here —
+  // this is what mints the magic link and sends the invitation.
+  router.post('/api/admin/courtiers/:id/approuver', async function(req, res){
+    if(!apiAdmin(req,res)) return;
+    try{
+      var broker = await db.get('SELECT * FROM brokers WHERE id=$1', [req.params.id]);
+      if (!broker) return res.status(404).json({ error: 'introuvable' });
+      if (broker.status !== 'applied' && broker.status !== 'refused') {
+        return res.status(409).json({ error: 'deja_traitee', status: broker.status });
+      }
+      await db.run("UPDATE brokers SET status='invited', updated_at=NOW() WHERE id=$1", [broker.id]);
+      var raw = await mintBrokerToken(broker.id, 'access');
+      try { await sendInviteEmail(req, broker, raw, req.lang || 'fr'); }
+      catch(e){ console.error('approve invite email', e); return res.status(502).json({ error: 'courriel', approved: true }); }
+      await logBrokerEvent(broker.id, 'approved', 'operator');
+      res.json({ success: true, status: 'invited' });
+    }catch(e){ console.error('approuver', e); res.status(500).json({ error: 'server' }); }
+  });
+
+  // Refuse a candidature. Deliberately silent — no rejection email; the
+  // operator can reach out personally if they want to.
+  router.post('/api/admin/courtiers/:id/refuser', async function(req, res){
+    if(!apiAdmin(req,res)) return;
+    try{
+      var broker = await db.get('SELECT * FROM brokers WHERE id=$1', [req.params.id]);
+      if (!broker) return res.status(404).json({ error: 'introuvable' });
+      if (broker.status === 'active') return res.status(409).json({ error: 'actif' });
+      await db.run("UPDATE brokers SET status='refused', published=0, updated_at=NOW() WHERE id=$1", [broker.id]);
+      await logBrokerEvent(broker.id, 'refused', 'operator');
+      res.json({ success: true, status: 'refused' });
+    }catch(e){ console.error('refuser', e); res.status(500).json({ error: 'server' }); }
   });
 
   router.post('/api/admin/courtiers/:id/activer', async function(req, res){

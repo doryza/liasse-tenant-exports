@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Courtiers — <%= settings.agent_name || 'VendVite' %></title>
+<link rel="stylesheet" href="public/css/admin-styles.css">
+<style>
+.crt-status{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.72rem;font-weight:600;letter-spacing:.03em}
+.crt-applied{background:#fef3c7;color:#92400e}
+.crt-invited{background:#dbeafe;color:#1e40af}
+.crt-active{background:#dcfce7;color:#166534}
+.crt-refused{background:#f3f4f6;color:#6b7280}
+.crt-cancelled,.crt-expired{background:#fee2e2;color:#991b1b}
+.crt-card{border:1px solid #e5e7eb;border-radius:10px;padding:16px 18px;margin-bottom:12px;background:#fff}
+.crt-card.is-applied{border-color:#f59e0b;box-shadow:0 1px 6px rgba(245,158,11,.15)}
+.crt-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.crt-head h3{margin:0 0 2px;font-size:1.02rem}
+.crt-agency{color:#6b7280;font-size:.85rem;margin:0}
+.crt-meta{display:flex;flex-wrap:wrap;gap:14px;margin:10px 0 0;font-size:.8rem;color:#6b7280}
+.crt-meta a{color:#4b5563}
+.crt-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.crt-note{font-size:.78rem;color:#9ca3af;margin-top:8px}
+</style>
+</head>
+<body class="admin">
+<%- include('partials/admin-sidebar') %>
+<div class="admin-main">
+  <header class="admin-top">
+    <button class="admin-burger" id="adminBurger" aria-label="Menu">≡</button>
+    <h1>Courtiers</h1>
+  </header>
+  <div class="admin-content">
+    <div class="stat-cards">
+      <div class="scard <%= cc.applied ? 'scard-accent' : '' %>"><div class="scard-num"><%= cc.applied %></div><div class="scard-label">Candidatures à examiner</div></div>
+      <div class="scard"><div class="scard-num"><%= cc.invited %></div><div class="scard-label">Invités</div></div>
+      <div class="scard"><div class="scard-num"><%= cc.active %></div><div class="scard-label">Membres actifs</div></div>
+    </div>
+
+    <% if (!courtiers.length) { %>
+      <div class="empty">Aucune candidature pour l'instant. Les demandes soumises sur la page d'accueil apparaîtront ici.</div>
+    <% } %>
+
+    <% courtiers.forEach(function(b){ %>
+      <article class="crt-card <%= b.status==='applied' ? 'is-applied' : '' %>" data-id="<%= b.id %>">
+        <div class="crt-head">
+          <div>
+            <h3><%= b.full_name %></h3>
+            <p class="crt-agency"><%= b.agency || '' %> · <a href="<%= b.slug %>" target="_blank" rel="noopener">/<%= b.slug %></a></p>
+          </div>
+          <span class="crt-status crt-<%= b.status %>"><%= ({applied:'À examiner', invited:'Invité', active:'Actif', refused:'Refusé', cancelled:'Annulé', expired:'Expiré'})[b.status] || b.status %></span>
+        </div>
+        <div class="crt-meta">
+          <a href="mailto:<%= b.email %>"><%= b.email %></a>
+          <% if (b.phone) { %><a href="tel:<%= String(b.phone).replace(/\D/g,'') %>"><%= formatPhone(b.phone) %></a><% } %>
+          <span><%= b.lead_count %> piste<%= b.lead_count===1?'':'s' %></span>
+          <span>Reçue le <%= formatDate(b.created_at, lang) %></span>
+          <% if (b.status==='active' && b.membership_expires_at) { %><span>Renouvellement le <%= formatDate(b.membership_expires_at, lang) %></span><% } %>
+        </div>
+        <div class="crt-actions">
+          <% if (b.status==='applied' || b.status==='refused') { %>
+            <button class="btn-primary btn-sm" data-act="approuver" data-id="<%= b.id %>">Approuver et inviter</button>
+          <% } %>
+          <% if (b.status==='applied') { %>
+            <button class="btn-ghost btn-sm" data-act="refuser" data-id="<%= b.id %>" data-arm="Confirmer le refus">Refuser</button>
+          <% } %>
+          <% if (b.status==='invited' || b.status==='active' || b.status==='cancelled' || b.status==='expired') { %>
+            <button class="btn-ghost btn-sm" data-act="relancer" data-id="<%= b.id %>">Renvoyer le lien d'accès</button>
+          <% } %>
+          <% if (b.status==='invited' || b.status==='expired' || b.status==='cancelled') { %>
+            <button class="btn-ghost btn-sm" data-act="activer" data-id="<%= b.id %>" data-arm="Confirmer l'activation (12 mois)">Activer sans paiement</button>
+          <% } %>
+        </div>
+        <% if (b.status==='applied') { %><p class="crt-note">Approuver envoie l'invitation par courriel avec le lien privé de sa page.</p><% } %>
+      </article>
+    <% }); %>
+  </div>
+</div>
+<script>
+(function(){
+  var burger=document.getElementById('adminBurger');
+  if(burger){ burger.addEventListener('click', function(){ document.getElementById('adminSidebar').classList.toggle('open'); }); }
+  document.querySelectorAll('[data-act]').forEach(function(btn){
+    btn.addEventListener('click', async function(){
+      // two-tap arm for destructive/costly actions
+      if(btn.hasAttribute('data-arm') && btn.getAttribute('data-armed')!=='1'){
+        btn.setAttribute('data-armed','1'); btn.textContent=btn.getAttribute('data-arm'); return;
+      }
+      btn.disabled=true;
+      try{
+        var r=await fetch('api/admin/courtiers/'+btn.getAttribute('data-id')+'/'+btn.getAttribute('data-act'), {
+          method:'POST', headers:{ 'Content-Type':'application/json' }, body:'{}'
+        });
+        if(r.ok){ location.reload(); return; }
+        var d=await r.json().catch(function(){ return {}; });
+        alert(d.error==='courriel' ? "Approuvé, mais l'envoi du courriel a échoué — utilisez « Renvoyer le lien »." : 'Action impossible ('+(d.error||r.status)+')');
+      }catch(_){ alert('Erreur réseau.'); }
+      btn.disabled=false;
+    });
+  });
+})();
+</script>
+</body>
+</html>
