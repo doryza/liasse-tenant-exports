@@ -1,6 +1,81 @@
 {
-  "exportedAt": "2026-07-05T16:13:29.191Z",
+  "exportedAt": "2026-09-01T02:37:19.293Z",
   "tables": {
+    "posts": {
+      "columns": [
+        "id",
+        "title",
+        "content",
+        "excerpt",
+        "image_url",
+        "category",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Ce que vaut vraiment votre maison en 2024",
+          "content": "Le prix demandé n'est qu'un point de départ. Ce qui compte, c'est le prix vendu — celui que le marché confirme.\n\nDans la plupart des quartiers, le ratio prix vendu sur prix demandé s'établit aujourd'hui autour de 99 %. Une propriété correctement évaluée se vend près de sa valeur affichée, et souvent plus vite.\n\nUne évaluation sérieuse s'appuie sur les ventes comparables des douze derniers mois, ajustées pour les particularités de votre propriété : superficie, état, exposition, rénovations récentes.",
+          "excerpt": "L'écart entre le prix affiché et le prix vendu s'est resserré. Voici comment lire le marché de votre quartier.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783139713/tapavis_tenant_vendvite/build_vendvite_1783139713856.png",
+          "category": "Marché",
+          "published": 1,
+          "created_at": "2026-07-04T05:40:05.123Z",
+          "updated_at": "2026-07-04T05:40:05.123Z"
+        },
+        {
+          "id": 2,
+          "title": "Cinq gestes qui augmentent la valeur perçue",
+          "content": "La valeur perçue précède la valeur négociée. Voici cinq interventions à faible coût et fort rendement.\n\n1. La lumière : remplacez les ampoules froides par une lumière chaude et uniforme.\n2. La première impression : entrée dégagée, poignées propres, porte fraîchement peinte.\n3. Le désencombrement : chaque pièce doit respirer.\n4. Les petites réparations visibles : robinet qui goutte, joint de silicone jauni.\n5. La mise en valeur de la vue : c'est ce que la fiche révèle en premier.",
+          "excerpt": "Avant la première visite, la perception de valeur se joue en quelques détails. Voici les cinq plus rentables.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783139714/tapavis_tenant_vendvite/build_vendvite_1783139714196.png",
+          "category": "Conseils",
+          "published": 1,
+          "created_at": "2026-07-04T05:40:05.138Z",
+          "updated_at": "2026-07-04T05:40:05.138Z"
+        },
+        {
+          "id": 3,
+          "title": "Vendre au bon moment : lire les saisons du marché",
+          "content": "Le printemps attire le plus d'acheteurs, mais aussi le plus de vendeurs. À l'automne, un inventaire réduit peut jouer en votre faveur.\n\nCe qui compte davantage que la saison : le niveau d'inventaire dans votre secteur précis. Un déséquilibre entre l'offre et la demande locale a plus d'effet sur votre prix que le calendrier.\n\nUne évaluation à jour vous indique si le moment est favorable pour votre adresse en particulier.",
+          "excerpt": "Le meilleur moment pour vendre dépend de votre quartier et de votre type de propriété.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783139715/tapavis_tenant_vendvite/build_vendvite_1783139715010.png",
+          "category": "Marché",
+          "published": 1,
+          "created_at": "2026-07-04T05:40:05.150Z",
+          "updated_at": "2026-07-04T05:40:05.150Z"
+        },
+        {
+          "id": 4,
+          "title": "Pourquoi une fiche visuelle avant la mise en marché",
+          "content": "Un dossier soigné n'est pas un luxe : c'est un signal. Il indique que la propriété est prise au sérieux, ce qui attire des acheteurs sérieux.\n\nLa fiche visuelle — vue de rue, coordonnées, données clés — pose les bases d'une négociation appuyée par des faits plutôt que par des impressions.\n\nC'est l'approche que nous appliquons dès la première adresse saisie.",
+          "excerpt": "Présenter votre propriété comme un actif, dès le premier échange, change la conversation avec les acheteurs.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783139714/tapavis_tenant_vendvite/build_vendvite_1783139714414.png",
+          "category": "Approche",
+          "published": 1,
+          "created_at": "2026-07-04T05:40:05.166Z",
+          "updated_at": "2026-07-04T05:40:05.166Z"
+        }
+      ]
+    },
+    "admin_invites": {
+      "columns": [
+        "id",
+        "email",
+        "token",
+        "role",
+        "status",
+        "invited_by",
+        "expires_at",
+        "accepted_at",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
     "admin_users": {
       "columns": [
         "id",
@@ -16,21 +91,6 @@
         "invite_expires_at",
         "last_login_at",
         "is_active",
-        "created_at"
-      ],
-      "totalRows": 0,
-      "sampleRows": []
-    },
-    "admin_invites": {
-      "columns": [
-        "id",
-        "email",
-        "token",
-        "role",
-        "status",
-        "invited_by",
-        "expires_at",
-        "accepted_at",
         "created_at"
       ],
       "totalRows": 0,
@@ -115,7 +175,7 @@
         "path",
         "created_at"
       ],
-      "totalRows": 15,
+      "totalRows": 172,
       "sampleRows": [
         {
           "id": 1,
@@ -166,66 +226,6 @@
           "id": 10,
           "path": "/",
           "created_at": "2026-07-05T13:59:31.848Z"
-        }
-      ]
-    },
-    "posts": {
-      "columns": [
-        "id",
-        "title",
-        "content",
-        "excerpt",
-        "image_url",
-        "category",
-        "published",
-        "created_at",
-        "updated_at"
-      ],
-      "totalRows": 4,
-      "sampleRows": [
-        {
-          "id": 1,
-          "title": "Ce que vaut vraiment votre maison en 2024",
-          "content": "Le prix demandé n'est qu'un point de départ. Ce qui compte, c'est le prix vendu — celui que le marché confirme.\n\nDans la plupart des quartiers, le ratio prix vendu sur prix demandé s'établit aujourd'hui autour de 99 %. Une propriété correctement évaluée se vend près de sa valeur affichée, et souvent plus vite.\n\nUne évaluation sérieuse s'appuie sur les ventes comparables des douze derniers mois, ajustées pour les particularités de votre propriété : superficie, état, exposition, rénovations récentes.",
-          "excerpt": "L'écart entre le prix affiché et le prix vendu s'est resserré. Voici comment lire le marché de votre quartier.",
-          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783139713/tapavis_tenant_vendvite/build_vendvite_1783139713856.png",
-          "category": "Marché",
-          "published": 1,
-          "created_at": "2026-07-04T05:40:05.123Z",
-          "updated_at": "2026-07-04T05:40:05.123Z"
-        },
-        {
-          "id": 2,
-          "title": "Cinq gestes qui augmentent la valeur perçue",
-          "content": "La valeur perçue précède la valeur négociée. Voici cinq interventions à faible coût et fort rendement.\n\n1. La lumière : remplacez les ampoules froides par une lumière chaude et uniforme.\n2. La première impression : entrée dégagée, poignées propres, porte fraîchement peinte.\n3. Le désencombrement : chaque pièce doit respirer.\n4. Les petites réparations visibles : robinet qui goutte, joint de silicone jauni.\n5. La mise en valeur de la vue : c'est ce que la fiche révèle en premier.",
-          "excerpt": "Avant la première visite, la perception de valeur se joue en quelques détails. Voici les cinq plus rentables.",
-          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783139714/tapavis_tenant_vendvite/build_vendvite_1783139714196.png",
-          "category": "Conseils",
-          "published": 1,
-          "created_at": "2026-07-04T05:40:05.138Z",
-          "updated_at": "2026-07-04T05:40:05.138Z"
-        },
-        {
-          "id": 3,
-          "title": "Vendre au bon moment : lire les saisons du marché",
-          "content": "Le printemps attire le plus d'acheteurs, mais aussi le plus de vendeurs. À l'automne, un inventaire réduit peut jouer en votre faveur.\n\nCe qui compte davantage que la saison : le niveau d'inventaire dans votre secteur précis. Un déséquilibre entre l'offre et la demande locale a plus d'effet sur votre prix que le calendrier.\n\nUne évaluation à jour vous indique si le moment est favorable pour votre adresse en particulier.",
-          "excerpt": "Le meilleur moment pour vendre dépend de votre quartier et de votre type de propriété.",
-          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783139715/tapavis_tenant_vendvite/build_vendvite_1783139715010.png",
-          "category": "Marché",
-          "published": 1,
-          "created_at": "2026-07-04T05:40:05.150Z",
-          "updated_at": "2026-07-04T05:40:05.150Z"
-        },
-        {
-          "id": 4,
-          "title": "Pourquoi une fiche visuelle avant la mise en marché",
-          "content": "Un dossier soigné n'est pas un luxe : c'est un signal. Il indique que la propriété est prise au sérieux, ce qui attire des acheteurs sérieux.\n\nLa fiche visuelle — vue de rue, coordonnées, données clés — pose les bases d'une négociation appuyée par des faits plutôt que par des impressions.\n\nC'est l'approche que nous appliquons dès la première adresse saisie.",
-          "excerpt": "Présenter votre propriété comme un actif, dès le premier échange, change la conversation avec les acheteurs.",
-          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1783139714/tapavis_tenant_vendvite/build_vendvite_1783139714414.png",
-          "category": "Approche",
-          "published": 1,
-          "created_at": "2026-07-04T05:40:05.166Z",
-          "updated_at": "2026-07-04T05:40:05.166Z"
         }
       ]
     },
