@@ -78,38 +78,38 @@ module.exports = function(services){
       footer_rights:"Tous droits réservés.",
       push_btn:"Activer les alertes de ventes",
       back_home:"Retour à l'accueil",
-      exp_eyebrow:"Lien echu",
-      exp_title:"Ce lien a expire.",
-      exp_lede:"Par securite, chaque lien d'acces est personnel et vit 72 heures. Demandez-en un nouveau et il arrivera dans votre boite en quelques instants.",
+      exp_eyebrow:"Lien échu",
+      exp_title:"Ce lien a expiré.",
+      exp_lede:"Par sécurité, chaque lien d'accès est personnel et vit 72 heures. Demandez-en un nouveau et il arrivera dans votre boîte en quelques instants.",
       exp_cta:"Demander un nouveau lien",
       inv_meta_title:"Sur invitation seulement",
-      inv_meta_desc:"VendVite confie a un nombre restreint de courtiers une page privee qui transforme une adresse en mandat.",
+      inv_meta_desc:"VendVite confie à un nombre restreint de courtiers une page privée qui transforme une adresse en mandat.",
       inv_eyebrow:"Sur invitation seulement",
-      inv_title:"Les meilleurs courtiers ne courent plus apres les vendeurs.",
-      inv_lede:"VendVite remet a un cercle restreint de courtiers une page privee qui transforme une simple adresse en mandat signe. Laissez vos coordonnees. Si votre secteur est encore libre, votre invitation suivra.",
+      inv_title:"Les meilleurs courtiers ne courent plus après les vendeurs.",
+      inv_lede:"VendVite remet à un cercle restreint de courtiers une page privée qui transforme une simple adresse en mandat signé. Laissez vos coordonnées. Si votre secteur est encore libre, votre invitation suivra.",
       inv_form_title:"Demander une invitation",
-      inv_form_sub:"Quatre renseignements. Rien de plus. Nous verifions la disponibilite de votre secteur avant de repondre.",
+      inv_form_sub:"Quatre renseignements. Rien de plus. Nous vérifions la disponibilité de votre secteur avant de répondre.",
       inv_f_name:"Nom complet",
       inv_f_name_ph:"Ex. Marie Tremblay",
       inv_f_agency:"Agence",
       inv_f_agency_ph:"Ex. RE/MAX Signature",
-      inv_f_phone:"Telephone",
+      inv_f_phone:"Téléphone",
       inv_f_phone_ph:"(514) 000-0000",
       inv_f_email:"Courriel",
       inv_f_email_ph:"vous@exemple.com",
       inv_f_submit:"Demander mon invitation",
       inv_f_sending:"Envoi…",
-      inv_fineprint:"Aucun engagement a cette etape. Votre invitation vous donne acces a votre page, que vous pourrez batir avant toute activation.",
-      inv_done_title:"Votre demande est scellee.",
-      inv_done_text:"Verifiez votre courriel : votre invitation contient le lien prive vers votre page VendVite.",
-      inv_mark_1:"Une page privee, a votre nom et a vos couleurs.",
-      inv_mark_2:"Chaque adresse saisie devient une piste qualifiee.",
-      inv_mark_3:"Les pistes vous parviennent instantanement, a vous seul.",
-      inv_foot:"Cercle prive de courtiers",
+      inv_fineprint:"Aucun engagement à cette étape. Votre invitation vous donne accès à votre page, que vous pourrez bâtir avant toute activation.",
+      inv_done_title:"Votre demande est scellée.",
+      inv_done_text:"Vérifiez votre courriel : votre invitation contient le lien privé vers votre page VendVite.",
+      inv_mark_1:"Une page privée, à votre nom et à vos couleurs.",
+      inv_mark_2:"Chaque adresse saisie devient une piste qualifiée.",
+      inv_mark_3:"Les pistes vous parviennent instantanément, à vous seul.",
+      inv_foot:"Cercle privé de courtiers",
       inv_err_required:"Tous les champs sont requis.",
       inv_err_email:"Ce courriel semble invalide.",
-      inv_err_generic:"Un probleme est survenu. Veuillez reessayer.",
-      inv_err_dup:"Une invitation a deja ete envoyee a ce courriel. Verifiez votre boite de reception.",
+      inv_err_generic:"Un problème est survenu. Veuillez réessayer.",
+      inv_err_dup:"Une invitation a déjà été envoyée à ce courriel. Vérifiez votre boîte de réception.",
     },
     en: {
       meta_title:"Free home valuation",
@@ -600,16 +600,16 @@ module.exports = function(services){
       + (fr ? 'Votre page vous attend, ' : 'Your page is waiting, ') + escapeHtml(broker.full_name.split(' ')[0]) + '.</h1>'
       + '<p style="color:rgba(245,239,230,.64);font-size:15px;line-height:1.6;margin:0 0 22px">'
       + (fr
-        ? 'Votre place dans le cercle VendVite est reservee. Le lien ci-dessous ouvre votre page privee — vous pouvez la batir, la personnaliser et la previsualiser des maintenant, sans aucun engagement.'
+        ? 'Votre place dans le cercle VendVite est réservée. Le lien ci-dessous ouvre votre page privée — vous pouvez la bâtir, la personnaliser et la prévisualiser dès maintenant, sans aucun engagement.'
         : 'Your place in the VendVite circle is reserved. The link below opens your private page — build it, personalise it and preview it right away, with no commitment.')
       + '</p>'
       + '<a href="' + link + '" style="display:block;text-align:center;padding:16px;border-radius:4px;background:#E30B2D;color:#fff;text-decoration:none;font-family:Georgia,serif;font-weight:bold;font-size:16px;box-shadow:inset 0 0 0 1.5px rgba(199,154,91,.5)">'
-      + (fr ? 'Ouvrir ma page privee' : 'Open my private page') + '</a>'
+      + (fr ? 'Ouvrir ma page privée' : 'Open my private page') + '</a>'
       + '<p style="color:rgba(245,239,230,.34);font-size:12.5px;line-height:1.6;margin:20px 0 0">'
-      + (fr ? 'Votre adresse reservee : ' : 'Your reserved address: ') + '<span style="color:#C79A5B">' + pageUrl + '</span><br>'
+      + (fr ? 'Votre adresse réservée : ' : 'Your reserved address: ') + '<span style="color:#C79A5B">' + pageUrl + '</span><br>'
       + (fr ? 'Ce lien est personnel et expire dans 72 heures.' : 'This link is personal and expires in 72 hours.')
       + '</p></div></div>';
-    var text = (fr ? 'Votre page privee VendVite : ' : 'Your private VendVite page: ') + link;
+    var text = (fr ? 'Votre page privée VendVite : ' : 'Your private VendVite page: ') + link;
     return await services.email.send({ to: broker.email, subject: subject, html: html, text: text });
   }
 
@@ -1037,7 +1037,7 @@ module.exports = function(services){
     var esc = escapeHtml;
     var rows = [
       ['Nom', lead.name], ['Adresse', lead.address], ['Courriel', lead.email],
-      ['Telephone', lead.phone ? formatPhone(lead.phone) : ''], ['Echeancier', lead.timeframe]
+      ['Téléphone', lead.phone ? formatPhone(lead.phone) : ''], ['Échéancier', lead.timeframe]
     ].filter(function(r){ return r[1]; });
     var html = ''
       + '<div style="background:#0D0A0B;padding:30px 20px;font-family:Inter,-apple-system,Segoe UI,Roboto,sans-serif">'
