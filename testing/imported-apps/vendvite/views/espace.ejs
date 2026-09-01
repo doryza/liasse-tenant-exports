@@ -56,37 +56,51 @@
                 <span>Téléverser une photo</span>
               </label>
               <p class="esp-hint" id="photoHint">JPG, PNG ou WebP · 8&nbsp;Mo max</p>
+              <p class="esp-help">Votre portrait — affiché dans la section «&nbsp;Votre courtier&nbsp;» de votre page et comme image de partage sur les réseaux sociaux.</p>
             </div>
           </div>
-          <div class="esp-f"><label for="f_agent_name">Nom affiché</label><input id="f_agent_name" data-k="agent_name" value="<%= profile.agent_name || broker.full_name %>"></div>
-          <div class="esp-f"><label for="f_agent_title">Titre</label><input id="f_agent_title" data-k="agent_title" placeholder="Courtier immobilier résidentiel" value="<%= profile.agent_title || '' %>"></div>
-          <div class="esp-f"><label for="f_agency">Agence</label><input id="f_agency" data-k="agency" value="<%= profile.agency || broker.agency || '' %>"></div>
+          <div class="esp-f"><label for="f_agent_name">Nom affiché</label><input id="f_agent_name" data-k="agent_name" value="<%= profile.agent_name || broker.full_name %>">
+            <p class="esp-help">Votre nom tel qu'il apparaît partout&nbsp;: barre du haut, section courtier, pied de page.</p></div>
+          <div class="esp-f"><label for="f_agent_title">Titre</label><input id="f_agent_title" data-k="agent_title" placeholder="<%= t.agent_title %>" value="<%= profile.agent_title || '' %>">
+            <p class="esp-help">Votre titre professionnel, sous votre nom dans la section courtier. Vide = «&nbsp;<%= t.agent_title %>&nbsp;».</p></div>
+          <div class="esp-f"><label for="f_agency">Agence</label><input id="f_agency" data-k="agency" value="<%= profile.agency || broker.agency || '' %>">
+            <p class="esp-help">Le nom de votre agence, affiché sous votre titre dans la section courtier.</p></div>
           <div class="esp-2">
-            <div class="esp-f"><label for="f_agent_phone">Téléphone</label><input id="f_agent_phone" data-k="agent_phone" value="<%= profile.agent_phone || broker.phone || '' %>"></div>
-            <div class="esp-f"><label for="f_agent_email">Courriel</label><input id="f_agent_email" data-k="agent_email" value="<%= profile.agent_email || broker.email %>"></div>
+            <div class="esp-f"><label for="f_agent_phone">Téléphone</label><input id="f_agent_phone" data-k="agent_phone" value="<%= profile.agent_phone || broker.phone || '' %>">
+              <p class="esp-help">Bouton d'appel dans la barre du haut de votre page.</p></div>
+            <div class="esp-f"><label for="f_agent_email">Courriel</label><input id="f_agent_email" data-k="agent_email" value="<%= profile.agent_email || broker.email %>">
+              <p class="esp-help">C'est ici que chaque nouvelle piste vous est envoyée — jamais affiché publiquement.</p></div>
           </div>
         </div>
 
         <div class="esp-col">
           <h2 class="esp-h">Votre accroche</h2>
-          <div class="esp-f"><label for="f_hero_title">Titre principal</label><textarea id="f_hero_title" data-k="hero_title" rows="2" placeholder="<%= t.hero_title %>"><%= profile.hero_title || '' %></textarea></div>
-          <div class="esp-f"><label for="f_hero_sub">Sous-titre</label><textarea id="f_hero_sub" data-k="hero_sub" rows="3" placeholder="<%= t.hero_sub %>"><%= profile.hero_sub || '' %></textarea></div>
-          <div class="esp-f"><label for="f_hero_note">Note sous le champ</label><input id="f_hero_note" data-k="hero_note" placeholder="<%= t.hero_note %>" value="<%= profile.hero_note || '' %>"></div>
+          <div class="esp-f"><label for="f_hero_title">Titre principal</label><textarea id="f_hero_title" data-k="hero_title" rows="2" placeholder="<%= t.hero_title %>"><%= profile.hero_title || '' %></textarea>
+            <p class="esp-help">Le grand titre en haut de votre page. Vide = le texte grisé ci-dessus reste affiché.</p></div>
+          <div class="esp-f"><label for="f_hero_sub">Sous-titre</label><textarea id="f_hero_sub" data-k="hero_sub" rows="3" placeholder="<%= t.hero_sub %>"><%= profile.hero_sub || '' %></textarea>
+            <p class="esp-help">Le paragraphe sous le titre — votre promesse au vendeur. Vide = texte par défaut.</p></div>
+          <div class="esp-f"><label for="f_hero_note">Note sous le champ</label><input id="f_hero_note" data-k="hero_note" placeholder="<%= t.hero_note %>" value="<%= profile.hero_note || '' %>">
+            <p class="esp-help">La ligne rassurante sous le champ d'adresse (frais, délai de réponse…). Vide = texte par défaut.</p></div>
 
           <h2 class="esp-h">Vos chiffres</h2>
+          <p class="esp-hint">Affichés dans la section «&nbsp;Les preuves en chiffres&nbsp;». Un champ vide garde la valeur du modèle.</p>
           <div class="esp-2">
-            <div class="esp-f"><label for="f_stat_homes">Propriétés vendues</label><input id="f_stat_homes" data-k="stat_homes" value="<%= profile.stat_homes || '' %>"></div>
-            <div class="esp-f"><label for="f_stat_days">Jours au marché</label><input id="f_stat_days" data-k="stat_days" value="<%= profile.stat_days || '' %>"></div>
+            <div class="esp-f"><label for="f_stat_homes">Propriétés vendues</label><input id="f_stat_homes" data-k="stat_homes" placeholder="<%= settings.stat_homes_sold || '0' %>" value="<%= profile.stat_homes || '' %>">
+              <p class="esp-help">Nombre total de propriétés que vous avez vendues.</p></div>
+            <div class="esp-f"><label for="f_stat_days">Jours au marché</label><input id="f_stat_days" data-k="stat_days" placeholder="<%= settings.stat_avg_days || '0' %>" value="<%= profile.stat_days || '' %>">
+              <p class="esp-help">Durée moyenne avant vente, en jours.</p></div>
           </div>
           <div class="esp-2">
-            <div class="esp-f"><label for="f_stat_ratio">Ratio vendu/demandé</label><input id="f_stat_ratio" data-k="stat_ratio" value="<%= profile.stat_ratio || '' %>"></div>
-            <div class="esp-f"><label for="f_stat_volume">Volume (M$)</label><input id="f_stat_volume" data-k="stat_volume" value="<%= profile.stat_volume || '' %>"></div>
+            <div class="esp-f"><label for="f_stat_ratio">Ratio vendu/demandé</label><input id="f_stat_ratio" data-k="stat_ratio" placeholder="<%= settings.stat_list_to_sale || '0' %>" value="<%= profile.stat_ratio || '' %>">
+              <p class="esp-help">Prix vendu vs prix demandé, en % (le «&nbsp;%&nbsp;» s'ajoute tout seul).</p></div>
+            <div class="esp-f"><label for="f_stat_volume">Volume (M$)</label><input id="f_stat_volume" data-k="stat_volume" placeholder="<%= settings.stat_career_volume || '0' %>" value="<%= profile.stat_volume || '' %>">
+              <p class="esp-help">Volume de carrière en millions de dollars (le «&nbsp;M$&nbsp;» s'ajoute tout seul).</p></div>
           </div>
         </div>
       </div>
 
       <h2 class="esp-h">Vos liens</h2>
-      <p class="esp-hint">Réseaux sociaux, site d'agence, fiche Centris. Retirez ceux que vous ne voulez pas afficher.</p>
+      <p class="esp-hint">Facebook, Instagram, LinkedIn, YouTube et TikTok deviennent des icônes au pied de page&nbsp;; les autres liens (site d'agence, fiche Centris…) s'affichent en boutons. Aucun lien = rien n'apparaît.</p>
       <div id="linkList" class="esp-links"></div>
       <button class="esp-ghost" id="addLink" type="button">+ Ajouter un lien</button>
 

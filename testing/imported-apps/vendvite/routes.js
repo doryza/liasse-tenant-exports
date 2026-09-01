@@ -1053,8 +1053,22 @@ module.exports = function(services){
     if (prof.hero_title) t.hero_title = prof.hero_title;
     if (prof.hero_sub) t.hero_sub = prof.hero_sub;
     if (prof.hero_note) t.hero_note = prof.hero_note;
-    ['stat_homes','stat_days','stat_ratio','stat_volume'].forEach(function(k){
-      if (prof[k]) settings[k] = prof[k];
+    // Profile keys → the TEMPLATE's real setting keys (the page reads
+    // stat_homes_sold / stat_avg_days / stat_list_to_sale / stat_career_volume).
+    var STAT_MAP = { stat_homes:'stat_homes_sold', stat_days:'stat_avg_days', stat_ratio:'stat_list_to_sale', stat_volume:'stat_career_volume' };
+    Object.keys(STAT_MAP).forEach(function(k){ if (prof[k]) settings[STAT_MAP[k]] = prof[k]; });
+    // Identity into the « Votre courtier » section (t-keys, not settings)
+    if (prof.agent_title) t.agent_title = prof.agent_title;
+    if (prof.agency || broker.agency) t.agent_remax = prof.agency || broker.agency;
+    // Footer socials are the BROKER's own — never the template's seeded
+    // placeholders. Recognized platforms become footer icons; the rest render
+    // as link pills; none at all → nothing shows.
+    var SOCIAL_RE = { social_facebook:/facebook\.com/i, social_instagram:/instagram\.com/i, social_linkedin:/linkedin\.com/i, social_youtube:/youtu\.?be/i, social_tiktok:/tiktok\.com/i };
+    Object.keys(SOCIAL_RE).forEach(function(k){ settings[k] = ''; });
+    var otherLinks = [];
+    (Array.isArray(prof.links) ? prof.links : []).forEach(function(l){
+      var hit = Object.keys(SOCIAL_RE).find(function(k){ return SOCIAL_RE[k].test(l.url) && !settings[k]; });
+      if (hit) settings[hit] = l.url; else otherLinks.push(l);
     });
     var testimonials = Array.isArray(prof.testimonials) && prof.testimonials.length
       ? prof.testimonials.map(function(x, i){ return Object.assign({ id: 'p' + i, published: 1, sort_order: i }, x); })
@@ -1067,7 +1081,7 @@ module.exports = function(services){
       posts: posts || [],
       isHome: true,
       brokerSlug: broker.slug,
-      brokerLinks: Array.isArray(prof.links) ? prof.links : [],
+      brokerLinks: otherLinks,
       isPreview: !!isPreview,
       canonical: absoluteUrl(req, '/' + broker.slug)
     }));
@@ -1098,6 +1112,8 @@ module.exports = function(services){
   async function notifyBrokerOfLead(req, broker, lead){
     var fr = true;
     var esc = escapeHtml;
+    // The espace « Courriel » field is where pistes land — account email as fallback.
+    var leadInbox = (brokerProfile(broker).agent_email || broker.email);
     var rows = [
       ['Nom', lead.name], ['Adresse', lead.address], ['Courriel', lead.email],
       ['Téléphone', lead.phone ? formatPhone(lead.phone) : ''], ['Échéancier', lead.timeframe]
@@ -1116,7 +1132,7 @@ module.exports = function(services){
       + '<a href="' + absoluteUrl(req, '/espace') + '" style="display:block;text-align:center;margin-top:22px;padding:14px;border-radius:4px;background:#E30B2D;color:#fff;text-decoration:none;font-family:Georgia,serif;font-weight:bold">Ouvrir mon espace</a>'
       + '</div></div>';
     return await services.email.send({
-      to: broker.email,
+      to: leadInbox,
       subject: 'Nouvelle piste — ' + lead.name,
       html: html,
       text: 'Nouvelle piste: ' + lead.name + ' — ' + lead.address

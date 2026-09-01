@@ -1,5 +1,12 @@
 <%- include('partials/header') %>
 <% if (typeof isPreview !== 'undefined' && isPreview) { %>
+<style>
+  /* Preview banner is FIXED above the sticky topbar: without the offsets the
+     two fight for top:0 and the banner sits on the logo. */
+  .bp-preview{position:fixed;top:0;left:0;right:0;z-index:300;min-height:38px;display:flex;align-items:center;justify-content:center;gap:6px;}
+  body{padding-top:38px;}
+  .topbar{top:38px;}
+</style>
 <div class="bp-preview">Aperçu privé — cette page n'est pas encore publique. <a href="espace">Retour à mon espace</a></div>
 <% } %>
 <script>window.VV_BROKER = <%- JSON.stringify(typeof brokerSlug !== 'undefined' ? brokerSlug : null) %>;</script>
