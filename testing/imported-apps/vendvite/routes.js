@@ -77,7 +77,39 @@ module.exports = function(services){
       footer_disclaimer:"Chaque agence RE/MAX est une entreprise indépendante et autonome. Courtier immobilier — permis OACIQ.",
       footer_rights:"Tous droits réservés.",
       push_btn:"Activer les alertes de ventes",
-      back_home:"Retour à l'accueil"
+      back_home:"Retour à l'accueil",
+      exp_eyebrow:"Lien echu",
+      exp_title:"Ce lien a expire.",
+      exp_lede:"Par securite, chaque lien d'acces est personnel et vit 72 heures. Demandez-en un nouveau et il arrivera dans votre boite en quelques instants.",
+      exp_cta:"Demander un nouveau lien",
+      inv_meta_title:"Sur invitation seulement",
+      inv_meta_desc:"VendVite confie a un nombre restreint de courtiers une page privee qui transforme une adresse en mandat.",
+      inv_eyebrow:"Sur invitation seulement",
+      inv_title:"Les meilleurs courtiers ne courent plus apres les vendeurs.",
+      inv_lede:"VendVite remet a un cercle restreint de courtiers une page privee qui transforme une simple adresse en mandat signe. Laissez vos coordonnees. Si votre secteur est encore libre, votre invitation suivra.",
+      inv_form_title:"Demander une invitation",
+      inv_form_sub:"Quatre renseignements. Rien de plus. Nous verifions la disponibilite de votre secteur avant de repondre.",
+      inv_f_name:"Nom complet",
+      inv_f_name_ph:"Ex. Marie Tremblay",
+      inv_f_agency:"Agence",
+      inv_f_agency_ph:"Ex. RE/MAX Signature",
+      inv_f_phone:"Telephone",
+      inv_f_phone_ph:"(514) 000-0000",
+      inv_f_email:"Courriel",
+      inv_f_email_ph:"vous@exemple.com",
+      inv_f_submit:"Demander mon invitation",
+      inv_f_sending:"Envoi…",
+      inv_fineprint:"Aucun engagement a cette etape. Votre invitation vous donne acces a votre page, que vous pourrez batir avant toute activation.",
+      inv_done_title:"Votre demande est scellee.",
+      inv_done_text:"Verifiez votre courriel : votre invitation contient le lien prive vers votre page VendVite.",
+      inv_mark_1:"Une page privee, a votre nom et a vos couleurs.",
+      inv_mark_2:"Chaque adresse saisie devient une piste qualifiee.",
+      inv_mark_3:"Les pistes vous parviennent instantanement, a vous seul.",
+      inv_foot:"Cercle prive de courtiers",
+      inv_err_required:"Tous les champs sont requis.",
+      inv_err_email:"Ce courriel semble invalide.",
+      inv_err_generic:"Un probleme est survenu. Veuillez reessayer.",
+      inv_err_dup:"Une invitation a deja ete envoyee a ce courriel. Verifiez votre boite de reception.",
     },
     en: {
       meta_title:"Free home valuation",
@@ -147,7 +179,39 @@ module.exports = function(services){
       footer_disclaimer:"Each RE/MAX office is independently owned and operated. Real estate broker — OACIQ licence.",
       footer_rights:"All rights reserved.",
       push_btn:"Enable sales alerts",
-      back_home:"Back to home"
+      back_home:"Back to home",
+      exp_eyebrow:"Link expired",
+      exp_title:"This link has expired.",
+      exp_lede:"For safety, every access link is personal and lives 72 hours. Request a new one and it lands in your inbox within moments.",
+      exp_cta:"Request a new link",
+      inv_meta_title:"By invitation only",
+      inv_meta_desc:"VendVite gives a small circle of brokers a private page that turns an address into a signed mandate.",
+      inv_eyebrow:"By invitation only",
+      inv_title:"The best brokers stopped chasing sellers.",
+      inv_lede:"VendVite hands a restricted circle of brokers a private page that turns a simple address into a signed mandate. Leave your details. If your territory is still open, your invitation follows.",
+      inv_form_title:"Request an invitation",
+      inv_form_sub:"Four details. Nothing more. We check your territory before replying.",
+      inv_f_name:"Full name",
+      inv_f_name_ph:"e.g. Marie Tremblay",
+      inv_f_agency:"Agency",
+      inv_f_agency_ph:"e.g. RE/MAX Signature",
+      inv_f_phone:"Phone",
+      inv_f_phone_ph:"(514) 000-0000",
+      inv_f_email:"Email",
+      inv_f_email_ph:"you@example.com",
+      inv_f_submit:"Request my invitation",
+      inv_f_sending:"Sending…",
+      inv_fineprint:"No commitment at this stage. Your invitation unlocks your page, which you can build before any activation.",
+      inv_done_title:"Your request is sealed.",
+      inv_done_text:"Check your inbox: your invitation holds the private link to your VendVite page.",
+      inv_mark_1:"A private page, in your name and your colours.",
+      inv_mark_2:"Every address entered becomes a qualified lead.",
+      inv_mark_3:"Leads reach you instantly, and you alone.",
+      inv_foot:"Private circle of brokers",
+      inv_err_required:"All fields are required.",
+      inv_err_email:"That email looks invalid.",
+      inv_err_generic:"Something went wrong. Please try again.",
+      inv_err_dup:"An invitation was already sent to this email. Check your inbox.",
     }
   };
 
@@ -398,6 +462,667 @@ module.exports = function(services){
   });
 
   router.post('/api/admin/generate-image', async function(req,res){ if(!apiAdmin(req,res))return; try{ var prompt=req.body.prompt; var ar=req.body.aspectRatio||'16:9'; if(!prompt) return res.status(400).json({ error:'prompt' }); var url=await services.ai.generateImage(prompt, { aspectRatio:ar }); res.json({ imageUrl:url }); }catch(e){ console.error('genimg', e); res.status(500).json({ error:'La génération a échoué. Téléversez une image manuellement.' }); } });
+
+  // ══ Cercle de courtiers — invitation, espace privé, page publique ══════
+  //
+  // Membership lifecycle: invited → active (paid) → expired/cancelled.
+  // A broker may edit and preview their page at ANY status; only `active`
+  // + published makes the public page reachable and lead capture live.
+  // Payment is a PayPal subscription; PAYPAL_* come from api_variables
+  // (services.externalVars), never hardcoded.
+
+  var BROKER_COOKIE = 'vv_courtier';
+  var BROKER_TOKEN_TTL_H = 72;
+  var PRICE_BASE = 599;
+  var TAX_GST = 0.05;
+  var TAX_QST = 0.09975;
+  function priceLines(){
+    var gst = Math.round(PRICE_BASE * TAX_GST * 100) / 100;
+    var qst = Math.round(PRICE_BASE * TAX_QST * 100) / 100;
+    return { base: PRICE_BASE, gst: gst, qst: qst, total: Math.round((PRICE_BASE + gst + qst) * 100) / 100 };
+  }
+
+  // Paths the broker-slug catch-all must never swallow.
+  var RESERVED_SLUGS = ['api','admin','acces','espace','journal','public','manifest.json','sw.js','favicon.ico','robots.txt','_platform','__preview','courtier','courtiers','index'];
+
+  function slugifyPart(s){
+    return String(s || '')
+      .normalize('NFD').replace(/[̀-ͯ]/g, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .slice(0, 40);
+  }
+
+  async function uniqueBrokerSlug(name, agency){
+    var base = [slugifyPart(name), slugifyPart(agency)].filter(Boolean).join('-') || 'courtier';
+    if (RESERVED_SLUGS.indexOf(base) !== -1) base = base + '-courtier';
+    var candidate = base, n = 1;
+    while (true) {
+      var hit = await db.get('SELECT id FROM brokers WHERE slug=$1', [candidate]);
+      if (!hit) return candidate;
+      n++;
+      candidate = base + '-' + n;
+    }
+  }
+
+  function brokerIsActive(b){
+    if (!b || b.status !== 'active') return false;
+    if (!b.membership_expires_at) return false;
+    return new Date(b.membership_expires_at).getTime() > Date.now();
+  }
+  function brokerPageLive(b){ return brokerIsActive(b) && Number(b.published) === 1; }
+
+  function brokerProfile(b){
+    var p = {};
+    try { p = (b && b.profile) ? (typeof b.profile === 'string' ? JSON.parse(b.profile) : b.profile) : {}; } catch(e){ p = {}; }
+    return p || {};
+  }
+
+  async function logBrokerEvent(brokerId, kind, detail){
+    try { await db.run('INSERT INTO broker_events (broker_id,kind,detail) VALUES ($1,$2,$3)', [brokerId, kind, (detail || '').slice(0, 500)]); } catch(e){}
+  }
+
+  function absoluteUrl(req, path){
+    try { if (typeof req.tenantUrl === 'function') return req.tenantUrl(path); } catch(e){}
+    var proto = (req.headers['x-forwarded-proto'] || req.protocol || 'https').split(',')[0];
+    return proto + '://' + req.get('host') + (path.charAt(0) === '/' ? path : '/' + path);
+  }
+
+  // ── Magic-link tokens (hash-at-rest; the raw token only ever exists in the email)
+  async function mintBrokerToken(brokerId, purpose){
+    var raw = services.crypto.randomBytes(32);
+    var hash = services.crypto.sha256(raw);
+    var expires = new Date(Date.now() + BROKER_TOKEN_TTL_H * 3600 * 1000).toISOString();
+    await db.run('INSERT INTO broker_tokens (broker_id,token_hash,purpose,expires_at) VALUES ($1,$2,$3,$4)', [brokerId, hash, purpose || 'access', expires]);
+    return raw;
+  }
+
+  async function consumeBrokerToken(raw){
+    if (!raw || typeof raw !== 'string' || raw.length < 20) return null;
+    var hash = services.crypto.sha256(raw);
+    var row = await db.get('SELECT * FROM broker_tokens WHERE token_hash=$1', [hash]);
+    if (!row) return null;
+    if (row.used_at) return null;
+    if (row.expires_at && new Date(row.expires_at).getTime() < Date.now()) return null;
+    await db.run('UPDATE broker_tokens SET used_at=NOW() WHERE id=$1', [row.id]);
+    return await db.get('SELECT * FROM brokers WHERE id=$1', [row.broker_id]);
+  }
+
+  // ── Broker session: signed cookie (HMAC over id, keyed by the platform JWT secret)
+  function signBrokerSession(id){
+    var payload = String(id) + '.' + Date.now();
+    var sig = require('crypto').createHmac('sha256', services.jwtSecret || 'vv').update(payload).digest('hex').slice(0, 32);
+    return payload + '.' + sig;
+  }
+  function readBrokerSession(raw){
+    if (!raw) return null;
+    var parts = String(raw).split('.');
+    if (parts.length !== 3) return null;
+    var payload = parts[0] + '.' + parts[1];
+    var expect = require('crypto').createHmac('sha256', services.jwtSecret || 'vv').update(payload).digest('hex').slice(0, 32);
+    var a = Buffer.from(parts[2]);
+    var b = Buffer.from(expect);
+    if (a.length !== b.length || !require('crypto').timingSafeEqual(a, b)) return null;
+    if (Date.now() - Number(parts[1]) > 30 * 24 * 3600 * 1000) return null;
+    return Number(parts[0]);
+  }
+
+  async function currentBroker(req){
+    var id = readBrokerSession(req.cookies ? req.cookies[BROKER_COOKIE] : null);
+    if (!id) return null;
+    return await db.get('SELECT * FROM brokers WHERE id=$1', [id]);
+  }
+
+  async function requireBroker(req, res){
+    var b = await currentBroker(req);
+    if (!b) { res.redirect('acces-expire'); return null; }
+    return b;
+  }
+  async function requireBrokerApi(req, res){
+    var b = await currentBroker(req);
+    if (!b) { res.status(401).json({ error: 'session' }); return null; }
+    return b;
+  }
+
+  // ── Invitation email
+  async function sendInviteEmail(req, broker, rawToken, lang){
+    var link = absoluteUrl(req, '/acces/' + rawToken);
+    var fr = (lang !== 'en');
+    var subject = fr ? 'Votre invitation VendVite' : 'Your VendVite invitation';
+    var pageUrl = absoluteUrl(req, '/' + broker.slug);
+    var html = ''
+      + '<div style="background:#0D0A0B;padding:34px 20px;font-family:Inter,-apple-system,Segoe UI,Roboto,sans-serif">'
+      + '<div style="max-width:520px;margin:0 auto;background:linear-gradient(165deg,#171213,#0f0b0c);border:1px solid rgba(245,239,230,.12);border-radius:10px;padding:32px 28px;color:#F5EFE6">'
+      + '<div style="font-family:IBM Plex Mono,monospace;font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:#C79A5B;margin-bottom:18px">'
+      + (fr ? 'Sur invitation seulement' : 'By invitation only') + '</div>'
+      + '<h1 style="font-family:Georgia,serif;font-size:25px;line-height:1.15;margin:0 0 14px;color:#F5EFE6">'
+      + (fr ? 'Votre page vous attend, ' : 'Your page is waiting, ') + escapeHtml(broker.full_name.split(' ')[0]) + '.</h1>'
+      + '<p style="color:rgba(245,239,230,.64);font-size:15px;line-height:1.6;margin:0 0 22px">'
+      + (fr
+        ? 'Votre place dans le cercle VendVite est reservee. Le lien ci-dessous ouvre votre page privee — vous pouvez la batir, la personnaliser et la previsualiser des maintenant, sans aucun engagement.'
+        : 'Your place in the VendVite circle is reserved. The link below opens your private page — build it, personalise it and preview it right away, with no commitment.')
+      + '</p>'
+      + '<a href="' + link + '" style="display:block;text-align:center;padding:16px;border-radius:4px;background:#E30B2D;color:#fff;text-decoration:none;font-family:Georgia,serif;font-weight:bold;font-size:16px;box-shadow:inset 0 0 0 1.5px rgba(199,154,91,.5)">'
+      + (fr ? 'Ouvrir ma page privee' : 'Open my private page') + '</a>'
+      + '<p style="color:rgba(245,239,230,.34);font-size:12.5px;line-height:1.6;margin:20px 0 0">'
+      + (fr ? 'Votre adresse reservee : ' : 'Your reserved address: ') + '<span style="color:#C79A5B">' + pageUrl + '</span><br>'
+      + (fr ? 'Ce lien est personnel et expire dans 72 heures.' : 'This link is personal and expires in 72 hours.')
+      + '</p></div></div>';
+    var text = (fr ? 'Votre page privee VendVite : ' : 'Your private VendVite page: ') + link;
+    return await services.email.send({ to: broker.email, subject: subject, html: html, text: text });
+  }
+
+  function escapeHtml(s){
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+      return ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[c];
+    });
+  }
+
+  // ── POST /api/courtier/candidature — the homepage form
+  router.post('/api/courtier/candidature', async function(req, res){
+    try{
+      var b = req.body || {};
+      var lang = req.lang || 'fr';
+      var TT = T[lang] || T.fr;
+      var name = String(b.name || '').trim().slice(0, 120);
+      var agency = String(b.agency || '').trim().slice(0, 120);
+      var phone = String(b.phone || '').trim().slice(0, 40);
+      var email = String(b.email || '').trim().toLowerCase().slice(0, 190);
+      if (!name || !agency || !phone || !email) return res.status(400).json({ error: TT.inv_err_required });
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return res.status(400).json({ error: TT.inv_err_email });
+
+      var existing = await db.get('SELECT * FROM brokers WHERE LOWER(email)=$1', [email]);
+      if (existing) {
+        // Re-invite rather than leak whether the address is already enrolled.
+        var reToken = await mintBrokerToken(existing.id, 'access');
+        try { await sendInviteEmail(req, existing, reToken, lang); } catch(e){ console.error('invite resend', e); }
+        await logBrokerEvent(existing.id, 'invite_resent', email);
+        return res.json({ success: true, message: TT.inv_done_text });
+      }
+
+      var slug = await uniqueBrokerSlug(name, agency);
+      var ins = await db.get(
+        'INSERT INTO brokers (slug,full_name,agency,phone,email,status,profile) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *',
+        [slug, name, agency, phone, email, 'invited', JSON.stringify({
+          agent_name: name,
+          agency: agency,
+          agent_phone: phone,
+          agent_email: email,
+          hero_title: null,
+          links: []
+        })]
+      );
+      var raw = await mintBrokerToken(ins.id, 'access');
+      try { await sendInviteEmail(req, ins, raw, lang); }
+      catch(e){ console.error('invite email', e); }
+      await logBrokerEvent(ins.id, 'applied', agency + ' / ' + email);
+      res.json({ success: true, message: TT.inv_done_text, slug: slug });
+    }catch(e){
+      console.error('candidature', e);
+      var TT2 = T[req.lang || 'fr'] || T.fr;
+      res.status(500).json({ error: TT2.inv_err_generic });
+    }
+  });
+
+  // ── GET /acces/:token — magic link lands here, opens the private space
+  router.get('/acces/:token', async function(req, res){
+    try{
+      var broker = await consumeBrokerToken(req.params.token);
+      if (!broker) return res.redirect('../acces-expire');
+      res.cookie(BROKER_COOKIE, signBrokerSession(broker.id), {
+        httpOnly: true, sameSite: 'lax', secure: true, maxAge: 30 * 24 * 3600 * 1000
+      });
+      await db.run('UPDATE brokers SET last_seen_at=NOW() WHERE id=$1', [broker.id]);
+      await logBrokerEvent(broker.id, 'access_link_used', '');
+      res.redirect('../espace');
+    }catch(e){ console.error('acces', e); res.redirect('../acces-expire'); }
+  });
+
+
+  // ── Expired / invalid magic link
+  router.get('/acces-expire', async function(req, res){
+    var L = await baseLocals(req);
+    res.status(410).render('acces-expire', Object.assign(L, { isHome: false }));
+  });
+
+  // ── Broker private space
+  async function espaceLocals(req, broker){
+    var L = await baseLocals(req);
+    var leads = await db.all('SELECT * FROM broker_leads WHERE broker_id=$1 ORDER BY created_at DESC LIMIT 200', [broker.id]);
+    var counts = await db.get("SELECT COUNT(*)::int AS total, COUNT(*) FILTER (WHERE status='nouveau')::int AS fresh, COUNT(*) FILTER (WHERE created_at > NOW() - INTERVAL '30 days')::int AS recent FROM broker_leads WHERE broker_id=$1", [broker.id]);
+    return Object.assign(L, {
+      isHome: false,
+      broker: broker,
+      profile: brokerProfile(broker),
+      leads: leads || [],
+      counts: counts || { total: 0, fresh: 0, recent: 0 },
+      isActive: brokerIsActive(broker),
+      isLive: brokerPageLive(broker),
+      price: priceLines(),
+      pageUrl: absoluteUrl(req, '/' + broker.slug)
+    });
+  }
+
+  router.get('/espace', async function(req, res){
+    var broker = await requireBroker(req, res);
+    if (!broker) return;
+    try{
+      await db.run('UPDATE brokers SET last_seen_at=NOW() WHERE id=$1', [broker.id]);
+      res.render('espace', await espaceLocals(req, broker));
+    }catch(e){ console.error('espace', e); res.status(500).send('Erreur'); }
+  });
+
+  // Live preview of the broker's own page, regardless of published/paid state.
+  router.get('/espace/apercu', async function(req, res){
+    var broker = await requireBroker(req, res);
+    if (!broker) return;
+    try{ await renderBrokerPage(req, res, broker, true); }
+    catch(e){ console.error('apercu', e); res.status(500).send('Erreur'); }
+  });
+
+  router.post('/api/espace/profil', async function(req, res){
+    var broker = await requireBrokerApi(req, res);
+    if (!broker) return;
+    try{
+      var incoming = req.body && typeof req.body === 'object' ? req.body : {};
+      var current = brokerProfile(broker);
+      var ALLOWED = ['agent_name','agency','agent_phone','agent_email','agent_title','agent_photo_url','hero_title','hero_sub','hero_note','about','stat_homes','stat_days','stat_ratio','stat_volume','links','testimonials'];
+      var next = Object.assign({}, current);
+      ALLOWED.forEach(function(k){
+        if (!(k in incoming)) return;
+        var v = incoming[k];
+        if (k === 'links') {
+          if (!Array.isArray(v)) return;
+          next.links = v.slice(0, 12).map(function(l){
+            return {
+              label: String((l && l.label) || '').slice(0, 40),
+              url: String((l && l.url) || '').slice(0, 300)
+            };
+          }).filter(function(l){ return l.label && /^https?:\/\//i.test(l.url); });
+          return;
+        }
+        if (k === 'testimonials') {
+          if (!Array.isArray(v)) return;
+          next.testimonials = v.slice(0, 12).map(function(x){
+            return {
+              author: String((x && x.author) || '').slice(0, 80),
+              neighborhood: String((x && x.neighborhood) || '').slice(0, 80),
+              quote: String((x && x.quote) || '').slice(0, 600),
+              sale_result: String((x && x.sale_result) || '').slice(0, 80)
+            };
+          }).filter(function(x){ return x.author && x.quote; });
+          return;
+        }
+        next[k] = v == null ? null : String(v).slice(0, 1200);
+      });
+      await db.run('UPDATE brokers SET profile=$1, updated_at=NOW() WHERE id=$2', [JSON.stringify(next), broker.id]);
+      await logBrokerEvent(broker.id, 'profile_saved', '');
+      res.json({ success: true, profile: next });
+    }catch(e){ console.error('profil', e); res.status(500).json({ error: 'server' }); }
+  });
+
+  // Photo upload → Cloudinary, scoped to this broker's folder.
+  router.post('/api/espace/photo', async function(req, res){
+    var broker = await requireBrokerApi(req, res);
+    if (!broker) return;
+    try{
+      var dataUrl = (req.body && req.body.image) || '';
+      if (!/^data:image\/(png|jpe?g|webp);base64,/.test(dataUrl)) return res.status(400).json({ error: 'format' });
+      if (dataUrl.length > 8 * 1024 * 1024) return res.status(413).json({ error: 'taille' });
+      var up = await services.cloudinary.uploader.upload(dataUrl, {
+        folder: 'vendvite_courtiers/' + broker.slug,
+        public_id: 'portrait',
+        overwrite: true,
+        resource_type: 'image'
+      });
+      var url = (up && (up.secure_url || up.url)) || '';
+      if (!url) return res.status(502).json({ error: 'upload' });
+      var prof = brokerProfile(broker);
+      prof.agent_photo_url = url;
+      await db.run('UPDATE brokers SET profile=$1, updated_at=NOW() WHERE id=$2', [JSON.stringify(prof), broker.id]);
+      res.json({ success: true, url: url });
+    }catch(e){ console.error('photo', e); res.status(500).json({ error: 'server' }); }
+  });
+
+  router.post('/api/espace/publier', async function(req, res){
+    var broker = await requireBrokerApi(req, res);
+    if (!broker) return;
+    var want = req.body && req.body.published === false ? 0 : 1;
+    if (want === 1 && !brokerIsActive(broker)) {
+      return res.status(402).json({ error: 'abonnement', code: 'PAYMENT_REQUIRED' });
+    }
+    try{
+      await db.run('UPDATE brokers SET published=$1, updated_at=NOW() WHERE id=$2', [want, broker.id]);
+      await logBrokerEvent(broker.id, want ? 'published' : 'unpublished', '');
+      res.json({ success: true, published: want === 1 });
+    }catch(e){ console.error('publier', e); res.status(500).json({ error: 'server' }); }
+  });
+
+  router.get('/api/espace/leads', async function(req, res){
+    var broker = await requireBrokerApi(req, res);
+    if (!broker) return;
+    try{
+      var rows = await db.all('SELECT * FROM broker_leads WHERE broker_id=$1 ORDER BY created_at DESC LIMIT 500', [broker.id]);
+      res.json({ leads: rows || [] });
+    }catch(e){ res.status(500).json({ error: 'server' }); }
+  });
+
+  router.put('/api/espace/leads/:id', async function(req, res){
+    var broker = await requireBrokerApi(req, res);
+    if (!broker) return;
+    try{
+      var owned = await db.get('SELECT id FROM broker_leads WHERE id=$1 AND broker_id=$2', [req.params.id, broker.id]);
+      if (!owned) return res.status(404).json({ error: 'introuvable' });
+      var status = req.body && req.body.status ? String(req.body.status).slice(0, 40) : null;
+      var notes = req.body && req.body.notes != null ? String(req.body.notes).slice(0, 4000) : null;
+      await db.run('UPDATE broker_leads SET status=COALESCE($1,status), notes=COALESCE($2,notes), updated_at=NOW() WHERE id=$3', [status, notes, req.params.id]);
+      res.json({ success: true });
+    }catch(e){ res.status(500).json({ error: 'server' }); }
+  });
+
+
+  // ── PayPal subscription ($599/yr + GST + QST). Credentials come from the
+  //    tenant's api_variables (services.externalVars) — never hardcoded.
+  //    PAYPAL_MODE: 'live' | 'sandbox' (defaults to sandbox, fail-safe).
+  function paypalCfg(){
+    var v = services.externalVars || {};
+    var mode = (v.PAYPAL_MODE || 'sandbox').toLowerCase();
+    return {
+      mode: mode,
+      base: mode === 'live' ? 'https://api-m.paypal.com' : 'https://api-m.sandbox.paypal.com',
+      clientId: v.PAYPAL_CLIENT_ID || '',
+      secret: v.PAYPAL_SECRET || v.PAYPAL_CLIENT_SECRET || '',
+      planId: v.PAYPAL_PLAN_ID || '',
+      webhookId: v.PAYPAL_WEBHOOK_ID || ''
+    };
+  }
+  function paypalReady(c){ return !!(c.clientId && c.secret && c.planId); }
+
+  async function paypalToken(c){
+    var r = await services.fetch(c.base + '/v1/oauth2/token', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Basic ' + Buffer.from(c.clientId + ':' + c.secret).toString('base64'),
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: 'grant_type=client_credentials'
+    });
+    if (!r.ok) throw new Error('paypal auth ' + r.status);
+    var j = await r.json();
+    return j.access_token;
+  }
+
+  router.post('/api/espace/abonnement', async function(req, res){
+    var broker = await requireBrokerApi(req, res);
+    if (!broker) return;
+    var c = paypalCfg();
+    if (!paypalReady(c)) return res.status(503).json({ error: 'paypal_absent', code: 'NOT_CONFIGURED' });
+    try{
+      var token = await paypalToken(c);
+      var r = await services.fetch(c.base + '/v1/billing/subscriptions', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'PayPal-Request-Id': 'vv-' + broker.id + '-' + Date.now() },
+        body: JSON.stringify({
+          plan_id: c.planId,
+          custom_id: String(broker.id),
+          subscriber: {
+            name: { given_name: (broker.full_name || '').split(' ')[0] || 'Courtier', surname: (broker.full_name || '').split(' ').slice(1).join(' ') || '.' },
+            email_address: broker.email
+          },
+          application_context: {
+            brand_name: 'VendVite',
+            locale: (req.lang === 'en' ? 'en-CA' : 'fr-CA'),
+            user_action: 'SUBSCRIBE_NOW',
+            return_url: absoluteUrl(req, '/espace/abonnement/retour'),
+            cancel_url: absoluteUrl(req, '/espace')
+          }
+        })
+      });
+      var j = await r.json();
+      if (!r.ok) { console.error('paypal sub', j); return res.status(502).json({ error: 'paypal' }); }
+      var approve = (j.links || []).filter(function(l){ return l.rel === 'approve'; })[0];
+      await db.run('UPDATE brokers SET paypal_subscription_id=$1, updated_at=NOW() WHERE id=$2', [j.id, broker.id]);
+      await logBrokerEvent(broker.id, 'subscription_created', j.id);
+      res.json({ success: true, approveUrl: approve ? approve.href : null });
+    }catch(e){ console.error('abonnement', e); res.status(500).json({ error: 'server' }); }
+  });
+
+  async function activateBroker(broker, subscriptionId, detail){
+    var until = new Date(Date.now() + 365 * 24 * 3600 * 1000).toISOString();
+    await db.run(
+      'UPDATE brokers SET status=$1, membership_started_at=COALESCE(membership_started_at,NOW()), membership_expires_at=$2, paypal_subscription_id=COALESCE($3,paypal_subscription_id), updated_at=NOW() WHERE id=$4',
+      ['active', until, subscriptionId || null, broker.id]
+    );
+    await logBrokerEvent(broker.id, 'membership_activated', detail || '');
+  }
+
+  router.get('/espace/abonnement/retour', async function(req, res){
+    var broker = await requireBroker(req, res);
+    if (!broker) return;
+    var c = paypalCfg();
+    var subId = req.query.subscription_id || broker.paypal_subscription_id;
+    try{
+      if (paypalReady(c) && subId) {
+        var token = await paypalToken(c);
+        var r = await services.fetch(c.base + '/v1/billing/subscriptions/' + encodeURIComponent(subId), {
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+        var j = await r.json();
+        if (r.ok && (j.status === 'ACTIVE' || j.status === 'APPROVED')) {
+          await activateBroker(broker, subId, 'return:' + j.status);
+        }
+      }
+    }catch(e){ console.error('retour', e); }
+    res.redirect('../../espace');
+  });
+
+  router.post('/api/espace/abonnement/annuler', async function(req, res){
+    var broker = await requireBrokerApi(req, res);
+    if (!broker) return;
+    var c = paypalCfg();
+    try{
+      if (paypalReady(c) && broker.paypal_subscription_id) {
+        var token = await paypalToken(c);
+        await services.fetch(c.base + '/v1/billing/subscriptions/' + encodeURIComponent(broker.paypal_subscription_id) + '/cancel', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ reason: 'Annulation par le courtier' })
+        });
+      }
+      // Access runs to the end of the paid term — only the renewal stops.
+      await db.run("UPDATE brokers SET status='cancelled', updated_at=NOW() WHERE id=$1", [broker.id]);
+      await logBrokerEvent(broker.id, 'membership_cancelled', '');
+      res.json({ success: true });
+    }catch(e){ console.error('annuler', e); res.status(500).json({ error: 'server' }); }
+  });
+
+  // PayPal webhook. The event itself is UNTRUSTED — anyone can POST here, and
+  // a forged BILLING.SUBSCRIPTION.ACTIVATED would otherwise hand out a $599
+  // membership for free. So the event is only ever a NUDGE: we re-fetch the
+  // subscription from PayPal and act solely on the status PayPal reports.
+  router.post('/api/paypal/webhook', async function(req, res){
+    try{
+      var ev = req.body || {};
+      var resource = ev.resource || {};
+      var subId = resource.id || resource.billing_agreement_id || '';
+      var brokerId = resource.custom_id || (resource.subscriber && resource.subscriber.custom_id) || null;
+      var broker = null;
+      if (brokerId) broker = await db.get('SELECT * FROM brokers WHERE id=$1', [brokerId]);
+      if (!broker && subId) broker = await db.get('SELECT * FROM brokers WHERE paypal_subscription_id=$1', [subId]);
+      if (!broker) return res.json({ received: true });
+
+      var c = paypalCfg();
+      var lookupId = subId || broker.paypal_subscription_id;
+      if (!paypalReady(c) || !lookupId) return res.json({ received: true });
+
+      var token = await paypalToken(c);
+      var r = await services.fetch(c.base + '/v1/billing/subscriptions/' + encodeURIComponent(lookupId), {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+      if (!r.ok) return res.json({ received: true });
+      var sub = await r.json();
+
+      // Only PayPal's own answer moves money-bearing state.
+      if (sub.status === 'ACTIVE') {
+        await activateBroker(broker, lookupId, 'verified:' + (ev.event_type || 'webhook'));
+      } else if (['CANCELLED', 'EXPIRED', 'SUSPENDED'].indexOf(sub.status) !== -1) {
+        await db.run("UPDATE brokers SET status='expired', published=0, updated_at=NOW() WHERE id=$1", [broker.id]);
+        await logBrokerEvent(broker.id, 'membership_stopped', 'verified:' + sub.status);
+      }
+      res.json({ received: true });
+    }catch(e){ console.error('paypal webhook', e); res.json({ received: true }); }
+  });
+
+  // ── Public broker page. Renders the lead funnel under the broker's identity.
+  async function renderBrokerPage(req, res, broker, isPreview){
+    var L = await baseLocals(req);
+    var prof = brokerProfile(broker);
+    var settings = Object.assign({}, L.settings, {
+      agent_name: prof.agent_name || broker.full_name,
+      agent_phone: prof.agent_phone || broker.phone,
+      agent_email: prof.agent_email || broker.email,
+      agent_title: prof.agent_title || broker.agency,
+      agency: prof.agency || broker.agency,
+      _p_agent_image_url: prof.agent_photo_url || L.settings._p_agent_image_url || ''
+    });
+    var t = Object.assign({}, L.t);
+    if (prof.hero_title) t.hero_title = prof.hero_title;
+    if (prof.hero_sub) t.hero_sub = prof.hero_sub;
+    if (prof.hero_note) t.hero_note = prof.hero_note;
+    ['stat_homes','stat_days','stat_ratio','stat_volume'].forEach(function(k){
+      if (prof[k]) settings[k] = prof[k];
+    });
+    var testimonials = Array.isArray(prof.testimonials) && prof.testimonials.length
+      ? prof.testimonials.map(function(x, i){ return Object.assign({ id: 'p' + i, published: 1, sort_order: i }, x); })
+      : await db.all('SELECT * FROM testimonials WHERE published=1 ORDER BY sort_order ASC, created_at DESC');
+    var posts = await db.all('SELECT * FROM posts WHERE published=1 ORDER BY created_at DESC LIMIT 3');
+    res.render('broker-page', Object.assign(L, {
+      t: t,
+      settings: settings,
+      testimonials: testimonials || [],
+      posts: posts || [],
+      isHome: true,
+      brokerSlug: broker.slug,
+      brokerLinks: Array.isArray(prof.links) ? prof.links : [],
+      isPreview: !!isPreview,
+      canonical: absoluteUrl(req, '/' + broker.slug)
+    }));
+  }
+
+  // ── Lead capture from a broker page → broker_leads + instant email
+  router.post('/api/courtier/:slug/piste', async function(req, res){
+    try{
+      var broker = await db.get('SELECT * FROM brokers WHERE slug=$1', [req.params.slug]);
+      if (!broker) return res.status(404).json({ error: 'introuvable' });
+      if (!brokerPageLive(broker)) return res.status(403).json({ error: 'inactif' });
+      var b = req.body || {};
+      var name = String(b.name || '').trim().slice(0, 120);
+      var address = String(b.address || '').trim().slice(0, 300);
+      if (!name || !address) return res.status(400).json({ error: (T[req.lang || 'fr'] || T.fr).err_required });
+      var lat = b.lat ? Number(b.lat) : null;
+      var lng = b.lng ? Number(b.lng) : null;
+      var row = await db.get(
+        'INSERT INTO broker_leads (broker_id,name,email,phone,address,lat,lng,timeframe,status) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *',
+        [broker.id, name, String(b.email || '').trim().slice(0, 190), String(b.phone || '').trim().slice(0, 40), address,
+         isFinite(lat) ? lat : null, isFinite(lng) ? lng : null, String(b.timeframe || '').trim().slice(0, 80), 'nouveau']
+      );
+      notifyBrokerOfLead(req, broker, row).catch(function(e){ console.error('lead mail', e); });
+      res.json({ success: true });
+    }catch(e){ console.error('piste', e); res.status(500).json({ error: 'server' }); }
+  });
+
+  async function notifyBrokerOfLead(req, broker, lead){
+    var fr = true;
+    var esc = escapeHtml;
+    var rows = [
+      ['Nom', lead.name], ['Adresse', lead.address], ['Courriel', lead.email],
+      ['Telephone', lead.phone ? formatPhone(lead.phone) : ''], ['Echeancier', lead.timeframe]
+    ].filter(function(r){ return r[1]; });
+    var html = ''
+      + '<div style="background:#0D0A0B;padding:30px 20px;font-family:Inter,-apple-system,Segoe UI,Roboto,sans-serif">'
+      + '<div style="max-width:520px;margin:0 auto;background:linear-gradient(165deg,#171213,#0f0b0c);border:1px solid rgba(245,239,230,.12);border-radius:10px;padding:28px;color:#F5EFE6">'
+      + '<div style="font-family:IBM Plex Mono,monospace;font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:#C79A5B;margin-bottom:14px">Nouvelle piste</div>'
+      + '<h1 style="font-family:Georgia,serif;font-size:22px;margin:0 0 18px">' + esc(lead.name) + '</h1>'
+      + '<table style="width:100%;border-collapse:collapse;font-size:14px">'
+      + rows.map(function(r){
+          return '<tr><td style="padding:7px 0;color:rgba(245,239,230,.42);width:38%">' + esc(r[0]) + '</td>'
+            + '<td style="padding:7px 0;color:#F5EFE6">' + esc(r[1]) + '</td></tr>';
+        }).join('')
+      + '</table>'
+      + '<a href="' + absoluteUrl(req, '/espace') + '" style="display:block;text-align:center;margin-top:22px;padding:14px;border-radius:4px;background:#E30B2D;color:#fff;text-decoration:none;font-family:Georgia,serif;font-weight:bold">Ouvrir mon espace</a>'
+      + '</div></div>';
+    return await services.email.send({
+      to: broker.email,
+      subject: 'Nouvelle piste — ' + lead.name,
+      html: html,
+      text: 'Nouvelle piste: ' + lead.name + ' — ' + lead.address
+    });
+  }
+
+
+  // ── Operator: roster + manual activation. Needed because a broker cannot
+  //    self-activate until a PayPal plan exists, and for comped accounts.
+  router.get('/api/admin/courtiers', async function(req, res){
+    if(!apiAdmin(req,res)) return;
+    try{
+      var rows = await db.all(
+        'SELECT b.*, (SELECT COUNT(*)::int FROM broker_leads l WHERE l.broker_id=b.id) AS lead_count'
+        + ' FROM brokers b ORDER BY b.created_at DESC'
+      );
+      res.json({ courtiers: rows || [] });
+    }catch(e){ res.status(500).json({ error: 'server' }); }
+  });
+
+  router.post('/api/admin/courtiers/:id/activer', async function(req, res){
+    if(!apiAdmin(req,res)) return;
+    try{
+      var broker = await db.get('SELECT * FROM brokers WHERE id=$1', [req.params.id]);
+      if (!broker) return res.status(404).json({ error: 'introuvable' });
+      var months = Number(req.body && req.body.months) || 12;
+      var until = new Date(Date.now() + months * 30.44 * 24 * 3600 * 1000).toISOString();
+      await db.run(
+        "UPDATE brokers SET status='active', membership_started_at=COALESCE(membership_started_at,NOW()), membership_expires_at=$1, updated_at=NOW() WHERE id=$2",
+        [until, broker.id]
+      );
+      await logBrokerEvent(broker.id, 'membership_activated', 'operator/' + months + 'm');
+      res.json({ success: true, expires: until });
+    }catch(e){ res.status(500).json({ error: 'server' }); }
+  });
+
+  router.post('/api/admin/courtiers/:id/relancer', async function(req, res){
+    if(!apiAdmin(req,res)) return;
+    try{
+      var broker = await db.get('SELECT * FROM brokers WHERE id=$1', [req.params.id]);
+      if (!broker) return res.status(404).json({ error: 'introuvable' });
+      var raw = await mintBrokerToken(broker.id, 'access');
+      await sendInviteEmail(req, broker, raw, req.lang || 'fr');
+      await logBrokerEvent(broker.id, 'invite_resent', 'operator');
+      res.json({ success: true });
+    }catch(e){ res.status(500).json({ error: 'server' }); }
+  });
+
+  // ── GET /:slug — a broker's public page. Must remain the LAST route before
+  //    the catch-all: it matches any single path segment, so every reserved
+  //    platform/app path has to be refused explicitly.
+  router.get('/:slug', async function(req, res, next){
+    var slug = String(req.params.slug || '');
+    if (!slug || RESERVED_SLUGS.indexOf(slug.toLowerCase()) !== -1) return next();
+    if (slug.indexOf('.') !== -1) return next();
+    if (!/^[a-z0-9-]+$/.test(slug)) return next();
+    try{
+      var broker = await db.get('SELECT * FROM brokers WHERE slug=$1', [slug]);
+      if (!broker) return next();
+      // Unpaid or unpublished pages do not exist publicly — the broker reaches
+      // their own draft through /espace/apercu instead.
+      if (!brokerPageLive(broker)) {
+        var me = await currentBroker(req);
+        if (!me || me.id !== broker.id) return next();
+      }
+      await renderBrokerPage(req, res, broker, false);
+    }catch(e){ console.error('broker page', e); next(); }
+  });
+
 
   router.use(function(req,res){
     if(req.method==='GET'){

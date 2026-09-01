@@ -1,0 +1,21 @@
+<%- include('partials/invite-header') %>
+<main class="inv">
+  <div class="inv-veil" aria-hidden="true"></div>
+  <section class="inv-hero">
+    <div class="inv-wrap">
+      <div class="inv-sigil" aria-hidden="true">
+        <svg viewBox="0 0 120 120" width="64" height="64" fill="none" stroke="currentColor">
+          <circle cx="60" cy="60" r="52" stroke-width="1" opacity=".4"/>
+          <path d="M40 40 L80 80 M80 40 L40 80" stroke-width="1.2" opacity=".7"/>
+        </svg>
+      </div>
+      <p class="inv-eyebrow"><%= t.exp_eyebrow %></p>
+      <h1 class="inv-display"><%= t.exp_title %></h1>
+      <p class="inv-lede"><%= t.exp_lede %></p>
+      <div class="inv-rule" aria-hidden="true"><span></span><em>&#10022;</em><span></span></div>
+      <a class="inv-submit" style="display:block;max-width:320px;margin:0 auto;text-align:center;text-decoration:none;line-height:1.2" href="."><%= t.exp_cta %></a>
+    </div>
+  </section>
+</main>
+</body>
+</html>

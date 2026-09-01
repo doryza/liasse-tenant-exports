@@ -1,0 +1,195 @@
+<%- include('partials/invite-header') %>
+<main class="esp">
+  <div class="inv-veil" aria-hidden="true"></div>
+
+  <header class="esp-top">
+    <div class="esp-wrap esp-top-inner">
+      <div>
+        <span class="esp-mark">VendVite</span>
+        <span class="esp-who"><%= broker.full_name %> · <%= broker.agency || '' %></span>
+      </div>
+      <nav class="esp-tabs" role="tablist">
+        <button class="esp-tab is-on" data-tab="page" role="tab">Ma page</button>
+        <button class="esp-tab" data-tab="pistes" role="tab">Mes pistes <span class="esp-pill"><%= counts.total %></span></button>
+        <button class="esp-tab" data-tab="abonnement" role="tab">Abonnement</button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="esp-wrap">
+
+    <!-- Status ribbon -->
+    <div class="esp-status <%= isLive ? 'is-live' : (isActive ? 'is-ready' : 'is-locked') %>">
+      <div class="esp-status-dot" aria-hidden="true"></div>
+      <div class="esp-status-text">
+        <% if (isLive) { %>
+          <strong>Votre page est en ligne.</strong>
+          <a href="<%= pageUrl %>" target="_blank" rel="noopener"><%= pageUrl %></a>
+        <% } else if (isActive) { %>
+          <strong>Abonnement actif.</strong> Votre page est prête — publiez-la quand vous le souhaitez.
+        <% } else { %>
+          <strong>Page en préparation.</strong> Bâtissez-la librement&nbsp;; l'activation ouvre la capture de pistes.
+        <% } %>
+      </div>
+      <div class="esp-status-act">
+        <a class="esp-ghost" href="espace/apercu" target="_blank" rel="noopener">Aperçu</a>
+        <% if (isActive) { %>
+          <button class="esp-btn" id="pubBtn" data-published="<%= broker.published %>"><%= Number(broker.published)===1 ? 'Retirer' : 'Publier' %></button>
+        <% } else { %>
+          <button class="esp-btn" data-goto="abonnement">Activer — <%= price.total.toFixed(2) %>&nbsp;$</button>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- ═══ Ma page ═══ -->
+    <section class="esp-panel is-on" data-panel="page">
+      <div class="esp-grid">
+        <div class="esp-col">
+          <h2 class="esp-h">Votre identité</h2>
+          <div class="esp-portrait">
+            <div class="esp-portrait-img" id="portraitBox">
+              <% if (profile.agent_photo_url) { %><img src="<%= profile.agent_photo_url %>" alt="" id="portraitImg"><% } else { %><span id="portraitEmpty">Aucune photo</span><img id="portraitImg" hidden alt=""><% } %>
+            </div>
+            <div>
+              <label class="esp-upload">
+                <input type="file" id="photoInput" accept="image/png,image/jpeg,image/webp" hidden>
+                <span>Téléverser une photo</span>
+              </label>
+              <p class="esp-hint" id="photoHint">JPG, PNG ou WebP · 8&nbsp;Mo max</p>
+            </div>
+          </div>
+          <div class="esp-f"><label for="f_agent_name">Nom affiché</label><input id="f_agent_name" data-k="agent_name" value="<%= profile.agent_name || broker.full_name %>"></div>
+          <div class="esp-f"><label for="f_agent_title">Titre</label><input id="f_agent_title" data-k="agent_title" placeholder="Courtier immobilier résidentiel" value="<%= profile.agent_title || '' %>"></div>
+          <div class="esp-f"><label for="f_agency">Agence</label><input id="f_agency" data-k="agency" value="<%= profile.agency || broker.agency || '' %>"></div>
+          <div class="esp-2">
+            <div class="esp-f"><label for="f_agent_phone">Téléphone</label><input id="f_agent_phone" data-k="agent_phone" value="<%= profile.agent_phone || broker.phone || '' %>"></div>
+            <div class="esp-f"><label for="f_agent_email">Courriel</label><input id="f_agent_email" data-k="agent_email" value="<%= profile.agent_email || broker.email %>"></div>
+          </div>
+        </div>
+
+        <div class="esp-col">
+          <h2 class="esp-h">Votre accroche</h2>
+          <div class="esp-f"><label for="f_hero_title">Titre principal</label><textarea id="f_hero_title" data-k="hero_title" rows="2" placeholder="<%= t.hero_title %>"><%= profile.hero_title || '' %></textarea></div>
+          <div class="esp-f"><label for="f_hero_sub">Sous-titre</label><textarea id="f_hero_sub" data-k="hero_sub" rows="3" placeholder="<%= t.hero_sub %>"><%= profile.hero_sub || '' %></textarea></div>
+          <div class="esp-f"><label for="f_hero_note">Note sous le champ</label><input id="f_hero_note" data-k="hero_note" placeholder="<%= t.hero_note %>" value="<%= profile.hero_note || '' %>"></div>
+
+          <h2 class="esp-h">Vos chiffres</h2>
+          <div class="esp-2">
+            <div class="esp-f"><label for="f_stat_homes">Propriétés vendues</label><input id="f_stat_homes" data-k="stat_homes" value="<%= profile.stat_homes || '' %>"></div>
+            <div class="esp-f"><label for="f_stat_days">Jours au marché</label><input id="f_stat_days" data-k="stat_days" value="<%= profile.stat_days || '' %>"></div>
+          </div>
+          <div class="esp-2">
+            <div class="esp-f"><label for="f_stat_ratio">Ratio vendu/demandé</label><input id="f_stat_ratio" data-k="stat_ratio" value="<%= profile.stat_ratio || '' %>"></div>
+            <div class="esp-f"><label for="f_stat_volume">Volume (M$)</label><input id="f_stat_volume" data-k="stat_volume" value="<%= profile.stat_volume || '' %>"></div>
+          </div>
+        </div>
+      </div>
+
+      <h2 class="esp-h">Vos liens</h2>
+      <p class="esp-hint">Réseaux sociaux, site d'agence, fiche Centris. Retirez ceux que vous ne voulez pas afficher.</p>
+      <div id="linkList" class="esp-links"></div>
+      <button class="esp-ghost" id="addLink" type="button">+ Ajouter un lien</button>
+
+      <h2 class="esp-h">Vos témoignages</h2>
+      <p class="esp-hint">Laissez vide pour afficher les témoignages par défaut de la page.</p>
+      <div id="tmList" class="esp-links"></div>
+      <button class="esp-ghost" id="addTm" type="button">+ Ajouter un témoignage</button>
+
+      <div class="esp-savebar">
+        <span class="esp-saved" id="savedFlag"></span>
+        <button class="esp-btn" id="saveBtn" type="button">Enregistrer</button>
+      </div>
+    </section>
+
+    <!-- ═══ Mes pistes ═══ -->
+    <section class="esp-panel" data-panel="pistes">
+      <div class="esp-stats">
+        <div class="esp-stat"><span class="esp-stat-n"><%= counts.total %></span><span class="esp-stat-l">Pistes au total</span></div>
+        <div class="esp-stat"><span class="esp-stat-n"><%= counts.fresh %></span><span class="esp-stat-l">Nouvelles</span></div>
+        <div class="esp-stat"><span class="esp-stat-n"><%= counts.recent %></span><span class="esp-stat-l">30 derniers jours</span></div>
+      </div>
+      <% if (!leads.length) { %>
+        <div class="esp-empty">
+          <div class="esp-empty-sigil" aria-hidden="true">&#10022;</div>
+          <h3>Aucune piste pour l'instant.</h3>
+          <p><% if (!isLive) { %>Publiez votre page pour commencer à recevoir des demandes d'évaluation.<% } else { %>Votre page est en ligne. Les demandes apparaîtront ici et vous serez averti par courriel.<% } %></p>
+        </div>
+      <% } else { %>
+        <div class="esp-leads">
+          <% leads.forEach(function(l){ %>
+            <article class="esp-lead" data-id="<%= l.id %>">
+              <div class="esp-lead-head">
+                <div>
+                  <h3><%= l.name %></h3>
+                  <p class="esp-lead-addr"><%= l.address || '' %></p>
+                </div>
+                <select class="esp-lead-status" data-id="<%= l.id %>">
+                  <% ['nouveau','contacté','évalué','fermé'].forEach(function(s){ %>
+                    <option value="<%= s %>" <%= (l.status===s?'selected':'') %>><%= s %></option>
+                  <% }); %>
+                </select>
+              </div>
+              <div class="esp-lead-meta">
+                <% if (l.phone) { %><a href="tel:<%= String(l.phone).replace(/\D/g,'') %>"><%= formatPhone(l.phone) %></a><% } %>
+                <% if (l.email) { %><a href="mailto:<%= l.email %>"><%= l.email %></a><% } %>
+                <% if (l.timeframe) { %><span><%= l.timeframe %></span><% } %>
+                <span class="esp-lead-when"><%= formatDate(l.created_at, lang) %></span>
+              </div>
+              <textarea class="esp-lead-notes" data-id="<%= l.id %>" rows="2" placeholder="Notes privées…"><%= l.notes || '' %></textarea>
+            </article>
+          <% }); %>
+        </div>
+      <% } %>
+    </section>
+
+    <!-- ═══ Abonnement ═══ -->
+    <section class="esp-panel" data-panel="abonnement">
+      <div class="esp-bill">
+        <div class="esp-bill-card">
+          <p class="esp-eyebrow">Adhésion annuelle</p>
+          <h2 class="esp-price"><%= price.base.toFixed(2) %>&nbsp;$ <span>/ an</span></h2>
+          <ul class="esp-bill-lines">
+            <li><span>Adhésion</span><span><%= price.base.toFixed(2) %>&nbsp;$</span></li>
+            <li><span>TPS (5&nbsp;%)</span><span><%= price.gst.toFixed(2) %>&nbsp;$</span></li>
+            <li><span>TVQ (9,975&nbsp;%)</span><span><%= price.qst.toFixed(2) %>&nbsp;$</span></li>
+            <li class="esp-bill-total"><span>Total</span><span><%= price.total.toFixed(2) %>&nbsp;$</span></li>
+          </ul>
+          <% if (isActive) { %>
+            <div class="esp-active-note">
+              <strong>Abonnement actif</strong>
+              <p>Renouvellement le <%= formatDate(broker.membership_expires_at, lang) %>.</p>
+            </div>
+            <button class="esp-ghost esp-danger" id="cancelBtn" type="button">Annuler le renouvellement</button>
+          <% } else if (broker.status === 'cancelled' && broker.membership_expires_at) { %>
+            <div class="esp-active-note">
+              <strong>Renouvellement annulé</strong>
+              <p>Votre page reste en ligne jusqu'au <%= formatDate(broker.membership_expires_at, lang) %>.</p>
+            </div>
+            <button class="esp-btn esp-btn-wide" id="subBtn" type="button">Réactiver</button>
+          <% } else { %>
+            <button class="esp-btn esp-btn-wide" id="subBtn" type="button">Activer ma page</button>
+            <p class="esp-hint" style="text-align:center">Paiement sécurisé par PayPal. Annulable en tout temps.</p>
+          <% } %>
+          <p class="esp-error" id="billError" role="alert"></p>
+        </div>
+        <ul class="esp-bill-what">
+          <li>Votre page privée, à votre nom, sur vendvite.app</li>
+          <li>Capture illimitée de demandes d'évaluation</li>
+          <li>Alerte courriel instantanée à chaque piste</li>
+          <li>Votre registre de pistes, à vous seul</li>
+          <li>Modifications en tout temps, sans frais</li>
+        </ul>
+      </div>
+    </section>
+  </div>
+</main>
+<script>
+  window.VV = {
+    profile: <%- JSON.stringify(profile) %>,
+    published: <%= Number(broker.published) === 1 ? 'true' : 'false' %>,
+    active: <%= isActive ? 'true' : 'false' %>
+  };
+</script>
+<script src="public/js/espace.js" defer></script>
+</body>
+</html>
