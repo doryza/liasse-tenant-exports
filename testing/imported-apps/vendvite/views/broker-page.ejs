@@ -122,7 +122,9 @@
       <% testimonials.forEach(function(tm){ %>
       <article class="testi-card">
         <svg class="testi-paperclip" viewBox="0 0 32 64" aria-hidden="true" focusable="false">
-          <path d="M22.5 17v27.5c0 8.5-4.3 13.5-10.3 13.5S3 53 3 45.5V15.2C3 6.2 8 1.5 15.2 1.5S27.5 6.4 27.5 15v29c0 6.5-3.4 10.5-8.4 10.5s-8.2-4.1-8.2-10.5V18.5c0-4.2 2-6.5 5.1-6.5s5.2 2.3 5.2 6.5v24"/>
+          <path class="testi-paperclip-depth" d="M24.5 30.5 13.7 51.8a7 7 0 0 1-12.5-6.3L17.5 13.3a5 5 0 0 1 8.9 4.5L10.1 50a3 3 0 0 1-5.4-2.7l13.1-25.9"/>
+          <path class="testi-paperclip-wire" d="M24.5 30.5 13.7 51.8a7 7 0 0 1-12.5-6.3L17.5 13.3a5 5 0 0 1 8.9 4.5L10.1 50a3 3 0 0 1-5.4-2.7l13.1-25.9"/>
+          <path class="testi-paperclip-shine" d="M24.5 30.5 13.7 51.8a7 7 0 0 1-12.5-6.3L17.5 13.3a5 5 0 0 1 8.9 4.5L10.1 50a3 3 0 0 1-5.4-2.7l13.1-25.9"/>
         </svg>
         <p class="testi-quote" data-content-source="testimonials:quote" data-content-id="<%= tm.id %>"><%= tm.quote %></p>
         <div class="testi-meta">
