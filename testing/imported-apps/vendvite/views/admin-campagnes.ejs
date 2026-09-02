@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Campagnes — <%= settings.agent_name || 'VendVite' %></title>
+<link rel="stylesheet" href="../public/css/admin-styles.css">
+<style>
+.cmp-card{border:1px solid #e5e7eb;border-radius:10px;padding:16px 18px;margin-bottom:12px;background:#fff}
+.cmp-card.is-due{border-color:#f59e0b;box-shadow:0 1px 6px rgba(245,158,11,.15)}
+.cmp-card.is-late{border-color:#dc2626;box-shadow:0 1px 6px rgba(220,38,38,.18)}
+.cmp-card.is-done{opacity:.72}
+.cmp-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.cmp-head h3{margin:0 0 2px;font-size:1.02rem}
+.cmp-sub{color:#6b7280;font-size:.85rem;margin:0}
+.cmp-status{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.72rem;font-weight:600;letter-spacing:.03em}
+.cmp-confirmed{background:#fef3c7;color:#92400e}
+.cmp-mailed{background:#dcfce7;color:#166534}
+.cmp-test{background:#e0e7ff;color:#3730a3;margin-left:6px}
+.cmp-meta{display:flex;flex-wrap:wrap;gap:14px;margin:10px 0 0;font-size:.8rem;color:#6b7280}
+.cmp-due{font-weight:600}
+.cmp-due.due-soon{color:#b45309}
+.cmp-due.due-late{color:#b91c1c}
+.cmp-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.cmp-note{font-size:.78rem;color:#9ca3af;margin-top:10px;line-height:1.5}
+.cmp-prev{margin:10px 0 0;font-size:.8rem;color:#4b5563;line-height:1.6}
+</style>
+</head>
+<body class="admin">
+<%- include('partials/admin-sidebar') %>
+<div class="admin-main">
+  <header class="admin-top">
+    <button class="admin-burger" id="adminBurger" aria-label="Menu">≡</button>
+    <h1>Campagnes</h1>
+  </header>
+  <div class="admin-content">
+    <div class="stat-cards">
+      <div class="scard <%= cc.confirmed ? 'scard-accent' : '' %>"><div class="scard-num"><%= cc.confirmed %></div><div class="scard-label">À poster</div></div>
+      <div class="scard"><div class="scard-num"><%= cc.mailed %></div><div class="scard-label">Postées</div></div>
+    </div>
+
+    <% if (!campagnes.length) { %>
+      <div class="empty">Aucune campagne pour l'instant. Elles apparaîtront ici dès qu'un courtier confirme son territoire dans son espace.</div>
+    <% } %>
+
+    <% campagnes.forEach(function(c){
+         var due = c.deadline_at ? new Date(c.deadline_at) : null;
+         var restant = due ? (due.getTime() - Date.now()) / 3600000 : null;
+         var done = c.status === 'mailed';
+         var klass = done ? 'is-done' : (restant !== null && restant < 0 ? 'is-late' : (restant !== null && restant < 24 ? 'is-due' : ''));
+    %>
+      <article class="cmp-card <%= klass %>">
+        <div class="cmp-head">
+          <div>
+            <h3><%= c.address_count %> adresses — <%= c.city || 'secteur' %></h3>
+            <p class="cmp-sub"><%= c.full_name %><%= c.agency ? ' · ' + c.agency : '' %> · <a href="<%= c.slug %>" target="_blank" rel="noopener">/<%= c.slug %></a></p>
+          </div>
+          <div>
+            <span class="cmp-status <%= done ? 'cmp-mailed' : 'cmp-confirmed' %>"><%= done ? 'Postée' : 'À poster' %></span>
+            <% if (Number(c.is_test) === 1) { %><span class="cmp-status cmp-test">TEST SANDBOX</span><% } %>
+          </div>
+        </div>
+        <div class="cmp-meta">
+          <a href="mailto:<%= c.broker_email %>"><%= c.broker_email %></a>
+          <% if (c.broker_phone) { %><a href="tel:<%= String(c.broker_phone).replace(/\D/g,'') %>"><%= formatPhone(c.broker_phone) %></a><% } %>
+          <span>Confirmée le <%= formatDate(c.created_at, lang) %></span>
+          <% if (due && !done) { %>
+            <span class="cmp-due <%= restant < 0 ? 'due-late' : (restant < 24 ? 'due-soon' : '') %>">
+              <%= restant < 0 ? 'En retard depuis ' + Math.abs(Math.round(restant)) + ' h' : 'À déposer dans ' + Math.round(restant) + ' h' %>
+            </span>
+          <% } else if (done && c.mailed_at) { %>
+            <span>Postée le <%= formatDate(c.mailed_at, lang) %></span>
+          <% } %>
+          <span>Rayon <%= c.radius_m %> m</span>
+        </div>
+        <p class="cmp-prev"><strong>Centre :</strong> <%= c.centre_label || '' %></p>
+        <% if (c.notes) { %><p class="cmp-prev"><strong>Précisions du courtier :</strong> <%= c.notes %></p><% } %>
+        <div class="cmp-actions">
+          <a class="btn-primary btn-sm" href="campagnes/<%= c.id %>/adresses.csv">Télécharger le CSV</a>
+          <button class="btn-ghost btn-sm" data-act="postee" data-id="<%= c.id %>"><%= done ? 'Marquer « à poster »' : 'Marquer comme postée' %></button>
+        </div>
+        <% if (!done) { %>
+          <p class="cmp-note">Le CSV n'a pas de codes postaux — la source cartographique n'en fournit pas. Complétez-les, puis générez les enveloppes avec le QR de <a href="<%= c.slug %>" target="_blank" rel="noopener">/<%= c.slug %></a>. Les lignes marquées « interpole » viennent d'une plage municipale et peuvent contenir un numéro inexistant : à valider avant impression.</p>
+        <% } %>
+      </article>
+    <% }); %>
+  </div>
+</div>
+<script>
+(function(){
+  var burger=document.getElementById('adminBurger');
+  if(burger){ burger.addEventListener('click', function(){ document.getElementById('adminSidebar').classList.toggle('open'); }); }
+  document.querySelectorAll('[data-act]').forEach(function(btn){
+    btn.addEventListener('click', async function(){
+      btn.disabled=true;
+      try{
+        var r=await fetch('../api/admin/campagnes/'+btn.getAttribute('data-id')+'/'+btn.getAttribute('data-act'), {
+          method:'POST', headers:{ 'Content-Type':'application/json' }, body:'{}'
+        });
+        if(r.ok){ location.reload(); return; }
+        var d=await r.json().catch(function(){ return {}; });
+        alert('Action impossible ('+(d.error||r.status)+')');
+      }catch(_){ alert('Erreur réseau.'); }
+      btn.disabled=false;
+    });
+  });
+})();
+</script>
+</body>
+</html>

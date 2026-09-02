@@ -1,6 +1,17 @@
 var express = require('express');
 var invoiceTools = require('./invoice');
 
+// ── Campagne « 150 portes » — reglages produit.
+//    Declares au SCOPE FICHIER et non dans la fabrique de routes : la plateforme
+//    reinvoque module.exports a chaque requete, donc tout etat declare a
+//    l'interieur repartirait vide et n'etranglerait jamais rien.
+var CAMPAGNE_CIBLE = 150;
+var CAMPAGNE_MAX = 200;
+var CAMPAGNE_PAR_AN = 1;
+var CAMPAGNE_HEURES = 72;
+var campagneDerniere = new Map();
+var CAMPAGNE_DELAI_MS = 20000;
+
 module.exports = function(services){
   var router = express.Router();
   router.use(express.json());
@@ -904,8 +915,14 @@ module.exports = function(services){
     var invoices = await db.all('SELECT * FROM broker_invoices WHERE broker_id=$1 ORDER BY payment_time DESC, id DESC LIMIT 20', [broker.id]);
     var activePaypal = await paypalCfg();
     var access = await brokerAccessState(broker, activePaypal.mode);
+    var campagnes = await db.all('SELECT id, status, centre_label, address_count, city, deadline_at, mailed_at, created_at FROM broker_campaigns WHERE broker_id=$1 ORDER BY created_at DESC LIMIT 12', [broker.id]);
+    var quota = await campagneQuota(broker);
     return Object.assign(L, {
       isHome: false,
+      campagnes: campagnes || [],
+      campQuota: quota,
+      campCible: CAMPAGNE_CIBLE,
+      campHeures: CAMPAGNE_HEURES,
       broker: broker,
       profile: brokerProfile(broker),
       leads: leads || [],
@@ -1111,6 +1128,189 @@ module.exports = function(services){
       var notes = req.body && req.body.notes != null ? String(req.body.notes).slice(0, 4000) : null;
       await db.run('UPDATE broker_leads SET status=COALESCE($1,status), notes=COALESCE($2,notes), updated_at=NOW() WHERE id=$3', [status, notes, req.params.id]);
       res.json({ success: true });
+    }catch(e){ res.status(500).json({ error: 'server' }); }
+  });
+
+
+  // ── Campagne « 150 portes » ────────────────────────────────────────────────
+  //    Le navigateur du courtier interroge lui-meme OpenStreetMap (Nominatim +
+  //    Overpass) et nous transmet la liste deja constituee. Le serveur ne fait
+  //    jamais cet appel sortant : l'IP de sortie est partagee par toute la
+  //    flotte et Overpass n'accorde que deux creneaux par IP — une requete
+  //    serveur bloquerait les autres locataires et depasserait le plafond
+  //    d'origine de Cloudflare. Ici on valide, on borne et on conserve.
+
+  // 72 heures ouvrables : on saute samedi et dimanche.
+  function echeanceOuvrable(heures){
+    var d = new Date();
+    var restant = heures;
+    while (restant > 0) {
+      d = new Date(d.getTime() + 3600000);
+      var j = d.getUTCDay();
+      if (j !== 0 && j !== 6) restant--;
+    }
+    return d;
+  }
+
+  function anneeAdhesion(broker){
+    var debut = broker.membership_started_at ? new Date(broker.membership_started_at) : null;
+    if (!debut || isNaN(debut.getTime())) return null;
+    var maintenant = new Date();
+    var borne = new Date(debut.getTime());
+    while (borne.getTime() <= maintenant.getTime()) borne.setUTCFullYear(borne.getUTCFullYear() + 1);
+    borne.setUTCFullYear(borne.getUTCFullYear() - 1);
+    return borne;
+  }
+
+  async function campagneQuota(broker){
+    var depuis = anneeAdhesion(broker);
+    var row = depuis
+      ? await db.get("SELECT COUNT(*)::int AS n FROM broker_campaigns WHERE broker_id=$1 AND status<>'cancelled' AND created_at>=$2", [broker.id, depuis])
+      : await db.get("SELECT COUNT(*)::int AS n FROM broker_campaigns WHERE broker_id=$1 AND status<>'cancelled'", [broker.id]);
+    var utilisees = (row && row.n) || 0;
+    return { utilisees: utilisees, incluses: CAMPAGNE_PAR_AN, restantes: Math.max(0, CAMPAGNE_PAR_AN - utilisees), depuis: depuis };
+  }
+
+  // Une adresse arrive du navigateur : on ne fait confiance a rien.
+  function assainirAdresse(a){
+    if (!a || typeof a !== 'object') return null;
+    var numero = String(a.numero == null ? '' : a.numero).trim().slice(0, 20);
+    var rue = String(a.rue == null ? '' : a.rue).trim().slice(0, 160);
+    if (!numero || !rue) return null;
+    var lat = Number(a.lat), lng = Number(a.lng);
+    return {
+      numero: numero,
+      rue: rue,
+      ville: String(a.ville == null ? '' : a.ville).trim().slice(0, 120),
+      source: a.source === 'point' ? 'point' : 'interpole',
+      lat: Number.isFinite(lat) ? Math.round(lat * 1e6) / 1e6 : null,
+      lng: Number.isFinite(lng) ? Math.round(lng * 1e6) / 1e6 : null,
+      metres: Number.isFinite(Number(a.metres)) ? Math.max(0, Math.round(Number(a.metres))) : null
+    };
+  }
+
+  router.post('/api/espace/campagne', async function(req, res){
+    var broker = await requireBrokerApi(req, res);
+    if (!broker) return;
+    try{
+      var access = await brokerAccessState(broker);
+      if (!access.active) return res.status(409).json({ error: 'abonnement', code: 'MEMBERSHIP_REQUIRED' });
+      if (Number(broker.published) !== 1) return res.status(409).json({ error: 'publication', code: 'PAGE_NOT_LIVE' });
+
+      // On LIT le verrou ici mais on ne l'arme qu'apres l'enregistrement : il
+      // existe pour empecher une campagne en double, pas pour punir une faute
+      // de frappe. L'armer avant la validation bloquerait 20 s un courtier qui
+      // vient simplement de se tromper d'adresse.
+      var precedent = campagneDerniere.get(broker.id) || 0;
+      if (new Date().getTime() - precedent < CAMPAGNE_DELAI_MS) return res.status(429).json({ error: 'cadence', code: 'TOO_FAST' });
+
+      var quota = await campagneQuota(broker);
+      if (quota.restantes <= 0) return res.status(409).json({ error: 'quota', code: 'QUOTA_SPENT' });
+
+      var corps = req.body && typeof req.body === 'object' ? req.body : {};
+      var centre = corps.centre && typeof corps.centre === 'object' ? corps.centre : {};
+      var libelle = String(centre.libelle == null ? '' : centre.libelle).trim().slice(0, 300);
+      var cLat = Number(centre.lat), cLng = Number(centre.lng);
+      if (!libelle || !Number.isFinite(cLat) || !Number.isFinite(cLng)) {
+        return res.status(400).json({ error: 'centre', code: 'CENTRE_REQUIRED' });
+      }
+
+      var brutes = Array.isArray(corps.adresses) ? corps.adresses.slice(0, CAMPAGNE_MAX) : [];
+      var vues = Object.create(null);
+      var adresses = [];
+      for (var i = 0; i < brutes.length; i++) {
+        var a = assainirAdresse(brutes[i]);
+        if (!a) continue;
+        var cle = (a.numero + '|' + a.rue).toLowerCase();
+        if (vues[cle]) continue;
+        vues[cle] = 1;
+        adresses.push(a);
+      }
+      if (adresses.length < 1) return res.status(400).json({ error: 'adresses', code: 'NO_ADDRESSES' });
+
+      var ville = String(corps.ville == null ? '' : corps.ville).trim().slice(0, 120);
+      var notes = String(corps.notes == null ? '' : corps.notes).trim().slice(0, 1000);
+      var rayon = Math.max(0, Math.min(5000, Math.round(Number(corps.rayon) || 0)));
+      var echeance = echeanceOuvrable(CAMPAGNE_HEURES);
+
+      // Une promesse de 72 h sans destinataire cote operateur serait un mensonge :
+      // on refuse plutot que de repondre « recu » dans le vide.
+      var ownerEmail = (services.config && (services.config.contactEmail || services.config.ownerEmail)) || null;
+      if (!ownerEmail) return res.status(500).json({ error: 'server', code: 'NO_OPERATOR' });
+
+      var campagne = await db.get(
+        'INSERT INTO broker_campaigns (broker_id,status,centre_label,centre_lat,centre_lng,radius_m,address_count,addresses,city,notes,is_test,deadline_at) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) RETURNING *',
+        [broker.id, 'confirmed', libelle, cLat, cLng, rayon, adresses.length, JSON.stringify(adresses), ville, notes, access.testAccess ? 1 : 0, echeance]
+      );
+
+      campagneDerniere.set(broker.id, new Date().getTime());
+
+      await logBrokerEvent(broker.id, access.testAccess ? 'sandbox_campaign_confirmed' : 'campaign_confirmed',
+        JSON.stringify({ id: campagne.id, n: adresses.length, centre: libelle.slice(0, 120) }));
+
+      var esc = escapeHtml;
+      var lignes = adresses.slice(0, 12).map(function(a){ return esc(a.numero + ' ' + a.rue); }).join('<br>');
+      var reste = adresses.length - Math.min(12, adresses.length);
+      var csvUrl = absoluteUrl(req, '/admin/campagnes/' + campagne.id + '/adresses.csv');
+      var html = ''
+        + '<div style="font-family:Arial,sans-serif;max-width:640px;margin:auto;padding:28px;color:#171717">'
+        + '<p style="font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#777">' + (access.testAccess ? 'TEST SANDBOX · ' : '') + 'Campagne 150 portes</p>'
+        + '<h1 style="font-family:Georgia,serif;font-size:26px;margin:0 0 8px">' + adresses.length + ' adresses à poster</h1>'
+        + '<p style="margin:0 0 18px;font-size:14px;color:#b45309"><strong>Dépôt à Postes Canada avant le ' + echeance.toLocaleString('fr-CA', { dateStyle: 'full', timeStyle: 'short' }) + '.</strong></p>'
+        + '<table style="width:100%;border-collapse:collapse;font-size:14px">'
+        + [['Courtier', broker.full_name], ['Agence', broker.agency], ['Courriel', broker.email], ['Téléphone', formatPhone(broker.phone)], ['Centre du territoire', libelle], ['Ville', ville], ['Rayon', rayon + ' m'], ['Adresses', String(adresses.length)], ['Page du courtier', absoluteUrl(req, '/' + broker.slug)]]
+          .map(function(r){ return '<tr><td style="padding:8px;border-bottom:1px solid #ddd;color:#777;width:34%">' + esc(r[0]) + '</td><td style="padding:8px;border-bottom:1px solid #ddd">' + esc(r[1] || '') + '</td></tr>'; }).join('')
+        + '</table>'
+        + (notes ? '<p style="margin-top:18px"><strong>Précisions :</strong><br>' + esc(notes).replace(/\n/g, '<br>') + '</p>' : '')
+        + '<p style="margin-top:20px;font-size:14px"><strong>Aperçu :</strong><br>' + lignes + (reste > 0 ? '<br><em>… et ' + reste + ' autres</em>' : '') + '</p>'
+        + '<p style="margin-top:20px"><a href="' + csvUrl + '" style="background:#171717;color:#fff;padding:11px 18px;border-radius:6px;text-decoration:none;font-size:14px">Télécharger le CSV des adresses</a></p>'
+        + '<p style="margin-top:18px;color:#777;font-size:12px">Les codes postaux ne sont pas fournis par la source cartographique : ils doivent être complétés avant le dépôt. Les adresses marquées « interpolé » sont déduites d\'une plage municipale et peuvent inclure un numéro inexistant.</p>'
+        + '</div>';
+
+      await services.email.send({
+        to: ownerEmail,
+        replyTo: broker.email,
+        subject: (access.testAccess ? '[TEST SANDBOX] ' : '') + 'VendVite — campagne ' + adresses.length + ' portes — ' + broker.full_name,
+        html: html,
+        text: 'Campagne VendVite\nCourtier: ' + broker.full_name + '\nCentre: ' + libelle + '\nAdresses: ' + adresses.length + '\nDepot avant: ' + echeance.toISOString() + '\nCSV: ' + csvUrl
+      });
+
+      var apres = await campagneQuota(broker);
+      res.json({ success: true, id: campagne.id, count: adresses.length, deadline: echeance.toISOString(), restantes: apres.restantes });
+    }catch(e){ console.error('campagne', e); res.status(500).json({ error: 'server' }); }
+  });
+
+  // ── Operateur : lire et livrer les campagnes. Sans cette surface, la promesse
+  //    de 72 h porterait sur des donnees qu'aucun humain ne peut recuperer.
+  router.get('/admin/campagnes', requireAdmin, async function(req, res){
+    var L = await baseLocals(req);
+    var campagnes = await db.all('SELECT c.*, b.full_name, b.agency, b.email AS broker_email, b.phone AS broker_phone, b.slug FROM broker_campaigns c JOIN brokers b ON b.id=c.broker_id ORDER BY c.created_at DESC LIMIT 200');
+    var cc = { confirmed: 0, mailed: 0 };
+    (campagnes || []).forEach(function(c){ if (c.status === 'confirmed') cc.confirmed++; else if (c.status === 'mailed') cc.mailed++; });
+    res.render('admin-campagnes', Object.assign(L, { active: 'campagnes', campagnes: campagnes || [], cc: cc }));
+  });
+
+  router.get('/admin/campagnes/:id/adresses.csv', requireAdmin, async function(req, res){
+    var c = await db.get('SELECT c.*, b.full_name, b.slug FROM broker_campaigns c JOIN brokers b ON b.id=c.broker_id WHERE c.id=$1', [req.params.id]);
+    if (!c) return res.status(404).send('Introuvable');
+    var cell = function(v){ var s = String(v == null ? '' : v); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+    var lignes = ['distance_m,house_number,street,city,province,postal_code,source'];
+    (c.addresses || []).forEach(function(a){
+      lignes.push([a.metres == null ? '' : a.metres, a.numero, a.rue, a.ville || c.city || '', c.province || 'QC', '', a.source].map(cell).join(','));
+    });
+    res.set('Content-Type', 'text/csv; charset=utf-8');
+    res.set('Content-Disposition', 'attachment; filename="campagne-' + c.id + '-' + c.slug + '.csv"');
+    res.send('\uFEFF' + lignes.join('\n') + '\n');
+  });
+
+  router.post('/api/admin/campagnes/:id/postee', async function(req, res){
+    if (!apiAdmin(req, res)) return;
+    try{
+      var c = await db.get('SELECT * FROM broker_campaigns WHERE id=$1', [req.params.id]);
+      if (!c) return res.status(404).json({ error: 'introuvable' });
+      var vise = c.status === 'mailed' ? 'confirmed' : 'mailed';
+      await db.run('UPDATE broker_campaigns SET status=$1, mailed_at=$2, updated_at=NOW() WHERE id=$3', [vise, vise === 'mailed' ? new Date() : null, c.id]);
+      res.json({ success: true, status: vise });
     }catch(e){ res.status(500).json({ error: 'server' }); }
   });
 

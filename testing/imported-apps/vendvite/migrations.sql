@@ -31,3 +31,9 @@ FROM (
   GROUP BY broker_id
 ) paid
 WHERE b.id=paid.broker_id AND b.paypal_sandbox_expires_at IS NULL AND paid.period_end>NOW();
+CREATE TABLE IF NOT EXISTS broker_campaigns (id SERIAL PRIMARY KEY, broker_id INTEGER NOT NULL, status TEXT NOT NULL DEFAULT 'confirmed', centre_label TEXT, centre_lat DOUBLE PRECISION, centre_lng DOUBLE PRECISION, radius_m INTEGER NOT NULL DEFAULT 0, address_count INTEGER NOT NULL DEFAULT 0, addresses JSONB NOT NULL DEFAULT '[]'::jsonb, city TEXT, province TEXT NOT NULL DEFAULT 'QC', notes TEXT, is_test INTEGER NOT NULL DEFAULT 0, deadline_at TIMESTAMPTZ, mailed_at TIMESTAMPTZ, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW());
+ALTER TABLE broker_campaigns ADD COLUMN IF NOT EXISTS province TEXT NOT NULL DEFAULT 'QC';
+ALTER TABLE broker_campaigns ADD COLUMN IF NOT EXISTS is_test INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE broker_campaigns ADD COLUMN IF NOT EXISTS deadline_at TIMESTAMPTZ;
+CREATE INDEX IF NOT EXISTS broker_campaigns_broker_idx ON broker_campaigns (broker_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS broker_campaigns_status_idx ON broker_campaigns (status, created_at DESC);

@@ -195,4 +195,309 @@
       timer = setTimeout(function(){ saveLead(ta.getAttribute('data-id'), { notes: ta.value }); }, 700);
     });
   });
+
+  // ── Campagne « 150 portes » ────────────────────────────────────────────────
+  //    Tout le travail cartographique se fait ICI, dans le navigateur du
+  //    courtier : Nominatim et Overpass acceptent tous deux le CORS. Passer par
+  //    le serveur ferait porter a une seule IP partagee par toute la flotte les
+  //    deux creneaux qu'Overpass accorde, et depasserait le plafond d'origine.
+  var CAMP = window.VV_CAMP || { cible: 150, restantes: 0 };
+  var OVERPASS = [
+    'https://overpass-api.de/api/interpreter',
+    'https://overpass.private.coffee/api/interpreter'
+  ];
+  var LADDER = [400, 800, 1500, 3000];
+  var CLES_COMMERCE = ['shop', 'office', 'amenity', 'tourism', 'craft', 'healthcare', 'leisure', 'club'];
+  var BATIS_NON_RESIDENTIELS = ['commercial', 'retail', 'industrial', 'office', 'church', 'chapel', 'school',
+    'university', 'hospital', 'warehouse', 'public', 'civic', 'hotel', 'kindergarten', 'government',
+    'sports_centre', 'stadium', 'train_station', 'fire_station'];
+
+  var campCentre = null, campAdresses = [], campRayon = 0, campVille = '';
+  var campCarte = null, campCouche = null, campPret = false;
+
+  function metres(lat1, lng1, lat2, lng2){
+    var R = 6371000, t = Math.PI / 180;
+    var dLat = (lat2 - lat1) * t, dLng = (lng2 - lng1) * t;
+    var h = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+      + Math.cos(lat1 * t) * Math.cos(lat2 * t) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+    return 2 * R * Math.asin(Math.sqrt(h));
+  }
+  function nb(n){ return Number(n).toLocaleString('fr-CA'); }
+  function etat(msg){ var el = $('campEtat'); if (el) el.textContent = msg || ''; }
+
+  function estResidentiel(t){
+    for (var i = 0; i < CLES_COMMERCE.length; i++) if (t[CLES_COMMERCE[i]]) return false;
+    return BATIS_NON_RESIDENTIELS.indexOf(t.building) === -1;
+  }
+
+  // Overpass tombe souvent (30 a 60 % des tentatives) : on alterne les miroirs.
+  async function overpass(requete, etiquette){
+    for (var tour = 0; tour < 4; tour++) {
+      var url = OVERPASS[tour % OVERPASS.length];
+      try{
+        var r = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: 'data=' + encodeURIComponent(requete)
+        });
+        var txt = await r.text();
+        if (txt.charAt(0) === '{') return JSON.parse(txt);
+      }catch(_){ /* miroir injoignable — on essaie le suivant */ }
+      etat('Le service cartographique est occupé — nouvelle tentative (' + (tour + 2) + '/4)…');
+      await new Promise(function(ok){ setTimeout(ok, 1500); });
+    }
+    throw new Error('overpass');
+  }
+
+  // OpenStreetMap stocke une grande partie des banlieues quebecoises sous forme
+  // de PLAGES (« 1050 a 1120, pairs ») et non de points. Sans cette expansion,
+  // un quartier parait vingt fois plus vide qu'il ne l'est.
+  function etendrePlages(elements){
+    var noeuds = {}, out = [];
+    elements.forEach(function(e){ if (e.type === 'node') noeuds[e.id] = e; });
+    elements.forEach(function(w){
+      if (w.type !== 'way' || !w.tags || !w.tags['addr:interpolation'] || !w.nodes) return;
+      var mode = w.tags['addr:interpolation'];
+      var pas = mode === 'all' ? 1 : (parseInt(mode, 10) || 2);
+      var bornes = w.nodes.map(function(id){ return noeuds[id]; })
+        .filter(function(n){ return n && n.tags && n.tags['addr:housenumber']; });
+      for (var k = 0; k + 1 < bornes.length; k++) {
+        var a = bornes[k], b = bornes[k + 1];
+        var na = parseInt(a.tags['addr:housenumber'], 10), nbb = parseInt(b.tags['addr:housenumber'], 10);
+        if (isNaN(na) || isNaN(nbb)) continue;
+        var bas = Math.min(na, nbb), haut = Math.max(na, nbb), etendue = haut - bas;
+        if (etendue / pas > 400) continue;
+        var de = na <= nbb ? a : b, vers = na <= nbb ? b : a;
+        var rue = a.tags['addr:street'] || b.tags['addr:street'] || w.tags['addr:street'] || '';
+        var ville = a.tags['addr:city'] || b.tags['addr:city'] || '';
+        for (var n = bas; n <= haut; n += pas) {
+          var f = etendue ? (n - bas) / etendue : 0;
+          out.push({
+            numero: String(n), rue: rue, ville: ville, source: 'interpole',
+            lat: de.lat + (vers.lat - de.lat) * f,
+            lng: de.lon + (vers.lon - de.lon) * f
+          });
+        }
+      }
+    });
+    return out;
+  }
+
+  function pointsAdresses(elements){
+    var out = [];
+    elements.forEach(function(e){
+      var t = e.tags || {};
+      if (!t['addr:housenumber']) return;
+      var lat = e.lat != null ? e.lat : (e.center && e.center.lat);
+      var lng = e.lon != null ? e.lon : (e.center && e.center.lon);
+      if (lat == null || !estResidentiel(t)) return;
+      out.push({
+        numero: t['addr:housenumber'], rue: t['addr:street'] || '', ville: t['addr:city'] || '',
+        source: 'point', lat: lat, lng: lng
+      });
+    });
+    return out;
+  }
+
+  async function balayer(lat, lng, cible){
+    for (var i = 0; i < LADDER.length; i++) {
+      var r = LADDER[i];
+      etat('Balayage du secteur sur ' + (r >= 1000 ? (r / 1000) + ' km' : r + ' m') + '…');
+      var j = await overpass('[out:json][timeout:60];('
+        + 'node(around:' + r + ',' + lat + ',' + lng + ')["addr:housenumber"];'
+        + 'way(around:' + r + ',' + lat + ',' + lng + ')["addr:housenumber"];'
+        + 'way(around:' + r + ',' + lat + ',' + lng + ')["addr:interpolation"];'
+        + ');(._;>;);out body center;', 'r' + r);
+
+      var brut = pointsAdresses(j.elements || []).concat(etendrePlages(j.elements || []));
+      var vues = Object.create(null), liste = [];
+      brut.forEach(function(a){
+        if (!a.numero || !a.rue) return;
+        var cle = (a.numero + '|' + a.rue).toLowerCase();
+        var deja = vues[cle];
+        if (deja && !(deja.source === 'interpole' && a.source === 'point')) return;
+        a.metres = Math.round(metres(lat, lng, a.lat, a.lng));
+        if (deja) { liste[deja.i] = a; a.i = deja.i; vues[cle] = a; return; }
+        a.i = liste.length; vues[cle] = a; liste.push(a);
+      });
+      liste.sort(function(x, y){ return x.metres - y.metres; });
+      if (liste.length >= cible || i === LADDER.length - 1) return { liste: liste, rayon: r, total: liste.length };
+    }
+    return { liste: [], rayon: 0, total: 0 };
+  }
+
+  function dessinerCarte(){
+    if (!window.L || !campCentre) return;
+    var boite = $('campCarte');
+    if (!boite) return;
+    if (!campCarte) {
+      campCarte = L.map(boite, { scrollWheelZoom: false, attributionControl: true });
+      // Tuiles OpenStreetMap : CARTO exige desormais une cle et filigrane
+      // « API KEY REQUIRED » sur chaque tuile sans elle.
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap', maxZoom: 19
+      }).addTo(campCarte);
+    }
+    if (campCouche) campCarte.removeLayer(campCouche);
+    campCouche = L.layerGroup().addTo(campCarte);
+
+    campAdresses.forEach(function(a){
+      L.marker([a.lat, a.lng], {
+        icon: L.divIcon({ className: 'camp-pin', html: '<i></i>', iconSize: [12, 12], iconAnchor: [6, 6] })
+      }).bindTooltip(a.numero + ' ' + a.rue, { direction: 'top' }).addTo(campCouche);
+    });
+    L.marker([campCentre.lat, campCentre.lng], {
+      icon: L.divIcon({ className: 'camp-centre-pin', html: '<i></i>', iconSize: [22, 22], iconAnchor: [11, 11] }),
+      zIndexOffset: 500
+    }).addTo(campCouche);
+    L.circle([campCentre.lat, campCentre.lng], {
+      radius: campAdresses.length ? campAdresses[campAdresses.length - 1].metres : 100,
+      color: '#c8a44d', weight: 1, fillColor: '#c8a44d', fillOpacity: .07
+    }).addTo(campCouche);
+
+    var pts = campAdresses.map(function(a){ return [a.lat, a.lng]; });
+    pts.push([campCentre.lat, campCentre.lng]);
+    campCarte.fitBounds(L.latLngBounds(pts).pad(0.12));
+    setTimeout(function(){ campCarte.invalidateSize(); }, 60);
+  }
+
+  function rendreListe(){
+    var ul = $('campListe');
+    if (!ul) return;
+    ul.innerHTML = '';
+    campAdresses.forEach(function(a){
+      var li = document.createElement('li');
+      li.innerHTML = '<span class="camp-d">' + a.metres + '&nbsp;m</span>'
+        + '<span class="camp-a">' + a.numero + ' ' + a.rue + '</span>';
+      ul.appendChild(li);
+    });
+    var rues = {};
+    campAdresses.forEach(function(a){ rues[a.rue] = (rues[a.rue] || 0) + 1; });
+    var tri = Object.keys(rues).sort(function(x, y){ return rues[y] - rues[x]; });
+    var elRues = $('campRues');
+    if (elRues) {
+      elRues.innerHTML = tri.slice(0, 8).map(function(r){
+        return '<span>' + r + ' <b>' + rues[r] + '</b></span>';
+      }).join('');
+    }
+  }
+
+  function compteur(el, vers){
+    if (!el) return;
+    // La vraie valeur d'abord : requestAnimationFrame ne se declenche pas dans
+    // un onglet en arriere-plan, et un « 0 » fige serait pire qu'une absence
+    // d'animation. L'animation ne fait que repasser par-dessus.
+    el.textContent = nb(vers);
+    var debut = 0, t0 = null, duree = 900;
+    function pas(ts){
+      if (t0 === null) t0 = ts;
+      var p = Math.min(1, (ts - t0) / duree);
+      el.textContent = nb(Math.round(debut + (vers - debut) * (1 - Math.pow(1 - p, 3))));
+      if (p < 1) requestAnimationFrame(pas);
+    }
+    requestAnimationFrame(pas);
+  }
+
+  async function chercherTerritoire(){
+    var champ = $('campAdresse');
+    var btn = $('campChercher');
+    var err = $('campErreur');
+    var res = $('campResultat');
+    if (!champ || !champ.value.trim()) { if (err) err.textContent = 'Entrez l’adresse au cœur du secteur que vous voulez travailler.'; return; }
+    if (err) err.textContent = '';
+    btn.disabled = true;
+    var libelleBtn = btn.textContent;
+    btn.textContent = 'Repérage…';
+    if (res) res.hidden = true;
+    etat('Localisation de l’adresse…');
+    try{
+      var q = champ.value.trim();
+      var g = await fetch('https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&countrycodes=ca&limit=1&q=' + encodeURIComponent(q));
+      var hits = await g.json();
+      if (!hits.length) throw new Error('geocode');
+      var h = hits[0];
+      campCentre = { lat: parseFloat(h.lat), lng: parseFloat(h.lon), libelle: h.display_name };
+      campVille = (h.address && (h.address.city || h.address.town || h.address.village || h.address.municipality)) || '';
+
+      var out = await balayer(campCentre.lat, campCentre.lng, CAMP.cible);
+      if (!out.total) {
+        etat('');
+        if (err) err.textContent = 'OpenStreetMap ne couvre pas encore ce secteur. Écrivez-nous : nous constituons la liste à la main.';
+        btn.disabled = false; btn.textContent = libelleBtn;
+        return;
+      }
+      campAdresses = out.liste.slice(0, CAMP.cible);
+      campRayon = out.rayon;
+
+      etat('');
+      if (res) res.hidden = false;
+      compteur($('campNombre'), campAdresses.length);
+      var loin = campAdresses[campAdresses.length - 1].metres;
+      var elPortee = $('campPortee');
+      if (elPortee) elPortee.textContent = loin < 1000 ? loin + ' m' : (loin / 1000).toFixed(1).replace('.', ',') + ' km';
+      var elTrouve = $('campTrouve');
+      if (elTrouve) elTrouve.textContent = nb(out.total);
+      var elCentre = $('campCentreTxt');
+      if (elCentre) elCentre.textContent = campCentre.libelle;
+      rendreListe();
+      dessinerCarte();
+      var conf = $('campConfirmer');
+      if (conf && CAMP.restantes > 0) conf.disabled = false;
+    }catch(_){
+      etat('');
+      if (err) err.textContent = 'Le service cartographique n’a pas répondu. Réessayez dans un instant.';
+    }
+    btn.disabled = false; btn.textContent = libelleBtn;
+  }
+
+  on($('campChercher'), 'click', chercherTerritoire);
+  on($('campAdresse'), 'keydown', function(e){ if (e.key === 'Enter') { e.preventDefault(); chercherTerritoire(); } });
+
+  on($('campConfirmer'), 'click', async function(){
+    var btn = $('campConfirmer'), err = $('campErreur'), ok = $('campSucces');
+    if (!campCentre || !campAdresses.length) return;
+    err.textContent = ''; ok.textContent = '';
+    btn.disabled = true; btn.textContent = 'Transmission…';
+    try{
+      var r = await fetch('api/espace/campagne', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          centre: { libelle: campCentre.libelle, lat: campCentre.lat, lng: campCentre.lng },
+          adresses: campAdresses.map(function(a){
+            return { numero: a.numero, rue: a.rue, ville: a.ville, source: a.source, lat: a.lat, lng: a.lng, metres: a.metres };
+          }),
+          ville: campVille, rayon: campRayon,
+          notes: $('campNotes') ? $('campNotes').value.trim() : ''
+        })
+      });
+      var d = await r.json().catch(function(){ return {}; });
+      if (r.ok) {
+        var q = new Date(d.deadline);
+        ok.textContent = 'C’est parti ✓ Vos ' + nb(d.count) + ' lettres sont déposées à Postes Canada d’ici le '
+          + q.toLocaleDateString('fr-CA', { weekday: 'long', day: 'numeric', month: 'long' }) + '.';
+        btn.textContent = 'Campagne confirmée';
+        CAMP.restantes = d.restantes;
+        return;
+      }
+      err.textContent =
+        d.code === 'QUOTA_SPENT' ? 'Votre campagne incluse de l’année est déjà utilisée. Écrivez-nous pour en ajouter une.' :
+        d.code === 'PAGE_NOT_LIVE' ? 'Publiez d’abord votre page : le code QR de la lettre doit mener quelque part.' :
+        d.code === 'MEMBERSHIP_REQUIRED' ? 'Activez votre abonnement pour lancer une campagne.' :
+        d.code === 'TOO_FAST' ? 'Un instant — votre demande précédente est encore en traitement.' :
+        r.status === 401 ? 'Votre session a expiré. Rouvrez votre lien d’accès personnel.' :
+        'La confirmation n’a pas abouti. Réessayez dans un instant.';
+    }catch(_){ err.textContent = 'La confirmation n’a pas abouti. Réessayez dans un instant.'; }
+    btn.disabled = false; btn.textContent = 'Confirmer et lancer l’envoi';
+  });
+
+  // Le panneau est en display:none tant qu'il n'est pas ouvert : une carte
+  // construite avant l'ouverture se dessine en 0x0 et rien ne previent Leaflet.
+  function reveiller(){
+    if (!campPret) { campPret = true; return; }
+    if (campCarte) setTimeout(function(){ campCarte.invalidateSize(); }, 60);
+  }
+  document.querySelectorAll('.esp-tab[data-tab="courrier"], [data-goto="courrier"]').forEach(function(b){
+    on(b, 'click', reveiller);
+  });
+
 })();

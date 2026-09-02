@@ -1,4 +1,6 @@
 <%- include('partials/invite-header') %>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" crossorigin="">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" defer crossorigin=""></script>
 <main class="esp">
   <div class="inv-veil" aria-hidden="true"></div>
 
@@ -123,10 +125,89 @@
 
     <!-- ═══ Courrier ciblé ═══ -->
     <section class="esp-panel" data-panel="courrier">
+
+      <!-- ── La campagne incluse : le cœur de l'onglet ── -->
+      <div class="camp-hero">
+        <div class="camp-hero-txt">
+          <p class="esp-eyebrow">Inclus dans votre licence · Postes Canada</p>
+          <h2>Désignez une rue. Nous frappons les <%= campCible %> portes les plus proches.</h2>
+          <p>Vous entrez une adresse&nbsp;; nous dessinons le territoire autour d'elle et sortons les <%= campCible %> adresses civiques les plus proches — voisins immédiats de votre inscription, de votre dernière vente, du secteur que vous voulez posséder. Chaque lettre porte votre nom, votre agence et un code QR qui mène à votre page.</p>
+          <div class="camp-badges">
+            <span><b><%= campCible %></b>adresses</span>
+            <span><b><%= campHeures %>&nbsp;h</b>avant le dépôt</span>
+            <span><b>0&nbsp;$</b>c'est déjà payé</span>
+          </div>
+        </div>
+        <div class="camp-hero-seal">
+          <div class="camp-seal-n"><%= campQuota.restantes %></div>
+          <div class="camp-seal-l"><%= campQuota.restantes > 1 ? 'campagnes incluses' : 'campagne incluse' %><br>cette année</div>
+        </div>
+      </div>
+
+      <article class="camp-card">
+        <% if (!isActive) { %>
+          <div class="esp-mail-lock"><strong>Abonnement requis</strong><span>Votre campagne de <%= campCible %> adresses est comprise dans la licence annuelle. Activez-la pour l'utiliser.</span><button class="esp-ghost" type="button" data-goto="abonnement">Voir l'abonnement</button></div>
+        <% } else if (!isLive) { %>
+          <div class="esp-mail-lock"><strong>Publiez votre page d'abord</strong><span>Le code QR imprimé sur chaque lettre doit mener à une page en ligne, sinon la campagne part dans le vide.</span><button class="esp-ghost" type="button" data-goto="page">Retour à ma page</button></div>
+        <% } else if (campQuota.restantes <= 0) { %>
+          <div class="esp-mail-lock"><strong>Campagne de l'année utilisée</strong><span>Vous avez déjà lancé votre campagne incluse. Écrivez-nous pour en ajouter une&nbsp;: le tarif au volume est plus bas que la première.</span></div>
+        <% } %>
+
+        <div class="camp-search">
+          <div class="esp-f">
+            <label for="campAdresse">L'adresse au cœur du secteur que vous voulez travailler</label>
+            <input id="campAdresse" type="text" autocomplete="off" placeholder="Ex.&nbsp;: 1088 rue de Chambord, Saint-Jérôme" maxlength="200">
+            <p class="esp-help">Une adresse précise vaut mieux qu'un nom de quartier&nbsp;: c'est le point exact d'où partent les <%= campCible %> plus proches voisins.</p>
+          </div>
+          <button class="esp-btn" id="campChercher" type="button">Voir mon territoire</button>
+        </div>
+        <p class="camp-etat" id="campEtat" role="status"></p>
+        <p class="esp-error" id="campErreur" role="alert"></p>
+
+        <div id="campResultat" hidden>
+          <div class="camp-stats">
+            <div class="camp-stat"><span class="camp-stat-n" id="campNombre">0</span><span class="camp-stat-l">adresses retenues</span></div>
+            <div class="camp-stat"><span class="camp-stat-n" id="campPortee">—</span><span class="camp-stat-l">la plus éloignée</span></div>
+            <div class="camp-stat"><span class="camp-stat-n" id="campTrouve">0</span><span class="camp-stat-l">balayées au total</span></div>
+          </div>
+          <p class="camp-centre">Centre du territoire&nbsp;: <span id="campCentreTxt"></span></p>
+          <div class="camp-carte" id="campCarte"></div>
+          <div class="camp-rues" id="campRues"></div>
+          <details class="camp-details">
+            <summary>Voir les <%= campCible %> adresses</summary>
+            <ol class="camp-liste" id="campListe"></ol>
+          </details>
+          <div class="esp-f">
+            <label for="campNotes">Une précision pour notre équipe&nbsp;? (facultatif)</label>
+            <textarea id="campNotes" rows="2" maxlength="1000" placeholder="Ex.&nbsp;: éviter les tours à condos, viser les unifamiliales…"></textarea>
+          </div>
+          <div class="camp-promesse">
+            <strong>Dès votre confirmation, nous prenons le relais.</strong>
+            <span>Nous validons la liste, complétons les codes postaux, imprimons vos lettres et les déposons à Postes Canada <b>sous <%= campHeures %>&nbsp;heures ouvrables</b>. Vous n'avez rien d'autre à faire.</span>
+          </div>
+          <button class="esp-btn esp-btn-wide" id="campConfirmer" type="button" disabled>Confirmer et lancer l'envoi</button>
+          <p class="esp-mail-success" id="campSucces" role="status"></p>
+          <p class="esp-hint">Les adresses proviennent des données cartographiques publiques. Nous validons chaque liste à la main avant impression&nbsp;; un numéro inexistant est retiré sans vous être facturé.</p>
+        </div>
+
+        <% if (campagnes.length) { %>
+          <div class="camp-histo">
+            <h4>Vos campagnes</h4>
+            <% campagnes.forEach(function(c){ %>
+              <div class="camp-histo-l">
+                <span class="camp-histo-b <%= c.status === 'mailed' ? 'is-ok' : '' %>"><%= c.status === 'mailed' ? 'Postée' : 'En préparation' %></span>
+                <span class="camp-histo-t"><%= c.address_count %> adresses · <%= c.centre_label ? c.centre_label.split(',').slice(0,2).join(',') : '' %></span>
+                <span class="camp-histo-d"><%= new Date(c.created_at).toLocaleDateString('fr-CA', { day:'numeric', month:'short', year:'numeric' }) %></span>
+              </div>
+            <% }); %>
+          </div>
+        <% } %>
+      </article>
+
       <div class="esp-mail-hero">
         <div>
-          <p class="esp-eyebrow">Courrier de précision · Postes Canada</p>
-          <h2>Transformez une rue ciblée en trafic qualifié.</h2>
+          <p class="esp-eyebrow">Plus grand volume · Postes Canada</p>
+          <h2>Au-delà des <%= campCible %>, le territoire s'achète au volume.</h2>
           <p>Votre lettre personnalisée dépose une offre simple et irrésistible dans les boîtes aux lettres que vous convoitez&nbsp;: une évaluation gratuite, utile maintenant comme plus tard. Chaque code QR mène directement à votre page VendVite.</p>
           <div class="esp-mail-tags"><span>Ciblage laser</span><span>Votre URL</span><span>Votre code QR</span><span>Noir et blanc</span></div>
         </div>
@@ -296,6 +377,7 @@
     live: <%= isLive ? 'true' : 'false' %>
     ,paypalMode: <%- JSON.stringify(paypalMode) %>
   };
+  window.VV_CAMP = { cible: <%= campCible %>, restantes: <%= campQuota.restantes %> };
 </script>
 <script src="public/js/espace.js" defer></script>
 </body>

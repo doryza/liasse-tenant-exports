@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Courtiers — <%= settings.agent_name || 'VendVite' %></title>
-<link rel="stylesheet" href="public/css/admin-styles.css">
+<link rel="stylesheet" href="../public/css/admin-styles.css">
 <style>
 .crt-status{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.72rem;font-weight:600;letter-spacing:.03em}
 .crt-applied{background:#fef3c7;color:#92400e}
@@ -88,7 +88,7 @@
       }
       btn.disabled=true;
       try{
-        var r=await fetch('api/admin/courtiers/'+btn.getAttribute('data-id')+'/'+btn.getAttribute('data-act'), {
+        var r=await fetch('../api/admin/courtiers/'+btn.getAttribute('data-id')+'/'+btn.getAttribute('data-act'), {
           method:'POST', headers:{ 'Content-Type':'application/json' }, body:'{}'
         });
         if(r.ok){ location.reload(); return; }
