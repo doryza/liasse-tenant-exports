@@ -86,7 +86,10 @@ module.exports = function(services){
       inv_meta_desc:"VendVite confie à un nombre restreint de courtiers une page privée qui transforme une adresse en mandat.",
       inv_eyebrow:"Sur invitation seulement",
       inv_title:"Les meilleurs courtiers ne courent plus après les vendeurs.",
-      inv_lede:"VendVite remet à un cercle restreint de courtiers une page privée qui transforme une simple adresse en mandat signé. Laissez vos coordonnées. Si votre secteur est encore libre, votre invitation suivra.",
+      inv_lede:"VendVite donne aux courtiers les plus stratégiques un système de prospection qui offre d’abord une valeur concrète aux propriétaires. Notre méthode exclusive et ultra-ciblée transforme leur intérêt en mandats — pour faire de vous le courtier incontournable dans les secteurs que vous convoitez.",
+      inv_price_amount:"599 $",
+      inv_price_term:"par année + taxes",
+      inv_price_pitch:"Un investissement qui ouvre de nouveaux horizons de prospection — et peut faire de chaque adresse le début de votre prochain mandat.",
       inv_form_title:"Demander une invitation",
       inv_form_sub:"Quatre renseignements. Rien de plus. Nous vérifions la disponibilité de votre secteur avant de répondre.",
       inv_f_name:"Nom complet",
@@ -98,14 +101,17 @@ module.exports = function(services){
       inv_f_email:"Courriel",
       inv_f_email_ph:"vous@exemple.com",
       inv_f_submit:"Demander mon invitation",
-      inv_f_sending:"Envoi…",
+      inv_f_sending:"Scellement en cours…",
+      inv_f_sent:"Candidature scellée",
       inv_fineprint:"Aucun engagement à cette étape. Votre invitation vous donne accès à votre page, que vous pourrez bâtir avant toute activation.",
-      inv_done_title:"Votre demande est scellée.",
-      inv_done_text:"Votre demande est à l’étude. Si votre secteur est libre, votre invitation arrivera par courriel sous peu.",
+      inv_done_kicker:"Candidature reçue · Cercle privé",
+      inv_done_title:"Votre candidature porte le sceau VendVite.",
+      inv_done_text:"Notre comité vérifie maintenant si une licence additionnelle peut être ouverte dans votre secteur. Si oui, votre offre d’accès privée arrivera par courriel — avec une longueur d’avance pour en devenir la référence.",
+      inv_done_status:"Disponibilité territoriale en cours de vérification",
       inv_mark_1:"Une page privée, à votre nom et à vos couleurs.",
       inv_mark_2:"Chaque adresse saisie devient une piste qualifiée.",
       inv_mark_3:"Les pistes vous parviennent instantanément, à vous seul.",
-      inv_foot:"Cercle privé de courtiers",
+      inv_foot:"Places limitées · Sur invitation seulement",
       inv_err_required:"Tous les champs sont requis.",
       inv_err_email:"Ce courriel semble invalide.",
       inv_err_generic:"Un problème est survenu. Veuillez réessayer.",
@@ -189,6 +195,9 @@ module.exports = function(services){
       inv_eyebrow:"By invitation only",
       inv_title:"The best brokers stopped chasing sellers.",
       inv_lede:"VendVite hands a restricted circle of brokers a private page that turns a simple address into a signed mandate. Leave your details. If your territory is still open, your invitation follows.",
+      inv_price_amount:"$599",
+      inv_price_term:"per year + taxes",
+      inv_price_pitch:"One investment that opens new prospecting horizons — and can make every address the beginning of your next mandate.",
       inv_form_title:"Request an invitation",
       inv_form_sub:"Four details. Nothing more. We check your territory before replying.",
       inv_f_name:"Full name",
@@ -200,14 +209,17 @@ module.exports = function(services){
       inv_f_email:"Email",
       inv_f_email_ph:"you@example.com",
       inv_f_submit:"Request my invitation",
-      inv_f_sending:"Sending…",
+      inv_f_sending:"Sealing your request…",
+      inv_f_sent:"Application sealed",
       inv_fineprint:"No commitment at this stage. Your invitation unlocks your page, which you can build before any activation.",
-      inv_done_title:"Your request is sealed.",
-      inv_done_text:"Your request is under review. If your territory is open, your invitation will arrive by email shortly.",
+      inv_done_kicker:"Application received · Private circle",
+      inv_done_title:"Your application now bears the VendVite seal.",
+      inv_done_text:"Our committee is now checking whether an additional licence can be opened in your territory. If so, your private access offer will arrive by email — giving you a head start on becoming its go-to broker.",
+      inv_done_status:"Territorial availability now under review",
       inv_mark_1:"A private page, in your name and your colours.",
       inv_mark_2:"Every address entered becomes a qualified lead.",
       inv_mark_3:"Leads reach you instantly, and you alone.",
-      inv_foot:"Private circle of brokers",
+      inv_foot:"Limited seats · Invite only",
       inv_err_required:"All fields are required.",
       inv_err_email:"That email looks invalid.",
       inv_err_generic:"Something went wrong. Please try again.",
@@ -633,14 +645,16 @@ module.exports = function(services){
       + (fr ? 'Votre demande est scellée, ' : 'Your request is sealed, ') + escapeHtml(broker.full_name.split(' ')[0]) + '.</h1>'
       + '<p style="color:rgba(245,239,230,.64);font-size:15px;line-height:1.6;margin:0">'
       + (fr
-        ? 'Nous vérifions la disponibilité de votre secteur. Si votre place dans le cercle est libre, votre invitation — et le lien privé vers votre page — arrivera dans cette boîte.'
-        : 'We are checking your territory. If your place in the circle is open, your invitation — and the private link to your page — will land in this inbox.')
+        ? 'Pour préserver la rareté — et l’efficacité — de la méthode VendVite, nous limitons volontairement le nombre de licences offertes dans chaque marché. Nous vérifions maintenant si une place additionnelle peut être ouverte dans votre secteur. Si oui, vous recevrez par courriel une offre d’accès ainsi que les modalités pour réserver votre licence.'
+        : 'To protect the scarcity — and effectiveness — of the VendVite method, we deliberately limit the number of licences offered in each market. We are now checking whether an additional seat can be opened in your territory. If so, you will receive an access offer by email along with the terms for securing your licence.')
       + '</p></div></div>';
     return await services.email.send({
       to: broker.email,
-      subject: fr ? 'Votre demande est à l’étude' : 'Your request is under review',
+      subject: fr ? 'Votre demande d’accès VendVite est reçue' : 'Your VendVite access request was received',
       html: html,
-      text: fr ? 'Votre demande VendVite est à l’étude.' : 'Your VendVite request is under review.'
+      text: fr
+        ? 'Votre demande d’accès VendVite est reçue. Nous limitons le nombre de licences par marché afin de préserver l’efficacité de notre méthode. Nous vous écrirons si une place additionnelle peut être ouverte dans votre secteur.'
+        : 'Your VendVite access request was received. We limit licences per market to protect the effectiveness of our method. We will contact you if an additional seat can be opened in your territory.'
     });
   }
 

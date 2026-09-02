@@ -12,13 +12,24 @@
       <h1 class="inv-display"><%= t.inv_title %></h1>
       <p class="inv-lede"><%= t.inv_lede %></p>
 
+      <div class="inv-price" aria-label="<%= t.inv_price_amount %> <%= t.inv_price_term %>">
+        <div class="inv-price-lockup">
+          <strong><%= t.inv_price_amount %></strong>
+          <span><%= t.inv_price_term %></span>
+        </div>
+        <p><%= t.inv_price_pitch %></p>
+      </div>
+
       <div class="inv-rule" aria-hidden="true"><span></span><em>&#10022;</em><span></span></div>
 
       <div class="inv-panel" id="invPanel">
         <h2 class="inv-panel-title"><%= t.inv_form_title %></h2>
         <p class="inv-panel-sub"><%= t.inv_form_sub %></p>
 
-        <form id="invForm" class="inv-form" novalidate>
+        <form id="invForm" class="inv-form" novalidate
+              data-err-required="<%= t.inv_err_required %>"
+              data-err-email="<%= t.inv_err_email %>"
+              data-err-generic="<%= t.inv_err_generic %>">
           <div class="inv-field">
             <label for="invName"><%= t.inv_f_name %></label>
             <input id="invName" name="name" type="text" autocomplete="name" placeholder="<%= t.inv_f_name_ph %>" required>
@@ -38,14 +49,29 @@
             </div>
           </div>
           <p class="inv-error" id="invError" role="alert"></p>
-          <button type="submit" class="inv-submit" id="invSubmit"><%= t.inv_f_submit %></button>
+          <button type="submit" class="inv-submit" id="invSubmit"
+                  data-sending="<%= t.inv_f_sending %>" data-sent="<%= t.inv_f_sent %>">
+            <span class="inv-submit-copy"><%= t.inv_f_submit %></span>
+            <span class="inv-submit-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          </button>
           <p class="inv-fineprint"><%= t.inv_fineprint %></p>
         </form>
 
-        <div class="inv-done" id="invDone" hidden>
-          <div class="inv-done-seal" aria-hidden="true">&#10022;</div>
+        <div class="inv-done" id="invDone" role="status" aria-live="polite" tabindex="-1" hidden>
+          <p class="inv-done-kicker"><%= t.inv_done_kicker %></p>
+          <div class="inv-seal-stage" aria-hidden="true">
+            <span class="inv-seal-pulse"></span>
+            <span class="inv-seal-spark inv-seal-spark-a">&#10022;</span>
+            <span class="inv-seal-spark inv-seal-spark-b">&#10022;</span>
+            <span class="inv-seal-spark inv-seal-spark-c">&#10022;</span>
+            <div class="inv-done-seal">
+              <span class="inv-seal-rim"></span>
+              <span class="inv-seal-monogram">V</span>
+            </div>
+          </div>
           <h3><%= t.inv_done_title %></h3>
           <p id="invDoneText"><%= t.inv_done_text %></p>
+          <div class="inv-done-status"><span aria-hidden="true">&#10003;</span><%= t.inv_done_status %></div>
         </div>
       </div>
 
