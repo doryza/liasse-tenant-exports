@@ -45,7 +45,7 @@
   </style>
 </head>
 <body>
-  <div class="printbar"><span>Lettre personnalisée · Noir et blanc · Format Lettre</span><button type="button" onclick="window.print()">Imprimer ou enregistrer en PDF</button></div>
+  <% if (!embed) { %><div class="printbar"><span>Lettre personnalisée · Noir et blanc · Format Lettre</span><button type="button" onclick="window.print()">Imprimer ou enregistrer en PDF</button></div><% } %>
   <main class="letter">
     <header class="mast">
       <div class="brand"><span>V</span>VendVite</div>

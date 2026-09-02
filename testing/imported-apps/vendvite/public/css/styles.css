@@ -453,7 +453,7 @@ a:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid var(
 
 .camp-histo{margin-top:24px;padding-top:18px;border-top:1px solid var(--hair);}
 .camp-histo h4{margin:0 0 12px;color:var(--ink-faint);font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;font-weight:600;}
-.camp-histo-l{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;padding:9px 0;border-bottom:1px solid rgba(245,239,230,.05);font-size:.8rem;}
+.camp-histo-l{display:grid;grid-template-columns:132px 1fr 62px 92px 96px;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid rgba(245,239,230,.05);font-size:.8rem;}
 .camp-histo-b{padding:3px 9px;border:1px solid rgba(199,154,91,.35);border-radius:20px;color:var(--gold);font-family:var(--mono);font-size:.54rem;letter-spacing:.1em;text-transform:uppercase;}
 .camp-histo-b.is-ok{border-color:rgba(120,190,140,.45);color:#8FD9A8;}
 .camp-histo-t{color:var(--ink-dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
@@ -466,4 +466,44 @@ a:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid var(
   .camp-search .esp-btn{margin-top:0;width:100%;}
   .camp-stats{grid-template-columns:1fr;}
   .camp-carte{height:300px;}
+}
+
+/* ── La lettre, dans la zone de l'offre ─────────────────────────────────────*/
+.camp-lettre{display:grid;grid-template-columns:minmax(240px,340px) 1fr;gap:28px;align-items:start;padding:24px;margin-bottom:18px;border:1px solid var(--hair);border-radius:9px;background:linear-gradient(165deg,rgba(23,18,19,.9),rgba(15,11,12,.9));}
+.camp-lettre-vue{position:relative;width:100%;overflow:hidden;border-radius:6px;border:1px solid rgba(199,154,91,.28);background:#fff;box-shadow:0 18px 44px rgba(0,0,0,.45);}
+.camp-sheet{transform-origin:top left;width:816px;height:1056px;}
+.camp-sheet iframe{width:816px;height:1056px;border:0;display:block;background:#fff;pointer-events:none;}
+.camp-lettre-txt h3{margin:6px 0 10px;font-family:var(--serif);font-size:1.5rem;line-height:1.12;letter-spacing:-.02em;}
+.camp-lettre-txt p{margin:0 0 16px;color:var(--ink-dim);font-size:.88rem;line-height:1.62;max-width:56ch;}
+.camp-lettre-txt strong{color:var(--gold);font-weight:600;word-break:break-all;}
+
+/* ── Paliers de 150 ────────────────────────────────────────────────────────*/
+.camp-qte{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;padding:18px 20px;margin-bottom:18px;border:1px solid rgba(199,154,91,.26);border-radius:8px;background:rgba(199,154,91,.05);}
+.camp-qte label{display:block;margin-bottom:10px;font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint);}
+.camp-qte .esp-help{margin-top:10px;}
+.camp-stepper{display:inline-flex;align-items:center;gap:2px;border:1px solid var(--hair);border-radius:6px;overflow:hidden;background:#0a0708;}
+.camp-stepper button{width:44px;height:44px;border:0;background:transparent;color:var(--ink);font-size:1.3rem;line-height:1;cursor:pointer;transition:background .15s;}
+.camp-stepper button:hover:not(:disabled){background:rgba(199,154,91,.16);color:var(--gold);}
+.camp-stepper button:disabled{opacity:.28;cursor:default;}
+.camp-stepper span{min-width:86px;text-align:center;font-family:var(--serif);font-size:1.5rem;font-weight:800;color:var(--ink);letter-spacing:-.02em;}
+.camp-prix{min-width:190px;text-align:right;}
+.camp-prix-n{display:block;color:var(--gold);font-family:var(--serif);font-size:1.9rem;font-weight:900;line-height:1;letter-spacing:-.02em;}
+.camp-prix-l{display:block;margin-top:7px;color:var(--ink-faint);font-family:var(--mono);font-size:.56rem;letter-spacing:.1em;text-transform:uppercase;}
+.camp-sandbox{margin:0 0 14px;padding:11px 14px;border:1px dashed rgba(199,154,91,.42);border-radius:6px;color:var(--gold);font-size:.78rem;line-height:1.5;}
+
+/* ── Historique ────────────────────────────────────────────────────────────*/
+.camp-histo-card{padding:22px 24px;border:1px solid var(--hair);border-radius:9px;background:linear-gradient(165deg,rgba(23,18,19,.9),rgba(15,11,12,.9));}
+.camp-histo-card h3{margin:0 0 14px;font-family:var(--serif);font-size:1.25rem;letter-spacing:-.015em;}
+.camp-histo-t-head{display:grid;grid-template-columns:132px 1fr 62px 92px 96px;gap:12px;padding-bottom:9px;border-bottom:1px solid var(--hair);color:var(--ink-faint);font-family:var(--mono);font-size:.54rem;letter-spacing:.14em;text-transform:uppercase;}
+.camp-histo-b.is-wait{border-color:rgba(245,158,11,.45);color:#F0B85A;}
+.camp-histo-q{color:var(--ink-dim);font-family:var(--mono);font-size:.72rem;}
+.camp-histo-m{color:var(--gold);font-family:var(--mono);font-size:.72rem;}
+
+@media (max-width:820px){
+  .camp-lettre{grid-template-columns:1fr;gap:20px;}
+  .camp-qte{grid-template-columns:1fr;gap:16px;}
+  .camp-prix{text-align:left;}
+  .camp-histo-l,.camp-histo-t-head{grid-template-columns:1fr auto;gap:8px;}
+  .camp-histo-t-head{display:none;}
+  .camp-histo-q,.camp-histo-d{display:none;}
 }

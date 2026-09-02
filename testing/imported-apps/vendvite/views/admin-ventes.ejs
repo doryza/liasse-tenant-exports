@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ventes et paiements — VendVite</title>
-<link rel="stylesheet" href="../public/css/admin-styles.css">
+<link rel="stylesheet" href="public/css/admin-styles.css">
 </head>
 <body class="admin">
 <%- include('partials/admin-sidebar') %>
@@ -92,7 +92,7 @@
               <td><%= ((Number(i.gst_cents||0)+Number(i.qst_cents||0))/100).toFixed(2).replace('.',',') %>&nbsp;$</td>
               <td><strong><%= (Number(i.total_cents||0)/100).toFixed(2).replace('.',',') %>&nbsp;$</strong></td>
               <td><span class="pill <%= i.emailed_at ? 'pill-on' : 'pill-off' %>"><%= i.emailed_at ? 'Envoyée' : 'À envoyer' %></span></td>
-              <td class="row-actions"><a class="btn-sm sales-download" href="ventes/factures/<%= i.id %>/pdf">PDF ↓</a></td>
+              <td class="row-actions"><a class="btn-sm sales-download" href="admin/ventes/factures/<%= i.id %>/pdf">PDF ↓</a></td>
             </tr>
           <% }); } else { %>
             <tr><td colspan="9" class="empty">Aucun paiement PayPal facturé pour le moment. La première vente apparaîtra ici automatiquement.</td></tr>
@@ -111,7 +111,7 @@
     if(!window.confirm('Créer dans PayPal Sandbox le produit VendVite et son plan annuel de 688,70 $ CAD? Aucun argent réel ne sera touché.')) return;
     planBtn.disabled=true; planStatus.textContent='Création sécurisée dans PayPal Sandbox…';
     try{
-      var response=await fetch('../api/admin/paypal/sandbox/plan',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});
+      var response=await fetch('api/admin/paypal/sandbox/plan',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});
       var data=await response.json();
       if(!response.ok){
         if(data.code==='SANDBOX_CREDENTIALS_MISSING') throw new Error('Ajoutez d’abord le Client ID et le Secret sandbox.');
@@ -127,7 +127,7 @@
     if(!window.confirm(question)) return;
     modeBtn.disabled=true; status.textContent='Changement en cours…';
     try{
-      var response=await fetch('../api/admin/paypal/mode',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mode:mode})});
+      var response=await fetch('api/admin/paypal/mode',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mode:mode})});
       var data=await response.json();
       if(!response.ok) throw new Error(data.code==='NOT_CONFIGURED'?'Les clés de ce mode ne sont pas encore configurées.':'Impossible de changer le mode.');
       status.textContent='Mode changé. Rechargement…'; window.location.reload();

@@ -206,7 +206,7 @@
     'https://overpass-api.de/api/interpreter',
     'https://overpass.private.coffee/api/interpreter'
   ];
-  var LADDER = [400, 800, 1500, 3000];
+  var LADDER = [400, 800, 1500, 3000, 5000];
   var CLES_COMMERCE = ['shop', 'office', 'amenity', 'tourism', 'craft', 'healthcare', 'leisure', 'club'];
   var BATIS_NON_RESIDENTIELS = ['commercial', 'retail', 'industrial', 'office', 'church', 'chapel', 'school',
     'university', 'hospital', 'warehouse', 'public', 'civic', 'hotel', 'kindergarten', 'government',
@@ -243,7 +243,7 @@
         var txt = await r.text();
         if (txt.charAt(0) === '{') return JSON.parse(txt);
       }catch(_){ /* miroir injoignable — on essaie le suivant */ }
-      etat('Le service cartographique est occupé — nouvelle tentative (' + (tour + 2) + '/4)…');
+      if (tour < 3) etat('Le service cartographique est occupé — nouvelle tentative (' + (tour + 2) + '/4)…');
       await new Promise(function(ok){ setTimeout(ok, 1500); });
     }
     throw new Error('overpass');
@@ -419,14 +419,14 @@
       campCentre = { lat: parseFloat(h.lat), lng: parseFloat(h.lon), libelle: h.display_name };
       campVille = (h.address && (h.address.city || h.address.town || h.address.village || h.address.municipality)) || '';
 
-      var out = await balayer(campCentre.lat, campCentre.lng, CAMP.cible);
+      var out = await balayer(campCentre.lat, campCentre.lng, campQuantite);
       if (!out.total) {
         etat('');
         if (err) err.textContent = 'OpenStreetMap ne couvre pas encore ce secteur. Écrivez-nous : nous constituons la liste à la main.';
         btn.disabled = false; btn.textContent = libelleBtn;
         return;
       }
-      campAdresses = out.liste.slice(0, CAMP.cible);
+      campAdresses = out.liste.slice(0, campQuantite);
       campRayon = out.rayon;
 
       etat('');
@@ -442,13 +442,65 @@
       rendreListe();
       dessinerCarte();
       var conf = $('campConfirmer');
-      if (conf && CAMP.restantes > 0) conf.disabled = false;
+      if (conf && (estIncluse() || CAMP.peutPayer)) { conf.disabled = false; conf.textContent = libelleBouton(); }
     }catch(_){
       etat('');
       if (err) err.textContent = 'Le service cartographique n’a pas répondu. Réessayez dans un instant.';
     }
     btn.disabled = false; btn.textContent = libelleBtn;
   }
+
+  // ── Paliers de 150 : la premiere campagne est comprise dans la licence,
+  //    les suivantes s'achetent au palier.
+  var campQuantite = CAMP.cible;
+  function palierPrix(q){
+    var liste = CAMP.paliers || [];
+    for (var i = 0; i < liste.length; i++) if (liste[i].quantite === q) return liste[i];
+    return null;
+  }
+  function estIncluse(){ return campQuantite === CAMP.cible && Number(CAMP.restantes) > 0; }
+  function argent(cents){
+    return (cents / 100).toLocaleString('fr-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' $';
+  }
+  function majQuantite(){
+    var el = $('campQte');
+    if (el) el.textContent = nb(campQuantite);
+    var prix = palierPrix(campQuantite);
+    var box = $('campPrix');
+    if (box) {
+      if (estIncluse()) {
+        box.innerHTML = '<span class="camp-prix-n">Incluse</span><span class="camp-prix-l">comprise dans votre licence</span>';
+      } else if (prix) {
+        box.innerHTML = '<span class="camp-prix-n">' + argent(prix.total) + '</span>'
+          + '<span class="camp-prix-l">' + nb(campQuantite) + ' lettres · ' + argent(prix.sousTotal) + ' + taxes</span>';
+      }
+    }
+    var btn = $('campConfirmer');
+    if (btn && !btn.disabled) btn.textContent = libelleBouton();
+    var moins = $('campMoins'), plus = $('campPlus');
+    if (moins) moins.disabled = campQuantite <= CAMP.palier;
+    if (plus) plus.disabled = campQuantite >= CAMP.max;
+  }
+  function libelleBouton(){
+    if (estIncluse()) return 'Confirmer et lancer l’envoi';
+    var prix = palierPrix(campQuantite);
+    return 'Payer ' + (prix ? argent(prix.total) : '') + ' et lancer l’envoi';
+  }
+  function changerQuantite(delta){
+    var vise = campQuantite + delta * CAMP.palier;
+    if (vise < CAMP.palier || vise > CAMP.max) return;
+    campQuantite = vise;
+    // Le territoire deja affiche ne correspond plus au nombre demande.
+    campAdresses = [];
+    var res = $('campResultat');
+    if (res) res.hidden = true;
+    var btn = $('campConfirmer');
+    if (btn) { btn.disabled = true; btn.textContent = libelleBouton(); }
+    majQuantite();
+  }
+  on($('campMoins'), 'click', function(){ changerQuantite(-1); });
+  on($('campPlus'), 'click', function(){ changerQuantite(1); });
+  majQuantite();
 
   on($('campChercher'), 'click', chercherTerritoire);
   on($('campAdresse'), 'keydown', function(e){ if (e.key === 'Enter') { e.preventDefault(); chercherTerritoire(); } });
@@ -457,19 +509,40 @@
     var btn = $('campConfirmer'), err = $('campErreur'), ok = $('campSucces');
     if (!campCentre || !campAdresses.length) return;
     err.textContent = ''; ok.textContent = '';
-    btn.disabled = true; btn.textContent = 'Transmission…';
+    var paye = !estIncluse();
+    if (paye && !CAMP.peutPayer) {
+      err.textContent = 'Le paiement n’est pas encore configuré. Écrivez-nous et nous lançons la campagne manuellement.';
+      return;
+    }
+    btn.disabled = true; btn.textContent = paye ? 'Ouverture de PayPal…' : 'Transmission…';
+    var charge = {
+      centre: { libelle: campCentre.libelle, lat: campCentre.lat, lng: campCentre.lng },
+      adresses: campAdresses.map(function(a){
+        return { numero: a.numero, rue: a.rue, ville: a.ville, source: a.source, lat: a.lat, lng: a.lng, metres: a.metres };
+      }),
+      ville: campVille, rayon: campRayon,
+      notes: $('campNotes') ? $('campNotes').value.trim() : ''
+    };
+    if (paye) charge.quantite = campQuantite;
     try{
-      var r = await fetch('api/espace/campagne', {
+      var r = await fetch(paye ? 'api/espace/campagne/commander' : 'api/espace/campagne', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          centre: { libelle: campCentre.libelle, lat: campCentre.lat, lng: campCentre.lng },
-          adresses: campAdresses.map(function(a){
-            return { numero: a.numero, rue: a.rue, ville: a.ville, source: a.source, lat: a.lat, lng: a.lng, metres: a.metres };
-          }),
-          ville: campVille, rayon: campRayon,
-          notes: $('campNotes') ? $('campNotes').value.trim() : ''
-        })
+        body: JSON.stringify(charge)
       });
+      if (paye) {
+        var dp = await r.json().catch(function(){ return {}; });
+        if (r.ok && dp.approve) { window.location.href = dp.approve; return; }
+        err.textContent =
+          dp.code === 'COUNT_MISMATCH' ? 'Nous n’avons trouvé que ' + nb(dp.trouvees || 0) + ' adresses pour ' + nb(campQuantite) + ' demandées. Réduisez la quantité ou choisissez un secteur plus dense.' :
+          dp.code === 'BAD_QUANTITY' ? 'Quantité invalide. Choisissez un palier de ' + nb(CAMP.palier) + '.' :
+          dp.code === 'NOT_CONFIGURED' ? 'Le paiement n’est pas encore configuré. Écrivez-nous et nous lançons la campagne manuellement.' :
+          dp.code === 'PAGE_NOT_LIVE' ? 'Publiez d’abord votre page : le code QR de la lettre doit mener quelque part.' :
+          dp.code === 'MEMBERSHIP_REQUIRED' ? 'Activez votre abonnement pour lancer une campagne.' :
+          r.status === 401 ? 'Votre session a expiré. Rouvrez votre lien d’accès personnel.' :
+          'Impossible d’ouvrir le paiement. Réessayez dans un instant.';
+        btn.disabled = false; btn.textContent = libelleBouton();
+        return;
+      }
       var d = await r.json().catch(function(){ return {}; });
       if (r.ok) {
         var q = new Date(d.deadline);
@@ -487,15 +560,53 @@
         r.status === 401 ? 'Votre session a expiré. Rouvrez votre lien d’accès personnel.' :
         'La confirmation n’a pas abouti. Réessayez dans un instant.';
     }catch(_){ err.textContent = 'La confirmation n’a pas abouti. Réessayez dans un instant.'; }
-    btn.disabled = false; btn.textContent = 'Confirmer et lancer l’envoi';
+    btn.disabled = false; btn.textContent = libelleBouton();
   });
 
+  // La lettre est une feuille FIXE de 8,5 x 11 po : a 100 % de largeur elle est
+  // rognee, pas reflowee. On la met a l'echelle plutot que de la redimensionner.
+  var LETTRE_L = 816, LETTRE_H = 1056;
+  function ajusterLettre(){
+    var vue = $('campSheet');
+    if (!vue || !vue.parentNode) return;
+    var dispo = vue.parentNode.clientWidth;
+    if (!dispo) return;
+    var k = Math.min(1, dispo / LETTRE_L);
+    vue.style.transform = 'scale(' + k + ')';
+    vue.parentNode.style.height = Math.round(LETTRE_H * k) + 'px';
+  }
+  if (window.ResizeObserver) {
+    var vueL = $('campSheet');
+    if (vueL && vueL.parentNode) { try{ new ResizeObserver(ajusterLettre).observe(vueL.parentNode); }catch(_){ } }
+  }
+  on(window, 'resize', ajusterLettre);
+
   // Le panneau est en display:none tant qu'il n'est pas ouvert : une carte
-  // construite avant l'ouverture se dessine en 0x0 et rien ne previent Leaflet.
+  // construite avant l'ouverture se dessine en 0x0 et rien ne previent Leaflet,
+  // et la lettre mesure une largeur nulle.
   function reveiller(){
+    setTimeout(ajusterLettre, 40);
     if (!campPret) { campPret = true; return; }
     if (campCarte) setTimeout(function(){ campCarte.invalidateSize(); }, 60);
   }
+
+  // Retour de PayPal : on rouvre l'onglet et on dit ce qui s'est passe.
+  (function(){
+    var m = /[?&]campagne=([a-z]+)/.exec(window.location.search || '');
+    if (!m) return;
+    var ok = $('campSucces'), err = $('campErreur');
+    show('courrier');
+    setTimeout(reveiller, 60);
+    if (m[1] === 'paye' || m[1] === 'test') {
+      if (ok) ok.textContent = m[1] === 'test'
+        ? 'Paiement test accepté ✓ Aucun montant réel n’a été prélevé. La campagne est enregistrée et identifiée comme un essai.'
+        : 'Paiement reçu ✓ Vos lettres sont déposées à Postes Canada dans les 72 heures ouvrables.';
+    } else if (m[1] === 'annule') {
+      if (err) err.textContent = 'Paiement annulé. Votre territoire est toujours là — relancez quand vous voulez.';
+    } else if (err) {
+      err.textContent = 'Nous n’avons pas encore reçu la confirmation de PayPal. Elle arrive parfois avec un léger délai ; votre campagne apparaîtra dans l’historique.';
+    }
+  })();
   document.querySelectorAll('.esp-tab[data-tab="courrier"], [data-goto="courrier"]').forEach(function(b){
     on(b, 'click', reveiller);
   });

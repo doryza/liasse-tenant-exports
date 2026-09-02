@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Campagnes — <%= settings.agent_name || 'VendVite' %></title>
-<link rel="stylesheet" href="../public/css/admin-styles.css">
+<link rel="stylesheet" href="public/css/admin-styles.css">
 <style>
 .cmp-card{border:1px solid #e5e7eb;border-radius:10px;padding:16px 18px;margin-bottom:12px;background:#fff}
 .cmp-card.is-due{border-color:#f59e0b;box-shadow:0 1px 6px rgba(245,158,11,.15)}
@@ -76,7 +76,7 @@
         <p class="cmp-prev"><strong>Centre :</strong> <%= c.centre_label || '' %></p>
         <% if (c.notes) { %><p class="cmp-prev"><strong>Précisions du courtier :</strong> <%= c.notes %></p><% } %>
         <div class="cmp-actions">
-          <a class="btn-primary btn-sm" href="campagnes/<%= c.id %>/adresses.csv">Télécharger le CSV</a>
+          <a class="btn-primary btn-sm" href="admin/campagnes/<%= c.id %>/adresses.csv">Télécharger le CSV</a>
           <button class="btn-ghost btn-sm" data-act="postee" data-id="<%= c.id %>"><%= done ? 'Marquer « à poster »' : 'Marquer comme postée' %></button>
         </div>
         <% if (!done) { %>
@@ -94,7 +94,7 @@
     btn.addEventListener('click', async function(){
       btn.disabled=true;
       try{
-        var r=await fetch('../api/admin/campagnes/'+btn.getAttribute('data-id')+'/'+btn.getAttribute('data-act'), {
+        var r=await fetch('api/admin/campagnes/'+btn.getAttribute('data-id')+'/'+btn.getAttribute('data-act'), {
           method:'POST', headers:{ 'Content-Type':'application/json' }, body:'{}'
         });
         if(r.ok){ location.reload(); return; }

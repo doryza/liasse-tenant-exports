@@ -31,9 +31,28 @@ FROM (
   GROUP BY broker_id
 ) paid
 WHERE b.id=paid.broker_id AND b.paypal_sandbox_expires_at IS NULL AND paid.period_end>NOW();
-CREATE TABLE IF NOT EXISTS broker_campaigns (id SERIAL PRIMARY KEY, broker_id INTEGER NOT NULL, status TEXT NOT NULL DEFAULT 'confirmed', centre_label TEXT, centre_lat DOUBLE PRECISION, centre_lng DOUBLE PRECISION, radius_m INTEGER NOT NULL DEFAULT 0, address_count INTEGER NOT NULL DEFAULT 0, addresses JSONB NOT NULL DEFAULT '[]'::jsonb, city TEXT, province TEXT NOT NULL DEFAULT 'QC', notes TEXT, is_test INTEGER NOT NULL DEFAULT 0, deadline_at TIMESTAMPTZ, mailed_at TIMESTAMPTZ, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS broker_campaigns (id SERIAL PRIMARY KEY, broker_id INTEGER NOT NULL, kind TEXT NOT NULL DEFAULT 'included', status TEXT NOT NULL DEFAULT 'confirmed', payment_status TEXT NOT NULL DEFAULT 'none', centre_label TEXT, centre_lat DOUBLE PRECISION, centre_lng DOUBLE PRECISION, radius_m INTEGER NOT NULL DEFAULT 0, quantity INTEGER NOT NULL DEFAULT 0, address_count INTEGER NOT NULL DEFAULT 0, addresses JSONB NOT NULL DEFAULT '[]'::jsonb, city TEXT, province TEXT NOT NULL DEFAULT 'QC', notes TEXT, subtotal_cents INTEGER NOT NULL DEFAULT 0, gst_cents INTEGER NOT NULL DEFAULT 0, qst_cents INTEGER NOT NULL DEFAULT 0, total_cents INTEGER NOT NULL DEFAULT 0, paypal_order_id TEXT, paypal_capture_id TEXT, paypal_mode TEXT NOT NULL DEFAULT 'live', is_test INTEGER NOT NULL DEFAULT 0, quota_period DATE, deadline_at TIMESTAMPTZ, mailed_at TIMESTAMPTZ, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW());
 ALTER TABLE broker_campaigns ADD COLUMN IF NOT EXISTS province TEXT NOT NULL DEFAULT 'QC';
 ALTER TABLE broker_campaigns ADD COLUMN IF NOT EXISTS is_test INTEGER NOT NULL DEFAULT 0;
 ALTER TABLE broker_campaigns ADD COLUMN IF NOT EXISTS deadline_at TIMESTAMPTZ;
 CREATE INDEX IF NOT EXISTS broker_campaigns_broker_idx ON broker_campaigns (broker_id, created_at DESC);
 CREATE INDEX IF NOT EXISTS broker_campaigns_status_idx ON broker_campaigns (status, created_at DESC);
+ALTER TABLE broker_campaigns ADD COLUMN IF NOT EXISTS kind TEXT NOT NULL DEFAULT 'included';
+ALTER TABLE broker_campaigns ADD COLUMN IF NOT EXISTS payment_status TEXT NOT NULL DEFAULT 'none';
+ALTER TABLE broker_campaigns ADD COLUMN IF NOT EXISTS quantity INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE broker_campaigns ADD COLUMN IF NOT EXISTS subtotal_cents INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE broker_campaigns ADD COLUMN IF NOT EXISTS gst_cents INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE broker_campaigns ADD COLUMN IF NOT EXISTS qst_cents INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE broker_campaigns ADD COLUMN IF NOT EXISTS total_cents INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE broker_campaigns ADD COLUMN IF NOT EXISTS paypal_order_id TEXT;
+ALTER TABLE broker_campaigns ADD COLUMN IF NOT EXISTS paypal_capture_id TEXT;
+ALTER TABLE broker_campaigns ADD COLUMN IF NOT EXISTS paypal_mode TEXT NOT NULL DEFAULT 'live';
+CREATE UNIQUE INDEX IF NOT EXISTS broker_campaigns_order_idx ON broker_campaigns (paypal_order_id) WHERE paypal_order_id IS NOT NULL;
+ALTER TABLE broker_invoices ALTER COLUMN paypal_subscription_id DROP NOT NULL;
+ALTER TABLE broker_invoices ALTER COLUMN period_start DROP NOT NULL;
+ALTER TABLE broker_invoices ALTER COLUMN period_end DROP NOT NULL;
+ALTER TABLE broker_invoices ADD COLUMN IF NOT EXISTS kind TEXT NOT NULL DEFAULT 'subscription';
+ALTER TABLE broker_invoices ADD COLUMN IF NOT EXISTS campaign_id INTEGER;
+ALTER TABLE broker_invoices ADD COLUMN IF NOT EXISTS paypal_order_id TEXT;
+ALTER TABLE broker_campaigns ADD COLUMN IF NOT EXISTS quota_period DATE;
+CREATE UNIQUE INDEX IF NOT EXISTS broker_campaigns_quota_idx ON broker_campaigns (broker_id, quota_period) WHERE kind='included' AND status<>'cancelled' AND is_test=0;

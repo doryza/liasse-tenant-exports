@@ -6,7 +6,10 @@ var invoiceTools = require('./invoice');
 //    reinvoque module.exports a chaque requete, donc tout etat declare a
 //    l'interieur repartirait vide et n'etranglerait jamais rien.
 var CAMPAGNE_CIBLE = 150;
-var CAMPAGNE_MAX = 200;
+var CAMPAGNE_PALIER = 150;
+var CAMPAGNE_PALIERS_MAX = 8;
+var CAMPAGNE_MAX = CAMPAGNE_PALIER * CAMPAGNE_PALIERS_MAX;
+var CAMPAGNE_PRIX_CENTS = 159;
 var CAMPAGNE_PAR_AN = 1;
 var CAMPAGNE_HEURES = 72;
 var campagneDerniere = new Map();
@@ -915,14 +918,27 @@ module.exports = function(services){
     var invoices = await db.all('SELECT * FROM broker_invoices WHERE broker_id=$1 ORDER BY payment_time DESC, id DESC LIMIT 20', [broker.id]);
     var activePaypal = await paypalCfg();
     var access = await brokerAccessState(broker, activePaypal.mode);
-    var campagnes = await db.all('SELECT id, status, centre_label, address_count, city, deadline_at, mailed_at, created_at FROM broker_campaigns WHERE broker_id=$1 ORDER BY created_at DESC LIMIT 12', [broker.id]);
+    var campagnes = await db.all("SELECT id, kind, status, payment_status, centre_label, quantity, address_count, city, total_cents, is_test, deadline_at, mailed_at, created_at FROM broker_campaigns WHERE broker_id=$1 AND NOT (kind='paid' AND payment_status='pending' AND created_at < NOW() - INTERVAL '2 hours') ORDER BY created_at DESC LIMIT 24", [broker.id]);
     var quota = await campagneQuota(broker);
+    var paliers = [];
+    for (var pi = 1; pi <= CAMPAGNE_PALIERS_MAX; pi++) {
+      var pq = pi * CAMPAGNE_PALIER;
+      var pp = prixCampagne(pq);
+      paliers.push({ quantite: pq, sousTotal: pp.sousTotal, tps: pp.tps, tvq: pp.tvq, total: pp.total });
+    }
+    var cfgPaypal = await paypalCfg();
     return Object.assign(L, {
       isHome: false,
       campagnes: campagnes || [],
       campQuota: quota,
       campCible: CAMPAGNE_CIBLE,
       campHeures: CAMPAGNE_HEURES,
+      campPalier: CAMPAGNE_PALIER,
+      campMax: CAMPAGNE_MAX,
+      campPaliers: paliers,
+      campPrixCents: CAMPAGNE_PRIX_CENTS,
+      campPeutPayer: paypalPeutEncaisser(cfgPaypal),
+      campModePaypal: cfgPaypal.mode,
       broker: broker,
       profile: brokerProfile(broker),
       leads: leads || [],
@@ -974,6 +990,9 @@ module.exports = function(services){
       });
       res.set('Cache-Control', 'private, no-store');
       res.render('lettre-proprietaires', {
+        // Dans l'apercu integre au panneau, la barre d'impression n'a pas de
+        // sens : on montre la feuille seule.
+        embed: !!(req.query && req.query._embed === '1'),
         broker: broker,
         profile: profile,
         pageUrl: pageUrl,
@@ -991,7 +1010,7 @@ module.exports = function(services){
     try{
       var access = await brokerAccessState(broker);
       if (!(access.active && Number(broker.published) === 1)) {
-        return res.status(409).json({ error: 'page_not_live', code: 'PAGE_NOT_LIVE' });
+        return res.status(409).json({ code: 'PAGE_NOT_LIVE' });
       }
       var quantity = Math.floor(Number(req.body && req.body.quantity));
       var sector = String((req.body && req.body.sector) || '').trim().slice(0, 300);
@@ -1140,20 +1159,41 @@ module.exports = function(services){
   //    serveur bloquerait les autres locataires et depasserait le plafond
   //    d'origine de Cloudflare. Ici on valide, on borne et on conserve.
 
-  // 72 heures ouvrables : on saute samedi et dimanche.
+  // 72 heures ouvrables : on saute samedi et dimanche — au fuseau du QUEBEC,
+  // pas en UTC. Un vendredi 21 h a Montreal est deja samedi en UTC, et compter
+  // en UTC avancait donc l'echeance d'une journee entiere.
+  function jourQuebec(d){
+    try{ return new Date(d).toLocaleDateString('en-CA', { timeZone: 'America/Toronto', weekday: 'short' }); }
+    catch(e){ return ''; }
+  }
   function echeanceOuvrable(heures){
     var d = new Date();
     var restant = heures;
     while (restant > 0) {
       d = new Date(d.getTime() + 3600000);
-      var j = d.getUTCDay();
-      if (j !== 0 && j !== 6) restant--;
+      var j = jourQuebec(d);
+      if (j !== 'Sat' && j !== 'Sun') restant--;
     }
     return d;
   }
 
+  // Prix d'une campagne payante. Calcul EN AVANT en cents entiers : la fonction
+  // taxBreakdown d'invoice.js retro-deduit le partage a partir du total et
+  // diverge d'un cent sur les gros volumes, ce qui ferait mentir la facture.
+  function prixCampagne(quantite){
+    var sous = quantite * CAMPAGNE_PRIX_CENTS;
+    var tps = Math.round(sous * 0.05);
+    var tvq = Math.round(sous * 0.09975);
+    return { quantite: quantite, sousTotal: sous, tps: tps, tvq: tvq, total: sous + tps + tvq };
+  }
+
+  // L'ancre de l'annee d'adhesion. membership_started_at est NULL pour tout
+  // courtier active a la main ou en bac a sable — c'est le cas des deux
+  // courtiers en production — et sans repli le quota « une par annee » devenait
+  // silencieusement « une a vie ».
   function anneeAdhesion(broker){
-    var debut = broker.membership_started_at ? new Date(broker.membership_started_at) : null;
+    var ancre = broker.membership_started_at || broker.created_at;
+    var debut = ancre ? new Date(ancre) : null;
     if (!debut || isNaN(debut.getTime())) return null;
     var maintenant = new Date();
     var borne = new Date(debut.getTime());
@@ -1164,9 +1204,10 @@ module.exports = function(services){
 
   async function campagneQuota(broker){
     var depuis = anneeAdhesion(broker);
+    var filtre = "kind='included' AND status<>'cancelled' AND payment_status<>'pending' AND is_test=0";
     var row = depuis
-      ? await db.get("SELECT COUNT(*)::int AS n FROM broker_campaigns WHERE broker_id=$1 AND status<>'cancelled' AND created_at>=$2", [broker.id, depuis])
-      : await db.get("SELECT COUNT(*)::int AS n FROM broker_campaigns WHERE broker_id=$1 AND status<>'cancelled'", [broker.id]);
+      ? await db.get("SELECT COUNT(*)::int AS n FROM broker_campaigns WHERE broker_id=$1 AND " + filtre + " AND created_at>=$2", [broker.id, depuis])
+      : await db.get("SELECT COUNT(*)::int AS n FROM broker_campaigns WHERE broker_id=$1 AND " + filtre, [broker.id]);
     var utilisees = (row && row.n) || 0;
     return { utilisees: utilisees, incluses: CAMPAGNE_PAR_AN, restantes: Math.max(0, CAMPAGNE_PAR_AN - utilisees), depuis: depuis };
   }
@@ -1194,28 +1235,29 @@ module.exports = function(services){
     if (!broker) return;
     try{
       var access = await brokerAccessState(broker);
-      if (!access.active) return res.status(409).json({ error: 'abonnement', code: 'MEMBERSHIP_REQUIRED' });
-      if (Number(broker.published) !== 1) return res.status(409).json({ error: 'publication', code: 'PAGE_NOT_LIVE' });
+      if (!access.active) return res.status(409).json({ code: 'MEMBERSHIP_REQUIRED' });
+      if (Number(broker.published) !== 1) return res.status(409).json({ code: 'PAGE_NOT_LIVE' });
 
       // On LIT le verrou ici mais on ne l'arme qu'apres l'enregistrement : il
       // existe pour empecher une campagne en double, pas pour punir une faute
       // de frappe. L'armer avant la validation bloquerait 20 s un courtier qui
       // vient simplement de se tromper d'adresse.
       var precedent = campagneDerniere.get(broker.id) || 0;
-      if (new Date().getTime() - precedent < CAMPAGNE_DELAI_MS) return res.status(429).json({ error: 'cadence', code: 'TOO_FAST' });
+      if (new Date().getTime() - precedent < CAMPAGNE_DELAI_MS) return res.status(429).json({ code: 'TOO_FAST' });
 
       var quota = await campagneQuota(broker);
-      if (quota.restantes <= 0) return res.status(409).json({ error: 'quota', code: 'QUOTA_SPENT' });
+      if (quota.restantes <= 0) return res.status(409).json({ code: 'QUOTA_SPENT' });
 
       var corps = req.body && typeof req.body === 'object' ? req.body : {};
       var centre = corps.centre && typeof corps.centre === 'object' ? corps.centre : {};
       var libelle = String(centre.libelle == null ? '' : centre.libelle).trim().slice(0, 300);
       var cLat = Number(centre.lat), cLng = Number(centre.lng);
       if (!libelle || !Number.isFinite(cLat) || !Number.isFinite(cLng)) {
-        return res.status(400).json({ error: 'centre', code: 'CENTRE_REQUIRED' });
+        return res.status(400).json({ code: 'CENTRE_REQUIRED' });
       }
 
-      var brutes = Array.isArray(corps.adresses) ? corps.adresses.slice(0, CAMPAGNE_MAX) : [];
+      var brutes = Array.isArray(corps.adresses) ? corps.adresses : [];
+      if (brutes.length > CAMPAGNE_MAX) return res.status(400).json({ code: 'TOO_MANY' });
       var vues = Object.create(null);
       var adresses = [];
       for (var i = 0; i < brutes.length; i++) {
@@ -1226,7 +1268,7 @@ module.exports = function(services){
         vues[cle] = 1;
         adresses.push(a);
       }
-      if (adresses.length < 1) return res.status(400).json({ error: 'adresses', code: 'NO_ADDRESSES' });
+      if (adresses.length < 1) return res.status(400).json({ code: 'NO_ADDRESSES' });
 
       var ville = String(corps.ville == null ? '' : corps.ville).trim().slice(0, 120);
       var notes = String(corps.notes == null ? '' : corps.notes).trim().slice(0, 1000);
@@ -1238,46 +1280,277 @@ module.exports = function(services){
       var ownerEmail = (services.config && (services.config.contactEmail || services.config.ownerEmail)) || null;
       if (!ownerEmail) return res.status(500).json({ error: 'server', code: 'NO_OPERATOR' });
 
-      var campagne = await db.get(
-        'INSERT INTO broker_campaigns (broker_id,status,centre_label,centre_lat,centre_lng,radius_m,address_count,addresses,city,notes,is_test,deadline_at) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) RETURNING *',
-        [broker.id, 'confirmed', libelle, cLat, cLng, rayon, adresses.length, JSON.stringify(adresses), ville, notes, access.testAccess ? 1 : 0, echeance]
-      );
+      if (adresses.length > CAMPAGNE_CIBLE) return res.status(400).json({ code: 'TOO_MANY' });
+      // quota_period + l'index unique partiel font respecter le quota par la
+      // BASE. Le COUNT plus haut n'est qu'une politesse : deux confirmations
+      // simultanees le passeraient toutes les deux, et la Map en memoire ne vit
+      // que dans un seul processus.
+      var periode = quota.depuis ? new Date(quota.depuis).toISOString().slice(0, 10) : null;
+      var campagne;
+      try{
+        campagne = await db.get(
+          'INSERT INTO broker_campaigns (broker_id,kind,status,payment_status,centre_label,centre_lat,centre_lng,radius_m,quantity,address_count,addresses,city,notes,is_test,quota_period,deadline_at) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16) RETURNING *',
+          [broker.id, 'included', 'confirmed', 'none', libelle, cLat, cLng, rayon, adresses.length, adresses.length, JSON.stringify(adresses), ville, notes, access.testAccess ? 1 : 0, periode, echeance]
+        );
+      }catch(err){
+        if (String(err && err.code) === '23505') return res.status(409).json({ code: 'QUOTA_SPENT' });
+        throw err;
+      }
 
       campagneDerniere.set(broker.id, new Date().getTime());
 
       await logBrokerEvent(broker.id, access.testAccess ? 'sandbox_campaign_confirmed' : 'campaign_confirmed',
         JSON.stringify({ id: campagne.id, n: adresses.length, centre: libelle.slice(0, 120) }));
 
-      var esc = escapeHtml;
-      var lignes = adresses.slice(0, 12).map(function(a){ return esc(a.numero + ' ' + a.rue); }).join('<br>');
-      var reste = adresses.length - Math.min(12, adresses.length);
-      var csvUrl = absoluteUrl(req, '/admin/campagnes/' + campagne.id + '/adresses.csv');
-      var html = ''
-        + '<div style="font-family:Arial,sans-serif;max-width:640px;margin:auto;padding:28px;color:#171717">'
-        + '<p style="font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#777">' + (access.testAccess ? 'TEST SANDBOX · ' : '') + 'Campagne 150 portes</p>'
-        + '<h1 style="font-family:Georgia,serif;font-size:26px;margin:0 0 8px">' + adresses.length + ' adresses à poster</h1>'
-        + '<p style="margin:0 0 18px;font-size:14px;color:#b45309"><strong>Dépôt à Postes Canada avant le ' + echeance.toLocaleString('fr-CA', { dateStyle: 'full', timeStyle: 'short' }) + '.</strong></p>'
-        + '<table style="width:100%;border-collapse:collapse;font-size:14px">'
-        + [['Courtier', broker.full_name], ['Agence', broker.agency], ['Courriel', broker.email], ['Téléphone', formatPhone(broker.phone)], ['Centre du territoire', libelle], ['Ville', ville], ['Rayon', rayon + ' m'], ['Adresses', String(adresses.length)], ['Page du courtier', absoluteUrl(req, '/' + broker.slug)]]
-          .map(function(r){ return '<tr><td style="padding:8px;border-bottom:1px solid #ddd;color:#777;width:34%">' + esc(r[0]) + '</td><td style="padding:8px;border-bottom:1px solid #ddd">' + esc(r[1] || '') + '</td></tr>'; }).join('')
-        + '</table>'
-        + (notes ? '<p style="margin-top:18px"><strong>Précisions :</strong><br>' + esc(notes).replace(/\n/g, '<br>') + '</p>' : '')
-        + '<p style="margin-top:20px;font-size:14px"><strong>Aperçu :</strong><br>' + lignes + (reste > 0 ? '<br><em>… et ' + reste + ' autres</em>' : '') + '</p>'
-        + '<p style="margin-top:20px"><a href="' + csvUrl + '" style="background:#171717;color:#fff;padding:11px 18px;border-radius:6px;text-decoration:none;font-size:14px">Télécharger le CSV des adresses</a></p>'
-        + '<p style="margin-top:18px;color:#777;font-size:12px">Les codes postaux ne sont pas fournis par la source cartographique : ils doivent être complétés avant le dépôt. Les adresses marquées « interpolé » sont déduites d\'une plage municipale et peuvent inclure un numéro inexistant.</p>'
-        + '</div>';
-
-      await services.email.send({
-        to: ownerEmail,
-        replyTo: broker.email,
-        subject: (access.testAccess ? '[TEST SANDBOX] ' : '') + 'VendVite — campagne ' + adresses.length + ' portes — ' + broker.full_name,
-        html: html,
-        text: 'Campagne VendVite\nCourtier: ' + broker.full_name + '\nCentre: ' + libelle + '\nAdresses: ' + adresses.length + '\nDepot avant: ' + echeance.toISOString() + '\nCSV: ' + csvUrl
-      });
+      await envoyerCampagneOperateur(req, broker, campagne, adresses, access.testAccess);
 
       var apres = await campagneQuota(broker);
       res.json({ success: true, id: campagne.id, count: adresses.length, deadline: echeance.toISOString(), restantes: apres.restantes });
     }catch(e){ console.error('campagne', e); res.status(500).json({ error: 'server' }); }
+  });
+
+
+
+  // Le courriel a l'operateur : une seule implementation pour la campagne
+  // incluse et les campagnes payantes, sinon les deux divergent.
+  async function envoyerCampagneOperateur(req, broker, campagne, adresses, estTest){
+    var ownerEmail = (services.config && (services.config.contactEmail || services.config.ownerEmail)) || null;
+    if (!ownerEmail) throw new Error('no operator email');
+    var esc = escapeHtml;
+    var liste = Array.isArray(adresses) ? adresses : [];
+    var lignes = liste.slice(0, 12).map(function(a){ return esc(a.numero + ' ' + a.rue); }).join('<br>');
+    var reste = liste.length - Math.min(12, liste.length);
+    var csvUrl = absoluteUrl(req, '/admin/campagnes/' + campagne.id + '/adresses.csv');
+    var echeance = campagne.deadline_at ? new Date(campagne.deadline_at) : new Date();
+    var paye = campagne.kind === 'paid';
+    var marque = estTest ? 'TEST SANDBOX · ' : '';
+    var rangs = [['Courtier', broker.full_name], ['Agence', broker.agency], ['Courriel', broker.email], ['Téléphone', formatPhone(broker.phone)], ['Centre du territoire', campagne.centre_label], ['Ville', campagne.city], ['Rayon', (campagne.radius_m || 0) + ' m'], ['Adresses', String(campagne.address_count)]];
+    if (paye) rangs.push(['Payé', campagneMontantTexte(campagne.total_cents || 0) + (estTest ? ' (sandbox — aucun argent réel)' : '')]);
+    else rangs.push(['Facturation', 'Incluse dans la licence']);
+    rangs.push(['Page du courtier', absoluteUrl(req, '/' + broker.slug)]);
+
+    var html = ''
+      + '<div style="font-family:Arial,sans-serif;max-width:640px;margin:auto;padding:28px;color:#171717">'
+      + '<p style="font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#777">' + marque + (paye ? 'Campagne payée' : 'Campagne incluse') + '</p>'
+      + '<h1 style="font-family:Georgia,serif;font-size:26px;margin:0 0 8px">' + campagne.address_count + ' adresses à poster</h1>'
+      + '<p style="margin:0 0 18px;font-size:14px;color:#b45309"><strong>Dépôt à Postes Canada avant le ' + echeance.toLocaleString('fr-CA', { dateStyle: 'full', timeStyle: 'short' }) + '.</strong></p>'
+      + '<table style="width:100%;border-collapse:collapse;font-size:14px">'
+      + rangs.map(function(r){ return '<tr><td style="padding:8px;border-bottom:1px solid #ddd;color:#777;width:34%">' + esc(r[0]) + '</td><td style="padding:8px;border-bottom:1px solid #ddd">' + esc(r[1] || '') + '</td></tr>'; }).join('')
+      + '</table>'
+      + (campagne.notes ? '<p style="margin-top:18px"><strong>Précisions :</strong><br>' + esc(campagne.notes).replace(/\n/g, '<br>') + '</p>' : '')
+      + '<p style="margin-top:20px;font-size:14px"><strong>Aperçu :</strong><br>' + lignes + (reste > 0 ? '<br><em>… et ' + reste + ' autres</em>' : '') + '</p>'
+      + '<p style="margin-top:20px"><a href="' + csvUrl + '" style="background:#171717;color:#fff;padding:11px 18px;border-radius:6px;text-decoration:none;font-size:14px">Télécharger le CSV des adresses</a></p>'
+      + '<p style="margin-top:18px;color:#777;font-size:12px">Les codes postaux ne sont pas fournis par la source cartographique : ils doivent être complétés avant le dépôt. Les adresses marquées « interpolé » sont déduites d\'une plage municipale et peuvent inclure un numéro inexistant.</p>'
+      + '</div>';
+
+    await services.email.send({
+      to: ownerEmail,
+      replyTo: broker.email,
+      subject: (estTest ? '[TEST SANDBOX] ' : '') + 'VendVite — campagne ' + campagne.address_count + ' portes — ' + broker.full_name,
+      html: html,
+      text: (estTest ? '[TEST SANDBOX] ' : '') + 'Campagne VendVite\nCourtier: ' + broker.full_name + '\nCentre: ' + (campagne.centre_label || '') + '\nAdresses: ' + campagne.address_count + '\nDepot avant: ' + echeance.toISOString() + '\nCSV: ' + csvUrl
+    });
+  }
+
+  // Facture d'une campagne payante. Les montants sont ceux calcules EN AVANT a
+  // la commande — on ne repasse pas par taxBreakdown, qui retro-deduit et
+  // diverge d'un cent sur les gros volumes.
+  async function facturerCampagne(req, broker, campagne, capture, mode){
+    try{
+      var captureId = capture && capture.id ? capture.id : ('order:' + campagne.paypal_order_id);
+      var cle = 'campagne:' + mode + ':' + captureId;
+      var deja = await db.get('SELECT id FROM broker_invoices WHERE payment_key=$1', [cle]);
+      if (deja) return deja;
+      var quand = new Date();
+      var row = await db.get(
+        'INSERT INTO broker_invoices (broker_id,kind,campaign_id,payment_key,paypal_order_id,paypal_transaction_id,payment_time,subtotal_cents,gst_cents,qst_cents,total_cents,currency,is_test,paypal_mode) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14) RETURNING *',
+        [broker.id, 'campagne', campagne.id, cle, campagne.paypal_order_id, capture && capture.id ? capture.id : null, quand, campagne.subtotal_cents, campagne.gst_cents, campagne.qst_cents, campagne.total_cents, 'CAD', mode === 'sandbox' ? 1 : 0, mode]
+      );
+      await db.run('UPDATE broker_invoices SET invoice_number=$1 WHERE id=$2 AND invoice_number IS NULL',
+        [invoiceTools.invoiceNumber(row.id, quand, mode === 'sandbox'), row.id]);
+      return row;
+    }catch(e){ console.error('facture campagne', e); return null; }
+  }
+
+  // ── Campagnes payantes (paliers de 150) ────────────────────────────────────
+  //    Achat unique : PayPal Orders v2, pas Subscriptions. La ligne est ecrite
+  //    AVANT l'appel a PayPal pour qu'un paiement capture ne puisse jamais
+  //    exister sans campagne correspondante, et l'index unique sur
+  //    paypal_order_id rend une capture rejouee inoffensive.
+
+  function campagneMontantTexte(cents){
+    return (cents / 100).toFixed(2).replace('.', ',') + ' $';
+  }
+
+  router.post('/api/espace/campagne/commander', async function(req, res){
+    var broker = await requireBrokerApi(req, res);
+    if (!broker) return;
+    try{
+      var access = await brokerAccessState(broker);
+      if (!access.active) return res.status(409).json({ code: 'MEMBERSHIP_REQUIRED' });
+      if (Number(broker.published) !== 1) return res.status(409).json({ code: 'PAGE_NOT_LIVE' });
+
+      var corps = req.body && typeof req.body === 'object' ? req.body : {};
+      var quantite = Math.floor(Number(corps.quantite));
+      if (!Number.isFinite(quantite) || quantite < CAMPAGNE_PALIER || quantite > CAMPAGNE_MAX || quantite % CAMPAGNE_PALIER !== 0) {
+        return res.status(400).json({ code: 'BAD_QUANTITY' });
+      }
+
+      var centre = corps.centre && typeof corps.centre === 'object' ? corps.centre : {};
+      var libelle = String(centre.libelle == null ? '' : centre.libelle).trim().slice(0, 300);
+      var cLat = Number(centre.lat), cLng = Number(centre.lng);
+      if (!libelle || !Number.isFinite(cLat) || !Number.isFinite(cLng)) {
+        return res.status(400).json({ code: 'CENTRE_REQUIRED' });
+      }
+
+      var brutes = Array.isArray(corps.adresses) ? corps.adresses : [];
+      if (brutes.length > CAMPAGNE_MAX) return res.status(400).json({ code: 'TOO_MANY' });
+      var vues = Object.create(null);
+      var adresses = [];
+      for (var i = 0; i < brutes.length; i++) {
+        var a = assainirAdresse(brutes[i]);
+        if (!a) continue;
+        var cle = (a.numero + '|' + a.rue).toLowerCase();
+        if (vues[cle]) continue;
+        vues[cle] = 1;
+        adresses.push(a);
+      }
+      // On facture un nombre de portes : livrer moins que le nombre paye serait
+      // un vol, en livrer plus serait offert. On refuse plutot que d'ajuster.
+      if (adresses.length !== quantite) {
+        return res.status(400).json({ code: 'COUNT_MISMATCH', trouvees: adresses.length, requises: quantite });
+      }
+
+      var c = await paypalCfg();
+      if (!paypalPeutEncaisser(c)) return res.status(503).json({ error: 'paypal_absent', code: 'NOT_CONFIGURED' });
+
+      var prix = prixCampagne(quantite);
+      var ville = String(corps.ville == null ? '' : corps.ville).trim().slice(0, 120);
+      var notes = String(corps.notes == null ? '' : corps.notes).trim().slice(0, 1000);
+      var rayon = Math.max(0, Math.min(5000, Math.round(Number(corps.rayon) || 0)));
+      var estTest = c.mode === 'sandbox' ? 1 : 0;
+
+      var campagne = await db.get(
+        'INSERT INTO broker_campaigns (broker_id,kind,status,payment_status,centre_label,centre_lat,centre_lng,radius_m,quantity,address_count,addresses,city,notes,subtotal_cents,gst_cents,qst_cents,total_cents,paypal_mode,is_test) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19) RETURNING *',
+        [broker.id, 'paid', 'pending_payment', 'pending', libelle, cLat, cLng, rayon, quantite, adresses.length, JSON.stringify(adresses), ville, notes, prix.sousTotal, prix.tps, prix.tvq, prix.total, c.mode, estTest]
+      );
+
+      var retour = absoluteUrl(req, '/espace/campagne/retour') + '?mode=' + c.mode;
+      var annule = absoluteUrl(req, '/espace/campagne/retour') + '?mode=' + c.mode + '&annule=1';
+      var token = await paypalToken(c);
+      var r = await services.fetch(c.base + '/v2/checkout/orders', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + token,
+          'Content-Type': 'application/json',
+          'PayPal-Request-Id': 'vvc-' + campagne.id
+        },
+        body: JSON.stringify({
+          intent: 'CAPTURE',
+          purchase_units: [{
+            // Namespace obligatoire : le webhook d'abonnement lit custom_id et
+            // reactiverait l'adhesion si on y mettait juste l'id du courtier.
+            custom_id: 'camp:' + broker.id + ':' + campagne.id,
+            description: quantite + ' lettres VendVite',
+            amount: {
+              currency_code: 'CAD',
+              value: (prix.total / 100).toFixed(2),
+              breakdown: {
+                item_total: { currency_code: 'CAD', value: (prix.sousTotal / 100).toFixed(2) },
+                tax_total: { currency_code: 'CAD', value: ((prix.tps + prix.tvq) / 100).toFixed(2) }
+              }
+            }
+          }],
+          application_context: {
+            brand_name: 'VendVite',
+            locale: (req.lang === 'en' ? 'en-CA' : 'fr-CA'),
+            user_action: 'PAY_NOW',
+            shipping_preference: 'NO_SHIPPING',
+            return_url: retour,
+            cancel_url: annule
+          }
+        })
+      });
+      var j = await r.json();
+      if (!r.ok || !j.id) {
+        await db.run("UPDATE broker_campaigns SET status='cancelled', payment_status='failed', updated_at=NOW() WHERE id=$1", [campagne.id]);
+        console.error('campagne order', j && j.message);
+        return res.status(502).json({ error: 'paypal', code: 'ORDER_FAILED' });
+      }
+      await db.run('UPDATE broker_campaigns SET paypal_order_id=$1, updated_at=NOW() WHERE id=$2', [j.id, campagne.id]);
+
+      var approuver = (j.links || []).filter(function(l){ return l.rel === 'approve' || l.rel === 'payer-action'; })[0];
+      if (!approuver) return res.status(502).json({ error: 'paypal', code: 'NO_APPROVE_LINK' });
+      res.json({ success: true, id: campagne.id, mode: c.mode, total: prix.total, approve: approuver.href });
+    }catch(e){ console.error('commander', e); res.status(500).json({ error: 'server' }); }
+  });
+
+  async function finaliserCampagnePayee(req, broker, campagne, c){
+    var token = await paypalToken(c);
+    var base = c.base + '/v2/checkout/orders/' + encodeURIComponent(campagne.paypal_order_id);
+    var lu = await services.fetch(base, { headers: { 'Authorization': 'Bearer ' + token } });
+    var ordre = await lu.json();
+    if (!lu.ok) return null;
+
+    var capture = null;
+    if (ordre.status === 'APPROVED') {
+      var cap = await services.fetch(base + '/capture', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'PayPal-Request-Id': 'vvcap-' + campagne.id },
+        body: '{}'
+      });
+      ordre = await cap.json();
+    }
+    if (ordre.status !== 'COMPLETED') return null;
+    try{
+      capture = ordre.purchase_units[0].payments.captures[0];
+    }catch(e){ capture = null; }
+
+    // L'index unique sur paypal_order_id et ce garde-fou rendent une capture
+    // rejouee (retour du navigateur + webhook) sans effet.
+    var frais = await db.get("SELECT payment_status FROM broker_campaigns WHERE id=$1", [campagne.id]);
+    if (frais && frais.payment_status === 'paid') return campagne;
+
+    var echeance = echeanceOuvrable(CAMPAGNE_HEURES);
+    await db.run(
+      "UPDATE broker_campaigns SET status='confirmed', payment_status='paid', paypal_capture_id=$1, deadline_at=$2, updated_at=NOW() WHERE id=$3",
+      [capture ? capture.id : null, echeance, campagne.id]
+    );
+    await logBrokerEvent(broker.id, c.mode === 'sandbox' ? 'sandbox_campaign_paid' : 'campaign_paid',
+      JSON.stringify({ id: campagne.id, n: campagne.address_count, cents: campagne.total_cents }));
+
+    var frais2 = Object.assign({}, campagne, { deadline_at: echeance });
+    await envoyerCampagneOperateur(req, broker, frais2, campagne.addresses || [], c.mode === 'sandbox');
+    await facturerCampagne(req, broker, frais2, capture, c.mode);
+    return frais2;
+  }
+
+  router.get('/espace/campagne/retour', async function(req, res){
+    var broker = await requireBroker(req, res);
+    if (!broker) return;
+    var mode = req.query && req.query.mode === 'sandbox' ? 'sandbox' : 'live';
+    var etat = 'verification';
+    try{
+      if (req.query && req.query.annule) {
+        etat = 'annule';
+      } else {
+        // On ne renvoie JAMAIS a PayPal l'identifiant fourni par le navigateur :
+        // on s'en sert seulement pour retrouver une ligne DEJA possedee par la
+        // session courante, sinon un courtier pourrait reclamer la commande d'un autre.
+        var jeton = String((req.query && req.query.token) || '').slice(0, 64);
+        var campagne = jeton
+          ? await db.get("SELECT * FROM broker_campaigns WHERE paypal_order_id=$1 AND broker_id=$2 AND kind='paid'", [jeton, broker.id])
+          : await db.get("SELECT * FROM broker_campaigns WHERE broker_id=$1 AND kind='paid' AND payment_status='pending' ORDER BY id DESC LIMIT 1", [broker.id]);
+        if (campagne && campagne.paypal_order_id) {
+          var c = await paypalCfg(campagne.paypal_mode || mode);
+          if (paypalPeutEncaisser(c)) {
+            var fini = await finaliserCampagnePayee(req, broker, campagne, c);
+            if (fini) etat = (c.mode === 'sandbox' ? 'test' : 'paye');
+          }
+        }
+      }
+    }catch(e){ console.error('campagne retour', e); }
+    res.redirect('../../espace?campagne=' + etat);
   });
 
   // ── Operateur : lire et livrer les campagnes. Sans cette surface, la promesse
@@ -1293,7 +1566,14 @@ module.exports = function(services){
   router.get('/admin/campagnes/:id/adresses.csv', requireAdmin, async function(req, res){
     var c = await db.get('SELECT c.*, b.full_name, b.slug FROM broker_campaigns c JOIN brokers b ON b.id=c.broker_id WHERE c.id=$1', [req.params.id]);
     if (!c) return res.status(404).send('Introuvable');
-    var cell = function(v){ var s = String(v == null ? '' : v); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+    // Les valeurs viennent du navigateur du courtier. Une cellule commencant par
+    // = + - @ ou une tabulation est EXECUTEE comme formule par Excel : on la
+    // prefixe d'une apostrophe. Les guillemets seuls ne protegent pas.
+    var cell = function(v){
+      var s = String(v == null ? '' : v);
+      if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
+      return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+    };
     var lignes = ['distance_m,house_number,street,city,province,postal_code,source'];
     (c.addresses || []).forEach(function(a){
       lignes.push([a.metres == null ? '' : a.metres, a.numero, a.rue, a.ville || c.city || '', c.province || 'QC', '', a.source].map(cell).join(','));
@@ -1347,6 +1627,10 @@ module.exports = function(services){
     };
   }
   function paypalReady(c){ return !!(c.clientId && c.secret && c.planId); }
+  // Un achat unique passe par Orders v2 : il n'a pas de plan. Gater la vente de
+  // campagnes sur paypalReady refuserait tout paiement des qu'aucun plan
+  // d'abonnement n'existe.
+  function paypalPeutEncaisser(c){ return !!(c.clientId && c.secret); }
 
   async function paypalToken(c){
     var r = await services.fetch(c.base + '/v1/oauth2/token', {
