@@ -640,12 +640,31 @@ module.exports = function(services){
     }
   }
 
-  function brokerIsActive(b){
+  function brokerHasRealAccess(b){
     if (!b || ['active','cancelled'].indexOf(b.status) === -1) return false;
     if (!b.membership_expires_at) return false;
     return new Date(b.membership_expires_at).getTime() > Date.now();
   }
-  function brokerPageLive(b){ return brokerIsActive(b) && Number(b.published) === 1; }
+  function brokerHasSandboxAccess(b){
+    if (!b || Number(b.paypal_sandbox_active) !== 1 || !b.paypal_sandbox_expires_at) return false;
+    return new Date(b.paypal_sandbox_expires_at).getTime() > Date.now();
+  }
+  async function brokerAccessState(b, forcedMode){
+    var mode = await currentPaypalMode(forcedMode);
+    var realActive = brokerHasRealAccess(b);
+    var sandboxActive = mode === 'sandbox' && brokerHasSandboxAccess(b);
+    return {
+      mode: mode,
+      realActive: realActive,
+      sandboxActive: sandboxActive,
+      active: realActive || sandboxActive,
+      testAccess: !realActive && sandboxActive
+    };
+  }
+  async function brokerPageLive(b, forcedMode){
+    var access = await brokerAccessState(b, forcedMode);
+    return access.active && Number(b.published) === 1;
+  }
 
   function brokerProfile(b){
     var p = {};
@@ -884,6 +903,7 @@ module.exports = function(services){
     var counts = await db.get("SELECT COUNT(*)::int AS total, COUNT(*) FILTER (WHERE status='nouveau')::int AS fresh, COUNT(*) FILTER (WHERE created_at > NOW() - INTERVAL '30 days')::int AS recent FROM broker_leads WHERE broker_id=$1", [broker.id]);
     var invoices = await db.all('SELECT * FROM broker_invoices WHERE broker_id=$1 ORDER BY payment_time DESC, id DESC LIMIT 20', [broker.id]);
     var activePaypal = await paypalCfg();
+    var access = await brokerAccessState(broker, activePaypal.mode);
     return Object.assign(L, {
       isHome: false,
       broker: broker,
@@ -891,8 +911,10 @@ module.exports = function(services){
       leads: leads || [],
       counts: counts || { total: 0, fresh: 0, recent: 0 },
       invoices: invoices || [],
-      isActive: brokerIsActive(broker),
-      isLive: brokerPageLive(broker),
+      isActive: access.active,
+      isRealActive: access.realActive,
+      isTestAccess: access.testAccess,
+      isLive: access.active && Number(broker.published) === 1,
       price: priceLines(),
       paymentConfirmed: req.query && req.query.paiement === 'confirme',
       paymentTest: req.query && req.query.paiement === 'test',
@@ -950,7 +972,8 @@ module.exports = function(services){
     var broker = await requireBrokerApi(req, res);
     if (!broker) return;
     try{
-      if (!brokerPageLive(broker)) {
+      var access = await brokerAccessState(broker);
+      if (!(access.active && Number(broker.published) === 1)) {
         return res.status(409).json({ error: 'page_not_live', code: 'PAGE_NOT_LIVE' });
       }
       var quantity = Math.floor(Number(req.body && req.body.quantity));
@@ -963,14 +986,14 @@ module.exports = function(services){
 
       var total = Math.round(quantity * 135) / 100;
       var ownerEmail = (services.config && (services.config.contactEmail || services.config.ownerEmail)) || null;
-      var detail = JSON.stringify({ quantity: quantity, sector: sector, notes: notes, total: total });
-      await logBrokerEvent(broker.id, 'postal_campaign_requested', detail);
+      var detail = JSON.stringify({ quantity: quantity, sector: sector, notes: notes, total: total, test: access.testAccess });
+      await logBrokerEvent(broker.id, access.testAccess?'sandbox_postal_campaign_requested':'postal_campaign_requested', detail);
 
       if (ownerEmail) {
         var esc = escapeHtml;
         var html = ''
           + '<div style="font-family:Arial,sans-serif;max-width:620px;margin:auto;padding:28px;color:#171717">'
-          + '<p style="font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#777">Campagne Courrier de précision</p>'
+          + '<p style="font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#777">' + (access.testAccess?'TEST SANDBOX · ':'') + 'Campagne Courrier de précision</p>'
           + '<h1 style="font-family:Georgia,serif;font-size:26px;margin:0 0 18px">Nouvelle demande de ' + quantity.toLocaleString('fr-CA') + ' adresses</h1>'
           + '<table style="width:100%;border-collapse:collapse;font-size:14px">'
           + [['Courtier', broker.full_name], ['Agence', broker.agency], ['Courriel', broker.email], ['Téléphone', formatPhone(broker.phone)], ['Secteur visé', sector], ['Quantité', quantity.toLocaleString('fr-CA')], ['Estimation', total.toFixed(2).replace('.', ',') + ' $']]
@@ -981,7 +1004,7 @@ module.exports = function(services){
         await services.email.send({
           to: ownerEmail,
           replyTo: broker.email,
-          subject: 'VendVite — campagne postale de ' + quantity + ' adresses — ' + broker.full_name,
+          subject: (access.testAccess?'[TEST SANDBOX] ':'') + 'VendVite — campagne postale de ' + quantity + ' adresses — ' + broker.full_name,
           html: html,
           text: 'Campagne postale VendVite\nCourtier: ' + broker.full_name + '\nSecteur: ' + sector + '\nQuantité: ' + quantity + '\nEstimation: ' + total.toFixed(2) + ' $\nNotes: ' + notes
         });
@@ -1058,7 +1081,8 @@ module.exports = function(services){
     var broker = await requireBrokerApi(req, res);
     if (!broker) return;
     var want = req.body && req.body.published === false ? 0 : 1;
-    if (want === 1 && !brokerIsActive(broker)) {
+    var access = await brokerAccessState(broker);
+    if (want === 1 && !access.active) {
       return res.status(402).json({ error: 'abonnement', code: 'PAYMENT_REQUIRED' });
     }
     try{
@@ -1182,19 +1206,19 @@ module.exports = function(services){
       + '<div style="max-width:540px;margin:0 auto;background:#171213;border:1px solid rgba(245,239,230,.14);border-radius:10px;padding:32px 28px;color:#F5EFE6">'
       + '<div style="font-family:monospace;font-size:11px;letter-spacing:.25em;text-transform:uppercase;color:#C79A5B;margin-bottom:16px">' + (isTest?'Test PayPal réussi':'Paiement confirmé') + '</div>'
       + '<h1 style="font-family:Georgia,serif;font-size:26px;line-height:1.15;margin:0 0 14px">' + (isTest?'Le parcours sandbox fonctionne, ':'Votre licence VendVite est active, ') + escapeHtml(firstName) + '.</h1>'
-      + '<p style="color:rgba(245,239,230,.66);font-size:15px;line-height:1.6;margin:0 0 18px">' + (isTest?'Aucun paiement réel n’a été encaissé et votre page n’a pas été activée. La facture test ':'Nous avons reçu votre paiement annuel de <strong style="color:#F5EFE6">'+escapeHtml(total)+'</strong>. Votre facture ') + '<strong style="color:#C79A5B">' + escapeHtml(invoice.invoice_number) + '</strong> est jointe à ce courriel et demeure disponible dans votre espace.</p>'
+      + '<p style="color:rgba(245,239,230,.66);font-size:15px;line-height:1.6;margin:0 0 18px">' + (isTest?'Aucun paiement réel n’a été encaissé. Votre accès d’essai est maintenant ouvert pour publier la page et vérifier tout le parcours. La facture test ':'Nous avons reçu votre paiement annuel de <strong style="color:#F5EFE6">'+escapeHtml(total)+'</strong>. Votre facture ') + '<strong style="color:#C79A5B">' + escapeHtml(invoice.invoice_number) + '</strong> est jointe à ce courriel et demeure disponible dans votre espace.</p>'
       + '<table style="width:100%;border-collapse:collapse;margin:20px 0;color:#F5EFE6;font-size:14px">'
       + '<tr><td style="padding:9px 0;border-bottom:1px solid rgba(245,239,230,.1);color:rgba(245,239,230,.45)">Abonnement</td><td style="padding:9px 0;border-bottom:1px solid rgba(245,239,230,.1);text-align:right">599,00 $ + taxes</td></tr>'
       + '<tr><td style="padding:9px 0;color:rgba(245,239,230,.45)">' + (isTest?'Total simulé':'Total payé') + '</td><td style="padding:9px 0;text-align:right;font-weight:700">' + escapeHtml(total) + '</td></tr>'
       + '</table>'
       + '<a href="' + invoiceUrl + '" style="display:block;text-align:center;padding:15px;border-radius:4px;background:#E30B2D;color:#fff;text-decoration:none;font-family:Georgia,serif;font-weight:bold">Télécharger ma facture</a>'
-      + '<p style="color:rgba(245,239,230,.4);font-size:12px;line-height:1.55;margin:18px 0 0">' + (isTest?'Document de test sans valeur comptable. Passez PayPal en mode réel uniquement au moment de vendre.':'Votre page reste sous votre contrôle : ouvrez votre espace pour la publier lorsque vous êtes prêt.') + '</p>'
+      + '<p style="color:rgba(245,239,230,.4);font-size:12px;line-height:1.55;margin:18px 0 0">' + (isTest?'Document de test sans valeur comptable. Cet accès fonctionne uniquement pendant que PayPal est en mode sandbox.':'Votre page reste sous votre contrôle : ouvrez votre espace pour la publier lorsque vous êtes prêt.') + '</p>'
       + '</div></div>';
     var result = await services.email.send({
       to: broker.email,
       subject: (isTest?'[TEST PAYPAL] ':'') + 'Votre facture VendVite ' + invoice.invoice_number,
       html: html,
-      text: isTest ? 'Test PayPal réussi. Aucun paiement réel; votre page demeure inactive. Facture test '+invoice.invoice_number+', total simulé '+total+'. Télécharger : '+invoiceUrl : 'Paiement confirmé. Votre licence VendVite est active. Facture ' + invoice.invoice_number + ', total payé ' + total + '. Télécharger : ' + invoiceUrl,
+      text: isTest ? 'Test PayPal réussi. Aucun paiement réel. Votre accès d’essai est ouvert pour publier la page et tester le parcours complet en mode sandbox. Facture test '+invoice.invoice_number+', total simulé '+total+'. Télécharger : '+invoiceUrl : 'Paiement confirmé. Votre licence VendVite est active. Facture ' + invoice.invoice_number + ', total payé ' + total + '. Télécharger : ' + invoiceUrl,
       attachments: [{
         content: pdf.toString('base64'),
         filename: invoice.invoice_number + '.pdf',
@@ -1298,6 +1322,18 @@ module.exports = function(services){
     await logBrokerEvent(broker.id, 'membership_activated', detail || '');
   }
 
+  async function activateSandboxBroker(broker, subscriptionId, detail, paypalPeriodEnd){
+    var candidate = new Date(paypalPeriodEnd || 0);
+    var until = Number.isFinite(candidate.getTime()) && candidate.getTime() > Date.now()
+      ? candidate.toISOString()
+      : new Date(Date.now() + 365 * 24 * 3600 * 1000).toISOString();
+    await db.run(
+      'UPDATE brokers SET paypal_sandbox_active=1, paypal_sandbox_expires_at=$1, paypal_sandbox_subscription_id=COALESCE($2,paypal_sandbox_subscription_id), updated_at=NOW() WHERE id=$3',
+      [until, subscriptionId || null, broker.id]
+    );
+    await logBrokerEvent(broker.id, 'sandbox_membership_activated', detail || '');
+  }
+
   router.get('/espace/abonnement/retour', async function(req, res){
     var broker = await requireBroker(req, res);
     if (!broker) return;
@@ -1313,10 +1349,9 @@ module.exports = function(services){
         });
         var j = await r.json();
         if (r.ok && j.status === 'ACTIVE') {
-          if(mode==='live') {
-            var nextBilling = j.billing_info && j.billing_info.next_billing_time;
-            await activateBroker(broker, subId, 'return:' + j.status, nextBilling);
-          }
+          var nextBilling = j.billing_info && j.billing_info.next_billing_time;
+          if(mode==='live') await activateBroker(broker, subId, 'return:' + j.status, nextBilling);
+          else await activateSandboxBroker(broker, subId, 'return:' + j.status, nextBilling);
           await issueInvoiceForPayment(req, broker, j, null, mode);
           confirmed = true;
         }
@@ -1389,10 +1424,9 @@ module.exports = function(services){
 
       // Only PayPal's own answer moves money-bearing state.
       if (sub.status === 'ACTIVE') {
-        if(mode==='live') {
-          var nextBilling = sub.billing_info && sub.billing_info.next_billing_time;
-          await activateBroker(broker, lookupId, 'verified:' + (ev.event_type || 'webhook'), nextBilling);
-        }
+        var nextBilling = sub.billing_info && sub.billing_info.next_billing_time;
+        if(mode==='live') await activateBroker(broker, lookupId, 'verified:' + (ev.event_type || 'webhook'), nextBilling);
+        else await activateSandboxBroker(broker, lookupId, 'verified:' + (ev.event_type || 'webhook'), nextBilling);
         await issueInvoiceForPayment(req, broker, sub, resource, mode);
       } else if (sub.status === 'CANCELLED') {
         // A cancellation stops renewal, not access already paid for.
@@ -1402,6 +1436,9 @@ module.exports = function(services){
         if(mode==='live') {
           await db.run("UPDATE brokers SET status='expired', published=0, updated_at=NOW() WHERE id=$1", [broker.id]);
           await logBrokerEvent(broker.id, 'membership_stopped', 'verified:' + sub.status);
+        } else {
+          await db.run('UPDATE brokers SET paypal_sandbox_active=0, updated_at=NOW() WHERE id=$1', [broker.id]);
+          await logBrokerEvent(broker.id, 'sandbox_membership_stopped', 'verified:' + sub.status);
         }
       }
       res.json({ received: true });
@@ -1464,7 +1501,7 @@ module.exports = function(services){
     try{
       var broker = await db.get('SELECT * FROM brokers WHERE slug=$1', [req.params.slug]);
       if (!broker) return res.status(404).json({ error: 'introuvable' });
-      if (!brokerPageLive(broker)) return res.status(403).json({ error: 'inactif' });
+      if (!(await brokerPageLive(broker))) return res.status(403).json({ error: 'inactif' });
       var b = req.body || {};
       var name = String(b.name || '').trim().slice(0, 120);
       var address = String(b.address || '').trim().slice(0, 300);
@@ -1599,7 +1636,7 @@ module.exports = function(services){
       if (!broker) return next();
       // Unpaid or unpublished pages do not exist publicly — the broker reaches
       // their own draft through /espace/apercu instead.
-      if (!brokerPageLive(broker)) {
+      if (!(await brokerPageLive(broker))) {
         var me = await currentBroker(req);
         if (!me || me.id !== broker.id) return next();
       }

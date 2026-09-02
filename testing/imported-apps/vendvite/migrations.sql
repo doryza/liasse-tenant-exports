@@ -3,8 +3,10 @@ ALTER TABLE testimonials ADD COLUMN IF NOT EXISTS sale_result TEXT;
 ALTER TABLE leads ADD COLUMN IF NOT EXISTS notes TEXT;
 ALTER TABLE leads ADD COLUMN IF NOT EXISTS lat DOUBLE PRECISION;
 ALTER TABLE leads ADD COLUMN IF NOT EXISTS lng DOUBLE PRECISION;
-CREATE TABLE IF NOT EXISTS brokers (id SERIAL PRIMARY KEY, slug TEXT UNIQUE NOT NULL, full_name TEXT NOT NULL, agency TEXT, phone TEXT, email TEXT NOT NULL, status TEXT DEFAULT 'invited', published INTEGER DEFAULT 0, profile JSONB DEFAULT '{}'::jsonb, paypal_subscription_id TEXT, paypal_sandbox_subscription_id TEXT, membership_started_at TIMESTAMPTZ, membership_expires_at TIMESTAMPTZ, last_seen_at TIMESTAMPTZ, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS brokers (id SERIAL PRIMARY KEY, slug TEXT UNIQUE NOT NULL, full_name TEXT NOT NULL, agency TEXT, phone TEXT, email TEXT NOT NULL, status TEXT DEFAULT 'invited', published INTEGER DEFAULT 0, profile JSONB DEFAULT '{}'::jsonb, paypal_subscription_id TEXT, paypal_sandbox_subscription_id TEXT, paypal_sandbox_active INTEGER NOT NULL DEFAULT 0, paypal_sandbox_expires_at TIMESTAMPTZ, membership_started_at TIMESTAMPTZ, membership_expires_at TIMESTAMPTZ, last_seen_at TIMESTAMPTZ, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW());
 ALTER TABLE brokers ADD COLUMN IF NOT EXISTS paypal_sandbox_subscription_id TEXT;
+ALTER TABLE brokers ADD COLUMN IF NOT EXISTS paypal_sandbox_active INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE brokers ADD COLUMN IF NOT EXISTS paypal_sandbox_expires_at TIMESTAMPTZ;
 CREATE UNIQUE INDEX IF NOT EXISTS brokers_email_lower_idx ON brokers (LOWER(email));
 CREATE TABLE IF NOT EXISTS broker_tokens (id SERIAL PRIMARY KEY, broker_id INTEGER NOT NULL, token_hash TEXT NOT NULL, purpose TEXT DEFAULT 'access', expires_at TIMESTAMPTZ, used_at TIMESTAMPTZ, created_at TIMESTAMPTZ DEFAULT NOW());
 CREATE INDEX IF NOT EXISTS broker_tokens_hash_idx ON broker_tokens (token_hash);
@@ -18,3 +20,14 @@ ALTER TABLE broker_invoices ADD COLUMN IF NOT EXISTS is_test INTEGER NOT NULL DE
 ALTER TABLE broker_invoices ADD COLUMN IF NOT EXISTS paypal_mode TEXT NOT NULL DEFAULT 'live';
 CREATE INDEX IF NOT EXISTS broker_invoices_broker_idx ON broker_invoices (broker_id, payment_time DESC);
 CREATE INDEX IF NOT EXISTS broker_invoices_subscription_idx ON broker_invoices (paypal_subscription_id, payment_time DESC);
+UPDATE brokers b
+SET paypal_sandbox_active=1,
+    paypal_sandbox_expires_at=GREATEST(COALESCE(b.paypal_sandbox_expires_at,'epoch'::timestamptz), paid.period_end),
+    updated_at=NOW()
+FROM (
+  SELECT broker_id, MAX(period_end) AS period_end
+  FROM broker_invoices
+  WHERE COALESCE(is_test,0)=1 AND paypal_mode='sandbox'
+  GROUP BY broker_id
+) paid
+WHERE b.id=paid.broker_id AND b.paypal_sandbox_expires_at IS NULL AND paid.period_end>NOW();

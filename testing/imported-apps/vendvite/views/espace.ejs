@@ -24,10 +24,10 @@
       <div class="esp-status-dot" aria-hidden="true"></div>
       <div class="esp-status-text">
         <% if (isLive) { %>
-          <strong>Votre page est en ligne.</strong>
+          <strong><%= isTestAccess ? 'Votre page test est en ligne.' : 'Votre page est en ligne.' %></strong>
           <a href="<%= pageUrl %>" target="_blank" rel="noopener"><%= pageUrl %></a>
         <% } else if (isActive) { %>
-          <strong>Abonnement actif.</strong> Votre page est prête — publiez-la quand vous le souhaitez.
+          <strong><%= isTestAccess ? 'Accès test actif.' : 'Abonnement actif.' %></strong> Votre page est prête — publiez-la quand vous le souhaitez.
         <% } else { %>
           <strong>Page en préparation.</strong> Bâtissez-la librement&nbsp;; l'activation ouvre la capture de pistes.
         <% } %>
@@ -220,7 +220,7 @@
       <% if (paymentTest) { %>
         <div class="esp-payment-success is-test">
           <span class="esp-payment-check" aria-hidden="true">◇</span>
-          <div><strong>Test PayPal réussi. Aucun paiement réel.</strong><p>La facture test est disponible ci-dessous et vous a été envoyée. Votre abonnement et votre page publique n’ont pas été activés.</p></div>
+          <div><strong>Test PayPal réussi. Votre accès d’essai est ouvert.</strong><p>Aucun paiement réel. Vous pouvez maintenant publier votre page, tester le code QR, recevoir une piste et demander une campagne ciblée.</p></div>
         </div>
       <% } %>
       <% if (paymentConfirmed) { %>
@@ -232,7 +232,7 @@
       <div class="esp-bill">
         <div class="esp-bill-card">
           <p class="esp-eyebrow">Adhésion annuelle</p>
-          <% if (paypalMode === 'sandbox') { %><div class="esp-sandbox-flag"><strong>MODE TEST PAYPAL</strong><span>Compte sandbox seulement · aucun argent réel · aucune activation</span></div><% } %>
+          <% if (paypalMode === 'sandbox') { %><div class="esp-sandbox-flag"><strong>MODE TEST PAYPAL</strong><span>Compte sandbox seulement · aucun argent réel · accès d’essai isolé</span></div><% } %>
           <h2 class="esp-price"><%= price.base.toFixed(2) %>&nbsp;$ <span>/ an</span></h2>
           <ul class="esp-bill-lines">
             <li><span>Adhésion</span><span><%= price.base.toFixed(2) %>&nbsp;$</span></li>
@@ -240,7 +240,13 @@
             <li><span>TVQ (9,975&nbsp;%)</span><span><%= price.qst.toFixed(2) %>&nbsp;$</span></li>
             <li class="esp-bill-total"><span>Total</span><span><%= price.total.toFixed(2) %>&nbsp;$</span></li>
           </ul>
-          <% if (broker.status === 'cancelled' && broker.membership_expires_at) { %>
+          <% if (isTestAccess) { %>
+            <div class="esp-active-note">
+              <strong>Accès test actif</strong>
+              <p>Parcours complet disponible jusqu’au <%= formatDate(broker.paypal_sandbox_expires_at, lang) %>, uniquement en mode sandbox.</p>
+            </div>
+            <p class="esp-hint" style="text-align:center">La publication, les pistes et les demandes de campagne sont des essais clairement identifiés et ne comptent pas comme une vente.</p>
+          <% } else if (broker.status === 'cancelled' && broker.membership_expires_at) { %>
             <div class="esp-active-note">
               <strong>Renouvellement annulé</strong>
               <p>Votre page reste en ligne jusqu'au <%= formatDate(broker.membership_expires_at, lang) %>.</p>
