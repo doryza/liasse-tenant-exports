@@ -17,6 +17,7 @@
 .cmp-confirmed{background:#fef3c7;color:#92400e}
 .cmp-mailed{background:#dcfce7;color:#166534}
 .cmp-test{background:#e0e7ff;color:#3730a3;margin-left:6px}
+.cmp-void{background:#f3f4f6;color:#6b7280}
 .cmp-meta{display:flex;flex-wrap:wrap;gap:14px;margin:10px 0 0;font-size:.8rem;color:#6b7280}
 .cmp-due{font-weight:600}
 .cmp-due.due-soon{color:#b45309}
@@ -56,7 +57,7 @@
             <p class="cmp-sub"><%= c.full_name %><%= c.agency ? ' · ' + c.agency : '' %> · <a href="<%= c.slug %>" target="_blank" rel="noopener">/<%= c.slug %></a></p>
           </div>
           <div>
-            <span class="cmp-status <%= done ? 'cmp-mailed' : 'cmp-confirmed' %>"><%= done ? 'Postée' : 'À poster' %></span>
+            <span class="cmp-status <%= c.status === 'cancelled' ? 'cmp-void' : (done ? 'cmp-mailed' : 'cmp-confirmed') %>"><%= c.status === 'cancelled' ? 'Annulée' : (c.payment_status === 'pending' ? 'Paiement en attente' : (done ? 'Postée' : 'À poster')) %></span>
             <% if (Number(c.is_test) === 1) { %><span class="cmp-status cmp-test">TEST SANDBOX</span><% } %>
           </div>
         </div>
@@ -78,6 +79,9 @@
         <div class="cmp-actions">
           <a class="btn-primary btn-sm" href="admin/campagnes/<%= c.id %>/adresses.csv">Télécharger le CSV</a>
           <button class="btn-ghost btn-sm" data-act="postee" data-id="<%= c.id %>"><%= done ? 'Marquer « à poster »' : 'Marquer comme postée' %></button>
+          <% if (c.status !== 'cancelled') { %>
+            <button class="btn-ghost btn-sm" data-act="annuler" data-id="<%= c.id %>" data-arm="Confirmer l'annulation">Annuler et rendre la campagne incluse</button>
+          <% } %>
         </div>
         <% if (!done) { %>
           <p class="cmp-note">Le CSV n'a pas de codes postaux — la source cartographique n'en fournit pas. Complétez-les, puis générez les enveloppes avec le QR de <a href="<%= c.slug %>" target="_blank" rel="noopener">/<%= c.slug %></a>. Les lignes marquées « interpole » viennent d'une plage municipale et peuvent contenir un numéro inexistant : à valider avant impression.</p>
@@ -92,6 +96,9 @@
   if(burger){ burger.addEventListener('click', function(){ document.getElementById('adminSidebar').classList.toggle('open'); }); }
   document.querySelectorAll('[data-act]').forEach(function(btn){
     btn.addEventListener('click', async function(){
+      if(btn.hasAttribute('data-arm') && btn.getAttribute('data-armed')!=='1'){
+        btn.setAttribute('data-armed','1'); btn.textContent=btn.getAttribute('data-arm'); return;
+      }
       btn.disabled=true;
       try{
         var r=await fetch('api/admin/campagnes/'+btn.getAttribute('data-id')+'/'+btn.getAttribute('data-act'), {

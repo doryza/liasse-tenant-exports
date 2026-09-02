@@ -458,7 +458,12 @@
     for (var i = 0; i < liste.length; i++) if (liste[i].quantite === q) return liste[i];
     return null;
   }
-  function estIncluse(){ return campQuantite === CAMP.cible && Number(CAMP.restantes) > 0; }
+  // Incluse = rien a payer une fois le credit applique. Ce n'est plus lie a la
+  // taille : 150 portes avec credit coutent 0, 450 portes avec credit coutent 300.
+  function estIncluse(){
+    var p = palierPrix(campQuantite);
+    return p ? p.facturable <= 0 : (campQuantite === CAMP.cible && Number(CAMP.restantes) > 0);
+  }
   function argent(cents){
     return (cents / 100).toLocaleString('fr-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' $';
   }
@@ -471,8 +476,11 @@
       if (estIncluse()) {
         box.innerHTML = '<span class="camp-prix-n">Incluse</span><span class="camp-prix-l">comprise dans votre licence</span>';
       } else if (prix) {
+        var detail = prix.offert > 0
+          ? nb(prix.offert) + ' offertes + ' + nb(prix.facturable) + ' à ' + argent(prix.sousTotal) + ' + taxes'
+          : nb(campQuantite) + ' lettres · ' + argent(prix.sousTotal) + ' + taxes';
         box.innerHTML = '<span class="camp-prix-n">' + argent(prix.total) + '</span>'
-          + '<span class="camp-prix-l">' + nb(campQuantite) + ' lettres · ' + argent(prix.sousTotal) + ' + taxes</span>';
+          + '<span class="camp-prix-l">' + detail + '</span>';
       }
     }
     var btn = $('campConfirmer');
@@ -535,6 +543,8 @@
         err.textContent =
           dp.code === 'COUNT_MISMATCH' ? 'Nous n’avons trouvé que ' + nb(dp.trouvees || 0) + ' adresses pour ' + nb(campQuantite) + ' demandées. Réduisez la quantité ou choisissez un secteur plus dense.' :
           dp.code === 'BAD_QUANTITY' ? 'Quantité invalide. Choisissez un palier de ' + nb(CAMP.palier) + '.' :
+          dp.code === 'USE_INCLUDED' ? 'Cette commande est entièrement couverte par votre campagne incluse — aucun paiement requis.' :
+          dp.code === 'QUOTA_SPENT' ? 'Votre campagne incluse vient d’être utilisée ailleurs. Rechargez la page pour voir le prix à jour.' :
           dp.code === 'NOT_CONFIGURED' ? 'Le paiement n’est pas encore configuré. Écrivez-nous et nous lançons la campagne manuellement.' :
           dp.code === 'PAGE_NOT_LIVE' ? 'Publiez d’abord votre page : le code QR de la lettre doit mener quelque part.' :
           dp.code === 'MEMBERSHIP_REQUIRED' ? 'Activez votre abonnement pour lancer une campagne.' :
@@ -561,6 +571,22 @@
         'La confirmation n’a pas abouti. Réessayez dans un instant.';
     }catch(_){ err.textContent = 'La confirmation n’a pas abouti. Réessayez dans un instant.'; }
     btn.disabled = false; btn.textContent = libelleBouton();
+  });
+
+  // Une commande restee en attente retient la campagne incluse : ce bouton la
+  // relache tout de suite, sans passer par nous.
+  document.querySelectorAll('[data-annuler]').forEach(function(b){
+    on(b, 'click', async function(){
+      var id = b.getAttribute('data-annuler');
+      b.disabled = true; b.textContent = 'Annulation…';
+      try{
+        var r = await fetch('api/espace/campagne/' + id + '/annuler', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}'
+        });
+        if (r.ok) { window.location.href = 'espace?campagne=liberee'; return; }
+      }catch(_){ }
+      b.disabled = false; b.textContent = 'Annuler et récupérer ma campagne incluse';
+    });
   });
 
   // La lettre est une feuille FIXE de 8,5 x 11 po : a 100 % de largeur elle est
@@ -602,7 +628,9 @@
         ? 'Paiement test accepté ✓ Aucun montant réel n’a été prélevé. La campagne est enregistrée et identifiée comme un essai.'
         : 'Paiement reçu ✓ Vos lettres sont déposées à Postes Canada dans les 72 heures ouvrables.';
     } else if (m[1] === 'annule') {
-      if (err) err.textContent = 'Paiement annulé. Votre territoire est toujours là — relancez quand vous voulez.';
+      if (err) err.textContent = 'Paiement annulé. Votre campagne incluse vous est rendue — relancez quand vous voulez.';
+    } else if (m[1] === 'liberee') {
+      if (ok) ok.textContent = 'Commande annulée ✓ Votre campagne incluse est de nouveau disponible.';
     } else if (err) {
       err.textContent = 'Nous n’avons pas encore reçu la confirmation de PayPal. Elle arrive parfois avec un léger délai ; votre campagne apparaîtra dans l’historique.';
     }

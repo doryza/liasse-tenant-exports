@@ -14,6 +14,7 @@ var CAMPAGNE_PAR_AN = 1;
 var CAMPAGNE_HEURES = 72;
 var campagneDerniere = new Map();
 var CAMPAGNE_DELAI_MS = 20000;
+var CAMPAGNE_RESERVE_MIN = 60;
 
 module.exports = function(services){
   var router = express.Router();
@@ -923,8 +924,10 @@ module.exports = function(services){
     var paliers = [];
     for (var pi = 1; pi <= CAMPAGNE_PALIERS_MAX; pi++) {
       var pq = pi * CAMPAGNE_PALIER;
-      var pp = prixCampagne(pq);
-      paliers.push({ quantite: pq, sousTotal: pp.sousTotal, tps: pp.tps, tvq: pp.tvq, total: pp.total });
+      // Calcules AVEC le credit courant : le client ne refait jamais l'arrondi
+      // des taxes, il lit la meme valeur que le serveur facturera.
+      var pp = prixCampagne(pq, quota.creditPortes);
+      paliers.push({ quantite: pq, offert: pp.offert, facturable: pp.facturable, sousTotal: pp.sousTotal, tps: pp.tps, tvq: pp.tvq, total: pp.total });
     }
     var cfgPaypal = await paypalCfg();
     return Object.assign(L, {
@@ -1180,11 +1183,13 @@ module.exports = function(services){
   // Prix d'une campagne payante. Calcul EN AVANT en cents entiers : la fonction
   // taxBreakdown d'invoice.js retro-deduit le partage a partir du total et
   // diverge d'un cent sur les gros volumes, ce qui ferait mentir la facture.
-  function prixCampagne(quantite){
-    var sous = quantite * CAMPAGNE_PRIX_CENTS;
+  function prixCampagne(quantite, credit){
+    var offert = Math.max(0, Math.min(Number(credit) || 0, quantite));
+    var facturable = quantite - offert;
+    var sous = facturable * CAMPAGNE_PRIX_CENTS;
     var tps = Math.round(sous * 0.05);
     var tvq = Math.round(sous * 0.09975);
-    return { quantite: quantite, sousTotal: sous, tps: tps, tvq: tvq, total: sous + tps + tvq };
+    return { quantite: quantite, offert: offert, facturable: facturable, sousTotal: sous, tps: tps, tvq: tvq, total: sous + tps + tvq };
   }
 
   // L'ancre de l'annee d'adhesion. membership_started_at est NULL pour tout
@@ -1202,14 +1207,42 @@ module.exports = function(services){
     return borne;
   }
 
-  async function campagneQuota(broker){
+  // Une commande payante abandonnee ne doit jamais retenir la campagne incluse.
+  // On libere ici plutot que d'attendre un geste du courtier : la reservation
+  // n'existe que pour empecher une double depense pendant le paiement.
+  async function libererCampagnesExpirees(broker){
+    try{
+      await db.run(
+        "UPDATE broker_campaigns SET status='cancelled', payment_status='cancelled', quota_period=NULL, updated_at=NOW() " +
+        "WHERE broker_id=$1 AND kind='paid' AND payment_status='pending' AND created_at < NOW() - INTERVAL '" + CAMPAGNE_RESERVE_MIN + " minutes'",
+        [broker.id]
+      );
+    }catch(e){ /* la liberation est opportuniste : jamais bloquante */ }
+  }
+
+  function periodeCourante(broker){
     var depuis = anneeAdhesion(broker);
-    var filtre = "kind='included' AND status<>'cancelled' AND payment_status<>'pending' AND is_test=0";
-    var row = depuis
-      ? await db.get("SELECT COUNT(*)::int AS n FROM broker_campaigns WHERE broker_id=$1 AND " + filtre + " AND created_at>=$2", [broker.id, depuis])
-      : await db.get("SELECT COUNT(*)::int AS n FROM broker_campaigns WHERE broker_id=$1 AND " + filtre, [broker.id]);
+    return depuis ? new Date(depuis).toISOString().slice(0, 10) : null;
+  }
+
+  async function campagneQuota(broker){
+    await libererCampagnesExpirees(broker);
+    var depuis = anneeAdhesion(broker);
+    var periode = periodeCourante(broker);
+    // quota_period marque la reservation, qu'elle soit portee par la campagne
+    // incluse ou par une commande payante qui consomme le credit.
+    var row = periode
+      ? await db.get("SELECT COUNT(*)::int AS n FROM broker_campaigns WHERE broker_id=$1 AND quota_period=$2 AND status<>'cancelled' AND is_test=0", [broker.id, periode])
+      : await db.get("SELECT COUNT(*)::int AS n FROM broker_campaigns WHERE broker_id=$1 AND quota_period IS NOT NULL AND status<>'cancelled' AND is_test=0", [broker.id]);
     var utilisees = (row && row.n) || 0;
-    return { utilisees: utilisees, incluses: CAMPAGNE_PAR_AN, restantes: Math.max(0, CAMPAGNE_PAR_AN - utilisees), depuis: depuis };
+    return {
+      utilisees: utilisees,
+      incluses: CAMPAGNE_PAR_AN,
+      restantes: Math.max(0, CAMPAGNE_PAR_AN - utilisees),
+      creditPortes: utilisees < CAMPAGNE_PAR_AN ? CAMPAGNE_CIBLE : 0,
+      depuis: depuis,
+      periode: periode
+    };
   }
 
   // Une adresse arrive du navigateur : on ne fait confiance a rien.
@@ -1285,7 +1318,7 @@ module.exports = function(services){
       // BASE. Le COUNT plus haut n'est qu'une politesse : deux confirmations
       // simultanees le passeraient toutes les deux, et la Map en memoire ne vit
       // que dans un seul processus.
-      var periode = quota.depuis ? new Date(quota.depuis).toISOString().slice(0, 10) : null;
+      var periode = quota.periode;
       var campagne;
       try{
         campagne = await db.get(
@@ -1424,16 +1457,35 @@ module.exports = function(services){
       var c = await paypalCfg();
       if (!paypalPeutEncaisser(c)) return res.status(503).json({ error: 'paypal_absent', code: 'NOT_CONFIGURED' });
 
-      var prix = prixCampagne(quantite);
+      // La campagne incluse s'applique en credit sur n'importe quelle taille de
+      // commande : 450 portes avec credit se facturent 300.
+      var quota = await campagneQuota(broker);
+      var credit = quota.creditPortes;
+      var prix = prixCampagne(quantite, credit);
+      if (prix.facturable <= 0) return res.status(400).json({ code: 'USE_INCLUDED' });
       var ville = String(corps.ville == null ? '' : corps.ville).trim().slice(0, 120);
       var notes = String(corps.notes == null ? '' : corps.notes).trim().slice(0, 1000);
       var rayon = Math.max(0, Math.min(5000, Math.round(Number(corps.rayon) || 0)));
       var estTest = c.mode === 'sandbox' ? 1 : 0;
 
-      var campagne = await db.get(
-        'INSERT INTO broker_campaigns (broker_id,kind,status,payment_status,centre_label,centre_lat,centre_lng,radius_m,quantity,address_count,addresses,city,notes,subtotal_cents,gst_cents,qst_cents,total_cents,paypal_mode,is_test) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19) RETURNING *',
-        [broker.id, 'paid', 'pending_payment', 'pending', libelle, cLat, cLng, rayon, quantite, adresses.length, JSON.stringify(adresses), ville, notes, prix.sousTotal, prix.tps, prix.tvq, prix.total, c.mode, estTest]
-      );
+      // On RESERVE le credit des la creation de la commande : sans cela deux
+      // paiements simultanes le depenseraient tous les deux et la contrainte
+      // ne sauterait qu'apres l'encaissement. La reservation est relachee a
+      // l'annulation, et d'office au bout d'une heure.
+      // Une commande en bac a sable ne reserve RIEN : le quota et l'index
+      // ignorent deja is_test=1, mais on evite d'ecrire une reservation qui
+      // ment sur elle-meme et deviendrait reelle si le predicat changeait.
+      var periodeCredit = (credit > 0 && !estTest) ? quota.periode : null;
+      var campagne;
+      try{
+        campagne = await db.get(
+          'INSERT INTO broker_campaigns (broker_id,kind,status,payment_status,centre_label,centre_lat,centre_lng,radius_m,quantity,address_count,addresses,city,notes,subtotal_cents,gst_cents,qst_cents,total_cents,paypal_mode,is_test,quota_period) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20) RETURNING *',
+          [broker.id, 'paid', 'pending_payment', 'pending', libelle, cLat, cLng, rayon, quantite, adresses.length, JSON.stringify(adresses), ville, notes, prix.sousTotal, prix.tps, prix.tvq, prix.total, c.mode, estTest, periodeCredit]
+        );
+      }catch(err){
+        if (String(err && err.code) === '23505') return res.status(409).json({ code: 'QUOTA_SPENT' });
+        throw err;
+      }
 
       var retour = absoluteUrl(req, '/espace/campagne/retour') + '?mode=' + c.mode;
       var annule = absoluteUrl(req, '/espace/campagne/retour') + '?mode=' + c.mode + '&annule=1';
@@ -1481,8 +1533,31 @@ module.exports = function(services){
 
       var approuver = (j.links || []).filter(function(l){ return l.rel === 'approve' || l.rel === 'payer-action'; })[0];
       if (!approuver) return res.status(502).json({ error: 'paypal', code: 'NO_APPROVE_LINK' });
-      res.json({ success: true, id: campagne.id, mode: c.mode, total: prix.total, approve: approuver.href });
+      res.json({ success: true, id: campagne.id, mode: c.mode, total: prix.total, offert: prix.offert, facturable: prix.facturable, approve: approuver.href });
     }catch(e){ console.error('commander', e); res.status(500).json({ error: 'server' }); }
+  });
+
+  // Relacher une commande non payee : la campagne incluse redevient disponible
+  // immediatement. C'est la porte de sortie manuelle — rien ne reste coince.
+  async function libererCampagne(brokerId, campagneId){
+    var r = await db.run(
+      "UPDATE broker_campaigns SET status='cancelled', payment_status='cancelled', quota_period=NULL, updated_at=NOW() " +
+      "WHERE id=$1 AND broker_id=$2 AND payment_status='pending'",
+      [campagneId, brokerId]
+    );
+    return !!(r && r.changes);
+  }
+
+  router.post('/api/espace/campagne/:id/annuler', async function(req, res){
+    var broker = await requireBrokerApi(req, res);
+    if (!broker) return;
+    try{
+      var libere = await libererCampagne(broker.id, Math.floor(Number(req.params.id)) || 0);
+      if (!libere) return res.status(409).json({ code: 'NOT_PENDING' });
+      await logBrokerEvent(broker.id, 'campaign_released', String(req.params.id));
+      var apres = await campagneQuota(broker);
+      res.json({ success: true, restantes: apres.restantes });
+    }catch(e){ console.error('annuler campagne', e); res.status(500).json({ error: 'server' }); }
   });
 
   async function finaliserCampagnePayee(req, broker, campagne, c){
@@ -1533,6 +1608,11 @@ module.exports = function(services){
     try{
       if (req.query && req.query.annule) {
         etat = 'annule';
+        var jetonA = String((req.query && req.query.token) || '').slice(0, 64);
+        var enCours = jetonA
+          ? await db.get("SELECT id FROM broker_campaigns WHERE paypal_order_id=$1 AND broker_id=$2 AND payment_status='pending'", [jetonA, broker.id])
+          : await db.get("SELECT id FROM broker_campaigns WHERE broker_id=$1 AND kind='paid' AND payment_status='pending' ORDER BY id DESC LIMIT 1", [broker.id]);
+        if (enCours) await libererCampagne(broker.id, enCours.id);
       } else {
         // On ne renvoie JAMAIS a PayPal l'identifiant fourni par le navigateur :
         // on s'en sert seulement pour retrouver une ligne DEJA possedee par la
@@ -1581,6 +1661,19 @@ module.exports = function(services){
     res.set('Content-Type', 'text/csv; charset=utf-8');
     res.set('Content-Disposition', 'attachment; filename="campagne-' + c.id + '-' + c.slug + '.csv"');
     res.send('\uFEFF' + lignes.join('\n') + '\n');
+  });
+
+  // Levier operateur : annuler n'importe quelle campagne et rendre au courtier
+  // sa campagne incluse, meme une commande payante restee en travers.
+  router.post('/api/admin/campagnes/:id/annuler', async function(req, res){
+    if (!apiAdmin(req, res)) return;
+    try{
+      var c = await db.get('SELECT * FROM broker_campaigns WHERE id=$1', [req.params.id]);
+      if (!c) return res.status(404).json({ error: 'introuvable' });
+      await db.run("UPDATE broker_campaigns SET status='cancelled', payment_status=CASE WHEN payment_status='paid' THEN 'paid' ELSE 'cancelled' END, quota_period=NULL, updated_at=NOW() WHERE id=$1", [c.id]);
+      await logBrokerEvent(c.broker_id, 'campaign_voided_by_operator', String(c.id));
+      res.json({ success: true });
+    }catch(e){ res.status(500).json({ error: 'server' }); }
   });
 
   router.post('/api/admin/campagnes/:id/postee', async function(req, res){

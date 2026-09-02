@@ -55,4 +55,5 @@ ALTER TABLE broker_invoices ADD COLUMN IF NOT EXISTS kind TEXT NOT NULL DEFAULT 
 ALTER TABLE broker_invoices ADD COLUMN IF NOT EXISTS campaign_id INTEGER;
 ALTER TABLE broker_invoices ADD COLUMN IF NOT EXISTS paypal_order_id TEXT;
 ALTER TABLE broker_campaigns ADD COLUMN IF NOT EXISTS quota_period DATE;
-CREATE UNIQUE INDEX IF NOT EXISTS broker_campaigns_quota_idx ON broker_campaigns (broker_id, quota_period) WHERE kind='included' AND status<>'cancelled' AND is_test=0;
+DROP INDEX IF EXISTS broker_campaigns_quota_idx;
+CREATE UNIQUE INDEX IF NOT EXISTS broker_campaigns_credit_idx ON broker_campaigns (broker_id, quota_period) WHERE quota_period IS NOT NULL AND status<>'cancelled' AND is_test=0;

@@ -175,7 +175,7 @@
               <span id="campQte"><%= campCible %></span>
               <button type="button" id="campPlus" aria-label="Ajouter un palier">+</button>
             </div>
-            <p class="esp-help">Par paliers de <%= campPalier %>. La première est comprise dans votre licence&nbsp;; au-delà, <%= (campPrixCents/100).toFixed(2).replace('.', ',') %>&nbsp;$ la lettre, taxes en sus.</p>
+            <p class="esp-help">Par paliers de <%= campPalier %>. <% if (campQuota.creditPortes > 0) { %>Vos <%= campQuota.creditPortes %> portes incluses se déduisent de <strong>n'importe quelle</strong> taille de commande&nbsp;; le reste est à <%= (campPrixCents/100).toFixed(2).replace('.', ',') %>&nbsp;$ la lettre, taxes en sus.<% } else { %><%= (campPrixCents/100).toFixed(2).replace('.', ',') %>&nbsp;$ la lettre, taxes en sus.<% } %></p>
           </div>
           <div class="camp-prix" id="campPrix"></div>
         </div>
@@ -239,6 +239,9 @@
               <span class="camp-histo-q"><%= c.address_count %></span>
               <span class="camp-histo-m"><%= c.kind === 'paid' ? ((c.total_cents||0)/100).toFixed(2).replace('.', ',') + ' $' : 'Incluse' %></span>
               <span class="camp-histo-d"><%= new Date(c.created_at).toLocaleDateString('fr-CA', { day:'numeric', month:'short', year:'numeric' }) %></span>
+              <% if (c.payment_status === 'pending') { %>
+                <button type="button" class="camp-histo-x" data-annuler="<%= c.id %>">Annuler et récupérer ma campagne incluse</button>
+              <% } %>
             </div>
           <% }); %>
         <% } %>
@@ -367,7 +370,7 @@
     live: <%= isLive ? 'true' : 'false' %>
     ,paypalMode: <%- JSON.stringify(paypalMode) %>
   };
-  window.VV_CAMP = { cible: <%= campCible %>, restantes: <%= campQuota.restantes %>, palier: <%= campPalier %>, max: <%= campMax %>, paliers: <%- JSON.stringify(campPaliers) %>, peutPayer: <%= campPeutPayer ? 'true' : 'false' %>, mode: <%- JSON.stringify(campModePaypal) %> };
+  window.VV_CAMP = { cible: <%= campCible %>, restantes: <%= campQuota.restantes %>, palier: <%= campPalier %>, max: <%= campMax %>, paliers: <%- JSON.stringify(campPaliers) %>, peutPayer: <%= campPeutPayer ? 'true' : 'false' %>, mode: <%- JSON.stringify(campModePaypal) %>, credit: <%= campQuota.creditPortes %> };
 </script>
 <script src="public/js/espace.js" defer></script>
 </body>
