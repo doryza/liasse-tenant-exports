@@ -146,14 +146,14 @@
             <h3>Lettre aux propriétaires</h3>
             <p>Prête à imprimer en noir et blanc, avec votre nom, votre agence, vos coordonnées et un QR unique vers <strong><%= pageUrl %></strong>.</p>
             <a class="esp-btn" href="espace/lettre-proprietaires" target="_blank" rel="noopener">Ouvrir et imprimer la lettre</a>
-            <% if (!isLive) { %><p class="esp-mail-warning">Publiez votre page avant de distribuer la lettre afin que le code QR soit actif.</p><% } %>
+            <% if (!isActive) { %><p class="esp-mail-warning">Activez votre abonnement, puis publiez votre page avant de distribuer la lettre afin que le code QR soit actif.</p><% } else if (!isLive) { %><p class="esp-mail-warning">Publiez votre page avant de distribuer la lettre afin que le code QR soit actif.</p><% } %>
           </div>
         </article>
 
         <article class="esp-campaign-card">
           <p class="esp-eyebrow">Campagne clé en main</p>
           <h3>Choisissez le territoire. Nous préparons la frappe.</h3>
-          <p class="esp-hint">Indiquez votre volume et la zone convoitée. Nous vous recontactons pour valider le ciblage et la campagne Postes Canada. Aucuns frais ne sont prélevés lors de cette demande.</p>
+          <p class="esp-hint">Indiquez votre volume et la zone convoitée. Le bouton transmet une demande de planification à l’équipe VendVite avec votre estimation. Nous vous recontactons pour valider le ciblage avant toute commande. <strong>Aucun paiement et aucune commande automatique.</strong></p>
           <form id="mailCampaignForm" novalidate>
             <div class="esp-2">
               <div class="esp-f"><label for="mailQuantity">Nombre d’adresses</label><input id="mailQuantity" name="quantity" type="number" min="300" step="50" value="300" required></div>
@@ -161,7 +161,12 @@
             </div>
             <div class="esp-f"><label for="mailSector">Secteur ciblé</label><input id="mailSector" name="sector" placeholder="Ex. rues ciblées, quartier ou codes postaux" maxlength="300" required></div>
             <div class="esp-f"><label for="mailNotes">Précisions facultatives</label><textarea id="mailNotes" name="notes" rows="3" maxlength="1000" placeholder="Ex. maisons unifamiliales autour de mon inscription récente…"></textarea></div>
-            <button class="esp-btn esp-btn-wide" id="mailCampaignBtn" type="submit" <%= isLive ? '' : 'disabled' %>>Demander ma campagne ciblée</button>
+            <% if (!isActive) { %>
+              <div class="esp-mail-lock"><strong>Abonnement requis</strong><span>Activez votre abonnement annuel pour publier votre page et envoyer du trafic vers celle-ci.</span><button class="esp-ghost" type="button" data-goto="abonnement">Voir l’abonnement</button></div>
+            <% } else if (!isLive) { %>
+              <div class="esp-mail-lock"><strong>Publication requise</strong><span>Votre abonnement est actif. Publiez maintenant votre page afin que le code QR mène à une page accessible.</span><button class="esp-ghost" type="button" data-goto="page">Retour à ma page</button></div>
+            <% } %>
+            <button class="esp-btn esp-btn-wide" id="mailCampaignBtn" type="submit" <%= isLive ? '' : 'disabled' %>><%= !isActive ? 'Abonnement requis' : (!isLive ? 'Publiez votre page pour continuer' : 'Demander ma campagne ciblée') %></button>
             <p class="esp-error" id="mailCampaignError" role="alert"></p>
             <p class="esp-mail-success" id="mailCampaignSuccess" role="status"></p>
           </form>
