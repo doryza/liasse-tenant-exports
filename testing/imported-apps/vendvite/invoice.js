@@ -21,10 +21,10 @@ function taxBreakdown(totalCents){
   };
 }
 
-function invoiceNumber(id, dateValue){
+function invoiceNumber(id, dateValue, isTest){
   var d = dateValue ? new Date(dateValue) : new Date();
   var year = Number.isFinite(d.getTime()) ? d.getUTCFullYear() : new Date().getUTCFullYear();
-  return 'VV-' + year + '-' + String(id).padStart(6, '0');
+  return 'VV-' + (isTest ? 'TEST-' : '') + year + '-' + String(id).padStart(6, '0');
 }
 
 function money(cents){
@@ -54,6 +54,7 @@ function pdfString(value){
 function buildInvoicePdf(invoice, broker, issuer){
   issuer = issuer || {};
   broker = broker || {};
+  var isTest = Number(invoice && invoice.is_test) === 1 || (invoice && invoice.is_test === true);
   var c = [];
   function fill(hex){
     var h = String(hex || '#000000').replace('#','');
@@ -83,7 +84,7 @@ function buildInvoicePdf(invoice, broker, issuer){
   fill('#E30B2D'); c.push('0 680 10 112 re f');
   fill('#FFFFFF');
   text(50,738,27,'F2','VendVite');
-  text(50,713,9,'F1','REÇU DE PAIEMENT · ABONNEMENT ANNUEL');
+  text(50,713,9,'F1',isTest ? 'TEST PAYPAL · AUCUN PAIEMENT RÉEL' : 'REÇU DE PAIEMENT · ABONNEMENT ANNUEL');
   text(382,739,11,'F2','FACTURE NO',180);
   text(382,720,12,'F2',invoice.invoice_number || '',180);
   text(382,702,9,'F1',dateFr(invoice.payment_time || invoice.created_at),180);
@@ -122,7 +123,7 @@ function buildInvoicePdf(invoice, broker, issuer){
   text(286,344,9,'F1',qstLabel,172); text(458,344,10,'F1',money(invoice.qst_cents),92);
   stroke('#111214'); line(338,328,562,328,1);
   fill('#111214');
-  text(320,303,13,'F2','TOTAL PAYÉ',128); text(458,303,13,'F2',money(invoice.total_cents),92);
+  text(320,303,13,'F2',isTest ? 'TOTAL SIMULÉ' : 'TOTAL PAYÉ',128); text(458,303,13,'F2',money(invoice.total_cents),92);
 
   fill('#F7F8F5'); c.push('50 224 512 50 re f');
   fill('#5F646C');
@@ -133,7 +134,7 @@ function buildInvoicePdf(invoice, broker, issuer){
 
   stroke('#D5D8D3'); line(50,92,562,92,1);
   fill('#5F646C');
-  text(50,70,9,'F1','Merci pour votre confiance. Cette facture confirme le paiement indiqué ci-dessus.');
+  text(50,70,9,'F1',isTest ? 'Document de test sans valeur comptable. Aucun paiement réel n\'a été encaissé.' : 'Merci pour votre confiance. Cette facture confirme le paiement indiqué ci-dessus.');
   text(50,52,9,'F1','VendVite · vendvite.app · ' + (issuer.email || 'notifications@liasse.tech'));
 
   var stream = c.join('\n') + '\n';

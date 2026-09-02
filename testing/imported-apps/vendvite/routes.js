@@ -378,7 +378,7 @@ module.exports = function(services){
     try{ var r6=await db.get("SELECT COUNT(*)::int c FROM site_visits WHERE created_at > NOW() - INTERVAL '7 days'"); s.recentVisits=r6.c; }catch(e){}
     try{ if(services.push && services.push.getSubscriptionCount){ s.pushCount=await services.push.getSubscriptionCount(); } }catch(e){}
     try{ if(services.auth && services.auth.getUserCount){ s.userCount=await services.auth.getUserCount(); } }catch(e){}
-    try{ var r7=await db.get('SELECT COUNT(*)::int c, COALESCE(SUM(total_cents),0)::bigint revenue FROM broker_invoices'); s.sales=Number(r7.c||0); s.revenueCents=Number(r7.revenue||0); }catch(e){}
+    try{ var r7=await db.get('SELECT COUNT(*)::int c, COALESCE(SUM(total_cents),0)::bigint revenue FROM broker_invoices WHERE COALESCE(is_test,0)=0'); s.sales=Number(r7.c||0); s.revenueCents=Number(r7.revenue||0); }catch(e){}
     return s;
   }
 
@@ -405,14 +405,28 @@ module.exports = function(services){
   router.get('/admin/ventes', requireAdmin, async function(req,res){
     try{
       var L=await baseLocals(req);
-      var totals=await db.get('SELECT COUNT(*)::int invoice_count, COUNT(DISTINCT broker_id)::int customer_count, COALESCE(SUM(subtotal_cents),0)::bigint subtotal_cents, COALESCE(SUM(gst_cents),0)::bigint gst_cents, COALESCE(SUM(qst_cents),0)::bigint qst_cents, COALESCE(SUM(total_cents),0)::bigint total_cents FROM broker_invoices');
+      var totals=await db.get('SELECT COUNT(*)::int invoice_count, COUNT(DISTINCT broker_id)::int customer_count, COALESCE(SUM(subtotal_cents),0)::bigint subtotal_cents, COALESCE(SUM(gst_cents),0)::bigint gst_cents, COALESCE(SUM(qst_cents),0)::bigint qst_cents, COALESCE(SUM(total_cents),0)::bigint total_cents FROM broker_invoices WHERE COALESCE(is_test,0)=0');
       var members=await db.get("SELECT COUNT(*) FILTER (WHERE status='active' AND membership_expires_at>NOW())::int active_count, COUNT(*) FILTER (WHERE status='cancelled' AND membership_expires_at>NOW())::int ending_count FROM brokers");
       var invoices=await db.all('SELECT i.*,b.full_name,b.agency,b.email FROM broker_invoices i JOIN brokers b ON b.id=i.broker_id ORDER BY i.payment_time DESC,i.id DESC LIMIT 250');
-      var monthly=await db.all("SELECT date_trunc('month',payment_time) month,COUNT(*)::int invoice_count,COALESCE(SUM(total_cents),0)::bigint total_cents FROM broker_invoices WHERE payment_time>NOW()-INTERVAL '12 months' GROUP BY 1 ORDER BY 1");
+      var monthly=await db.all("SELECT date_trunc('month',payment_time) month,COUNT(*)::int invoice_count,COALESCE(SUM(total_cents),0)::bigint total_cents FROM broker_invoices WHERE COALESCE(is_test,0)=0 AND payment_time>NOW()-INTERVAL '12 months' GROUP BY 1 ORDER BY 1");
+      var livePaypal=await paypalCfg('live');
+      var sandboxPaypal=await paypalCfg('sandbox');
+      var paypalState={ mode:(await currentPaypalMode()), liveReady:paypalReady(livePaypal), sandboxReady:paypalReady(sandboxPaypal) };
       var maxMonth=1;
       (monthly||[]).forEach(function(m){ maxMonth=Math.max(maxMonth,Number(m.total_cents||0)); });
-      res.render('admin-ventes', Object.assign(L, { active:'ventes', totals:totals||{}, members:members||{}, invoices:invoices||[], monthly:monthly||[], maxMonth:maxMonth }));
+      res.render('admin-ventes', Object.assign(L, { active:'ventes', totals:totals||{}, members:members||{}, invoices:invoices||[], monthly:monthly||[], maxMonth:maxMonth, paypalState:paypalState }));
     }catch(e){ console.error('admin ventes',e); res.status(500).send('Erreur'); }
+  });
+  router.post('/api/admin/paypal/mode', async function(req,res){
+    if(!apiAdmin(req,res)) return;
+    try{
+      var mode=String(req.body&&req.body.mode||'').trim().toLowerCase();
+      if(mode!=='live'&&mode!=='sandbox') return res.status(400).json({ error:'mode' });
+      var selected=await paypalCfg(mode);
+      if(!paypalReady(selected)) return res.status(409).json({ error:'paypal_absent', code:'NOT_CONFIGURED', mode:mode });
+      await db.run("INSERT INTO admin_settings (key,value,updated_at) VALUES ('paypal_mode',$1,NOW()) ON CONFLICT (key) DO UPDATE SET value=EXCLUDED.value,updated_at=NOW()",[mode]);
+      res.json({ success:true, mode:mode });
+    }catch(e){ console.error('paypal mode',e); res.status(500).json({ error:'server' }); }
   });
   router.get('/admin/ventes/factures/:id/pdf', requireAdmin, async function(req,res){
     try{
@@ -804,6 +818,7 @@ module.exports = function(services){
     var leads = await db.all('SELECT * FROM broker_leads WHERE broker_id=$1 ORDER BY created_at DESC LIMIT 200', [broker.id]);
     var counts = await db.get("SELECT COUNT(*)::int AS total, COUNT(*) FILTER (WHERE status='nouveau')::int AS fresh, COUNT(*) FILTER (WHERE created_at > NOW() - INTERVAL '30 days')::int AS recent FROM broker_leads WHERE broker_id=$1", [broker.id]);
     var invoices = await db.all('SELECT * FROM broker_invoices WHERE broker_id=$1 ORDER BY payment_time DESC, id DESC LIMIT 20', [broker.id]);
+    var activePaypal = await paypalCfg();
     return Object.assign(L, {
       isHome: false,
       broker: broker,
@@ -815,6 +830,9 @@ module.exports = function(services){
       isLive: brokerPageLive(broker),
       price: priceLines(),
       paymentConfirmed: req.query && req.query.paiement === 'confirme',
+      paymentTest: req.query && req.query.paiement === 'test',
+      paypalMode: activePaypal.mode,
+      paypalConfigured: paypalReady(activePaypal),
       pageUrl: absoluteUrl(req, '/' + broker.slug)
     });
   }
@@ -1010,19 +1028,26 @@ module.exports = function(services){
 
   // ── PayPal subscription ($599/yr + GST + QST). Credentials come from the
   //    tenant's secure API-variable store — never hardcoded.
-  //    PAYPAL_MODE: 'live' | 'sandbox' (defaults to sandbox, fail-safe).
-  function paypalCfg(){
-    // Keep every credential as a literal externalVars access. The tenant
-    // dashboard discovers these exact names and turns them into secure fields
-    // on its API Keys tab; aliases make required credentials invisible there.
-    var mode = String(services.externalVars.PAYPAL_MODE || 'sandbox').trim().toLowerCase();
-    if (mode !== 'live') mode = 'sandbox';
+  //    Mode is selected in /admin/ventes. Live and sandbox credentials are
+  //    deliberately separate so a test can never reach a production account.
+  async function currentPaypalMode(forcedMode){
+    var forced=String(forcedMode||'').trim().toLowerCase();
+    if(forced==='live'||forced==='sandbox') return forced;
+    var saved=null;
+    try{ saved=await db.get("SELECT value FROM admin_settings WHERE key='paypal_mode'"); }catch(e){}
+    var mode=String(saved&&saved.value||services.externalVars.PAYPAL_MODE||'sandbox').trim().toLowerCase();
+    return mode==='live'?'live':'sandbox';
+  }
+  async function paypalCfg(forcedMode){
+    // Literal accesses make all six secure fields discoverable in the tenant
+    // dashboard. Sandbox never falls back to production credentials.
+    var mode=await currentPaypalMode(forcedMode);
     return {
       mode: mode,
       base: mode === 'live' ? 'https://api-m.paypal.com' : 'https://api-m.sandbox.paypal.com',
-      clientId: String(services.externalVars.PAYPAL_CLIENT_ID || '').trim(),
-      secret: String(services.externalVars.PAYPAL_CLIENT_SECRET || '').trim(),
-      planId: String(services.externalVars.PAYPAL_PLAN_ID || '').trim()
+      clientId: String(mode==='live' ? (services.externalVars.PAYPAL_CLIENT_ID||'') : (services.externalVars.PAYPAL_SANDBOX_CLIENT_ID||'')).trim(),
+      secret: String(mode==='live' ? (services.externalVars.PAYPAL_CLIENT_SECRET||'') : (services.externalVars.PAYPAL_SANDBOX_CLIENT_SECRET||'')).trim(),
+      planId: String(mode==='live' ? (services.externalVars.PAYPAL_PLAN_ID||'') : (services.externalVars.PAYPAL_SANDBOX_PLAN_ID||'')).trim()
     };
   }
   function paypalReady(c){ return !!(c.clientId && c.secret && c.planId); }
@@ -1079,24 +1104,25 @@ module.exports = function(services){
     var firstName = String(broker.full_name || '').split(' ')[0] || 'Courtier';
     var invoiceUrl = absoluteUrl(req, '/espace/factures/' + invoice.id + '/pdf');
     var total = invoiceTools.money(invoice.total_cents);
+    var isTest = Number(invoice.is_test) === 1 || invoice.is_test === true;
     var html = ''
       + '<div style="background:#0D0A0B;padding:34px 20px;font-family:Inter,-apple-system,Segoe UI,Roboto,sans-serif">'
       + '<div style="max-width:540px;margin:0 auto;background:#171213;border:1px solid rgba(245,239,230,.14);border-radius:10px;padding:32px 28px;color:#F5EFE6">'
-      + '<div style="font-family:monospace;font-size:11px;letter-spacing:.25em;text-transform:uppercase;color:#C79A5B;margin-bottom:16px">Paiement confirmé</div>'
-      + '<h1 style="font-family:Georgia,serif;font-size:26px;line-height:1.15;margin:0 0 14px">Votre licence VendVite est active, ' + escapeHtml(firstName) + '.</h1>'
-      + '<p style="color:rgba(245,239,230,.66);font-size:15px;line-height:1.6;margin:0 0 18px">Nous avons reçu votre paiement annuel de <strong style="color:#F5EFE6">' + escapeHtml(total) + '</strong>. Votre facture <strong style="color:#C79A5B">' + escapeHtml(invoice.invoice_number) + '</strong> est jointe à ce courriel et demeure disponible dans votre espace.</p>'
+      + '<div style="font-family:monospace;font-size:11px;letter-spacing:.25em;text-transform:uppercase;color:#C79A5B;margin-bottom:16px">' + (isTest?'Test PayPal réussi':'Paiement confirmé') + '</div>'
+      + '<h1 style="font-family:Georgia,serif;font-size:26px;line-height:1.15;margin:0 0 14px">' + (isTest?'Le parcours sandbox fonctionne, ':'Votre licence VendVite est active, ') + escapeHtml(firstName) + '.</h1>'
+      + '<p style="color:rgba(245,239,230,.66);font-size:15px;line-height:1.6;margin:0 0 18px">' + (isTest?'Aucun paiement réel n’a été encaissé et votre page n’a pas été activée. La facture test ':'Nous avons reçu votre paiement annuel de <strong style="color:#F5EFE6">'+escapeHtml(total)+'</strong>. Votre facture ') + '<strong style="color:#C79A5B">' + escapeHtml(invoice.invoice_number) + '</strong> est jointe à ce courriel et demeure disponible dans votre espace.</p>'
       + '<table style="width:100%;border-collapse:collapse;margin:20px 0;color:#F5EFE6;font-size:14px">'
       + '<tr><td style="padding:9px 0;border-bottom:1px solid rgba(245,239,230,.1);color:rgba(245,239,230,.45)">Abonnement</td><td style="padding:9px 0;border-bottom:1px solid rgba(245,239,230,.1);text-align:right">599,00 $ + taxes</td></tr>'
-      + '<tr><td style="padding:9px 0;color:rgba(245,239,230,.45)">Total payé</td><td style="padding:9px 0;text-align:right;font-weight:700">' + escapeHtml(total) + '</td></tr>'
+      + '<tr><td style="padding:9px 0;color:rgba(245,239,230,.45)">' + (isTest?'Total simulé':'Total payé') + '</td><td style="padding:9px 0;text-align:right;font-weight:700">' + escapeHtml(total) + '</td></tr>'
       + '</table>'
       + '<a href="' + invoiceUrl + '" style="display:block;text-align:center;padding:15px;border-radius:4px;background:#E30B2D;color:#fff;text-decoration:none;font-family:Georgia,serif;font-weight:bold">Télécharger ma facture</a>'
-      + '<p style="color:rgba(245,239,230,.4);font-size:12px;line-height:1.55;margin:18px 0 0">Votre page reste sous votre contrôle : ouvrez votre espace pour la publier lorsque vous êtes prêt.</p>'
+      + '<p style="color:rgba(245,239,230,.4);font-size:12px;line-height:1.55;margin:18px 0 0">' + (isTest?'Document de test sans valeur comptable. Passez PayPal en mode réel uniquement au moment de vendre.':'Votre page reste sous votre contrôle : ouvrez votre espace pour la publier lorsque vous êtes prêt.') + '</p>'
       + '</div></div>';
     var result = await services.email.send({
       to: broker.email,
-      subject: 'Votre facture VendVite ' + invoice.invoice_number,
+      subject: (isTest?'[TEST PAYPAL] ':'') + 'Votre facture VendVite ' + invoice.invoice_number,
       html: html,
-      text: 'Paiement confirmé. Votre licence VendVite est active. Facture ' + invoice.invoice_number + ', total payé ' + total + '. Télécharger : ' + invoiceUrl,
+      text: isTest ? 'Test PayPal réussi. Aucun paiement réel; votre page demeure inactive. Facture test '+invoice.invoice_number+', total simulé '+total+'. Télécharger : '+invoiceUrl : 'Paiement confirmé. Votre licence VendVite est active. Facture ' + invoice.invoice_number + ', total payé ' + total + '. Télécharger : ' + invoiceUrl,
       attachments: [{
         content: pdf.toString('base64'),
         filename: invoice.invoice_number + '.pdf',
@@ -1111,34 +1137,36 @@ module.exports = function(services){
     return invoice;
   }
 
-  async function issueInvoiceForPayment(req, broker, subscription, eventResource){
+  async function issueInvoiceForPayment(req, broker, subscription, eventResource, mode){
     if (!subscription || subscription.status !== 'ACTIVE') return null;
     var payment = paymentSnapshot(subscription, eventResource);
     if (!payment) return null;
-    var subId = String(subscription.id || broker.paypal_subscription_id || '');
+    mode = mode === 'sandbox' ? 'sandbox' : 'live';
+    var isTest = mode === 'sandbox';
+    var subId = String(subscription.id || (isTest ? broker.paypal_sandbox_subscription_id : broker.paypal_subscription_id) || '');
     if (!subId) return null;
-    var paymentKey = subId + ':' + payment.time;
+    var paymentKey = mode + ':' + subId + ':' + payment.time;
     var invoice = await db.get('SELECT * FROM broker_invoices WHERE payment_key=$1', [paymentKey]);
     if (!invoice) {
       // Return redirects and PayPal webhooks can report the same payment a few
       // seconds apart. Collapse them even if their timestamps differ slightly.
       invoice = await db.get(
-        "SELECT * FROM broker_invoices WHERE paypal_subscription_id=$1 AND total_cents=$2 AND ABS(EXTRACT(EPOCH FROM (payment_time-$3::timestamptz))) < 600 ORDER BY id DESC LIMIT 1",
-        [subId, payment.totalCents, payment.time]
+        "SELECT * FROM broker_invoices WHERE paypal_subscription_id=$1 AND paypal_mode=$2 AND total_cents=$3 AND ABS(EXTRACT(EPOCH FROM (payment_time-$4::timestamptz))) < 600 ORDER BY id DESC LIMIT 1",
+        [subId, mode, payment.totalCents, payment.time]
       );
     }
     if (!invoice) {
       var tax = invoiceTools.taxBreakdown(payment.totalCents);
       var periodEnd = invoicePeriodEnd(subscription, payment.time);
       invoice = await db.get(
-        'INSERT INTO broker_invoices (broker_id,payment_key,paypal_subscription_id,paypal_transaction_id,payment_time,period_start,period_end,subtotal_cents,gst_cents,qst_cents,total_cents,currency) VALUES ($1,$2,$3,$4,$5,$5,$6,$7,$8,$9,$10,$11) ON CONFLICT (payment_key) DO NOTHING RETURNING *',
-        [broker.id, paymentKey, subId, payment.transactionId, payment.time, periodEnd, tax.subtotalCents, tax.gstCents, tax.qstCents, tax.totalCents, payment.currency]
+        'INSERT INTO broker_invoices (broker_id,payment_key,paypal_subscription_id,paypal_transaction_id,payment_time,period_start,period_end,subtotal_cents,gst_cents,qst_cents,total_cents,currency,is_test,paypal_mode) VALUES ($1,$2,$3,$4,$5,$5,$6,$7,$8,$9,$10,$11,$12,$13) ON CONFLICT (payment_key) DO NOTHING RETURNING *',
+        [broker.id, paymentKey, subId, payment.transactionId, payment.time, periodEnd, tax.subtotalCents, tax.gstCents, tax.qstCents, tax.totalCents, payment.currency, isTest?1:0, mode]
       );
       if (!invoice) invoice = await db.get('SELECT * FROM broker_invoices WHERE payment_key=$1', [paymentKey]);
       if (invoice && !invoice.invoice_number) {
-        var number = invoiceTools.invoiceNumber(invoice.id, payment.time);
+        var number = invoiceTools.invoiceNumber(invoice.id, payment.time, isTest);
         invoice = await db.get('UPDATE broker_invoices SET invoice_number=$1 WHERE id=$2 RETURNING *', [number, invoice.id]);
-        await logBrokerEvent(broker.id, 'invoice_created', number);
+        await logBrokerEvent(broker.id, isTest?'test_invoice_created':'invoice_created', number);
       }
     } else if (!invoice.paypal_transaction_id && payment.transactionId) {
       invoice = await db.get('UPDATE broker_invoices SET paypal_transaction_id=$1 WHERE id=$2 RETURNING *', [payment.transactionId, invoice.id]);
@@ -1153,7 +1181,7 @@ module.exports = function(services){
   router.post('/api/espace/abonnement', async function(req, res){
     var broker = await requireBrokerApi(req, res);
     if (!broker) return;
-    var c = paypalCfg();
+    var c = await paypalCfg();
     if (!paypalReady(c)) return res.status(503).json({ error: 'paypal_absent', code: 'NOT_CONFIGURED' });
     try{
       var token = await paypalToken(c);
@@ -1171,16 +1199,17 @@ module.exports = function(services){
             brand_name: 'VendVite',
             locale: (req.lang === 'en' ? 'en-CA' : 'fr-CA'),
             user_action: 'SUBSCRIBE_NOW',
-            return_url: absoluteUrl(req, '/espace/abonnement/retour'),
-            cancel_url: absoluteUrl(req, '/espace')
+            return_url: absoluteUrl(req, '/espace/abonnement/retour?mode=' + c.mode),
+            cancel_url: absoluteUrl(req, '/espace?paiement=annule')
           }
         })
       });
       var j = await r.json();
       if (!r.ok) { console.error('paypal sub', j); return res.status(502).json({ error: 'paypal' }); }
       var approve = (j.links || []).filter(function(l){ return l.rel === 'approve'; })[0];
-      await db.run('UPDATE brokers SET paypal_subscription_id=$1, updated_at=NOW() WHERE id=$2', [j.id, broker.id]);
-      await logBrokerEvent(broker.id, 'subscription_created', j.id);
+      if(c.mode==='sandbox') await db.run('UPDATE brokers SET paypal_sandbox_subscription_id=$1, updated_at=NOW() WHERE id=$2', [j.id, broker.id]);
+      else await db.run('UPDATE brokers SET paypal_subscription_id=$1, updated_at=NOW() WHERE id=$2', [j.id, broker.id]);
+      await logBrokerEvent(broker.id, c.mode==='sandbox'?'sandbox_subscription_created':'subscription_created', j.id);
       res.json({ success: true, approveUrl: approve ? approve.href : null });
     }catch(e){ console.error('abonnement', e); res.status(500).json({ error: 'server' }); }
   });
@@ -1200,8 +1229,9 @@ module.exports = function(services){
   router.get('/espace/abonnement/retour', async function(req, res){
     var broker = await requireBroker(req, res);
     if (!broker) return;
-    var c = paypalCfg();
-    var subId = req.query.subscription_id || broker.paypal_subscription_id;
+    var mode = req.query && req.query.mode === 'sandbox' ? 'sandbox' : 'live';
+    var c = await paypalCfg(mode);
+    var subId = req.query.subscription_id || (mode==='sandbox'?broker.paypal_sandbox_subscription_id:broker.paypal_subscription_id);
     var confirmed = false;
     try{
       if (paypalReady(c) && subId) {
@@ -1211,14 +1241,16 @@ module.exports = function(services){
         });
         var j = await r.json();
         if (r.ok && j.status === 'ACTIVE') {
-          var nextBilling = j.billing_info && j.billing_info.next_billing_time;
-          await activateBroker(broker, subId, 'return:' + j.status, nextBilling);
-          await issueInvoiceForPayment(req, broker, j, null);
+          if(mode==='live') {
+            var nextBilling = j.billing_info && j.billing_info.next_billing_time;
+            await activateBroker(broker, subId, 'return:' + j.status, nextBilling);
+          }
+          await issueInvoiceForPayment(req, broker, j, null, mode);
           confirmed = true;
         }
       }
     }catch(e){ console.error('retour', e); }
-    res.redirect('../../espace?paiement=' + (confirmed ? 'confirme' : 'verification'));
+    res.redirect('../../espace?paiement=' + (confirmed ? (mode==='sandbox'?'test':'confirme') : 'verification'));
   });
 
   router.get('/espace/factures/:id/pdf', async function(req, res){
@@ -1238,19 +1270,20 @@ module.exports = function(services){
   router.post('/api/espace/abonnement/annuler', async function(req, res){
     var broker = await requireBrokerApi(req, res);
     if (!broker) return;
-    var c = paypalCfg();
+    var c = await paypalCfg();
+    var subId = c.mode==='sandbox' ? broker.paypal_sandbox_subscription_id : broker.paypal_subscription_id;
     try{
-      if (paypalReady(c) && broker.paypal_subscription_id) {
+      if (paypalReady(c) && subId) {
         var token = await paypalToken(c);
-        await services.fetch(c.base + '/v1/billing/subscriptions/' + encodeURIComponent(broker.paypal_subscription_id) + '/cancel', {
+        await services.fetch(c.base + '/v1/billing/subscriptions/' + encodeURIComponent(subId) + '/cancel', {
           method: 'POST',
           headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
           body: JSON.stringify({ reason: 'Annulation par le courtier' })
         });
       }
-      // Access runs to the end of the paid term — only the renewal stops.
-      await db.run("UPDATE brokers SET status='cancelled', updated_at=NOW() WHERE id=$1", [broker.id]);
-      await logBrokerEvent(broker.id, 'membership_cancelled', '');
+      // A sandbox cancellation is a test only and cannot alter paid access.
+      if(c.mode==='live') await db.run("UPDATE brokers SET status='cancelled', updated_at=NOW() WHERE id=$1", [broker.id]);
+      await logBrokerEvent(broker.id, c.mode==='sandbox'?'sandbox_subscription_cancelled':'membership_cancelled', '');
       res.json({ success: true });
     }catch(e){ console.error('annuler', e); res.status(500).json({ error: 'server' }); }
   });
@@ -1263,15 +1296,16 @@ module.exports = function(services){
     try{
       var ev = req.body || {};
       var resource = ev.resource || {};
-      var subId = resource.id || resource.billing_agreement_id || '';
+      var subId = resource.billing_agreement_id || resource.id || '';
       var brokerId = resource.custom_id || (resource.subscriber && resource.subscriber.custom_id) || null;
       var broker = null;
-      if (brokerId) broker = await db.get('SELECT * FROM brokers WHERE id=$1', [brokerId]);
-      if (!broker && subId) broker = await db.get('SELECT * FROM brokers WHERE paypal_subscription_id=$1', [subId]);
+      if (subId) broker = await db.get('SELECT * FROM brokers WHERE paypal_subscription_id=$1 OR paypal_sandbox_subscription_id=$1', [subId]);
+      if (!broker && brokerId) broker = await db.get('SELECT * FROM brokers WHERE id=$1', [brokerId]);
       if (!broker) return res.json({ received: true });
 
-      var c = paypalCfg();
-      var lookupId = subId || broker.paypal_subscription_id;
+      var mode = subId && broker.paypal_sandbox_subscription_id === subId ? 'sandbox' : 'live';
+      var c = await paypalCfg(mode);
+      var lookupId = subId || (mode==='sandbox'?broker.paypal_sandbox_subscription_id:broker.paypal_subscription_id);
       if (!paypalReady(c) || !lookupId) return res.json({ received: true });
 
       var token = await paypalToken(c);
@@ -1283,16 +1317,20 @@ module.exports = function(services){
 
       // Only PayPal's own answer moves money-bearing state.
       if (sub.status === 'ACTIVE') {
-        var nextBilling = sub.billing_info && sub.billing_info.next_billing_time;
-        await activateBroker(broker, lookupId, 'verified:' + (ev.event_type || 'webhook'), nextBilling);
-        await issueInvoiceForPayment(req, broker, sub, resource);
+        if(mode==='live') {
+          var nextBilling = sub.billing_info && sub.billing_info.next_billing_time;
+          await activateBroker(broker, lookupId, 'verified:' + (ev.event_type || 'webhook'), nextBilling);
+        }
+        await issueInvoiceForPayment(req, broker, sub, resource, mode);
       } else if (sub.status === 'CANCELLED') {
         // A cancellation stops renewal, not access already paid for.
-        await db.run("UPDATE brokers SET status='cancelled', updated_at=NOW() WHERE id=$1", [broker.id]);
-        await logBrokerEvent(broker.id, 'membership_cancelled', 'verified:' + sub.status);
+        if(mode==='live') await db.run("UPDATE brokers SET status='cancelled', updated_at=NOW() WHERE id=$1", [broker.id]);
+        await logBrokerEvent(broker.id, mode==='sandbox'?'sandbox_subscription_cancelled':'membership_cancelled', 'verified:' + sub.status);
       } else if (['EXPIRED', 'SUSPENDED'].indexOf(sub.status) !== -1) {
-        await db.run("UPDATE brokers SET status='expired', published=0, updated_at=NOW() WHERE id=$1", [broker.id]);
-        await logBrokerEvent(broker.id, 'membership_stopped', 'verified:' + sub.status);
+        if(mode==='live') {
+          await db.run("UPDATE brokers SET status='expired', published=0, updated_at=NOW() WHERE id=$1", [broker.id]);
+          await logBrokerEvent(broker.id, 'membership_stopped', 'verified:' + sub.status);
+        }
       }
       res.json({ received: true });
     }catch(e){ console.error('paypal webhook', e); res.json({ received: true }); }

@@ -37,7 +37,7 @@
         <% if (isActive) { %>
           <button class="esp-btn" id="pubBtn" data-published="<%= broker.published %>"><%= Number(broker.published)===1 ? 'Retirer' : 'Publier' %></button>
         <% } else { %>
-          <button class="esp-btn" data-goto="abonnement">Activer — <%= price.total.toFixed(2) %>&nbsp;$</button>
+          <button class="esp-btn" data-goto="abonnement"><%= paypalMode==='sandbox'?'Tester PayPal':'Activer — '+price.total.toFixed(2)+' $' %></button>
         <% } %>
       </div>
     </div>
@@ -217,6 +217,12 @@
 
     <!-- ═══ Abonnement ═══ -->
     <section class="esp-panel" data-panel="abonnement">
+      <% if (paymentTest) { %>
+        <div class="esp-payment-success is-test">
+          <span class="esp-payment-check" aria-hidden="true">◇</span>
+          <div><strong>Test PayPal réussi. Aucun paiement réel.</strong><p>La facture test est disponible ci-dessous et vous a été envoyée. Votre abonnement et votre page publique n’ont pas été activés.</p></div>
+        </div>
+      <% } %>
       <% if (paymentConfirmed) { %>
         <div class="esp-payment-success">
           <span class="esp-payment-check" aria-hidden="true">✓</span>
@@ -226,6 +232,7 @@
       <div class="esp-bill">
         <div class="esp-bill-card">
           <p class="esp-eyebrow">Adhésion annuelle</p>
+          <% if (paypalMode === 'sandbox') { %><div class="esp-sandbox-flag"><strong>MODE TEST PAYPAL</strong><span>Compte sandbox seulement · aucun argent réel · aucune activation</span></div><% } %>
           <h2 class="esp-price"><%= price.base.toFixed(2) %>&nbsp;$ <span>/ an</span></h2>
           <ul class="esp-bill-lines">
             <li><span>Adhésion</span><span><%= price.base.toFixed(2) %>&nbsp;$</span></li>
@@ -244,9 +251,9 @@
               <strong>Abonnement actif</strong>
               <p>Renouvellement le <%= formatDate(broker.membership_expires_at, lang) %>.</p>
             </div>
-            <button class="esp-ghost esp-danger" id="cancelBtn" type="button">Annuler le renouvellement</button>
+            <% if(paypalMode==='live'){ %><button class="esp-ghost esp-danger" id="cancelBtn" type="button">Annuler le renouvellement</button><% } else { %><p class="esp-hint" style="text-align:center">Votre abonnement réel est protégé pendant les essais sandbox. Repassez en mode réel pour gérer son renouvellement.</p><% } %>
           <% } else { %>
-            <button class="esp-btn esp-btn-wide" id="subBtn" type="button">Activer ma page</button>
+            <button class="esp-btn esp-btn-wide" id="subBtn" type="button"><%= paypalMode==='sandbox'?'Tester l’abonnement PayPal':'Activer ma page' %></button>
             <p class="esp-hint" style="text-align:center">Paiement sécurisé par PayPal. Annulable en tout temps.</p>
           <% } %>
           <p class="esp-error" id="billError" role="alert"></p>
@@ -264,7 +271,7 @@
               <p class="esp-eyebrow">Mes factures</p>
               <% invoices.forEach(function(invoice){ %>
                 <a class="esp-invoice-row" href="espace/factures/<%= invoice.id %>/pdf">
-                  <span><strong><%= invoice.invoice_number %></strong><small><%= formatDate(invoice.payment_time, lang) %></small></span>
+                  <span><strong><%= invoice.invoice_number %></strong><small><%= formatDate(invoice.payment_time, lang) %><% if(Number(invoice.is_test)===1||invoice.is_test===true){ %> · TEST — sans valeur comptable<% } %></small></span>
                   <span><b><%= (Number(invoice.total_cents || 0) / 100).toFixed(2).replace('.', ',') %>&nbsp;$</b><small>PDF ↓</small></span>
                 </a>
               <% }); %>
@@ -281,6 +288,7 @@
     published: <%= Number(broker.published) === 1 ? 'true' : 'false' %>,
     active: <%= isActive ? 'true' : 'false' %>,
     live: <%= isLive ? 'true' : 'false' %>
+    ,paypalMode: <%- JSON.stringify(paypalMode) %>
   };
 </script>
 <script src="public/js/espace.js" defer></script>
