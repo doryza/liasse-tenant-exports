@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Lettre aux propriétaires — <%= broker.full_name %></title>
+  <style>
+    @page{size:Letter;margin:0}
+    *{box-sizing:border-box}
+    html,body{margin:0;background:#e8e8e8;color:#000;font-family:Arial,Helvetica,sans-serif}
+    .printbar{position:sticky;top:0;z-index:10;display:flex;justify-content:center;align-items:center;gap:16px;padding:12px;background:#111;color:#fff;font-size:14px;box-shadow:0 2px 14px rgba(0,0,0,.25)}
+    .printbar button{border:1px solid #fff;border-radius:3px;padding:10px 18px;background:#fff;color:#000;font-weight:700;cursor:pointer}
+    .letter{position:relative;width:8.5in;height:11in;margin:24px auto;padding:.63in .72in .54in;background:#fff;box-shadow:0 12px 42px rgba(0,0,0,.18);overflow:hidden}
+    .letter::before{content:"";position:absolute;inset:.28in;border:1px solid #000;pointer-events:none}
+    .mast{display:flex;align-items:flex-end;justify-content:space-between;padding-bottom:15px;border-bottom:3px solid #000}
+    .brand{font-family:Georgia,'Times New Roman',serif;font-size:29px;font-weight:700;letter-spacing:-.02em}
+    .brand span{display:inline-grid;place-items:center;width:34px;height:34px;margin-right:9px;border:2px solid #000;border-radius:50%;font-size:18px;vertical-align:2px}
+    .personal{max-width:3.3in;text-align:right;font-size:10px;line-height:1.45}
+    .personal strong{display:block;font-size:12px}
+    .eyebrow{margin:26px 0 8px;font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase}
+    h1{max-width:6.45in;margin:0;font-family:Georgia,'Times New Roman',serif;font-size:34px;line-height:1.04;letter-spacing:-.025em}
+    .salutation{margin:20px 0 11px;font-family:Georgia,'Times New Roman',serif;font-size:16px;font-weight:700}
+    .bodycopy{max-width:6.65in;margin:0;font-family:Georgia,'Times New Roman',serif;font-size:13.4px;line-height:1.5}
+    .bodycopy p{margin:0 0 11px}
+    .reasons{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin:17px 0;border-top:1px solid #000;border-bottom:1px solid #000}
+    .reason{min-height:83px;padding:13px 14px 12px;border-right:1px solid #000}
+    .reason:last-child{border-right:0}
+    .reason strong{display:block;margin-bottom:5px;font-family:Georgia,'Times New Roman',serif;font-size:13px}
+    .reason span{display:block;font-size:9.6px;line-height:1.4;color:#333}
+    .cta{display:grid;grid-template-columns:1fr 1.36in;gap:23px;align-items:center;margin-top:17px;padding:17px 19px;border:2px solid #000}
+    .cta-kicker{margin:0 0 5px;font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase}
+    .cta h2{margin:0 0 7px;font-family:Georgia,'Times New Roman',serif;font-size:21px;line-height:1.14}
+    .cta p{margin:0 0 8px;font-size:10.5px;line-height:1.4}
+    .url{font-size:11px;font-weight:700;word-break:break-all}
+    .qr{width:1.32in;height:1.32in;padding:5px;border:1px solid #000;background:#fff}
+    .qr img{display:block;width:100%;height:100%}
+    .signature{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;margin-top:18px}
+    .sign-name{font-family:Georgia,'Times New Roman',serif;font-size:16px;font-weight:700}
+    .sign-meta{margin-top:3px;font-size:9.7px;line-height:1.45}
+    .free{max-width:2.6in;text-align:right;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-weight:700;line-height:1.3}
+    .fine{position:absolute;right:.72in;bottom:.46in;left:.72in;padding-top:8px;border-top:1px solid #aaa;font-size:7.3px;line-height:1.35;color:#555}
+    @media(max-width:850px){.letter{margin:0;transform-origin:top left}.printbar span{display:none}}
+    @media print{html,body{background:#fff}.printbar{display:none}.letter{margin:0;box-shadow:none}}
+  </style>
+</head>
+<body>
+  <div class="printbar"><span>Lettre personnalisée · Noir et blanc · Format Lettre</span><button type="button" onclick="window.print()">Imprimer ou enregistrer en PDF</button></div>
+  <main class="letter">
+    <header class="mast">
+      <div class="brand"><span>V</span>VendVite</div>
+      <div class="personal"><strong><%= profile.agent_name || broker.full_name %></strong><%= profile.agent_title || 'Courtier immobilier' %><% if (profile.agency || broker.agency) { %> · <%= profile.agency || broker.agency %><% } %></div>
+    </header>
+
+    <p class="eyebrow">À l’attention du propriétaire</p>
+    <h1>Et si vous connaissiez la valeur actuelle de votre propriété&nbsp;?</h1>
+    <p class="salutation">Bonjour,</p>
+    <div class="bodycopy">
+      <p>Votre propriété est probablement l’un de vos actifs les plus importants. Pourtant, sa valeur réelle évolue avec les ventes récentes de votre secteur — souvent bien différemment de l’évaluation municipale.</p>
+      <p>Je vous offre une <strong>évaluation gratuite et sans engagement</strong>. Vous n’avez pas besoin de vouloir vendre aujourd’hui. Connaître votre position sur le marché est simplement une information utile à conserver, maintenant comme plus tard.</p>
+    </div>
+
+    <section class="reasons" aria-label="Pourquoi demander une évaluation">
+      <div class="reason"><strong>Pour planifier</strong><span>Une vente éventuelle, un refinancement ou votre prochain projet.</span></div>
+      <div class="reason"><strong>Pour décider</strong><span>Des rénovations à prioriser selon la réalité de votre marché.</span></div>
+      <div class="reason"><strong>Pour savoir</strong><span>Ce que les ventes récentes disent vraiment de votre propriété.</span></div>
+    </section>
+
+    <div class="bodycopy"><p>Aucune pression, aucun engagement. Scannez simplement le code ci-dessous, entrez votre adresse et votre dossier commencera à prendre forme. Je pourrai ensuite préparer une estimation appuyée par les données de votre secteur.</p></div>
+
+    <section class="cta">
+      <div>
+        <p class="cta-kicker">Votre évaluation vous attend</p>
+        <h2>Scannez. Entrez votre adresse. Découvrez votre potentiel.</h2>
+        <p>Gratuit · Confidentiel · Sans engagement</p>
+        <div class="url"><%= pageUrl %></div>
+      </div>
+      <div class="qr"><img src="<%= qrDataUrl %>" alt="Code QR vers la page d’évaluation de <%= broker.full_name %>"></div>
+    </section>
+
+    <section class="signature">
+      <div><div class="sign-name"><%= profile.agent_name || broker.full_name %></div><div class="sign-meta"><%= profile.agent_title || 'Courtier immobilier' %><% if (profile.agency || broker.agency) { %> · <%= profile.agency || broker.agency %><% } %><% if (profile.agent_phone || broker.phone) { %><br><%= formatPhone(profile.agent_phone || broker.phone) %><% } %></div></div>
+      <div class="free">Une bonne information aujourd’hui peut devenir une excellente décision demain.</div>
+    </section>
+
+    <footer class="fine">Cette offre est gratuite et sans obligation de vendre ou de retenir les services du courtier. L’estimation fournie est une opinion de valeur marchande et ne remplace pas une évaluation agréée. Chaque agence immobilière est une entreprise indépendante et autonome.</footer>
+  </main>
+</body>
+</html>

@@ -10,6 +10,7 @@
       </div>
       <nav class="esp-tabs" role="tablist">
         <button class="esp-tab is-on" data-tab="page" role="tab">Ma page</button>
+        <button class="esp-tab" data-tab="courrier" role="tab">Courrier ciblé</button>
         <button class="esp-tab" data-tab="pistes" role="tab">Mes pistes <span class="esp-pill"><%= counts.total %></span></button>
         <button class="esp-tab" data-tab="abonnement" role="tab">Abonnement</button>
       </nav>
@@ -120,6 +121,54 @@
       </div>
     </section>
 
+    <!-- ═══ Courrier ciblé ═══ -->
+    <section class="esp-panel" data-panel="courrier">
+      <div class="esp-mail-hero">
+        <div>
+          <p class="esp-eyebrow">Courrier de précision · Postes Canada</p>
+          <h2>Transformez une rue ciblée en trafic qualifié.</h2>
+          <p>Votre lettre personnalisée dépose une offre simple et irrésistible dans les boîtes aux lettres que vous convoitez&nbsp;: une évaluation gratuite, utile maintenant comme plus tard. Chaque code QR mène directement à votre page VendVite.</p>
+          <div class="esp-mail-tags"><span>Ciblage laser</span><span>Votre URL</span><span>Votre code QR</span><span>Noir et blanc</span></div>
+        </div>
+        <div class="esp-mail-rate"><strong>1,35&nbsp;$</strong><span>par adresse</span><small>Minimum 300 adresses<br>À partir de 405&nbsp;$</small></div>
+      </div>
+
+      <div class="esp-mail-grid">
+        <article class="esp-doc-card">
+          <div class="esp-doc-sheet" aria-hidden="true">
+            <span class="esp-doc-brand">VendVite</span>
+            <i></i><i></i><i></i>
+            <b>Évaluation gratuite</b>
+            <div class="esp-doc-qr">▦</div>
+          </div>
+          <div class="esp-doc-copy">
+            <p class="esp-eyebrow">Votre document personnalisé</p>
+            <h3>Lettre aux propriétaires</h3>
+            <p>Prête à imprimer en noir et blanc, avec votre nom, votre agence, vos coordonnées et un QR unique vers <strong><%= pageUrl %></strong>.</p>
+            <a class="esp-btn" href="espace/lettre-proprietaires" target="_blank" rel="noopener">Ouvrir et imprimer la lettre</a>
+            <% if (!isLive) { %><p class="esp-mail-warning">Publiez votre page avant de distribuer la lettre afin que le code QR soit actif.</p><% } %>
+          </div>
+        </article>
+
+        <article class="esp-campaign-card">
+          <p class="esp-eyebrow">Campagne clé en main</p>
+          <h3>Choisissez le territoire. Nous préparons la frappe.</h3>
+          <p class="esp-hint">Indiquez votre volume et la zone convoitée. Nous vous recontactons pour valider le ciblage et la campagne Postes Canada. Aucuns frais ne sont prélevés lors de cette demande.</p>
+          <form id="mailCampaignForm" novalidate>
+            <div class="esp-2">
+              <div class="esp-f"><label for="mailQuantity">Nombre d’adresses</label><input id="mailQuantity" name="quantity" type="number" min="300" step="50" value="300" required></div>
+              <div class="esp-f"><label for="mailEstimate">Estimation</label><output id="mailEstimate" class="esp-mail-estimate">405,00&nbsp;$</output></div>
+            </div>
+            <div class="esp-f"><label for="mailSector">Secteur ciblé</label><input id="mailSector" name="sector" placeholder="Ex. rues ciblées, quartier ou codes postaux" maxlength="300" required></div>
+            <div class="esp-f"><label for="mailNotes">Précisions facultatives</label><textarea id="mailNotes" name="notes" rows="3" maxlength="1000" placeholder="Ex. maisons unifamiliales autour de mon inscription récente…"></textarea></div>
+            <button class="esp-btn esp-btn-wide" id="mailCampaignBtn" type="submit" <%= isLive ? '' : 'disabled' %>>Demander ma campagne ciblée</button>
+            <p class="esp-error" id="mailCampaignError" role="alert"></p>
+            <p class="esp-mail-success" id="mailCampaignSuccess" role="status"></p>
+          </form>
+        </article>
+      </div>
+    </section>
+
     <!-- ═══ Mes pistes ═══ -->
     <section class="esp-panel" data-panel="pistes">
       <div class="esp-stats">
@@ -206,7 +255,8 @@
   window.VV = {
     profile: <%- JSON.stringify(profile) %>,
     published: <%= Number(broker.published) === 1 ? 'true' : 'false' %>,
-    active: <%= isActive ? 'true' : 'false' %>
+    active: <%= isActive ? 'true' : 'false' %>,
+    live: <%= isLive ? 'true' : 'false' %>
   };
 </script>
 <script src="public/js/espace.js" defer></script>

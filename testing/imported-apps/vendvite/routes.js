@@ -798,6 +798,77 @@ module.exports = function(services){
     catch(e){ console.error('apercu', e); res.status(500).send('Erreur'); }
   });
 
+  // Monochrome, print-ready acquisition letter. The QR is generated on the
+  // server so every copy points to this broker's exact VendVite page.
+  router.get('/espace/lettre-proprietaires', async function(req, res){
+    var broker = await requireBroker(req, res);
+    if (!broker) return;
+    try{
+      var profile = brokerProfile(broker);
+      var pageUrl = absoluteUrl(req, '/' + broker.slug);
+      var qrDataUrl = await services.qrcode.toDataURL(pageUrl, {
+        errorCorrectionLevel: 'H',
+        margin: 2,
+        width: 720,
+        color: { dark: '#000000', light: '#FFFFFF' }
+      });
+      res.set('Cache-Control', 'private, no-store');
+      res.render('lettre-proprietaires', {
+        broker: broker,
+        profile: profile,
+        pageUrl: pageUrl,
+        qrDataUrl: qrDataUrl,
+        formatPhone: formatPhone
+      });
+    }catch(e){ console.error('lettre proprietaires', e); res.status(500).send('Erreur'); }
+  });
+
+  // Optional done-for-you Canada Post campaign request. Nothing is charged
+  // here; the operator receives the exact quantity, territory and estimate.
+  router.post('/api/espace/campagne-postale', async function(req, res){
+    var broker = await requireBrokerApi(req, res);
+    if (!broker) return;
+    try{
+      if (!brokerPageLive(broker)) {
+        return res.status(409).json({ error: 'page_not_live', code: 'PAGE_NOT_LIVE' });
+      }
+      var quantity = Math.floor(Number(req.body && req.body.quantity));
+      var sector = String((req.body && req.body.sector) || '').trim().slice(0, 300);
+      var notes = String((req.body && req.body.notes) || '').trim().slice(0, 1000);
+      if (!Number.isFinite(quantity) || quantity < 300 || quantity > 100000) {
+        return res.status(400).json({ error: 'quantity', code: 'MINIMUM_300' });
+      }
+      if (!sector) return res.status(400).json({ error: 'sector', code: 'SECTOR_REQUIRED' });
+
+      var total = Math.round(quantity * 135) / 100;
+      var ownerEmail = (services.config && (services.config.contactEmail || services.config.ownerEmail)) || null;
+      var detail = JSON.stringify({ quantity: quantity, sector: sector, notes: notes, total: total });
+      await logBrokerEvent(broker.id, 'postal_campaign_requested', detail);
+
+      if (ownerEmail) {
+        var esc = escapeHtml;
+        var html = ''
+          + '<div style="font-family:Arial,sans-serif;max-width:620px;margin:auto;padding:28px;color:#171717">'
+          + '<p style="font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#777">Campagne Courrier de précision</p>'
+          + '<h1 style="font-family:Georgia,serif;font-size:26px;margin:0 0 18px">Nouvelle demande de ' + quantity.toLocaleString('fr-CA') + ' adresses</h1>'
+          + '<table style="width:100%;border-collapse:collapse;font-size:14px">'
+          + [['Courtier', broker.full_name], ['Agence', broker.agency], ['Courriel', broker.email], ['Téléphone', formatPhone(broker.phone)], ['Secteur visé', sector], ['Quantité', quantity.toLocaleString('fr-CA')], ['Estimation', total.toFixed(2).replace('.', ',') + ' $']]
+            .map(function(r){ return '<tr><td style="padding:8px;border-bottom:1px solid #ddd;color:#777;width:32%">' + esc(r[0]) + '</td><td style="padding:8px;border-bottom:1px solid #ddd">' + esc(r[1] || '') + '</td></tr>'; }).join('')
+          + (notes ? '<p style="margin-top:18px"><strong>Précisions :</strong><br>' + esc(notes).replace(/\n/g, '<br>') + '</p>' : '')
+          + '<p style="margin-top:20px;color:#777;font-size:12px">Estimation à 1,35 $ par adresse. Cette demande ne constitue pas encore une commande facturée.</p>'
+          + '</div>';
+        await services.email.send({
+          to: ownerEmail,
+          replyTo: broker.email,
+          subject: 'VendVite — campagne postale de ' + quantity + ' adresses — ' + broker.full_name,
+          html: html,
+          text: 'Campagne postale VendVite\nCourtier: ' + broker.full_name + '\nSecteur: ' + sector + '\nQuantité: ' + quantity + '\nEstimation: ' + total.toFixed(2) + ' $\nNotes: ' + notes
+        });
+      }
+      res.json({ success: true, quantity: quantity, total: total });
+    }catch(e){ console.error('campagne postale', e); res.status(500).json({ error: 'server' }); }
+  });
+
   router.post('/api/espace/profil', async function(req, res){
     var broker = await requireBrokerApi(req, res);
     if (!broker) return;

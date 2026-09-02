@@ -1,5 +1,5 @@
 (function(){
-  var VV = window.VV || { profile: {}, published: false, active: false };
+  var VV = window.VV || { profile: {}, published: false, active: false, live: false };
   var profile = VV.profile || {};
   function $(id){ return document.getElementById(id); }
   function on(el, ev, fn){ if(el) el.addEventListener(ev, fn); }
@@ -137,6 +137,46 @@
       if (r.ok) { location.reload(); return; }
     }catch(_){}
     btn.disabled = false;
+  });
+
+  // ── Laser-precision Canada Post campaign calculator + request
+  var mailQuantity = $('mailQuantity');
+  var mailEstimate = $('mailEstimate');
+  function updateMailEstimate(){
+    if (!mailQuantity || !mailEstimate) return;
+    var quantity = Math.max(0, Math.floor(Number(mailQuantity.value) || 0));
+    mailEstimate.textContent = (quantity * 1.35).toLocaleString('fr-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' $';
+  }
+  on(mailQuantity, 'input', updateMailEstimate);
+  updateMailEstimate();
+
+  on($('mailCampaignForm'), 'submit', async function(e){
+    e.preventDefault();
+    var btn = $('mailCampaignBtn'), err = $('mailCampaignError'), success = $('mailCampaignSuccess');
+    var quantity = Math.floor(Number(mailQuantity && mailQuantity.value));
+    var sector = $('mailSector') ? $('mailSector').value.trim() : '';
+    var notes = $('mailNotes') ? $('mailNotes').value.trim() : '';
+    err.textContent = ''; success.textContent = '';
+    if (!VV.live) { err.textContent = 'Publiez d’abord votre page afin que le code QR mène à une page active.'; return; }
+    if (!Number.isFinite(quantity) || quantity < 300) { err.textContent = 'Le minimum est de 300 adresses.'; return; }
+    if (!sector) { err.textContent = 'Indiquez le secteur que vous souhaitez cibler.'; return; }
+    btn.disabled = true; btn.textContent = 'Transmission…';
+    try{
+      var r = await fetch('api/espace/campagne-postale', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ quantity: quantity, sector: sector, notes: notes })
+      });
+      var d = await r.json().catch(function(){ return {}; });
+      if (r.ok) {
+        success.textContent = 'Demande reçue ✓ Nous vous contacterons pour valider le ciblage et le dépôt postal.';
+        btn.textContent = 'Demande transmise';
+        return;
+      }
+      err.textContent = d.code === 'PAGE_NOT_LIVE'
+        ? 'Publiez d’abord votre page afin que le code QR mène à une page active.'
+        : (d.code === 'MINIMUM_300' ? 'Le minimum est de 300 adresses.' : 'Impossible de transmettre la demande. Réessayez.');
+    }catch(_){ err.textContent = 'Impossible de transmettre la demande. Réessayez.'; }
+    btn.disabled = false; btn.textContent = 'Demander ma campagne ciblée';
   });
 
   // ── Lead status + notes (debounced autosave)
