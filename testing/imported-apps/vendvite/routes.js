@@ -408,7 +408,7 @@ module.exports = function(services){
       var totals=await db.get('SELECT COUNT(*)::int invoice_count, COUNT(DISTINCT broker_id)::int customer_count, COALESCE(SUM(subtotal_cents),0)::bigint subtotal_cents, COALESCE(SUM(gst_cents),0)::bigint gst_cents, COALESCE(SUM(qst_cents),0)::bigint qst_cents, COALESCE(SUM(total_cents),0)::bigint total_cents FROM broker_invoices WHERE COALESCE(is_test,0)=0');
       var members=await db.get("SELECT COUNT(*) FILTER (WHERE status='active' AND membership_expires_at>NOW())::int active_count, COUNT(*) FILTER (WHERE status='cancelled' AND membership_expires_at>NOW())::int ending_count FROM brokers");
       var invoices=await db.all('SELECT i.*,b.full_name,b.agency,b.email FROM broker_invoices i JOIN brokers b ON b.id=i.broker_id ORDER BY i.payment_time DESC,i.id DESC LIMIT 250');
-      var monthly=await db.all("SELECT date_trunc('month',payment_time) month,COUNT(*)::int invoice_count,COALESCE(SUM(total_cents),0)::bigint total_cents FROM broker_invoices WHERE COALESCE(is_test,0)=0 AND payment_time>NOW()-INTERVAL '12 months' GROUP BY 1 ORDER BY 1");
+      var monthly=await db.all("SELECT date_trunc('month',payment_time) AS period_month,COUNT(*)::int invoice_count,COALESCE(SUM(total_cents),0)::bigint total_cents FROM broker_invoices WHERE COALESCE(is_test,0)=0 AND payment_time>NOW()-INTERVAL '12 months' GROUP BY 1 ORDER BY 1");
       var livePaypal=await paypalCfg('live');
       var sandboxPaypal=await paypalCfg('sandbox');
       var paypalState={

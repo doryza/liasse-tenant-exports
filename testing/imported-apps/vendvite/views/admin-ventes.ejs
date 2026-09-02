@@ -62,7 +62,7 @@
         <div class="sales-bars">
           <% monthly.forEach(function(m){ var pct=Math.max(4,Math.round(Number(m.total_cents||0)/Number(maxMonth||1)*100)); %>
             <div class="sales-bar-row">
-              <span><%= new Date(m.month).toLocaleDateString('fr-CA',{month:'short',year:'numeric',timeZone:'UTC'}) %></span>
+              <span><%= new Date(m.period_month || m.month).toLocaleDateString('fr-CA',{month:'short',year:'numeric',timeZone:'UTC'}) %></span>
               <i><b style="width:<%= pct %>%"></b></i>
               <strong><%= (Number(m.total_cents||0)/100).toLocaleString('fr-CA',{minimumFractionDigits:2,maximumFractionDigits:2}) %>&nbsp;$</strong>
             </div>
