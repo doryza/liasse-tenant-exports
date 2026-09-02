@@ -11,10 +11,10 @@
         <span class="esp-who"><%= broker.full_name %> · <%= broker.agency || '' %></span>
       </div>
       <nav class="esp-tabs" role="tablist">
-        <button class="esp-tab is-on" data-tab="page" role="tab">Ma page</button>
-        <button class="esp-tab" data-tab="courrier" role="tab">Courrier ciblé</button>
-        <button class="esp-tab" data-tab="pistes" role="tab">Mes pistes <span class="esp-pill"><%= counts.total %></span></button>
-        <button class="esp-tab" data-tab="abonnement" role="tab">Abonnement</button>
+        <button class="esp-tab is-on" data-tab="page" role="tab"><%= t.esp_nav_my_page %></button>
+        <button class="esp-tab" data-tab="courrier" role="tab"><%= t.esp_nav_targeted_mail %></button>
+        <button class="esp-tab" data-tab="pistes" role="tab"><%= t.esp_nav_my_leads %> <span class="esp-pill"><%= counts.total %></span></button>
+        <button class="esp-tab" data-tab="abonnement" role="tab"><%= t.esp_nav_subscription %></button>
       </nav>
     </div>
   </header>
@@ -26,16 +26,16 @@
       <div class="esp-status-dot" aria-hidden="true"></div>
       <div class="esp-status-text">
         <% if (isLive) { %>
-          <strong><%= isTestAccess ? 'Votre page test est en ligne.' : 'Votre page est en ligne.' %></strong>
+          <strong><%= isTestAccess ? t.esp_test_page_live : t.esp_page_live %></strong>
           <a href="<%= pageUrl %>" target="_blank" rel="noopener"><%= pageUrl %></a>
         <% } else if (isActive) { %>
           <strong><%= isTestAccess ? 'Accès test actif.' : 'Abonnement actif.' %></strong> Votre page est prête — publiez-la quand vous le souhaitez.
         <% } else { %>
-          <strong>Page en préparation.</strong> Bâtissez-la librement&nbsp;; l'activation ouvre la capture de pistes.
+          <strong><%= t.esp_page_in_progress_status %></strong> Bâtissez-la librement&nbsp;; l'activation ouvre la capture de pistes.
         <% } %>
       </div>
       <div class="esp-status-act">
-        <a class="esp-ghost" href="espace/apercu" target="_blank" rel="noopener">Aperçu</a>
+        <a class="esp-ghost" href="espace/apercu" target="_blank" rel="noopener"><%= t.esp_preview_button %></a>
         <% if (isActive) { %>
           <button class="esp-btn" id="pubBtn" data-published="<%= broker.published %>"><%= Number(broker.published)===1 ? 'Retirer' : 'Publier' %></button>
         <% } else { %>
@@ -48,78 +48,81 @@
     <section class="esp-panel is-on" data-panel="page">
       <div class="esp-grid">
         <div class="esp-col">
-          <h2 class="esp-h">Votre identité</h2>
+          <h2 class="esp-h"><%= t.esp_section_your_identity %></h2>
           <div class="esp-portrait">
             <div class="esp-portrait-img" id="portraitBox">
-              <% if (profile.agent_photo_url) { %><img src="<%= profile.agent_photo_url %>" alt="" id="portraitImg"><% } else { %><span id="portraitEmpty">Aucune photo</span><img id="portraitImg" hidden alt=""><% } %>
+              <% if (profile.agent_photo_url) { %><img src="<%= profile.agent_photo_url %>" alt="" id="portraitImg"><% } else { %><span id="portraitEmpty"><%= t.esp_no_photo_placeholder %></span><img id="portraitImg" hidden alt=""><% } %>
             </div>
             <div>
               <label class="esp-upload">
                 <input type="file" id="photoInput" accept="image/png,image/jpeg,image/webp" hidden>
-                <span>Téléverser une photo</span>
+                <span><%= t.esp_upload_photo_button %></span>
               </label>
-              <p class="esp-hint" id="photoHint">JPG, PNG ou WebP · 8&nbsp;Mo max</p>
-              <p class="esp-help">Votre portrait — affiché dans la section «&nbsp;Votre courtier&nbsp;» de votre page et comme image de partage sur les réseaux sociaux.</p>
+              <p class="esp-hint" id="photoHint"><%- t.esp_photo_format_size_hint %></p>
+              <p class="esp-help"><%- t.esp_portrait_field_help %></p>
             </div>
           </div>
-          <div class="esp-f"><label for="f_agent_name">Nom affiché</label><input id="f_agent_name" data-k="agent_name" value="<%= profile.agent_name || broker.full_name %>">
-            <p class="esp-help">Votre nom tel qu'il apparaît partout&nbsp;: barre du haut, section courtier, pied de page.</p></div>
-          <div class="esp-f"><label for="f_agent_title">Titre</label><input id="f_agent_title" data-k="agent_title" placeholder="<%= t.agent_title %>" value="<%= profile.agent_title || '' %>">
-            <p class="esp-help">Votre titre professionnel, sous votre nom dans la section courtier. Vide = «&nbsp;<%= t.agent_title %>&nbsp;».</p></div>
-          <div class="esp-f"><label for="f_agency">Agence</label><input id="f_agency" data-k="agency" value="<%= profile.agency || broker.agency || '' %>">
-            <p class="esp-help">Le nom de votre agence, affiché sous votre titre dans la section courtier.</p></div>
+          <div class="esp-f"><label for="f_agent_name"><%= t.esp_display_name_label %></label><input id="f_agent_name" data-k="agent_name" value="<%= profile.agent_name || broker.full_name %>">
+            <p class="esp-help"><%- t.esp_display_name_help %></p></div>
+          <div class="esp-f"><label for="f_agent_title"><%= t.esp_title_label %></label><input id="f_agent_title" data-k="agent_title" placeholder="<%= t.agent_title %>" value="<%= profile.agent_title || '' %>">
+            <p class="esp-help"><%- t.esp_title_help_lead %><%= t.agent_title %><%- t.esp_title_help_tail %></p></div>
+          <div class="esp-f"><label for="f_agency"><%= t.esp_agency_label %></label><input id="f_agency" data-k="agency" value="<%= profile.agency || broker.agency || '' %>">
+            <p class="esp-help"><%= t.esp_agency_help %></p></div>
           <div class="esp-2">
-            <div class="esp-f"><label for="f_agent_phone">Téléphone</label><input id="f_agent_phone" data-k="agent_phone" value="<%= profile.agent_phone || broker.phone || '' %>">
-              <p class="esp-help">Bouton d'appel dans la barre du haut de votre page.</p></div>
-            <div class="esp-f"><label for="f_agent_email">Courriel</label><input id="f_agent_email" data-k="agent_email" value="<%= profile.agent_email || broker.email %>">
-              <p class="esp-help">C'est ici que chaque nouvelle piste vous est envoyée — jamais affiché publiquement.</p></div>
+            <div class="esp-f"><label for="f_agent_phone"><%= t.esp_phone_label %></label><input id="f_agent_phone" data-k="agent_phone" value="<%= profile.agent_phone || broker.phone || '' %>">
+              <p class="esp-help"><%= t.esp_phone_help %></p></div>
+            <div class="esp-f"><label for="f_agent_email"><%= t.esp_email_label %></label><input id="f_agent_email" data-k="agent_email" value="<%= profile.agent_email || broker.email %>">
+              <p class="esp-help"><%= t.esp_email_help %></p></div>
           </div>
 
-          <h2 class="esp-h">À propos de vous</h2>
-          <div class="esp-f"><label for="f_about">Votre présentation</label>
+          <h2 class="esp-h"><%= t.esp_section_about_you %></h2>
+          <div class="esp-f"><label for="f_about"><%= t.esp_bio_label %></label>
             <textarea id="f_about" data-k="about" rows="4" placeholder="<%= t.agent_credo %>"><%= profile.about || '' %></textarea>
-            <p class="esp-help">Le paragraphe de la section «&nbsp;L'agent&nbsp;» de votre page — votre philosophie, votre approche, en une ou deux phrases. Vide = le texte grisé ci-dessus reste affiché.</p></div>
+            <p class="esp-help"><%- t.esp_bio_help %></p></div>
         </div>
 
         <div class="esp-col">
-          <h2 class="esp-h">Votre accroche</h2>
-          <div class="esp-f"><label for="f_hero_title">Titre principal</label><textarea id="f_hero_title" data-k="hero_title" rows="2" placeholder="<%= t.hero_title %>"><%= profile.hero_title || '' %></textarea>
-            <p class="esp-help">Le grand titre en haut de votre page. Vide = le texte grisé ci-dessus reste affiché.</p></div>
-          <div class="esp-f"><label for="f_hero_sub">Sous-titre</label><textarea id="f_hero_sub" data-k="hero_sub" rows="3" placeholder="<%= t.hero_sub %>"><%= profile.hero_sub || '' %></textarea>
-            <p class="esp-help">Le paragraphe sous le titre — votre promesse au vendeur. Vide = texte par défaut.</p></div>
-          <div class="esp-f"><label for="f_hero_note">Note sous le champ</label><input id="f_hero_note" data-k="hero_note" placeholder="<%= t.hero_note %>" value="<%= profile.hero_note || '' %>">
-            <p class="esp-help">La ligne rassurante sous le champ d'adresse (frais, délai de réponse…). Vide = texte par défaut.</p></div>
+          <div class="esp-f"><label for="f_agency_disclaimer"><%= t.esp_disclaimer_label %></label><input id="f_agency_disclaimer" data-k="agency_disclaimer" value="<%= profile.agency_disclaimer || '' %>" placeholder="<%= t.esp_disclaimer_ph %>" maxlength="300">
+            <p class="esp-help"><%= t.esp_disclaimer_help %></p></div>
 
-          <h2 class="esp-h">Vos chiffres</h2>
-          <p class="esp-hint">Affichés dans la section «&nbsp;Les preuves en chiffres&nbsp;». Un champ vide garde la valeur du modèle.</p>
+          <h2 class="esp-h"><%= t.esp_section_your_hook %></h2>
+          <div class="esp-f"><label for="f_hero_title"><%= t.esp_main_headline_label %></label><textarea id="f_hero_title" data-k="hero_title" rows="2" placeholder="<%= t.hero_title %>"><%= profile.hero_title || '' %></textarea>
+            <p class="esp-help"><%= t.esp_main_headline_help %></p></div>
+          <div class="esp-f"><label for="f_hero_sub"><%= t.esp_subtitle_label %></label><textarea id="f_hero_sub" data-k="hero_sub" rows="3" placeholder="<%= t.hero_sub %>"><%= profile.hero_sub || '' %></textarea>
+            <p class="esp-help"><%= t.esp_subtitle_help %></p></div>
+          <div class="esp-f"><label for="f_hero_note"><%= t.esp_note_under_field_label %></label><input id="f_hero_note" data-k="hero_note" placeholder="<%= t.hero_note %>" value="<%= profile.hero_note || '' %>">
+            <p class="esp-help"><%= t.esp_note_under_field_help %></p></div>
+
+          <h2 class="esp-h"><%= t.esp_section_your_numbers %></h2>
+          <p class="esp-hint"><%- t.esp_stats_shown_in_proof_section %></p>
           <div class="esp-2">
-            <div class="esp-f"><label for="f_stat_homes">Propriétés vendues</label><input id="f_stat_homes" data-k="stat_homes" placeholder="<%= settings.stat_homes_sold || '0' %>" value="<%= profile.stat_homes || '' %>">
-              <p class="esp-help">Nombre total de propriétés que vous avez vendues.</p></div>
-            <div class="esp-f"><label for="f_stat_days">Jours au marché</label><input id="f_stat_days" data-k="stat_days" placeholder="<%= settings.stat_avg_days || '0' %>" value="<%= profile.stat_days || '' %>">
-              <p class="esp-help">Durée moyenne avant vente, en jours.</p></div>
+            <div class="esp-f"><label for="f_stat_homes"><%= t.esp_stat_properties_sold_label %></label><input id="f_stat_homes" data-k="stat_homes" placeholder="<%= settings.stat_homes_sold || '0' %>" value="<%= profile.stat_homes || '' %>">
+              <p class="esp-help"><%= t.esp_stat_properties_sold_help %></p></div>
+            <div class="esp-f"><label for="f_stat_days"><%= t.esp_stat_days_on_market_label %></label><input id="f_stat_days" data-k="stat_days" placeholder="<%= settings.stat_avg_days || '0' %>" value="<%= profile.stat_days || '' %>">
+              <p class="esp-help"><%= t.esp_stat_days_on_market_help %></p></div>
           </div>
           <div class="esp-2">
-            <div class="esp-f"><label for="f_stat_ratio">Ratio vendu/demandé</label><input id="f_stat_ratio" data-k="stat_ratio" placeholder="<%= settings.stat_list_to_sale || '0' %>" value="<%= profile.stat_ratio || '' %>">
-              <p class="esp-help">Prix vendu vs prix demandé, en % (le «&nbsp;%&nbsp;» s'ajoute tout seul).</p></div>
-            <div class="esp-f"><label for="f_stat_volume">Volume (M$)</label><input id="f_stat_volume" data-k="stat_volume" placeholder="<%= settings.stat_career_volume || '0' %>" value="<%= profile.stat_volume || '' %>">
-              <p class="esp-help">Volume de carrière en millions de dollars (le «&nbsp;M$&nbsp;» s'ajoute tout seul).</p></div>
+            <div class="esp-f"><label for="f_stat_ratio"><%= t.esp_stat_sold_to_list_ratio_label %></label><input id="f_stat_ratio" data-k="stat_ratio" placeholder="<%= settings.stat_list_to_sale || '0' %>" value="<%= profile.stat_ratio || '' %>">
+              <p class="esp-help"><%- t.esp_stat_sold_to_list_ratio_help %></p></div>
+            <div class="esp-f"><label for="f_stat_volume"><%= t.esp_stat_volume_millions_label %></label><input id="f_stat_volume" data-k="stat_volume" placeholder="<%= settings.stat_career_volume || '0' %>" value="<%= profile.stat_volume || '' %>">
+              <p class="esp-help"><%- t.esp_stat_volume_millions_help %></p></div>
           </div>
         </div>
       </div>
 
-      <h2 class="esp-h">Vos liens</h2>
-      <p class="esp-hint">Facebook, Instagram, LinkedIn, YouTube et TikTok deviennent des icônes au pied de page&nbsp;; les autres liens (site d'agence, fiche Centris…) s'affichent en boutons. Aucun lien = rien n'apparaît.</p>
+      <h2 class="esp-h"><%= t.esp_your_links_heading %></h2>
+      <p class="esp-hint"><%- t.esp_links_icons_vs_buttons_help %></p>
       <div id="linkList" class="esp-links"></div>
-      <button class="esp-ghost" id="addLink" type="button">+ Ajouter un lien</button>
+      <button class="esp-ghost" id="addLink" type="button"><%= t.esp_add_link_button %></button>
 
-      <h2 class="esp-h">Vos témoignages</h2>
-      <p class="esp-hint">Laissez vide pour afficher les témoignages par défaut de la page.</p>
+      <h2 class="esp-h"><%= t.esp_your_testimonials_heading %></h2>
+      <p class="esp-hint"><%= t.esp_testimonials_default_help %></p>
       <div id="tmList" class="esp-links"></div>
-      <button class="esp-ghost" id="addTm" type="button">+ Ajouter un témoignage</button>
+      <button class="esp-ghost" id="addTm" type="button"><%= t.esp_add_testimonial_button %></button>
 
       <div class="esp-savebar">
         <span class="esp-saved" id="savedFlag"></span>
-        <button class="esp-btn" id="saveBtn" type="button">Enregistrer</button>
+        <button class="esp-btn" id="saveBtn" type="button"><%= t.esp_save_button %></button>
       </div>
     </section>
 
@@ -128,18 +131,18 @@
 
       <div class="camp-hero">
         <div class="camp-hero-txt">
-          <p class="esp-eyebrow">Inclus dans votre licence · Postes Canada</p>
-          <h2>Désignez une rue. Nous frappons les portes les plus proches.</h2>
-          <p>Vous entrez une adresse&nbsp;; nous dessinons le territoire autour d'elle et sortons les adresses civiques les plus proches — voisins immédiats de votre inscription, de votre dernière vente, du secteur que vous voulez posséder. Chaque lettre porte votre nom, votre agence et un code QR qui mène à votre page.</p>
+          <p class="esp-eyebrow"><%= t.esp_campaign_included_canada_post %></p>
+          <h2><%= t.esp_campaign_name_street_tagline %></h2>
+          <p><%- t.esp_campaign_territory_explainer %></p>
           <div class="camp-badges">
-            <span><b><%= campCible %></b>portes incluses</span>
-            <span><b><%= campHeures %>&nbsp;h</b>avant le dépôt</span>
-            <span><b>+<%= campPalier %></b>par palier ensuite</span>
+            <span><b><%= campCible %></b><%= t.esp_doors_included_unit %></span>
+            <span><b><%= campHeures %>&nbsp;h</b><%= t.esp_hours_before_drop_unit %></span>
+            <span><b>+<%= campPalier %></b><%= t.esp_price_per_tier_after_unit %></span>
           </div>
         </div>
         <div class="camp-hero-seal">
           <div class="camp-seal-n"><%= campQuota.restantes %></div>
-          <div class="camp-seal-l"><%= campQuota.restantes > 1 ? 'campagnes incluses' : 'campagne incluse' %><br>cette année</div>
+          <div class="camp-seal-l"><%= campQuota.restantes > 1 ? t.esp_campaigns_included_plural : t.esp_campaign_included_singular %><br><%= t.esp_this_year_suffix %></div>
         </div>
       </div>
 
@@ -147,90 +150,90 @@
       <article class="camp-lettre">
         <div class="camp-lettre-vue">
           <div class="camp-sheet" id="campSheet">
-            <iframe id="campLettre" src="espace/lettre-proprietaires?_embed=1" title="Aperçu de votre lettre" loading="lazy" tabindex="-1" scrolling="no"></iframe>
+            <iframe id="campLettre" src="espace/lettre-proprietaires?_embed=1" title="<%= t.esp_letter_preview_alt %>" loading="lazy" tabindex="-1" scrolling="no"></iframe>
           </div>
         </div>
         <div class="camp-lettre-txt">
-          <p class="esp-eyebrow">Ce qui entre dans la boîte</p>
-          <h3>Votre lettre, telle qu'elle sera imprimée.</h3>
-          <p>Noir et blanc, une page, prête pour Postes Canada. Votre nom, votre agence, vos coordonnées et un code QR unique vers <strong><%= pageUrl %></strong>. C'est exactement ce document que reçoivent vos voisins, quel que soit le nombre de portes choisi — l'aperçu ci-contre est la pièce elle-même, pas une maquette.</p>
-          <a class="esp-btn" href="espace/lettre-proprietaires" target="_blank" rel="noopener">Ouvrir en grand et imprimer</a>
-          <% if (!isActive) { %><p class="esp-mail-warning">Activez votre abonnement, puis publiez votre page&nbsp;: le code QR doit mener quelque part.</p>
-          <% } else if (!isLive) { %><p class="esp-mail-warning">Publiez votre page avant de distribuer la lettre afin que le code QR soit actif.</p><% } %>
+          <p class="esp-eyebrow"><%= t.esp_letter_mailbox_heading %></p>
+          <h3><%= t.esp_letter_as_printed_line %></h3>
+          <p><%= t.esp_letter_spec_before_page_url %> <strong><%= pageUrl %></strong><%= t.esp_letter_spec_after_page_url %></p>
+          <a class="esp-btn" href="espace/lettre-proprietaires" target="_blank" rel="noopener"><%= t.esp_letter_open_print %></a>
+          <% if (!isActive) { %><p class="esp-mail-warning"><%- t.esp_activate_sub_then_publish_qr %></p>
+          <% } else if (!isLive) { %><p class="esp-mail-warning"><%= t.esp_publish_before_letter_notice %></p><% } %>
         </div>
       </article>
 
       <article class="camp-card">
         <% if (!isActive) { %>
-          <div class="esp-mail-lock"><strong>Abonnement requis</strong><span>Votre campagne de <%= campCible %> adresses est comprise dans la licence annuelle. Activez-la pour l'utiliser.</span><button class="esp-ghost" type="button" data-goto="abonnement">Voir l'abonnement</button></div>
+          <div class="esp-mail-lock"><strong><%= t.esp_subscription_required_badge %></strong><span><%- t.esp_lock_membership_lead %><%= campCible %><%- t.esp_lock_membership_tail %></span><button class="esp-ghost" type="button" data-goto="abonnement"><%= t.esp_view_subscription_link %></button></div>
         <% } else if (!isLive) { %>
-          <div class="esp-mail-lock"><strong>Publiez votre page d'abord</strong><span>Le code QR imprimé sur chaque lettre doit mener à une page en ligne, sinon la campagne part dans le vide.</span><button class="esp-ghost" type="button" data-goto="page">Retour à ma page</button></div>
+          <div class="esp-mail-lock"><strong><%= t.esp_publish_page_first_title %></strong><span><%= t.esp_qr_needs_live_page_warning %></span><button class="esp-ghost" type="button" data-goto="page"><%= t.esp_back_to_my_page %></button></div>
         <% } %>
 
         <div class="camp-qte">
           <div>
-            <label>Combien de portes&nbsp;?</label>
+            <label><%- t.esp_how_many_doors_question %></label>
             <div class="camp-stepper">
-              <button type="button" id="campMoins" aria-label="Retirer un palier">−</button>
+              <button type="button" id="campMoins" aria-label="<%= t.esp_remove_tier_button %>">−</button>
               <span id="campQte"><%= campCible %></span>
-              <button type="button" id="campPlus" aria-label="Ajouter un palier">+</button>
+              <button type="button" id="campPlus" aria-label="<%= t.esp_add_tier_button %>">+</button>
             </div>
-            <p class="esp-help">Par paliers de <%= campPalier %>. <% if (campQuota.creditPortes > 0) { %>Vos <%= campQuota.creditPortes %> portes incluses se déduisent de <strong>n'importe quelle</strong> taille de commande&nbsp;; le reste est à <%= (campPrixCents/100).toFixed(2).replace('.', ',') %>&nbsp;$ la lettre, taxes en sus.<% } else { %><%= (campPrixCents/100).toFixed(2).replace('.', ',') %>&nbsp;$ la lettre, taxes en sus.<% } %></p>
+            <p class="esp-help"><%- t.esp_tiers_of_lead %><%= campPalier %><%- t.esp_tiers_of_tail %> <% if (campQuota.creditPortes > 0) { %><%- t.esp_credit_applies_lead %><%= campQuota.creditPortes %><%- t.esp_credit_applies_mid %> <strong><%= t.esp_deducted_from_any %></strong> <%- t.esp_credit_rest_lead %><%= (campPrixCents/100).toFixed(2).replace('.', ',') %><%- t.esp_credit_rest_tail %><% } else { %><%= (campPrixCents/100).toFixed(2).replace('.', ',') %><%- t.esp_per_letter_taxes_extra %><% } %></p>
           </div>
           <div class="camp-prix" id="campPrix"></div>
         </div>
 
         <div class="camp-search">
           <div class="esp-f">
-            <label for="campAdresse">L'adresse au cœur du secteur que vous voulez travailler</label>
+            <label for="campAdresse"><%= t.esp_area_centre_address_label %></label>
             <div class="camp-ac">
-              <input id="campAdresse" type="text" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="campSuggest" placeholder="Ex.&nbsp;: 1088 rue de Chambord, Saint-Jérôme" maxlength="200">
+              <input id="campAdresse" type="text" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="campSuggest" placeholder="<%- t.esp_civic_address_example_ph %>" maxlength="200">
               <ul class="camp-suggest" id="campSuggest" role="listbox" hidden></ul>
             </div>
-            <p class="esp-help">Commencez à taper&nbsp;: choisissez l'adresse dans la liste pour un point exact. C'est de là que partent les plus proches voisins.</p>
+            <p class="esp-help"><%- t.esp_address_autocomplete_hint %></p>
           </div>
-          <button class="esp-btn" id="campChercher" type="button">Voir mon territoire</button>
+          <button class="esp-btn" id="campChercher" type="button"><%= t.esp_see_my_territory_button %></button>
         </div>
         <p class="camp-etat" id="campEtat" role="status"></p>
         <p class="esp-error" id="campErreur" role="alert"></p>
 
         <div id="campResultat" hidden>
           <div class="camp-stats">
-            <div class="camp-stat"><span class="camp-stat-n" id="campNombre">0</span><span class="camp-stat-l">adresses retenues</span></div>
-            <div class="camp-stat"><span class="camp-stat-n" id="campPortee">—</span><span class="camp-stat-l">la plus éloignée</span></div>
-            <div class="camp-stat"><span class="camp-stat-n" id="campTrouve">0</span><span class="camp-stat-l">balayées au total</span></div>
+            <div class="camp-stat"><span class="camp-stat-n" id="campNombre">0</span><span class="camp-stat-l"><%= t.esp_stat_addresses_selected %></span></div>
+            <div class="camp-stat"><span class="camp-stat-n" id="campPortee">—</span><span class="camp-stat-l"><%= t.esp_stat_farthest_address %></span></div>
+            <div class="camp-stat"><span class="camp-stat-n" id="campTrouve">0</span><span class="camp-stat-l"><%= t.esp_stat_total_swept %></span></div>
           </div>
-          <p class="camp-centre">Centre du territoire&nbsp;: <span id="campCentreTxt"></span></p>
+          <p class="camp-centre"><%- t.esp_territory_centre_label %> <span id="campCentreTxt"></span></p>
           <div class="camp-carte" id="campCarte"></div>
           <div class="camp-rues" id="campRues"></div>
           <details class="camp-details">
-            <summary>Voir les adresses retenues</summary>
+            <summary><%= t.esp_view_selected_addresses_link %></summary>
             <ol class="camp-liste" id="campListe"></ol>
           </details>
           <div class="esp-f">
-            <label for="campNotes">Une précision pour notre équipe&nbsp;? (facultatif)</label>
-            <textarea id="campNotes" rows="2" maxlength="1000" placeholder="Ex.&nbsp;: éviter les tours à condos, viser les unifamiliales…"></textarea>
+            <label for="campNotes"><%- t.esp_team_note_optional_label %></label>
+            <textarea id="campNotes" rows="2" maxlength="1000" placeholder="<%- t.esp_team_note_placeholder %>"></textarea>
           </div>
           <div class="camp-promesse">
-            <strong>Dès votre confirmation, nous prenons le relais.</strong>
-            <span>Nous validons la liste, complétons les codes postaux, imprimons vos lettres et les déposons à Postes Canada <b>sous <%= campHeures %>&nbsp;heures ouvrables</b>. Vous n'avez rien d'autre à faire.</span>
+            <strong><%= t.esp_after_confirm_we_take_over %></strong>
+            <span><%= t.esp_fulfilment_steps_lead %> <b><%- t.esp_within_hours_lead %><%= campHeures %><%- t.esp_within_hours_tail %></b><%= t.esp_nothing_else_to_do_tail %></span>
           </div>
           <% if (campModePaypal === 'sandbox') { %>
-            <p class="camp-sandbox">Mode test PayPal actif&nbsp;: un achat de palier supplémentaire ne prélève aucun argent réel et sera identifié comme un essai.</p>
+            <p class="camp-sandbox"><%- t.esp_paypal_test_mode_notice %></p>
           <% } %>
-          <button class="esp-btn esp-btn-wide" id="campConfirmer" type="button" disabled>Confirmer et lancer l'envoi</button>
+          <button class="esp-btn esp-btn-wide" id="campConfirmer" type="button" disabled><%= t.esp_confirm_launch_mailing_btn %></button>
           <p class="esp-mail-success" id="campSucces" role="status"></p>
-          <p class="esp-hint">Les adresses proviennent des données cartographiques publiques. Nous validons chaque liste à la main avant impression&nbsp;; un numéro inexistant est retiré sans vous être facturé.</p>
+          <p class="esp-hint"><%- t.esp_address_source_manual_check %></p>
         </div>
       </article>
 
       <!-- ── Historique ── -->
       <article class="camp-histo-card">
-        <h3>Vos campagnes</h3>
+        <h3><%= t.esp_your_campaigns_heading %></h3>
         <% if (!campagnes.length) { %>
-          <p class="esp-hint">Aucune campagne pour l'instant. La première est comprise dans votre licence.</p>
+          <p class="esp-hint"><%= t.esp_no_campaigns_first_included %></p>
         <% } else { %>
-          <div class="camp-histo-t-head"><span>État</span><span>Territoire</span><span>Portes</span><span>Montant</span><span>Date</span></div>
+          <div class="camp-histo-t-head"><span><%= t.esp_campaign_col_status %></span><span><%= t.esp_campaign_col_territory %></span><span><%= t.esp_campaign_col_doors %></span><span><%= t.esp_campaign_col_amount %></span><span><%= t.esp_campaign_col_date %></span></div>
           <% campagnes.forEach(function(c){
                var libelle = c.centre_label ? c.centre_label.split(',').slice(0,2).join(',') : (c.city || '—');
                var annulee = c.status === 'cancelled';
@@ -254,10 +257,10 @@
               <% if (reprenable || c.payment_status === 'pending') { %>
                 <span class="camp-histo-act">
                   <% if (reprenable) { %>
-                    <button type="button" class="camp-histo-x" data-reprendre="<%= c.id %>">Recharger ce territoire</button>
+                    <button type="button" class="camp-histo-x" data-reprendre="<%= c.id %>"><%= t.esp_territory_reload_btn %></button>
                   <% } %>
                   <% if (c.payment_status === 'pending') { %>
-                    <button type="button" class="camp-histo-x" data-annuler="<%= c.id %>">Annuler et récupérer ma campagne incluse</button>
+                    <button type="button" class="camp-histo-x" data-annuler="<%= c.id %>"><%= t.esp_cancel_reclaim_included_btn %></button>
                   <% } %>
                 </span>
               <% } %>
@@ -270,15 +273,15 @@
     <!-- ═══ Mes pistes ═══ -->
     <section class="esp-panel" data-panel="pistes">
       <div class="esp-stats">
-        <div class="esp-stat"><span class="esp-stat-n"><%= counts.total %></span><span class="esp-stat-l">Pistes au total</span></div>
-        <div class="esp-stat"><span class="esp-stat-n"><%= counts.fresh %></span><span class="esp-stat-l">Nouvelles</span></div>
-        <div class="esp-stat"><span class="esp-stat-n"><%= counts.recent %></span><span class="esp-stat-l">30 derniers jours</span></div>
+        <div class="esp-stat"><span class="esp-stat-n"><%= counts.total %></span><span class="esp-stat-l"><%= t.esp_leads_total_label %></span></div>
+        <div class="esp-stat"><span class="esp-stat-n"><%= counts.fresh %></span><span class="esp-stat-l"><%= t.esp_leads_new_label %></span></div>
+        <div class="esp-stat"><span class="esp-stat-n"><%= counts.recent %></span><span class="esp-stat-l"><%= t.esp_leads_last_30_days_label %></span></div>
       </div>
       <% if (!leads.length) { %>
         <div class="esp-empty">
           <div class="esp-empty-sigil" aria-hidden="true">&#10022;</div>
-          <h3>Aucune piste pour l'instant.</h3>
-          <p><% if (!isLive) { %>Publiez votre page pour commencer à recevoir des demandes d'évaluation.<% } else { %>Votre page est en ligne. Les demandes apparaîtront ici et vous serez averti par courriel.<% } %></p>
+          <h3><%= t.esp_leads_empty_state %></h3>
+          <p><% if (!isLive) { %><%= t.esp_leads_empty_unpublished %><% } else { %><%= t.esp_leads_empty_published %><% } %></p>
         </div>
       <% } else { %>
         <div class="esp-leads">
@@ -301,7 +304,7 @@
                 <% if (l.timeframe) { %><span><%= l.timeframe %></span><% } %>
                 <span class="esp-lead-when"><%= formatDate(l.created_at, lang) %></span>
               </div>
-              <textarea class="esp-lead-notes" data-id="<%= l.id %>" rows="2" placeholder="Notes privées…"><%= l.notes || '' %></textarea>
+              <textarea class="esp-lead-notes" data-id="<%= l.id %>" rows="2" placeholder="<%= t.esp_lead_private_notes_ph %>"><%= l.notes || '' %></textarea>
             </article>
           <% }); %>
         </div>
@@ -313,61 +316,61 @@
       <% if (paymentTest) { %>
         <div class="esp-payment-success is-test">
           <span class="esp-payment-check" aria-hidden="true">◇</span>
-          <div><strong>Test PayPal réussi. Votre accès d’essai est ouvert.</strong><p>Aucun paiement réel. Vous pouvez maintenant publier votre page, tester le code QR, recevoir une piste et demander une campagne ciblée.</p></div>
+          <div><strong><%= t.esp_paypal_test_success_title %></strong><p><%= t.esp_paypal_test_success_body %></p></div>
         </div>
       <% } %>
       <% if (paymentConfirmed) { %>
         <div class="esp-payment-success">
           <span class="esp-payment-check" aria-hidden="true">✓</span>
-          <div><strong>Paiement confirmé. Votre licence est active.</strong><p>Votre facture VendVite est disponible ci-dessous et une copie vous est envoyée par courriel.</p></div>
+          <div><strong><%= t.esp_payment_confirmed_licence_active %></strong><p><%= t.esp_invoice_available_emailed %></p></div>
         </div>
       <% } %>
       <div class="esp-bill">
         <div class="esp-bill-card">
-          <p class="esp-eyebrow">Adhésion annuelle</p>
-          <% if (paypalMode === 'sandbox') { %><div class="esp-sandbox-flag"><strong>MODE TEST PAYPAL</strong><span>Compte sandbox seulement · aucun argent réel · accès d’essai isolé</span></div><% } %>
+          <p class="esp-eyebrow"><%= t.esp_annual_membership_heading %></p>
+          <% if (paypalMode === 'sandbox') { %><div class="esp-sandbox-flag"><strong><%= t.esp_paypal_test_mode_badge %></strong><span><%= t.esp_test_account_only_note %></span></div><% } %>
           <h2 class="esp-price"><%= price.base.toFixed(2) %>&nbsp;$ <span>/ an</span></h2>
           <ul class="esp-bill-lines">
-            <li><span>Adhésion</span><span><%= price.base.toFixed(2) %>&nbsp;$</span></li>
-            <li><span>TPS (5&nbsp;%)</span><span><%= price.gst.toFixed(2) %>&nbsp;$</span></li>
-            <li><span>TVQ (9,975&nbsp;%)</span><span><%= price.qst.toFixed(2) %>&nbsp;$</span></li>
-            <li class="esp-bill-total"><span>Total</span><span><%= price.total.toFixed(2) %>&nbsp;$</span></li>
+            <li><span><%= t.esp_invoice_line_membership %></span><span><%= price.base.toFixed(2) %>&nbsp;$</span></li>
+            <li><span><%- t.esp_invoice_line_gst %></span><span><%= price.gst.toFixed(2) %>&nbsp;$</span></li>
+            <li><span><%- t.esp_invoice_line_qst %></span><span><%= price.qst.toFixed(2) %>&nbsp;$</span></li>
+            <li class="esp-bill-total"><span><%= t.esp_invoice_line_total %></span><span><%= price.total.toFixed(2) %>&nbsp;$</span></li>
           </ul>
           <% if (isTestAccess) { %>
             <div class="esp-active-note">
-              <strong>Accès test actif</strong>
-              <p>Parcours complet disponible jusqu’au <%= formatDate(broker.paypal_sandbox_expires_at, lang) %>, uniquement en mode sandbox.</p>
+              <strong><%= t.esp_test_access_active_title %></strong>
+              <p><%- t.esp_sandbox_until_lead %><%= formatDate(broker.paypal_sandbox_expires_at, lang) %><%- t.esp_sandbox_until_tail %></p>
             </div>
-            <p class="esp-hint" style="text-align:center">La publication, les pistes et les demandes de campagne sont des essais clairement identifiés et ne comptent pas comme une vente.</p>
+            <p class="esp-hint" style="text-align:center"><%= t.esp_test_actions_not_a_sale %></p>
           <% } else if (broker.status === 'cancelled' && broker.membership_expires_at) { %>
             <div class="esp-active-note">
-              <strong>Renouvellement annulé</strong>
-              <p>Votre page reste en ligne jusqu'au <%= formatDate(broker.membership_expires_at, lang) %>.</p>
+              <strong><%= t.esp_renewal_cancelled_title %></strong>
+              <p><%- t.esp_page_online_until_lead %><%= formatDate(broker.membership_expires_at, lang) %><%- t.esp_page_online_until_tail %></p>
             </div>
-            <button class="esp-btn esp-btn-wide" id="subBtn" type="button">Réactiver</button>
+            <button class="esp-btn esp-btn-wide" id="subBtn" type="button"><%= t.esp_reactivate_btn %></button>
           <% } else if (isActive) { %>
             <div class="esp-active-note">
-              <strong>Abonnement actif</strong>
-              <p>Renouvellement le <%= formatDate(broker.membership_expires_at, lang) %>.</p>
+              <strong><%= t.esp_subscription_active_title %></strong>
+              <p><%- t.esp_renews_on_lead %><%= formatDate(broker.membership_expires_at, lang) %><%- t.esp_renews_on_tail %></p>
             </div>
-            <% if(paypalMode==='live'){ %><button class="esp-ghost esp-danger" id="cancelBtn" type="button">Annuler le renouvellement</button><% } else { %><p class="esp-hint" style="text-align:center">Votre abonnement réel est protégé pendant les essais sandbox. Repassez en mode réel pour gérer son renouvellement.</p><% } %>
+            <% if(paypalMode==='live'){ %><button class="esp-ghost esp-danger" id="cancelBtn" type="button"><%= t.esp_cancel_renewal_btn %></button><% } else { %><p class="esp-hint" style="text-align:center"><%= t.esp_real_subscription_protected_test %></p><% } %>
           <% } else { %>
             <button class="esp-btn esp-btn-wide" id="subBtn" type="button"><%= paypalMode==='sandbox'?'Tester l’abonnement PayPal':'Activer ma page' %></button>
-            <p class="esp-hint" style="text-align:center">Paiement sécurisé par PayPal. Annulable en tout temps.</p>
+            <p class="esp-hint" style="text-align:center"><%= t.esp_paypal_secure_cancel_anytime %></p>
           <% } %>
           <p class="esp-error" id="billError" role="alert"></p>
         </div>
         <div>
           <ul class="esp-bill-what">
-            <li>Votre page privée, à votre nom, sur vendvite.app</li>
-            <li>Capture illimitée de demandes d'évaluation</li>
-            <li>Alerte courriel instantanée à chaque piste</li>
-            <li>Votre registre de pistes, à vous seul</li>
-            <li>Modifications en tout temps, sans frais</li>
+            <li><%= t.esp_perk_private_page_named %></li>
+            <li><%= t.esp_perk_unlimited_valuation_capture %></li>
+            <li><%= t.esp_perk_instant_lead_email_alert %></li>
+            <li><%= t.esp_perk_private_lead_register %></li>
+            <li><%= t.esp_perk_free_edits_anytime %></li>
           </ul>
           <% if (invoices && invoices.length) { %>
             <div class="esp-invoices">
-              <p class="esp-eyebrow">Mes factures</p>
+              <p class="esp-eyebrow"><%= t.esp_invoices_heading %></p>
               <% invoices.forEach(function(invoice){ %>
                 <a class="esp-invoice-row" href="espace/factures/<%= invoice.id %>/pdf">
                   <span><strong><%= invoice.invoice_number %></strong><small><%= formatDate(invoice.payment_time, lang) %><% if(Number(invoice.is_test)===1||invoice.is_test===true){ %> · TEST — sans valeur comptable<% } %></small></span>
@@ -389,6 +392,9 @@
     live: <%= isLive ? 'true' : 'false' %>
     ,paypalMode: <%- JSON.stringify(paypalMode) %>
   };
+  // Dictionnaire du panneau, filtre au prefixe : le navigateur ne recoit que
+  // ce qu'il affiche, dans la langue choisie.
+  window.VV_T = <%- JSON.stringify(Object.keys(t).filter(function(k){return k.indexOf('esp_')===0;}).reduce(function(o,k){o[k]=t[k];return o;},{})) %>;
   window.VV_CAMP = { cible: <%= campCible %>, restantes: <%= campQuota.restantes %>, palier: <%= campPalier %>, max: <%= campMax %>, paliers: <%- JSON.stringify(campPaliers) %>, peutPayer: <%= campPeutPayer ? 'true' : 'false' %>, mode: <%- JSON.stringify(campModePaypal) %>, credit: <%= campQuota.creditPortes %> };
 </script>
 <script src="public/js/espace.js" defer></script>

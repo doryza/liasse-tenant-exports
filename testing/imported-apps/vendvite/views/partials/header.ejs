@@ -9,16 +9,16 @@
 <meta name="description" content="<%= t.meta_desc %>">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="<%= settings.agent_name || 'VendVite' %>">
-<meta property="og:title" content="<%= (settings.agent_name || 'RE/MAX') %> — <%= t.meta_title %>">
+<meta property="og:title" content="<%= (settings.agent_name || t.agent_fallback_name) %> — <%= t.meta_title %>">
 <meta property="og:description" content="<%= t.meta_desc %>">
 <meta property="og:locale" content="<%= lang==='en' ? 'en_CA' : 'fr_CA' %>">
 <% if(typeof ogImage!=='undefined' && ogImage){ %><meta property="og:image" content="<%= ogImage %>"><% } %>
 <% if(typeof canonical!=='undefined' && canonical){ %><meta property="og:url" content="<%= canonical %>"><link rel="canonical" href="<%= canonical %>"><% } %>
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="<%= (settings.agent_name || 'RE/MAX') %> — <%= t.meta_title %>">
+<meta name="twitter:title" content="<%= (settings.agent_name || t.agent_fallback_name) %> — <%= t.meta_title %>">
 <meta name="twitter:description" content="<%= t.meta_desc %>">
 <% if(typeof ogImage!=='undefined' && ogImage){ %><meta name="twitter:image" content="<%= ogImage %>"><% } %>
-<title><%= (settings.agent_name || 'RE/MAX') %> — <%= t.meta_title %></title>
+<title><%= (settings.agent_name || t.agent_fallback_name) %> — <%= t.meta_title %></title>
 <link rel="manifest" href="manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -30,7 +30,7 @@
   <div class="container topbar-inner">
     <a class="wordmark" href="." aria-label="<%= settings.agent_name || 'Accueil' %>">
       <span class="seal" aria-hidden="true">V</span>
-      <span data-setting-key="agent_name"><%= settings.agent_name || 'RE/MAX' %></span>
+      <span data-setting-key="agent_name"><%= settings.agent_name || t.agent_fallback_name %></span>
     </a>
     <div class="lang-toggle">
       <a href="?lang=fr" class="<%= lang==='fr'?'active':'' %>">FR</a><span aria-hidden="true">·</span><a href="?lang=en" class="<%= lang==='en'?'active':'' %>">EN</a>

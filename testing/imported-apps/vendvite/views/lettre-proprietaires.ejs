@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
-  <title>Lettre aux propriétaires — <%= broker.full_name %></title>
+  <title><%- t.ltr_title_prefix %><%= broker.full_name %></title>
   <style>
     @page{size:Letter;margin:0}
     *{box-sizing:border-box}
@@ -45,45 +45,45 @@
   </style>
 </head>
 <body>
-  <% if (!embed) { %><div class="printbar"><span>Lettre personnalisée · Noir et blanc · Format Lettre</span><button type="button" onclick="window.print()">Imprimer ou enregistrer en PDF</button></div><% } %>
+  <% if (!embed) { %><div class="printbar"><span><%= t.ltr_printbar_meta %></span><button type="button" onclick="window.print()"><%= t.ltr_print_button %></button></div><% } %>
   <main class="letter">
     <header class="mast">
       <div class="brand"><span>V</span>VendVite</div>
-      <div class="personal"><strong><%= profile.agent_name || broker.full_name %></strong><%= profile.agent_title || 'Courtier immobilier' %><% if (profile.agency || broker.agency) { %> · <%= profile.agency || broker.agency %><% } %></div>
+      <div class="personal"><strong><%= profile.agent_name || broker.full_name %></strong><%= profile.agent_title || t.agent_title %><% if (profile.agency || broker.agency) { %> · <%= profile.agency || broker.agency %><% } %></div>
     </header>
 
-    <p class="eyebrow">À l’attention du propriétaire</p>
-    <h1>Et si vous connaissiez la valeur actuelle de votre propriété&nbsp;?</h1>
-    <p class="salutation">Bonjour,</p>
+    <p class="eyebrow"><%= t.ltr_eyebrow_attention %></p>
+    <h1><%- t.ltr_headline %></h1>
+    <p class="salutation"><%= t.ltr_salutation %></p>
     <div class="bodycopy">
-      <p>Votre propriété est probablement l’un de vos actifs les plus importants. Pourtant, sa valeur réelle évolue avec les ventes récentes de votre secteur — souvent bien différemment de l’évaluation municipale.</p>
-      <p>Je vous offre une <strong>évaluation gratuite et sans engagement</strong>. Vous n’avez pas besoin de vouloir vendre aujourd’hui. Connaître votre position sur le marché est simplement une information utile à conserver, maintenant comme plus tard.</p>
+      <p><%= t.ltr_body_assets %></p>
+      <p><%= t.ltr_offer_lead %> <strong><%= t.ltr_offer_bold %></strong><%= t.ltr_offer_tail %></p>
     </div>
 
-    <section class="reasons" aria-label="Pourquoi demander une évaluation">
-      <div class="reason"><strong>Pour planifier</strong><span>Une vente éventuelle, un refinancement ou votre prochain projet.</span></div>
-      <div class="reason"><strong>Pour décider</strong><span>Des rénovations à prioriser selon la réalité de votre marché.</span></div>
-      <div class="reason"><strong>Pour savoir</strong><span>Ce que les ventes récentes disent vraiment de votre propriété.</span></div>
+    <section class="reasons" aria-label="<%= t.ltr_reasons_aria %>">
+      <div class="reason"><strong><%= t.ltr_reason1_title %></strong><span><%= t.ltr_reason1_body %></span></div>
+      <div class="reason"><strong><%= t.ltr_reason2_title %></strong><span><%= t.ltr_reason2_body %></span></div>
+      <div class="reason"><strong><%= t.ltr_reason3_title %></strong><span><%= t.ltr_reason3_body %></span></div>
     </section>
 
-    <div class="bodycopy"><p>Aucune pression, aucun engagement. Scannez simplement le code ci-dessous, entrez votre adresse et votre dossier commencera à prendre forme. Je pourrai ensuite préparer une estimation appuyée par les données de votre secteur.</p></div>
+    <div class="bodycopy"><p><%= t.ltr_body_scan %></p></div>
 
     <section class="cta">
       <div>
-        <p class="cta-kicker">Votre évaluation vous attend</p>
-        <h2>Scannez. Entrez votre adresse. Découvrez votre potentiel.</h2>
-        <p>Gratuit · Confidentiel · Sans engagement</p>
+        <p class="cta-kicker"><%= t.ltr_cta_kicker %></p>
+        <h2><%= t.ltr_cta_title %></h2>
+        <p><%= t.ltr_cta_terms %></p>
         <div class="url"><%= pageUrl %></div>
       </div>
-      <div class="qr"><img src="<%= qrDataUrl %>" alt="Code QR vers la page d’évaluation de <%= broker.full_name %>"></div>
+      <div class="qr"><img src="<%= qrDataUrl %>" alt="<%- t.ltr_qr_alt %><%= broker.full_name %>"></div>
     </section>
 
     <section class="signature">
-      <div><div class="sign-name"><%= profile.agent_name || broker.full_name %></div><div class="sign-meta"><%= profile.agent_title || 'Courtier immobilier' %><% if (profile.agency || broker.agency) { %> · <%= profile.agency || broker.agency %><% } %><% if (profile.agent_phone || broker.phone) { %><br><%= formatPhone(profile.agent_phone || broker.phone) %><% } %></div></div>
-      <div class="free">Une bonne information aujourd’hui peut devenir une excellente décision demain.</div>
+      <div><div class="sign-name"><%= profile.agent_name || broker.full_name %></div><div class="sign-meta"><%= profile.agent_title || t.agent_title %><% if (profile.agency || broker.agency) { %> · <%= profile.agency || broker.agency %><% } %><% if (profile.agent_phone || broker.phone) { %><br><%= formatPhone(profile.agent_phone || broker.phone) %><% } %></div></div>
+      <div class="free"><%= t.ltr_pullquote %></div>
     </section>
 
-    <footer class="fine">Cette offre est gratuite et sans obligation de vendre ou de retenir les services du courtier. L’estimation fournie est une opinion de valeur marchande et ne remplace pas une évaluation agréée. Chaque agence immobilière est une entreprise indépendante et autonome.</footer>
+    <footer class="fine"><%= t.ltr_fineprint %></footer>
   </main>
 </body>
 </html>

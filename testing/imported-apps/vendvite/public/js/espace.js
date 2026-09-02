@@ -2,6 +2,8 @@
   var VV = window.VV || { profile: {}, published: false, active: false, live: false };
   var profile = VV.profile || {};
   function $(id){ return document.getElementById(id); }
+  // Textes traduits, rendus par le serveur selon la langue choisie.
+  function T(k){ var d = window.VV_T || {}; return (d[k] != null) ? d[k] : ''; }
   function on(el, ev, fn){ if(el) el.addEventListener(ev, fn); }
 
   // ── Tabs
@@ -32,8 +34,8 @@
     row.appendChild(del);
     container.appendChild(row);
   }
-  var LINK_F = [{ key: 'label', ph: 'Libellé (ex. Instagram)' }, { key: 'url', ph: 'https://…' }];
-  var TM_F = [{ key: 'author', ph: 'Nom' }, { key: 'neighborhood', ph: 'Secteur' }, { key: 'quote', ph: 'Témoignage' }, { key: 'sale_result', ph: 'Résultat' }];
+  var LINK_F = [{ key: 'label', ph: T('esp_social_link_label_placeholder') }, { key: 'url', ph: 'https://…' }];
+  var TM_F = [{ key: 'author', ph: T('esp_tm_author_ph') }, { key: 'neighborhood', ph: T('esp_tm_area_ph') }, { key: 'quote', ph: T('esp_tm_quote_ph') }, { key: 'sale_result', ph: T('esp_tm_result_ph') }];
   var linkList = $('linkList'), tmList = $('tmList');
   (profile.links || []).forEach(function(l){ buildRow(linkList, LINK_F, l); });
   (profile.testimonials || []).forEach(function(x){ buildRow(tmList, TM_F, x); });
@@ -63,9 +65,9 @@
       var r = await fetch('api/espace/profil', {
         method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
       });
-      flag.textContent = r.ok ? 'Enregistré ✓' : 'Échec de l’enregistrement';
+      flag.textContent = r.ok ? T('esp_save_success_toast') : T('esp_save_failed_toast');
       if (r.ok) { var d = await r.json(); if (d.profile) profile = d.profile; }
-    }catch(_){ flag.textContent = 'Échec de l’enregistrement'; }
+    }catch(_){ flag.textContent = T('esp_save_failed_toast'); }
     btn.disabled = false;
     setTimeout(function(){ flag.textContent = ''; }, 3200);
   });
@@ -75,8 +77,8 @@
     var file = e.target.files && e.target.files[0];
     if (!file) return;
     var hint = $('photoHint');
-    if (file.size > 8 * 1024 * 1024) { hint.textContent = 'Image trop lourde (8 Mo max).'; return; }
-    hint.textContent = 'Téléversement…';
+    if (file.size > 8 * 1024 * 1024) { hint.textContent = T('esp_photo_too_large_error'); return; }
+    hint.textContent = T('esp_uploading_status');
     var reader = new FileReader();
     reader.onload = async function(){
       try{
@@ -88,9 +90,9 @@
         if (r.ok && d.url) {
           var img = $('portraitImg'); img.src = d.url; img.hidden = false;
           var empty = $('portraitEmpty'); if (empty) empty.remove();
-          hint.textContent = 'Photo mise à jour ✓';
-        } else { hint.textContent = 'Téléversement refusé.'; }
-      }catch(_){ hint.textContent = 'Téléversement refusé.'; }
+          hint.textContent = T('esp_photo_updated_toast');
+        } else { hint.textContent = T('esp_upload_refused_error'); }
+      }catch(_){ hint.textContent = T('esp_upload_refused_error'); }
     };
     reader.readAsDataURL(file);
   });
@@ -121,62 +123,22 @@
       var d = await r.json().catch(function(){ return {}; });
       if (r.ok && d.approveUrl) { window.location.href = d.approveUrl; return; }
       err.textContent = d.code === 'NOT_CONFIGURED'
-        ? 'Le paiement n’est pas encore ouvert. Écrivez-nous et nous activons votre page manuellement.'
-        : 'Impossible d’ouvrir le paiement. Réessayez dans un instant.';
-    }catch(_){ err.textContent = 'Impossible d’ouvrir le paiement.'; }
+        ? T('esp_payment_not_open_contact_us')
+        : T('esp_payment_open_failed_retry');
+    }catch(_){ err.textContent = T('esp_payment_open_failed'); }
     btn.disabled = false;
   });
 
   var cancelArmed = false;
   on($('cancelBtn'), 'click', async function(){
     var btn = $('cancelBtn');
-    if (!cancelArmed) { cancelArmed = true; btn.textContent = 'Confirmer l’annulation'; return; }
+    if (!cancelArmed) { cancelArmed = true; btn.textContent = T('esp_confirm_cancellation_button'); return; }
     btn.disabled = true;
     try{
       var r = await fetch('api/espace/abonnement/annuler', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
       if (r.ok) { location.reload(); return; }
     }catch(_){}
     btn.disabled = false;
-  });
-
-  // ── Laser-precision Canada Post campaign calculator + request
-  var mailQuantity = $('mailQuantity');
-  var mailEstimate = $('mailEstimate');
-  function updateMailEstimate(){
-    if (!mailQuantity || !mailEstimate) return;
-    var quantity = Math.max(0, Math.floor(Number(mailQuantity.value) || 0));
-    mailEstimate.textContent = (quantity * 1.59).toLocaleString('fr-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' $';
-  }
-  on(mailQuantity, 'input', updateMailEstimate);
-  updateMailEstimate();
-
-  on($('mailCampaignForm'), 'submit', async function(e){
-    e.preventDefault();
-    var btn = $('mailCampaignBtn'), err = $('mailCampaignError'), success = $('mailCampaignSuccess');
-    var quantity = Math.floor(Number(mailQuantity && mailQuantity.value));
-    var sector = $('mailSector') ? $('mailSector').value.trim() : '';
-    var notes = $('mailNotes') ? $('mailNotes').value.trim() : '';
-    err.textContent = ''; success.textContent = '';
-    if (!VV.live) { err.textContent = 'Publiez d’abord votre page afin que le code QR mène à une page active.'; return; }
-    if (!Number.isFinite(quantity) || quantity < 300) { err.textContent = 'Le minimum est de 300 adresses.'; return; }
-    if (!sector) { err.textContent = 'Indiquez le secteur que vous souhaitez cibler.'; return; }
-    btn.disabled = true; btn.textContent = 'Transmission…';
-    try{
-      var r = await fetch('api/espace/campagne-postale', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ quantity: quantity, sector: sector, notes: notes })
-      });
-      var d = await r.json().catch(function(){ return {}; });
-      if (r.ok) {
-        success.textContent = 'Demande reçue ✓ Nous vous contacterons pour valider le ciblage et le dépôt postal.';
-        btn.textContent = 'Demande transmise';
-        return;
-      }
-      err.textContent = d.code === 'PAGE_NOT_LIVE'
-        ? 'Publiez d’abord votre page afin que le code QR mène à une page active.'
-        : (d.code === 'MINIMUM_300' ? 'Le minimum est de 300 adresses.' : 'Impossible de transmettre la demande. Réessayez.');
-    }catch(_){ err.textContent = 'Impossible de transmettre la demande. Réessayez.'; }
-    btn.disabled = false; btn.textContent = 'Demander ma campagne ciblée';
   });
 
   // ── Lead status + notes (debounced autosave)
@@ -299,7 +261,7 @@
         var txt = await r.text();
         if (txt.charAt(0) === '{') return JSON.parse(txt);
       }catch(_){ /* miroir injoignable — on essaie le suivant */ }
-      if (tour < 3) etat('Le service cartographique est occupé — nouvelle tentative (' + (tour + 2) + '/4)…');
+      if (tour < 3) etat(T('esp_map_service_busy_retry_prefix') + (tour + 2) + '/4)…');
       await new Promise(function(ok){ setTimeout(ok, 1500); });
     }
     throw new Error('overpass');
@@ -360,11 +322,11 @@
       var r = LADDER[i];
       var deja = lireRung(lat, lng, r);
       if (deja && deja.length) {
-        etat('Reprise du balayage déjà effectué sur ' + (r >= 1000 ? (r / 1000) + ' km' : r + ' m') + '…');
+        etat(T('esp_sweep_resume_prefix') + (r >= 1000 ? (r / 1000) + ' km' : r + ' m') + '…');
         if (deja.length >= cible || i === LADDER.length - 1) return { liste: deja, rayon: r, total: deja.length };
         continue;
       }
-      etat('Balayage du secteur sur ' + (r >= 1000 ? (r / 1000) + ' km' : r + ' m') + '…');
+      etat(T('esp_sweep_area_start_prefix') + (r >= 1000 ? (r / 1000) + ' km' : r + ' m') + '…');
       var j = await overpass('[out:json][timeout:60];('
         + 'node(around:' + r + ',' + lat + ',' + lng + ')["addr:housenumber"];'
         + 'way(around:' + r + ',' + lat + ',' + lng + ')["addr:housenumber"];'
@@ -494,7 +456,7 @@
     if ($('campAdresse')) $('campAdresse').value = campCentre.libelle || '';
     afficherTerritoire(o.total);
     var el = $('campEtat');
-    if (el) el.textContent = 'Territoire restauré — ' + nb(campAdresses.length) + ' adresses, aucun nouveau balayage nécessaire.';
+    if (el) el.textContent = T('esp_territory_restored_prefix') + nb(campAdresses.length) + T('esp_territory_restored_suffix');
     return true;
   }
 
@@ -503,13 +465,13 @@
     var btn = $('campChercher');
     var err = $('campErreur');
     var res = $('campResultat');
-    if (!champ || !champ.value.trim()) { if (err) err.textContent = 'Entrez l’adresse au cœur du secteur que vous voulez travailler.'; return; }
+    if (!champ || !champ.value.trim()) { if (err) err.textContent = T('esp_area_centre_address_hint'); return; }
     if (err) err.textContent = '';
     btn.disabled = true;
     var libelleBtn = btn.textContent;
-    btn.textContent = 'Repérage…';
+    btn.textContent = T('esp_locating_short_status');
     if (res) res.hidden = true;
-    etat('Localisation de l’adresse…');
+    etat(T('esp_locating_address_status'));
     try{
       var q = champ.value.trim();
       if (campChoisi && campChoisi.libelle === q) {
@@ -528,7 +490,7 @@
       var out = await balayer(campCentre.lat, campCentre.lng, campQuantite);
       if (!out.total) {
         etat('');
-        if (err) err.textContent = 'OpenStreetMap ne couvre pas encore ce secteur. Écrivez-nous : nous constituons la liste à la main.';
+        if (err) err.textContent = T('esp_osm_area_uncovered_error');
         btn.disabled = false; btn.textContent = libelleBtn;
         return;
       }
@@ -540,7 +502,7 @@
       sauverTerritoire();
     }catch(_){
       etat('');
-      if (err) err.textContent = 'Le service cartographique n’a pas répondu. Réessayez dans un instant.';
+      if (err) err.textContent = T('esp_map_service_no_response_error');
     }
     btn.disabled = false; btn.textContent = libelleBtn;
   }
@@ -569,11 +531,11 @@
     var box = $('campPrix');
     if (box) {
       if (estIncluse()) {
-        box.innerHTML = '<span class="camp-prix-n">Incluse</span><span class="camp-prix-l">comprise dans votre licence</span>';
+        box.innerHTML = T('esp_campaign_price_included_html');
       } else if (prix) {
         var detail = prix.offert > 0
-          ? nb(prix.offert) + ' offertes + ' + nb(prix.facturable) + ' à ' + argent(prix.sousTotal) + ' + taxes'
-          : nb(campQuantite) + ' lettres · ' + argent(prix.sousTotal) + ' + taxes';
+          ? nb(prix.offert) + T('esp_qty_included_plus_prefix') + nb(prix.facturable) + T('esp_qty_at_price') + argent(prix.sousTotal) + T('esp_plus_taxes')
+          : nb(campQuantite) + T('esp_qty_letters_separator') + argent(prix.sousTotal) + T('esp_plus_taxes');
         box.innerHTML = '<span class="camp-prix-n">' + argent(prix.total) + '</span>'
           + '<span class="camp-prix-l">' + detail + '</span>';
       }
@@ -585,7 +547,7 @@
     if (plus) plus.disabled = campQuantite >= CAMP.max;
   }
   function libelleBouton(){
-    if (estIncluse()) return 'Confirmer et lancer l’envoi';
+    if (estIncluse()) return T('esp_confirm_launch_mailing_btn_js');
     var prix = palierPrix(campQuantite);
     return 'Payer ' + (prix ? argent(prix.total) : '') + ' et lancer l’envoi';
   }
@@ -706,10 +668,10 @@
     err.textContent = ''; ok.textContent = '';
     var paye = !estIncluse();
     if (paye && !CAMP.peutPayer) {
-      err.textContent = 'Le paiement n’est pas encore configuré. Écrivez-nous et nous lançons la campagne manuellement.';
+      err.textContent = T('esp_payment_not_configured_manual');
       return;
     }
-    btn.disabled = true; btn.textContent = paye ? 'Ouverture de PayPal…' : 'Transmission…';
+    btn.disabled = true; btn.textContent = paye ? T('esp_opening_paypal') : 'Transmission…';
     var charge = {
       centre: { libelle: campCentre.libelle, lat: campCentre.lat, lng: campCentre.lng },
       adresses: campAdresses.map(function(a){
@@ -733,36 +695,36 @@
         var dp = await r.json().catch(function(){ return {}; });
         if (r.ok && dp.approve) { window.location.href = dp.approve; return; }
         err.textContent =
-          dp.code === 'COUNT_MISMATCH' ? 'Nous n’avons trouvé que ' + nb(dp.trouvees || 0) + ' adresses pour ' + nb(campQuantite) + ' demandées. Réduisez la quantité ou choisissez un secteur plus dense.' :
-          dp.code === 'BAD_QUANTITY' ? 'Quantité invalide. Choisissez un palier de ' + nb(CAMP.palier) + '.' :
-          dp.code === 'USE_INCLUDED' ? 'Cette commande est entièrement couverte par votre campagne incluse — aucun paiement requis.' :
-          dp.code === 'QUOTA_SPENT' ? 'Votre campagne incluse vient d’être utilisée ailleurs. Rechargez la page pour voir le prix à jour.' :
-          dp.code === 'NOT_CONFIGURED' ? 'Le paiement n’est pas encore configuré. Écrivez-nous et nous lançons la campagne manuellement.' :
-          dp.code === 'PAGE_NOT_LIVE' ? 'Publiez d’abord votre page : le code QR de la lettre doit mener quelque part.' :
-          dp.code === 'MEMBERSHIP_REQUIRED' ? 'Activez votre abonnement pour lancer une campagne.' :
-          r.status === 401 ? 'Votre session a expiré. Rouvrez votre lien d’accès personnel.' :
-          'Impossible d’ouvrir le paiement. Réessayez dans un instant.';
+          dp.code === 'COUNT_MISMATCH' ? T('esp_only_found_count_prefix') + nb(dp.trouvees || 0) + T('esp_addresses_of_requested_mid') + nb(campQuantite) + T('esp_reduce_qty_or_denser_area') :
+          dp.code === 'BAD_QUANTITY' ? T('esp_invalid_qty_choose_tier') + nb(CAMP.palier) + '.' :
+          dp.code === 'USE_INCLUDED' ? T('esp_order_covered_by_included') :
+          dp.code === 'QUOTA_SPENT' ? T('esp_included_campaign_used_elsewhere') :
+          dp.code === 'NOT_CONFIGURED' ? T('esp_payment_not_configured_manual') :
+          dp.code === 'PAGE_NOT_LIVE' ? T('esp_publish_page_before_qr') :
+          dp.code === 'MEMBERSHIP_REQUIRED' ? T('esp_activate_subscription_first') :
+          r.status === 401 ? T('esp_session_expired_reopen_link') :
+          T('esp_payment_open_failed_retry');
         btn.disabled = false; btn.textContent = libelleBouton();
         return;
       }
       var d = await r.json().catch(function(){ return {}; });
       if (r.ok) {
         var q = new Date(d.deadline);
-        ok.textContent = 'C’est parti ✓ Vos ' + nb(d.count) + ' lettres sont déposées à Postes Canada d’ici le '
+        ok.textContent = T('esp_launch_success_prefix') + nb(d.count) + T('esp_letters_at_canada_post_by')
           + q.toLocaleDateString('fr-CA', { weekday: 'long', day: 'numeric', month: 'long' }) + '.';
         oublier();
-        btn.textContent = 'Campagne confirmée';
+        btn.textContent = T('esp_campaign_confirmed');
         CAMP.restantes = d.restantes;
         return;
       }
       err.textContent =
-        d.code === 'QUOTA_SPENT' ? 'Votre campagne incluse de l’année est déjà utilisée. Écrivez-nous pour en ajouter une.' :
-        d.code === 'PAGE_NOT_LIVE' ? 'Publiez d’abord votre page : le code QR de la lettre doit mener quelque part.' :
-        d.code === 'MEMBERSHIP_REQUIRED' ? 'Activez votre abonnement pour lancer une campagne.' :
-        d.code === 'TOO_FAST' ? 'Un instant — votre demande précédente est encore en traitement.' :
-        r.status === 401 ? 'Votre session a expiré. Rouvrez votre lien d’accès personnel.' :
-        'La confirmation n’a pas abouti. Réessayez dans un instant.';
-    }catch(_){ err.textContent = 'La confirmation n’a pas abouti. Réessayez dans un instant.'; }
+        d.code === 'QUOTA_SPENT' ? T('esp_yearly_included_already_used') :
+        d.code === 'PAGE_NOT_LIVE' ? T('esp_publish_page_before_qr') :
+        d.code === 'MEMBERSHIP_REQUIRED' ? T('esp_activate_subscription_first') :
+        d.code === 'TOO_FAST' ? T('esp_previous_request_still_processing') :
+        r.status === 401 ? T('esp_session_expired_reopen_link') :
+        T('esp_confirmation_failed_retry');
+    }catch(_){ err.textContent = T('esp_confirmation_failed_retry'); }
     btn.disabled = false; btn.textContent = libelleBouton();
   });
 
@@ -788,12 +750,12 @@
           if ($('campNotes')) $('campNotes').value = d.notes || '';
           afficherTerritoire(d.adresses.length);
           sauverTerritoire();
-          etat('Territoire rechargé — ' + nb(campAdresses.length) + ' adresses, ajustez la quantité ou relancez.');
+          etat(T('esp_territory_reloaded_prefix') + nb(campAdresses.length) + T('esp_addresses_adjust_or_relaunch'));
           var res = $('campResultat');
           if (res) res.scrollIntoView({ block: 'start', behavior: 'smooth' });
         } else {
           var err = $('campErreur');
-          if (err) err.textContent = 'Cette campagne ne peut plus être modifiée.';
+          if (err) err.textContent = T('esp_campaign_no_longer_editable');
         }
       }catch(_){ }
       b.disabled = false; b.textContent = libelle;
@@ -812,7 +774,7 @@
         });
         if (r.ok) { window.location.href = 'espace?campagne=liberee'; return; }
       }catch(_){ }
-      b.disabled = false; b.textContent = 'Annuler et récupérer ma campagne incluse';
+      b.disabled = false; b.textContent = T('esp_cancel_reclaim_included_btn_js');
     });
   });
 
@@ -855,14 +817,14 @@
     else setTimeout(restaurerTerritoire, 80);
     if (m[1] === 'paye' || m[1] === 'test') {
       if (ok) ok.textContent = m[1] === 'test'
-        ? 'Paiement test accepté ✓ Aucun montant réel n’a été prélevé. La campagne est enregistrée et identifiée comme un essai.'
-        : 'Paiement reçu ✓ Vos lettres sont déposées à Postes Canada dans les 72 heures ouvrables.';
+        ? T('esp_test_payment_accepted')
+        : T('esp_payment_received_72_business_h');
     } else if (m[1] === 'annule') {
-      if (err) err.textContent = 'Paiement annulé. Votre campagne incluse vous est rendue — relancez quand vous voulez.';
+      if (err) err.textContent = T('esp_payment_cancelled_included_back');
     } else if (m[1] === 'liberee') {
-      if (ok) ok.textContent = 'Commande annulée ✓ Votre campagne incluse est de nouveau disponible.';
+      if (ok) ok.textContent = T('esp_order_cancelled_included_free');
     } else if (err) {
-      err.textContent = 'Nous n’avons pas encore reçu la confirmation de PayPal. Elle arrive parfois avec un léger délai ; votre campagne apparaîtra dans l’historique.';
+      err.textContent = T('esp_paypal_confirmation_pending');
     }
   })();
   document.querySelectorAll('.esp-tab[data-tab="courrier"], [data-goto="courrier"]').forEach(function(b){

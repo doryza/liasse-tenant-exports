@@ -7,7 +7,7 @@
   body{padding-top:38px;}
   .topbar{top:38px;}
 </style>
-<div class="bp-preview">Aperçu privé — cette page n'est pas encore publique. <a href="espace">Retour à mon espace</a></div>
+<div class="bp-preview"><%= t.bp_preview_banner %> <a href="espace"><%= t.bp_preview_back %></a></div>
 <% } %>
 <script>window.VV_BROKER = <%- JSON.stringify(typeof brokerSlug !== 'undefined' ? brokerSlug : null) %>;</script>
 <main>
@@ -103,7 +103,7 @@
     </div>
     <div class="agent-body">
       <p class="eyebrow-c" data-lk="t:agent_eyebrow"><%= t.agent_eyebrow %></p>
-      <h2 class="agent-name" data-setting-key="agent_name"><%= settings.agent_name || 'RE/MAX' %></h2>
+      <h2 class="agent-name" data-setting-key="agent_name"><%= settings.agent_name || t.agent_fallback_name %></h2>
       <p class="agent-title" data-lk="t:agent_title"><%= t.agent_title %></p>
       <p class="agent-credo" data-lk="t:agent_credo"><%= t.agent_credo %></p>
       <p class="agent-remax" data-lk="t:agent_remax"><%= t.agent_remax %></p>

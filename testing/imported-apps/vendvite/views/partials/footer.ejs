@@ -1,7 +1,7 @@
 <footer class="footer">
   <div class="container footer-inner">
     <div class="footer-block">
-      <div class="footer-brand serif" data-setting-key="agent_name"><%= settings.agent_name || 'RE/MAX' %></div>
+      <div class="footer-brand serif" data-setting-key="agent_name"><%= settings.agent_name || t.agent_fallback_name %></div>
       <p class="footer-lic" data-lk="t:footer_disclaimer"><%= t.footer_disclaimer %></p>
       <p class="footer-lic">© <%= new Date().getFullYear() %> · <span data-lk="t:footer_rights"><%= t.footer_rights %></span></p>
     </div>
