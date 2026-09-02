@@ -12,3 +12,6 @@ CREATE TABLE IF NOT EXISTS broker_leads (id SERIAL PRIMARY KEY, broker_id INTEGE
 CREATE INDEX IF NOT EXISTS broker_leads_broker_idx ON broker_leads (broker_id, created_at DESC);
 CREATE TABLE IF NOT EXISTS broker_events (id SERIAL PRIMARY KEY, broker_id INTEGER, kind TEXT, detail TEXT, created_at TIMESTAMPTZ DEFAULT NOW());
 CREATE INDEX IF NOT EXISTS broker_events_broker_idx ON broker_events (broker_id, created_at DESC);
+CREATE TABLE IF NOT EXISTS broker_invoices (id SERIAL PRIMARY KEY, broker_id INTEGER NOT NULL, invoice_number TEXT UNIQUE, payment_key TEXT UNIQUE NOT NULL, paypal_subscription_id TEXT NOT NULL, paypal_transaction_id TEXT, payment_time TIMESTAMPTZ NOT NULL, period_start TIMESTAMPTZ NOT NULL, period_end TIMESTAMPTZ NOT NULL, subtotal_cents INTEGER NOT NULL, gst_cents INTEGER NOT NULL DEFAULT 0, qst_cents INTEGER NOT NULL DEFAULT 0, total_cents INTEGER NOT NULL, currency TEXT NOT NULL DEFAULT 'CAD', emailed_at TIMESTAMPTZ, created_at TIMESTAMPTZ DEFAULT NOW());
+CREATE INDEX IF NOT EXISTS broker_invoices_broker_idx ON broker_invoices (broker_id, payment_time DESC);
+CREATE INDEX IF NOT EXISTS broker_invoices_subscription_idx ON broker_invoices (paypal_subscription_id, payment_time DESC);

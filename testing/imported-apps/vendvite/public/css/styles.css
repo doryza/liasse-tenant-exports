@@ -329,6 +329,17 @@ a:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid var(
 .esp-active-note{padding:14px 16px;border-radius:var(--radius);background:rgba(199,154,91,.08);border:1px solid rgba(199,154,91,.22);margin-bottom:14px;}
 .esp-active-note strong{display:block;font-size:.92rem;margin-bottom:3px;}
 .esp-active-note p{margin:0;color:var(--ink-faint);font-size:.82rem;}
+.esp-payment-success{display:flex;align-items:center;gap:15px;margin:0 0 22px;padding:17px 18px;border:1px solid rgba(101,212,138,.34);border-radius:9px;background:rgba(101,212,138,.08);}
+.esp-payment-check{display:grid;place-items:center;flex:0 0 38px;width:38px;height:38px;border:1px solid rgba(101,212,138,.48);border-radius:50%;color:#65d48a;font-family:var(--serif);font-size:1.15rem;font-weight:900;}
+.esp-payment-success strong{display:block;color:#d9f7e3;font-family:var(--serif);font-size:1.04rem;}
+.esp-payment-success p{margin:4px 0 0;color:var(--ink-faint);font-size:.76rem;line-height:1.45;}
+.esp-invoices{margin-top:22px;padding-top:20px;border-top:1px solid var(--hair);}
+.esp-invoice-row{display:flex;justify-content:space-between;gap:14px;padding:12px 0;border-bottom:1px solid rgba(245,239,230,.07);color:var(--ink);text-decoration:none;transition:color .15s,border-color .15s;}
+.esp-invoice-row:hover{color:var(--gold);border-color:rgba(199,154,91,.28);}
+.esp-invoice-row>span{display:flex;flex-direction:column;gap:3px;}
+.esp-invoice-row>span:last-child{text-align:right;}
+.esp-invoice-row strong,.esp-invoice-row b{font-family:var(--mono);font-size:.72rem;letter-spacing:.04em;}
+.esp-invoice-row small{color:var(--ink-faint);font-size:.66rem;}
 .esp-error{color:var(--brand-light);font-family:var(--mono);font-size:.74rem;min-height:1em;margin:10px 0 0;text-align:center;}
 .esp-mail-hero{display:grid;grid-template-columns:1fr auto;gap:32px;align-items:center;padding:28px;border:1px solid rgba(199,154,91,.24);border-radius:10px;background:radial-gradient(circle at 92% 20%,rgba(227,11,45,.17),transparent 34%),linear-gradient(145deg,rgba(23,18,19,.98),rgba(12,9,10,.98));box-shadow:0 24px 60px rgba(0,0,0,.34);}
 .esp-mail-hero h2{max-width:17ch;font-family:var(--serif);font-size:clamp(1.65rem,4vw,2.25rem);line-height:1.08;letter-spacing:-.025em;}

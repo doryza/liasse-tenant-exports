@@ -1,4 +1,5 @@
 var express = require('express');
+var invoiceTools = require('./invoice');
 
 module.exports = function(services){
   var router = express.Router();
@@ -502,6 +503,16 @@ module.exports = function(services){
     return { base: PRICE_BASE, gst: gst, qst: qst, total: Math.round((PRICE_BASE + gst + qst) * 100) / 100 };
   }
 
+  function invoiceIssuer(){
+    return {
+      name: String(services.externalVars.VENDVITE_LEGAL_NAME || 'Liasse Technologique').trim(),
+      address: String(services.externalVars.VENDVITE_BILLING_ADDRESS || 'Québec, Canada').trim(),
+      email: String(services.externalVars.VENDVITE_BILLING_EMAIL || 'notifications@liasse.tech').trim(),
+      gst: String(services.externalVars.VENDVITE_GST_NUMBER || '').trim(),
+      qst: String(services.externalVars.VENDVITE_QST_NUMBER || '').trim()
+    };
+  }
+
   // Paths the broker-slug catch-all must never swallow.
   var RESERVED_SLUGS = ['api','admin','acces','espace','journal','public','manifest.json','sw.js','favicon.ico','robots.txt','_platform','__preview','courtier','courtiers','index'];
 
@@ -527,7 +538,7 @@ module.exports = function(services){
   }
 
   function brokerIsActive(b){
-    if (!b || b.status !== 'active') return false;
+    if (!b || ['active','cancelled'].indexOf(b.status) === -1) return false;
     if (!b.membership_expires_at) return false;
     return new Date(b.membership_expires_at).getTime() > Date.now();
   }
@@ -768,15 +779,18 @@ module.exports = function(services){
     var L = await baseLocals(req);
     var leads = await db.all('SELECT * FROM broker_leads WHERE broker_id=$1 ORDER BY created_at DESC LIMIT 200', [broker.id]);
     var counts = await db.get("SELECT COUNT(*)::int AS total, COUNT(*) FILTER (WHERE status='nouveau')::int AS fresh, COUNT(*) FILTER (WHERE created_at > NOW() - INTERVAL '30 days')::int AS recent FROM broker_leads WHERE broker_id=$1", [broker.id]);
+    var invoices = await db.all('SELECT * FROM broker_invoices WHERE broker_id=$1 ORDER BY payment_time DESC, id DESC LIMIT 20', [broker.id]);
     return Object.assign(L, {
       isHome: false,
       broker: broker,
       profile: brokerProfile(broker),
       leads: leads || [],
       counts: counts || { total: 0, fresh: 0, recent: 0 },
+      invoices: invoices || [],
       isActive: brokerIsActive(broker),
       isLive: brokerPageLive(broker),
       price: priceLines(),
+      paymentConfirmed: req.query && req.query.paiement === 'confirme',
       pageUrl: absoluteUrl(req, '/' + broker.slug)
     });
   }
@@ -1003,6 +1017,115 @@ module.exports = function(services){
     return j.access_token;
   }
 
+  function paymentSnapshot(subscription, eventResource){
+    var billing = subscription && subscription.billing_info;
+    var last = billing && billing.last_payment;
+    var amount = last && last.amount;
+    var eventAmount = eventResource && eventResource.amount;
+    var rawValue = amount && amount.value;
+    var currency = amount && amount.currency_code;
+    if ((!rawValue || !currency) && eventAmount) {
+      rawValue = eventAmount.total || eventAmount.value;
+      currency = eventAmount.currency || eventAmount.currency_code;
+    }
+    var at = (last && last.time) || (eventResource && (eventResource.create_time || eventResource.update_time));
+    var parsed = new Date(at || 0);
+    var totalCents = Math.round(Number(rawValue) * 100);
+    if (!Number.isFinite(parsed.getTime()) || !Number.isFinite(totalCents) || totalCents <= 0) return null;
+    return {
+      time: parsed.toISOString(),
+      totalCents: totalCents,
+      currency: String(currency || 'CAD').toUpperCase().slice(0, 3),
+      transactionId: eventResource && eventResource.id ? String(eventResource.id).slice(0, 80) : null
+    };
+  }
+
+  function invoicePeriodEnd(subscription, paymentTime){
+    var next = subscription && subscription.billing_info && subscription.billing_info.next_billing_time;
+    var nextDate = new Date(next || 0);
+    var paidAt = new Date(paymentTime);
+    if (Number.isFinite(nextDate.getTime()) && nextDate > paidAt) return nextDate.toISOString();
+    return new Date(paidAt.getTime() + 365 * 24 * 3600 * 1000).toISOString();
+  }
+
+  async function emailBrokerInvoice(req, broker, invoice){
+    if (!invoice || invoice.emailed_at) return invoice;
+    var issuer = invoiceIssuer();
+    var pdf = invoiceTools.buildInvoicePdf(invoice, broker, issuer);
+    var firstName = String(broker.full_name || '').split(' ')[0] || 'Courtier';
+    var invoiceUrl = absoluteUrl(req, '/espace/factures/' + invoice.id + '/pdf');
+    var total = invoiceTools.money(invoice.total_cents);
+    var html = ''
+      + '<div style="background:#0D0A0B;padding:34px 20px;font-family:Inter,-apple-system,Segoe UI,Roboto,sans-serif">'
+      + '<div style="max-width:540px;margin:0 auto;background:#171213;border:1px solid rgba(245,239,230,.14);border-radius:10px;padding:32px 28px;color:#F5EFE6">'
+      + '<div style="font-family:monospace;font-size:11px;letter-spacing:.25em;text-transform:uppercase;color:#C79A5B;margin-bottom:16px">Paiement confirmé</div>'
+      + '<h1 style="font-family:Georgia,serif;font-size:26px;line-height:1.15;margin:0 0 14px">Votre licence VendVite est active, ' + escapeHtml(firstName) + '.</h1>'
+      + '<p style="color:rgba(245,239,230,.66);font-size:15px;line-height:1.6;margin:0 0 18px">Nous avons reçu votre paiement annuel de <strong style="color:#F5EFE6">' + escapeHtml(total) + '</strong>. Votre facture <strong style="color:#C79A5B">' + escapeHtml(invoice.invoice_number) + '</strong> est jointe à ce courriel et demeure disponible dans votre espace.</p>'
+      + '<table style="width:100%;border-collapse:collapse;margin:20px 0;color:#F5EFE6;font-size:14px">'
+      + '<tr><td style="padding:9px 0;border-bottom:1px solid rgba(245,239,230,.1);color:rgba(245,239,230,.45)">Abonnement</td><td style="padding:9px 0;border-bottom:1px solid rgba(245,239,230,.1);text-align:right">599,00 $ + taxes</td></tr>'
+      + '<tr><td style="padding:9px 0;color:rgba(245,239,230,.45)">Total payé</td><td style="padding:9px 0;text-align:right;font-weight:700">' + escapeHtml(total) + '</td></tr>'
+      + '</table>'
+      + '<a href="' + invoiceUrl + '" style="display:block;text-align:center;padding:15px;border-radius:4px;background:#E30B2D;color:#fff;text-decoration:none;font-family:Georgia,serif;font-weight:bold">Télécharger ma facture</a>'
+      + '<p style="color:rgba(245,239,230,.4);font-size:12px;line-height:1.55;margin:18px 0 0">Votre page reste sous votre contrôle : ouvrez votre espace pour la publier lorsque vous êtes prêt.</p>'
+      + '</div></div>';
+    var result = await services.email.send({
+      to: broker.email,
+      subject: 'Votre facture VendVite ' + invoice.invoice_number,
+      html: html,
+      text: 'Paiement confirmé. Votre licence VendVite est active. Facture ' + invoice.invoice_number + ', total payé ' + total + '. Télécharger : ' + invoiceUrl,
+      attachments: [{
+        content: pdf.toString('base64'),
+        filename: invoice.invoice_number + '.pdf',
+        type: 'application/pdf',
+        disposition: 'attachment'
+      }]
+    });
+    if (!result || result.success !== false) {
+      await db.run('UPDATE broker_invoices SET emailed_at=NOW() WHERE id=$1', [invoice.id]);
+      invoice.emailed_at = new Date().toISOString();
+    }
+    return invoice;
+  }
+
+  async function issueInvoiceForPayment(req, broker, subscription, eventResource){
+    if (!subscription || subscription.status !== 'ACTIVE') return null;
+    var payment = paymentSnapshot(subscription, eventResource);
+    if (!payment) return null;
+    var subId = String(subscription.id || broker.paypal_subscription_id || '');
+    if (!subId) return null;
+    var paymentKey = subId + ':' + payment.time;
+    var invoice = await db.get('SELECT * FROM broker_invoices WHERE payment_key=$1', [paymentKey]);
+    if (!invoice) {
+      // Return redirects and PayPal webhooks can report the same payment a few
+      // seconds apart. Collapse them even if their timestamps differ slightly.
+      invoice = await db.get(
+        "SELECT * FROM broker_invoices WHERE paypal_subscription_id=$1 AND total_cents=$2 AND ABS(EXTRACT(EPOCH FROM (payment_time-$3::timestamptz))) < 600 ORDER BY id DESC LIMIT 1",
+        [subId, payment.totalCents, payment.time]
+      );
+    }
+    if (!invoice) {
+      var tax = invoiceTools.taxBreakdown(payment.totalCents);
+      var periodEnd = invoicePeriodEnd(subscription, payment.time);
+      invoice = await db.get(
+        'INSERT INTO broker_invoices (broker_id,payment_key,paypal_subscription_id,paypal_transaction_id,payment_time,period_start,period_end,subtotal_cents,gst_cents,qst_cents,total_cents,currency) VALUES ($1,$2,$3,$4,$5,$5,$6,$7,$8,$9,$10,$11) ON CONFLICT (payment_key) DO NOTHING RETURNING *',
+        [broker.id, paymentKey, subId, payment.transactionId, payment.time, periodEnd, tax.subtotalCents, tax.gstCents, tax.qstCents, tax.totalCents, payment.currency]
+      );
+      if (!invoice) invoice = await db.get('SELECT * FROM broker_invoices WHERE payment_key=$1', [paymentKey]);
+      if (invoice && !invoice.invoice_number) {
+        var number = invoiceTools.invoiceNumber(invoice.id, payment.time);
+        invoice = await db.get('UPDATE broker_invoices SET invoice_number=$1 WHERE id=$2 RETURNING *', [number, invoice.id]);
+        await logBrokerEvent(broker.id, 'invoice_created', number);
+      }
+    } else if (!invoice.paypal_transaction_id && payment.transactionId) {
+      invoice = await db.get('UPDATE broker_invoices SET paypal_transaction_id=$1 WHERE id=$2 RETURNING *', [payment.transactionId, invoice.id]);
+    }
+    if (invoice && !invoice.emailed_at) {
+      try { await emailBrokerInvoice(req, broker, invoice); }
+      catch(e){ console.error('invoice email', e); }
+    }
+    return invoice;
+  }
+
   router.post('/api/espace/abonnement', async function(req, res){
     var broker = await requireBrokerApi(req, res);
     if (!broker) return;
@@ -1038,8 +1161,11 @@ module.exports = function(services){
     }catch(e){ console.error('abonnement', e); res.status(500).json({ error: 'server' }); }
   });
 
-  async function activateBroker(broker, subscriptionId, detail){
-    var until = new Date(Date.now() + 365 * 24 * 3600 * 1000).toISOString();
+  async function activateBroker(broker, subscriptionId, detail, paypalPeriodEnd){
+    var candidate = new Date(paypalPeriodEnd || 0);
+    var until = Number.isFinite(candidate.getTime()) && candidate.getTime() > Date.now()
+      ? candidate.toISOString()
+      : new Date(Date.now() + 365 * 24 * 3600 * 1000).toISOString();
     await db.run(
       'UPDATE brokers SET status=$1, membership_started_at=COALESCE(membership_started_at,NOW()), membership_expires_at=$2, paypal_subscription_id=COALESCE($3,paypal_subscription_id), updated_at=NOW() WHERE id=$4',
       ['active', until, subscriptionId || null, broker.id]
@@ -1052,6 +1178,7 @@ module.exports = function(services){
     if (!broker) return;
     var c = paypalCfg();
     var subId = req.query.subscription_id || broker.paypal_subscription_id;
+    var confirmed = false;
     try{
       if (paypalReady(c) && subId) {
         var token = await paypalToken(c);
@@ -1059,12 +1186,29 @@ module.exports = function(services){
           headers: { 'Authorization': 'Bearer ' + token }
         });
         var j = await r.json();
-        if (r.ok && (j.status === 'ACTIVE' || j.status === 'APPROVED')) {
-          await activateBroker(broker, subId, 'return:' + j.status);
+        if (r.ok && j.status === 'ACTIVE') {
+          var nextBilling = j.billing_info && j.billing_info.next_billing_time;
+          await activateBroker(broker, subId, 'return:' + j.status, nextBilling);
+          await issueInvoiceForPayment(req, broker, j, null);
+          confirmed = true;
         }
       }
     }catch(e){ console.error('retour', e); }
-    res.redirect('../../espace');
+    res.redirect('../../espace?paiement=' + (confirmed ? 'confirme' : 'verification'));
+  });
+
+  router.get('/espace/factures/:id/pdf', async function(req, res){
+    var broker = await requireBroker(req, res);
+    if (!broker) return;
+    try{
+      var invoice = await db.get('SELECT * FROM broker_invoices WHERE id=$1 AND broker_id=$2', [req.params.id, broker.id]);
+      if (!invoice) return res.status(404).send('Facture introuvable');
+      var pdf = invoiceTools.buildInvoicePdf(invoice, broker, invoiceIssuer());
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', 'attachment; filename="' + invoice.invoice_number + '.pdf"');
+      res.setHeader('Cache-Control', 'private, no-store');
+      res.send(pdf);
+    }catch(e){ console.error('invoice pdf', e); res.status(500).send('Impossible de générer la facture'); }
   });
 
   router.post('/api/espace/abonnement/annuler', async function(req, res){
@@ -1115,8 +1259,14 @@ module.exports = function(services){
 
       // Only PayPal's own answer moves money-bearing state.
       if (sub.status === 'ACTIVE') {
-        await activateBroker(broker, lookupId, 'verified:' + (ev.event_type || 'webhook'));
-      } else if (['CANCELLED', 'EXPIRED', 'SUSPENDED'].indexOf(sub.status) !== -1) {
+        var nextBilling = sub.billing_info && sub.billing_info.next_billing_time;
+        await activateBroker(broker, lookupId, 'verified:' + (ev.event_type || 'webhook'), nextBilling);
+        await issueInvoiceForPayment(req, broker, sub, resource);
+      } else if (sub.status === 'CANCELLED') {
+        // A cancellation stops renewal, not access already paid for.
+        await db.run("UPDATE brokers SET status='cancelled', updated_at=NOW() WHERE id=$1", [broker.id]);
+        await logBrokerEvent(broker.id, 'membership_cancelled', 'verified:' + sub.status);
+      } else if (['EXPIRED', 'SUSPENDED'].indexOf(sub.status) !== -1) {
         await db.run("UPDATE brokers SET status='expired', published=0, updated_at=NOW() WHERE id=$1", [broker.id]);
         await logBrokerEvent(broker.id, 'membership_stopped', 'verified:' + sub.status);
       }

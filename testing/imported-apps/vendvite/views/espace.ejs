@@ -217,6 +217,12 @@
 
     <!-- ═══ Abonnement ═══ -->
     <section class="esp-panel" data-panel="abonnement">
+      <% if (paymentConfirmed) { %>
+        <div class="esp-payment-success">
+          <span class="esp-payment-check" aria-hidden="true">✓</span>
+          <div><strong>Paiement confirmé. Votre licence est active.</strong><p>Votre facture VendVite est disponible ci-dessous et une copie vous est envoyée par courriel.</p></div>
+        </div>
+      <% } %>
       <div class="esp-bill">
         <div class="esp-bill-card">
           <p class="esp-eyebrow">Adhésion annuelle</p>
@@ -227,31 +233,44 @@
             <li><span>TVQ (9,975&nbsp;%)</span><span><%= price.qst.toFixed(2) %>&nbsp;$</span></li>
             <li class="esp-bill-total"><span>Total</span><span><%= price.total.toFixed(2) %>&nbsp;$</span></li>
           </ul>
-          <% if (isActive) { %>
-            <div class="esp-active-note">
-              <strong>Abonnement actif</strong>
-              <p>Renouvellement le <%= formatDate(broker.membership_expires_at, lang) %>.</p>
-            </div>
-            <button class="esp-ghost esp-danger" id="cancelBtn" type="button">Annuler le renouvellement</button>
-          <% } else if (broker.status === 'cancelled' && broker.membership_expires_at) { %>
+          <% if (broker.status === 'cancelled' && broker.membership_expires_at) { %>
             <div class="esp-active-note">
               <strong>Renouvellement annulé</strong>
               <p>Votre page reste en ligne jusqu'au <%= formatDate(broker.membership_expires_at, lang) %>.</p>
             </div>
             <button class="esp-btn esp-btn-wide" id="subBtn" type="button">Réactiver</button>
+          <% } else if (isActive) { %>
+            <div class="esp-active-note">
+              <strong>Abonnement actif</strong>
+              <p>Renouvellement le <%= formatDate(broker.membership_expires_at, lang) %>.</p>
+            </div>
+            <button class="esp-ghost esp-danger" id="cancelBtn" type="button">Annuler le renouvellement</button>
           <% } else { %>
             <button class="esp-btn esp-btn-wide" id="subBtn" type="button">Activer ma page</button>
             <p class="esp-hint" style="text-align:center">Paiement sécurisé par PayPal. Annulable en tout temps.</p>
           <% } %>
           <p class="esp-error" id="billError" role="alert"></p>
         </div>
-        <ul class="esp-bill-what">
-          <li>Votre page privée, à votre nom, sur vendvite.app</li>
-          <li>Capture illimitée de demandes d'évaluation</li>
-          <li>Alerte courriel instantanée à chaque piste</li>
-          <li>Votre registre de pistes, à vous seul</li>
-          <li>Modifications en tout temps, sans frais</li>
-        </ul>
+        <div>
+          <ul class="esp-bill-what">
+            <li>Votre page privée, à votre nom, sur vendvite.app</li>
+            <li>Capture illimitée de demandes d'évaluation</li>
+            <li>Alerte courriel instantanée à chaque piste</li>
+            <li>Votre registre de pistes, à vous seul</li>
+            <li>Modifications en tout temps, sans frais</li>
+          </ul>
+          <% if (invoices && invoices.length) { %>
+            <div class="esp-invoices">
+              <p class="esp-eyebrow">Mes factures</p>
+              <% invoices.forEach(function(invoice){ %>
+                <a class="esp-invoice-row" href="espace/factures/<%= invoice.id %>/pdf">
+                  <span><strong><%= invoice.invoice_number %></strong><small><%= formatDate(invoice.payment_time, lang) %></small></span>
+                  <span><b><%= (Number(invoice.total_cents || 0) / 100).toFixed(2).replace('.', ',') %>&nbsp;$</b><small>PDF ↓</small></span>
+                </a>
+              <% }); %>
+            </div>
+          <% } %>
+        </div>
       </div>
     </section>
   </div>
