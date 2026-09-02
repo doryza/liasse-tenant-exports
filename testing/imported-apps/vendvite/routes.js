@@ -369,7 +369,7 @@ module.exports = function(services){
   function findModule(k){ for(var i=0;i<MODULES.length;i++){ if(MODULES[i].key===k) return MODULES[i]; } return null; }
 
   async function gatherStats(){
-    var s={ leads:0,newLeads:0,testimonials:0,posts:0,visits:0,recentVisits:0,pushCount:0,userCount:0 };
+    var s={ leads:0,newLeads:0,testimonials:0,posts:0,visits:0,recentVisits:0,pushCount:0,userCount:0,sales:0,revenueCents:0 };
     try{ var r=await db.get('SELECT COUNT(*)::int c FROM leads'); s.leads=r.c; }catch(e){}
     try{ var r2=await db.get("SELECT COUNT(*)::int c FROM leads WHERE status='nouveau'"); s.newLeads=r2.c; }catch(e){}
     try{ var r3=await db.get('SELECT COUNT(*)::int c FROM testimonials'); s.testimonials=r3.c; }catch(e){}
@@ -378,6 +378,7 @@ module.exports = function(services){
     try{ var r6=await db.get("SELECT COUNT(*)::int c FROM site_visits WHERE created_at > NOW() - INTERVAL '7 days'"); s.recentVisits=r6.c; }catch(e){}
     try{ if(services.push && services.push.getSubscriptionCount){ s.pushCount=await services.push.getSubscriptionCount(); } }catch(e){}
     try{ if(services.auth && services.auth.getUserCount){ s.userCount=await services.auth.getUserCount(); } }catch(e){}
+    try{ var r7=await db.get('SELECT COUNT(*)::int c, COALESCE(SUM(total_cents),0)::bigint revenue FROM broker_invoices'); s.sales=Number(r7.c||0); s.revenueCents=Number(r7.revenue||0); }catch(e){}
     return s;
   }
 
@@ -401,9 +402,32 @@ module.exports = function(services){
     (courtiers||[]).forEach(function(b){ if(cc[b.status]!=null) cc[b.status]++; else cc.other++; });
     res.render('admin-courtiers', Object.assign(L, { active:'courtiers', courtiers:courtiers||[], cc:cc }));
   });
+  router.get('/admin/ventes', requireAdmin, async function(req,res){
+    try{
+      var L=await baseLocals(req);
+      var totals=await db.get('SELECT COUNT(*)::int invoice_count, COUNT(DISTINCT broker_id)::int customer_count, COALESCE(SUM(subtotal_cents),0)::bigint subtotal_cents, COALESCE(SUM(gst_cents),0)::bigint gst_cents, COALESCE(SUM(qst_cents),0)::bigint qst_cents, COALESCE(SUM(total_cents),0)::bigint total_cents FROM broker_invoices');
+      var members=await db.get("SELECT COUNT(*) FILTER (WHERE status='active' AND membership_expires_at>NOW())::int active_count, COUNT(*) FILTER (WHERE status='cancelled' AND membership_expires_at>NOW())::int ending_count FROM brokers");
+      var invoices=await db.all('SELECT i.*,b.full_name,b.agency,b.email FROM broker_invoices i JOIN brokers b ON b.id=i.broker_id ORDER BY i.payment_time DESC,i.id DESC LIMIT 250');
+      var monthly=await db.all("SELECT date_trunc('month',payment_time) month,COUNT(*)::int invoice_count,COALESCE(SUM(total_cents),0)::bigint total_cents FROM broker_invoices WHERE payment_time>NOW()-INTERVAL '12 months' GROUP BY 1 ORDER BY 1");
+      var maxMonth=1;
+      (monthly||[]).forEach(function(m){ maxMonth=Math.max(maxMonth,Number(m.total_cents||0)); });
+      res.render('admin-ventes', Object.assign(L, { active:'ventes', totals:totals||{}, members:members||{}, invoices:invoices||[], monthly:monthly||[], maxMonth:maxMonth }));
+    }catch(e){ console.error('admin ventes',e); res.status(500).send('Erreur'); }
+  });
+  router.get('/admin/ventes/factures/:id/pdf', requireAdmin, async function(req,res){
+    try{
+      var invoice=await db.get('SELECT i.*,b.full_name,b.agency,b.email FROM broker_invoices i JOIN brokers b ON b.id=i.broker_id WHERE i.id=$1',[req.params.id]);
+      if(!invoice) return res.status(404).send('Facture introuvable');
+      var pdf=invoiceTools.buildInvoicePdf(invoice,invoice,invoiceIssuer());
+      res.setHeader('Content-Type','application/pdf');
+      res.setHeader('Content-Disposition','attachment; filename="'+invoice.invoice_number+'.pdf"');
+      res.setHeader('Cache-Control','private, no-store');
+      res.send(pdf);
+    }catch(e){ console.error('admin invoice pdf',e); res.status(500).send('Impossible de générer la facture'); }
+  });
     router.get('/admin/settings', requireAdmin, async function(req,res){ var L=await baseLocals(req); res.render('admin-settings', Object.assign(L, { active:'settings', settingsGroups:SETTINGS_GROUPS })); });
 
-  router.get('/api/admin/stats', async function(req,res){ if(!apiAdmin(req,res))return; try{ var s=await gatherStats(); res.json({ userCount:s.userCount, pushSubscriberCount:s.pushCount, totalVisits:s.visits, recentVisits:s.recentVisits, leads:s.leads, newLeads:s.newLeads, testimonials:s.testimonials, posts:s.posts }); }catch(e){ res.status(500).json({ error:'server' }); } });
+  router.get('/api/admin/stats', async function(req,res){ if(!apiAdmin(req,res))return; try{ var s=await gatherStats(); res.json({ userCount:s.userCount, pushSubscriberCount:s.pushCount, totalVisits:s.visits, recentVisits:s.recentVisits, leads:s.leads, newLeads:s.newLeads, testimonials:s.testimonials, posts:s.posts, sales:s.sales, revenueCents:s.revenueCents }); }catch(e){ res.status(500).json({ error:'server' }); } });
 
   router.get('/api/admin/modules', function(req,res){ if(!apiAdmin(req,res))return; res.json({ modules:MODULES.map(function(m){ return { key:m.key, label:m.label, icon:m.icon, fields:m.fields }; }), settingsFields:SETTINGS_FIELDS }); });
 

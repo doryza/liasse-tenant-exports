@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ventes et paiements — VendVite</title>
+<link rel="stylesheet" href="../public/css/admin-styles.css">
+</head>
+<body class="admin">
+<%- include('partials/admin-sidebar') %>
+<div class="admin-main">
+  <header class="admin-top">
+    <button class="admin-burger" id="adminBurger" aria-label="Menu">≡</button>
+    <h1>Ventes et paiements</h1>
+    <span class="sales-readonly">Lecture seule</span>
+  </header>
+  <div class="admin-content">
+    <div class="admin-hero">
+      <div>
+        <h2 class="dash-title">Registre VendVite</h2>
+        <p class="dash-sub">Chaque ligne correspond à un paiement PayPal confirmé et à une facture transmise au courtier.</p>
+      </div>
+    </div>
+
+    <div class="stat-cards sales-stats">
+      <div class="scard scard-accent"><div class="scard-num"><%= (Number(totals.total_cents||0)/100).toLocaleString('fr-CA',{minimumFractionDigits:2,maximumFractionDigits:2}) %>&nbsp;$</div><div class="scard-label">Total encaissé</div></div>
+      <div class="scard"><div class="scard-num"><%= Number(totals.invoice_count||0) %></div><div class="scard-label">Paiements facturés</div></div>
+      <div class="scard"><div class="scard-num"><%= Number(members.active_count||0) %></div><div class="scard-label">Abonnements actifs</div></div>
+      <div class="scard"><div class="scard-num"><%= ((Number(totals.gst_cents||0)+Number(totals.qst_cents||0))/100).toLocaleString('fr-CA',{minimumFractionDigits:2,maximumFractionDigits:2}) %>&nbsp;$</div><div class="scard-label">Taxes perçues</div></div>
+      <div class="scard"><div class="scard-num"><%= Number(members.ending_count||0) %></div><div class="scard-label">Non renouvelés · encore actifs</div></div>
+    </div>
+
+    <% if (monthly && monthly.length) { %>
+      <section class="sales-chart" aria-label="Ventes des douze derniers mois">
+        <div class="admin-section-head"><h2 class="admin-h2">12 derniers mois</h2><span class="sales-tax-note">Montants taxes incluses</span></div>
+        <div class="sales-bars">
+          <% monthly.forEach(function(m){ var pct=Math.max(4,Math.round(Number(m.total_cents||0)/Number(maxMonth||1)*100)); %>
+            <div class="sales-bar-row">
+              <span><%= new Date(m.month).toLocaleDateString('fr-CA',{month:'short',year:'numeric',timeZone:'UTC'}) %></span>
+              <i><b style="width:<%= pct %>%"></b></i>
+              <strong><%= (Number(m.total_cents||0)/100).toLocaleString('fr-CA',{minimumFractionDigits:2,maximumFractionDigits:2}) %>&nbsp;$</strong>
+            </div>
+          <% }); %>
+        </div>
+      </section>
+    <% } %>
+
+    <div class="sales-breakdown">
+      <div><span>Sous-total</span><strong><%= (Number(totals.subtotal_cents||0)/100).toLocaleString('fr-CA',{minimumFractionDigits:2,maximumFractionDigits:2}) %>&nbsp;$</strong></div>
+      <div><span>TPS perçue</span><strong><%= (Number(totals.gst_cents||0)/100).toLocaleString('fr-CA',{minimumFractionDigits:2,maximumFractionDigits:2}) %>&nbsp;$</strong></div>
+      <div><span>TVQ perçue</span><strong><%= (Number(totals.qst_cents||0)/100).toLocaleString('fr-CA',{minimumFractionDigits:2,maximumFractionDigits:2}) %>&nbsp;$</strong></div>
+    </div>
+
+    <div class="admin-section-head"><h2 class="admin-h2">Factures</h2><span class="row-count"><%= invoices.length %> affichée<%= invoices.length===1?'':'s' %></span></div>
+    <div class="table-wrap">
+      <table class="admin-table sales-table">
+        <thead><tr><th>Facture</th><th>Courtier</th><th>Date</th><th>PayPal</th><th>Sous-total</th><th>Taxes</th><th>Total</th><th>Envoi</th><th></th></tr></thead>
+        <tbody>
+          <% if(invoices.length){ invoices.forEach(function(i){ %>
+            <tr>
+              <td><strong class="sales-invoice-no"><%= i.invoice_number %></strong></td>
+              <td><strong><%= i.full_name %></strong><small class="sales-sub"><%= i.agency || i.email %></small></td>
+              <td><%= formatDate(i.payment_time,lang) %></td>
+              <td><span class="sales-paypal"><%= i.paypal_transaction_id || i.paypal_subscription_id %></span></td>
+              <td><%= (Number(i.subtotal_cents||0)/100).toFixed(2).replace('.',',') %>&nbsp;$</td>
+              <td><%= ((Number(i.gst_cents||0)+Number(i.qst_cents||0))/100).toFixed(2).replace('.',',') %>&nbsp;$</td>
+              <td><strong><%= (Number(i.total_cents||0)/100).toFixed(2).replace('.',',') %>&nbsp;$</strong></td>
+              <td><span class="pill <%= i.emailed_at ? 'pill-on' : 'pill-off' %>"><%= i.emailed_at ? 'Envoyée' : 'À envoyer' %></span></td>
+              <td class="row-actions"><a class="btn-sm sales-download" href="ventes/factures/<%= i.id %>/pdf">PDF ↓</a></td>
+            </tr>
+          <% }); } else { %>
+            <tr><td colspan="9" class="empty">Aucun paiement PayPal facturé pour le moment. La première vente apparaîtra ici automatiquement.</td></tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<script>(function(){var b=document.getElementById('adminBurger'),s=document.getElementById('adminSidebar');if(b&&s)b.addEventListener('click',function(){s.classList.toggle('open')});})();</script>
+</body>
+</html>

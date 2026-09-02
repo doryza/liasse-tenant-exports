@@ -28,12 +28,14 @@
       <div class="scard"><div class="scard-num"><%= stats.visits %></div><div class="scard-label">Visites totales</div></div>
       <div class="scard"><div class="scard-num"><%= stats.pushCount %></div><div class="scard-label">Abonnés notifications</div></div>
       <div class="scard"><div class="scard-num"><%= stats.testimonials %></div><div class="scard-label">Témoignages</div></div>
+      <div class="scard"><div class="scard-num"><%= (Number(stats.revenueCents || 0) / 100).toLocaleString('fr-CA',{minimumFractionDigits:2,maximumFractionDigits:2}) %>&nbsp;$</div><div class="scard-label">Ventes encaissées</div></div>
     </div>
     <h2 class="admin-h2">Gérer le contenu</h2>
     <div class="admin-cards">
       <a class="mcard" href="admin/leads"><div class="mcard-ico" aria-hidden="true">📥</div><h3>Demandes d'évaluation</h3><p>Gérez les prospects vendeurs et leur suivi.</p><span class="mcard-go">Ouvrir →</span></a>
       <a class="mcard" href="admin/testimonials"><div class="mcard-ico" aria-hidden="true">⭐</div><h3>Témoignages</h3><p>Ajoutez et modifiez les témoignages clients.</p><span class="mcard-go">Ouvrir →</span></a>
       <a class="mcard" href="admin/posts"><div class="mcard-ico" aria-hidden="true">📝</div><h3>Journal</h3><p>Publiez vos notes de marché.</p><span class="mcard-go">Ouvrir →</span></a>
+      <a class="mcard" href="admin/ventes"><div class="mcard-ico" aria-hidden="true">◫</div><h3>Ventes et paiements</h3><p>Suivez les abonnements, taxes, factures et références PayPal.</p><span class="mcard-go">Ouvrir →</span></a>
       <a class="mcard" href="admin/settings"><div class="mcard-ico" aria-hidden="true">⚙️</div><h3>Réglages</h3><p>Coordonnées, statistiques et réseaux sociaux.</p><span class="mcard-go">Ouvrir →</span></a>
     </div>
     <div class="admin-section-head"><h2 class="admin-h2">Demandes récentes</h2><a class="link-more" href="admin/leads">Tout voir →</a></div>
