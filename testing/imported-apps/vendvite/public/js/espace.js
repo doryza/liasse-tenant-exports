@@ -212,7 +212,7 @@
     'university', 'hospital', 'warehouse', 'public', 'civic', 'hotel', 'kindergarten', 'government',
     'sports_centre', 'stadium', 'train_station', 'fire_station'];
 
-  var campCentre = null, campAdresses = [], campRayon = 0, campVille = '';
+  var campCentre = null, campAdresses = [], campRayon = 0, campVille = '', campRepriseId = 0;
   var campCarte = null, campCouche = null, campPret = false;
 
   // ── Persistance locale ─────────────────────────────────────────────────────
@@ -245,7 +245,7 @@
   function sauverTerritoire(){
     if (!campCentre || !campAdresses.length) return;
     ecrire(CLE, {
-      centre: campCentre, quantite: campQuantite, rayon: campRayon, ville: campVille,
+      centre: campCentre, quantite: campQuantite, rayon: campRayon, ville: campVille, reprise: campRepriseId,
       total: Number(($('campTrouve') || {}).textContent || '0'.replace(/\s/g, '')) || campAdresses.length,
       adresses: campAdresses,
       notes: $('campNotes') ? $('campNotes').value : ''
@@ -488,6 +488,7 @@
     campRayon = o.rayon || 0;
     campVille = o.ville || '';
     campQuantite = o.quantite || CAMP.cible;
+    campRepriseId = Number(o.reprise) || 0;
     majQuantite();
     if (o.notes && $('campNotes')) $('campNotes').value = o.notes;
     if ($('campAdresse')) $('campAdresse').value = campCentre.libelle || '';
@@ -523,6 +524,7 @@
         campVille = (h.address && (h.address.city || h.address.town || h.address.village || h.address.municipality)) || '';
       }
 
+      campRepriseId = 0;
       var out = await balayer(campCentre.lat, campCentre.lng, campQuantite);
       if (!out.total) {
         etat('');
@@ -716,7 +718,12 @@
       ville: campVille, rayon: campRayon,
       notes: $('campNotes') ? $('campNotes').value.trim() : ''
     };
-    if (paye) charge.quantite = campQuantite;
+    if (paye) {
+      charge.quantite = campQuantite;
+      // Sans cela, relancer un territoire recharge creerait une seconde ligne
+      // identique dans l'historique a chaque aller-retour chez PayPal.
+      if (campRepriseId) charge.reprend = campRepriseId;
+    }
     try{
       var r = await fetch(paye ? 'api/espace/campagne/commander' : 'api/espace/campagne', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -775,6 +782,7 @@
           campRayon = d.rayon || 0;
           campVille = d.ville || '';
           campQuantite = d.quantite || CAMP.cible;
+          campRepriseId = Number(id) || 0;
           majQuantite();
           if ($('campAdresse')) $('campAdresse').value = (d.centre && d.centre.libelle) || '';
           if ($('campNotes')) $('campNotes').value = d.notes || '';

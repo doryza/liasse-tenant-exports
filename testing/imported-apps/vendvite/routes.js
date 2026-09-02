@@ -340,7 +340,13 @@ module.exports = function(services){
     var ogImage = settings._p_agent_image_url || '';
     var canonical = '';
     try{ if(typeof req.tenantUrl==='function') canonical=req.tenantUrl('/'); }catch(e){}
-    return { t:t, lang:lang, settings:settings, formatDate:function(d){ return formatDate(d, lang); }, formatPhone:formatPhone, googleApiKey:(services.google && services.google.mapsApiKey) || '', ogImage:ogImage, canonical:canonical, statusClass:statusClass };
+    // La plateforme injecte <base href> dans toute page locataire : un lien
+    // « ?lang=en » tout nu se resout donc contre la RACINE et renvoie a
+    // l'accueil au lieu de changer la langue de la page courante. On rend le
+    // chemin courant, sans barre oblique initiale, pour rester sur place sous
+    // les deux montages.
+    var cheminCourant = String(req.path || '/').replace(/^\//, '');
+    return { t:t, lang:lang, settings:settings, formatDate:function(d){ return formatDate(d, lang); }, formatPhone:formatPhone, googleApiKey:(services.google && services.google.mapsApiKey) || '', ogImage:ogImage, canonical:canonical, statusClass:statusClass, cheminCourant:cheminCourant, langueVisible:true };
   }
 
   router.get('/', async function(req,res){
@@ -932,6 +938,9 @@ module.exports = function(services){
     var cfgPaypal = await paypalCfg();
     return Object.assign(L, {
       isHome: false,
+      // La console est en francais seulement : afficher un selecteur de langue
+      // qui ne change rien serait pire que de ne pas en afficher.
+      langueVisible: false,
       campagnes: campagnes || [],
       campQuota: quota,
       campCible: CAMPAGNE_CIBLE,
@@ -1476,12 +1485,33 @@ module.exports = function(services){
       // ignorent deja is_test=1, mais on evite d'ecrire une reservation qui
       // ment sur elle-meme et deviendrait reelle si le predicat changeait.
       var periodeCredit = (credit > 0 && !estTest) ? quota.periode : null;
+
+      // Relancer un territoire deja enregistre ne doit pas en creer une copie.
+      // On reprend la ligne existante quand elle est encore modifiable : par
+      // identifiant si le navigateur l'a rechargee, sinon en reconnaissant une
+      // cible identique (meme centre, meme quantite, meme nombre d'adresses)
+      // parmi les commandes non payees.
+      var repriseId = Math.floor(Number(corps.reprend)) || 0;
+      var existante = repriseId
+        ? await db.get("SELECT id FROM broker_campaigns WHERE id=$1 AND broker_id=$2 AND payment_status<>'paid' AND status<>'mailed'", [repriseId, broker.id])
+        : await db.get(
+            "SELECT id FROM broker_campaigns WHERE broker_id=$1 AND kind='paid' AND payment_status<>'paid' AND status<>'mailed' AND centre_label=$2 AND quantity=$3 AND address_count=$4 ORDER BY id DESC LIMIT 1",
+            [broker.id, libelle, quantite, adresses.length]
+          );
+
       var campagne;
       try{
-        campagne = await db.get(
-          'INSERT INTO broker_campaigns (broker_id,kind,status,payment_status,centre_label,centre_lat,centre_lng,radius_m,quantity,address_count,addresses,city,notes,subtotal_cents,gst_cents,qst_cents,total_cents,paypal_mode,is_test,quota_period) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20) RETURNING *',
-          [broker.id, 'paid', 'pending_payment', 'pending', libelle, cLat, cLng, rayon, quantite, adresses.length, JSON.stringify(adresses), ville, notes, prix.sousTotal, prix.tps, prix.tvq, prix.total, c.mode, estTest, periodeCredit]
-        );
+        if (existante) {
+          campagne = await db.get(
+            "UPDATE broker_campaigns SET kind='paid', status='pending_payment', payment_status='pending', centre_label=$1, centre_lat=$2, centre_lng=$3, radius_m=$4, quantity=$5, address_count=$6, addresses=$7, city=$8, notes=$9, subtotal_cents=$10, gst_cents=$11, qst_cents=$12, total_cents=$13, paypal_mode=$14, is_test=$15, quota_period=$16, paypal_order_id=NULL, paypal_capture_id=NULL, updated_at=NOW() WHERE id=$17 RETURNING *",
+            [libelle, cLat, cLng, rayon, quantite, adresses.length, JSON.stringify(adresses), ville, notes, prix.sousTotal, prix.tps, prix.tvq, prix.total, c.mode, estTest, periodeCredit, existante.id]
+          );
+        } else {
+          campagne = await db.get(
+            'INSERT INTO broker_campaigns (broker_id,kind,status,payment_status,centre_label,centre_lat,centre_lng,radius_m,quantity,address_count,addresses,city,notes,subtotal_cents,gst_cents,qst_cents,total_cents,paypal_mode,is_test,quota_period) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20) RETURNING *',
+            [broker.id, 'paid', 'pending_payment', 'pending', libelle, cLat, cLng, rayon, quantite, adresses.length, JSON.stringify(adresses), ville, notes, prix.sousTotal, prix.tps, prix.tvq, prix.total, c.mode, estTest, periodeCredit]
+          );
+        }
       }catch(err){
         if (String(err && err.code) === '23505') return res.status(409).json({ code: 'QUOTA_SPENT' });
         throw err;

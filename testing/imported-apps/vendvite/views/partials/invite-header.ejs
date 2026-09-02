@@ -19,6 +19,8 @@
 <link rel="stylesheet" href="public/css/styles.css">
 </head>
 <body class="inv-body">
+<% if (typeof langueVisible === 'undefined' || langueVisible) { %>
 <div class="inv-lang">
-  <a href="?lang=fr" class="<%= lang==='fr'?'active':'' %>">FR</a><span aria-hidden="true">·</span><a href="?lang=en" class="<%= lang==='en'?'active':'' %>">EN</a>
+  <a href="<%= (typeof cheminCourant !== 'undefined' ? cheminCourant : '') %>?lang=fr" class="<%= lang==='fr'?'active':'' %>">FR</a><span aria-hidden="true">·</span><a href="<%= (typeof cheminCourant !== 'undefined' ? cheminCourant : '') %>?lang=en" class="<%= lang==='en'?'active':'' %>">EN</a>
 </div>
+<% } %>
