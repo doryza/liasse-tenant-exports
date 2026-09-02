@@ -984,7 +984,7 @@ module.exports = function(services){
       }
       if (!sector) return res.status(400).json({ error: 'sector', code: 'SECTOR_REQUIRED' });
 
-      var total = Math.round(quantity * 135) / 100;
+      var total = Math.round(quantity * 159) / 100;
       var ownerEmail = (services.config && (services.config.contactEmail || services.config.ownerEmail)) || null;
       var detail = JSON.stringify({ quantity: quantity, sector: sector, notes: notes, total: total, test: access.testAccess });
       await logBrokerEvent(broker.id, access.testAccess?'sandbox_postal_campaign_requested':'postal_campaign_requested', detail);
@@ -999,7 +999,7 @@ module.exports = function(services){
           + [['Courtier', broker.full_name], ['Agence', broker.agency], ['Courriel', broker.email], ['Téléphone', formatPhone(broker.phone)], ['Secteur visé', sector], ['Quantité', quantity.toLocaleString('fr-CA')], ['Estimation', total.toFixed(2).replace('.', ',') + ' $']]
             .map(function(r){ return '<tr><td style="padding:8px;border-bottom:1px solid #ddd;color:#777;width:32%">' + esc(r[0]) + '</td><td style="padding:8px;border-bottom:1px solid #ddd">' + esc(r[1] || '') + '</td></tr>'; }).join('')
           + (notes ? '<p style="margin-top:18px"><strong>Précisions :</strong><br>' + esc(notes).replace(/\n/g, '<br>') + '</p>' : '')
-          + '<p style="margin-top:20px;color:#777;font-size:12px">Estimation à 1,35 $ par adresse. Cette demande ne constitue pas encore une commande facturée.</p>'
+          + '<p style="margin-top:20px;color:#777;font-size:12px">Estimation à 1,59 $ par lettre postée. Cette demande ne constitue pas encore une commande facturée.</p>'
           + '</div>';
         await services.email.send({
           to: ownerEmail,

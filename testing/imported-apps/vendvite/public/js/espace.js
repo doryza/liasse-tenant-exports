@@ -145,7 +145,7 @@
   function updateMailEstimate(){
     if (!mailQuantity || !mailEstimate) return;
     var quantity = Math.max(0, Math.floor(Number(mailQuantity.value) || 0));
-    mailEstimate.textContent = (quantity * 1.35).toLocaleString('fr-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' $';
+    mailEstimate.textContent = (quantity * 1.59).toLocaleString('fr-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' $';
   }
   on(mailQuantity, 'input', updateMailEstimate);
   updateMailEstimate();
