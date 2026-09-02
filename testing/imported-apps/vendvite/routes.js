@@ -1548,6 +1548,29 @@ module.exports = function(services){
     return !!(r && r.changes);
   }
 
+  // Recharger le territoire d'une campagne NON PAYEE : le courtier retrouve
+  // exactement ce qu'il avait avant d'appuyer sur payer, y compris apres un
+  // abandon chez PayPal ou sur un autre appareil. La liste vit deja en base.
+  router.get('/api/espace/campagne/:id/territoire', async function(req, res){
+    var broker = await requireBrokerApi(req, res);
+    if (!broker) return;
+    try{
+      var c = await db.get(
+        "SELECT * FROM broker_campaigns WHERE id=$1 AND broker_id=$2 AND payment_status<>'paid' AND status<>'mailed'",
+        [Math.floor(Number(req.params.id)) || 0, broker.id]
+      );
+      if (!c) return res.status(404).json({ code: 'NOT_EDITABLE' });
+      res.json({
+        centre: { libelle: c.centre_label, lat: c.centre_lat, lng: c.centre_lng },
+        quantite: c.quantity || c.address_count,
+        rayon: c.radius_m || 0,
+        ville: c.city || '',
+        notes: c.notes || '',
+        adresses: c.addresses || []
+      });
+    }catch(e){ console.error('territoire', e); res.status(500).json({ error: 'server' }); }
+  });
+
   router.post('/api/espace/campagne/:id/annuler', async function(req, res){
     var broker = await requireBrokerApi(req, res);
     if (!broker) return;

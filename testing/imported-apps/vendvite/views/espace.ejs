@@ -183,8 +183,11 @@
         <div class="camp-search">
           <div class="esp-f">
             <label for="campAdresse">L'adresse au cœur du secteur que vous voulez travailler</label>
-            <input id="campAdresse" type="text" autocomplete="off" placeholder="Ex.&nbsp;: 1088 rue de Chambord, Saint-Jérôme" maxlength="200">
-            <p class="esp-help">Une adresse précise vaut mieux qu'un nom de quartier&nbsp;: c'est le point exact d'où partent les plus proches voisins.</p>
+            <div class="camp-ac">
+              <input id="campAdresse" type="text" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="campSuggest" placeholder="Ex.&nbsp;: 1088 rue de Chambord, Saint-Jérôme" maxlength="200">
+              <ul class="camp-suggest" id="campSuggest" role="listbox" hidden></ul>
+            </div>
+            <p class="esp-help">Commencez à taper&nbsp;: choisissez l'adresse dans la liste pour un point exact. C'est de là que partent les plus proches voisins.</p>
           </div>
           <button class="esp-btn" id="campChercher" type="button">Voir mon territoire</button>
         </div>
@@ -230,8 +233,17 @@
           <div class="camp-histo-t-head"><span>État</span><span>Territoire</span><span>Portes</span><span>Montant</span><span>Date</span></div>
           <% campagnes.forEach(function(c){
                var libelle = c.centre_label ? c.centre_label.split(',').slice(0,2).join(',') : (c.city || '—');
-               var etat = c.status === 'mailed' ? 'Postée' : (c.payment_status === 'pending' ? 'Paiement en attente' : 'En préparation');
-               var cls  = c.status === 'mailed' ? 'is-ok' : (c.payment_status === 'pending' ? 'is-wait' : '');
+               var annulee = c.status === 'cancelled';
+               var etat = annulee ? 'Abandonnée'
+                        : c.status === 'mailed' ? 'Postée'
+                        : c.payment_status === 'pending' ? 'Paiement en attente'
+                        : 'En préparation';
+               var cls  = annulee ? 'is-off'
+                        : c.status === 'mailed' ? 'is-ok'
+                        : c.payment_status === 'pending' ? 'is-wait' : '';
+               // Tant qu'elle n'est pas payée, la campagne reste modifiable :
+               // son territoire se recharge dans le sélecteur tel qu'il était.
+               var reprenable = c.payment_status !== 'paid' && c.status !== 'mailed' && Number(c.address_count) > 0;
           %>
             <div class="camp-histo-l">
               <span class="camp-histo-b <%= cls %>"><%= etat %><% if (Number(c.is_test) === 1) { %> · test<% } %></span>
@@ -239,8 +251,15 @@
               <span class="camp-histo-q"><%= c.address_count %></span>
               <span class="camp-histo-m"><%= c.kind === 'paid' ? ((c.total_cents||0)/100).toFixed(2).replace('.', ',') + ' $' : 'Incluse' %></span>
               <span class="camp-histo-d"><%= new Date(c.created_at).toLocaleDateString('fr-CA', { day:'numeric', month:'short', year:'numeric' }) %></span>
-              <% if (c.payment_status === 'pending') { %>
-                <button type="button" class="camp-histo-x" data-annuler="<%= c.id %>">Annuler et récupérer ma campagne incluse</button>
+              <% if (reprenable || c.payment_status === 'pending') { %>
+                <span class="camp-histo-act">
+                  <% if (reprenable) { %>
+                    <button type="button" class="camp-histo-x" data-reprendre="<%= c.id %>">Recharger ce territoire</button>
+                  <% } %>
+                  <% if (c.payment_status === 'pending') { %>
+                    <button type="button" class="camp-histo-x" data-annuler="<%= c.id %>">Annuler et récupérer ma campagne incluse</button>
+                  <% } %>
+                </span>
               <% } %>
             </div>
           <% }); %>

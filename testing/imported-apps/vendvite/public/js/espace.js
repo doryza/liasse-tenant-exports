@@ -215,6 +215,62 @@
   var campCentre = null, campAdresses = [], campRayon = 0, campVille = '';
   var campCarte = null, campCouche = null, campPret = false;
 
+  // ── Persistance locale ─────────────────────────────────────────────────────
+  //    Un aller-retour vers PayPal, un rafraichissement ou un onglet ferme ne
+  //    doivent jamais coûter un nouveau balayage : Overpass est lent et faillible.
+  //    Tout vit dans le navigateur du courtier, rien de sensible.
+  var CLE = 'vv_camp_' + (CAMP.id || 'x');
+  var CLE_RUNGS = CLE + '_rungs';
+  var TTL_MS = 24 * 3600 * 1000;
+
+  function lire(cle){
+    try{
+      var brut = window.localStorage.getItem(cle);
+      if (!brut) return null;
+      var o = JSON.parse(brut);
+      if (!o || !o.ts || (Date.now() - o.ts) > TTL_MS) { window.localStorage.removeItem(cle); return null; }
+      return o;
+    }catch(_){ return null; }
+  }
+  function ecrire(cle, o){
+    try{
+      o.ts = Date.now();
+      window.localStorage.setItem(cle, JSON.stringify(o));
+    }catch(_){ /* quota plein ou stockage refuse : on continue sans filet */ }
+  }
+  function oublier(){
+    try{ window.localStorage.removeItem(CLE); window.localStorage.removeItem(CLE_RUNGS); }catch(_){ }
+  }
+
+  function sauverTerritoire(){
+    if (!campCentre || !campAdresses.length) return;
+    ecrire(CLE, {
+      centre: campCentre, quantite: campQuantite, rayon: campRayon, ville: campVille,
+      total: Number(($('campTrouve') || {}).textContent || '0'.replace(/\s/g, '')) || campAdresses.length,
+      adresses: campAdresses,
+      notes: $('campNotes') ? $('campNotes').value : ''
+    });
+  }
+
+  // Cache par palier de rayon : un balayage interrompu reprend aux rangs deja
+  // obtenus au lieu de tout redemander a Overpass.
+  function cleRung(lat, lng, r){ return lat.toFixed(5) + '|' + lng.toFixed(5) + '|' + r; }
+  function lireRung(lat, lng, r){
+    var tout = lire(CLE_RUNGS);
+    if (!tout || !tout.rungs) return null;
+    return tout.rungs[cleRung(lat, lng, r)] || null;
+  }
+  function ecrireRung(lat, lng, r, liste){
+    var tout = lire(CLE_RUNGS) || { rungs: {} };
+    tout.rungs = tout.rungs || {};
+    // On ne garde que l'essentiel : une liste de 1 200 adresses tient largement,
+    // mais inutile d'empiler tous les rangs de toutes les recherches.
+    var cles = Object.keys(tout.rungs);
+    if (cles.length > 6) delete tout.rungs[cles[0]];
+    tout.rungs[cleRung(lat, lng, r)] = liste;
+    ecrire(CLE_RUNGS, tout);
+  }
+
   function metres(lat1, lng1, lat2, lng2){
     var R = 6371000, t = Math.PI / 180;
     var dLat = (lat2 - lat1) * t, dLng = (lng2 - lng1) * t;
@@ -302,6 +358,12 @@
   async function balayer(lat, lng, cible){
     for (var i = 0; i < LADDER.length; i++) {
       var r = LADDER[i];
+      var deja = lireRung(lat, lng, r);
+      if (deja && deja.length) {
+        etat('Reprise du balayage déjà effectué sur ' + (r >= 1000 ? (r / 1000) + ' km' : r + ' m') + '…');
+        if (deja.length >= cible || i === LADDER.length - 1) return { liste: deja, rayon: r, total: deja.length };
+        continue;
+      }
       etat('Balayage du secteur sur ' + (r >= 1000 ? (r / 1000) + ' km' : r + ' m') + '…');
       var j = await overpass('[out:json][timeout:60];('
         + 'node(around:' + r + ',' + lat + ',' + lng + ')["addr:housenumber"];'
@@ -321,6 +383,7 @@
         a.i = liste.length; vues[cle] = a; liste.push(a);
       });
       liste.sort(function(x, y){ return x.metres - y.metres; });
+      ecrireRung(lat, lng, r, liste);
       if (liste.length >= cible || i === LADDER.length - 1) return { liste: liste, rayon: r, total: liste.length };
     }
     return { liste: [], rayon: 0, total: 0 };
@@ -398,6 +461,42 @@
     requestAnimationFrame(pas);
   }
 
+  function afficherTerritoire(total){
+    var res = $('campResultat');
+    if (res) res.hidden = false;
+    compteur($('campNombre'), campAdresses.length);
+    var loin = campAdresses[campAdresses.length - 1].metres;
+    var elPortee = $('campPortee');
+    if (elPortee) elPortee.textContent = loin < 1000 ? loin + ' m' : (loin / 1000).toFixed(1).replace('.', ',') + ' km';
+    var elTrouve = $('campTrouve');
+    if (elTrouve) elTrouve.textContent = nb(total || campAdresses.length);
+    var elCentre = $('campCentreTxt');
+    if (elCentre) elCentre.textContent = campCentre.libelle;
+    rendreListe();
+    dessinerCarte();
+    var conf = $('campConfirmer');
+    if (conf && (estIncluse() || CAMP.peutPayer)) { conf.disabled = false; conf.textContent = libelleBouton(); }
+  }
+
+  // Restaure le dernier territoire calcule : retour de PayPal, rafraichissement,
+  // onglet rouvert. Aucun appel reseau, la carte se redessine telle quelle.
+  function restaurerTerritoire(){
+    var o = lire(CLE);
+    if (!o || !o.centre || !o.adresses || !o.adresses.length) return false;
+    campCentre = o.centre;
+    campAdresses = o.adresses;
+    campRayon = o.rayon || 0;
+    campVille = o.ville || '';
+    campQuantite = o.quantite || CAMP.cible;
+    majQuantite();
+    if (o.notes && $('campNotes')) $('campNotes').value = o.notes;
+    if ($('campAdresse')) $('campAdresse').value = campCentre.libelle || '';
+    afficherTerritoire(o.total);
+    var el = $('campEtat');
+    if (el) el.textContent = 'Territoire restauré — ' + nb(campAdresses.length) + ' adresses, aucun nouveau balayage nécessaire.';
+    return true;
+  }
+
   async function chercherTerritoire(){
     var champ = $('campAdresse');
     var btn = $('campChercher');
@@ -412,12 +511,17 @@
     etat('Localisation de l’adresse…');
     try{
       var q = champ.value.trim();
-      var g = await fetch('https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&countrycodes=ca&limit=1&q=' + encodeURIComponent(q));
-      var hits = await g.json();
-      if (!hits.length) throw new Error('geocode');
-      var h = hits[0];
-      campCentre = { lat: parseFloat(h.lat), lng: parseFloat(h.lon), libelle: h.display_name };
-      campVille = (h.address && (h.address.city || h.address.town || h.address.village || h.address.municipality)) || '';
+      if (campChoisi && campChoisi.libelle === q) {
+        // Suggestion retenue : Photon a deja rendu les coordonnees exactes.
+        campCentre = { lat: campChoisi.lat, lng: campChoisi.lng, libelle: campChoisi.libelle };
+      } else {
+        var g = await fetch('https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&countrycodes=ca&limit=1&q=' + encodeURIComponent(q));
+        var hits = await g.json();
+        if (!hits.length) throw new Error('geocode');
+        var h = hits[0];
+        campCentre = { lat: parseFloat(h.lat), lng: parseFloat(h.lon), libelle: h.display_name };
+        campVille = (h.address && (h.address.city || h.address.town || h.address.village || h.address.municipality)) || '';
+      }
 
       var out = await balayer(campCentre.lat, campCentre.lng, campQuantite);
       if (!out.total) {
@@ -430,19 +534,8 @@
       campRayon = out.rayon;
 
       etat('');
-      if (res) res.hidden = false;
-      compteur($('campNombre'), campAdresses.length);
-      var loin = campAdresses[campAdresses.length - 1].metres;
-      var elPortee = $('campPortee');
-      if (elPortee) elPortee.textContent = loin < 1000 ? loin + ' m' : (loin / 1000).toFixed(1).replace('.', ',') + ' km';
-      var elTrouve = $('campTrouve');
-      if (elTrouve) elTrouve.textContent = nb(out.total);
-      var elCentre = $('campCentreTxt');
-      if (elCentre) elCentre.textContent = campCentre.libelle;
-      rendreListe();
-      dessinerCarte();
-      var conf = $('campConfirmer');
-      if (conf && (estIncluse() || CAMP.peutPayer)) { conf.disabled = false; conf.textContent = libelleBouton(); }
+      afficherTerritoire(out.total);
+      sauverTerritoire();
     }catch(_){
       etat('');
       if (err) err.textContent = 'Le service cartographique n’a pas répondu. Réessayez dans un instant.';
@@ -510,8 +603,100 @@
   on($('campPlus'), 'click', function(){ changerQuantite(1); });
   majQuantite();
 
-  on($('campChercher'), 'click', chercherTerritoire);
-  on($('campAdresse'), 'keydown', function(e){ if (e.key === 'Enter') { e.preventDefault(); chercherTerritoire(); } });
+  // ── Autocompletion d'adresse ───────────────────────────────────────────────
+  //    Photon (OSM) plutot que Google Places : la plateforme facture un
+  //    chargement de carte des que l'URL du SDK Google Maps apparait dans une
+  //    reponse HTML, meme si personne n'ouvre l'onglet. Photon est libre, tolere
+  //    les accents manquants et rend directement les coordonnees — choisir une
+  //    suggestion evite donc l'appel de geocodage.
+  var campChoisi = null;
+  var acTimer = null, acIndex = -1, acItems = [];
+
+  function acFermer(){
+    var ul = $('campSuggest');
+    if (ul) { ul.hidden = true; ul.innerHTML = ''; }
+    var inp = $('campAdresse');
+    if (inp) inp.setAttribute('aria-expanded', 'false');
+    acIndex = -1; acItems = [];
+  }
+  function acLibelle(p){
+    var rue = [p.housenumber, p.street || p.name].filter(Boolean).join(' ');
+    return [rue, p.city || p.county, p.postcode].filter(Boolean).join(', ');
+  }
+  function acChoisir(i){
+    var it = acItems[i];
+    if (!it) return;
+    campChoisi = { lat: it.lat, lng: it.lng, libelle: it.libelle };
+    var inp = $('campAdresse');
+    if (inp) inp.value = it.libelle;
+    campVille = it.ville || '';
+    acFermer();
+    chercherTerritoire();
+  }
+  function acRendre(list){
+    var ul = $('campSuggest');
+    if (!ul) return;
+    acItems = list;
+    if (!list.length) return acFermer();
+    ul.innerHTML = '';
+    list.forEach(function(it, i){
+      var li = document.createElement('li');
+      li.setAttribute('role', 'option');
+      li.textContent = it.libelle;
+      on(li, 'mousedown', function(e){ e.preventDefault(); acChoisir(i); });
+      ul.appendChild(li);
+    });
+    ul.hidden = false;
+    var inp = $('campAdresse');
+    if (inp) inp.setAttribute('aria-expanded', 'true');
+    acIndex = -1;
+  }
+  async function acChercher(q){
+    // Biais vers le dernier territoire, sinon le sud du Quebec.
+    var lat = (campCentre && campCentre.lat) || 45.7, lng = (campCentre && campCentre.lng) || -73.8;
+    try{
+      var r = await fetch('https://photon.komoot.io/api/?limit=5&lang=fr&lat=' + lat + '&lon=' + lng + '&q=' + encodeURIComponent(q));
+      var j = await r.json();
+      var vus = Object.create(null);
+      var out = [];
+      (j.features || []).forEach(function(f){
+        var p = f.properties || {};
+        if (p.countrycode && p.countrycode !== 'CA') return;
+        var lib = acLibelle(p);
+        if (!lib || vus[lib]) return;
+        vus[lib] = 1;
+        out.push({ libelle: lib, lat: f.geometry.coordinates[1], lng: f.geometry.coordinates[0], ville: p.city || p.county || '' });
+      });
+      acRendre(out);
+    }catch(_){ acFermer(); }
+  }
+
+  on($('campAdresse'), 'input', function(){
+    campChoisi = null;
+    var q = $('campAdresse').value.trim();
+    clearTimeout(acTimer);
+    if (q.length < 4) return acFermer();
+    acTimer = setTimeout(function(){ acChercher(q); }, 350);
+  });
+  on($('campAdresse'), 'blur', function(){ setTimeout(acFermer, 120); });
+  on($('campAdresse'), 'keydown', function(e){
+    var ul = $('campSuggest');
+    var ouvert = ul && !ul.hidden && acItems.length;
+    if (e.key === 'ArrowDown' && ouvert) {
+      e.preventDefault(); acIndex = Math.min(acItems.length - 1, acIndex + 1);
+    } else if (e.key === 'ArrowUp' && ouvert) {
+      e.preventDefault(); acIndex = Math.max(0, acIndex - 1);
+    } else if (e.key === 'Escape') {
+      acFermer(); return;
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (ouvert && acIndex >= 0) return acChoisir(acIndex);
+      acFermer(); chercherTerritoire(); return;
+    } else { return; }
+    [].forEach.call(ul.children, function(li, i){ li.classList.toggle('is-on', i === acIndex); });
+  });
+
+  on($('campChercher'), 'click', function(){ acFermer(); chercherTerritoire(); });
 
   on($('campConfirmer'), 'click', async function(){
     var btn = $('campConfirmer'), err = $('campErreur'), ok = $('campSucces');
@@ -558,6 +743,7 @@
         var q = new Date(d.deadline);
         ok.textContent = 'C’est parti ✓ Vos ' + nb(d.count) + ' lettres sont déposées à Postes Canada d’ici le '
           + q.toLocaleDateString('fr-CA', { weekday: 'long', day: 'numeric', month: 'long' }) + '.';
+        oublier();
         btn.textContent = 'Campagne confirmée';
         CAMP.restantes = d.restantes;
         return;
@@ -571,6 +757,39 @@
         'La confirmation n’a pas abouti. Réessayez dans un instant.';
     }catch(_){ err.textContent = 'La confirmation n’a pas abouti. Réessayez dans un instant.'; }
     btn.disabled = false; btn.textContent = libelleBouton();
+  });
+
+  // Recharger une campagne non payee : le serveur garde la liste, donc le
+  // territoire revient meme apres un vidage du navigateur ou sur un autre poste.
+  document.querySelectorAll('[data-reprendre]').forEach(function(b){
+    on(b, 'click', async function(){
+      var id = b.getAttribute('data-reprendre');
+      var libelle = b.textContent;
+      b.disabled = true; b.textContent = 'Chargement…';
+      try{
+        var r = await fetch('api/espace/campagne/' + id + '/territoire');
+        var d = await r.json();
+        if (r.ok && d.adresses && d.adresses.length) {
+          campCentre = d.centre;
+          campAdresses = d.adresses;
+          campRayon = d.rayon || 0;
+          campVille = d.ville || '';
+          campQuantite = d.quantite || CAMP.cible;
+          majQuantite();
+          if ($('campAdresse')) $('campAdresse').value = (d.centre && d.centre.libelle) || '';
+          if ($('campNotes')) $('campNotes').value = d.notes || '';
+          afficherTerritoire(d.adresses.length);
+          sauverTerritoire();
+          etat('Territoire rechargé — ' + nb(campAdresses.length) + ' adresses, ajustez la quantité ou relancez.');
+          var res = $('campResultat');
+          if (res) res.scrollIntoView({ block: 'start', behavior: 'smooth' });
+        } else {
+          var err = $('campErreur');
+          if (err) err.textContent = 'Cette campagne ne peut plus être modifiée.';
+        }
+      }catch(_){ }
+      b.disabled = false; b.textContent = libelle;
+    });
   });
 
   // Une commande restee en attente retient la campagne incluse : ce bouton la
@@ -623,6 +842,9 @@
     var ok = $('campSucces'), err = $('campErreur');
     show('courrier');
     setTimeout(reveiller, 60);
+    // Un paiement abandonne ne doit pas coûter le territoire : on le remet tel quel.
+    if (m[1] === 'paye' || m[1] === 'test') oublier();
+    else setTimeout(restaurerTerritoire, 80);
     if (m[1] === 'paye' || m[1] === 'test') {
       if (ok) ok.textContent = m[1] === 'test'
         ? 'Paiement test accepté ✓ Aucun montant réel n’a été prélevé. La campagne est enregistrée et identifiée comme un essai.'
@@ -638,5 +860,10 @@
   document.querySelectorAll('.esp-tab[data-tab="courrier"], [data-goto="courrier"]').forEach(function(b){
     on(b, 'click', reveiller);
   });
+
+  // Rafraichissement simple : si un territoire est en memoire, il revient seul.
+  if (!/[?&]campagne=/.test(window.location.search || '')) {
+    setTimeout(function(){ restaurerTerritoire(); }, 40);
+  }
 
 })();
