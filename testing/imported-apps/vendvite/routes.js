@@ -488,8 +488,8 @@ module.exports = function(services){
   // Membership lifecycle: invited → active (paid) → expired/cancelled.
   // A broker may edit and preview their page at ANY status; only `active`
   // + published makes the public page reachable and lead capture live.
-  // Payment is a PayPal subscription; PAYPAL_* come from api_variables
-  // (services.externalVars), never hardcoded.
+  // Payment is a PayPal subscription; PAYPAL_* come from the tenant's secure
+  // API-variable store, never from generated code or public settings.
 
   var BROKER_COOKIE = 'vv_courtier';
   var BROKER_TOKEN_TTL_H = 72;
@@ -900,18 +900,20 @@ module.exports = function(services){
 
 
   // ── PayPal subscription ($599/yr + GST + QST). Credentials come from the
-  //    tenant's api_variables (services.externalVars) — never hardcoded.
+  //    tenant's secure API-variable store — never hardcoded.
   //    PAYPAL_MODE: 'live' | 'sandbox' (defaults to sandbox, fail-safe).
   function paypalCfg(){
-    var v = services.externalVars || {};
-    var mode = (v.PAYPAL_MODE || 'sandbox').toLowerCase();
+    // Keep every credential as a literal externalVars access. The tenant
+    // dashboard discovers these exact names and turns them into secure fields
+    // on its API Keys tab; aliases make required credentials invisible there.
+    var mode = String(services.externalVars.PAYPAL_MODE || 'sandbox').trim().toLowerCase();
+    if (mode !== 'live') mode = 'sandbox';
     return {
       mode: mode,
       base: mode === 'live' ? 'https://api-m.paypal.com' : 'https://api-m.sandbox.paypal.com',
-      clientId: v.PAYPAL_CLIENT_ID || '',
-      secret: v.PAYPAL_SECRET || v.PAYPAL_CLIENT_SECRET || '',
-      planId: v.PAYPAL_PLAN_ID || '',
-      webhookId: v.PAYPAL_WEBHOOK_ID || ''
+      clientId: String(services.externalVars.PAYPAL_CLIENT_ID || '').trim(),
+      secret: String(services.externalVars.PAYPAL_CLIENT_SECRET || '').trim(),
+      planId: String(services.externalVars.PAYPAL_PLAN_ID || '').trim()
     };
   }
   function paypalReady(c){ return !!(c.clientId && c.secret && c.planId); }
