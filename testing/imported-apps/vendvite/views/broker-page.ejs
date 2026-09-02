@@ -121,11 +121,7 @@
     <div class="testi-grid">
       <% testimonials.forEach(function(tm){ %>
       <article class="testi-card">
-        <svg class="testi-paperclip" viewBox="0 0 32 64" aria-hidden="true" focusable="false">
-          <path class="testi-paperclip-depth" d="M24.5 30.5 13.7 51.8a7 7 0 0 1-12.5-6.3L17.5 13.3a5 5 0 0 1 8.9 4.5L10.1 50a3 3 0 0 1-5.4-2.7l13.1-25.9"/>
-          <path class="testi-paperclip-wire" d="M24.5 30.5 13.7 51.8a7 7 0 0 1-12.5-6.3L17.5 13.3a5 5 0 0 1 8.9 4.5L10.1 50a3 3 0 0 1-5.4-2.7l13.1-25.9"/>
-          <path class="testi-paperclip-shine" d="M24.5 30.5 13.7 51.8a7 7 0 0 1-12.5-6.3L17.5 13.3a5 5 0 0 1 8.9 4.5L10.1 50a3 3 0 0 1-5.4-2.7l13.1-25.9"/>
-        </svg>
+        <span class="testi-clip" aria-hidden="true"></span>
         <p class="testi-quote" data-content-source="testimonials:quote" data-content-id="<%= tm.id %>"><%= tm.quote %></p>
         <div class="testi-meta">
           <div class="testi-name" data-content-source="testimonials:author" data-content-id="<%= tm.id %>"><%= tm.author %></div>
