@@ -30,11 +30,20 @@
         <p><% if(paypalState.mode==='sandbox'){ %>Les abonnements utilisent les comptes PayPal sandbox. Ils génèrent une facture marquée TEST, sans activer la page du courtier et sans gonfler les ventes.<% } else { %>Les prochains abonnements utilisent vos identifiants PayPal de production, activent la page et entrent au registre comptable.<% } %></p>
       </div>
       <div class="paypal-mode-actions">
-        <span class="paypal-credential <%= paypalState.sandboxReady?'is-ready':'is-missing' %>">Sandbox <%= paypalState.sandboxReady?'configuré':'à configurer' %></span>
+        <span class="paypal-credential <%= paypalState.sandboxCredentialsReady?'is-ready':'is-missing' %>">Clés test <%= paypalState.sandboxCredentialsReady?'configurées':'manquantes' %></span>
         <span class="paypal-credential <%= paypalState.liveReady?'is-ready':'is-missing' %>">Réel <%= paypalState.liveReady?'configuré':'à configurer' %></span>
+        <% if(paypalState.sandboxPlanId){ %>
+          <div class="paypal-plan-state"><span>Plan sandbox annuel</span><code><%= paypalState.sandboxPlanId %></code><strong>688,70&nbsp;$ CAD / an</strong></div>
+        <% } else if(paypalState.sandboxCredentialsReady){ %>
+          <button class="btn-sm paypal-plan-btn" id="paypalPlanBtn">Créer le plan test · 688,70&nbsp;$/an</button>
+          <small class="paypal-plan-help">VendVite créera automatiquement le produit et le plan dans PayPal Sandbox. Aucun argent réel.</small>
+        <% } else { %>
+          <small class="paypal-plan-help">Ajoutez le Client ID et le Secret sandbox dans l’onglet API Keys. VendVite pourra ensuite créer le plan pour vous.</small>
+        <% } %>
         <% var targetMode=paypalState.mode==='sandbox'?'live':'sandbox'; var targetReady=targetMode==='sandbox'?paypalState.sandboxReady:paypalState.liveReady; %>
         <button class="btn-sm paypal-mode-btn" id="paypalModeBtn" data-mode="<%= targetMode %>" <%= targetReady?'':'disabled' %>><%= targetMode==='sandbox'?'Passer en mode test':'Passer en mode réel' %></button>
-        <% if(!targetReady){ %><small>Ajoutez d’abord les trois clés <%= targetMode==='sandbox'?'sandbox':'réelles' %> dans l’onglet API Keys du tenant.</small><% } %>
+        <% if(!targetReady&&targetMode==='sandbox'){ %><small>Créez d’abord le plan sandbox ci-dessus pour déverrouiller le mode test.</small><% } else if(!targetReady){ %><small>Ajoutez d’abord les trois clés réelles dans l’onglet API Keys du tenant.</small><% } %>
+        <p id="paypalPlanStatus" class="paypal-mode-status" role="status"></p>
         <p id="paypalModeStatus" class="paypal-mode-status" role="status"></p>
       </div>
     </section>
@@ -97,6 +106,21 @@
   var b=document.getElementById('adminBurger'),s=document.getElementById('adminSidebar');
   if(b&&s)b.addEventListener('click',function(){s.classList.toggle('open')});
   var modeBtn=document.getElementById('paypalModeBtn'),status=document.getElementById('paypalModeStatus');
+  var planBtn=document.getElementById('paypalPlanBtn'),planStatus=document.getElementById('paypalPlanStatus');
+  if(planBtn) planBtn.addEventListener('click',async function(){
+    if(!window.confirm('Créer dans PayPal Sandbox le produit VendVite et son plan annuel de 688,70 $ CAD? Aucun argent réel ne sera touché.')) return;
+    planBtn.disabled=true; planStatus.textContent='Création sécurisée dans PayPal Sandbox…';
+    try{
+      var response=await fetch('../api/admin/paypal/sandbox/plan',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});
+      var data=await response.json();
+      if(!response.ok){
+        if(data.code==='SANDBOX_CREDENTIALS_MISSING') throw new Error('Ajoutez d’abord le Client ID et le Secret sandbox.');
+        throw new Error('PayPal n’a pas pu créer le plan. Vérifiez les clés sandbox.');
+      }
+      planStatus.textContent=(data.existing?'Plan sandbox vérifié : ':'Plan sandbox créé : ')+data.planId+'. Rechargement…';
+      window.location.reload();
+    }catch(error){ planStatus.textContent=error.message; planBtn.disabled=false; }
+  });
   if(modeBtn) modeBtn.addEventListener('click',async function(){
     var mode=modeBtn.dataset.mode;
     var question=mode==='live'?'Passer PayPal en mode RÉEL? Les prochains abonnements encaisseront de vrais paiements et activeront les pages.':'Passer PayPal en mode sandbox? Les prochains parcours seront des tests sans argent réel.';

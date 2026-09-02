@@ -411,7 +411,13 @@ module.exports = function(services){
       var monthly=await db.all("SELECT date_trunc('month',payment_time) month,COUNT(*)::int invoice_count,COALESCE(SUM(total_cents),0)::bigint total_cents FROM broker_invoices WHERE COALESCE(is_test,0)=0 AND payment_time>NOW()-INTERVAL '12 months' GROUP BY 1 ORDER BY 1");
       var livePaypal=await paypalCfg('live');
       var sandboxPaypal=await paypalCfg('sandbox');
-      var paypalState={ mode:(await currentPaypalMode()), liveReady:paypalReady(livePaypal), sandboxReady:paypalReady(sandboxPaypal) };
+      var paypalState={
+        mode:(await currentPaypalMode()),
+        liveReady:paypalReady(livePaypal),
+        sandboxReady:paypalReady(sandboxPaypal),
+        sandboxCredentialsReady:!!(sandboxPaypal.clientId&&sandboxPaypal.secret),
+        sandboxPlanId:sandboxPaypal.planId||''
+      };
       var maxMonth=1;
       (monthly||[]).forEach(function(m){ maxMonth=Math.max(maxMonth,Number(m.total_cents||0)); });
       res.render('admin-ventes', Object.assign(L, { active:'ventes', totals:totals||{}, members:members||{}, invoices:invoices||[], monthly:monthly||[], maxMonth:maxMonth, paypalState:paypalState }));
@@ -427,6 +433,65 @@ module.exports = function(services){
       await db.run("INSERT INTO admin_settings (key,value,updated_at) VALUES ('paypal_mode',$1,NOW()) ON CONFLICT (key) DO UPDATE SET value=EXCLUDED.value,updated_at=NOW()",[mode]);
       res.json({ success:true, mode:mode });
     }catch(e){ console.error('paypal mode',e); res.status(500).json({ error:'server' }); }
+  });
+  router.post('/api/admin/paypal/sandbox/plan', async function(req,res){
+    if(!apiAdmin(req,res)) return;
+    try{
+      var c=await paypalCfg('sandbox');
+      if(!c.clientId||!c.secret) return res.status(409).json({ error:'sandbox_credentials_missing', code:'SANDBOX_CREDENTIALS_MISSING' });
+      var token=await paypalToken(c);
+      var authHeaders={ 'Authorization':'Bearer '+token, 'Content-Type':'application/json' };
+
+      // Reuse and verify a plan already entered or created. This makes the
+      // button idempotent and avoids littering PayPal with duplicate plans.
+      if(c.planId){
+        var existingResponse=await services.fetch(c.base+'/v1/billing/plans/'+encodeURIComponent(c.planId),{ headers:{'Authorization':'Bearer '+token} });
+        if(existingResponse.ok){
+          var existingPlan=await existingResponse.json();
+          if(existingPlan.status!=='ACTIVE'){
+            var activation=await services.fetch(c.base+'/v1/billing/plans/'+encodeURIComponent(c.planId)+'/activate',{ method:'POST',headers:authHeaders,body:'{}' });
+            if(!activation.ok) return res.status(502).json({ error:'paypal_plan_activation', code:'PAYPAL_PLAN_ACTIVATION_FAILED' });
+          }
+          await saveAdminSetting('paypal_sandbox_plan_id',c.planId);
+          return res.json({ success:true, planId:c.planId, existing:true });
+        }
+        if(existingResponse.status!==404) return res.status(502).json({ error:'paypal_plan_lookup', code:'PAYPAL_UNAVAILABLE' });
+      }
+
+      var productId=await readAdminSetting('paypal_sandbox_product_id');
+      if(productId){
+        var productCheck=await services.fetch(c.base+'/v1/catalogs/products/'+encodeURIComponent(productId),{ headers:{'Authorization':'Bearer '+token} });
+        if(productCheck.status===404) productId='';
+        else if(!productCheck.ok) return res.status(502).json({ error:'paypal_product_lookup', code:'PAYPAL_UNAVAILABLE' });
+      }
+      if(!productId){
+        var productResponse=await services.fetch(c.base+'/v1/catalogs/products',{
+          method:'POST',
+          headers:Object.assign({},authHeaders,{'PayPal-Request-Id':'vendvite-sbx-product-v1','Prefer':'return=representation'}),
+          body:JSON.stringify({ name:'VendVite — Adhésion annuelle (sandbox)',description:'Outil annuel de génération de pistes pour courtiers immobiliers — environnement de test',type:'SERVICE',category:'SOFTWARE',home_url:'https://vendvite.app' })
+        });
+        var productBody=await productResponse.json().catch(function(){return{};});
+        if(!productResponse.ok||!productBody.id){ console.error('paypal sandbox product',productResponse.status,productBody); return res.status(502).json({ error:'paypal_product',code:'PAYPAL_PRODUCT_FAILED' }); }
+        productId=String(productBody.id);
+        await saveAdminSetting('paypal_sandbox_product_id',productId);
+      }
+
+      var planResponse=await services.fetch(c.base+'/v1/billing/plans',{
+        method:'POST',
+        headers:Object.assign({},authHeaders,{'PayPal-Request-Id':'vendvite-sbx-plan-68870-v1','Prefer':'return=representation'}),
+        body:JSON.stringify({
+          product_id:productId,
+          name:'VendVite annuel — 688,70 $ CAD (sandbox)',
+          description:'599,00 $ + TPS 29,95 $ + TVQ 59,75 $ inclus — TEST SEULEMENT',
+          billing_cycles:[{ frequency:{interval_unit:'YEAR',interval_count:1},tenure_type:'REGULAR',sequence:1,total_cycles:0,pricing_scheme:{fixed_price:{value:'688.70',currency_code:'CAD'}} }],
+          payment_preferences:{auto_bill_outstanding:true,payment_failure_threshold:3}
+        })
+      });
+      var planBody=await planResponse.json().catch(function(){return{};});
+      if(!planResponse.ok||!/^P-/.test(String(planBody.id||''))){ console.error('paypal sandbox plan',planResponse.status,planBody); return res.status(502).json({ error:'paypal_plan',code:'PAYPAL_PLAN_FAILED' }); }
+      await saveAdminSetting('paypal_sandbox_plan_id',String(planBody.id));
+      res.json({ success:true,planId:String(planBody.id),existing:false });
+    }catch(e){ console.error('paypal sandbox plan creator',e); res.status(500).json({ error:'server' }); }
   });
   router.get('/admin/ventes/factures/:id/pdf', requireAdmin, async function(req,res){
     try{
@@ -1030,24 +1095,31 @@ module.exports = function(services){
   //    tenant's secure API-variable store — never hardcoded.
   //    Mode is selected in /admin/ventes. Live and sandbox credentials are
   //    deliberately separate so a test can never reach a production account.
+  async function readAdminSetting(key){
+    try{ var row=await db.get('SELECT value FROM admin_settings WHERE key=$1',[key]); return String(row&&row.value||'').trim(); }
+    catch(e){ return ''; }
+  }
+  async function saveAdminSetting(key,value){
+    await db.run('INSERT INTO admin_settings (key,value,updated_at) VALUES ($1,$2,NOW()) ON CONFLICT (key) DO UPDATE SET value=EXCLUDED.value,updated_at=NOW()',[key,String(value||'').trim()]);
+  }
   async function currentPaypalMode(forcedMode){
     var forced=String(forcedMode||'').trim().toLowerCase();
     if(forced==='live'||forced==='sandbox') return forced;
-    var saved=null;
-    try{ saved=await db.get("SELECT value FROM admin_settings WHERE key='paypal_mode'"); }catch(e){}
-    var mode=String(saved&&saved.value||services.externalVars.PAYPAL_MODE||'sandbox').trim().toLowerCase();
+    var saved=await readAdminSetting('paypal_mode');
+    var mode=String(saved||services.externalVars.PAYPAL_MODE||'sandbox').trim().toLowerCase();
     return mode==='live'?'live':'sandbox';
   }
   async function paypalCfg(forcedMode){
     // Literal accesses make all six secure fields discoverable in the tenant
     // dashboard. Sandbox never falls back to production credentials.
     var mode=await currentPaypalMode(forcedMode);
+    var generatedSandboxPlan=mode==='sandbox'?await readAdminSetting('paypal_sandbox_plan_id'):'';
     return {
       mode: mode,
       base: mode === 'live' ? 'https://api-m.paypal.com' : 'https://api-m.sandbox.paypal.com',
       clientId: String(mode==='live' ? (services.externalVars.PAYPAL_CLIENT_ID||'') : (services.externalVars.PAYPAL_SANDBOX_CLIENT_ID||'')).trim(),
       secret: String(mode==='live' ? (services.externalVars.PAYPAL_CLIENT_SECRET||'') : (services.externalVars.PAYPAL_SANDBOX_CLIENT_SECRET||'')).trim(),
-      planId: String(mode==='live' ? (services.externalVars.PAYPAL_PLAN_ID||'') : (services.externalVars.PAYPAL_SANDBOX_PLAN_ID||'')).trim()
+      planId: String(mode==='live' ? (services.externalVars.PAYPAL_PLAN_ID||'') : (generatedSandboxPlan||services.externalVars.PAYPAL_SANDBOX_PLAN_ID||'')).trim()
     };
   }
   function paypalReady(c){ return !!(c.clientId && c.secret && c.planId); }
