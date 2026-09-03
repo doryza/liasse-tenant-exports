@@ -495,10 +495,36 @@ a:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid var(
 .camp-centre{margin:0 0 12px;color:var(--ink-faint);font-size:.76rem;line-height:1.5;}
 .camp-centre span{color:var(--ink-dim);}
 
-.camp-carte{height:380px;border:1px solid var(--hair);border-radius:8px;overflow:hidden;background:#0a0708;}
-.camp-carte .leaflet-container{background:#0a0708;font-family:var(--sans);}
+.camp-carte{position:relative;height:380px;border:1px solid var(--hair);border-radius:8px;overflow:hidden;background:#0a0708;font-family:var(--sans);isolation:isolate;}
+/* Critical Leaflet layout kept locally: the map remains correctly stacked even
+   when the optional CDN stylesheet is delayed or blocked. */
+.camp-carte.leaflet-container{overflow:hidden;outline:0;touch-action:pan-x pan-y;background:#0a0708;}
+.camp-carte .leaflet-pane,.camp-carte .leaflet-tile,.camp-carte .leaflet-marker-icon,.camp-carte .leaflet-marker-shadow,.camp-carte .leaflet-tile-container,.camp-carte .leaflet-map-pane svg,.camp-carte .leaflet-map-pane canvas,.camp-carte .leaflet-zoom-box{position:absolute;left:0;top:0;}
+.camp-carte .leaflet-map-pane{z-index:2;}
+.camp-carte .leaflet-tile-pane{z-index:2;}
+.camp-carte .leaflet-overlay-pane{z-index:4;}
+.camp-carte .leaflet-shadow-pane{z-index:5;}
+.camp-carte .leaflet-marker-pane{z-index:6;}
+.camp-carte .leaflet-tooltip-pane{z-index:7;}
+.camp-carte .leaflet-popup-pane{z-index:8;}
+.camp-carte .leaflet-tile,.camp-carte .leaflet-marker-icon,.camp-carte .leaflet-marker-shadow{user-select:none;-webkit-user-drag:none;max-width:none!important;max-height:none!important;}
+.camp-carte .leaflet-tile{visibility:hidden;}
+.camp-carte .leaflet-tile-loaded{visibility:inherit;}
+.camp-carte .leaflet-control{position:relative;z-index:800;pointer-events:auto;}
+.camp-carte .leaflet-top,.camp-carte .leaflet-bottom{position:absolute;z-index:1000;pointer-events:none;}
+.camp-carte .leaflet-top{top:0}.camp-carte .leaflet-right{right:0}.camp-carte .leaflet-bottom{bottom:0}.camp-carte .leaflet-left{left:0}
+.camp-carte .leaflet-control-zoom{margin:10px;border:1px solid rgba(199,154,91,.32);border-radius:5px;overflow:hidden;box-shadow:0 4px 18px rgba(0,0,0,.35);}
+.camp-carte .leaflet-control-zoom a{display:grid;place-items:center;width:28px;height:28px;background:#171112;color:var(--ink);font:700 18px/1 var(--sans);text-decoration:none;border-bottom:1px solid var(--hair);}
+.camp-carte .leaflet-control-zoom a:last-child{border-bottom:0;}
+.camp-carte .leaflet-control-attribution{margin:0;padding:2px 5px;background:rgba(13,10,11,.78);color:var(--ink-faint);font-size:9px;}
+.camp-carte .leaflet-control-attribution a{color:var(--gold);}
 /* Les tuiles OSM sont claires : on les assourdit pour qu'elles tiennent dans l'interface sombre sans devenir illisibles. */
 .camp-carte .leaflet-tile-pane{filter:grayscale(.55) brightness(.82) contrast(1.08) sepia(.12);}
+.camp-carte.is-fallback{display:block;background:radial-gradient(circle at 50% 48%,rgba(199,154,91,.12),transparent 38%),linear-gradient(145deg,#120d0e,#080607);}
+.camp-carte.is-fallback svg{display:block;width:100%;height:100%;}
+.camp-map-fallback-label{position:absolute;left:16px;bottom:14px;z-index:2;display:flex;max-width:calc(100% - 32px);flex-direction:column;gap:3px;padding:8px 10px;border:1px solid rgba(199,154,91,.24);border-radius:5px;background:rgba(10,7,8,.82);backdrop-filter:blur(5px);}
+.camp-map-fallback-label strong{color:var(--ink);font-family:var(--serif);font-size:.9rem;}
+.camp-map-fallback-label span{color:var(--ink-faint);font-family:var(--mono);font-size:.48rem;line-height:1.45;letter-spacing:.05em;text-transform:uppercase;}
 .camp-pin i{display:block;width:12px;height:12px;border-radius:50%;background:var(--brand);border:1.5px solid rgba(245,239,230,.85);box-shadow:0 0 7px rgba(227,11,45,.65);}
 .camp-centre-pin i{display:block;width:22px;height:22px;border-radius:50%;background:var(--gold);border:3px solid #0D0A0B;box-shadow:0 0 0 3px rgba(199,154,91,.5),0 0 16px rgba(199,154,91,.7);}
 

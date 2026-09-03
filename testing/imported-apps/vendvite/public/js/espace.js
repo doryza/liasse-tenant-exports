@@ -188,7 +188,8 @@
     'sports_centre', 'stadium', 'train_station', 'fire_station'];
 
   var campCentre = null, campAdresses = [], campRayon = 0, campVille = '', campRepriseId = 0;
-  var campCarte = null, campCouche = null, campPret = false;
+  var campCarte = null, campCouche = null, campTuiles = null;
+  var campCarteJeton = 0, campCarteObserver = null, campCarteReveil = null;
 
   // ── Persistance locale ─────────────────────────────────────────────────────
   //    Un aller-retour vers PayPal, un rafraichissement ou un onglet ferme ne
@@ -364,39 +365,141 @@
     return { liste: [], rayon: 0, total: 0 };
   }
 
-  function dessinerCarte(){
-    if (!window.L || !campCentre) return;
-    var boite = $('campCarte');
-    if (!boite) return;
-    if (!campCarte) {
-      campCarte = L.map(boite, { scrollWheelZoom: false, attributionControl: true });
-      // Tuiles OpenStreetMap : CARTO exige desormais une cle et filigrane
-      // « API KEY REQUIRED » sur chaque tuile sans elle.
-      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap', maxZoom: 19
-      }).addTo(campCarte);
+  function coordValide(p){
+    if (!p || !isFinite(Number(p.lat)) || !isFinite(Number(p.lng))) return false;
+    return Math.abs(Number(p.lat)) <= 90 && Math.abs(Number(p.lng)) <= 180;
+  }
+
+  // A map must never become a blank rectangle just because Leaflet, its CSS,
+  // or the remote tile server is unavailable. This dependency-free SVG keeps
+  // the selected territory legible in every browser and network state.
+  function dessinerCarteSecours(boite){
+    if (!boite || !coordValide(campCentre)) return;
+    if (campCarte) {
+      try { campCarte.remove(); } catch(_){ }
+      campCarte = null; campCouche = null; campTuiles = null;
     }
-    if (campCouche) campCarte.removeLayer(campCouche);
-    campCouche = L.layerGroup().addTo(campCarte);
+    boite.innerHTML = '';
+    boite.classList.add('is-fallback');
+    var ns = 'http://www.w3.org/2000/svg';
+    var svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('viewBox', '0 0 1000 600');
+    svg.setAttribute('preserveAspectRatio', 'none');
+    svg.setAttribute('aria-hidden', 'true');
+    var defs = document.createElementNS(ns, 'defs');
+    var pattern = document.createElementNS(ns, 'pattern');
+    pattern.setAttribute('id', 'campGrid'); pattern.setAttribute('width', '62'); pattern.setAttribute('height', '62'); pattern.setAttribute('patternUnits', 'userSpaceOnUse');
+    var gridPath = document.createElementNS(ns, 'path');
+    gridPath.setAttribute('d', 'M 62 0 L 0 0 0 62'); gridPath.setAttribute('fill', 'none'); gridPath.setAttribute('stroke', 'rgba(199,154,91,.12)'); gridPath.setAttribute('stroke-width', '1');
+    pattern.appendChild(gridPath); defs.appendChild(pattern); svg.appendChild(defs);
+    var fond = document.createElementNS(ns, 'rect');
+    fond.setAttribute('width', '1000'); fond.setAttribute('height', '600'); fond.setAttribute('fill', 'url(#campGrid)'); svg.appendChild(fond);
 
-    campAdresses.forEach(function(a){
-      L.marker([a.lat, a.lng], {
-        icon: L.divIcon({ className: 'camp-pin', html: '<i></i>', iconSize: [12, 12], iconAnchor: [6, 6] })
-      }).bindTooltip(a.numero + ' ' + a.rue, { direction: 'top' }).addTo(campCouche);
+    var valides = campAdresses.filter(coordValide).concat([campCentre]);
+    var lats = valides.map(function(p){ return Number(p.lat); });
+    var lngs = valides.map(function(p){ return Number(p.lng); });
+    var minLat = Math.min.apply(Math, lats), maxLat = Math.max.apply(Math, lats);
+    var minLng = Math.min.apply(Math, lngs), maxLng = Math.max.apply(Math, lngs);
+    if (maxLat === minLat) { maxLat += .001; minLat -= .001; }
+    if (maxLng === minLng) { maxLng += .001; minLng -= .001; }
+    function xy(p){
+      return {
+        x: 55 + ((Number(p.lng) - minLng) / (maxLng - minLng)) * 890,
+        y: 545 - ((Number(p.lat) - minLat) / (maxLat - minLat)) * 490
+      };
+    }
+    campAdresses.filter(coordValide).forEach(function(a){
+      var p = xy(a), point = document.createElementNS(ns, 'circle');
+      point.setAttribute('cx', p.x.toFixed(1)); point.setAttribute('cy', p.y.toFixed(1)); point.setAttribute('r', '5');
+      point.setAttribute('fill', '#e30b2d'); point.setAttribute('fill-opacity', '.72'); svg.appendChild(point);
     });
-    L.marker([campCentre.lat, campCentre.lng], {
-      icon: L.divIcon({ className: 'camp-centre-pin', html: '<i></i>', iconSize: [22, 22], iconAnchor: [11, 11] }),
-      zIndexOffset: 500
-    }).addTo(campCouche);
-    L.circle([campCentre.lat, campCentre.lng], {
-      radius: campAdresses.length ? campAdresses[campAdresses.length - 1].metres : 100,
-      color: '#c8a44d', weight: 1, fillColor: '#c8a44d', fillOpacity: .07
-    }).addTo(campCouche);
+    var c = xy(campCentre), halo = document.createElementNS(ns, 'circle');
+    halo.setAttribute('cx', c.x.toFixed(1)); halo.setAttribute('cy', c.y.toFixed(1)); halo.setAttribute('r', '19');
+    halo.setAttribute('fill', '#c79a5b'); halo.setAttribute('fill-opacity', '.22'); halo.setAttribute('stroke', '#c79a5b'); halo.setAttribute('stroke-width', '3'); svg.appendChild(halo);
+    var centre = document.createElementNS(ns, 'circle');
+    centre.setAttribute('cx', c.x.toFixed(1)); centre.setAttribute('cy', c.y.toFixed(1)); centre.setAttribute('r', '7'); centre.setAttribute('fill', '#f5efe6'); svg.appendChild(centre);
+    boite.appendChild(svg);
+    var legende = document.createElement('div'); legende.className = 'camp-map-fallback-label';
+    var titre = document.createElement('strong'); titre.textContent = T('esp_map_fallback_title');
+    var note = document.createElement('span'); note.textContent = T('esp_map_fallback_note');
+    legende.appendChild(titre); legende.appendChild(note); boite.appendChild(legende);
+  }
 
-    var pts = campAdresses.map(function(a){ return [a.lat, a.lng]; });
-    pts.push([campCentre.lat, campCentre.lng]);
-    campCarte.fitBounds(L.latLngBounds(pts).pad(0.12));
-    setTimeout(function(){ campCarte.invalidateSize(); }, 60);
+  function reveillerCarte(){
+    clearTimeout(campCarteReveil);
+    campCarteReveil = setTimeout(function(){
+      if (!campCentre) return;
+      if (!campCarte) { dessinerCarte(); return; }
+      try { campCarte.invalidateSize({ pan: false }); } catch(_){ }
+    }, 80);
+  }
+
+  function dessinerCarteLeaflet(boite, jeton){
+    if (jeton !== campCarteJeton || !window.L || !coordValide(campCentre)) return;
+    try{
+      boite.classList.remove('is-fallback');
+      if (!campCarte) {
+        boite.innerHTML = '';
+        campCarte = window.L.map(boite, { scrollWheelZoom: false, attributionControl: true, zoomControl: true });
+        var erreursTuiles = 0;
+        campTuiles = window.L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; OpenStreetMap', maxZoom: 19, crossOrigin: true
+        });
+        campTuiles.on('tileerror', function(){
+          erreursTuiles++;
+          if (erreursTuiles >= 3 && jeton === campCarteJeton && !boite.classList.contains('is-fallback')) dessinerCarteSecours(boite);
+        });
+        campTuiles.addTo(campCarte);
+        if (window.ResizeObserver && !campCarteObserver) {
+          campCarteObserver = new ResizeObserver(reveillerCarte);
+          campCarteObserver.observe(boite);
+        }
+      }
+      if (campCouche) campCarte.removeLayer(campCouche);
+      campCouche = window.L.layerGroup().addTo(campCarte);
+      campAdresses.filter(coordValide).forEach(function(a){
+        window.L.marker([Number(a.lat), Number(a.lng)], {
+          icon: window.L.divIcon({ className: 'camp-pin', html: '<i></i>', iconSize: [12, 12], iconAnchor: [6, 6] })
+        }).bindTooltip(a.numero + ' ' + a.rue, { direction: 'top' }).addTo(campCouche);
+      });
+      window.L.marker([Number(campCentre.lat), Number(campCentre.lng)], {
+        icon: window.L.divIcon({ className: 'camp-centre-pin', html: '<i></i>', iconSize: [22, 22], iconAnchor: [11, 11] }), zIndexOffset: 500
+      }).addTo(campCouche);
+      window.L.circle([Number(campCentre.lat), Number(campCentre.lng)], {
+        radius: campAdresses.length ? Number(campAdresses[campAdresses.length - 1].metres) || 100 : 100,
+        color: '#c8a44d', weight: 1, fillColor: '#c8a44d', fillOpacity: .07
+      }).addTo(campCouche);
+      var pts = campAdresses.filter(coordValide).map(function(a){ return [Number(a.lat), Number(a.lng)]; });
+      pts.push([Number(campCentre.lat), Number(campCentre.lng)]);
+      // The result panel has only just become visible. Size first, fit on the
+      // next paint, then size once more after fonts/layout have settled.
+      campCarte.invalidateSize({ pan: false });
+      requestAnimationFrame(function(){
+        if (!campCarte || jeton !== campCarteJeton) return;
+        try { campCarte.fitBounds(window.L.latLngBounds(pts).pad(.12), { maxZoom: 17, animate: false }); } catch(_){ }
+        setTimeout(function(){ if (campCarte) campCarte.invalidateSize({ pan: false }); }, 180);
+      });
+    }catch(_){ dessinerCarteSecours(boite); }
+  }
+
+  function dessinerCarte(){
+    var boite = $('campCarte');
+    if (!boite || !coordValide(campCentre)) return;
+    var jeton = ++campCarteJeton;
+    // A complete map immediately when the CDN is unavailable; if Leaflet is
+    // present, upgrade it on the next paint after the hidden panel is revealed.
+    if (!window.L) {
+      dessinerCarteSecours(boite);
+      // The CDN script is deferred and may finish after restored campaign data.
+      // Keep the useful fallback visible, then upgrade in place if it arrives.
+      [250, 1000, 2500, 8000].forEach(function(delai){
+        setTimeout(function(){
+          if (jeton === campCarteJeton && window.L) dessinerCarteLeaflet(boite, jeton);
+        }, delai);
+      });
+      return;
+    }
+    requestAnimationFrame(function(){ dessinerCarteLeaflet(boite, jeton); });
   }
 
   function rendreListe(){
@@ -437,10 +540,11 @@
   }
 
   function afficherTerritoire(total){
+    if (!coordValide(campCentre) || !campAdresses.length) return;
     var res = $('campResultat');
     if (res) res.hidden = false;
     compteur($('campNombre'), campAdresses.length);
-    var loin = campAdresses[campAdresses.length - 1].metres;
+    var loin = Number(campAdresses[campAdresses.length - 1].metres) || 0;
     var elPortee = $('campPortee');
     if (elPortee) elPortee.textContent = loin < 1000 ? loin + ' m' : (loin / 1000).toFixed(1).replace('.', ',') + ' km';
     var elTrouve = $('campTrouve');
@@ -457,9 +561,11 @@
   // onglet rouvert. Aucun appel reseau, la carte se redessine telle quelle.
   function restaurerTerritoire(){
     var o = lire(CLE);
-    if (!o || !o.centre || !o.adresses || !o.adresses.length) return false;
+    if (!o || !coordValide(o.centre) || !Array.isArray(o.adresses)) return false;
+    var adressesValides = o.adresses.filter(coordValide);
+    if (!adressesValides.length) return false;
     campCentre = o.centre;
-    campAdresses = o.adresses;
+    campAdresses = adressesValides;
     campRayon = o.rayon || 0;
     campVille = o.ville || '';
     campQuantite = o.quantite || CAMP.cible;
@@ -807,13 +913,15 @@
     var vueL = $('campSheet');
     if (vueL && vueL.parentNode) { try{ new ResizeObserver(ajusterLettre).observe(vueL.parentNode); }catch(_){ } }
   }
-  on(window, 'resize', ajusterLettre);
+  on(window, 'resize', function(){ ajusterLettre(); reveillerCarte(); });
+  on(window, 'orientationchange', reveillerCarte);
+  on(window, 'pageshow', reveillerCarte);
+  on(document, 'visibilitychange', function(){ if (!document.hidden) reveillerCarte(); });
 
   // Recalculate the fixed-format letter after the page has settled.
   function reveiller(){
     setTimeout(ajusterLettre, 40);
-    if (!campPret) { campPret = true; return; }
-    if (campCarte) setTimeout(function(){ campCarte.invalidateSize(); }, 60);
+    reveillerCarte();
   }
 
   // Retour de PayPal : la route revient directement sur cette page.
