@@ -1278,7 +1278,7 @@ module.exports = function(services){
 
   async function requireBroker(req, res){
     var b = await currentBroker(req);
-    if (!b) { res.redirect('acces-expire'); return null; }
+    if (!b) { res.redirect(tp(req, '/acces-expire')); return null; }
     return b;
   }
   async function requireBrokerApi(req, res){
