@@ -72,7 +72,7 @@
         var payload={ name:name, email:((q('leadEmail') && q('leadEmail').value) || '').trim(), phone:((q('leadPhone') && q('leadPhone').value) || '').trim(), timeframe:((q('leadTime') && q('leadTime').value) || '').trim(), address:address, lat:((q('leadLat') && q('leadLat').value) || ''), lng:((q('leadLng') && q('leadLng').value) || '') };
         // On a broker's page the lead belongs to that broker, not to the
         // house funnel — VV_BROKER is emitted only by broker-page.ejs.
-        var leadUrl = window.VV_BROKER ? ('api/courtier/' + window.VV_BROKER + '/piste') : 'api/lead';
+        var leadUrl = window.VV_LEAD_URL || (window.VV_BROKER ? ('api/courtier/' + window.VV_BROKER + '/piste') : 'api/lead');
         fetch(leadUrl, { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify(payload) })
           .then(function(r){ if(!r.ok) throw new Error('bad'); return r.json(); })
           .then(function(){ stampFiche(); })

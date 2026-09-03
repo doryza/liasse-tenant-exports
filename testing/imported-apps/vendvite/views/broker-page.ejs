@@ -6,7 +6,12 @@
   <a class="bp-peek-btn" href="espace"><%= t.bp_preview_back %></a>
 </div>
 <% } %>
-<script>window.VV_BROKER = <%- JSON.stringify(typeof brokerSlug !== 'undefined' ? brokerSlug : null) %>;</script>
+<script>
+window.VV_BROKER = <%- JSON.stringify(typeof brokerSlug !== 'undefined' ? brokerSlug : null) %>;
+window.VV_LEAD_URL = <%- JSON.stringify(typeof brokerSlug !== 'undefined' && brokerSlug
+  ? ((typeof isPreview !== 'undefined' && isPreview ? '../' : '') + 'api/courtier/' + brokerSlug + '/piste')
+  : null) %>;
+</script>
 <main>
 <section class="hero" id="evaluation">
   <div class="hero-topo" aria-hidden="true"></div>

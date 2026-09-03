@@ -1140,7 +1140,8 @@ module.exports = function(services){
   //
   // Membership lifecycle: invited → active (paid) → expired/cancelled.
   // A broker may edit and preview their page at ANY status; only `active`
-  // + published makes the public page reachable and lead capture live.
+  // + published makes the public page reachable. The signed-in owner may also
+  // submit a lead through the private preview to test the complete funnel.
   // Payment is a PayPal subscription; PAYPAL_* come from the tenant's secure
   // API-variable store, never from generated code or public settings.
 
@@ -2684,7 +2685,16 @@ module.exports = function(services){
     try{
       var broker = await db.get('SELECT * FROM brokers WHERE slug=$1', [req.params.slug]);
       if (!broker) return res.status(404).json({ error: 'introuvable' });
-      if (!(await brokerPageLive(broker))) return res.status(403).json({ error: 'inactif' });
+      var pageLive = await brokerPageLive(broker);
+      if (!pageLive) {
+        // An invited broker must be able to test the complete funnel from the
+        // private preview. The signed session keeps this exception scoped to
+        // that broker; inactive pages remain closed to everyone else.
+        var previewOwner = await currentBroker(req);
+        if (!previewOwner || Number(previewOwner.id) !== Number(broker.id)) {
+          return res.status(403).json({ error: 'inactif' });
+        }
+      }
       var b = req.body || {};
       var name = String(b.name || '').trim().slice(0, 120);
       var address = String(b.address || '').trim().slice(0, 300);
@@ -2697,7 +2707,7 @@ module.exports = function(services){
          isFinite(lat) ? lat : null, isFinite(lng) ? lng : null, String(b.timeframe || '').trim().slice(0, 80), 'nouveau']
       );
       notifyBrokerOfLead(req, broker, row).catch(function(e){ console.error('lead mail', e); });
-      res.json({ success: true });
+      res.json({ success: true, preview: !pageLive });
     }catch(e){ console.error('piste', e); res.status(500).json({ error: 'server' }); }
   });
 
