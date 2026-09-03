@@ -1,6 +1,8 @@
 <%- include('partials/invite-header') %>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" crossorigin="">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" defer crossorigin=""></script>
+<% if (activePage === 'courrier') { %>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" crossorigin="">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" defer crossorigin=""></script>
+<% } %>
 <main class="esp">
   <div class="inv-veil" aria-hidden="true"></div>
 
@@ -10,11 +12,11 @@
         <span class="esp-mark">VendVite</span>
         <span class="esp-who"><%= broker.full_name %> · <%= broker.agency || '' %></span>
       </div>
-      <nav class="esp-tabs" role="tablist">
-        <button class="esp-tab is-on" data-tab="page" role="tab"><%= t.esp_nav_my_page %></button>
-        <button class="esp-tab" data-tab="courrier" role="tab"><%= t.esp_nav_targeted_mail %></button>
-        <button class="esp-tab" data-tab="pistes" role="tab"><%= t.esp_nav_my_leads %> <span class="esp-pill"><%= counts.total %></span></button>
-        <button class="esp-tab" data-tab="abonnement" role="tab"><%= t.esp_nav_subscription %></button>
+      <nav class="esp-tabs" aria-label="<%= lang==='en' ? 'Broker space' : 'Espace courtier' %>">
+        <a class="esp-tab <%= activePage==='page'?'is-on':'' %>" href="espace" <%- activePage==='page'?'aria-current="page"':'' %>><%= t.esp_nav_my_page %></a>
+        <a class="esp-tab <%= activePage==='courrier'?'is-on':'' %>" href="espace/courrier-cible" <%- activePage==='courrier'?'aria-current="page"':'' %>><%= t.esp_nav_targeted_mail %></a>
+        <a class="esp-tab <%= activePage==='pistes'?'is-on':'' %>" href="espace/pistes" <%- activePage==='pistes'?'aria-current="page"':'' %>><%= t.esp_nav_my_leads %> <span class="esp-pill"><%= counts.total %></span></a>
+        <a class="esp-tab <%= activePage==='abonnement'?'is-on':'' %>" href="espace/abonnement" <%- activePage==='abonnement'?'aria-current="page"':'' %>><%= t.esp_nav_subscription %></a>
       </nav>
     </div>
   </header>
@@ -22,28 +24,30 @@
   <div class="esp-wrap">
 
     <!-- Activation offer / live status -->
-    <% if (!isActive) { %>
+    <% if (activePage === 'page' && !isActive) { %>
       <section class="esp-launch" aria-labelledby="espLaunchTitle">
         <div class="esp-launch-copy">
           <p class="esp-eyebrow"><%= t.esp_launch_eyebrow %></p>
           <h1 id="espLaunchTitle"><%= t.esp_launch_title %></h1>
           <p class="esp-launch-lede"><%= t.esp_launch_body %></p>
-          <ul class="esp-launch-proof">
-            <li><%= t.esp_perk_unlimited_valuation_capture %></li>
-            <li><%= t.esp_perk_instant_lead_email_alert %></li>
-            <li><%= t.esp_perk_free_edits_anytime %></li>
-          </ul>
+          <ol class="esp-launch-steps">
+            <li><span>1</span><%= t.esp_launch_step_address %></li>
+            <li><span>2</span><%= t.esp_launch_step_neighbours %></li>
+            <li><span>3</span><%= t.esp_launch_step_leads %></li>
+          </ol>
+          <a class="esp-campaign-link" href="espace/courrier-cible"><%= t.esp_launch_campaign_cta %> <span aria-hidden="true">→</span></a>
         </div>
         <aside class="esp-launch-offer" aria-label="<%= t.esp_launch_offer %>">
+          <div class="esp-launch-included"><strong>150</strong><span><%= t.esp_launch_included_label %></span></div>
           <p><%= t.esp_launch_offer %></p>
           <div class="esp-launch-price"><strong><%= price.base.toFixed(0) %></strong><span>$<small>/ <%= lang==='en'?'year':'an' %></small></span></div>
           <div class="esp-launch-total"><span><%= t.esp_launch_total %></span><b><%= price.total.toFixed(2).replace('.', lang==='fr'?',':'.') %>&nbsp;$</b></div>
-          <button class="esp-btn esp-launch-cta" type="button" data-goto="abonnement"><%= paypalMode==='sandbox'?'Tester PayPal':t.esp_launch_cta %></button>
+          <a class="esp-btn esp-launch-cta" href="espace/abonnement"><%= paypalMode==='sandbox'?'Tester PayPal':t.esp_launch_cta %></a>
           <a class="esp-preview-link" href="espace/apercu" target="_blank" rel="noopener"><%= t.esp_preview_button %> <span aria-hidden="true">↗</span></a>
-          <small><%= t.esp_paypal_secure_cancel_anytime %></small>
+          <small><%= t.esp_launch_campaign_note %><br><%= t.esp_paypal_secure_cancel_anytime %></small>
         </aside>
       </section>
-    <% } else { %>
+    <% } else if (activePage === 'page') { %>
       <div class="esp-status <%= isLive ? 'is-live' : 'is-ready' %>">
         <div class="esp-status-dot" aria-hidden="true"></div>
         <div class="esp-status-text">
@@ -62,6 +66,7 @@
     <% } %>
 
     <!-- ═══ Ma page ═══ -->
+    <% if (activePage === 'page') { %>
     <section class="esp-panel is-on" data-panel="page">
       <div class="esp-panel-head">
         <p class="esp-eyebrow"><%= t.esp_setup_eyebrow %></p>
@@ -147,9 +152,11 @@
         <button class="esp-btn" id="saveBtn" type="button"><%= t.esp_save_button %></button>
       </div>
     </section>
+    <% } %>
 
     <!-- ═══ Courrier ciblé ═══ -->
-    <section class="esp-panel" data-panel="courrier">
+    <% if (activePage === 'courrier') { %>
+    <section class="esp-panel is-on" data-panel="courrier">
 
       <div class="camp-hero">
         <div class="camp-hero-txt">
@@ -187,9 +194,9 @@
 
       <article class="camp-card">
         <% if (!isActive) { %>
-          <div class="esp-mail-lock"><strong><%= t.esp_subscription_required_badge %></strong><span><%- t.esp_lock_membership_lead %><%= campCible %><%- t.esp_lock_membership_tail %></span><button class="esp-ghost" type="button" data-goto="abonnement"><%= t.esp_view_subscription_link %></button></div>
+          <div class="esp-mail-lock"><strong><%= t.esp_subscription_required_badge %></strong><span><%- t.esp_lock_membership_lead %><%= campCible %><%- t.esp_lock_membership_tail %></span><a class="esp-ghost" href="espace/abonnement"><%= t.esp_view_subscription_link %></a></div>
         <% } else if (!isLive) { %>
-          <div class="esp-mail-lock"><strong><%= t.esp_publish_page_first_title %></strong><span><%= t.esp_qr_needs_live_page_warning %></span><button class="esp-ghost" type="button" data-goto="page"><%= t.esp_back_to_my_page %></button></div>
+          <div class="esp-mail-lock"><strong><%= t.esp_publish_page_first_title %></strong><span><%= t.esp_qr_needs_live_page_warning %></span><a class="esp-ghost" href="espace"><%= t.esp_back_to_my_page %></a></div>
         <% } %>
 
         <div class="camp-qte">
@@ -291,9 +298,11 @@
         <% } %>
       </article>
     </section>
+    <% } %>
 
     <!-- ═══ Mes pistes ═══ -->
-    <section class="esp-panel" data-panel="pistes">
+    <% if (activePage === 'pistes') { %>
+    <section class="esp-panel is-on" data-panel="pistes">
       <div class="esp-stats">
         <div class="esp-stat"><span class="esp-stat-n"><%= counts.total %></span><span class="esp-stat-l"><%= t.esp_leads_total_label %></span></div>
         <div class="esp-stat"><span class="esp-stat-n"><%= counts.fresh %></span><span class="esp-stat-l"><%= t.esp_leads_new_label %></span></div>
@@ -332,9 +341,11 @@
         </div>
       <% } %>
     </section>
+    <% } %>
 
     <!-- ═══ Abonnement ═══ -->
-    <section class="esp-panel" data-panel="abonnement">
+    <% if (activePage === 'abonnement') { %>
+    <section class="esp-panel is-on" data-panel="abonnement">
       <% if (paymentTest) { %>
         <div class="esp-payment-success is-test">
           <span class="esp-payment-check" aria-hidden="true">◇</span>
@@ -384,6 +395,7 @@
         </div>
         <div>
           <ul class="esp-bill-what">
+            <li><%= t.esp_perk_targeted_campaign_included %></li>
             <li><%= t.esp_perk_private_page_named %></li>
             <li><%= t.esp_perk_unlimited_valuation_capture %></li>
             <li><%= t.esp_perk_instant_lead_email_alert %></li>
@@ -404,6 +416,7 @@
         </div>
       </div>
     </section>
+    <% } %>
   </div>
 </main>
 <script>

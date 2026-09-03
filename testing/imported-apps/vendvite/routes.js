@@ -140,12 +140,18 @@ module.exports = function(services){
       esp_nav_subscription:"Abonnement",
       esp_page_in_progress_status:"Page en préparation.",
       esp_preview_button:"Aperçu",
-      esp_launch_eyebrow:"Votre moteur de prospection privé",
-      esp_launch_title:"Votre prochaine inscription peut commencer par une simple adresse.",
-      esp_launch_body:"Mettez-y votre touche. Puis visez votre première campagne postale — elle est comprise dans votre licence : 150 lettres, ou davantage, dans le quartier que vous voulez dominer.",
-      esp_launch_offer:"Licence VendVite annuelle",
+      esp_launch_eyebrow:"Votre campagne de lancement est incluse",
+      esp_launch_title:"Une adresse cible. 150 propriétaires voisins. Aucun frais de campagne.",
+      esp_launch_body:"Avec votre adhésion VendVite, choisissez l’adresse au cœur du secteur que vous voulez travailler. Nous ciblons les 150 portes les plus proches, personnalisons chaque lettre et la déposons à Postes Canada. Son code QR mène les propriétaires vers votre page — et leurs demandes, directement vers vous.",
+      esp_launch_offer:"Adhésion VendVite annuelle",
       esp_launch_total:"Total avec taxes",
-      esp_launch_cta:"Voir l’offre et activer",
+      esp_launch_cta:"Activer mon adhésion",
+      esp_launch_campaign_cta:"Planifier ma campagne de 150 adresses",
+      esp_launch_campaign_note:"Une campagne de 150 lettres ciblées offerte chaque année avec une adhésion active.",
+      esp_launch_included_label:"lettres ciblées incluses",
+      esp_launch_step_address:"Choisissez l’adresse cible",
+      esp_launch_step_neighbours:"Nous ciblons 150 portes",
+      esp_launch_step_leads:"Les réponses deviennent vos leads",
       esp_setup_eyebrow:"Étape 1 · Votre vitrine",
       esp_setup_title:"Faites de cette page la vôtre.",
       esp_setup_body:"Commencez par votre identité et votre promesse. Vous pouvez enregistrer, prévisualiser et revenir modifier chaque détail avant l’activation.",
@@ -272,6 +278,7 @@ module.exports = function(services){
       esp_real_subscription_protected_test:"Votre abonnement réel est protégé pendant les essais sandbox. Repassez en mode réel pour gérer son renouvellement.",
       esp_paypal_secure_cancel_anytime:"Paiement sécurisé par PayPal. Annulable en tout temps.",
       esp_perk_private_page_named:"Votre page privée, à votre nom, sur vendvite.app",
+      esp_perk_targeted_campaign_included:"Une campagne annuelle de 150 lettres ciblées, sans frais additionnels",
       esp_perk_unlimited_valuation_capture:"Capture illimitée de demandes d'évaluation",
       esp_perk_instant_lead_email_alert:"Alerte courriel instantanée à chaque lead",
       esp_perk_private_lead_register:"Votre registre de leads, à vous seul",
@@ -505,12 +512,18 @@ module.exports = function(services){
       esp_nav_subscription:"Subscription",
       esp_page_in_progress_status:"Page in progress.",
       esp_preview_button:"Preview",
-      esp_launch_eyebrow:"Your private prospecting engine",
-      esp_launch_title:"Your next listing can begin with a single address.",
-      esp_launch_body:"Make it yours. Then aim your first mail campaign — it comes with your licence: 150 letters, or more, into the neighbourhood you intend to own.",
-      esp_launch_offer:"Annual VendVite licence",
+      esp_launch_eyebrow:"Your launch campaign is included",
+      esp_launch_title:"One target address. 150 nearby homeowners. No campaign fee.",
+      esp_launch_body:"With your VendVite membership, choose the address at the heart of the area you want to work. We target the 150 closest doors, personalize every letter and deliver the mailing to Canada Post. Its QR code brings homeowners to your page — and their requests straight to you.",
+      esp_launch_offer:"Annual VendVite membership",
       esp_launch_total:"Total including taxes",
-      esp_launch_cta:"View the offer and activate",
+      esp_launch_cta:"Activate my membership",
+      esp_launch_campaign_cta:"Plan my 150-address campaign",
+      esp_launch_campaign_note:"One targeted campaign of 150 letters included each year with an active membership.",
+      esp_launch_included_label:"targeted letters included",
+      esp_launch_step_address:"Choose the target address",
+      esp_launch_step_neighbours:"We target 150 doors",
+      esp_launch_step_leads:"Replies become your leads",
       esp_setup_eyebrow:"Step 1 · Your showcase",
       esp_setup_title:"Make this page unmistakably yours.",
       esp_setup_body:"Start with your identity and promise. Save, preview and refine every detail before activating.",
@@ -637,6 +650,7 @@ module.exports = function(services){
       esp_real_subscription_protected_test:"Your real subscription is protected during test-mode trials. Switch back to live mode to manage its renewal.",
       esp_paypal_secure_cancel_anytime:"Payment secured by PayPal. Cancel at any time.",
       esp_perk_private_page_named:"Your private page, in your name, on vendvite.app",
+      esp_perk_targeted_campaign_included:"One annual campaign of 150 targeted letters, at no additional cost",
       esp_perk_unlimited_valuation_capture:"Unlimited capture of valuation requests",
       esp_perk_instant_lead_email_alert:"Instant email alert on every lead",
       esp_perk_private_lead_register:"Your lead register, yours alone",
@@ -1485,12 +1499,21 @@ module.exports = function(services){
     });
   }
 
-  router.get('/espace', async function(req, res){
+  var ESPACE_PAGES = {
+    '/espace': 'page',
+    '/espace/courrier-cible': 'courrier',
+    '/espace/pistes': 'pistes',
+    '/espace/abonnement': 'abonnement'
+  };
+
+  router.get(Object.keys(ESPACE_PAGES), async function(req, res){
     var broker = await requireBroker(req, res);
     if (!broker) return;
     try{
       await db.run('UPDATE brokers SET last_seen_at=NOW() WHERE id=$1', [broker.id]);
-      res.render('espace', await espaceLocals(req, broker));
+      res.render('espace', Object.assign(await espaceLocals(req, broker), {
+        activePage: ESPACE_PAGES[req.path] || 'page'
+      }));
     }catch(e){ console.error('espace', e); res.status(500).send('Erreur'); }
   });
 
@@ -2210,7 +2233,7 @@ module.exports = function(services){
         }
       }
     }catch(e){ console.error('campagne retour', e); }
-    res.redirect('../../espace?campagne=' + etat);
+    res.redirect('../../espace/courrier-cible?campagne=' + etat);
   });
 
   // ── Operateur : lire et livrer les campagnes. Sans cette surface, la promesse
@@ -2453,7 +2476,7 @@ module.exports = function(services){
             locale: (req.lang === 'en' ? 'en-CA' : 'fr-CA'),
             user_action: 'SUBSCRIBE_NOW',
             return_url: absoluteUrl(req, '/espace/abonnement/retour?mode=' + c.mode),
-            cancel_url: absoluteUrl(req, '/espace?paiement=annule')
+            cancel_url: absoluteUrl(req, '/espace/abonnement?paiement=annule')
           }
         })
       });
@@ -2514,7 +2537,7 @@ module.exports = function(services){
         }
       }
     }catch(e){ console.error('retour', e); }
-    res.redirect('../../espace?paiement=' + (confirmed ? (mode==='sandbox'?'test':'confirme') : 'verification'));
+    res.redirect('../../espace/abonnement?paiement=' + (confirmed ? (mode==='sandbox'?'test':'confirme') : 'verification'));
   });
 
   router.get('/espace/factures/:id/pdf', async function(req, res){

@@ -6,18 +6,6 @@
   function T(k){ var d = window.VV_T || {}; return (d[k] != null) ? d[k] : ''; }
   function on(el, ev, fn){ if(el) el.addEventListener(ev, fn); }
 
-  // ── Tabs
-  var tabs = document.querySelectorAll('.esp-tab');
-  var panels = document.querySelectorAll('.esp-panel');
-  function show(name){
-    tabs.forEach(function(t){ t.classList.toggle('is-on', t.getAttribute('data-tab') === name); });
-    panels.forEach(function(p){ p.classList.toggle('is-on', p.getAttribute('data-panel') === name); });
-  }
-  tabs.forEach(function(t){ on(t, 'click', function(){ show(t.getAttribute('data-tab')); }); });
-  document.querySelectorAll('[data-goto]').forEach(function(b){
-    on(b, 'click', function(){ show(b.getAttribute('data-goto')); });
-  });
-
   // ── Repeatable rows (links + testimonials)
   function rowInput(ph, val, key){
     var i = document.createElement('input');
@@ -37,8 +25,8 @@
   var LINK_F = [{ key: 'label', ph: T('esp_social_link_label_placeholder') }, { key: 'url', ph: 'https://…' }];
   var TM_F = [{ key: 'author', ph: T('esp_tm_author_ph') }, { key: 'neighborhood', ph: T('esp_tm_area_ph') }, { key: 'quote', ph: T('esp_tm_quote_ph') }, { key: 'sale_result', ph: T('esp_tm_result_ph') }];
   var linkList = $('linkList'), tmList = $('tmList');
-  (profile.links || []).forEach(function(l){ buildRow(linkList, LINK_F, l); });
-  (profile.testimonials || []).forEach(function(x){ buildRow(tmList, TM_F, x); });
+  if (linkList) (profile.links || []).forEach(function(l){ buildRow(linkList, LINK_F, l); });
+  if (tmList) (profile.testimonials || []).forEach(function(x){ buildRow(tmList, TM_F, x); });
   on($('addLink'), 'click', function(){ buildRow(linkList, LINK_F, {}); });
   on($('addTm'), 'click', function(){ buildRow(tmList, TM_F, {}); });
 
@@ -111,7 +99,7 @@
       });
       if (r.ok) { location.reload(); return; }
       var d = await r.json().catch(function(){ return {}; });
-      if (d.code === 'PAYMENT_REQUIRED') show('abonnement');
+      if (d.code === 'PAYMENT_REQUIRED') window.location.href = 'espace/abonnement';
     }catch(_){}
     btn.disabled = false;
   });
@@ -159,6 +147,10 @@
       timer = setTimeout(function(){ saveLead(ta.getAttribute('data-id'), { notes: ta.value }); }, 700);
     });
   });
+
+  // These are now distinct pages. Keep the costly map and territory workflow
+  // off the profile, leads and subscription pages.
+  if (!$('campQte')) return;
 
   // ── Campagne « 150 portes » ────────────────────────────────────────────────
   //    Tout le travail cartographique se fait ICI, dans le navigateur du
@@ -774,7 +766,7 @@
         var r = await fetch('api/espace/campagne/' + id + '/annuler', {
           method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}'
         });
-        if (r.ok) { window.location.href = 'espace?campagne=liberee'; return; }
+        if (r.ok) { window.location.href = 'espace/courrier-cible?campagne=liberee'; return; }
       }catch(_){ }
       b.disabled = false; b.textContent = T('esp_cancel_reclaim_included_btn_js');
     });
@@ -798,21 +790,18 @@
   }
   on(window, 'resize', ajusterLettre);
 
-  // Le panneau est en display:none tant qu'il n'est pas ouvert : une carte
-  // construite avant l'ouverture se dessine en 0x0 et rien ne previent Leaflet,
-  // et la lettre mesure une largeur nulle.
+  // Recalculate the fixed-format letter after the page has settled.
   function reveiller(){
     setTimeout(ajusterLettre, 40);
     if (!campPret) { campPret = true; return; }
     if (campCarte) setTimeout(function(){ campCarte.invalidateSize(); }, 60);
   }
 
-  // Retour de PayPal : on rouvre l'onglet et on dit ce qui s'est passe.
+  // Retour de PayPal : la route revient directement sur cette page.
   (function(){
     var m = /[?&]campagne=([a-z]+)/.exec(window.location.search || '');
     if (!m) return;
     var ok = $('campSucces'), err = $('campErreur');
-    show('courrier');
     setTimeout(reveiller, 60);
     // Un paiement abandonne ne doit pas coûter le territoire : on le remet tel quel.
     if (m[1] === 'paye' || m[1] === 'test') oublier();
@@ -829,10 +818,6 @@
       err.textContent = T('esp_paypal_confirmation_pending');
     }
   })();
-  document.querySelectorAll('.esp-tab[data-tab="courrier"], [data-goto="courrier"]').forEach(function(b){
-    on(b, 'click', reveiller);
-  });
-
   // Rafraichissement simple : si un territoire est en memoire, il revient seul.
   if (!/[?&]campagne=/.test(window.location.search || '')) {
     setTimeout(function(){ restaurerTerritoire(); }, 40);
