@@ -1,13 +1,10 @@
 <%- include('partials/header') %>
 <% if (typeof isPreview !== 'undefined' && isPreview) { %>
-<style>
-  /* Preview banner is FIXED above the sticky topbar: without the offsets the
-     two fight for top:0 and the banner sits on the logo. */
-  .bp-preview{position:fixed;top:0;left:0;right:0;z-index:300;min-height:38px;display:flex;align-items:center;justify-content:center;gap:6px;}
-  body{padding-top:38px;}
-  .topbar{top:38px;}
-</style>
-<div class="bp-preview"><%= t.bp_preview_banner %> <a href="espace"><%= t.bp_preview_back %></a></div>
+<div class="bp-peek" role="status">
+  <span class="bp-peek-dot" aria-hidden="true"></span>
+  <span class="bp-peek-txt"><%= t.bp_preview_banner %></span>
+  <a class="bp-peek-btn" href="espace"><%= t.bp_preview_back %></a>
+</div>
 <% } %>
 <script>window.VV_BROKER = <%- JSON.stringify(typeof brokerSlug !== 'undefined' ? brokerSlug : null) %>;</script>
 <main>
@@ -98,7 +95,7 @@
 <section class="section agent" id="agent">
   <div class="container agent-inner">
     <div class="agent-photo">
-      <img src="<%= settings._p_agent_image_url ? settings._p_agent_image_url : 'https://placehold.co/640x800/141011/C79A5B/png?text=Agent' %>" data-setting-key="_p_agent_image_url" alt="<%= settings.agent_name || 'Agent' %>">
+      <img src="<%= settings._p_agent_image_url ? settings._p_agent_image_url : 'public/img/agent-silhouette.svg' %>" data-setting-key="_p_agent_image_url" alt="<%= settings.agent_name || '' %>">
       <span class="clip" aria-hidden="true"></span>
     </div>
     <div class="agent-body">

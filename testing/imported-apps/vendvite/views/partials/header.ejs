@@ -28,12 +28,12 @@
 <body>
 <header class="topbar">
   <div class="container topbar-inner">
-    <a class="wordmark" href="." aria-label="<%= settings.agent_name || 'Accueil' %>">
+    <a class="wordmark" href="." aria-label="VendVite">
       <span class="seal" aria-hidden="true">V</span>
-      <span data-setting-key="agent_name"><%= settings.agent_name || t.agent_fallback_name %></span>
+      <span>VendVite</span>
     </a>
     <div class="lang-toggle">
-      <a href="?lang=fr" class="<%= lang==='fr'?'active':'' %>">FR</a><span aria-hidden="true">·</span><a href="?lang=en" class="<%= lang==='en'?'active':'' %>">EN</a>
+      <a href="<%= (typeof cheminCourant !== 'undefined' ? cheminCourant : '') %>?lang=fr" class="<%= lang==='fr'?'active':'' %>">FR</a><span aria-hidden="true">·</span><a href="<%= (typeof cheminCourant !== 'undefined' ? cheminCourant : '') %>?lang=en" class="<%= lang==='en'?'active':'' %>">EN</a>
     </div>
     <div class="topbar-right">
       <% if(settings.agent_phone){ %><a class="topbar-phone" href="tel:<%= String(settings.agent_phone).replace(/\D/g,'') %>" data-setting-key="agent_phone"><%= formatPhone(settings.agent_phone) %></a><% } %>

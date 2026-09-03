@@ -443,8 +443,15 @@ a:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid var(
   .esp-mail-lock span,.esp-mail-lock .esp-ghost{grid-column:1;grid-row:auto;}
   .esp-mail-lock .esp-ghost{margin-top:7px;text-align:center;}
 }
-.bp-preview{position:sticky;top:0;z-index:200;background:linear-gradient(90deg,var(--brand-dark),var(--brand));color:#fff;text-align:center;padding:9px 16px;font-family:var(--mono);font-size:.66rem;letter-spacing:.11em;text-transform:uppercase;}
-.bp-preview a{color:#fff;text-decoration:underline;margin-left:8px;}
+/* Pastille d'apercu : flottante et hors du flux, pour ne plus pousser
+   l'en-tete ni ecraser un nom de courtier qui passe sur deux lignes. */
+.bp-peek{position:fixed;z-index:300;left:50%;bottom:18px;transform:translateX(-50%);display:flex;align-items:center;gap:11px;max-width:calc(100vw - 24px);padding:9px 10px 9px 15px;border:1px solid rgba(199,154,91,.42);border-radius:999px;background:rgba(13,10,11,.92);-webkit-backdrop-filter:blur(9px);backdrop-filter:blur(9px);box-shadow:0 12px 34px rgba(0,0,0,.55);}
+.bp-peek-dot{flex:none;width:7px;height:7px;border-radius:50%;background:var(--brand);box-shadow:0 0 0 3px rgba(227,11,45,.22);}
+.bp-peek-txt{color:var(--ink-dim);font-family:var(--mono);font-size:.6rem;letter-spacing:.11em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.bp-peek-btn{flex:none;padding:7px 14px;border-radius:999px;background:var(--brand);color:#fff;text-decoration:none;font-family:var(--mono);font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;transition:background .15s;}
+.bp-peek-btn:hover{background:var(--brand-light);}
+@media(max-width:520px){.bp-peek{left:12px;right:12px;transform:none;max-width:none;}.bp-peek-txt{font-size:.55rem;}}
+@media print{.bp-peek{display:none;}}
 .bp-links-sec{padding-top:0;}
 .bp-links{list-style:none;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;padding:0;margin:0;}
 .bp-links a{display:inline-block;padding:10px 18px;border:1px solid var(--hair);border-radius:var(--radius);color:var(--ink-dim);font-family:var(--mono);font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;transition:border-color .15s,color .15s;}

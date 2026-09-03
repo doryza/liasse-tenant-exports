@@ -1275,7 +1275,7 @@ module.exports = function(services){
 
   // ── Invitation email
   async function sendInviteEmail(req, broker, rawToken, lang){
-    var link = absoluteUrl(req, '/acces/' + rawToken);
+    var link = absoluteUrl(req, '/acces/' + rawToken) + '?vue=apercu';
     var fr = (lang !== 'en');
     var subject = fr ? 'Votre invitation VendVite' : 'Your VendVite invitation';
     var pageUrl = absoluteUrl(req, '/' + broker.slug);
@@ -1285,14 +1285,14 @@ module.exports = function(services){
       + '<div style="font-family:IBM Plex Mono,monospace;font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:#C79A5B;margin-bottom:18px">'
       + (fr ? 'Sur invitation seulement' : 'By invitation only') + '</div>'
       + '<h1 style="font-family:Georgia,serif;font-size:25px;line-height:1.15;margin:0 0 14px;color:#F5EFE6">'
-      + (fr ? 'Votre page vous attend, ' : 'Your page is waiting, ') + escapeHtml(broker.full_name.split(' ')[0]) + '.</h1>'
+      + (fr ? 'Voici votre page, ' : 'Here is your page, ') + escapeHtml(broker.full_name.split(' ')[0]) + '.</h1>'
       + '<p style="color:rgba(245,239,230,.64);font-size:15px;line-height:1.6;margin:0 0 22px">'
       + (fr
-        ? 'Votre place dans le cercle VendVite est réservée. Le lien ci-dessous ouvre votre page privée — vous pouvez la bâtir, la personnaliser et la prévisualiser dès maintenant, sans aucun engagement.'
-        : 'Your place in the VendVite circle is reserved. The link below opens your private page — build it, personalise it and preview it right away, with no commitment.')
+        ? 'Votre place dans le cercle VendVite est réservée. Le lien ci-dessous ouvre votre page exactement telle qu\'un propriétaire la verrait. Le bouton au bas de l\'écran vous fait passer en mode édition — rien n\'est public tant que vous ne publiez pas.'
+        : 'Your place in the VendVite circle is reserved. The link below opens your page exactly as a homeowner would see it. Use the button at the bottom of the screen to edit it — nothing is public until you publish.')
       + '</p>'
       + '<a href="' + link + '" style="display:block;text-align:center;padding:16px;border-radius:4px;background:#E30B2D;color:#fff;text-decoration:none;font-family:Georgia,serif;font-weight:bold;font-size:16px;box-shadow:inset 0 0 0 1.5px rgba(199,154,91,.5)">'
-      + (fr ? 'Ouvrir ma page privée' : 'Open my private page') + '</a>'
+      + (fr ? 'Voir ma page' : 'See my page') + '</a>'
       + '<p style="color:rgba(245,239,230,.34);font-size:12.5px;line-height:1.6;margin:20px 0 0">'
       + (fr ? 'Votre adresse réservée : ' : 'Your reserved address: ') + '<span style="color:#C79A5B">' + pageUrl + '</span><br>'
       + (fr ? 'Ce lien est personnel et expire dans 72 heures.' : 'This link is personal and expires in 72 hours.')
@@ -1423,7 +1423,9 @@ module.exports = function(services){
       });
       await db.run('UPDATE brokers SET last_seen_at=NOW() WHERE id=$1', [broker.id]);
       await logBrokerEvent(broker.id, 'access_link_used', '');
-      res.redirect('../espace');
+      // Une invitation mene a l'apercu : on montre la page avant la console.
+      var vue = (req.query && req.query.vue === 'apercu') ? '../espace/apercu' : '../espace';
+      res.redirect(vue);
     }catch(e){ console.error('acces', e); res.redirect('../acces-expire'); }
   });
 
