@@ -106,7 +106,7 @@ function buildInvoicePdf(invoice, broker, issuer){
   text(432,533,9,'F2','MONTANT',118);
   fill('#111214');
   text(62,493,11,'F2','Abonnement annuel VendVite');
-  text(62,476,9,'F1','Page privée, capture de pistes et espace courtier');
+  text(62,476,9,'F1','Page privée, capture de leads et espace courtier');
   text(432,493,11,'F1',money(invoice.subtotal_cents),118);
   stroke('#D5D8D3'); line(50,458,562,458,1);
 

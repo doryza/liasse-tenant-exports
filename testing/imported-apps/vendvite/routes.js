@@ -125,8 +125,8 @@ module.exports = function(services){
       inv_done_text:"Notre comité vérifie maintenant si une licence additionnelle peut être ouverte dans votre secteur. Si oui, votre offre d’accès privée arrivera par courriel — avec une longueur d’avance pour en devenir la référence.",
       inv_done_status:"Disponibilité territoriale en cours de vérification",
       inv_mark_1:"Une page privée, à votre nom et à vos couleurs.",
-      inv_mark_2:"Chaque adresse saisie devient une piste qualifiée.",
-      inv_mark_3:"Les pistes vous parviennent instantanément, à vous seul.",
+      inv_mark_2:"Chaque adresse saisie devient un lead qualifié.",
+      inv_mark_3:"Les leads vous parviennent instantanément, à vous seul.",
       inv_foot:"Places limitées · Sur invitation seulement",
       inv_err_required:"Tous les champs sont requis.",
       inv_err_email:"Ce courriel semble invalide.",
@@ -134,7 +134,7 @@ module.exports = function(services){
       inv_err_dup:"Une invitation a déjà été envoyée à ce courriel. Vérifiez votre boîte de réception.",
       esp_nav_my_page:"Ma page",
       esp_nav_targeted_mail:"Courrier ciblé",
-      esp_nav_my_leads:"Mes pistes",
+      esp_nav_my_leads:"Mes leads",
       esp_nav_subscription:"Abonnement",
       esp_page_in_progress_status:"Page en préparation.",
       esp_preview_button:"Aperçu",
@@ -152,7 +152,7 @@ module.exports = function(services){
       esp_phone_label:"Téléphone",
       esp_phone_help:"Bouton d'appel dans la barre du haut de votre page.",
       esp_email_label:"Courriel",
-      esp_email_help:"C'est ici que chaque nouvelle piste vous est envoyée — jamais affiché publiquement.",
+      esp_email_help:"C'est ici que chaque nouveau lead vous est envoyé — jamais affiché publiquement.",
       esp_section_about_you:"À propos de vous",
       esp_bio_label:"Votre présentation",
       esp_bio_help:"Le paragraphe de la section «&nbsp;L'agent&nbsp;» de votre page — votre philosophie, votre approche, en une ou deux phrases. Vide = le texte grisé ci-dessus reste affiché.",
@@ -188,10 +188,10 @@ module.exports = function(services){
       esp_price_per_tier_after_unit:"par palier ensuite",
       esp_this_year_suffix:"cette année",
       esp_letter_preview_alt:"Aperçu de votre lettre",
-      esp_letter_mailbox_heading:"Ce qui entre dans la boîte",
+      esp_letter_mailbox_heading:"Ce qu'on met dans l'enveloppe",
       esp_letter_as_printed_line:"Votre lettre, telle qu'elle sera imprimée.",
-      esp_letter_spec_before_page_url:"Noir et blanc, une page, prête pour Postes Canada. Votre nom, votre agence, vos coordonnées et un code QR unique vers",
-      esp_letter_spec_after_page_url:". C'est exactement ce document que reçoivent vos voisins, quel que soit le nombre de portes choisi — l'aperçu ci-contre est la pièce elle-même, pas une maquette.",
+      esp_letter_spec_before_page_url:"Noir et blanc, une page recto-verso français/anglais, prête pour Postes Canada. Votre nom, votre agence, vos coordonnées et un code QR unique vers",
+      esp_letter_spec_after_page_url:". C'est exactement ce document que reçoivent vos cibles, quel que soit le nombre de portes choisi — l'aperçu ci-contre est la pièce elle-même, pas une maquette.",
       esp_letter_open_print:"Ouvrir en grand et imprimer",
       esp_activate_sub_then_publish_qr:"Activez votre abonnement, puis publiez votre page&nbsp;: le code QR doit mener quelque part.",
       esp_publish_before_letter_notice:"Publiez votre page avant de distribuer la lettre afin que le code QR soit actif.",
@@ -233,13 +233,13 @@ module.exports = function(services){
       esp_campaign_col_date:"Date",
       esp_territory_reload_btn:"Recharger ce territoire",
       esp_cancel_reclaim_included_btn:"Annuler et récupérer ma campagne incluse",
-      esp_leads_total_label:"Pistes au total",
-      esp_leads_new_label:"Nouvelles",
+      esp_leads_total_label:"Leads au total",
+      esp_leads_new_label:"Nouveaux",
       esp_leads_last_30_days_label:"30 derniers jours",
-      esp_leads_empty_state:"Aucune piste pour l'instant.",
+      esp_leads_empty_state:"Aucun lead pour l'instant.",
       esp_lead_private_notes_ph:"Notes privées…",
       esp_paypal_test_success_title:"Test PayPal réussi. Votre accès d’essai est ouvert.",
-      esp_paypal_test_success_body:"Aucun paiement réel. Vous pouvez maintenant publier votre page, tester le code QR, recevoir une piste et demander une campagne ciblée.",
+      esp_paypal_test_success_body:"Aucun paiement réel. Vous pouvez maintenant publier votre page, tester le code QR, recevoir un lead et demander une campagne ciblée.",
       esp_payment_confirmed_licence_active:"Paiement confirmé. Votre licence est active.",
       esp_invoice_available_emailed:"Votre facture VendVite est disponible ci-dessous et une copie vous est envoyée par courriel.",
       esp_annual_membership_heading:"Adhésion annuelle",
@@ -251,7 +251,7 @@ module.exports = function(services){
       esp_invoice_line_total:"Total",
       esp_test_access_active_title:"Accès test actif",
       esp_test_access_until_date:"Parcours complet disponible jusqu’au , uniquement en mode sandbox.",
-      esp_test_actions_not_a_sale:"La publication, les pistes et les demandes de campagne sont des essais clairement identifiés et ne comptent pas comme une vente.",
+      esp_test_actions_not_a_sale:"La publication, les leads et les demandes de campagne sont des essais clairement identifiés et ne comptent pas comme une vente.",
       esp_renewal_cancelled_title:"Renouvellement annulé",
       esp_page_online_until_date:"Votre page reste en ligne jusqu'au .",
       esp_reactivate_btn:"Réactiver",
@@ -262,8 +262,8 @@ module.exports = function(services){
       esp_paypal_secure_cancel_anytime:"Paiement sécurisé par PayPal. Annulable en tout temps.",
       esp_perk_private_page_named:"Votre page privée, à votre nom, sur vendvite.app",
       esp_perk_unlimited_valuation_capture:"Capture illimitée de demandes d'évaluation",
-      esp_perk_instant_lead_email_alert:"Alerte courriel instantanée à chaque piste",
-      esp_perk_private_lead_register:"Votre registre de pistes, à vous seul",
+      esp_perk_instant_lead_email_alert:"Alerte courriel instantanée à chaque lead",
+      esp_perk_private_lead_register:"Votre registre de leads, à vous seul",
       esp_perk_free_edits_anytime:"Modifications en tout temps, sans frais",
       esp_invoices_heading:"Mes factures",
       esp_social_link_label_placeholder:"Libellé (ex. Instagram)",
@@ -542,10 +542,10 @@ module.exports = function(services){
       esp_price_per_tier_after_unit:"per tier after that",
       esp_this_year_suffix:"this year",
       esp_letter_preview_alt:"Preview of your letter",
-      esp_letter_mailbox_heading:"What lands in the mailbox",
+      esp_letter_mailbox_heading:"What goes in the envelope",
       esp_letter_as_printed_line:"Your letter, exactly as it will be printed.",
-      esp_letter_spec_before_page_url:"Black and white, one page, ready for Canada Post. Your name, your agency, your contact details and a unique QR code pointing to",
-      esp_letter_spec_after_page_url:". This is exactly the document your neighbours receive, whatever the number of doors you choose — the preview here is the piece itself, not a mockup.",
+      esp_letter_spec_before_page_url:"Black and white, one sheet printed both sides in French and English, ready for Canada Post. Your name, your agency, your contact details and a unique QR code pointing to",
+      esp_letter_spec_after_page_url:". This is exactly the document your targets receive, whatever the number of doors you choose — the preview here is the piece itself, not a mockup.",
       esp_letter_open_print:"Open full size and print",
       esp_activate_sub_then_publish_qr:"Activate your subscription, then publish your page: the QR code has to lead somewhere.",
       esp_publish_before_letter_notice:"Publish your page before distributing the letter so the QR code is live.",
@@ -981,7 +981,7 @@ module.exports = function(services){
         var productResponse=await services.fetch(c.base+'/v1/catalogs/products',{
           method:'POST',
           headers:Object.assign({},authHeaders,{'PayPal-Request-Id':'vendvite-sbx-product-v1','Prefer':'return=representation'}),
-          body:JSON.stringify({ name:'VendVite — Adhésion annuelle (sandbox)',description:'Outil annuel de génération de pistes pour courtiers immobiliers — environnement de test',type:'SERVICE',category:'SOFTWARE',home_url:'https://vendvite.app' })
+          body:JSON.stringify({ name:'VendVite — Adhésion annuelle (sandbox)',description:'Outil annuel de génération de leads pour courtiers immobiliers — environnement de test',type:'SERVICE',category:'SOFTWARE',home_url:'https://vendvite.app' })
         });
         var productBody=await productResponse.json().catch(function(){return{};});
         if(!productResponse.ok||!productBody.id){ console.error('paypal sandbox product',productResponse.status,productBody); return res.status(502).json({ error:'paypal_product',code:'PAYPAL_PRODUCT_FAILED' }); }
@@ -2663,7 +2663,7 @@ module.exports = function(services){
     var html = ''
       + '<div style="background:#0D0A0B;padding:30px 20px;font-family:Inter,-apple-system,Segoe UI,Roboto,sans-serif">'
       + '<div style="max-width:520px;margin:0 auto;background:linear-gradient(165deg,#171213,#0f0b0c);border:1px solid rgba(245,239,230,.12);border-radius:10px;padding:28px;color:#F5EFE6">'
-      + '<div style="font-family:IBM Plex Mono,monospace;font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:#C79A5B;margin-bottom:14px">Nouvelle piste</div>'
+      + '<div style="font-family:IBM Plex Mono,monospace;font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:#C79A5B;margin-bottom:14px">Nouveau lead</div>'
       + '<h1 style="font-family:Georgia,serif;font-size:22px;margin:0 0 18px">' + esc(lead.name) + '</h1>'
       + '<table style="width:100%;border-collapse:collapse;font-size:14px">'
       + rows.map(function(r){
@@ -2675,9 +2675,9 @@ module.exports = function(services){
       + '</div></div>';
     return await services.email.send({
       to: leadInbox,
-      subject: 'Nouvelle piste — ' + lead.name,
+      subject: 'Nouveau lead — ' + lead.name,
       html: html,
-      text: 'Nouvelle piste: ' + lead.name + ' — ' + lead.address
+      text: 'Nouveau lead: ' + lead.name + ' — ' + lead.address
     });
   }
 

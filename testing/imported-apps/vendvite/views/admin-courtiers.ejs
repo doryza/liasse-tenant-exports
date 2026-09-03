@@ -53,7 +53,7 @@
         <div class="crt-meta">
           <a href="mailto:<%= b.email %>"><%= b.email %></a>
           <% if (b.phone) { %><a href="tel:<%= String(b.phone).replace(/\D/g,'') %>"><%= formatPhone(b.phone) %></a><% } %>
-          <span><%= b.lead_count %> piste<%= b.lead_count===1?'':'s' %></span>
+          <span><%= b.lead_count %> lead<%= b.lead_count===1?'':'s' %></span>
           <span>Reçue le <%= formatDate(b.created_at, lang) %></span>
           <% if (b.status==='active' && b.membership_expires_at) { %><span>Renouvellement le <%= formatDate(b.membership_expires_at, lang) %></span><% } %>
         </div>
