@@ -328,6 +328,15 @@ module.exports = function(services){
       esp_confirm_launch_mailing_btn_js:"Confirmer et lancer l’envoi",
       esp_payment_not_configured_manual:"Le paiement n’est pas encore configuré. Écrivez-nous et nous lançons la campagne manuellement.",
       esp_opening_paypal:"Ouverture de PayPal…",
+      esp_campaign_subscribe_launch_btn:"Activer mon abonnement pour lancer cet envoi",
+      esp_campaign_subscribing:"Ouverture de l’abonnement…",
+      esp_campaign_publish_launch_btn:"Publier ma page et lancer cet envoi",
+      esp_campaign_publishing_launch:"Publication de la page et transmission…",
+      esp_campaign_subscription_ready:"Abonnement actif ✓ Votre territoire est conservé. Lancez maintenant votre première campagne incluse.",
+      esp_campaign_subscription_cancelled:"Activation annulée. Votre territoire est conservé — reprenez quand vous voulez.",
+      esp_campaign_pay_launch_prefix:"Payer ",
+      esp_campaign_publish_pay_launch_prefix:"Publier ma page, payer ",
+      esp_campaign_pay_launch_suffix:" et lancer l’envoi",
       esp_only_found_count_prefix:"Nous n’avons trouvé que ",
       esp_addresses_of_requested_mid:" adresses pour ",
       esp_reduce_qty_or_denser_area:" demandées. Réduisez la quantité ou choisissez un secteur plus dense.",
@@ -717,6 +726,15 @@ module.exports = function(services){
       esp_confirm_launch_mailing_btn_js:"Confirm and launch the mailing",
       esp_payment_not_configured_manual:"Payment isn't set up yet. Write to us and we'll launch the campaign manually.",
       esp_opening_paypal:"Opening PayPal…",
+      esp_campaign_subscribe_launch_btn:"Activate my membership to launch this mailing",
+      esp_campaign_subscribing:"Opening membership checkout…",
+      esp_campaign_publish_launch_btn:"Publish my page and launch this mailing",
+      esp_campaign_publishing_launch:"Publishing the page and submitting the mailing…",
+      esp_campaign_subscription_ready:"Membership active ✓ Your territory is saved. Launch your first included campaign now.",
+      esp_campaign_subscription_cancelled:"Activation cancelled. Your territory is saved — resume whenever you're ready.",
+      esp_campaign_pay_launch_prefix:"Pay ",
+      esp_campaign_publish_pay_launch_prefix:"Publish my page, pay ",
+      esp_campaign_pay_launch_suffix:" and launch the mailing",
       esp_only_found_count_prefix:"We only found ",
       esp_addresses_of_requested_mid:" addresses of the ",
       esp_reduce_qty_or_denser_area:" requested. Reduce the quantity or choose a denser area.",
@@ -2514,6 +2532,7 @@ module.exports = function(services){
       return res.status(409).json({ error: 'configuration', code: 'SETUP_REQUIRED' });
     }
     var c = await paypalCfg();
+    var intentCampagne = !!(req.body && req.body.intent === 'campaign');
     if (!paypalReady(c)) return res.status(503).json({ error: 'paypal_absent', code: 'NOT_CONFIGURED' });
     try{
       var token = await paypalToken(c);
@@ -2531,8 +2550,8 @@ module.exports = function(services){
             brand_name: 'VendVite',
             locale: (req.lang === 'en' ? 'en-CA' : 'fr-CA'),
             user_action: 'SUBSCRIBE_NOW',
-            return_url: absoluteUrl(req, '/espace/abonnement/retour?mode=' + c.mode),
-            cancel_url: absoluteUrl(req, '/espace/abonnement?paiement=annule')
+            return_url: absoluteUrl(req, '/espace/abonnement/retour?mode=' + c.mode + (intentCampagne ? '&intent=campaign' : '')),
+            cancel_url: absoluteUrl(req, intentCampagne ? '/espace/courrier-cible?abonnement=annule' : '/espace/abonnement?paiement=annule')
           }
         })
       });
@@ -2593,7 +2612,11 @@ module.exports = function(services){
         }
       }
     }catch(e){ console.error('retour', e); }
-    res.redirect('../../espace/abonnement?paiement=' + (confirmed ? (mode==='sandbox'?'test':'confirme') : 'verification'));
+    var etatPaiement = confirmed ? (mode==='sandbox'?'test':'confirme') : 'verification';
+    if (confirmed && req.query && req.query.intent === 'campaign') {
+      return res.redirect('../../espace/courrier-cible?abonnement=' + etatPaiement);
+    }
+    res.redirect('../../espace/abonnement?paiement=' + etatPaiement);
   });
 
   router.get('/espace/factures/:id/pdf', async function(req, res){

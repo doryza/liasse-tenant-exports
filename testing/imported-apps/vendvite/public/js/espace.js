@@ -666,9 +666,12 @@
     if (plus) plus.disabled = campQuantite >= CAMP.max;
   }
   function libelleBouton(){
+    if (!CAMP.active) return T('esp_campaign_subscribe_launch_btn');
+    if (!CAMP.published && estIncluse()) return T('esp_campaign_publish_launch_btn');
     if (estIncluse()) return T('esp_confirm_launch_mailing_btn_js');
     var prix = palierPrix(campQuantite);
-    return 'Payer ' + (prix ? argent(prix.total) : '') + ' et lancer l’envoi';
+    return T(CAMP.published ? 'esp_campaign_pay_launch_prefix' : 'esp_campaign_publish_pay_launch_prefix')
+      + (prix ? argent(prix.total) : '') + T('esp_campaign_pay_launch_suffix');
   }
   function changerQuantite(delta){
     var vise = campQuantite + delta * CAMP.palier;
@@ -785,6 +788,49 @@
     var btn = $('campConfirmer'), err = $('campErreur'), ok = $('campSucces');
     if (!campCentre || !campAdresses.length) return;
     err.textContent = ''; ok.textContent = '';
+    // Preserve the finished territory and open the annual plan directly. This
+    // keeps the campaign as the reason to subscribe instead of creating a
+    // dead-end error or making the broker rebuild their work after checkout.
+    if (!CAMP.active) {
+      sauverTerritoire();
+      btn.disabled = true; btn.textContent = T('esp_campaign_subscribing');
+      try{
+        var rs = await fetch('api/espace/abonnement', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ intent: 'campaign' })
+        });
+        var ds = await rs.json().catch(function(){ return {}; });
+        if (rs.ok && ds.approveUrl) { window.location.href = ds.approveUrl; return; }
+        err.textContent = ds.code === 'SETUP_REQUIRED'
+          ? T('esp_setup_required_error')
+          : ds.code === 'NOT_CONFIGURED'
+            ? T('esp_payment_not_open_contact_us')
+            : T('esp_payment_open_failed_retry');
+      }catch(_){ err.textContent = T('esp_payment_open_failed'); }
+      btn.disabled = false; btn.textContent = libelleBouton();
+      return;
+    }
+
+    // The letter's QR must resolve on mailing day. Once subscribed, the same
+    // explicit click publishes the personalized page before transmission.
+    if (!CAMP.published) {
+      btn.disabled = true; btn.textContent = T('esp_campaign_publishing_launch');
+      try{
+        var rp = await fetch('api/espace/publier', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ published: true })
+        });
+        if (!rp.ok) {
+          var dpub = await rp.json().catch(function(){ return {}; });
+          err.textContent = dpub.code === 'PAYMENT_REQUIRED' ? T('esp_activate_subscription_first') : T('esp_confirmation_failed_retry');
+          btn.disabled = false; btn.textContent = libelleBouton();
+          return;
+        }
+        CAMP.published = true;
+      }catch(_){
+        err.textContent = T('esp_confirmation_failed_retry');
+        btn.disabled = false; btn.textContent = libelleBouton();
+        return;
+      }
+    }
     var paye = !estIncluse();
     if (paye && !CAMP.peutPayer) {
       err.textContent = T('esp_payment_not_configured_manual');
@@ -948,6 +994,17 @@
   // Rafraichissement simple : si un territoire est en memoire, il revient seul.
   if (!/[?&]campagne=/.test(window.location.search || '')) {
     setTimeout(function(){ restaurerTerritoire(); }, 40);
+  }
+  if (/[?&]abonnement=(confirme|test)/.test(window.location.search || '')) {
+    setTimeout(function(){
+      var ok = $('campSucces');
+      if (ok) ok.textContent = T('esp_campaign_subscription_ready');
+    }, 100);
+  } else if (/[?&]abonnement=annule/.test(window.location.search || '')) {
+    setTimeout(function(){
+      var err = $('campErreur');
+      if (err) err.textContent = T('esp_campaign_subscription_cancelled');
+    }, 100);
   }
 
 })();

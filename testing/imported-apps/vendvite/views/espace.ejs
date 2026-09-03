@@ -435,7 +435,7 @@
   // Dictionnaire du panneau, filtre au prefixe : le navigateur ne recoit que
   // ce qu'il affiche, dans la langue choisie.
   window.VV_T = <%- JSON.stringify(Object.keys(t).filter(function(k){return k.indexOf('esp_')===0;}).reduce(function(o,k){o[k]=t[k];return o;},{})) %>;
-  window.VV_CAMP = { cible: <%= campCible %>, restantes: <%= campQuota.restantes %>, palier: <%= campPalier %>, max: <%= campMax %>, paliers: <%- JSON.stringify(campPaliers) %>, peutPayer: <%= campPeutPayer ? 'true' : 'false' %>, mode: <%- JSON.stringify(campModePaypal) %>, credit: <%= campQuota.creditPortes %> };
+  window.VV_CAMP = { cible: <%= campCible %>, restantes: <%= campQuota.restantes %>, palier: <%= campPalier %>, max: <%= campMax %>, paliers: <%- JSON.stringify(campPaliers) %>, peutPayer: <%= campPeutPayer ? 'true' : 'false' %>, mode: <%- JSON.stringify(campModePaypal) %>, credit: <%= campQuota.creditPortes %>, active: <%= isActive ? 'true' : 'false' %>, published: <%= Number(broker.published) === 1 ? 'true' : 'false' %> };
 </script>
 <script src="public/js/espace.js" defer></script>
 </body>
