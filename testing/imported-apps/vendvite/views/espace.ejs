@@ -87,7 +87,7 @@
           </div>
           <div class="esp-f"><label for="f_agent_name"><%= t.esp_display_name_label %></label><input id="f_agent_name" data-k="agent_name" value="<%= profile.agent_name || broker.full_name %>">
             <p class="esp-help"><%- t.esp_display_name_help %></p></div>
-          <div class="esp-f"><label for="f_agent_title"><%= t.esp_title_label %></label><input id="f_agent_title" data-k="agent_title" placeholder="<%= t.agent_title %>" value="<%= profile.agent_title || '' %>">
+          <div class="esp-f"><label for="f_agent_title"><%= t.esp_title_label %></label><input id="f_agent_title" data-k="agent_title" placeholder="<%= t.agent_title %>" value="<%= profile.agent_title || t.agent_title %>">
             <p class="esp-help"><%- t.esp_title_help_lead %><%= t.agent_title %><%- t.esp_title_help_tail %></p></div>
           <div class="esp-f"><label for="f_agency"><%= t.esp_agency_label %></label><input id="f_agency" data-k="agency" value="<%= profile.agency || broker.agency || '' %>">
             <p class="esp-help"><%= t.esp_agency_help %></p></div>
@@ -100,19 +100,19 @@
 
           <h2 class="esp-h"><%= t.esp_section_about_you %></h2>
           <div class="esp-f"><label for="f_about"><%= t.esp_bio_label %></label>
-            <textarea id="f_about" data-k="about" rows="4" placeholder="<%= t.agent_credo %>"><%= profile.about || '' %></textarea>
+            <textarea id="f_about" data-k="about" rows="6" placeholder="<%= t.agent_credo %>"><%= profile.about || t.agent_credo %></textarea>
             <p class="esp-help"><%- t.esp_bio_help %></p></div>
-          <div class="esp-f"><label for="f_agency_disclaimer"><%= t.esp_disclaimer_label %></label><input id="f_agency_disclaimer" data-k="agency_disclaimer" value="<%= profile.agency_disclaimer || '' %>" placeholder="<%= t.esp_disclaimer_ph %>" maxlength="300">
+          <div class="esp-f"><label for="f_agency_disclaimer"><%= t.esp_disclaimer_label %></label><textarea id="f_agency_disclaimer" data-k="agency_disclaimer" rows="2" placeholder="<%= t.esp_disclaimer_ph %>" maxlength="300"><%= profile.agency_disclaimer || '' %></textarea>
             <p class="esp-help"><%= t.esp_disclaimer_help %></p></div>
         </div>
 
         <div class="esp-col">
           <h2 class="esp-h"><%= t.esp_section_your_hook %></h2>
-          <div class="esp-f"><label for="f_hero_title"><%= t.esp_main_headline_label %></label><textarea id="f_hero_title" data-k="hero_title" rows="2" placeholder="<%= t.hero_title %>"><%= profile.hero_title || '' %></textarea>
+          <div class="esp-f"><label for="f_hero_title"><%= t.esp_main_headline_label %></label><textarea id="f_hero_title" data-k="hero_title" rows="3" placeholder="<%= t.hero_title %>"><%= profile.hero_title || t.hero_title %></textarea>
             <p class="esp-help"><%= t.esp_main_headline_help %></p></div>
-          <div class="esp-f"><label for="f_hero_sub"><%= t.esp_subtitle_label %></label><textarea id="f_hero_sub" data-k="hero_sub" rows="3" placeholder="<%= t.hero_sub %>"><%= profile.hero_sub || '' %></textarea>
+          <div class="esp-f"><label for="f_hero_sub"><%= t.esp_subtitle_label %></label><textarea id="f_hero_sub" data-k="hero_sub" rows="5" placeholder="<%= t.hero_sub %>"><%= profile.hero_sub || t.hero_sub %></textarea>
             <p class="esp-help"><%= t.esp_subtitle_help %></p></div>
-          <div class="esp-f"><label for="f_hero_note"><%= t.esp_note_under_field_label %></label><input id="f_hero_note" data-k="hero_note" placeholder="<%= t.hero_note %>" value="<%= profile.hero_note || '' %>">
+          <div class="esp-f"><label for="f_hero_note"><%= t.esp_note_under_field_label %></label><input id="f_hero_note" data-k="hero_note" placeholder="<%= t.hero_note %>" value="<%= profile.hero_note || t.hero_note %>">
             <p class="esp-help"><%= t.esp_note_under_field_help %></p></div>
 
           <h2 class="esp-h"><%= t.esp_section_your_numbers %></h2>
@@ -234,7 +234,7 @@
           </details>
           <div class="esp-f">
             <label for="campNotes"><%- t.esp_team_note_optional_label %></label>
-            <textarea id="campNotes" rows="2" maxlength="1000" placeholder="<%- t.esp_team_note_placeholder %>"></textarea>
+            <textarea id="campNotes" rows="3" maxlength="1000" placeholder="<%- t.esp_team_note_placeholder %>"></textarea>
           </div>
           <div class="camp-promesse">
             <strong><%= t.esp_after_confirm_we_take_over %></strong>
