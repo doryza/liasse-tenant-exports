@@ -164,6 +164,8 @@
   </div>
 </section>
 
+<% var aDesReseaux = !!(settings.social_facebook || settings.social_instagram || settings.social_linkedin || settings.social_youtube || settings.social_tiktok); %>
+<% if (aDesReseaux) { %>
 <section class="social" id="social">
   <div class="container">
     <div class="section-head center">
@@ -179,6 +181,7 @@
     </div>
   </div>
 </section>
+<% } %>
 
 <section class="seal-band">
   <div class="container center">
