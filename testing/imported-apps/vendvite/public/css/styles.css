@@ -473,15 +473,14 @@ a:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid var(
 .esp-help{color:rgba(245,239,230,.46);font-size:.72rem;line-height:1.5;margin:6px 0 0;}
 
 /* ── Campagne « 150 portes » ─────────────────────────────────────────────── */
-.camp-hero{display:grid;grid-template-columns:1fr auto;gap:32px;align-items:center;padding:30px;margin-bottom:18px;border:1px solid rgba(199,154,91,.42);border-radius:10px;background:radial-gradient(circle at 88% 18%,rgba(199,154,91,.20),transparent 38%),linear-gradient(145deg,rgba(26,20,17,.98),rgba(12,9,10,.98));box-shadow:0 24px 60px rgba(0,0,0,.40);}
-.camp-hero h2{max-width:19ch;margin:0;font-family:var(--serif);font-size:clamp(1.7rem,4vw,2.35rem);line-height:1.06;letter-spacing:-.025em;}
-.camp-hero-txt>p:not(.esp-eyebrow){max-width:64ch;margin:14px 0 0;color:var(--ink-dim);font-size:.92rem;line-height:1.62;}
-.camp-badges{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px;}
-.camp-badges span{display:flex;flex-direction:column;gap:3px;padding:10px 15px;border:1px solid rgba(199,154,91,.3);border-radius:6px;background:rgba(199,154,91,.06);color:var(--ink-faint);font-family:var(--mono);font-size:.56rem;letter-spacing:.11em;text-transform:uppercase;}
-.camp-badges b{color:var(--gold);font-family:var(--serif);font-size:1.5rem;letter-spacing:-.02em;line-height:1;}
-.camp-hero-seal{min-width:150px;padding:22px 18px;border-left:1px solid rgba(199,154,91,.28);text-align:center;}
-.camp-seal-n{color:var(--gold);font-family:var(--serif);font-size:3.1rem;font-weight:900;line-height:1;}
-.camp-seal-l{margin-top:8px;color:var(--ink-dim);font-family:var(--mono);font-size:.56rem;letter-spacing:.12em;text-transform:uppercase;line-height:1.7;}
+.camp-production{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(440px,.65fr);gap:24px;align-items:center;padding:16px 20px;margin-bottom:18px;border:1px solid rgba(199,154,91,.3);border-radius:9px;background:linear-gradient(145deg,rgba(24,18,17,.96),rgba(12,9,10,.96));box-shadow:0 16px 40px rgba(0,0,0,.28);}
+.camp-production-copy{min-width:0;}
+.camp-production-copy .esp-eyebrow{margin-bottom:5px;font-size:.52rem;}
+.camp-production-copy strong{display:block;color:var(--ink);font-family:var(--serif);font-size:1.08rem;line-height:1.15;}
+.camp-production-copy>span{display:block;margin-top:5px;color:var(--ink-dim);font-size:.7rem;line-height:1.42;}
+.camp-production-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;}
+.camp-production-steps>span{display:flex;align-items:center;gap:7px;min-width:0;padding:8px;border:1px solid rgba(199,154,91,.2);border-radius:6px;background:rgba(199,154,91,.045);color:var(--ink-faint);font-family:var(--mono);font-size:.5rem;line-height:1.3;letter-spacing:.06em;text-transform:uppercase;}
+.camp-production-steps i{display:grid;place-items:center;flex:0 0 20px;width:20px;height:20px;border:1px solid rgba(199,154,91,.42);border-radius:50%;color:var(--gold);font-style:normal;font-size:.48rem;}
 
 .camp-card{padding:24px;margin-bottom:22px;border:1px solid var(--hair);border-radius:9px;background:linear-gradient(165deg,rgba(23,18,19,.9),rgba(15,11,12,.9));}
 .camp-search{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:start;}
@@ -530,12 +529,21 @@ a:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid var(
 .camp-histo-d{color:var(--ink-faint);font-family:var(--mono);font-size:.64rem;}
 
 @media (max-width:820px){
-  .camp-hero{grid-template-columns:1fr;gap:22px;}
-  .camp-hero-seal{border-left:0;border-top:1px solid rgba(199,154,91,.28);padding:18px 0 0;text-align:left;}
+  .camp-production{grid-template-columns:1fr;gap:10px;padding:14px 16px;}
+  .camp-production-steps{grid-template-columns:repeat(3,minmax(0,1fr));}
   .camp-search{grid-template-columns:1fr;}
   .camp-search .esp-btn{margin-top:0;width:100%;}
   .camp-stats{grid-template-columns:1fr;}
   .camp-carte{height:300px;}
+}
+@media (max-width:520px){
+  .camp-production{min-width:0;padding:12px 13px;overflow:hidden;}
+  .camp-production-copy strong{font-size:.9rem;}
+  .camp-production-copy>span{display:none;}
+  .camp-production-steps{display:flex;width:100%;max-width:100%;min-width:0;gap:5px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none;}
+  .camp-production-steps::-webkit-scrollbar{display:none;}
+  .camp-production-steps>span{flex:0 0 auto;padding:6px 7px;font-size:.44rem;white-space:nowrap;}
+  .camp-production-steps i{display:none;}
 }
 
 /* ── La lettre, dans la zone de l'offre ─────────────────────────────────────*/

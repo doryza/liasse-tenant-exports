@@ -160,20 +160,16 @@
     <% if (activePage === 'courrier') { %>
     <section class="esp-panel is-on" data-panel="courrier">
 
-      <div class="camp-hero">
-        <div class="camp-hero-txt">
+      <div class="camp-production" role="note">
+        <div class="camp-production-copy">
           <p class="esp-eyebrow"><%= t.esp_campaign_included_canada_post %></p>
-          <h2><%= t.esp_campaign_name_street_tagline %></h2>
-          <p><%- t.esp_campaign_territory_explainer %></p>
-          <div class="camp-badges">
-            <span><b><%= campCible %></b><%= t.esp_doors_included_unit %></span>
-            <span><b><%= campHeures %>&nbsp;h</b><%= t.esp_hours_before_drop_unit %></span>
-            <span><b>+<%= campPalier %></b><%= t.esp_price_per_tier_after_unit %></span>
-          </div>
+          <strong><%= t.esp_campaign_name_street_tagline %></strong>
+          <span><%- t.esp_campaign_territory_explainer %></span>
         </div>
-        <div class="camp-hero-seal">
-          <div class="camp-seal-n"><%= campQuota.restantes %></div>
-          <div class="camp-seal-l"><%= campQuota.restantes > 1 ? t.esp_campaigns_included_plural : t.esp_campaign_included_singular %><br><%= t.esp_this_year_suffix %></div>
+        <div class="camp-production-steps" aria-label="<%= t.esp_campaign_name_street_tagline %>">
+          <span><i>1</i><%= t.esp_production_step_data %></span>
+          <span><i>2</i><%= t.esp_production_step_print %></span>
+          <span><i>3</i><%= t.esp_production_step_deposit %></span>
         </div>
       </div>
 
