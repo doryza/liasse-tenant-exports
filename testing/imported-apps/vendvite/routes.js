@@ -142,7 +142,7 @@ module.exports = function(services){
       esp_preview_button:"Aperçu",
       esp_launch_eyebrow:"Votre campagne de lancement est incluse",
       esp_launch_title:"Une adresse cible. 150 propriétaires voisins. Aucun frais de campagne.",
-      esp_launch_body:"Avec votre adhésion VendVite, choisissez l’adresse au cœur du secteur que vous voulez travailler. Nous ciblons les 150 portes les plus proches, personnalisons chaque lettre et la déposons à Postes Canada. Son code QR mène les propriétaires vers votre page — et leurs demandes, directement vers vous.",
+      esp_launch_body:"Avec votre adhésion VendVite, choisissez l’adresse au cœur du secteur que vous voulez travailler. Nous ciblons les 150 portes les plus proches, personnalisons chaque lettre et la déposons à Postes Canada port payé inclus. Son code QR mène les propriétaires vers votre page — et leurs demandes, directement vers vous.",
       esp_launch_offer:"Adhésion VendVite annuelle",
       esp_launch_total:"Total avec taxes",
       esp_launch_cta:"Activer mon adhésion",
