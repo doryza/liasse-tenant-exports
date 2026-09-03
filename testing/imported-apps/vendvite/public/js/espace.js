@@ -585,6 +585,7 @@
     var err = $('campErreur');
     var res = $('campResultat');
     if (!champ || !champ.value.trim()) { if (err) err.textContent = T('esp_area_centre_address_hint'); return; }
+    fermerApercuAbonnement();
     if (err) err.textContent = '';
     btn.disabled = true;
     var libelleBtn = btn.textContent;
@@ -628,7 +629,7 @@
 
   // ── Paliers de 150 : la premiere campagne est comprise dans la licence,
   //    les suivantes s'achetent au palier.
-  var campQuantite = CAMP.cible;
+  var campQuantite = CAMP.cible, campSubOuvert = false;
   function palierPrix(q){
     var liste = CAMP.paliers || [];
     for (var i = 0; i < liste.length; i++) if (liste[i].quantite === q) return liste[i];
@@ -666,17 +667,28 @@
     if (plus) plus.disabled = campQuantite >= CAMP.max;
   }
   function libelleBouton(){
-    if (!CAMP.active) return T('esp_campaign_subscribe_launch_btn');
+    if (!CAMP.active) {
+      return campSubOuvert
+        ? T('esp_campaign_continue_paypal') + argent(Number(CAMP.subscriptionTotal) || 0) + T('esp_campaign_continue_annual_suffix')
+        : T('esp_campaign_subscribe_launch_btn');
+    }
     if (!CAMP.published && estIncluse()) return T('esp_campaign_publish_launch_btn');
     if (estIncluse()) return T('esp_confirm_launch_mailing_btn_js');
     var prix = palierPrix(campQuantite);
     return T(CAMP.published ? 'esp_campaign_pay_launch_prefix' : 'esp_campaign_publish_pay_launch_prefix')
       + (prix ? argent(prix.total) : '') + T('esp_campaign_pay_launch_suffix');
   }
+  function fermerApercuAbonnement(){
+    campSubOuvert = false;
+    var apercu = $('campSubReveal'), btn = $('campConfirmer');
+    if (apercu) apercu.hidden = true;
+    if (btn) btn.setAttribute('aria-expanded', 'false');
+  }
   function changerQuantite(delta){
     var vise = campQuantite + delta * CAMP.palier;
     if (vise < CAMP.palier || vise > CAMP.max) return;
     campQuantite = vise;
+    fermerApercuAbonnement();
     // Le territoire deja affiche ne correspond plus au nombre demande.
     campAdresses = [];
     var res = $('campResultat');
@@ -788,11 +800,19 @@
     var btn = $('campConfirmer'), err = $('campErreur'), ok = $('campSucces');
     if (!campCentre || !campAdresses.length) return;
     err.textContent = ''; ok.textContent = '';
-    // Preserve the finished territory and open the annual plan directly. This
-    // keeps the campaign as the reason to subscribe instead of creating a
-    // dead-end error or making the broker rebuild their work after checkout.
+    // Preserve the finished territory, reveal the exact annual commitment in
+    // place, then open checkout only after a second, explicitly priced click.
     if (!CAMP.active) {
       sauverTerritoire();
+      if (!campSubOuvert) {
+        campSubOuvert = true;
+        var apercu = $('campSubReveal');
+        if (apercu) apercu.hidden = false;
+        btn.setAttribute('aria-expanded', 'true');
+        btn.textContent = libelleBouton();
+        requestAnimationFrame(function(){ if (apercu) apercu.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); });
+        return;
+      }
       btn.disabled = true; btn.textContent = T('esp_campaign_subscribing');
       try{
         var rs = await fetch('api/espace/abonnement', {

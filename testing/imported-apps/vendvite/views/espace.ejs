@@ -248,7 +248,20 @@
           <% if (campModePaypal === 'sandbox') { %>
             <p class="camp-sandbox"><%- t.esp_paypal_test_mode_notice %></p>
           <% } %>
-          <button class="esp-btn esp-btn-wide" id="campConfirmer" type="button" disabled><%= t.esp_confirm_launch_mailing_btn %></button>
+          <div class="camp-sub-reveal" id="campSubReveal" role="region" aria-live="polite" hidden>
+            <p class="esp-eyebrow"><%= t.esp_campaign_reveal_eyebrow %></p>
+            <div class="camp-sub-reveal-head">
+              <strong><%= t.esp_campaign_reveal_title %></strong>
+              <div><b><%= price.total.toFixed(2).replace('.', lang==='en'?'.':',') %>&nbsp;$</b><span><%= t.esp_campaign_reveal_price_suffix %></span></div>
+            </div>
+            <p><%= t.esp_campaign_reveal_billing %></p>
+            <ul>
+              <li><%= t.esp_campaign_reveal_benefit_page %></li>
+              <li><%= t.esp_campaign_reveal_benefit_mail %></li>
+              <li><%= t.esp_campaign_reveal_benefit_service %></li>
+            </ul>
+          </div>
+          <button class="esp-btn esp-btn-wide" id="campConfirmer" type="button" aria-expanded="false" aria-controls="campSubReveal" disabled><%= t.esp_confirm_launch_mailing_btn %></button>
           <p class="esp-mail-success" id="campSucces" role="status"></p>
           <p class="esp-hint"><%- t.esp_address_source_manual_check %></p>
         </div>
@@ -435,7 +448,7 @@
   // Dictionnaire du panneau, filtre au prefixe : le navigateur ne recoit que
   // ce qu'il affiche, dans la langue choisie.
   window.VV_T = <%- JSON.stringify(Object.keys(t).filter(function(k){return k.indexOf('esp_')===0;}).reduce(function(o,k){o[k]=t[k];return o;},{})) %>;
-  window.VV_CAMP = { cible: <%= campCible %>, restantes: <%= campQuota.restantes %>, palier: <%= campPalier %>, max: <%= campMax %>, paliers: <%- JSON.stringify(campPaliers) %>, peutPayer: <%= campPeutPayer ? 'true' : 'false' %>, mode: <%- JSON.stringify(campModePaypal) %>, credit: <%= campQuota.creditPortes %>, active: <%= isActive ? 'true' : 'false' %>, published: <%= Number(broker.published) === 1 ? 'true' : 'false' %> };
+  window.VV_CAMP = { cible: <%= campCible %>, restantes: <%= campQuota.restantes %>, palier: <%= campPalier %>, max: <%= campMax %>, paliers: <%- JSON.stringify(campPaliers) %>, peutPayer: <%= campPeutPayer ? 'true' : 'false' %>, mode: <%- JSON.stringify(campModePaypal) %>, credit: <%= campQuota.creditPortes %>, active: <%= isActive ? 'true' : 'false' %>, published: <%= Number(broker.published) === 1 ? 'true' : 'false' %>, subscriptionTotal: <%= Math.round(price.total * 100) %> };
 </script>
 <script src="public/js/espace.js" defer></script>
 </body>
