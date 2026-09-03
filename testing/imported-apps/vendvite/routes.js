@@ -107,11 +107,13 @@ module.exports = function(services){
       inv_price_term:"par année + taxes",
       inv_price_pitch:"Un investissement qui ouvre de nouveaux horizons de prospection — et peut faire de chaque adresse le début de votre prochain mandat.",
       inv_form_title:"Demander une invitation",
-      inv_form_sub:"Quatre renseignements. Rien de plus. Nous vérifions la disponibilité de votre secteur avant de répondre.",
+      inv_form_sub:"Cinq renseignements. Rien de plus. Nous vérifions la disponibilité de votre secteur avant de répondre.",
       inv_f_name:"Nom complet",
       inv_f_name_ph:"Ex. Marie Tremblay",
       inv_f_agency:"Agence",
       inv_f_agency_ph:"Le nom de votre agence",
+      inv_f_region:"Secteur ou région ciblé",
+      inv_f_region_ph:"Ex. Rosemont, Montréal ou les Laurentides",
       inv_f_phone:"Téléphone",
       inv_f_phone_ph:"(514) 000-0000",
       inv_f_email:"Courriel",
@@ -138,6 +140,15 @@ module.exports = function(services){
       esp_nav_subscription:"Abonnement",
       esp_page_in_progress_status:"Page en préparation.",
       esp_preview_button:"Aperçu",
+      esp_launch_eyebrow:"Votre moteur de prospection privé",
+      esp_launch_title:"Votre prochaine inscription peut commencer par une simple adresse.",
+      esp_launch_body:"Personnalisez votre page maintenant. Une fois activée, elle transforme l’intérêt des propriétaires en demandes d’évaluation qui vous arrivent directement.",
+      esp_launch_offer:"Licence VendVite annuelle",
+      esp_launch_total:"Total avec taxes",
+      esp_launch_cta:"Voir l’offre et activer",
+      esp_setup_eyebrow:"Étape 1 · Votre vitrine",
+      esp_setup_title:"Faites de cette page la vôtre.",
+      esp_setup_body:"Commencez par votre identité et votre promesse. Vous pouvez enregistrer, prévisualiser et revenir modifier chaque détail avant l’activation.",
       esp_section_your_identity:"Votre identité",
       esp_no_photo_placeholder:"Aucune photo",
       esp_upload_photo_button:"Téléverser une photo",
@@ -461,11 +472,13 @@ module.exports = function(services){
       inv_price_term:"per year + taxes",
       inv_price_pitch:"One investment that opens new prospecting horizons — and can make every address the beginning of your next mandate.",
       inv_form_title:"Request an invitation",
-      inv_form_sub:"Four details. Nothing more. We check your territory before replying.",
+      inv_form_sub:"Five details. Nothing more. We check your territory before replying.",
       inv_f_name:"Full name",
       inv_f_name_ph:"e.g. Marie Tremblay",
       inv_f_agency:"Agency",
       inv_f_agency_ph:"Your agency name",
+      inv_f_region:"Target area or region",
+      inv_f_region_ph:"e.g. Rosemont, Montréal or the Laurentians",
       inv_f_phone:"Phone",
       inv_f_phone_ph:"(514) 000-0000",
       inv_f_email:"Email",
@@ -492,6 +505,15 @@ module.exports = function(services){
       esp_nav_subscription:"Subscription",
       esp_page_in_progress_status:"Page in progress.",
       esp_preview_button:"Preview",
+      esp_launch_eyebrow:"Your private prospecting engine",
+      esp_launch_title:"Your next listing can begin with a single address.",
+      esp_launch_body:"Personalize your page now. Once activated, it turns homeowner interest into valuation requests delivered directly to you.",
+      esp_launch_offer:"Annual VendVite licence",
+      esp_launch_total:"Total including taxes",
+      esp_launch_cta:"View the offer and activate",
+      esp_setup_eyebrow:"Step 1 · Your showcase",
+      esp_setup_title:"Make this page unmistakably yours.",
+      esp_setup_body:"Start with your identity and promise. Save, preview and refine every detail before activating.",
       esp_section_your_identity:"Your identity",
       esp_no_photo_placeholder:"No photo",
       esp_upload_photo_button:"Upload a photo",
@@ -1316,7 +1338,7 @@ module.exports = function(services){
       + '<div style="font-family:IBM Plex Mono,monospace;font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:#C79A5B;margin-bottom:14px">Nouvelle candidature</div>'
       + '<h1 style="font-family:Georgia,serif;font-size:22px;margin:0 0 16px">' + esc(broker.full_name) + '</h1>'
       + '<table style="width:100%;border-collapse:collapse;font-size:14px">'
-      + [['Agence', broker.agency], ['Courriel', broker.email], ['Téléphone', formatPhone(broker.phone)], ['Page réservée', '/' + broker.slug]]
+      + [['Agence', broker.agency], ['Secteur ou région visé', broker.target_region], ['Courriel', broker.email], ['Téléphone', formatPhone(broker.phone)], ['Page réservée', '/' + broker.slug]]
           .filter(function(r){ return r[1]; })
           .map(function(r){ return '<tr><td style="padding:7px 0;color:rgba(245,239,230,.42);width:38%">' + esc(r[0]) + '</td><td style="padding:7px 0;color:#F5EFE6">' + esc(r[1]) + '</td></tr>'; }).join('')
       + '</table>'
@@ -1326,7 +1348,7 @@ module.exports = function(services){
       to: to,
       subject: 'Nouvelle candidature — ' + broker.full_name,
       html: html,
-      text: 'Nouvelle candidature: ' + broker.full_name + ' (' + (broker.agency || '') + ') — ' + adminUrl
+      text: 'Nouvelle candidature: ' + broker.full_name + ' (' + (broker.agency || '') + ')\nSecteur ou région visé: ' + (broker.target_region || '') + '\n' + adminUrl
     });
   }
 
@@ -1344,13 +1366,16 @@ module.exports = function(services){
       var TT = T[lang] || T.fr;
       var name = String(b.name || '').trim().slice(0, 120);
       var agency = String(b.agency || '').trim().slice(0, 120);
+      var targetRegion = String(b.target_region || '').trim().slice(0, 200);
       var phone = String(b.phone || '').trim().slice(0, 40);
       var email = String(b.email || '').trim().toLowerCase().slice(0, 190);
-      if (!name || !agency || !phone || !email) return res.status(400).json({ error: TT.inv_err_required });
+      if (!name || !agency || !targetRegion || !phone || !email) return res.status(400).json({ error: TT.inv_err_required });
       if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return res.status(400).json({ error: TT.inv_err_email });
 
       var existing = await db.get('SELECT * FROM brokers WHERE LOWER(email)=$1', [email]);
       if (existing) {
+        await db.run('UPDATE brokers SET target_region=$1, updated_at=NOW() WHERE id=$2', [targetRegion, existing.id]);
+        existing.target_region = targetRegion;
         // Same generic answer whatever the state — never leak enrolment.
         if (existing.status === 'invited' || existing.status === 'active' || existing.status === 'cancelled' || existing.status === 'expired') {
           // Already past review: a fresh access link is genuinely helpful.
@@ -1365,8 +1390,8 @@ module.exports = function(services){
 
       var slug = await uniqueBrokerSlug(name, agency);
       var ins = await db.get(
-        'INSERT INTO brokers (slug,full_name,agency,phone,email,status,profile) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *',
-        [slug, name, agency, phone, email, 'applied', JSON.stringify({
+        'INSERT INTO brokers (slug,full_name,agency,phone,email,target_region,status,profile) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *',
+        [slug, name, agency, phone, email, targetRegion, 'applied', JSON.stringify({
           agent_name: name,
           agency: agency,
           agent_phone: phone,
@@ -1379,7 +1404,7 @@ module.exports = function(services){
       // acknowledgement; the vendvite operator gets pinged to review.
       try { await sendAckEmail(req, ins, lang); } catch(e){ console.error('ack email', e); }
       try { await sendOwnerNewApplicationEmail(req, ins); } catch(e){ console.error('owner notify', e); }
-      await logBrokerEvent(ins.id, 'applied', agency + ' / ' + email);
+      await logBrokerEvent(ins.id, 'applied', agency + ' / ' + targetRegion + ' / ' + email);
       res.json({ success: true, message: TT.inv_done_text, slug: slug });
     }catch(e){
       console.error('candidature', e);

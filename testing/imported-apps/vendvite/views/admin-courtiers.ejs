@@ -17,6 +17,8 @@
 .crt-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
 .crt-head h3{margin:0 0 2px;font-size:1.02rem}
 .crt-agency{color:#6b7280;font-size:.85rem;margin:0}
+.crt-region{color:#374151;font-size:.84rem;margin:8px 0 0}
+.crt-region strong{color:#6b7280;font-size:.72rem;letter-spacing:.04em;text-transform:uppercase}
 .crt-meta{display:flex;flex-wrap:wrap;gap:14px;margin:10px 0 0;font-size:.8rem;color:#6b7280}
 .crt-meta a{color:#4b5563}
 .crt-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
@@ -47,6 +49,7 @@
           <div>
             <h3><%= b.full_name %></h3>
             <p class="crt-agency"><%= b.agency || '' %> · <a href="<%= b.slug %>" target="_blank" rel="noopener">/<%= b.slug %></a></p>
+            <% if (b.target_region) { %><p class="crt-region"><strong>Secteur visé</strong> · <%= b.target_region %></p><% } %>
           </div>
           <span class="crt-status crt-<%= b.status %>"><%= ({applied:'À examiner', invited:'Invité', active:'Actif', refused:'Refusé', cancelled:'Annulé', expired:'Expiré'})[b.status] || b.status %></span>
         </div>

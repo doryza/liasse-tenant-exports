@@ -36,7 +36,11 @@
           </div>
           <div class="inv-field">
             <label for="invAgency"><%= t.inv_f_agency %></label>
-            <input id="invAgency" name="agency" type="text" autocomplete="organization" placeholder="<%= t.inv_f_agency_ph %>" required>
+            <input id="invAgency" name="agency" type="text" autocomplete="organization" maxlength="120" placeholder="<%= t.inv_f_agency_ph %>" required>
+          </div>
+          <div class="inv-field">
+            <label for="invRegion"><%= t.inv_f_region %></label>
+            <input id="invRegion" name="target_region" type="text" maxlength="200" placeholder="<%= t.inv_f_region_ph %>" required>
           </div>
           <div class="inv-row">
             <div class="inv-field">

@@ -6,7 +6,7 @@
 
   <header class="esp-top">
     <div class="esp-wrap esp-top-inner">
-      <div>
+      <div class="esp-brand">
         <span class="esp-mark">VendVite</span>
         <span class="esp-who"><%= broker.full_name %> · <%= broker.agency || '' %></span>
       </div>
@@ -21,39 +21,62 @@
 
   <div class="esp-wrap">
 
-    <!-- Status ribbon -->
-    <div class="esp-status <%= isLive ? 'is-live' : (isActive ? 'is-ready' : 'is-locked') %>">
-      <div class="esp-status-dot" aria-hidden="true"></div>
-      <div class="esp-status-text">
-        <% if (isLive) { %>
-          <strong><%= isTestAccess ? t.esp_test_page_live : t.esp_page_live %></strong>
-          <a href="<%= pageUrl %>" target="_blank" rel="noopener"><%= pageUrl %></a>
-        <% } else if (isActive) { %>
-          <strong><%= isTestAccess ? 'Accès test actif.' : 'Abonnement actif.' %></strong> Votre page est prête — publiez-la quand vous le souhaitez.
-        <% } else { %>
-          <strong><%= t.esp_page_in_progress_status %></strong> Bâtissez-la librement&nbsp;; l'activation ouvre la capture de leads.
-        <% } %>
-      </div>
-      <div class="esp-status-act">
-        <a class="esp-ghost" href="espace/apercu" target="_blank" rel="noopener"><%= t.esp_preview_button %></a>
-        <% if (isActive) { %>
+    <!-- Activation offer / live status -->
+    <% if (!isActive) { %>
+      <section class="esp-launch" aria-labelledby="espLaunchTitle">
+        <div class="esp-launch-copy">
+          <p class="esp-eyebrow"><%= t.esp_launch_eyebrow %></p>
+          <h1 id="espLaunchTitle"><%= t.esp_launch_title %></h1>
+          <p class="esp-launch-lede"><%= t.esp_launch_body %></p>
+          <ul class="esp-launch-proof">
+            <li><%= t.esp_perk_unlimited_valuation_capture %></li>
+            <li><%= t.esp_perk_instant_lead_email_alert %></li>
+            <li><%= t.esp_perk_free_edits_anytime %></li>
+          </ul>
+        </div>
+        <aside class="esp-launch-offer" aria-label="<%= t.esp_launch_offer %>">
+          <p><%= t.esp_launch_offer %></p>
+          <div class="esp-launch-price"><strong><%= price.base.toFixed(0) %></strong><span>$<small>/ <%= lang==='en'?'year':'an' %></small></span></div>
+          <div class="esp-launch-total"><span><%= t.esp_launch_total %></span><b><%= price.total.toFixed(2).replace('.', lang==='fr'?',':'.') %>&nbsp;$</b></div>
+          <button class="esp-btn esp-launch-cta" type="button" data-goto="abonnement"><%= paypalMode==='sandbox'?'Tester PayPal':t.esp_launch_cta %></button>
+          <a class="esp-preview-link" href="espace/apercu" target="_blank" rel="noopener"><%= t.esp_preview_button %> <span aria-hidden="true">↗</span></a>
+          <small><%= t.esp_paypal_secure_cancel_anytime %></small>
+        </aside>
+      </section>
+    <% } else { %>
+      <div class="esp-status <%= isLive ? 'is-live' : 'is-ready' %>">
+        <div class="esp-status-dot" aria-hidden="true"></div>
+        <div class="esp-status-text">
+          <% if (isLive) { %>
+            <strong><%= isTestAccess ? t.esp_test_page_live : t.esp_page_live %></strong>
+            <a href="<%= pageUrl %>" target="_blank" rel="noopener"><%= pageUrl %></a>
+          <% } else { %>
+            <strong><%= isTestAccess ? 'Accès test actif.' : 'Abonnement actif.' %></strong> Votre page est prête — publiez-la quand vous le souhaitez.
+          <% } %>
+        </div>
+        <div class="esp-status-act">
+          <a class="esp-ghost" href="espace/apercu" target="_blank" rel="noopener"><%= t.esp_preview_button %></a>
           <button class="esp-btn" id="pubBtn" data-published="<%= broker.published %>"><%= Number(broker.published)===1 ? 'Retirer' : 'Publier' %></button>
-        <% } else { %>
-          <button class="esp-btn" data-goto="abonnement"><%= paypalMode==='sandbox'?'Tester PayPal':'Activer — '+price.total.toFixed(2)+' $' %></button>
-        <% } %>
+        </div>
       </div>
-    </div>
+    <% } %>
 
     <!-- ═══ Ma page ═══ -->
     <section class="esp-panel is-on" data-panel="page">
+      <div class="esp-panel-head">
+        <p class="esp-eyebrow"><%= t.esp_setup_eyebrow %></p>
+        <h2><%= t.esp_setup_title %></h2>
+        <p><%= t.esp_setup_body %></p>
+      </div>
       <div class="esp-grid">
         <div class="esp-col">
           <h2 class="esp-h"><%= t.esp_section_your_identity %></h2>
           <div class="esp-portrait">
             <div class="esp-portrait-img" id="portraitBox">
-              <% if (profile.agent_photo_url) { %><img src="<%= profile.agent_photo_url %>" alt="" id="portraitImg"><% } else { %><span id="portraitEmpty"><%= t.esp_no_photo_placeholder %></span><img id="portraitImg" hidden alt=""><% } %>
+              <span class="esp-portrait-empty" id="portraitEmpty" <%= profile.agent_photo_url ? 'hidden' : '' %>><i aria-hidden="true"></i><b><%= t.esp_no_photo_placeholder %></b></span>
+              <img id="portraitImg" src="<%= profile.agent_photo_url || '' %>" <%= profile.agent_photo_url ? '' : 'hidden' %> alt="" onerror="this.hidden=true;var fallback=document.getElementById('portraitEmpty');if(fallback)fallback.hidden=false">
             </div>
-            <div>
+            <div class="esp-portrait-copy">
               <label class="esp-upload">
                 <input type="file" id="photoInput" accept="image/png,image/jpeg,image/webp" hidden>
                 <span><%= t.esp_upload_photo_button %></span>
@@ -79,12 +102,11 @@
           <div class="esp-f"><label for="f_about"><%= t.esp_bio_label %></label>
             <textarea id="f_about" data-k="about" rows="4" placeholder="<%= t.agent_credo %>"><%= profile.about || '' %></textarea>
             <p class="esp-help"><%- t.esp_bio_help %></p></div>
+          <div class="esp-f"><label for="f_agency_disclaimer"><%= t.esp_disclaimer_label %></label><input id="f_agency_disclaimer" data-k="agency_disclaimer" value="<%= profile.agency_disclaimer || '' %>" placeholder="<%= t.esp_disclaimer_ph %>" maxlength="300">
+            <p class="esp-help"><%= t.esp_disclaimer_help %></p></div>
         </div>
 
         <div class="esp-col">
-          <div class="esp-f"><label for="f_agency_disclaimer"><%= t.esp_disclaimer_label %></label><input id="f_agency_disclaimer" data-k="agency_disclaimer" value="<%= profile.agency_disclaimer || '' %>" placeholder="<%= t.esp_disclaimer_ph %>" maxlength="300">
-            <p class="esp-help"><%= t.esp_disclaimer_help %></p></div>
-
           <h2 class="esp-h"><%= t.esp_section_your_hook %></h2>
           <div class="esp-f"><label for="f_hero_title"><%= t.esp_main_headline_label %></label><textarea id="f_hero_title" data-k="hero_title" rows="2" placeholder="<%= t.hero_title %>"><%= profile.hero_title || '' %></textarea>
             <p class="esp-help"><%= t.esp_main_headline_help %></p></div>

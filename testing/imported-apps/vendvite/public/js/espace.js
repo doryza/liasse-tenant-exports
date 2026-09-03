@@ -88,8 +88,10 @@
         });
         var d = await r.json().catch(function(){ return {}; });
         if (r.ok && d.url) {
-          var img = $('portraitImg'); img.src = d.url; img.hidden = false;
-          var empty = $('portraitEmpty'); if (empty) empty.remove();
+          var img = $('portraitImg'), empty = $('portraitEmpty');
+          img.onload = function(){ img.hidden = false; if (empty) empty.hidden = true; };
+          img.onerror = function(){ img.hidden = true; if (empty) empty.hidden = false; };
+          img.src = d.url;
           hint.textContent = T('esp_photo_updated_toast');
         } else { hint.textContent = T('esp_upload_refused_error'); }
       }catch(_){ hint.textContent = T('esp_upload_refused_error'); }
