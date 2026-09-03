@@ -102,7 +102,7 @@
           <div class="esp-f"><label for="f_about"><%= t.esp_bio_label %></label>
             <textarea id="f_about" data-k="about" rows="6" placeholder="<%= t.agent_credo %>"><%= profile.about || t.agent_credo %></textarea>
             <p class="esp-help"><%- t.esp_bio_help %></p></div>
-          <div class="esp-f"><label for="f_agency_disclaimer"><%= t.esp_disclaimer_label %></label><textarea id="f_agency_disclaimer" data-k="agency_disclaimer" rows="2" placeholder="<%= t.esp_disclaimer_ph %>" maxlength="300"><%= profile.agency_disclaimer || '' %></textarea>
+          <div class="esp-f"><label for="f_agency_disclaimer"><%= t.esp_disclaimer_label %></label><textarea id="f_agency_disclaimer" data-k="agency_disclaimer" rows="3" placeholder="<%= t.esp_disclaimer_ph %>" maxlength="300"><%= profile.agency_disclaimer || t.footer_disclaimer %></textarea>
             <p class="esp-help"><%= t.esp_disclaimer_help %></p></div>
         </div>
 
