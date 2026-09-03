@@ -1493,7 +1493,15 @@ module.exports = function(services){
       // La lettre est desormais bilingue : sans baseLocals elle n'a pas de t et
       // la vue leve une ReferenceError des la premiere cle.
       var L = await baseLocals(req);
+      // La lettre s'imprime recto-verso : une face par langue. On passe les DEUX
+      // dictionnaires, avec les surcharges de l'operateur appliquees a chacun.
+      var settingsL = await getSettings();
+      var TL = {
+        fr: applyTextOverrides(Object.assign({}, T.fr), settingsL, 'fr'),
+        en: applyTextOverrides(Object.assign({}, T.en), settingsL, 'en')
+      };
       res.render('lettre-proprietaires', Object.assign(L, {
+        TL: TL,
         // Dans l'apercu integre au panneau, la barre d'impression n'a pas de
         // sens : on montre la feuille seule.
         embed: !!(req.query && req.query._embed === '1'),
