@@ -25,27 +25,29 @@
 
     <!-- Activation offer / live status -->
     <% if (activePage === 'page' && !isActive) { %>
-      <section class="esp-launch" aria-labelledby="espLaunchTitle">
+      <section class="esp-launch <%= setupComplete ? 'is-complete' : '' %>" aria-labelledby="espLaunchTitle">
         <div class="esp-launch-copy">
           <p class="esp-eyebrow"><%= t.esp_launch_eyebrow %></p>
-          <h1 id="espLaunchTitle"><%= t.esp_launch_title %></h1>
+          <h1 id="espLaunchTitle"><%= setupComplete ? t.esp_launch_complete_title : t.esp_launch_title %></h1>
           <p class="esp-launch-lede"><%= t.esp_launch_body %></p>
-          <ol class="esp-launch-steps">
-            <li><span>1</span><%= t.esp_launch_step_address %></li>
-            <li><span>2</span><%= t.esp_launch_step_neighbours %></li>
-            <li><span>3</span><%= t.esp_launch_step_leads %></li>
-          </ol>
-          <a class="esp-campaign-link" href="espace/courrier-cible"><%= t.esp_launch_campaign_cta %> <span aria-hidden="true">→</span></a>
+          <p class="esp-launch-mobile-summary"><%= t.esp_launch_mobile_summary %></p>
+          <div class="esp-launch-actions">
+            <a class="esp-ghost" href="espace/apercu" target="_blank" rel="noopener"><%= t.esp_launch_preview_page %> <span aria-hidden="true">↗</span></a>
+            <% if (!setupComplete) { %>
+              <button class="esp-btn esp-ready-btn" id="setupDoneBtn" type="button"><%= t.esp_launch_mark_done %></button>
+            <% } else { %>
+              <span class="esp-ready-status"><%= t.esp_launch_done_status %></span>
+            <% } %>
+          </div>
+          <p class="esp-error" id="setupDoneError" role="alert"></p>
         </div>
-        <aside class="esp-launch-offer" aria-label="<%= t.esp_launch_offer %>">
-          <div class="esp-launch-included"><strong>150</strong><span><%= t.esp_launch_included_label %></span></div>
-          <p><%= t.esp_launch_offer %></p>
-          <div class="esp-launch-price"><strong><%= price.base.toFixed(0) %></strong><span>$<small>/ <%= lang==='en'?'year':'an' %></small></span></div>
-          <div class="esp-launch-total"><span><%= t.esp_launch_total %></span><b><%= price.total.toFixed(2).replace('.', lang==='fr'?',':'.') %>&nbsp;$</b></div>
-          <a class="esp-btn esp-launch-cta" href="espace/abonnement"><%= paypalMode==='sandbox'?'Tester PayPal':t.esp_launch_cta %></a>
-          <a class="esp-preview-link" href="espace/apercu" target="_blank" rel="noopener"><%= t.esp_preview_button %> <span aria-hidden="true">↗</span></a>
-          <small><%= t.esp_launch_campaign_note %><br><%= t.esp_paypal_secure_cancel_anytime %></small>
-        </aside>
+        <% if (setupComplete) { %>
+          <aside class="esp-launch-offer" aria-label="<%= t.esp_launch_offer %>">
+            <p><%= t.esp_launch_price_reveal %></p>
+            <div class="esp-launch-price"><strong><%= price.base.toFixed(0) %></strong><span>$<small>/ <%= lang==='en'?'year':'an' %></small></span></div>
+            <a class="esp-btn esp-launch-cta" href="espace/abonnement"><%= paypalMode==='sandbox'?'Tester PayPal':t.esp_launch_cta %></a>
+          </aside>
+        <% } %>
       </section>
     <% } else if (activePage === 'page') { %>
       <div class="esp-status <%= isLive ? 'is-live' : 'is-ready' %>">
@@ -360,6 +362,12 @@
       <% } %>
       <div class="esp-bill">
         <div class="esp-bill-card">
+          <% if (!isActive && !setupComplete) { %>
+            <p class="esp-eyebrow"><%= t.esp_setup_gate_eyebrow %></p>
+            <h2 class="esp-gate-title"><%= t.esp_setup_gate_title %></h2>
+            <p class="esp-gate-body"><%= t.esp_setup_gate_body %></p>
+            <a class="esp-btn esp-btn-wide esp-gate-cta" href="espace"><%= t.esp_setup_gate_cta %></a>
+          <% } else { %>
           <p class="esp-eyebrow"><%= t.esp_annual_membership_heading %></p>
           <% if (paypalMode === 'sandbox') { %><div class="esp-sandbox-flag"><strong><%= t.esp_paypal_test_mode_badge %></strong><span><%= t.esp_test_account_only_note %></span></div><% } %>
           <h2 class="esp-price"><%= price.base.toFixed(2) %>&nbsp;$ <span>/ an</span></h2>
@@ -392,6 +400,7 @@
             <p class="esp-hint" style="text-align:center"><%= t.esp_paypal_secure_cancel_anytime %></p>
           <% } %>
           <p class="esp-error" id="billError" role="alert"></p>
+          <% } %>
         </div>
         <div>
           <ul class="esp-bill-what">

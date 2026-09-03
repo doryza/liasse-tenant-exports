@@ -140,9 +140,11 @@ module.exports = function(services){
       esp_nav_subscription:"Abonnement",
       esp_page_in_progress_status:"Page en préparation.",
       esp_preview_button:"Aperçu",
-      esp_launch_eyebrow:"Votre campagne de lancement est incluse",
-      esp_launch_title:"Une adresse cible. 150 propriétaires voisins. Aucun frais de campagne.",
-      esp_launch_body:"Avec votre adhésion VendVite, choisissez l’adresse au cœur du secteur que vous voulez travailler. Nous ciblons les 150 portes les plus proches, personnalisons chaque lettre et la déposons à Postes Canada port payé inclus. Son code QR mène les propriétaires vers votre page — et leurs demandes, directement vers vous.",
+      esp_launch_eyebrow:"Deux étapes pour conquérir votre secteur",
+      esp_launch_title:"Personnalisez votre page de capture, puis lancez votre première campagne postale intégrée.",
+      esp_launch_complete_title:"Votre page est prête. Lancez votre conquête de quartier.",
+      esp_launch_body:"Choisissez le quartier à dominer. Nous ciblons 150 propriétaires, imprimons et plions votre envoi personnalisé, puis le déposons via nos comptes corporatifs Postes Canada. Les réponses reviennent dans votre registre de leads.",
+      esp_launch_mobile_summary:"150 propriétaires ciblés · Impression et pliage · Dépôt via nos comptes Postes Canada",
       esp_launch_offer:"Adhésion VendVite annuelle",
       esp_launch_total:"Total avec taxes",
       esp_launch_cta:"Activer mon adhésion",
@@ -152,6 +154,16 @@ module.exports = function(services){
       esp_launch_step_address:"Choisissez l’adresse cible",
       esp_launch_step_neighbours:"Nous ciblons 150 portes",
       esp_launch_step_leads:"Les réponses deviennent vos leads",
+      esp_launch_preview_page:"Prévisualiser ma page",
+      esp_launch_mark_done:"Ma page est personnalisée",
+      esp_launch_marking_done:"Confirmation…",
+      esp_launch_done_status:"Page personnalisée ✓",
+      esp_launch_price_reveal:"Votre système de capture est prêt. Découvrez maintenant la licence qui inclut votre première campagne de 150 lettres.",
+      esp_setup_gate_eyebrow:"Votre page avant le prix",
+      esp_setup_gate_title:"Finalisez d’abord votre système de capture de prospects.",
+      esp_setup_gate_body:"Prévisualisez votre page, personnalisez-la à votre nom, puis confirmez qu’elle est prête. Nous vous présenterons ensuite la licence et votre première campagne postale intégrée.",
+      esp_setup_gate_cta:"Personnaliser ma page",
+      esp_setup_required_error:"Confirmez d’abord que votre page de capture est personnalisée.",
       esp_setup_eyebrow:"Étape 1 · Votre vitrine",
       esp_setup_title:"Faites de cette page la vôtre.",
       esp_setup_body:"Commencez par votre identité et votre promesse. Vous pouvez enregistrer, prévisualiser et revenir modifier chaque détail avant l’activation.",
@@ -512,9 +524,11 @@ module.exports = function(services){
       esp_nav_subscription:"Subscription",
       esp_page_in_progress_status:"Page in progress.",
       esp_preview_button:"Preview",
-      esp_launch_eyebrow:"Your launch campaign is included",
-      esp_launch_title:"One target address. 150 nearby homeowners. No campaign fee.",
-      esp_launch_body:"With your VendVite membership, choose the address at the heart of the area you want to work. We target the 150 closest doors, personalize every letter and deliver the mailing to Canada Post. Its QR code brings homeowners to your page — and their requests straight to you.",
+      esp_launch_eyebrow:"Two steps to own your market",
+      esp_launch_title:"Personalize your lead capture page, then launch your first integrated mail campaign.",
+      esp_launch_complete_title:"Your page is ready. Start owning your neighbourhood.",
+      esp_launch_body:"Choose the neighbourhood to dominate. We target 150 homeowners, print and fold your personalized mailing, then deposit it through our corporate Canada Post accounts. Responses return to your lead register.",
+      esp_launch_mobile_summary:"150 targeted homeowners · Printing and folding · Deposit through our Canada Post accounts",
       esp_launch_offer:"Annual VendVite membership",
       esp_launch_total:"Total including taxes",
       esp_launch_cta:"Activate my membership",
@@ -524,6 +538,16 @@ module.exports = function(services){
       esp_launch_step_address:"Choose the target address",
       esp_launch_step_neighbours:"We target 150 doors",
       esp_launch_step_leads:"Replies become your leads",
+      esp_launch_preview_page:"Preview my page",
+      esp_launch_mark_done:"My page is personalized",
+      esp_launch_marking_done:"Confirming…",
+      esp_launch_done_status:"Page personalized ✓",
+      esp_launch_price_reveal:"Your lead capture system is ready. Now discover the licence that includes your first 150-letter campaign.",
+      esp_setup_gate_eyebrow:"Your page before the price",
+      esp_setup_gate_title:"Finish your lead capture system first.",
+      esp_setup_gate_body:"Preview your page, personalize it with your name and brand, then confirm it is ready. We will then show you the licence and your first integrated mail campaign.",
+      esp_setup_gate_cta:"Personalize my page",
+      esp_setup_required_error:"First confirm that your lead capture page is personalized.",
       esp_setup_eyebrow:"Step 1 · Your showcase",
       esp_setup_title:"Make this page unmistakably yours.",
       esp_setup_body:"Start with your identity and promise. Save, preview and refine every detail before activating.",
@@ -1484,6 +1508,7 @@ module.exports = function(services){
       campModePaypal: cfgPaypal.mode,
       broker: broker,
       profile: brokerProfile(broker),
+      setupComplete: !!brokerProfile(broker).setup_completed_at,
       leads: leads || [],
       counts: counts || { total: 0, fresh: 0, recent: 0 },
       invoices: invoices || [],
@@ -1651,6 +1676,23 @@ module.exports = function(services){
       await logBrokerEvent(broker.id, 'profile_saved', '');
       res.json({ success: true, profile: next });
     }catch(e){ console.error('profil', e); res.status(500).json({ error: 'server' }); }
+  });
+
+  // The annual offer stays hidden until the broker explicitly confirms that
+  // their lead-capture page is personalized. Keep this milestone in profile
+  // JSON so existing tenants need no schema migration and profile saves retain it.
+  router.post('/api/espace/page-prete', async function(req, res){
+    var broker = await requireBrokerApi(req, res);
+    if (!broker) return;
+    try{
+      var prof = brokerProfile(broker);
+      if (!prof.setup_completed_at) {
+        prof.setup_completed_at = new Date().toISOString();
+        await db.run('UPDATE brokers SET profile=$1, updated_at=NOW() WHERE id=$2', [JSON.stringify(prof), broker.id]);
+        await logBrokerEvent(broker.id, 'lead_capture_page_completed', prof.setup_completed_at);
+      }
+      res.json({ success: true, setupComplete: true });
+    }catch(e){ console.error('page prete', e); res.status(500).json({ error: 'server' }); }
   });
 
   // Photo upload → Cloudinary, scoped to this broker's folder.
@@ -2458,6 +2500,9 @@ module.exports = function(services){
   router.post('/api/espace/abonnement', async function(req, res){
     var broker = await requireBrokerApi(req, res);
     if (!broker) return;
+    if (!brokerProfile(broker).setup_completed_at) {
+      return res.status(409).json({ error: 'configuration', code: 'SETUP_REQUIRED' });
+    }
     var c = await paypalCfg();
     if (!paypalReady(c)) return res.status(503).json({ error: 'paypal_absent', code: 'NOT_CONFIGURED' });
     try{

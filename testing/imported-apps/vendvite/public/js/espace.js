@@ -60,6 +60,23 @@
     setTimeout(function(){ flag.textContent = ''; }, 3200);
   });
 
+  // ── Explicit end of page-personalization step
+  on($('setupDoneBtn'), 'click', async function(){
+    var btn = $('setupDoneBtn'), err = $('setupDoneError');
+    btn.disabled = true;
+    btn.textContent = T('esp_launch_marking_done');
+    if (err) err.textContent = '';
+    try{
+      var r = await fetch('api/espace/page-prete', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}'
+      });
+      if (r.ok) { location.reload(); return; }
+      if (err) err.textContent = T('esp_save_failed_toast');
+    }catch(_){ if (err) err.textContent = T('esp_save_failed_toast'); }
+    btn.disabled = false;
+    btn.textContent = T('esp_launch_mark_done');
+  });
+
   // ── Photo upload
   on($('photoInput'), 'change', function(e){
     var file = e.target.files && e.target.files[0];
@@ -112,9 +129,11 @@
       var r = await fetch('api/espace/abonnement', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
       var d = await r.json().catch(function(){ return {}; });
       if (r.ok && d.approveUrl) { window.location.href = d.approveUrl; return; }
-      err.textContent = d.code === 'NOT_CONFIGURED'
-        ? T('esp_payment_not_open_contact_us')
-        : T('esp_payment_open_failed_retry');
+      err.textContent = d.code === 'SETUP_REQUIRED'
+        ? T('esp_setup_required_error')
+        : d.code === 'NOT_CONFIGURED'
+          ? T('esp_payment_not_open_contact_us')
+          : T('esp_payment_open_failed_retry');
     }catch(_){ err.textContent = T('esp_payment_open_failed'); }
     btn.disabled = false;
   });
