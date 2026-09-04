@@ -3,7 +3,7 @@
   <div class="inv-veil" aria-hidden="true"></div>
   <header class="hp-masthead hp-wrap">
     <a class="hp-brand" href="." aria-label="VendVite"><img src="https://res.cloudinary.com/duhp69meg/image/upload/f_auto,q_auto,w_120/v1788268189/vendvite/logo.png" alt="" width="42" height="50"><span>VendVite<span class="hp-brand-dot">.</span></span></a>
-    <a class="hp-broker-login" href="connexion"><%= t.ws_login %> ↗</a>
+    <a class="hp-broker-login" data-vv-auth href="connexion"><%= t.ws_login %> ↗</a>
   </header>
   <% if (experiment.preview) { %><p class="hp-preview hp-wrap"><%= t.hp_preview %> <strong><%= experiment.variant === 'visible' ? 'A' : 'B' %></strong></p><% } %>
   <section class="hp-hero hp-wrap" aria-labelledby="hpTitle">

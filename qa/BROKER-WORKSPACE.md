@@ -1,6 +1,6 @@
 # Accepted broker workspace
 
-The homepage links to `/connexion`. An authenticated browser goes straight to `/espace`; otherwise the broker requests a sign-in email using the invitation address. Public profile email edits never change the sign-in identity.
+The homepage links to `/connexion`. Marked native broker links and signout controls handle clicks before the platform SDK, whose document-level login keyword matching would otherwise divert them into the generic platform login. An authenticated browser goes straight to `/espace`; otherwise the broker requests a sign-in email using the invitation address. Public profile email edits never change the sign-in identity.
 
 ## Access model
 

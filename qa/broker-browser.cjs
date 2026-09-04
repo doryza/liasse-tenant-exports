@@ -1,17 +1,22 @@
 const assert=require('node:assert/strict'),{create,root}=require('./harness.cjs');
 const {chromium}=require('/home/liassetech/liasse.tech/node_modules/playwright');const authTools=require(root+'/broker-auth-v1');
+function sdkLoginCapture(){
+ // Reproduce the platform SDK's document-capture interception, absent from
+ // the isolated Express harness. Native broker controls must win over it.
+ document.addEventListener('click',function(e){const el=e.target.closest('a,button');if(!el||(el.type==='submit'&&el.closest('form')))return;if(/connexion|mon compte|sign in|login/i.test(el.textContent)){e.preventDefault();e.stopImmediatePropagation();}},true);
+}
 (async()=>{
  const h=await create(),auth=authTools.create(h.services),browser=await chromium.launch({headless:true}),errors=[];
  try{
   const b=await h.db.get("INSERT INTO brokers(slug,full_name,email,agency,status,profile) VALUES ('qa-broker','Marie Tremblay','marie@example.test','Agence locale','invited',$1) RETURNING *",[JSON.stringify({agent_name:'Marie Tremblay',agency:'Agence locale',agent_email:'marie@example.test',agent_phone:'5145550100'})]);
   const lead=await h.db.get("INSERT INTO broker_leads(broker_id,name,email,address) VALUES ($1,'Jean Propriétaire','jean@example.test','123 rue Principale') RETURNING *",[b.id]);
-  const loginContext=await browser.newContext(),login=await loginContext.newPage();
+  const loginContext=await browser.newContext();await loginContext.addInitScript(sdkLoginCapture);const login=await loginContext.newPage();
   await login.goto(h.url+'/pwa/vendvite/?vv_preview=visible');await login.locator('.hp-broker-login').click();
   await login.locator('#loginEmail').fill(b.email);await login.locator('#brokerLoginForm button').click();
   await login.locator('#loginResult.ws-success').waitFor();assert.equal(h.emails.length,1);assert.equal(await login.locator('#brokerLoginForm button').isDisabled(),true);
   await loginContext.close();
   for(const width of [1440,390,320])for(const lang of ['fr','en']){
-   const context=await browser.newContext({viewport:{width,height:900}}),page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
+   const context=await browser.newContext({viewport:{width,height:900}});await context.addInitScript(sdkLoginCapture);const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
    const token=await auth.mint(b.id,'access');await page.goto(h.url+'/pwa/vendvite/acces/'+token+'?lang='+lang,{waitUntil:'networkidle'});
    assert.equal(await page.locator('body').evaluate(b=>b.scrollWidth<=innerWidth),true,'login overflow '+width);
    if(width!==320 && lang==='fr')await page.screenshot({path:'qa/broker-confirm-'+width+'.png',fullPage:true});
@@ -38,7 +43,9 @@ const {chromium}=require('/home/liassetech/liasse.tech/node_modules/playwright')
    await page.locator('#leadSearch').fill('no match');assert.equal(await page.locator('#leadNoMatches').isVisible(),true);await page.locator('#leadSearch').fill('Jean');assert.equal(await page.locator('.esp-lead').isVisible(),true);
    // The same used invitation remains convenient on the authenticated browser.
    await page.goto(h.url+'/pwa/vendvite/acces/'+token);await page.waitForURL('**/pwa/vendvite/espace');
-   await page.goto(h.url+'/pwa/vendvite/espace/compte');await page.locator('[data-signout=one]').click();await page.waitForURL('**/pwa/vendvite/connexion');assert.equal(await page.locator('#brokerLoginForm').isVisible(),true);
+   await page.locator('.esp-tab[href="espace/compte"]').click();await page.waitForURL('**/pwa/vendvite/espace/compte');
+   if(lang==='fr'){await page.locator('[data-signout=all]').click();await page.locator('[data-signout=all]').click();}else{await page.locator('[data-signout=one]').click();}
+   await page.waitForURL('**/pwa/vendvite/connexion');assert.equal(await page.locator('#brokerLoginForm').isVisible(),true);
    await context.close();
   }
   assert.deepEqual(errors,[]);

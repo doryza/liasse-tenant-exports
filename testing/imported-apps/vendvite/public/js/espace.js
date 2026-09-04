@@ -34,14 +34,18 @@
   function profileChanged(){if(!$('saveBtn'))return;dirty=true;editVersion++;$('savedFlag').textContent=T('ws_unsaved');$('savedFlag').classList.remove('is-error');}
   document.querySelectorAll('[data-k]').forEach(function(el){on(el,'input',profileChanged);});
   document.querySelectorAll('[data-signout]').forEach(function(btn){
-    on(btn,'click',async function(){
+    // Liasse auto-wires login keywords at document capture. Broker signout
+    // belongs to this workspace; handle these marked controls one level earlier.
+    window.addEventListener('click',async function(e){
+      if(!e.target.closest || e.target.closest('[data-signout]')!==btn)return;
+      e.preventDefault();e.stopImmediatePropagation();
       if(hasUnsaved()){notice(T('ws_leave'));return;}
       var all=btn.dataset.signout==='all';
       if(all && btn.dataset.armed!=='1'){btn.dataset.armed='1';btn.textContent=T('ws_logout_confirm');return;}
       btn.disabled=true;
       try{var r=await apiFetch('api/espace/deconnexion',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({all:all})});if(r.ok){location.href=(await r.json()).redirect;return;}notice(T('ws_retry'));}catch(e){notice(T('ws_retry'));}
       btn.disabled=false;
-    });
+    },true);
   });
   on($('copyPageLink'),'click',async function(){try{await navigator.clipboard.writeText($('copyPageLink').dataset.url);$('copyPageLink').textContent=T('ws_copied');}catch(e){notice(T('ws_retry'));}});
 

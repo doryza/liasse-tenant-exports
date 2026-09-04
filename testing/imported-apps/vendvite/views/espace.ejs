@@ -13,18 +13,18 @@
         <span class="esp-who"><%= broker.full_name %> · <%= broker.agency || '' %></span>
       </div>
       <nav class="esp-tabs" aria-label="<%= lang==='en' ? 'Broker space' : 'Espace courtier' %>">
-        <a class="esp-tab <%= activePage==='accueil'?'is-on':'' %>" href="espace" <%- activePage==='accueil'?'aria-current="page"':'' %>><%= t.ws_home %></a>
-        <a class="esp-tab <%= activePage==='page'?'is-on':'' %>" href="espace/page" <%- activePage==='page'?'aria-current="page"':'' %>><%= t.esp_nav_my_page %></a>
-        <a class="esp-tab <%= activePage==='courrier'?'is-on':'' %>" href="espace/courrier-cible" <%- activePage==='courrier'?'aria-current="page"':'' %>><%= t.esp_nav_targeted_mail %></a>
-        <a class="esp-tab <%= activePage==='pistes'?'is-on':'' %>" href="espace/pistes" <%- activePage==='pistes'?'aria-current="page"':'' %>><%= t.ws_leads %> <span class="esp-pill"><%= counts.total %></span></a>
-        <a class="esp-tab <%= activePage==='abonnement'?'is-on':'' %>" href="espace/abonnement" <%- activePage==='abonnement'?'aria-current="page"':'' %>><%= t.esp_nav_subscription %></a>
-        <a class="esp-tab <%= activePage==='compte'?'is-on':'' %>" href="espace/compte" <%- activePage==='compte'?'aria-current="page"':'' %>><%= t.ws_account %></a>
+        <a data-vv-auth class="esp-tab <%= activePage==='accueil'?'is-on':'' %>" href="espace" <%- activePage==='accueil'?'aria-current="page"':'' %>><%= t.ws_home %></a>
+        <a data-vv-auth class="esp-tab <%= activePage==='page'?'is-on':'' %>" href="espace/page" <%- activePage==='page'?'aria-current="page"':'' %>><%= t.esp_nav_my_page %></a>
+        <a data-vv-auth class="esp-tab <%= activePage==='courrier'?'is-on':'' %>" href="espace/courrier-cible" <%- activePage==='courrier'?'aria-current="page"':'' %>><%= t.esp_nav_targeted_mail %></a>
+        <a data-vv-auth class="esp-tab <%= activePage==='pistes'?'is-on':'' %>" href="espace/pistes" <%- activePage==='pistes'?'aria-current="page"':'' %>><%= t.ws_leads %> <span class="esp-pill"><%= counts.total %></span></a>
+        <a data-vv-auth class="esp-tab <%= activePage==='abonnement'?'is-on':'' %>" href="espace/abonnement" <%- activePage==='abonnement'?'aria-current="page"':'' %>><%= t.esp_nav_subscription %></a>
+        <a data-vv-auth class="esp-tab <%= activePage==='compte'?'is-on':'' %>" href="espace/compte" <%- activePage==='compte'?'aria-current="page"':'' %>><%= t.ws_account %></a>
       </nav>
     </div>
   </header>
 
   <div class="esp-wrap">
-    <div id="workspaceNotice" class="ws-notice" role="status" aria-live="polite" hidden><span id="workspaceNoticeText"></span> <a id="workspaceReconnect" href="connexion" target="_blank" rel="noopener" hidden><%= t.ws_session_link %> ↗</a></div>
+    <div id="workspaceNotice" class="ws-notice" role="status" aria-live="polite" hidden><span id="workspaceNoticeText"></span> <a data-vv-auth id="workspaceReconnect" href="connexion" target="_blank" rel="noopener" hidden><%= t.ws_session_link %> ↗</a></div>
     <% if(activePage==='accueil'){ %><%- include('partials/workspace-overview') %><% } %>
     <% if(activePage==='compte'){ %><%- include('partials/workspace-account') %><% } %>
 
