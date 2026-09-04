@@ -58,3 +58,19 @@ ALTER TABLE broker_invoices ADD COLUMN IF NOT EXISTS paypal_order_id TEXT;
 ALTER TABLE broker_campaigns ADD COLUMN IF NOT EXISTS quota_period DATE;
 DROP INDEX IF EXISTS broker_campaigns_quota_idx;
 CREATE UNIQUE INDEX IF NOT EXISTS broker_campaigns_credit_idx ON broker_campaigns (broker_id, quota_period) WHERE quota_period IS NOT NULL AND status<>'cancelled' AND is_test=0;
+
+-- Homepage pricing experiment. Additive; no existing business data changes.
+CREATE TABLE IF NOT EXISTS homepage_experiments (
+  experiment TEXT PRIMARY KEY, started_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  winner TEXT CHECK (winner IN ('visible','gated')), next_look INTEGER NOT NULL DEFAULT 0,
+  checked_at TIMESTAMPTZ, decided_at TIMESTAMPTZ, last_result JSONB
+);
+CREATE TABLE IF NOT EXISTS homepage_visitors (
+  experiment TEXT NOT NULL REFERENCES homepage_experiments(experiment),
+  visitor_id TEXT NOT NULL, variant TEXT NOT NULL CHECK (variant IN ('visible','gated')),
+  assigned_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), exposed_at TIMESTAMPTZ,
+  form_started_at TIMESTAMPTZ, cta_at TIMESTAMPTZ, applied_at TIMESTAMPTZ,
+  broker_id INTEGER REFERENCES brokers(id), PRIMARY KEY (experiment,visitor_id), UNIQUE (experiment,broker_id)
+);
+CREATE INDEX IF NOT EXISTS homepage_visitors_exposure_idx ON homepage_visitors(experiment,variant,exposed_at);
+INSERT INTO homepage_experiments (experiment) VALUES ('homepage-price-v1') ON CONFLICT DO NOTHING;

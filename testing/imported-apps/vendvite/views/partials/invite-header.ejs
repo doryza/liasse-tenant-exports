@@ -17,10 +17,11 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..900&family=IBM+Plex+Mono:wght@500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="public/css/styles.css">
+<% if (typeof experiment !== 'undefined') { %><link rel="stylesheet" href="public/css/homepage.css?v=homepage-price-v1"><% } %>
 </head>
 <body class="inv-body">
 <% if (typeof langueVisible === 'undefined' || langueVisible) { %>
 <div class="inv-lang">
-  <a href="<%= (typeof cheminCourant !== 'undefined' ? cheminCourant : '') %>?lang=fr" class="<%= lang==='fr'?'active':'' %>">FR</a><span aria-hidden="true">·</span><a href="<%= (typeof cheminCourant !== 'undefined' ? cheminCourant : '') %>?lang=en" class="<%= lang==='en'?'active':'' %>">EN</a>
+  <a href="<%= (typeof cheminCourant !== 'undefined' ? cheminCourant : '') %>?lang=fr<%= typeof experiment !== 'undefined' && experiment.preview ? '&vv_preview='+experiment.variant : '' %>" class="<%= lang==='fr'?'active':'' %>">FR</a><span aria-hidden="true">·</span><a href="<%= (typeof cheminCourant !== 'undefined' ? cheminCourant : '') %>?lang=en<%= typeof experiment !== 'undefined' && experiment.preview ? '&vv_preview='+experiment.variant : '' %>" class="<%= lang==='en'?'active':'' %>">EN</a>
 </div>
 <% } %>

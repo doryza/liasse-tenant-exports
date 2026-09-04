@@ -1,5 +1,7 @@
 var express = require('express');
 var invoiceTools = require('./invoice');
+var homepageTools = require('./homepage-experiment');
+var homepageCopy = require('./homepage-copy');
 
 // ── Campagne « 150 portes » — reglages produit.
 //    Declares au SCOPE FICHIER et non dans la fabrique de routes : la plateforme
@@ -23,6 +25,7 @@ module.exports = function(services){
 
   var db = services.db;
   var cfg = services.config || {};
+  var homepageExperiment = homepageTools.create(services);
 
   var T = {
     fr: {
@@ -900,6 +903,9 @@ module.exports = function(services){
     ]}
   ];
 
+  Object.assign(T.fr, homepageCopy.fr);
+  Object.assign(T.en, homepageCopy.en);
+
   function tp(req, p){ return (typeof req.tenantPath === 'function') ? req.tenantPath(p) : p.replace(/^\//,''); }
   function formatPhone(p){ if(!p) return ''; var d=String(p).replace(/\D/g,''); if(d.length===10) return '('+d.slice(0,3)+') '+d.slice(3,6)+'-'+d.slice(6); if(d.length===11 && d[0]==='1') return '1 ('+d.slice(1,4)+') '+d.slice(4,7)+'-'+d.slice(7); return p; }
   function formatDate(d, lang){ if(!d) return ''; try{ return new Date(d).toLocaleDateString(lang==='en'?'en-CA':'fr-CA',{ year:'numeric', month:'long', day:'numeric' }); }catch(e){ return ''; } }
@@ -950,10 +956,26 @@ module.exports = function(services){
   router.get('/', async function(req,res){
     try{
       var L=await baseLocals(req);
-      var testimonials=await db.all('SELECT * FROM testimonials WHERE published=1 ORDER BY sort_order ASC, created_at DESC');
-      var posts=await db.all('SELECT * FROM posts WHERE published=1 ORDER BY created_at DESC LIMIT 3');
-      res.render('index', Object.assign(L, { testimonials:testimonials, posts:posts, isHome:true }));
+      var experiment = { variant:'visible', preview:false, track:false };
+      try { experiment = await homepageExperiment.assign(req,res); } catch(e) { console.error('homepage assignment',e.message); }
+      res.set('Cache-Control','private, no-store');
+      res.render('index', Object.assign(L, { experiment:experiment, isHome:true }));
     }catch(e){ console.error('index', e); res.status(500).send('Erreur'); }
+  });
+
+  router.post('/api/homepage/event', async function(req,res){
+    res.set('Cache-Control','private, no-store');
+    try { await homepageExperiment.event(req); await homepageExperiment.evaluate(); } catch(e) { console.error('homepage event',e.message); }
+    res.status(204).end();
+  });
+
+  router.get('/admin/conversions', requireAdmin, async function(req,res){
+    try {
+      await homepageExperiment.evaluate();
+      var L=await baseLocals(req);
+      res.set('Cache-Control','private, no-store');
+      res.render('admin-conversions',Object.assign(L,{active:'conversions',experimentState:await homepageExperiment.state(),conversionRows:await homepageExperiment.results()}));
+    } catch(e) { console.error('homepage results',e.message); res.status(500).send('Erreur'); }
   });
 
   router.get('/journal/:id', async function(req,res){
@@ -1449,6 +1471,9 @@ module.exports = function(services){
       var b = req.body || {};
       var lang = req.lang || 'fr';
       var TT = T[lang] || T.fr;
+      res.set('Cache-Control','private, no-store');
+      var offer = { amount:TT.inv_price_amount, term:TT.inv_price_term, includes:TT.inv_price_pitch, billing:TT.hp_price_note };
+      if (b.homepage_preview === true) return res.json({success:true,preview:true,message:TT.hp_preview_done,offer:offer});
       var name = String(b.name || '').trim().slice(0, 120);
       var agency = String(b.agency || '').trim().slice(0, 120);
       var targetRegion = String(b.target_region || '').trim().slice(0, 200);
@@ -1470,7 +1495,7 @@ module.exports = function(services){
         } else {
           await logBrokerEvent(existing.id, 'reapplied', email);
         }
-        return res.json({ success: true, message: TT.inv_done_text });
+        return res.json({ success: true, message: TT.inv_done_text, offer:offer });
       }
 
       var slug = await uniqueBrokerSlug(name, agency);
@@ -1485,12 +1510,13 @@ module.exports = function(services){
           links: []
         })]
       );
+      try { await homepageExperiment.convert(req,ins.id); } catch(e) { console.error('homepage attribution',e.message); }
       // Manual review gate: NO magic link yet. The broker gets a sealed
       // acknowledgement; the vendvite operator gets pinged to review.
       try { await sendAckEmail(req, ins, lang); } catch(e){ console.error('ack email', e); }
       try { await sendOwnerNewApplicationEmail(req, ins); } catch(e){ console.error('owner notify', e); }
       await logBrokerEvent(ins.id, 'applied', agency + ' / ' + targetRegion + ' / ' + email);
-      res.json({ success: true, message: TT.inv_done_text, slug: slug });
+      res.json({ success: true, message: TT.inv_done_text, slug: slug, offer:offer });
     }catch(e){
       console.error('candidature', e);
       var TT2 = T[req.lang || 'fr'] || T.fr;
