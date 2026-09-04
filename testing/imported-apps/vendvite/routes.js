@@ -2,6 +2,8 @@ var express = require('express');
 var invoiceTools = require('./invoice');
 var homepageTools = require('./homepage-experiment-v1');
 var homepageCopy = require('./homepage-copy');
+var brokerAuthTools = require('./broker-auth-v1');
+var workspaceCopy = require('./workspace-copy-v1');
 
 // ── Campagne « 150 portes » — reglages produit.
 //    Declares au SCOPE FICHIER et non dans la fabrique de routes : la plateforme
@@ -20,12 +22,13 @@ var CAMPAGNE_RESERVE_MIN = 60;
 
 module.exports = function(services){
   var router = express.Router();
-  router.use(express.json());
+  router.use(express.json({ limit:'12mb' }));
   router.use(express.urlencoded({ extended: true }));
 
   var db = services.db;
   var cfg = services.config || {};
   var homepageExperiment = homepageTools.create(services);
+  var brokerAuth = brokerAuthTools.create(services);
 
   var T = {
     fr: {
@@ -905,7 +908,10 @@ module.exports = function(services){
 
   Object.assign(T.fr, homepageCopy.fr);
   Object.assign(T.en, homepageCopy.en);
+  Object.assign(T.fr,workspaceCopy.fr);
+  Object.assign(T.en,workspaceCopy.en);
 
+  function scriptJson(value){ return JSON.stringify(value).replace(/</g,'\\u003c').replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029'); }
   function tp(req, p){ return (typeof req.tenantPath === 'function') ? req.tenantPath(p) : p.replace(/^\//,''); }
   function formatPhone(p){ if(!p) return ''; var d=String(p).replace(/\D/g,''); if(d.length===10) return '('+d.slice(0,3)+') '+d.slice(3,6)+'-'+d.slice(6); if(d.length===11 && d[0]==='1') return '1 ('+d.slice(1,4)+') '+d.slice(4,7)+'-'+d.slice(7); return p; }
   function formatDate(d, lang){ if(!d) return ''; try{ return new Date(d).toLocaleDateString(lang==='en'?'en-CA':'fr-CA',{ year:'numeric', month:'long', day:'numeric' }); }catch(e){ return ''; } }
@@ -950,7 +956,7 @@ module.exports = function(services){
     // chemin courant, sans barre oblique initiale, pour rester sur place sous
     // les deux montages.
     var cheminCourant = String(req.path || '/').replace(/^\//, '');
-    return { t:t, lang:lang, settings:settings, formatDate:function(d){ return formatDate(d, lang); }, formatPhone:formatPhone, googleApiKey:(services.google && services.google.mapsApiKey) || '', ogImage:ogImage, canonical:canonical, statusClass:statusClass, cheminCourant:cheminCourant, langueVisible:true };
+    return { scriptJson:scriptJson,t:t, lang:lang, settings:settings, formatDate:function(d){ return formatDate(d, lang); }, formatPhone:formatPhone, googleApiKey:(services.google && services.google.mapsApiKey) || '', ogImage:ogImage, canonical:canonical, statusClass:statusClass, cheminCourant:cheminCourant, langueVisible:true };
   }
 
   router.get('/', async function(req,res){
@@ -1239,8 +1245,6 @@ module.exports = function(services){
   // Payment is a PayPal subscription; PAYPAL_* come from the tenant's secure
   // API-variable store, never from generated code or public settings.
 
-  var BROKER_COOKIE = 'vv_courtier';
-  var BROKER_TOKEN_TTL_H = 72;
   var PRICE_BASE = 599;
   var TAX_GST = 0.05;
   var TAX_QST = 0.09975;
@@ -1261,7 +1265,7 @@ module.exports = function(services){
   }
 
   // Paths the broker-slug catch-all must never swallow.
-  var RESERVED_SLUGS = ['api','admin','acces','espace','journal','public','manifest.json','sw.js','favicon.ico','robots.txt','_platform','__preview','courtier','courtiers','index'];
+  var RESERVED_SLUGS = ['api','admin','acces','espace','journal','public','manifest.json','sw.js','favicon.ico','robots.txt','_platform','__preview','courtier','courtiers','index','connexion','acces-expire'];
 
   function slugifyPart(s){
     return String(s || '')
@@ -1326,65 +1330,41 @@ module.exports = function(services){
     return proto + '://' + req.get('host') + (path.charAt(0) === '/' ? path : '/' + path);
   }
 
-  // ── Magic-link tokens (hash-at-rest; the raw token only ever exists in the email)
-  async function mintBrokerToken(brokerId, purpose){
-    var raw = services.crypto.randomBytes(32);
-    var hash = services.crypto.sha256(raw);
-    var expires = new Date(Date.now() + BROKER_TOKEN_TTL_H * 3600 * 1000).toISOString();
-    await db.run('INSERT INTO broker_tokens (broker_id,token_hash,purpose,expires_at) VALUES ($1,$2,$3,$4)', [brokerId, hash, purpose || 'access', expires]);
-    return raw;
+  async function mintBrokerToken(brokerId,purpose){ return brokerAuth.mint(brokerId,purpose); }
+  async function currentBroker(req,res){ return brokerAuth.current(req,res); }
+  function workspaceUnavailable(req,res){
+    if(res.headersSent)return;
+    brokerAuthTools.protect(res);res.set('Retry-After','10');
+    var lang=req.lang==='en'?'en':'fr',t=T[lang];
+    if(req.path.indexOf('/api/')===0)return res.status(503).json({code:'TEMPORARILY_UNAVAILABLE',error:t.ws_retry});
+    // Render without a settings/database lookup so a DB outage cannot break
+    // the recovery screen itself.
+    res.status(503).render('workspace-error',{t:t,lang:lang,ws:true,cheminCourant:req.path.replace(/^\//,''),langueVisible:false},function(err,html){
+      res.send(err?t.ws_generic_title:html);
+    });
   }
-
-  async function consumeBrokerToken(raw){
-    if (!raw || typeof raw !== 'string' || raw.length < 20) return null;
-    var hash = services.crypto.sha256(raw);
-    var row = await db.get('SELECT * FROM broker_tokens WHERE token_hash=$1', [hash]);
-    if (!row) return null;
-    if (row.used_at) return null;
-    if (row.expires_at && new Date(row.expires_at).getTime() < Date.now()) return null;
-    await db.run('UPDATE broker_tokens SET used_at=NOW() WHERE id=$1', [row.id]);
-    return await db.get('SELECT * FROM brokers WHERE id=$1', [row.broker_id]);
+  function brokerEndpoint(handler){
+    return function(req,res,next){Promise.resolve(handler(req,res,next)).catch(function(){console.error('broker workspace request failed');workspaceUnavailable(req,res);});};
   }
-
-  // ── Broker session: signed cookie (HMAC over id, keyed by the platform JWT secret)
-  function signBrokerSession(id){
-    var payload = String(id) + '.' + Date.now();
-    var sig = require('crypto').createHmac('sha256', services.jwtSecret || 'vv').update(payload).digest('hex').slice(0, 32);
-    return payload + '.' + sig;
-  }
-  function readBrokerSession(raw){
-    if (!raw) return null;
-    var parts = String(raw).split('.');
-    if (parts.length !== 3) return null;
-    var payload = parts[0] + '.' + parts[1];
-    var expect = require('crypto').createHmac('sha256', services.jwtSecret || 'vv').update(payload).digest('hex').slice(0, 32);
-    var a = Buffer.from(parts[2]);
-    var b = Buffer.from(expect);
-    if (a.length !== b.length || !require('crypto').timingSafeEqual(a, b)) return null;
-    if (Date.now() - Number(parts[1]) > 30 * 24 * 3600 * 1000) return null;
-    return Number(parts[0]);
-  }
-
-  async function currentBroker(req){
-    var id = readBrokerSession(req.cookies ? req.cookies[BROKER_COOKIE] : null);
-    if (!id) return null;
-    return await db.get('SELECT * FROM brokers WHERE id=$1', [id]);
-  }
-
-  async function requireBroker(req, res){
-    var b = await currentBroker(req);
-    if (!b) { res.redirect(tp(req, '/acces-expire')); return null; }
+  async function requireBroker(req,res){
+    brokerAuthTools.protect(res);
+    var b;try{b=await currentBroker(req,res);}catch(e){workspaceUnavailable(req,res);return null;}
+    if(!b){res.redirect(tp(req,'/connexion')+'?next='+encodeURIComponent(brokerAuthTools.safeNext(req.path.replace(/^\//,''))));return null;}
     return b;
   }
-  async function requireBrokerApi(req, res){
-    var b = await currentBroker(req);
-    if (!b) { res.status(401).json({ error: 'session' }); return null; }
+  async function requireBrokerApi(req,res){
+    brokerAuthTools.protect(res);
+    var b;try{b=await currentBroker(req,res);}catch(e){workspaceUnavailable(req,res);return null;}
+    if(!b){res.status(401).json({error:'session',code:'SESSION_EXPIRED',loginUrl:tp(req,'/connexion')});return null;}
+    if(['GET','HEAD','OPTIONS'].indexOf(req.method)===-1 && !brokerAuth.csrf(req)){
+      res.status(403).json({error:'csrf',code:'CSRF_INVALID'});return null;
+    }
     return b;
   }
 
   // ── Invitation email
   async function sendInviteEmail(req, broker, rawToken, lang){
-    var link = absoluteUrl(req, '/acces/' + rawToken) + '?vue=apercu';
+    var link = absoluteUrl(req, '/acces/' + rawToken) + '?lang=' + (lang==='en'?'en':'fr');
     var fr = (lang !== 'en');
     var subject = fr ? 'Votre invitation VendVite' : 'Your VendVite invitation';
     var pageUrl = absoluteUrl(req, '/' + broker.slug);
@@ -1394,17 +1374,17 @@ module.exports = function(services){
       + '<div style="font-family:IBM Plex Mono,monospace;font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:#C79A5B;margin-bottom:18px">'
       + (fr ? 'Sur invitation seulement' : 'By invitation only') + '</div>'
       + '<h1 style="font-family:Georgia,serif;font-size:25px;line-height:1.15;margin:0 0 14px;color:#F5EFE6">'
-      + (fr ? 'Voici votre page, ' : 'Here is your page, ') + escapeHtml(broker.full_name.split(' ')[0]) + '.</h1>'
+      + (fr ? 'Votre accès est accepté, ' : 'Your access is approved, ') + escapeHtml(broker.full_name.split(' ')[0]) + '.</h1>'
       + '<p style="color:rgba(245,239,230,.64);font-size:15px;line-height:1.6;margin:0 0 22px">'
       + (fr
-        ? 'Votre place dans le cercle VendVite est réservée. Le lien ci-dessous ouvre votre page exactement telle qu\'un propriétaire la verrait. Le bouton au bas de l\'écran vous fait passer en mode édition — rien n\'est public tant que vous ne publiez pas.'
-        : 'Your place in the VendVite circle is reserved. The link below opens your page exactly as a homeowner would see it. Use the button at the bottom of the screen to edit it — nothing is public until you publish.')
+        ? 'Votre espace vous guide pour personnaliser votre page, activer votre adhésion et préparer votre première campagne. Votre page reste privée tant que vous ne la publiez pas.'
+        : 'Your workspace guides you through personalizing your page, activating your membership and preparing your first campaign. Your page stays private until you publish it.')
       + '</p>'
       + '<a href="' + link + '" style="display:block;text-align:center;padding:16px;border-radius:4px;background:#E30B2D;color:#fff;text-decoration:none;font-family:Georgia,serif;font-weight:bold;font-size:16px;box-shadow:inset 0 0 0 1.5px rgba(199,154,91,.5)">'
-      + (fr ? 'Voir ma page' : 'See my page') + '</a>'
+      + (fr ? 'Ouvrir mon espace' : 'Open my workspace') + '</a>'
       + '<p style="color:rgba(245,239,230,.34);font-size:12.5px;line-height:1.6;margin:20px 0 0">'
       + (fr ? 'Votre adresse réservée : ' : 'Your reserved address: ') + '<span style="color:#C79A5B">' + pageUrl + '</span><br>'
-      + (fr ? 'Ce lien est personnel et expire dans 72 heures.' : 'This link is personal and expires in 72 hours.')
+      + (fr ? 'Ce lien est personnel et valable 72 heures pour une première connexion. Ensuite, retrouvez votre espace depuis la page d’accueil sans redemander de lien sur cet appareil.' : 'This personal link is valid for 72 hours for your first sign-in. Afterwards, return from the homepage without requesting another link on this device.')
       + '</p></div></div>';
     var text = (fr ? 'Votre page privée VendVite : ' : 'Your private VendVite page: ') + link;
     return await services.email.send({ to: broker.email, subject: subject, html: html, text: text });
@@ -1490,10 +1470,8 @@ module.exports = function(services){
         existing.target_region = targetRegion;
         // Same generic answer whatever the state — never leak enrolment.
         if (existing.status === 'invited' || existing.status === 'active' || existing.status === 'cancelled' || existing.status === 'expired') {
-          // Already past review: a fresh access link is genuinely helpful.
-          var reToken = await mintBrokerToken(existing.id, 'access');
-          try { await sendInviteEmail(req, existing, reToken, lang); } catch(e){ console.error('invite resend', e); }
-          await logBrokerEvent(existing.id, 'invite_resent', email);
+          // Self-service sign-in owns resends and their rate limits.
+          await logBrokerEvent(existing.id, 'reapplied', 'Existing approved account; use broker sign-in');
         } else {
           await logBrokerEvent(existing.id, 'reapplied', email);
         }
@@ -1526,31 +1504,71 @@ module.exports = function(services){
     }
   });
 
-  // ── GET /acces/:token — magic link lands here, opens the private space
-  router.get('/acces/:token', async function(req, res){
+  async function loginPage(req,res,options){
+    brokerAuthTools.protect(res);
+    var L=await baseLocals(req);
+    res.render('connexion',Object.assign(L,{isHome:false,loginMode:'request',invalidLink:false,next:brokerAuthTools.safeNext(req.query.next),challenge:brokerAuth.challenge(req,res),token:'',ws:true},options||{}));
+  }
+  router.get('/connexion',brokerEndpoint(async function(req,res){
+    brokerAuthTools.protect(res);
+    if(await currentBroker(req,res))return res.redirect(tp(req,'/'+brokerAuthTools.safeNext(req.query.next)));
+    await loginPage(req,res);
+  }));
+  router.post('/api/courtier/connexion',brokerEndpoint(async function(req,res){
+    brokerAuthTools.protect(res);
+    var TT=T[req.lang]||T.fr;
+    if(!brokerAuth.validChallenge(req))return res.status(403).json({code:'CSRF_INVALID',error:TT.ws_retry});
+    var email=String((req.body||{}).email||'').trim().toLowerCase();
+    if(email.length>190 || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email))return res.status(400).json({error:TT.ws_invalid_email});
     try{
-      var broker = await consumeBrokerToken(req.params.token);
-      if (!broker) return res.redirect('../acces-expire');
-      res.cookie(BROKER_COOKIE, signBrokerSession(broker.id), {
-        httpOnly: true, sameSite: 'lax', secure: true, maxAge: 30 * 24 * 3600 * 1000
+      var next=brokerAuthTools.safeNext(req.body.next);
+      var outcome=await brokerAuth.requestLink(req,email,async function(b,raw){
+        var link=absoluteUrl(req,'/acces/'+raw)+'?lang='+req.lang+'&next='+encodeURIComponent(next);
+        var fr=req.lang!=='en';
+        return services.email.send({to:b.email,subject:fr?'Votre lien de connexion VendVite':'Your VendVite sign-in link',text:(fr?'Ouvrir mon espace : ':'Open my workspace: ')+link+'\n'+TT.ws_login_hint,html:'<div style="font-family:Arial,sans-serif;max-width:560px;padding:32px"><h1>VendVite</h1><p>'+escapeHtml(TT.ws_login_title)+'</p><p><a href="'+escapeHtml(link)+'">'+escapeHtml(TT.ws_confirm)+'</a></p><p>'+escapeHtml(TT.ws_login_hint)+'</p></div>'});
       });
-      await db.run('UPDATE brokers SET last_seen_at=NOW() WHERE id=$1', [broker.id]);
-      await logBrokerEvent(broker.id, 'access_link_used', '');
-      // Une invitation mene a l'apercu : on montre la page avant la console.
-      var vue = (req.query && req.query.vue === 'apercu') ? '../espace/apercu' : '../espace';
-      res.redirect(vue);
-    }catch(e){ console.error('acces', e); res.redirect('../acces-expire'); }
-  });
-
-
-  // ── Expired / invalid magic link
-  router.get('/acces-expire', async function(req, res){
-    var L = await baseLocals(req);
-    res.status(410).render('acces-expire', Object.assign(L, { isHome: false }));
-  });
+      if(outcome==='limited'){res.set('Retry-After','3600');return res.status(429).json({error:TT.ws_throttled});}
+      res.status(202).json({success:true,message:TT.ws_sent});
+    }catch(e){console.error('broker login request failed');res.status(503).json({error:TT.ws_retry});}
+  }));
+  router.get('/acces/:token',brokerEndpoint(async function(req,res){
+    brokerAuthTools.protect(res);
+    // An already authenticated broker can reuse the invitation indefinitely
+    // without consuming a new credential or being sent back for another email.
+    if(await currentBroker(req,res))return res.redirect(tp(req,'/espace'));
+    var token=req.params.token;
+    if(!await brokerAuth.inspect(token))return loginPage(req,res,{invalidLink:true});
+    await loginPage(req,res,{loginMode:'confirm',token:token,next:brokerAuthTools.safeNext(req.query.next)});
+  }));
+  router.post('/acces/:token',brokerEndpoint(async function(req,res){
+    brokerAuthTools.protect(res);
+    if(await currentBroker(req,res))return res.redirect(303,tp(req,'/espace'));
+    if(!brokerAuth.validChallenge(req))return res.status(403).send((T[req.lang]||T.fr).ws_retry);
+    try{
+      var broker=await brokerAuth.redeem(req,res,req.params.token);
+      if(!broker)return loginPage(req,res,{invalidLink:true});
+      await db.run('UPDATE brokers SET last_seen_at=NOW() WHERE id=$1',[broker.id]);
+      await logBrokerEvent(broker.id,'access_link_used','persistent session');
+      res.redirect(303,tp(req,'/'+brokerAuthTools.safeNext(req.body.next)));
+    }catch(e){console.error('broker sign-in failed');res.status(503).send((T[req.lang]||T.fr).ws_retry);}
+  }));
+  router.get('/acces-expire',brokerEndpoint(async function(req,res){
+    brokerAuthTools.protect(res);
+    if(await currentBroker(req,res))return res.redirect(tp(req,'/espace'));
+    await loginPage(req,res,{invalidLink:true});
+  }));
+  router.post('/api/espace/deconnexion',brokerEndpoint(async function(req,res){
+    if(!await requireBrokerApi(req,res))return;
+    await brokerAuth.logout(req,res,req.body.all===true);
+    res.json({success:true,redirect:tp(req,'/connexion')});
+  }));
+  router.get('/api/espace/session',brokerEndpoint(async function(req,res){
+    if(!await requireBrokerApi(req,res))return;
+    res.json({success:true,csrf:req._vvSession.csrf});
+  }));
 
   // ── Broker private space
-  async function espaceLocals(req, broker){
+  async function espaceLocals(req, broker, activePage){
     var L = await baseLocals(req);
     var leads = await db.all('SELECT * FROM broker_leads WHERE broker_id=$1 ORDER BY created_at DESC LIMIT 200', [broker.id]);
     var counts = await db.get("SELECT COUNT(*)::int AS total, COUNT(*) FILTER (WHERE status='nouveau')::int AS fresh, COUNT(*) FILTER (WHERE created_at > NOW() - INTERVAL '30 days')::int AS recent FROM broker_leads WHERE broker_id=$1", [broker.id]);
@@ -1595,39 +1613,45 @@ module.exports = function(services){
       paymentTest: req.query && req.query.paiement === 'test',
       paypalMode: activePaypal.mode,
       paypalConfigured: paypalReady(activePaypal),
-      pageUrl: absoluteUrl(req, '/' + broker.slug)
+      pageUrl: absoluteUrl(req, '/' + broker.slug),
+      ws:true,
+      csrf:req._vvSession.csrf,
+      sessions:activePage==='compte'?await db.all('SELECT id,device_label,created_at,last_seen_at,absolute_expires_at FROM broker_sessions WHERE broker_id=$1 AND revoked_at IS NULL AND idle_expires_at>NOW() AND absolute_expires_at>NOW() ORDER BY last_seen_at DESC LIMIT 20',[broker.id]):[],
+      sessionId:req._vvSession.id
     });
   }
 
   var ESPACE_PAGES = {
-    '/espace': 'page',
+    '/espace': 'accueil',
+    '/espace/page': 'page',
+    '/espace/compte': 'compte',
     '/espace/courrier-cible': 'courrier',
     '/espace/pistes': 'pistes',
     '/espace/abonnement': 'abonnement'
   };
 
-  router.get(Object.keys(ESPACE_PAGES), async function(req, res){
+  router.get(Object.keys(ESPACE_PAGES), brokerEndpoint(async function(req, res){
     var broker = await requireBroker(req, res);
     if (!broker) return;
     try{
       await db.run('UPDATE brokers SET last_seen_at=NOW() WHERE id=$1', [broker.id]);
-      res.render('espace', Object.assign(await espaceLocals(req, broker), {
+      res.render('espace', Object.assign(await espaceLocals(req, broker, ESPACE_PAGES[req.path]), {
         activePage: ESPACE_PAGES[req.path] || 'page'
       }));
-    }catch(e){ console.error('espace', e); res.status(500).send('Erreur'); }
-  });
+    }catch(e){ console.error('broker workspace render failed');workspaceUnavailable(req,res); }
+  }));
 
   // Live preview of the broker's own page, regardless of published/paid state.
-  router.get('/espace/apercu', async function(req, res){
+  router.get('/espace/apercu', brokerEndpoint(async function(req, res){
     var broker = await requireBroker(req, res);
     if (!broker) return;
     try{ await renderBrokerPage(req, res, broker, true); }
     catch(e){ console.error('apercu', e); res.status(500).send('Erreur'); }
-  });
+  }));
 
   // Monochrome, print-ready acquisition letter. The QR is generated on the
   // server so every copy points to this broker's exact VendVite page.
-  router.get('/espace/lettre-proprietaires', async function(req, res){
+  router.get('/espace/lettre-proprietaires', brokerEndpoint(async function(req, res){
     var broker = await requireBroker(req, res);
     if (!broker) return;
     try{
@@ -1662,11 +1686,11 @@ module.exports = function(services){
         formatPhone: formatPhone
       }));
     }catch(e){ console.error('lettre proprietaires', e); res.status(500).send('Erreur'); }
-  });
+  }));
 
   // Optional done-for-you Canada Post campaign request. Nothing is charged
   // here; the operator receives the exact quantity, territory and estimate.
-  router.post('/api/espace/campagne-postale', async function(req, res){
+  router.post('/api/espace/campagne-postale', brokerEndpoint(async function(req, res){
     var broker = await requireBrokerApi(req, res);
     if (!broker) return;
     try{
@@ -1709,13 +1733,14 @@ module.exports = function(services){
       }
       res.json({ success: true, quantity: quantity, total: total });
     }catch(e){ console.error('campagne postale', e); res.status(500).json({ error: 'server' }); }
-  });
+  }));
 
-  router.post('/api/espace/profil', async function(req, res){
+  router.post('/api/espace/profil', brokerEndpoint(async function(req, res){
     var broker = await requireBrokerApi(req, res);
     if (!broker) return;
     try{
       var incoming = req.body && typeof req.body === 'object' ? req.body : {};
+      if(!Number.isInteger(incoming.profileVersion) || incoming.profileVersion!==Number(broker.profile_version))return res.status(409).json({code:'PROFILE_CONFLICT'});
       var current = brokerProfile(broker);
       var ALLOWED = ['agent_name','agency','agent_phone','agent_email','agent_title','agent_photo_url','hero_title','hero_sub','hero_note','about','agency_disclaimer','stat_homes','stat_days','stat_ratio','stat_volume','links','testimonials'];
       var next = Object.assign({}, current);
@@ -1746,53 +1771,57 @@ module.exports = function(services){
         }
         next[k] = v == null ? null : String(v).slice(0, 1200);
       });
-      await db.run('UPDATE brokers SET profile=$1, updated_at=NOW() WHERE id=$2', [JSON.stringify(next), broker.id]);
+      if(!String(next.agent_name||'').trim() || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(String(next.agent_email||'')))return res.status(400).json({code:'PROFILE_INVALID',error:(T[req.lang]||T.fr).ws_required_profile});
+      if(Array.isArray(incoming.links) && incoming.links.some(function(l){return !l || !String(l.label||'').trim() || !/^https?:\/\//i.test(String(l.url||''));}))return res.status(400).json({code:'PROFILE_INVALID',error:req.lang==='en'?'Each link needs a label and an http(s) address.':'Chaque lien doit avoir un titre et une adresse http(s).'});
+      if(next.agent_photo_url && !/^https:\/\//i.test(next.agent_photo_url))return res.status(400).json({code:'PROFILE_INVALID'});
+      var saved=await db.get('UPDATE brokers SET profile=$1,profile_version=profile_version+1,updated_at=NOW() WHERE id=$2 AND profile_version=$3 RETURNING profile,profile_version',[JSON.stringify(next),broker.id,incoming.profileVersion]);
+      if(!saved)return res.status(409).json({code:'PROFILE_CONFLICT'});
       await logBrokerEvent(broker.id, 'profile_saved', '');
-      res.json({ success: true, profile: next });
+      res.json({ success: true, profile: next,profileVersion:saved.profile_version });
     }catch(e){ console.error('profil', e); res.status(500).json({ error: 'server' }); }
-  });
+  }));
 
   // The annual offer stays hidden until the broker explicitly confirms that
   // their lead-capture page is personalized. Keep this milestone in profile
   // JSON so existing tenants need no schema migration and profile saves retain it.
-  router.post('/api/espace/page-prete', async function(req, res){
+  router.post('/api/espace/page-prete', brokerEndpoint(async function(req, res){
     var broker = await requireBrokerApi(req, res);
     if (!broker) return;
     try{
-      var prof = brokerProfile(broker);
-      if (!prof.setup_completed_at) {
-        prof.setup_completed_at = new Date().toISOString();
-        await db.run('UPDATE brokers SET profile=$1, updated_at=NOW() WHERE id=$2', [JSON.stringify(prof), broker.id]);
-        await logBrokerEvent(broker.id, 'lead_capture_page_completed', prof.setup_completed_at);
-      }
-      res.json({ success: true, setupComplete: true });
+      var prof=brokerProfile(broker);
+      if(!String(prof.agent_name||'').trim() || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(String(prof.agent_email||'')))return res.status(400).json({code:'PROFILE_INVALID',error:(T[req.lang]||T.fr).ws_required_profile});
+      if(!Number.isInteger(req.body.profileVersion)||req.body.profileVersion!==Number(broker.profile_version))return res.status(409).json({code:'PROFILE_CONFLICT'});
+      var saved=await db.get("UPDATE brokers SET profile=jsonb_set(COALESCE(profile,'{}'::jsonb),'{setup_completed_at}',to_jsonb(NOW()),true),profile_version=profile_version+1,updated_at=NOW() WHERE id=$1 AND profile_version=$2 RETURNING profile_version",[broker.id,req.body.profileVersion]);
+      if(!saved)return res.status(409).json({code:'PROFILE_CONFLICT'});
+      await logBrokerEvent(broker.id,'lead_capture_page_completed','');
+      res.json({success:true,setupComplete:true,profileVersion:saved.profile_version});
     }catch(e){ console.error('page prete', e); res.status(500).json({ error: 'server' }); }
-  });
+  }));
 
   // Photo upload → Cloudinary, scoped to this broker's folder.
-  router.post('/api/espace/photo', async function(req, res){
+  router.post('/api/espace/photo', brokerEndpoint(async function(req, res){
     var broker = await requireBrokerApi(req, res);
     if (!broker) return;
     try{
+      if(!Number.isInteger(req.body.profileVersion)||req.body.profileVersion!==Number(broker.profile_version))return res.status(409).json({code:'PROFILE_CONFLICT'});
       var dataUrl = (req.body && req.body.image) || '';
       if (!/^data:image\/(png|jpe?g|webp);base64,/.test(dataUrl)) return res.status(400).json({ error: 'format' });
-      if (dataUrl.length > 8 * 1024 * 1024) return res.status(413).json({ error: 'taille' });
+      if (dataUrl.length > Math.ceil(8 * 1024 * 1024 * 4 / 3) + 128) return res.status(413).json({ error: 'taille' });
       var up = await services.cloudinary.uploader.upload(dataUrl, {
         folder: 'vendvite_courtiers/' + broker.slug,
-        public_id: 'portrait',
-        overwrite: true,
+        public_id: 'portrait_' + services.crypto.randomBytes(8),
+        overwrite: false,
         resource_type: 'image'
       });
       var url = (up && (up.secure_url || up.url)) || '';
       if (!url) return res.status(502).json({ error: 'upload' });
-      var prof = brokerProfile(broker);
-      prof.agent_photo_url = url;
-      await db.run('UPDATE brokers SET profile=$1, updated_at=NOW() WHERE id=$2', [JSON.stringify(prof), broker.id]);
-      res.json({ success: true, url: url });
+      var saved=await db.get("UPDATE brokers SET profile=jsonb_set(COALESCE(profile,'{}'::jsonb),'{agent_photo_url}',to_jsonb($1::text),true),profile_version=profile_version+1,updated_at=NOW() WHERE id=$2 AND profile_version=$3 RETURNING profile_version",[url,broker.id,req.body.profileVersion]);
+      if(!saved)return res.status(409).json({code:'PROFILE_CONFLICT'});
+      res.json({ success: true, url: url,profileVersion:saved.profile_version });
     }catch(e){ console.error('photo', e); res.status(500).json({ error: 'server' }); }
-  });
+  }));
 
-  router.post('/api/espace/publier', async function(req, res){
+  router.post('/api/espace/publier', brokerEndpoint(async function(req, res){
     var broker = await requireBrokerApi(req, res);
     if (!broker) return;
     var want = req.body && req.body.published === false ? 0 : 1;
@@ -1805,29 +1834,30 @@ module.exports = function(services){
       await logBrokerEvent(broker.id, want ? 'published' : 'unpublished', '');
       res.json({ success: true, published: want === 1 });
     }catch(e){ console.error('publier', e); res.status(500).json({ error: 'server' }); }
-  });
+  }));
 
-  router.get('/api/espace/leads', async function(req, res){
+  router.get('/api/espace/leads', brokerEndpoint(async function(req, res){
     var broker = await requireBrokerApi(req, res);
     if (!broker) return;
     try{
       var rows = await db.all('SELECT * FROM broker_leads WHERE broker_id=$1 ORDER BY created_at DESC LIMIT 500', [broker.id]);
       res.json({ leads: rows || [] });
     }catch(e){ res.status(500).json({ error: 'server' }); }
-  });
+  }));
 
-  router.put('/api/espace/leads/:id', async function(req, res){
+  router.put('/api/espace/leads/:id', brokerEndpoint(async function(req, res){
     var broker = await requireBrokerApi(req, res);
     if (!broker) return;
     try{
       var owned = await db.get('SELECT id FROM broker_leads WHERE id=$1 AND broker_id=$2', [req.params.id, broker.id]);
       if (!owned) return res.status(404).json({ error: 'introuvable' });
       var status = req.body && req.body.status ? String(req.body.status).slice(0, 40) : null;
+      if(status && ['nouveau','contacté','évalué','fermé'].indexOf(status)===-1)return res.status(400).json({code:'INVALID_STATUS'});
       var notes = req.body && req.body.notes != null ? String(req.body.notes).slice(0, 4000) : null;
-      await db.run('UPDATE broker_leads SET status=COALESCE($1,status), notes=COALESCE($2,notes), updated_at=NOW() WHERE id=$3', [status, notes, req.params.id]);
+      await db.run('UPDATE broker_leads SET status=COALESCE($1,status), notes=COALESCE($2,notes), updated_at=NOW() WHERE id=$3 AND broker_id=$4', [status, notes, req.params.id,broker.id]);
       res.json({ success: true });
     }catch(e){ res.status(500).json({ error: 'server' }); }
-  });
+  }));
 
 
   // ── Campagne « 150 portes » ────────────────────────────────────────────────
@@ -1939,7 +1969,7 @@ module.exports = function(services){
     };
   }
 
-  router.post('/api/espace/campagne', async function(req, res){
+  router.post('/api/espace/campagne', brokerEndpoint(async function(req, res){
     var broker = await requireBrokerApi(req, res);
     if (!broker) return;
     try{
@@ -2016,7 +2046,7 @@ module.exports = function(services){
       var apres = await campagneQuota(broker);
       res.json({ success: true, id: campagne.id, count: adresses.length, deadline: echeance.toISOString(), restantes: apres.restantes });
     }catch(e){ console.error('campagne', e); res.status(500).json({ error: 'server' }); }
-  });
+  }));
 
 
 
@@ -2091,7 +2121,7 @@ module.exports = function(services){
     return (cents / 100).toFixed(2).replace('.', ',') + ' $';
   }
 
-  router.post('/api/espace/campagne/commander', async function(req, res){
+  router.post('/api/espace/campagne/commander', brokerEndpoint(async function(req, res){
     var broker = await requireBrokerApi(req, res);
     if (!broker) return;
     try{
@@ -2232,7 +2262,7 @@ module.exports = function(services){
       if (!approuver) return res.status(502).json({ error: 'paypal', code: 'NO_APPROVE_LINK' });
       res.json({ success: true, id: campagne.id, mode: c.mode, total: prix.total, offert: prix.offert, facturable: prix.facturable, approve: approuver.href });
     }catch(e){ console.error('commander', e); res.status(500).json({ error: 'server' }); }
-  });
+  }));
 
   // Relacher une commande non payee : la campagne incluse redevient disponible
   // immediatement. C'est la porte de sortie manuelle — rien ne reste coince.
@@ -2248,7 +2278,7 @@ module.exports = function(services){
   // Recharger le territoire d'une campagne NON PAYEE : le courtier retrouve
   // exactement ce qu'il avait avant d'appuyer sur payer, y compris apres un
   // abandon chez PayPal ou sur un autre appareil. La liste vit deja en base.
-  router.get('/api/espace/campagne/:id/territoire', async function(req, res){
+  router.get('/api/espace/campagne/:id/territoire', brokerEndpoint(async function(req, res){
     var broker = await requireBrokerApi(req, res);
     if (!broker) return;
     try{
@@ -2266,9 +2296,9 @@ module.exports = function(services){
         adresses: c.addresses || []
       });
     }catch(e){ console.error('territoire', e); res.status(500).json({ error: 'server' }); }
-  });
+  }));
 
-  router.post('/api/espace/campagne/:id/annuler', async function(req, res){
+  router.post('/api/espace/campagne/:id/annuler', brokerEndpoint(async function(req, res){
     var broker = await requireBrokerApi(req, res);
     if (!broker) return;
     try{
@@ -2278,7 +2308,7 @@ module.exports = function(services){
       var apres = await campagneQuota(broker);
       res.json({ success: true, restantes: apres.restantes });
     }catch(e){ console.error('annuler campagne', e); res.status(500).json({ error: 'server' }); }
-  });
+  }));
 
   async function finaliserCampagnePayee(req, broker, campagne, c){
     var token = await paypalToken(c);
@@ -2320,7 +2350,7 @@ module.exports = function(services){
     return frais2;
   }
 
-  router.get('/espace/campagne/retour', async function(req, res){
+  router.get('/espace/campagne/retour', brokerEndpoint(async function(req, res){
     var broker = await requireBroker(req, res);
     if (!broker) return;
     var mode = req.query && req.query.mode === 'sandbox' ? 'sandbox' : 'live';
@@ -2351,7 +2381,7 @@ module.exports = function(services){
       }
     }catch(e){ console.error('campagne retour', e); }
     res.redirect('../../espace/courrier-cible?campagne=' + etat);
-  });
+  }));
 
   // ── Operateur : lire et livrer les campagnes. Sans cette surface, la promesse
   //    de 72 h porterait sur des donnees qu'aucun humain ne peut recuperer.
@@ -2571,7 +2601,7 @@ module.exports = function(services){
     return invoice;
   }
 
-  router.post('/api/espace/abonnement', async function(req, res){
+  router.post('/api/espace/abonnement', brokerEndpoint(async function(req, res){
     var broker = await requireBrokerApi(req, res);
     if (!broker) return;
     if (!brokerProfile(broker).setup_completed_at) {
@@ -2609,7 +2639,7 @@ module.exports = function(services){
       await logBrokerEvent(broker.id, c.mode==='sandbox'?'sandbox_subscription_created':'subscription_created', j.id);
       res.json({ success: true, approveUrl: approve ? approve.href : null });
     }catch(e){ console.error('abonnement', e); res.status(500).json({ error: 'server' }); }
-  });
+  }));
 
   async function activateBroker(broker, subscriptionId, detail, paypalPeriodEnd){
     var candidate = new Date(paypalPeriodEnd || 0);
@@ -2635,7 +2665,7 @@ module.exports = function(services){
     await logBrokerEvent(broker.id, 'sandbox_membership_activated', detail || '');
   }
 
-  router.get('/espace/abonnement/retour', async function(req, res){
+  router.get('/espace/abonnement/retour', brokerEndpoint(async function(req, res){
     var broker = await requireBroker(req, res);
     if (!broker) return;
     var mode = req.query && req.query.mode === 'sandbox' ? 'sandbox' : 'live';
@@ -2663,9 +2693,9 @@ module.exports = function(services){
       return res.redirect('../../espace/courrier-cible?abonnement=' + etatPaiement);
     }
     res.redirect('../../espace/abonnement?paiement=' + etatPaiement);
-  });
+  }));
 
-  router.get('/espace/factures/:id/pdf', async function(req, res){
+  router.get('/espace/factures/:id/pdf', brokerEndpoint(async function(req, res){
     var broker = await requireBroker(req, res);
     if (!broker) return;
     try{
@@ -2677,9 +2707,9 @@ module.exports = function(services){
       res.setHeader('Cache-Control', 'private, no-store');
       res.send(pdf);
     }catch(e){ console.error('invoice pdf', e); res.status(500).send('Impossible de générer la facture'); }
-  });
+  }));
 
-  router.post('/api/espace/abonnement/annuler', async function(req, res){
+  router.post('/api/espace/abonnement/annuler', brokerEndpoint(async function(req, res){
     var broker = await requireBrokerApi(req, res);
     if (!broker) return;
     var c = await paypalCfg();
@@ -2698,7 +2728,7 @@ module.exports = function(services){
       await logBrokerEvent(broker.id, c.mode==='sandbox'?'sandbox_subscription_cancelled':'membership_cancelled', '');
       res.json({ success: true });
     }catch(e){ console.error('annuler', e); res.status(500).json({ error: 'server' }); }
-  });
+  }));
 
   // PayPal webhook. The event itself is UNTRUSTED — anyone can POST here, and
   // a forged BILLING.SUBSCRIPTION.ACTIVATED would otherwise hand out a $599
@@ -2820,7 +2850,7 @@ module.exports = function(services){
         // An invited broker must be able to test the complete funnel from the
         // private preview. The signed session keeps this exception scoped to
         // that broker; inactive pages remain closed to everyone else.
-        var previewOwner = await currentBroker(req);
+        var previewOwner = await currentBroker(req,res);
         if (!previewOwner || Number(previewOwner.id) !== Number(broker.id)) {
           return res.status(403).json({ error: 'inactif' });
         }
@@ -2912,7 +2942,7 @@ module.exports = function(services){
       var broker = await db.get('SELECT * FROM brokers WHERE id=$1', [req.params.id]);
       if (!broker) return res.status(404).json({ error: 'introuvable' });
       if (broker.status === 'active') return res.status(409).json({ error: 'actif' });
-      await db.run("UPDATE brokers SET status='refused', published=0, updated_at=NOW() WHERE id=$1", [broker.id]);
+      await db.run("WITH account AS (UPDATE brokers SET status='refused',published=0,auth_valid_after=NOW(),updated_at=NOW() WHERE id=$1 RETURNING id), sessions AS (UPDATE broker_sessions SET revoked_at=NOW() WHERE broker_id IN (SELECT id FROM account) AND revoked_at IS NULL) UPDATE broker_tokens SET revoked_at=NOW() WHERE broker_id IN (SELECT id FROM account) AND revoked_at IS NULL",[broker.id]);
       await logBrokerEvent(broker.id, 'refused', 'operator');
       res.json({ success: true, status: 'refused' });
     }catch(e){ console.error('refuser', e); res.status(500).json({ error: 'server' }); }
@@ -2939,6 +2969,7 @@ module.exports = function(services){
     try{
       var broker = await db.get('SELECT * FROM brokers WHERE id=$1', [req.params.id]);
       if (!broker) return res.status(404).json({ error: 'introuvable' });
+      if(!brokerAuthTools.allowed(broker))return res.status(409).json({error:'not_approved'});
       var raw = await mintBrokerToken(broker.id, 'access');
       await sendInviteEmail(req, broker, raw, req.lang || 'fr');
       await logBrokerEvent(broker.id, 'invite_resent', 'operator');
@@ -2960,7 +2991,7 @@ module.exports = function(services){
       // Unpaid or unpublished pages do not exist publicly — the broker reaches
       // their own draft through /espace/apercu instead.
       if (!(await brokerPageLive(broker))) {
-        var me = await currentBroker(req);
+        var me = await currentBroker(req,res);
         if (!me || me.id !== broker.id) return next();
       }
       await renderBrokerPage(req, res, broker, false);

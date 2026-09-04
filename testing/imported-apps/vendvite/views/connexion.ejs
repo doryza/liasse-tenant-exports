@@ -1,0 +1,27 @@
+<%- include('partials/invite-header') %>
+<main class="ws-login">
+  <a class="ws-wordmark" href=".">VendVite<span>.</span></a>
+  <div class="ws-login-card">
+    <p class="ws-eyebrow"><%= t.ws_login %></p>
+    <h1><%= loginMode==='confirm'?t.ws_confirm_title:t.ws_login_title %></h1>
+    <p class="ws-muted"><%= loginMode==='confirm'?t.ws_confirm_intro:t.ws_login_intro %></p>
+    <% if(invalidLink){ %><p class="ws-notice"><%= t.ws_link_invalid %></p><% } %>
+    <% if(loginMode==='confirm'){ %>
+      <form method="post" action="acces/<%= token %>">
+        <input type="hidden" name="challenge" value="<%= challenge %>"><input type="hidden" name="next" value="<%= next %>">
+        <button class="esp-btn ws-wide" type="submit"><%= t.ws_confirm %> ↗</button>
+      </form>
+    <% }else{ %>
+      <form id="brokerLoginForm" data-sending="<%= t.ws_sending %>" data-error="<%= t.ws_retry %>">
+        <input type="hidden" name="challenge" value="<%= challenge %>"><input type="hidden" name="next" value="<%= next %>">
+        <label for="loginEmail"><%= t.ws_email %></label><input id="loginEmail" name="email" type="email" autocomplete="email" maxlength="190" required autofocus placeholder="vous@agence.ca">
+        <button class="esp-btn ws-wide" type="submit"><%= t.ws_send %> ↗</button>
+        <p id="loginResult" role="status" aria-live="polite"></p>
+      </form>
+    <% } %>
+    <p class="ws-small"><%= loginMode==='confirm'?t.ws_confirm_hint:t.ws_login_hint %></p>
+    <a href="." class="ws-back"><%= t.ws_back_home %> →</a>
+  </div>
+</main>
+<script src="public/js/broker-login-v1.js" defer></script>
+</body></html>

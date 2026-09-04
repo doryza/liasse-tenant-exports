@@ -74,3 +74,14 @@ CREATE TABLE IF NOT EXISTS homepage_visitors (
 );
 CREATE INDEX IF NOT EXISTS homepage_visitors_exposure_idx ON homepage_visitors(experiment,variant,exposed_at);
 INSERT INTO homepage_experiments (experiment) VALUES ('homepage-price-v1') ON CONFLICT DO NOTHING;
+-- Persistent broker access and optimistic profile saving (additive).
+ALTER TABLE broker_tokens ADD COLUMN IF NOT EXISTS revoked_at TIMESTAMPTZ;
+ALTER TABLE brokers ADD COLUMN IF NOT EXISTS profile_version INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE brokers ADD COLUMN IF NOT EXISTS auth_valid_after TIMESTAMPTZ;
+CREATE TABLE IF NOT EXISTS broker_sessions (
+ id BIGSERIAL PRIMARY KEY, broker_id INTEGER NOT NULL REFERENCES brokers(id), token_hash TEXT UNIQUE NOT NULL,
+ device_label TEXT NOT NULL DEFAULT '', created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), last_seen_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+ idle_expires_at TIMESTAMPTZ NOT NULL, absolute_expires_at TIMESTAMPTZ NOT NULL, revoked_at TIMESTAMPTZ
+);
+CREATE INDEX IF NOT EXISTS broker_sessions_broker_idx ON broker_sessions(broker_id,last_seen_at);
+CREATE TABLE IF NOT EXISTS broker_login_limits(bucket_key TEXT PRIMARY KEY,hits INTEGER NOT NULL,window_started_at TIMESTAMPTZ NOT NULL,last_request_at TIMESTAMPTZ NOT NULL);

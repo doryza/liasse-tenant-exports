@@ -3,78 +3,39 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" crossorigin="">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" defer crossorigin=""></script>
 <% } %>
-<main class="esp">
+<main class="esp ws-workspace">
   <div class="inv-veil" aria-hidden="true"></div>
 
   <header class="esp-top">
     <div class="esp-wrap esp-top-inner">
       <div class="esp-brand">
-        <span class="esp-mark">VendVite</span>
+        <a class="esp-mark" href="espace">VendVite<span class="ws-brand-dot">.</span></a>
         <span class="esp-who"><%= broker.full_name %> · <%= broker.agency || '' %></span>
       </div>
       <nav class="esp-tabs" aria-label="<%= lang==='en' ? 'Broker space' : 'Espace courtier' %>">
-        <a class="esp-tab <%= activePage==='page'?'is-on':'' %>" href="espace" <%- activePage==='page'?'aria-current="page"':'' %>><%= t.esp_nav_my_page %></a>
+        <a class="esp-tab <%= activePage==='accueil'?'is-on':'' %>" href="espace" <%- activePage==='accueil'?'aria-current="page"':'' %>><%= t.ws_home %></a>
+        <a class="esp-tab <%= activePage==='page'?'is-on':'' %>" href="espace/page" <%- activePage==='page'?'aria-current="page"':'' %>><%= t.esp_nav_my_page %></a>
         <a class="esp-tab <%= activePage==='courrier'?'is-on':'' %>" href="espace/courrier-cible" <%- activePage==='courrier'?'aria-current="page"':'' %>><%= t.esp_nav_targeted_mail %></a>
-        <a class="esp-tab <%= activePage==='pistes'?'is-on':'' %>" href="espace/pistes" <%- activePage==='pistes'?'aria-current="page"':'' %>><%= t.esp_nav_my_leads %> <span class="esp-pill"><%= counts.total %></span></a>
+        <a class="esp-tab <%= activePage==='pistes'?'is-on':'' %>" href="espace/pistes" <%- activePage==='pistes'?'aria-current="page"':'' %>><%= t.ws_leads %> <span class="esp-pill"><%= counts.total %></span></a>
         <a class="esp-tab <%= activePage==='abonnement'?'is-on':'' %>" href="espace/abonnement" <%- activePage==='abonnement'?'aria-current="page"':'' %>><%= t.esp_nav_subscription %></a>
+        <a class="esp-tab <%= activePage==='compte'?'is-on':'' %>" href="espace/compte" <%- activePage==='compte'?'aria-current="page"':'' %>><%= t.ws_account %></a>
       </nav>
     </div>
   </header>
 
   <div class="esp-wrap">
+    <div id="workspaceNotice" class="ws-notice" role="status" aria-live="polite" hidden><span id="workspaceNoticeText"></span> <a id="workspaceReconnect" href="connexion" target="_blank" rel="noopener" hidden><%= t.ws_session_link %> ↗</a></div>
+    <% if(activePage==='accueil'){ %><%- include('partials/workspace-overview') %><% } %>
+    <% if(activePage==='compte'){ %><%- include('partials/workspace-account') %><% } %>
 
-    <!-- Activation offer / live status -->
-    <% if (activePage === 'page' && !isActive) { %>
-      <section class="esp-launch <%= setupComplete ? 'is-complete' : '' %>" aria-labelledby="espLaunchTitle">
-        <div class="esp-launch-copy">
-          <p class="esp-eyebrow"><%= t.esp_launch_eyebrow %></p>
-          <h1 id="espLaunchTitle"><%= setupComplete ? t.esp_launch_complete_title : t.esp_launch_title %></h1>
-          <p class="esp-launch-lede"><%= t.esp_launch_body %></p>
-          <p class="esp-launch-mobile-summary"><%= t.esp_launch_mobile_summary %></p>
-          <div class="esp-launch-actions">
-            <a class="esp-ghost" href="espace/apercu" target="_blank" rel="noopener"><%= t.esp_launch_preview_page %> <span aria-hidden="true">↗</span></a>
-            <% if (!setupComplete) { %>
-              <button class="esp-btn esp-ready-btn" id="setupDoneBtn" type="button"><%= t.esp_launch_mark_done %></button>
-            <% } else { %>
-              <span class="esp-ready-status"><%= t.esp_launch_done_status %></span>
-            <% } %>
-          </div>
-          <p class="esp-error" id="setupDoneError" role="alert"></p>
-        </div>
-        <% if (setupComplete) { %>
-          <aside class="esp-launch-offer" aria-label="<%= t.esp_launch_offer %>">
-            <p><%= t.esp_launch_price_reveal %></p>
-            <div class="esp-launch-price"><strong><%= price.base.toFixed(0) %></strong><span>$<small>/ <%= lang==='en'?'year':'an' %></small></span></div>
-            <a class="esp-btn esp-launch-cta" href="espace/abonnement"><%= paypalMode==='sandbox'?'Tester PayPal':t.esp_launch_cta %></a>
-          </aside>
-        <% } %>
-      </section>
-    <% } else if (activePage === 'page') { %>
-      <div class="esp-status <%= isLive ? 'is-live' : 'is-ready' %>">
-        <div class="esp-status-dot" aria-hidden="true"></div>
-        <div class="esp-status-text">
-          <% if (isLive) { %>
-            <strong><%= isTestAccess ? t.esp_test_page_live : t.esp_page_live %></strong>
-            <a href="<%= pageUrl %>" target="_blank" rel="noopener"><%= pageUrl %></a>
-          <% } else { %>
-            <strong><%= isTestAccess ? 'Accès test actif.' : 'Abonnement actif.' %></strong> Votre page est prête — publiez-la quand vous le souhaitez.
-          <% } %>
-        </div>
-        <div class="esp-status-act">
-          <a class="esp-ghost" href="espace/apercu" target="_blank" rel="noopener"><%= t.esp_preview_button %></a>
-          <button class="esp-btn" id="pubBtn" data-published="<%= broker.published %>"><%= Number(broker.published)===1 ? 'Retirer' : 'Publier' %></button>
-        </div>
-      </div>
+
+    <% if(activePage==='page'){ %>
+    <section class="ws-profile-heading"><div><p class="ws-eyebrow"><%= t.ws_setup_eyebrow %></p><h1><%= t.ws_setup_title %></h1><p class="ws-muted"><%= t.ws_setup_body %></p></div><div class="ws-profile-actions"><a class="esp-ghost" href="espace/apercu" target="_blank" rel="noopener"><%= t.ws_preview %> ↗</a><% if(isActive){ %><button class="esp-btn" id="pubBtn" data-published="<%= broker.published %>" type="button"><%= Number(broker.published)===1?(lang==='fr'?'Retirer la page':'Unpublish page'):t.ws_step_publish %></button><% } %></div></section>
     <% } %>
 
     <!-- ═══ Ma page ═══ -->
     <% if (activePage === 'page') { %>
     <section class="esp-panel is-on" data-panel="page">
-      <div class="esp-panel-head">
-        <p class="esp-eyebrow"><%= t.esp_setup_eyebrow %></p>
-        <h2><%= t.esp_setup_title %></h2>
-        <p><%= t.esp_setup_body %></p>
-      </div>
       <div class="esp-grid">
         <div class="esp-col">
           <h2 class="esp-h"><%= t.esp_section_your_identity %></h2>
@@ -150,9 +111,10 @@
       <button class="esp-ghost" id="addTm" type="button"><%= t.esp_add_testimonial_button %></button>
 
       <div class="esp-savebar">
-        <span class="esp-saved" id="savedFlag"></span>
+        <span class="esp-saved" id="savedFlag" role="status" aria-live="polite"><%= t.ws_saved %></span>
         <button class="esp-btn" id="saveBtn" type="button"><%= t.esp_save_button %></button>
       </div>
+      <% if(!setupComplete){ %><div class="ws-ready"><button class="esp-btn" id="setupDoneBtn" type="button"><%= t.ws_mark_ready %></button><p class="esp-error" id="setupDoneError" role="alert"></p></div><% }else if(!isActive){ %><div class="ws-ready"><a class="esp-btn" href="espace/abonnement"><%= t.ws_step_member %> ↗</a></div><% } %>
     </section>
     <% } %>
 
@@ -194,7 +156,7 @@
         <% if (!isActive) { %>
           <div class="esp-mail-lock"><strong><%= t.esp_subscription_required_badge %></strong><span><%- t.esp_lock_membership_lead %><%= campCible %><%- t.esp_lock_membership_tail %></span><a class="esp-ghost" href="espace/abonnement"><%= t.esp_view_subscription_link %></a></div>
         <% } else if (!isLive) { %>
-          <div class="esp-mail-lock"><strong><%= t.esp_publish_page_first_title %></strong><span><%= t.esp_qr_needs_live_page_warning %></span><a class="esp-ghost" href="espace"><%= t.esp_back_to_my_page %></a></div>
+          <div class="esp-mail-lock"><strong><%= t.esp_publish_page_first_title %></strong><span><%= t.esp_qr_needs_live_page_warning %></span><a class="esp-ghost" href="espace/page"><%= t.esp_back_to_my_page %></a></div>
         <% } %>
 
         <div class="camp-qte">
@@ -314,6 +276,7 @@
     <!-- ═══ Mes pistes ═══ -->
     <% if (activePage === 'pistes') { %>
     <section class="esp-panel is-on" data-panel="pistes">
+      <h1 class="ws-section-title"><%= t.ws_leads %></h1>
       <div class="esp-stats">
         <div class="esp-stat"><span class="esp-stat-n"><%= counts.total %></span><span class="esp-stat-l"><%= t.esp_leads_total_label %></span></div>
         <div class="esp-stat"><span class="esp-stat-n"><%= counts.fresh %></span><span class="esp-stat-l"><%= t.esp_leads_new_label %></span></div>
@@ -326,6 +289,7 @@
           <p><% if (!isLive) { %><%= t.esp_leads_empty_unpublished %><% } else { %><%= t.esp_leads_empty_published %><% } %></p>
         </div>
       <% } else { %>
+        <div class="ws-lead-filters"><label><span><%= t.ws_filter %></span><input id="leadSearch" type="search" placeholder="<%= t.ws_search %>"></label><label><span><%= t.ws_lead_status %></span><select id="leadFilter"><option value=""><%= t.ws_all %></option><% ['nouveau','contacté','évalué','fermé'].forEach(function(status,i){ %><option value="<%= status %>"><%= [t.ws_status_new,t.ws_status_contacted,t.ws_status_valued,t.ws_status_closed][i] %></option><% }); %></select></label></div><p id="leadNoMatches" class="ws-muted" hidden><%= t.ws_no_matches %></p>
         <div class="esp-leads">
           <% leads.forEach(function(l){ %>
             <article class="esp-lead" data-id="<%= l.id %>">
@@ -334,9 +298,9 @@
                   <h3><%= l.name %></h3>
                   <p class="esp-lead-addr"><%= l.address || '' %></p>
                 </div>
-                <select class="esp-lead-status" data-id="<%= l.id %>">
-                  <% ['nouveau','contacté','évalué','fermé'].forEach(function(s){ %>
-                    <option value="<%= s %>" <%= (l.status===s?'selected':'') %>><%= s %></option>
+                <select class="esp-lead-status" data-id="<%= l.id %>" aria-label="<%= t.ws_lead_status %>">
+                  <% ['nouveau','contacté','évalué','fermé'].forEach(function(s,i){ %>
+                    <option value="<%= s %>" <%= (l.status===s?'selected':'') %>><%= [t.ws_status_new,t.ws_status_contacted,t.ws_status_valued,t.ws_status_closed][i] %></option>
                   <% }); %>
                 </select>
               </div>
@@ -346,7 +310,7 @@
                 <% if (l.timeframe) { %><span><%= l.timeframe %></span><% } %>
                 <span class="esp-lead-when"><%= formatDate(l.created_at, lang) %></span>
               </div>
-              <textarea class="esp-lead-notes" data-id="<%= l.id %>" rows="2" placeholder="<%= t.esp_lead_private_notes_ph %>"><%= l.notes || '' %></textarea>
+              <textarea class="esp-lead-notes" data-id="<%= l.id %>" rows="2" aria-label="<%= t.ws_notes %>" placeholder="<%= t.esp_lead_private_notes_ph %>"><%= l.notes || '' %></textarea><div class="ws-lead-save"><span data-lead-save="<%= l.id %>" role="status" aria-live="polite"></span><button class="esp-ghost" type="button" data-lead-retry="<%= l.id %>" hidden><%= t.ws_reload %></button></div>
             </article>
           <% }); %>
         </div>
@@ -375,7 +339,7 @@
             <p class="esp-eyebrow"><%= t.esp_setup_gate_eyebrow %></p>
             <h2 class="esp-gate-title"><%= t.esp_setup_gate_title %></h2>
             <p class="esp-gate-body"><%= t.esp_setup_gate_body %></p>
-            <a class="esp-btn esp-btn-wide esp-gate-cta" href="espace"><%= t.esp_setup_gate_cta %></a>
+            <a class="esp-btn esp-btn-wide esp-gate-cta" href="espace/page"><%= t.esp_setup_gate_cta %></a>
           <% } else { %>
           <p class="esp-eyebrow"><%= t.esp_annual_membership_heading %></p>
           <% if (paypalMode === 'sandbox') { %><div class="esp-sandbox-flag"><strong><%= t.esp_paypal_test_mode_badge %></strong><span><%= t.esp_test_account_only_note %></span></div><% } %>
@@ -439,17 +403,19 @@
 </main>
 <script>
   window.VV = {
-    profile: <%- JSON.stringify(profile) %>,
+    csrf: <%- scriptJson(csrf) %>,
+    profileVersion: <%= Number(broker.profile_version)||0 %>,
+    profile: <%- scriptJson(profile) %>,
     published: <%= Number(broker.published) === 1 ? 'true' : 'false' %>,
     active: <%= isActive ? 'true' : 'false' %>,
     live: <%= isLive ? 'true' : 'false' %>
-    ,paypalMode: <%- JSON.stringify(paypalMode) %>
+    ,paypalMode: <%- scriptJson(paypalMode) %>
   };
   // Dictionnaire du panneau, filtre au prefixe : le navigateur ne recoit que
   // ce qu'il affiche, dans la langue choisie.
-  window.VV_T = <%- JSON.stringify(Object.keys(t).filter(function(k){return k.indexOf('esp_')===0;}).reduce(function(o,k){o[k]=t[k];return o;},{})) %>;
-  window.VV_CAMP = { cible: <%= campCible %>, restantes: <%= campQuota.restantes %>, palier: <%= campPalier %>, max: <%= campMax %>, paliers: <%- JSON.stringify(campPaliers) %>, peutPayer: <%= campPeutPayer ? 'true' : 'false' %>, mode: <%- JSON.stringify(campModePaypal) %>, credit: <%= campQuota.creditPortes %>, active: <%= isActive ? 'true' : 'false' %>, published: <%= Number(broker.published) === 1 ? 'true' : 'false' %>, subscriptionTotal: <%= Math.round(price.total * 100) %> };
+  window.VV_T = <%- scriptJson(Object.keys(t).filter(function(k){return k.indexOf('esp_')===0||k.indexOf('ws_')===0;}).reduce(function(o,k){o[k]=t[k];return o;},{})) %>;
+  window.VV_CAMP = { cible: <%= campCible %>, restantes: <%= campQuota.restantes %>, palier: <%= campPalier %>, max: <%= campMax %>, paliers: <%- scriptJson(campPaliers) %>, peutPayer: <%= campPeutPayer ? 'true' : 'false' %>, mode: <%- scriptJson(campModePaypal) %>, credit: <%= campQuota.creditPortes %>, active: <%= isActive ? 'true' : 'false' %>, published: <%= Number(broker.published) === 1 ? 'true' : 'false' %>, subscriptionTotal: <%= Math.round(price.total * 100) %> };
 </script>
-<script src="public/js/espace.js" defer></script>
+<script src="public/js/espace.js?v=broker-workspace-v1" defer></script>
 </body>
 </html>
