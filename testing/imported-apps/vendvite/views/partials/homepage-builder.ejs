@@ -1,0 +1,43 @@
+<section class="hp-builder hp-wrap" id="builder" aria-labelledby="hpBuilderTitle">
+  <p class="hp-eyebrow"><%= t.hp_builder_eyebrow %></p>
+  <div class="hp-builder-heading"><h2 id="hpBuilderTitle"><%= t.hp_builder_title %></h2><p><%= t.hp_builder_lede %></p></div>
+  <figure class="hp-studio">
+    <div class="hp-studio-bar"><span class="hp-brand">VendVite<span class="hp-brand-dot">.</span></span><strong><%= t.hp_ui_title %></strong><span class="hp-studio-saved">✓ <%= t.hp_ui_saved %></span></div>
+    <div class="hp-studio-body">
+      <div class="hp-studio-controls">
+        <div class="hp-demo-label"><%= t.hp_ui_location %></div><div class="hp-demo-field">Montréal <span aria-hidden="true">⌖</span></div>
+        <div class="hp-demo-row"><div><div class="hp-demo-label"><%= t.hp_ui_radius %></div><div class="hp-demo-field">800 m</div></div><div><div class="hp-demo-label"><%= t.hp_ui_goal %></div><div class="hp-demo-field">300</div></div></div>
+        <div class="hp-demo-label"><%= t.hp_ui_filter %></div><div class="hp-demo-field"><%= t.hp_ui_type %><span aria-hidden="true">⌄</span></div>
+        <div class="hp-demo-search"><%= t.hp_ui_street %></div>
+        <div class="hp-demo-total"><span><%= t.hp_ui_selection %></span><strong>300 <small><%= t.hp_ui_letters %></small></strong><p>✓ <%= t.hp_ui_excluded %></p></div>
+      </div>
+      <div class="hp-studio-map">
+        <div class="hp-map-toolbar"><span>⌖ Montréal</span><span><%= t.hp_ui_area %> <span aria-hidden="true">◇</span></span></div>
+        <svg viewBox="0 0 720 420" role="img" aria-label="<%= t.hp_ui_map %>" xmlns="http://www.w3.org/2000/svg">
+          <defs><pattern id="hpBlocks" width="92" height="74" patternUnits="userSpaceOnUse" patternTransform="rotate(-24)"><rect width="92" height="74" fill="#e8e5dc"/><rect x="7" y="7" width="78" height="60" rx="5" fill="#d8d4c8"/><path d="M13 19H79M13 55H79" stroke="#c5bfb0" stroke-width="14" stroke-dasharray="9 4"/></pattern></defs>
+          <rect width="720" height="420" fill="url(#hpBlocks)"/>
+          <path d="M0 350Q180 260 270 330T720 350V420H0Z" fill="#b4cec6"/>
+          <path d="M530 0L720 0V170L620 195L555 120Z" fill="#b9c6a0"/>
+          <path d="M45 0L265 420M0 195L480 0M160 420L720 165" stroke="#f9f7ef" stroke-width="16" fill="none"/>
+          <path d="M212 126L433 60L593 232L351 336L166 256Z" fill="#b9092c" fill-opacity=".10" stroke="#b9092c" stroke-width="2.5" stroke-dasharray="7 5"/>
+          <% for(var row=0;row<8;row++){for(var col=0;col<12;col++){var x=205+col*26+row*5,y=144+row*18-col*5;var removed=(row*12+col)%17===0; %>
+            <circle cx="<%= x %>" cy="<%= y %>" r="4" fill="<%= removed?'#8c918d':'#ab1234' %>" stroke="#fff" stroke-width="1.3"/>
+          <% }} %>
+          <% [[212,126],[433,60],[593,232],[351,336],[166,256]].forEach(function(p){ %><rect x="<%= p[0]-4 %>" y="<%= p[1]-4 %>" width="8" height="8" rx="2" fill="#fff" stroke="#b9092c" stroke-width="2"/><% }); %>
+          <circle cx="365" cy="198" r="17" fill="#b9092c" fill-opacity=".18"/><circle cx="365" cy="198" r="7" fill="#b9092c" stroke="#fff" stroke-width="3"/>
+        </svg>
+        <div class="hp-map-legend"><span><i></i><%= t.hp_ui_selected %></span><span><i></i><%= t.hp_ui_removed %></span></div>
+        <div class="hp-map-footer"><strong>300 <span><%= t.hp_ui_letters %></span></strong><span class="hp-demo-button"><%= t.hp_ui_review %> ↗</span></div>
+      </div>
+    </div>
+    <figcaption><%= t.hp_builder_caption %></figcaption>
+  </figure>
+  <div class="hp-products"><% t.hp_products.forEach(function(product){ %><article><p class="hp-label"><%= product[0] %></p><h3><%= product[1] %></h3><p><%= product[2] %></p></article><% }); %></div>
+</section>
+<section class="hp-shipping hp-wrap" aria-labelledby="hpShippingTitle">
+  <div class="hp-shipping-card">
+    <div class="hp-shipping-symbol" aria-hidden="true">✉ <span>✓</span></div>
+    <div><p class="hp-eyebrow"><%= t.hp_shipping_eyebrow %></p><h2 id="hpShippingTitle"><%= t.hp_shipping_title %></h2><p class="hp-shipping-body"><%= t.hp_shipping_body %></p></div>
+    <ol class="hp-shipping-steps"><% t.hp_shipping_steps.forEach(function(step){ %><li><span aria-hidden="true">✓</span><%= step %></li><% }); %></ol>
+  </div>
+</section>

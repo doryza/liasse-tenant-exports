@@ -31,6 +31,13 @@
       (form.hidden ? done : field('invName')).focus({preventScroll:true});
     });
   });
+  var builderLink=document.querySelector('.hp-text-link[href="#builder"]');
+  if(builderLink) builderLink.addEventListener('click',function(e){
+    var builder=document.getElementById('builder');
+    if(!builder) return;
+    e.preventDefault();
+    builder.scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});
+  });
   var sticky=document.getElementById('hpSticky');
   if(sticky && 'IntersectionObserver' in window){
     var seenHero=false, seenForm=false;

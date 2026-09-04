@@ -1,7 +1,7 @@
 var express = require('express');
 var invoiceTools = require('./invoice');
 var homepageTools = require('./homepage-experiment-v1');
-var homepageCopy = require('./homepage-copy');
+var homepageCopy = require('./homepage-copy-v2');
 var brokerAuthTools = require('./broker-auth-v1');
 var workspaceCopy = require('./workspace-copy-v1');
 var campaignModel=require('./public/js/campaign-model-v1');
