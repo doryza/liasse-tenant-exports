@@ -1,6 +1,6 @@
 const assert=require('node:assert/strict'), {test}=require('node:test');
 const {create,root}=require('./harness.cjs');
-const exp=require(root+'/homepage-experiment');
+const exp=require(root+'/homepage-experiment-v1');
 const headers={'user-agent':'Vendvite QA browser','content-type':'application/json'};
 test('homepage experiment: persisted assignments, attribution, exclusions and bounded winner selection',async()=>{
  const h=await create();

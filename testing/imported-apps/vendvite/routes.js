@@ -1,6 +1,6 @@
 var express = require('express');
 var invoiceTools = require('./invoice');
-var homepageTools = require('./homepage-experiment');
+var homepageTools = require('./homepage-experiment-v1');
 var homepageCopy = require('./homepage-copy');
 
 // ── Campagne « 150 portes » — reglages produit.
