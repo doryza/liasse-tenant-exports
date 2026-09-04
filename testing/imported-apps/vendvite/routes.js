@@ -4,6 +4,9 @@ var homepageTools = require('./homepage-experiment-v1');
 var homepageCopy = require('./homepage-copy');
 var brokerAuthTools = require('./broker-auth-v1');
 var workspaceCopy = require('./workspace-copy-v1');
+var campaignModel=require('./public/js/campaign-model-v1');
+var campaignDataTools=require('./campaign-data-v1');
+var campaignCopy=require('./campaign-copy-v1');
 
 // ── Campagne « 150 portes » — reglages produit.
 //    Declares au SCOPE FICHIER et non dans la fabrique de routes : la plateforme
@@ -29,6 +32,7 @@ module.exports = function(services){
   var cfg = services.config || {};
   var homepageExperiment = homepageTools.create(services);
   var brokerAuth = brokerAuthTools.create(services);
+  var campaignData=campaignDataTools.create(services);
 
   var T = {
     fr: {
@@ -910,6 +914,7 @@ module.exports = function(services){
   Object.assign(T.en, homepageCopy.en);
   Object.assign(T.fr,workspaceCopy.fr);
   Object.assign(T.en,workspaceCopy.en);
+  Object.assign(T.fr,campaignCopy.fr);Object.assign(T.en,campaignCopy.en);
 
   function scriptJson(value){ return JSON.stringify(value).replace(/</g,'\\u003c').replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029'); }
   function tp(req, p){ return (typeof req.tenantPath === 'function') ? req.tenantPath(p) : p.replace(/^\//,''); }
@@ -1861,7 +1866,7 @@ module.exports = function(services){
 
 
   // ── Campagne « 150 portes » ────────────────────────────────────────────────
-  //    Le navigateur du courtier interroge lui-meme OpenStreetMap (Nominatim +
+  //    Le navigateur du courtier interroge lui-meme OpenStreetMap (Photon +
   //    Overpass) et nous transmet la liste deja constituee. Le serveur ne fait
   //    jamais cet appel sortant : l'IP de sortie est partagee par toute la
   //    flotte et Overpass n'accorde que deux creneaux par IP — une requete
@@ -1951,23 +1956,51 @@ module.exports = function(services){
     };
   }
 
-  // Une adresse arrive du navigateur : on ne fait confiance a rien.
-  function assainirAdresse(a){
-    if (!a || typeof a !== 'object') return null;
-    var numero = String(a.numero == null ? '' : a.numero).trim().slice(0, 20);
-    var rue = String(a.rue == null ? '' : a.rue).trim().slice(0, 160);
-    if (!numero || !rue) return null;
-    var lat = Number(a.lat), lng = Number(a.lng);
-    return {
-      numero: numero,
-      rue: rue,
-      ville: String(a.ville == null ? '' : a.ville).trim().slice(0, 120),
-      source: a.source === 'point' ? 'point' : 'interpole',
-      lat: Number.isFinite(lat) ? Math.round(lat * 1e6) / 1e6 : null,
-      lng: Number.isFinite(lng) ? Math.round(lng * 1e6) / 1e6 : null,
-      metres: Number.isFinite(Number(a.metres)) ? Math.max(0, Math.round(Number(a.metres))) : null
-    };
+  // Resuming an unpaid campaign keeps the credit already reserved for it.
+  async function campaignCredit(broker,quota,reprise){
+    if(quota.creditPortes||!Number.isInteger(Number(reprise))||Number(reprise)<1)return quota.creditPortes;
+    var reserved=await db.get("SELECT quota_period FROM broker_campaigns WHERE id=$1 AND broker_id=$2 AND payment_status='pending' AND status='pending_payment' AND is_test=0",[Number(reprise),broker.id]);
+    return reserved&&reserved.quota_period&&new Date(reserved.quota_period).toISOString().slice(0,10)===quota.periode?CAMPAGNE_CIBLE:0;
   }
+
+  // Une adresse arrive du navigateur : on ne fait confiance a rien.
+  function assainirAdresse(a){return campaignModel.sanitize(a);}
+
+  router.post('/api/espace/campagne/devis',brokerEndpoint(async function(req,res){
+    var broker=await requireBrokerApi(req,res);if(!broker)return;
+    var count=Number(req.body.count);if(!Number.isInteger(count)||count<1||count>CAMPAGNE_MAX)return res.status(400).json({code:'BAD_QUANTITY'});
+    var quota=await campagneQuota(broker);res.json({price:prixCampagne(count,await campaignCredit(broker,quota,req.body.reprise)),remaining:quota.restantes});
+  }));
+  router.post('/api/espace/campagne/analyse',brokerEndpoint(async function(req,res){
+    var broker=await requireBrokerApi(req,res);if(!broker)return;
+    if(!Array.isArray(req.body.addresses)||req.body.addresses.length>100)return res.status(400).json({code:'BAD_ADDRESSES'});
+    var addresses=req.body.addresses.map(assainirAdresse);if(addresses.some(function(a){return !a;}))return res.status(400).json({code:'BAD_ADDRESSES'});
+    if(!await campaignData.limit(broker.id,'analysis',75))return res.status(429).json({code:'RATE_LIMITED'});
+    res.json(await campaignData.enrich(addresses));
+  }));
+  router.get('/api/espace/campagne/brouillon',brokerEndpoint(async function(req,res){
+    var broker=await requireBrokerApi(req,res);if(!broker)return;
+    var draft=await db.get('SELECT revision,data,updated_at FROM broker_campaign_drafts WHERE broker_id=$1',[broker.id]);
+    if(draft&&draft.data&&draft.data.reprise){
+      var done=await db.get("SELECT id,addresses FROM broker_campaigns WHERE id=$1 AND broker_id=$2 AND payment_status='paid'",[draft.data.reprise,broker.id]);
+      if(done){var completedIds=(done.addresses||[]).map(campaignModel.key).sort();if(JSON.stringify(completedIds)===JSON.stringify((draft.data.selected||[]).slice().sort()))draft.completedCampaign=done.id;}
+    }
+    res.json(draft||{revision:0,data:null});
+  }));
+  router.put('/api/espace/campagne/brouillon',brokerEndpoint(async function(req,res){
+    var broker=await requireBrokerApi(req,res);if(!broker)return;
+    var data=req.body.data,revision=req.body.revision;
+    if(!Number.isInteger(revision)||revision<0||!data||!Array.isArray(data.addresses)||data.addresses.length>4000||!Array.isArray(data.selected)||data.selected.length>CAMPAGNE_MAX||JSON.stringify(data).length>3500000)return res.status(400).json({code:'BAD_DRAFT'});
+    if(data.center&&!campaignModel.qc(data.center))return res.status(400).json({code:'BAD_DRAFT'});
+    var addresses=data.addresses.map(function(a){var clean=assainirAdresse(a);if(!clean)return null;var p=a.analysis||{};clean.analysis={type:['house','plex','apartment','condo','residential','nonresidential','unknown'].includes(p.type)?p.type:'unknown',units:campaignModel.integer(p.units),levels:campaignModel.integer(p.levels,200),year:campaignModel.integer(p.year,2100),source:'osm',confidence:'mapped',buildingId:String(p.buildingId||'').slice(0,160),unitScope:p.units?'building':null};return clean;});
+    if(addresses.some(function(a){return !a;}))return res.status(400).json({code:'BAD_DRAFT'});
+    var ids=new Set(addresses.map(function(a){return a.id;}));if(ids.size!==addresses.length||data.excluded&&!Array.isArray(data.excluded)||data.selected.some(function(id){return !ids.has(id);}))return res.status(400).json({code:'BAD_DRAFT'});
+    var trusted=await campaignData.trusted(addresses);trusted.forEach(function(a,i){if(!a.analysis)a.analysis=addresses[i].analysis;});
+    var clean={center:data.center?{lat:Number(data.center.lat),lng:Number(data.center.lng),libelle:String(data.center.libelle||'').slice(0,300)}:null,city:String(data.city||'').slice(0,120),radius:Math.min(5000,Math.max(200,Number(data.radius)||800)),target:Math.min(CAMPAGNE_MAX,Math.max(1,Math.floor(Number(data.target))||150)),addresses:trusted,selected:Array.from(new Set(data.selected)),excluded:Array.from(new Set((data.excluded||[]).filter(function(id){return ids.has(id)&&!data.selected.includes(id);}))),notes:String(data.notes||'').slice(0,1000),polygon:Array.isArray(data.polygon)?data.polygon.slice(0,30).filter(function(p){return Array.isArray(p)&&campaignModel.qc({lat:p[0],lng:p[1]});}):[],reprise:Number(data.reprise)||0};
+    var row=await db.get("INSERT INTO broker_campaign_drafts(broker_id,revision,data) SELECT $1,1,$2::jsonb WHERE $3=0 ON CONFLICT(broker_id) DO NOTHING RETURNING revision",[broker.id,JSON.stringify(clean),revision]);
+    if(!row)row=await db.get('UPDATE broker_campaign_drafts SET revision=revision+1,data=$1,updated_at=NOW() WHERE broker_id=$2 AND revision=$3 RETURNING revision',[JSON.stringify(clean),broker.id,revision]);
+    if(!row)return res.status(409).json({code:'DRAFT_CONFLICT'});res.json(row);
+  }));
 
   router.post('/api/espace/campagne', brokerEndpoint(async function(req, res){
     var broker = await requireBrokerApi(req, res);
@@ -1991,7 +2024,7 @@ module.exports = function(services){
       var centre = corps.centre && typeof corps.centre === 'object' ? corps.centre : {};
       var libelle = String(centre.libelle == null ? '' : centre.libelle).trim().slice(0, 300);
       var cLat = Number(centre.lat), cLng = Number(centre.lng);
-      if (!libelle || !Number.isFinite(cLat) || !Number.isFinite(cLng)) {
+      if (!libelle || !campaignModel.qc({lat:cLat,lng:cLng})) {
         return res.status(400).json({ code: 'CENTRE_REQUIRED' });
       }
 
@@ -2002,12 +2035,13 @@ module.exports = function(services){
       for (var i = 0; i < brutes.length; i++) {
         var a = assainirAdresse(brutes[i]);
         if (!a) continue;
-        var cle = (a.numero + '|' + a.rue).toLowerCase();
+        var cle = campaignModel.key(a);
         if (vues[cle]) continue;
         vues[cle] = 1;
         adresses.push(a);
       }
       if (adresses.length < 1) return res.status(400).json({ code: 'NO_ADDRESSES' });
+      adresses=await campaignData.trusted(adresses);
 
       var ville = String(corps.ville == null ? '' : corps.ville).trim().slice(0, 120);
       var notes = String(corps.notes == null ? '' : corps.notes).trim().slice(0, 1000);
@@ -2079,7 +2113,7 @@ module.exports = function(services){
       + (campagne.notes ? '<p style="margin-top:18px"><strong>Précisions :</strong><br>' + esc(campagne.notes).replace(/\n/g, '<br>') + '</p>' : '')
       + '<p style="margin-top:20px;font-size:14px"><strong>Aperçu :</strong><br>' + lignes + (reste > 0 ? '<br><em>… et ' + reste + ' autres</em>' : '') + '</p>'
       + '<p style="margin-top:20px"><a href="' + csvUrl + '" style="background:#171717;color:#fff;padding:11px 18px;border-radius:6px;text-decoration:none;font-size:14px">Télécharger le CSV des adresses</a></p>'
-      + '<p style="margin-top:18px;color:#777;font-size:12px">Les codes postaux ne sont pas fournis par la source cartographique : ils doivent être complétés avant le dépôt. Les adresses marquées « interpolé » sont déduites d\'une plage municipale et peuvent inclure un numéro inexistant.</p>'
+      + '<p style="margin-top:18px;color:#777;font-size:12px">Les codes postaux absents doivent être complétés avant le dépôt. Les comptes de logements sont indicatifs du bâti : une lettre par adresse sélectionnée, sans appartement ajouté automatiquement. Les adresses marquées « interpolé » sont déduites d\'une plage municipale et peuvent inclure un numéro inexistant.</p>'
       + '</div>';
 
     await services.email.send({
@@ -2111,7 +2145,7 @@ module.exports = function(services){
     }catch(e){ console.error('facture campagne', e); return null; }
   }
 
-  // ── Campagnes payantes (paliers de 150) ────────────────────────────────────
+  // ── Campagnes payantes (quantité exacte sélectionnée) ────────────────────────────────────
   //    Achat unique : PayPal Orders v2, pas Subscriptions. La ligne est ecrite
   //    AVANT l'appel a PayPal pour qu'un paiement capture ne puisse jamais
   //    exister sans campagne correspondante, et l'index unique sur
@@ -2130,15 +2164,15 @@ module.exports = function(services){
       if (Number(broker.published) !== 1) return res.status(409).json({ code: 'PAGE_NOT_LIVE' });
 
       var corps = req.body && typeof req.body === 'object' ? req.body : {};
-      var quantite = Math.floor(Number(corps.quantite));
-      if (!Number.isFinite(quantite) || quantite < CAMPAGNE_PALIER || quantite > CAMPAGNE_MAX || quantite % CAMPAGNE_PALIER !== 0) {
+      var quantite = Number(corps.quantite);
+      if (!Number.isInteger(quantite) || quantite < 1 || quantite > CAMPAGNE_MAX) {
         return res.status(400).json({ code: 'BAD_QUANTITY' });
       }
 
       var centre = corps.centre && typeof corps.centre === 'object' ? corps.centre : {};
       var libelle = String(centre.libelle == null ? '' : centre.libelle).trim().slice(0, 300);
       var cLat = Number(centre.lat), cLng = Number(centre.lng);
-      if (!libelle || !Number.isFinite(cLat) || !Number.isFinite(cLng)) {
+      if (!libelle || !campaignModel.qc({lat:cLat,lng:cLng})) {
         return res.status(400).json({ code: 'CENTRE_REQUIRED' });
       }
 
@@ -2149,7 +2183,7 @@ module.exports = function(services){
       for (var i = 0; i < brutes.length; i++) {
         var a = assainirAdresse(brutes[i]);
         if (!a) continue;
-        var cle = (a.numero + '|' + a.rue).toLowerCase();
+        var cle = campaignModel.key(a);
         if (vues[cle]) continue;
         vues[cle] = 1;
         adresses.push(a);
@@ -2160,14 +2194,16 @@ module.exports = function(services){
         return res.status(400).json({ code: 'COUNT_MISMATCH', trouvees: adresses.length, requises: quantite });
       }
 
+      adresses=await campaignData.trusted(adresses);
       var c = await paypalCfg();
       if (!paypalPeutEncaisser(c)) return res.status(503).json({ error: 'paypal_absent', code: 'NOT_CONFIGURED' });
 
       // La campagne incluse s'applique en credit sur n'importe quelle taille de
       // commande : 450 portes avec credit se facturent 300.
       var quota = await campagneQuota(broker);
-      var credit = quota.creditPortes;
+      var credit = await campaignCredit(broker,quota,corps.reprend);
       var prix = prixCampagne(quantite, credit);
+      if(corps.expectedTotal!=null&&Number(corps.expectedTotal)!==prix.total)return res.status(409).json({code:'PRICE_CHANGED'});
       if (prix.facturable <= 0) return res.status(400).json({ code: 'USE_INCLUDED' });
       var ville = String(corps.ville == null ? '' : corps.ville).trim().slice(0, 120);
       var notes = String(corps.notes == null ? '' : corps.notes).trim().slice(0, 1000);
@@ -2200,7 +2236,7 @@ module.exports = function(services){
       try{
         if (existante) {
           campagne = await db.get(
-            "UPDATE broker_campaigns SET kind='paid', status='pending_payment', payment_status='pending', centre_label=$1, centre_lat=$2, centre_lng=$3, radius_m=$4, quantity=$5, address_count=$6, addresses=$7, city=$8, notes=$9, subtotal_cents=$10, gst_cents=$11, qst_cents=$12, total_cents=$13, paypal_mode=$14, is_test=$15, quota_period=$16, paypal_order_id=NULL, paypal_capture_id=NULL, updated_at=NOW() WHERE id=$17 RETURNING *",
+            "UPDATE broker_campaigns SET kind='paid', status='pending_payment', payment_status='pending', centre_label=$1, centre_lat=$2, centre_lng=$3, radius_m=$4, quantity=$5, address_count=$6, addresses=$7, city=$8, notes=$9, subtotal_cents=$10, gst_cents=$11, qst_cents=$12, total_cents=$13, paypal_mode=$14, is_test=$15, quota_period=$16, paypal_order_id=NULL, paypal_capture_id=NULL, updated_at=NOW() WHERE id=$17 AND payment_status<>'paid' AND status<>'mailed' RETURNING *",
             [libelle, cLat, cLng, rayon, quantite, adresses.length, JSON.stringify(adresses), ville, notes, prix.sousTotal, prix.tps, prix.tvq, prix.total, c.mode, estTest, periodeCredit, existante.id]
           );
         } else {
@@ -2214,6 +2250,7 @@ module.exports = function(services){
         throw err;
       }
 
+      if(!campagne)return res.status(409).json({code:'NOT_EDITABLE'});
       var retour = absoluteUrl(req, '/espace/campagne/retour') + '?mode=' + c.mode;
       var annule = absoluteUrl(req, '/espace/campagne/retour') + '?mode=' + c.mode + '&annule=1';
       var token = await paypalToken(c);
@@ -2222,7 +2259,9 @@ module.exports = function(services){
         headers: {
           'Authorization': 'Bearer ' + token,
           'Content-Type': 'application/json',
-          'PayPal-Request-Id': 'vvc-' + campagne.id
+          // A changed selection is a different order; retries of the same
+          // selection retain their idempotency key. Hash fits PayPal's limit.
+          'PayPal-Request-Id': 'vvc-'+services.crypto.sha256(JSON.stringify({id:campagne.id,total:prix.total,addresses:adresses.map(campaignModel.key).sort(),centre:[cLat,cLng],notes:notes})).slice(0,32)
         },
         body: JSON.stringify({
           intent: 'CAPTURE',
@@ -2404,9 +2443,9 @@ module.exports = function(services){
       if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
       return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
     };
-    var lignes = ['distance_m,house_number,street,city,province,postal_code,source'];
+    var lignes = ['distance_m,house_number,street,unit,city,province,postal_code,address_source,property_type,recorded_dwellings,dwelling_scope,construction_year,property_source,source_checked_at'];
     (c.addresses || []).forEach(function(a){
-      lignes.push([a.metres == null ? '' : a.metres, a.numero, a.rue, a.ville || c.city || '', c.province || 'QC', '', a.source].map(cell).join(','));
+      lignes.push([a.metres == null ? '' : a.metres,a.numero,a.rue,a.unit||'',a.ville||c.city||'',c.province||'QC',a.postal||'',a.source,(a.analysis||{}).type||'',(a.analysis||{}).units||'',(a.analysis||{}).unitScope||'',(a.analysis||{}).year||'',(a.analysis||{}).source||'',(a.analysis||{}).fetchedAt||''].map(cell).join(','));
     });
     res.set('Content-Type', 'text/csv; charset=utf-8');
     res.set('Content-Disposition', 'attachment; filename="campagne-' + c.id + '-' + c.slug + '.csv"');

@@ -16,7 +16,7 @@ function sdkLoginCapture(){
   await login.locator('#loginResult.ws-success').waitFor();assert.equal(h.emails.length,1);assert.equal(await login.locator('#brokerLoginForm button').isDisabled(),true);
   await loginContext.close();
   for(const width of [1440,390,320])for(const lang of ['fr','en']){
-   const context=await browser.newContext({viewport:{width,height:900}});await context.addInitScript(sdkLoginCapture);const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
+   const context=await browser.newContext({viewport:{width,height:900}});await context.route('https://tile.openstreetmap.org/**',r=>r.abort());await context.addInitScript(sdkLoginCapture);const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
    const token=await auth.mint(b.id,'access');await page.goto(h.url+'/pwa/vendvite/acces/'+token+'?lang='+lang,{waitUntil:'networkidle'});
    assert.equal(await page.locator('body').evaluate(b=>b.scrollWidth<=innerWidth),true,'login overflow '+width);
    if(width!==320 && lang==='fr')await page.screenshot({path:'qa/broker-confirm-'+width+'.png',fullPage:true});

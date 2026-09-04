@@ -1,0 +1,40 @@
+      <details class="cs-history"><summary><%= t.c_history %> · <%= campagnes.length %></summary><div class="camp-histo-card">
+        <h3><%= t.esp_your_campaigns_heading %></h3>
+        <% if (!campagnes.length) { %>
+          <p class="esp-hint"><%= t.esp_no_campaigns_first_included %></p>
+        <% } else { %>
+          <div class="camp-histo-t-head"><span><%= t.esp_campaign_col_status %></span><span><%= t.esp_campaign_col_territory %></span><span><%= t.esp_campaign_col_doors %></span><span><%= t.esp_campaign_col_amount %></span><span><%= t.esp_campaign_col_date %></span></div>
+          <% campagnes.forEach(function(c){
+               var libelle = c.centre_label ? c.centre_label.split(',').slice(0,2).join(',') : (c.city || '—');
+               var annulee = c.status === 'cancelled';
+               var etat = annulee ? 'Abandonnée'
+                        : c.status === 'mailed' ? 'Postée'
+                        : c.payment_status === 'pending' ? 'Paiement en attente'
+                        : 'En préparation';
+               var cls  = annulee ? 'is-off'
+                        : c.status === 'mailed' ? 'is-ok'
+                        : c.payment_status === 'pending' ? 'is-wait' : '';
+               // Tant qu'elle n'est pas payée, la campagne reste modifiable :
+               // son territoire se recharge dans le sélecteur tel qu'il était.
+               var reprenable = c.payment_status !== 'paid' && c.status !== 'mailed' && Number(c.address_count) > 0;
+          %>
+            <div class="camp-histo-l">
+              <span class="camp-histo-b <%= cls %>"><%= etat %><% if (Number(c.is_test) === 1) { %> · test<% } %></span>
+              <span class="camp-histo-t" title="<%= c.centre_label || '' %>"><%= libelle %></span>
+              <span class="camp-histo-q"><%= c.address_count %></span>
+              <span class="camp-histo-m"><%= c.kind === 'paid' ? ((c.total_cents||0)/100).toFixed(2).replace('.', ',') + ' $' : 'Incluse' %></span>
+              <span class="camp-histo-d"><%= new Date(c.created_at).toLocaleDateString('fr-CA', { day:'numeric', month:'short', year:'numeric' }) %></span>
+              <% if (reprenable || c.payment_status === 'pending') { %>
+                <span class="camp-histo-act">
+                  <% if (reprenable) { %>
+                    <button type="button" class="camp-histo-x" data-reprendre="<%= c.id %>"><%= t.esp_territory_reload_btn %></button>
+                  <% } %>
+                  <% if (c.payment_status === 'pending') { %>
+                    <button type="button" class="camp-histo-x" data-annuler="<%= c.id %>"><%= t.esp_cancel_reclaim_included_btn %></button>
+                  <% } %>
+                </span>
+              <% } %>
+            </div>
+          <% }); %>
+        <% } %>
+      </div></details>

@@ -85,3 +85,7 @@ CREATE TABLE IF NOT EXISTS broker_sessions (
 );
 CREATE INDEX IF NOT EXISTS broker_sessions_broker_idx ON broker_sessions(broker_id,last_seen_at);
 CREATE TABLE IF NOT EXISTS broker_login_limits(bucket_key TEXT PRIMARY KEY,hits INTEGER NOT NULL,window_started_at TIMESTAMPTZ NOT NULL,last_request_at TIMESTAMPTZ NOT NULL);
+-- Campaign studio: private drafts and cached public property analysis.
+CREATE TABLE IF NOT EXISTS broker_campaign_drafts (broker_id INTEGER PRIMARY KEY REFERENCES brokers(id),revision INTEGER NOT NULL DEFAULT 0,data JSONB NOT NULL DEFAULT '{}',updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW());
+CREATE TABLE IF NOT EXISTS campaign_property_cache (cache_key TEXT PRIMARY KEY,payload JSONB NOT NULL,expires_at TIMESTAMPTZ NOT NULL);
+CREATE TABLE IF NOT EXISTS campaign_request_limits (broker_id INTEGER NOT NULL REFERENCES brokers(id),bucket TEXT NOT NULL,window_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),hits INTEGER NOT NULL DEFAULT 1,PRIMARY KEY(broker_id,bucket));
