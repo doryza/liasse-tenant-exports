@@ -28,15 +28,29 @@ function excluded(req, services) {
     /bot|crawler|spider|headless|preview|facebookexternalhit|slurp/i.test(String(req.headers['user-agent'] || ''));
 }
 
+function privateResponse(res) {
+  if (res._vvPrivateResponse) return;
+  res._vvPrivateResponse = true;
+  res.vary('Cookie');
+  res.set('Cache-Control','private, no-store');
+  // Liasse's HTML injection replaces Cache-Control in res.send. Apply the
+  // experiment policy at header flush, after that wrapper has finished.
+  var writeHead = res.writeHead;
+  res.writeHead = function() {
+    res.setHeader('Cache-Control','private, no-store');
+    return writeHead.apply(this,arguments);
+  };
+}
+
 function create(services) {
   var db = services.db;
   async function state() {
     return await db.get('SELECT * FROM homepage_experiments WHERE experiment=$1', [KEY]);
   }
   async function assign(req, res) {
-    res.set('Cache-Control', 'private, no-store');
+    privateResponse(res);
     var preview = req.query.vv_preview;
-    if (preview === 'visible' || preview === 'gated') return { variant:preview, preview:true, track:false };
+    if (preview === 'visible' || preview === 'gated') { res.set('X-Liasse-Preview','homepage-experiment'); return { variant:preview, preview:true, track:false }; }
     if (excluded(req, services)) return { variant:'visible', preview:false, track:false };
     var id = cookieId(req);
     var visitor = id && await db.get('SELECT variant FROM homepage_visitors WHERE experiment=$1 AND visitor_id=$2', [KEY,id]);
@@ -96,4 +110,4 @@ function create(services) {
   }
   return { assign:assign, event:event, convert:convert, results:results, state:state, evaluate:evaluate };
 }
-module.exports = { create:create, interval:interval, decide:decide, key:KEY, looks:LOOKS, windowDays:DAYS };
+module.exports = { privateResponse:privateResponse, create:create, interval:interval, decide:decide, key:KEY, looks:LOOKS, windowDays:DAYS };

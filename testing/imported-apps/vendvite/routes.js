@@ -954,6 +954,7 @@ module.exports = function(services){
   }
 
   router.get('/', async function(req,res){
+    homepageTools.privateResponse(res);
     try{
       var L=await baseLocals(req);
       var experiment = { variant:'visible', preview:false, track:false };
@@ -970,6 +971,7 @@ module.exports = function(services){
   });
 
   router.get('/admin/conversions', requireAdmin, async function(req,res){
+    homepageTools.privateResponse(res);
     try {
       await homepageExperiment.evaluate();
       var L=await baseLocals(req);

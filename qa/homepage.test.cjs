@@ -5,7 +5,7 @@ const headers={'user-agent':'Vendvite QA browser','content-type':'application/js
 test('homepage experiment: persisted assignments, attribution, exclusions and bounded winner selection',async()=>{
  const h=await create();
  try{
-  const base='http://127.0.0.1:4798';
+  const base=h.url;
   const get=(url,extra={})=>fetch(base+url,{headers:{...headers,...extra}});
   const post=(url,body,cookie)=>fetch(base+url,{method:'POST',headers:{...headers,cookie:cookie||''},body:JSON.stringify(body)});
   const response=await get('/');assert.equal(response.status,200);assert.match(response.headers.get('cache-control'),/no-store/);
