@@ -84,17 +84,17 @@
             <p class="esp-help"><%= t.esp_note_under_field_help %></p></div>
 
           <h2 class="esp-h"><%= t.esp_section_your_numbers %></h2>
-          <p class="esp-hint"><%- t.esp_stats_shown_in_proof_section %></p>
+          <p class="esp-hint"><%= lang==='fr' ? 'Vos chiffres apparaissent dans votre présentation. Laissez un champ vide pour le masquer.' : 'Your figures appear in your profile. Leave a field empty to hide it.' %></p>
           <div class="esp-2">
-            <div class="esp-f"><label for="f_stat_homes"><%= t.esp_stat_properties_sold_label %></label><input id="f_stat_homes" data-k="stat_homes" placeholder="<%= settings.stat_homes_sold || '0' %>" value="<%= profile.stat_homes || '' %>">
+            <div class="esp-f"><label for="f_stat_homes"><%= t.esp_stat_properties_sold_label %></label><input id="f_stat_homes" data-k="stat_homes" placeholder="—" value="<%= profile.stat_homes || '' %>">
               <p class="esp-help"><%= t.esp_stat_properties_sold_help %></p></div>
-            <div class="esp-f"><label for="f_stat_days"><%= t.esp_stat_days_on_market_label %></label><input id="f_stat_days" data-k="stat_days" placeholder="<%= settings.stat_avg_days || '0' %>" value="<%= profile.stat_days || '' %>">
+            <div class="esp-f"><label for="f_stat_days"><%= t.esp_stat_days_on_market_label %></label><input id="f_stat_days" data-k="stat_days" placeholder="—" value="<%= profile.stat_days || '' %>">
               <p class="esp-help"><%= t.esp_stat_days_on_market_help %></p></div>
           </div>
           <div class="esp-2">
-            <div class="esp-f"><label for="f_stat_ratio"><%= t.esp_stat_sold_to_list_ratio_label %></label><input id="f_stat_ratio" data-k="stat_ratio" placeholder="<%= settings.stat_list_to_sale || '0' %>" value="<%= profile.stat_ratio || '' %>">
+            <div class="esp-f"><label for="f_stat_ratio"><%= t.esp_stat_sold_to_list_ratio_label %></label><input id="f_stat_ratio" data-k="stat_ratio" placeholder="—" value="<%= profile.stat_ratio || '' %>">
               <p class="esp-help"><%- t.esp_stat_sold_to_list_ratio_help %></p></div>
-            <div class="esp-f"><label for="f_stat_volume"><%= t.esp_stat_volume_millions_label %></label><input id="f_stat_volume" data-k="stat_volume" placeholder="<%= settings.stat_career_volume || '0' %>" value="<%= profile.stat_volume || '' %>">
+            <div class="esp-f"><label for="f_stat_volume"><%= t.esp_stat_volume_millions_label %></label><input id="f_stat_volume" data-k="stat_volume" placeholder="—" value="<%= profile.stat_volume || '' %>">
               <p class="esp-help"><%- t.esp_stat_volume_millions_help %></p></div>
           </div>
         </div>

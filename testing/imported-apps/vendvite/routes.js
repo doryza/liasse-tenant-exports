@@ -216,7 +216,7 @@ module.exports = function(services){
       esp_links_icons_vs_buttons_help:"Facebook, Instagram, LinkedIn, YouTube et TikTok deviennent des icônes au pied de page&nbsp;; les autres liens (site d'agence, fiche Centris…) s'affichent en boutons. Aucun lien = rien n'apparaît.",
       esp_add_link_button:"+ Ajouter un lien",
       esp_your_testimonials_heading:"Vos témoignages",
-      esp_testimonials_default_help:"Laissez vide pour afficher les témoignages par défaut de la page.",
+      esp_testimonials_default_help:"Ajoutez vos propres témoignages. Sans témoignage, cette section reste masquée.",
       esp_add_testimonial_button:"+ Ajouter un témoignage",
       esp_save_button:"Enregistrer",
       esp_campaign_included_canada_post:"Centre de production postale VendVite",
@@ -623,7 +623,7 @@ module.exports = function(services){
       esp_links_icons_vs_buttons_help:"Facebook, Instagram, LinkedIn, YouTube and TikTok become icons in the footer; other links (agency site, Centris listing…) appear as buttons. No links = nothing appears.",
       esp_add_link_button:"+ Add a link",
       esp_your_testimonials_heading:"Your testimonials",
-      esp_testimonials_default_help:"Leave empty to show the page's default testimonials.",
+      esp_testimonials_default_help:"Add your own testimonials. The section stays hidden when none are provided.",
       esp_add_testimonial_button:"+ Add a testimonial",
       esp_save_button:"Save",
       esp_campaign_included_canada_post:"VendVite postal production centre",
@@ -2846,7 +2846,7 @@ module.exports = function(services){
       agent_email: prof.agent_email || broker.email,
       agent_title: prof.agent_title || broker.agency,
       agency: prof.agency || broker.agency,
-      _p_agent_image_url: prof.agent_photo_url || L.settings._p_agent_image_url || ''
+      _p_agent_image_url: prof.agent_photo_url || ''
     });
     var t = Object.assign({}, L.t);
     if (isDemo) {
@@ -2862,10 +2862,14 @@ module.exports = function(services){
     ];
     if (prof.hero_sub && legacyHeroSubs.indexOf(prof.hero_sub) === -1) t.hero_sub = prof.hero_sub;
     if (prof.hero_note) t.hero_note = prof.hero_note;
-    // Profile keys → the TEMPLATE's real setting keys (the page reads
-    // stat_homes_sold / stat_avg_days / stat_list_to_sale / stat_career_volume).
-    var STAT_MAP = { stat_homes:'stat_homes_sold', stat_days:'stat_avg_days', stat_ratio:'stat_list_to_sale', stat_volume:'stat_career_volume' };
-    Object.keys(STAT_MAP).forEach(function(k){ if (prof[k]) settings[STAT_MAP[k]] = prof[k]; });
+    // Show only figures supplied by this broker; never inherit site-wide samples.
+    var brokerStats = [
+      {key:'stat_homes',label:t.stat_homes_label,unit:''},
+      {key:'stat_days',label:t.stat_days_label,unit:t.stat_days_unit},
+      {key:'stat_ratio',label:t.stat_ratio_label,unit:'%'},
+      {key:'stat_volume',label:t.stat_volume_label,unit:t.stat_volume_unit}
+    ].map(function(stat){ return Object.assign({},stat,{value:String(prof[stat.key] || '').trim()}); })
+      .filter(function(stat){ return /^(?:\d+(?:[.,]\d+)?)$/.test(stat.value) && Number(stat.value.replace(',','.'))>0; });
     // Identity into the « Votre courtier » section (t-keys, not settings)
     if (prof.agent_title) t.agent_title = prof.agent_title;
     if (prof.agency || broker.agency) t.agent_remax = prof.agency || broker.agency;
@@ -2883,15 +2887,14 @@ module.exports = function(services){
       var hit = Object.keys(SOCIAL_RE).find(function(k){ return SOCIAL_RE[k].test(l.url) && !settings[k]; });
       if (hit) settings[hit] = l.url; else otherLinks.push(l);
     });
-    var testimonials = isDemo ? [] : Array.isArray(prof.testimonials) && prof.testimonials.length
-      ? prof.testimonials.map(function(x, i){ return Object.assign({ id: 'p' + i, published: 1, sort_order: i }, x); })
-      : await db.all('SELECT * FROM testimonials WHERE published=1 ORDER BY sort_order ASC, created_at DESC');
-    var posts = isDemo ? [] : await db.all('SELECT * FROM posts WHERE published=1 ORDER BY created_at DESC LIMIT 3');
+    var testimonials = (Array.isArray(prof.testimonials) ? prof.testimonials : [])
+      .filter(function(x){return x && String(x.quote || '').trim() && String(x.author || '').trim();})
+      .map(function(x,i){return Object.assign({id:'p'+i},x);});
     res.render('broker-page', Object.assign(L, {
       t: t,
       settings: settings,
       testimonials: testimonials || [],
-      posts: posts || [],
+      brokerStats: brokerStats,
       isHome: true,
       brokerSlug: broker.slug,
       brokerLinks: otherLinks,

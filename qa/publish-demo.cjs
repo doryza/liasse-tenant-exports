@@ -2,7 +2,7 @@
 const fs=require('fs');
 const {Client}=require('/home/liassetech/liasse.tech/node_modules/pg');
 (async()=>{
- const baseline=JSON.parse(fs.readFileSync('/tmp/vendvite-demo-template-baseline.json','utf8'));
+ const baseline=JSON.parse(fs.readFileSync('/tmp/vendvite-sections-baseline.json','utf8'));
  const db=new Client({connectionString:fs.readFileSync('/home/liassetech/.liasse-ops/db-public-url','utf8').trim(),ssl:{rejectUnauthorized:false},statement_timeout:15000});
  await db.connect();
  try {
@@ -14,7 +14,7 @@ const {Client}=require('/home/liassetech/liasse.tech/node_modules/pg');
  const credentials=fs.readFileSync('/home/liassetech/.liasse-ops/liasse-tech-admin-creds','utf8').trim();
  const response=await fetch('https://liasse.tech/admin/subscriber-pwas/433/import-from-testing',{
   method:'POST',headers:{Authorization:'Basic '+Buffer.from(credentials).toString('base64'),'Content-Type':'application/json'},
-  body:JSON.stringify({source:'github',github:{owner:'doryza',repo:'liasse-tenant-exports',branch:'feat/vendvite-richard-demo'},note:'Render Richard Tremblay through the actual shared customer broker-page template and lead funnel. Remove separate demo design; keep demo submissions inert.'}),signal:AbortSignal.timeout(180000)
+  body:JSON.stringify({source:'github',github:{owner:'doryza',repo:'liasse-tenant-exports',branch:'feat/vendvite-richard-demo'},note:'Simplify shared broker page into property request and broker profile, with optional broker-owned testimonials. Fold steps and stats inline; remove journal and empty/redundant sections; preserve shared demo and 599 pricing.'}),signal:AbortSignal.timeout(180000)
  });
  const result=await response.text();if(!response.ok)throw Error('HTTP '+response.status+': '+result.slice(0,500));console.log(result);
 })().catch(e=>{console.error(e.message);process.exit(1)});
