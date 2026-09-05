@@ -53,7 +53,7 @@
 
 
   function field(id){ return document.getElementById(id); }
-  function clearBad(){ ['invName','invAgency','invRegion','invPhone','invEmail'].forEach(function(id){ field(id).classList.remove('bad'); field(id).removeAttribute('aria-invalid'); }); }
+  function clearBad(){ ['invName','invAgency','invPhone','invEmail'].forEach(function(id){ field(id).classList.remove('bad'); field(id).removeAttribute('aria-invalid'); }); }
 
   form.addEventListener('submit', async function(e){
     e.preventDefault();
@@ -64,14 +64,13 @@
     var payload = {
       name: field('invName').value.trim(),
       agency: field('invAgency').value.trim(),
-      target_region: field('invRegion').value.trim(),
       phone: field('invPhone').value.trim(),
       email: field('invEmail').value.trim()
     };
     var missing = Object.keys(payload).filter(function(k){ return !payload[k]; });
     if(missing.length){
       missing.forEach(function(k){
-        var map = { name:'invName', agency:'invAgency', target_region:'invRegion', phone:'invPhone', email:'invEmail' };
+        var map = { name:'invName', agency:'invAgency', phone:'invPhone', email:'invEmail' };
         field(map[k]).classList.add('bad'); field(map[k]).setAttribute('aria-invalid','true');
       });
       err.textContent = form.getAttribute('data-err-required') || 'Tous les champs sont requis.';

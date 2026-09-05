@@ -1,7 +1,7 @@
 var express = require('express');
 var invoiceTools = require('./invoice');
 var homepageTools = require('./homepage-experiment-v1');
-var homepageCopy = require('./homepage-copy-v4');
+var homepageCopy = require('./homepage-copy-v5');
 var brokerAuthTools = require('./broker-auth-v1');
 var workspaceCopy = require('./workspace-copy-v2');
 var campaignModel=require('./public/js/campaign-model-v1');
@@ -1407,16 +1407,16 @@ module.exports = function(services){
       + (fr ? 'Votre demande est reçue, ' : 'Your request was received, ') + escapeHtml(broker.full_name.split(' ')[0]) + '.</h1>'
       + '<p style="color:rgba(245,239,230,.64);font-size:15px;line-height:1.6;margin:0">'
       + (fr
-        ? 'Nous étudions votre demande et votre secteur. Nous limitons le nombre d’accès par marché pour que chaque courtier garde une longueur d’avance dans son quartier. Si un accès peut être ouvert dans le vôtre, vous recevrez par courriel un lien pour bâtir votre page de capture et consulter le tarif.'
-        : 'We are reviewing your request and your area. We limit the number of seats per market so every broker keeps a head start in their neighbourhood. If a seat can be opened in yours, you will receive an email link to build your lead-capture page and see the price.')
+        ? 'Nous préparons votre accès. Vous recevrez par courriel un lien pour bâtir votre page de capture et consulter le tarif.'
+        : 'We are preparing your access. You will receive an email link to build your lead-capture page and see the price.')
       + '</p></div></div>';
     return await services.email.send({
       to: broker.email,
       subject: fr ? 'Votre demande d’accès VendVite est reçue' : 'Your VendVite access request was received',
       html: html,
       text: fr
-        ? 'Votre demande d’accès VendVite est reçue. Nous limitons le nombre d’accès par marché pour que chaque courtier garde une longueur d’avance dans son quartier. Nous vous écrirons si un accès peut être ouvert dans le vôtre.'
-        : 'Your VendVite access request was received. We limit seats per market so every broker keeps a head start in their neighbourhood. We will contact you if a seat can be opened in yours.'
+        ? 'Votre demande d’accès VendVite est reçue. Vous recevrez par courriel un lien pour bâtir votre page de capture et consulter le tarif.'
+        : 'Your VendVite access request was received. You will receive an email link to build your lead-capture page and see the price.'
     });
   }
 
@@ -1466,7 +1466,7 @@ module.exports = function(services){
       var targetRegion = String(b.target_region || '').trim().slice(0, 200);
       var phone = String(b.phone || '').trim().slice(0, 40);
       var email = String(b.email || '').trim().toLowerCase().slice(0, 190);
-      if (!name || !agency || !targetRegion || !phone || !email) return res.status(400).json({ error: TT.inv_err_required });
+      if (!name || !agency || !phone || !email) return res.status(400).json({ error: TT.inv_err_required });
       if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return res.status(400).json({ error: TT.inv_err_email });
 
       var existing = await db.get('SELECT * FROM brokers WHERE LOWER(email)=$1', [email]);

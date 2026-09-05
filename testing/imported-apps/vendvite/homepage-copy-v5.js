@@ -1,4 +1,4 @@
-// Homepage pitch v4 (v3 + price note) — « Pourquoi gaspiller votre budget marketing sur Facebook ? »
+// Homepage pitch v5 (no territory ask) — « Pourquoi gaspiller votre budget marketing sur Facebook ? »
 // Courrier Postes Canada préparé par des professionnels + page de capture qui
 // offre au propriétaire son analyse comparative gratuite. Both price variants of
 // the homepage-price-v1 experiment share this copy; only the offer box differs.
@@ -9,12 +9,12 @@ module.exports = {
   inv_eyebrow: 'Pour les courtiers immobiliers du Québec',
   inv_title: 'Pourquoi gaspiller votre budget marketing sur Facebook ?',
   inv_lede: 'Des campagnes Postes Canada préparées par des professionnels, livrées aux portes exactes que vous choisissez. Chaque lettre mène à votre page de capture, où le propriétaire reçoit quelque chose de concret — son analyse comparative de marché, gratuite — et où sa demande vous revient directement.',
-  inv_form_title: 'Dites-nous quel quartier vous voulez.',
-  inv_form_sub: 'Vos coordonnées et le secteur que vous voulez travailler. Nous étudions chaque demande avant d’ouvrir un accès.',
+  inv_form_title: 'Demandez votre accès.',
+  inv_form_sub: 'Vos coordonnées suffisent. Vous recevrez un lien par courriel pour bâtir votre page de capture et voir le tarif.',
   inv_f_submit: 'Demander mon accès', inv_f_sending: 'Envoi en cours…', inv_f_sent: 'Demande reçue',
   inv_fineprint: 'Aucun paiement aujourd’hui. Aucune carte requise. Vos coordonnées servent à traiter votre demande et à vous recontacter.',
-  inv_done_kicker: 'Demande reçue', inv_done_title: 'Votre quartier est noté.',
-  inv_done_text: 'Nous étudions votre demande et votre secteur. Si votre accès est approuvé, vous recevrez un lien par courriel pour bâtir votre page de capture, puis choisir d’activer votre adhésion.',
+  inv_done_kicker: 'Demande reçue', inv_done_title: 'Votre demande est reçue.',
+  inv_done_text: 'Vous recevrez rapidement un lien par courriel pour bâtir votre page de capture, puis choisir d’activer votre adhésion.',
   inv_done_status: 'Surveillez votre boîte de réception.',
   inv_foot: 'Pour les courtiers qui préfèrent les enveloppes aux impressions.',
   hp_cta: 'Demander mon accès', hp_secondary: 'Voir la différence', hp_reassurance: 'Sans engagement · Aucune carte requise',
@@ -72,7 +72,7 @@ module.exports = {
    ['Qu’est-ce qui est inclus ?', 'Le créateur de campagnes, votre page de capture, la réception illimitée de demandes et une campagne de 150 lettres par année — impression, enveloppes, affranchissement et dépôt Postes Canada compris.'],
    ['Puis-je envoyer des centaines de lettres ?', 'Oui. Le créateur permet de sélectionner jusqu’à 1 200 adresses par envoi. Une campagne allant jusqu’à 150 lettres est comprise chaque année; les lettres supplémentaires sont facturées en sus. Vous vérifiez le montant avant de confirmer.'],
    ['Dois-je imprimer les lettres ou préparer les enveloppes ?', 'Non. Notre centre s’occupe de l’impression, du pliage, de la mise sous enveloppe, de l’affranchissement et du dépôt chez Postes Canada. Rien à imprimer, rien à coller, rien à poster.'],
-   ['Est-ce que je paie en envoyant le formulaire ?', 'Non. La demande est sans engagement. Si elle est approuvée, vous pouvez bâtir votre page avant de décider d’activer l’adhésion.'],
+   ['Est-ce que je paie en envoyant le formulaire ?', 'Non. La demande est sans engagement. Vous bâtissez votre page avant de décider d’activer l’adhésion.'],
    ['Qui prépare l’analyse comparative de marché ?', 'Vous, le courtier. VendVite ouvre la conversation; votre expertise et votre suivi font le reste.'],
    ['Les demandes ou les mandats sont-ils garantis ?', 'Non. Les résultats dépendent notamment de votre secteur, de l’intérêt des propriétaires et de votre suivi. Aucun volume de demandes ni mandat n’est garanti.']
   ],
@@ -86,12 +86,12 @@ module.exports = {
   inv_eyebrow: 'For real estate brokers in Quebec',
   inv_title: 'Why waste your marketing budget on Facebook?',
   inv_lede: 'Canada Post mail campaigns prepared by professionals and delivered to the exact doors you choose. Every letter leads to your lead-capture page, where the homeowner gets something concrete — a free comparative market analysis — and their request comes straight to you.',
-  inv_form_title: 'Tell us which neighbourhood you want.',
-  inv_form_sub: 'Your contact details and the area you want to work. We review every request before opening access.',
+  inv_form_title: 'Request your access.',
+  inv_form_sub: 'Your contact details are enough. You’ll receive an email link to build your lead-capture page and see the price.',
   inv_f_submit: 'Request my access', inv_f_sending: 'Sending…', inv_f_sent: 'Request received',
   inv_fineprint: 'No payment today. No card required. We use your details to review your request and contact you about it.',
-  inv_done_kicker: 'Request received', inv_done_title: 'Your neighbourhood is noted.',
-  inv_done_text: 'We’re reviewing your request and target area. If approved, you’ll receive an email link to build your lead-capture page, then decide whether to activate your membership.',
+  inv_done_kicker: 'Request received', inv_done_title: 'Your request was received.',
+  inv_done_text: 'You’ll shortly receive an email link to build your lead-capture page, then decide whether to activate your membership.',
   inv_done_status: 'Keep an eye on your inbox.',
   inv_foot: 'For brokers who prefer envelopes to impressions.',
   hp_cta: 'Request my access', hp_secondary: 'See the difference', hp_reassurance: 'No commitment · No card required',
@@ -149,7 +149,7 @@ module.exports = {
    ['What’s included?', 'The campaign builder, your lead-capture page, unlimited requests and one 150-letter campaign each year — printing, envelopes, postage and Canada Post handoff included.'],
    ['Can I send hundreds of letters?', 'Yes. Select up to 1,200 addresses per mailing in the builder. One campaign of up to 150 letters is included each year; additional letters are billed separately. You review the amount before confirming.'],
    ['Do I need to print letters or prepare envelopes?', 'No. Our centre handles printing, folding, envelope stuffing, postage and handoff to Canada Post. Nothing to print, nothing to seal, nothing to mail.'],
-   ['Do I pay when I submit the form?', 'No. Your request comes with no commitment. If approved, you can build your page before deciding to activate your membership.'],
+   ['Do I pay when I submit the form?', 'No. Your request comes with no commitment. You build your page before deciding to activate your membership.'],
    ['Who prepares the comparative market analysis?', 'You, the broker. VendVite opens the conversation; your expertise and follow-up take it from there.'],
    ['Are leads or listings guaranteed?', 'No. Results depend on your neighbourhood, homeowner interest and your follow-up. There is no guaranteed number of requests or listings.']
   ],
