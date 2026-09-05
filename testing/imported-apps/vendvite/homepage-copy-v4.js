@@ -1,4 +1,4 @@
-// Homepage pitch v3 — « Pourquoi gaspiller votre budget marketing sur Facebook ? »
+// Homepage pitch v4 (v3 + price note) — « Pourquoi gaspiller votre budget marketing sur Facebook ? »
 // Courrier Postes Canada préparé par des professionnels + page de capture qui
 // offre au propriétaire son analyse comparative gratuite. Both price variants of
 // the homepage-price-v1 experiment share this copy; only the offer box differs.
@@ -23,7 +23,7 @@ module.exports = {
   hp_page: 'Le ciblage à la porte près', hp_page_detail: 'Le quartier, la rue, le type de propriété : vous choisissez chaque adresse.',
   hp_leads: 'Votre page de capture', hp_leads_detail: 'Chaque lettre offre une analyse comparative gratuite. Les demandes vous arrivent directement.',
   hp_mail_allowance: 'Une campagne de 150 lettres comprise chaque année. Besoin de plus ? Les lettres supplémentaires sont facturées en sus.',
-  hp_price_note: 'Facturation annuelle à l’activation. Renouvellement annuel, annulable depuis votre espace.',
+  hp_price_note: 'Facturation annuelle à l’activation. Annulable en tout temps.',
   hp_gate_title: 'Votre tarif, après votre demande', hp_gate_note: 'Le tarif annuel s’affiche dès l’envoi du formulaire, avant tout engagement.',
   hp_form_note: 'Une demande d’accès, pas un achat.', hp_offer: 'Voici votre adhésion VendVite',
   inv_price_pitch: 'Votre adhésion comprend le créateur de campagnes, votre page de capture, une campagne annuelle de 150 lettres — impression, enveloppes, affranchissement et dépôt Postes Canada compris — et la réception illimitée de demandes d’analyse.',
@@ -100,7 +100,7 @@ module.exports = {
   hp_page: 'Targeting down to the door', hp_page_detail: 'The neighbourhood, the street, the property type: you choose every address.',
   hp_leads: 'Your lead-capture page', hp_leads_detail: 'Every letter offers a free comparative market analysis. Requests come straight to you.',
   hp_mail_allowance: 'One 150-letter campaign included every year. Need more? Additional letters are billed separately.',
-  hp_price_note: 'Billed annually on activation. Renews yearly; cancel from your account.',
+  hp_price_note: 'Billed annually on activation. Cancel anytime.',
   hp_gate_title: 'Your price, after your request', hp_gate_note: 'See the annual price immediately after submitting the form, before committing.',
   hp_form_note: 'An access request, not a purchase.', hp_offer: 'Your VendVite membership',
   inv_price_pitch: 'Your membership includes the campaign builder, your lead-capture page, one annual campaign of 150 letters — printing, envelopes, postage and Canada Post handoff included — and unlimited market-analysis requests.',
