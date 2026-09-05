@@ -3,6 +3,7 @@
   function q(id){ return document.getElementById(id); }
 
   function initBanners(){
+    if(window.VV_DEMO) return;
     try{ if(window.TenantSDK && TenantSDK.ui && TenantSDK.ui.showInstallBanner){ TenantSDK.ui.showInstallBanner(); } }catch(e){}
     setTimeout(function(){ try{ if(window.TenantSDK && TenantSDK.ui && TenantSDK.ui.showPushPrompt){ TenantSDK.ui.showPushPrompt(); } }catch(e){} }, 9000);
   }
@@ -69,6 +70,7 @@
         if(!name || !address){ if(errEl) errEl.textContent=T.errRequired || 'Champs requis.'; return; }
         var btn=q('sealBtn'); var orig=btn ? btn.textContent : '';
         if(btn){ btn.disabled=true; btn.textContent=T.submitting || '…'; }
+        if(window.VV_DEMO){ form.reset(); stampFiche(); return; }
         var payload={ name:name, email:((q('leadEmail') && q('leadEmail').value) || '').trim(), phone:((q('leadPhone') && q('leadPhone').value) || '').trim(), timeframe:((q('leadTime') && q('leadTime').value) || '').trim(), address:address, lat:((q('leadLat') && q('leadLat').value) || ''), lng:((q('leadLng') && q('leadLng').value) || '') };
         // On a broker's page the lead belongs to that broker, not to the
         // house funnel — VV_BROKER is emitted only by broker-page.ejs.

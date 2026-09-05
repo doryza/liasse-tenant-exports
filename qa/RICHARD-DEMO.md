@@ -1,7 +1,7 @@
-VendVite generation 58 baseline, preserved before editing. Adds a fictional Richard Tremblay / RE/MAX demo at /richard-tremblay, linked in the homepage hero and personalized-page pitch. A shared illustrative stock portrait is served by Unsplash. Demo requests remain in the browser; there is no broker account, lead write or outgoing email.
+Richard Tremblay now renders through the same renderBrokerPage function and views/broker-page.ejs template used by paying brokers, with the same CSS, address lookup, property dossier, lead form, agent section and footer. The separate demo layout and script have been removed. A small demo banner links back to the $599/year offer. Profile identity, portrait, affiliation and statistics are illustrative.
 
-Homepage always displays $599/year plus taxes in French and English, including existing gated preview URLs. New experiment assignments, events and application attribution are disabled; historical data remains available. Preview submissions retain their no-write behavior.
+window.VV_DEMO prevents lead submissions in the shared client script; the reserved demo API endpoint also returns an inert response. Real broker requests keep their existing behavior. The shared header also fits 320px screens.
 
-Validated with `node qa/demo-browser.cjs`: FR/EN at 320, 390 and 1440px, both legacy pricing URLs, demo navigation, image loading, local-only form completion, no overflow or browser errors. Live checks use PREVIEW_BASE=https://vendvite.app/.
+Validation: node --test qa/demo-template.test.cjs proves that both demo and active customer routes render broker-page, demo POSTs create no leads or emails, and a real broker POST creates its lead. qa/demo-browser.cjs checks FR/EN at 320/390/1440px, homepage pricing, navigation, portrait, form completion and overflow. PREVIEW_BASE selects local or live testing.
 
-Published after explicit user approval to the existing public doryza/liasse-tenant-exports repository. The scoped tenant import verified the exact generation 58 baseline, added 2 files and modified 5, with no removals. Restore point: 1853. Import generation: 1854. Release commit: ae0eba7.
+This correction uses live generation 59 as its exact pre-import baseline. Publishing was explicitly authorized in the conversation. The scoped importer creates a restore point before updating tenant 433.

@@ -11,7 +11,7 @@
 <meta property="og:title" content="VendVite — <%= t.inv_meta_title %>">
 <meta property="og:description" content="<%= t.inv_meta_desc %>">
 <meta property="og:locale" content="<%= lang==='en' ? 'en_CA' : 'fr_CA' %>">
-<title>VendVite — <%= typeof demoPage!=='undefined' ? 'Richard Tremblay — Démo / Demo' : (typeof ws!=='undefined' && ws ? t.ws_home : t.inv_meta_title) %></title>
+<title>VendVite — <%= typeof ws!=='undefined' && ws ? t.ws_home : t.inv_meta_title %></title>
 <link rel="manifest" href="manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

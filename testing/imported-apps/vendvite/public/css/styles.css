@@ -638,3 +638,9 @@ a:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid var(
 .camp-suggest{position:absolute;z-index:40;left:0;right:0;top:calc(100% + 4px);margin:0;padding:5px;list-style:none;max-height:250px;overflow-y:auto;background:#0a0708;border:1px solid rgba(199,154,91,.34);border-radius:7px;box-shadow:0 18px 44px rgba(0,0,0,.6);}
 .camp-suggest li{padding:10px 12px;border-radius:4px;cursor:pointer;color:var(--ink-dim);font-size:.86rem;line-height:1.35;}
 .camp-suggest li:hover,.camp-suggest li.is-on{background:rgba(199,154,91,.16);color:var(--ink);}
+
+/* Demo context sits above the unchanged customer broker template. */
+.bp-demo{background:#191315;border-bottom:1px solid var(--hair);font-size:.75rem;color:var(--ink-dim)}
+.bp-demo-inner{display:flex;align-items:center;justify-content:space-between;gap:20px;padding-top:10px;padding-bottom:10px}.bp-demo p{margin:0}.bp-demo strong{color:var(--gold)}.bp-demo a{color:var(--ink);white-space:nowrap;text-decoration:underline;text-underline-offset:4px}
+@media(max-width:760px){.bp-demo-inner{align-items:flex-start;flex-direction:column;gap:6px}}
+@media(max-width:360px){.topbar-inner{padding-left:12px;padding-right:12px;gap:6px}.topbar-cta{padding:9px 10px}}

@@ -1,4 +1,10 @@
 <%- include('partials/header') %>
+<% if (typeof isDemo !== 'undefined' && isDemo) { %>
+<div class="bp-demo" role="note"><div class="container bp-demo-inner">
+  <p><strong><%= lang==='fr' ? 'Profil démo' : 'Demo profile' %></strong> · <%= lang==='fr' ? 'Personnage, affiliation et chiffres fictifs. Aucune demande envoyée.' : 'Fictional identity, affiliation and figures. No requests sent.' %></p>
+  <a href=".?lang=<%= lang %>#invPanel"><%= lang==='fr' ? 'Votre page — 599 $ / an' : 'Your page — $599 / year' %> ↗</a>
+</div></div>
+<% } %>
 <% if (typeof isPreview !== 'undefined' && isPreview) { %>
 <div class="bp-peek" role="status">
   <span class="bp-peek-dot" aria-hidden="true"></span>
@@ -7,6 +13,7 @@
 </div>
 <% } %>
 <script>
+window.VV_DEMO = <%- JSON.stringify(typeof isDemo !== 'undefined' && isDemo) %>;
 window.VV_BROKER = <%- JSON.stringify(typeof brokerSlug !== 'undefined' ? brokerSlug : null) %>;
 window.VV_LEAD_URL = <%- JSON.stringify(typeof brokerSlug !== 'undefined' && brokerSlug
   ? ((typeof isPreview !== 'undefined' && isPreview ? '../' : '') + 'api/courtier/' + brokerSlug + '/piste')

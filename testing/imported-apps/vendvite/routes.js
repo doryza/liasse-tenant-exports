@@ -993,8 +993,18 @@ module.exports = function(services){
 
   router.get('/richard-tremblay', async function(req,res){
     try {
-      var L = await baseLocals(req);
-      res.render('demo-broker', Object.assign(L, {experiment:{variant:'visible',preview:false,track:false},isHome:false}));
+      var fr = req.lang === 'fr';
+      await renderBrokerPage(req, res, {
+        slug:'richard-tremblay', full_name:'Richard Tremblay', agency:'RE/MAX', phone:'', email:'',
+        profile:{
+          agent_name:'Richard Tremblay', agency:'RE/MAX',
+          agent_title:fr ? 'Courtier immobilier résidentiel' : 'Residential real estate broker',
+          agent_photo_url:'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=800&q=85',
+          about:fr ? 'Une approche humaine, une écoute attentive et un plan adapté à votre prochaine étape.' : 'A personal approach, attentive listening and a plan tailored to your next step.',
+          agency_disclaimer:fr ? 'Profil fictif de démonstration. Photo illustrative, affiliation RE/MAX et statistiques présentées à titre d’exemple.' : 'Fictional demo profile. Illustrative portrait, RE/MAX affiliation and statistics shown as examples.',
+          stat_homes:'120', stat_days:'28', stat_ratio:'98', stat_volume:'65', links:[]
+        }
+      }, false, true);
     } catch(e) { console.error('demo broker',e.message); res.status(500).send('Erreur'); }
   });
 
@@ -1277,7 +1287,7 @@ module.exports = function(services){
   }
 
   // Paths the broker-slug catch-all must never swallow.
-  var RESERVED_SLUGS = ['api','admin','acces','espace','journal','public','manifest.json','sw.js','favicon.ico','robots.txt','_platform','__preview','courtier','courtiers','index','connexion','acces-expire'];
+  var RESERVED_SLUGS = ['api','admin','acces','espace','journal','public','manifest.json','sw.js','favicon.ico','robots.txt','_platform','__preview','courtier','courtiers','index','connexion','acces-expire','richard-tremblay'];
 
   function slugifyPart(s){
     return String(s || '')
@@ -2827,7 +2837,7 @@ module.exports = function(services){
   });
 
   // ── Public broker page. Renders the lead funnel under the broker's identity.
-  async function renderBrokerPage(req, res, broker, isPreview){
+  async function renderBrokerPage(req, res, broker, isPreview, isDemo){
     var L = await baseLocals(req);
     var prof = brokerProfile(broker);
     var settings = Object.assign({}, L.settings, {
@@ -2839,6 +2849,10 @@ module.exports = function(services){
       _p_agent_image_url: prof.agent_photo_url || L.settings._p_agent_image_url || ''
     });
     var t = Object.assign({}, L.t);
+    if (isDemo) {
+      t.success_title = L.lang === 'fr' ? 'Démonstration terminée.' : 'Demo complete.';
+      t.success_text = L.lang === 'fr' ? 'Sur votre page VendVite, cette demande vous serait transmise pour le suivi. Aucune demande n’a été envoyée dans cette démo.' : 'On your VendVite page, this request would reach you for follow-up. No request was sent in this demo.';
+    }
     if (prof.hero_title) t.hero_title = prof.hero_title;
     // Ignore the former seeded promise if it was persisted unchanged in an
     // existing profile; genuine broker-written custom copy remains respected.
@@ -2869,10 +2883,10 @@ module.exports = function(services){
       var hit = Object.keys(SOCIAL_RE).find(function(k){ return SOCIAL_RE[k].test(l.url) && !settings[k]; });
       if (hit) settings[hit] = l.url; else otherLinks.push(l);
     });
-    var testimonials = Array.isArray(prof.testimonials) && prof.testimonials.length
+    var testimonials = isDemo ? [] : Array.isArray(prof.testimonials) && prof.testimonials.length
       ? prof.testimonials.map(function(x, i){ return Object.assign({ id: 'p' + i, published: 1, sort_order: i }, x); })
       : await db.all('SELECT * FROM testimonials WHERE published=1 ORDER BY sort_order ASC, created_at DESC');
-    var posts = await db.all('SELECT * FROM posts WHERE published=1 ORDER BY created_at DESC LIMIT 3');
+    var posts = isDemo ? [] : await db.all('SELECT * FROM posts WHERE published=1 ORDER BY created_at DESC LIMIT 3');
     res.render('broker-page', Object.assign(L, {
       t: t,
       settings: settings,
@@ -2882,9 +2896,16 @@ module.exports = function(services){
       brokerSlug: broker.slug,
       brokerLinks: otherLinks,
       isPreview: !!isPreview,
+      isDemo: !!isDemo,
+      ogImage: settings._p_agent_image_url,
       canonical: absoluteUrl(req, '/' + broker.slug)
     }));
   }
+
+  // The public demo is never a real broker account or a lead destination.
+  router.post('/api/courtier/richard-tremblay/piste', function(req,res){
+    res.json({success:true,demo:true});
+  });
 
   // ── Lead capture from a broker page → broker_leads + instant email
   router.post('/api/courtier/:slug/piste', async function(req, res){
