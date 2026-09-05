@@ -11,13 +11,13 @@
 <meta property="og:title" content="VendVite — <%= t.inv_meta_title %>">
 <meta property="og:description" content="<%= t.inv_meta_desc %>">
 <meta property="og:locale" content="<%= lang==='en' ? 'en_CA' : 'fr_CA' %>">
-<title>VendVite — <%= typeof ws!=='undefined' && ws ? t.ws_home : t.inv_meta_title %></title>
+<title>VendVite — <%= typeof demoPage!=='undefined' ? 'Richard Tremblay — Démo / Demo' : (typeof ws!=='undefined' && ws ? t.ws_home : t.inv_meta_title) %></title>
 <link rel="manifest" href="manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..900&family=IBM+Plex+Mono:wght@500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="public/css/styles.css">
-<% if (typeof experiment !== 'undefined') { %><link rel="stylesheet" href="public/css/homepage.css?v=pitch-v3"><% } %>
+<% if (typeof experiment !== 'undefined') { %><link rel="stylesheet" href="public/css/homepage.css?v=richard-demo-v1"><% } %>
 <% if(typeof ws!=='undefined' && ws){ %><link rel="stylesheet" href="public/css/workspace-v1.css"><% } %>
 <% if(typeof ws!=='undefined'&&ws){ %><link rel="stylesheet" href="public/css/campaign-studio-v1.css"><% } %>
 <script src="public/js/broker-navigation-v1.js" defer></script>

@@ -5,7 +5,7 @@
     <a class="hp-brand" href="." aria-label="VendVite"><img src="https://res.cloudinary.com/duhp69meg/image/upload/c_crop,g_north,h_538,w_534/f_auto,q_auto,w_160/v1788268189/vendvite/logo.png" alt="" width="58" height="58"><span>VendVite<span class="hp-brand-dot">.</span></span></a>
     <a class="hp-broker-login" data-vv-auth href="connexion"><%= t.ws_login %> ↗</a>
   </header>
-  <% if (experiment.preview) { %><p class="hp-preview hp-wrap"><%= t.hp_preview %> <strong><%= experiment.variant === 'visible' ? 'A' : 'B' %></strong></p><% } %>
+  <% if (experiment.preview) { %><p class="hp-preview hp-wrap"><%= t.hp_preview %> </p><% } %>
   <section class="hp-hero hp-wrap" aria-labelledby="hpTitle">
     <div class="hp-pitch">
       <p class="hp-eyebrow"><span aria-hidden="true"></span><%= t.inv_eyebrow %></p>
@@ -13,6 +13,7 @@
       <p class="hp-lede"><%= t.inv_lede %></p>
       <div class="hp-actions"><a class="hp-cta" data-home-cta href="#invPanel"><%= t.hp_cta %><span aria-hidden="true">↗</span></a><a class="hp-text-link" href="#compare"><%= t.hp_secondary %> <span aria-hidden="true">↓</span></a></div>
       <p class="hp-reassurance"><%= t.hp_reassurance %></p>
+      <a class="hp-text-link" href="richard-tremblay?lang=<%= lang %>"><%= lang==='fr' ? 'Voir la page démo de Richard Tremblay' : 'Explore Richard Tremblay’s demo page' %> ↗</a>
       <div class="hp-included">
         <p class="hp-label"><%= t.hp_included %></p>
         <ul class="hp-benefits">
@@ -25,12 +26,8 @@
     </div>
     <div class="hp-conversion">
       <div class="hp-offer" id="hpOffer">
-        <% if (experiment.variant === 'visible') { %>
-          <div class="hp-offer-price"><strong><%= t.inv_price_amount %></strong><span><%= t.inv_price_term %></span></div>
-          <p><%= t.hp_price_note %></p>
-        <% } else { %>
-          <strong class="hp-offer-title"><%= t.hp_gate_title %></strong><p><%= t.hp_gate_note %></p>
-        <% } %>
+        <div class="hp-offer-price"><strong><%= t.inv_price_amount %></strong><span><%= t.inv_price_term %></span></div>
+        <p><%= t.hp_price_note %></p>
       </div>
       <div class="inv-panel" id="invPanel">
         <p class="hp-label hp-form-intro"><%= t.hp_form_note %></p>

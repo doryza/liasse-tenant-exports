@@ -968,8 +968,8 @@ module.exports = function(services){
     homepageTools.privateResponse(res);
     try{
       var L=await baseLocals(req);
-      var experiment = { variant:'visible', preview:false, track:false };
-      try { experiment = await homepageExperiment.assign(req,res); } catch(e) { console.error('homepage assignment',e.message); }
+      var experiment = { variant:'visible', preview:['visible','gated'].includes(req.query.vv_preview), track:false };
+      if (experiment.preview) res.set('X-Liasse-Preview','homepage-demo');
       res.set('Cache-Control','private, no-store');
       res.render('index', Object.assign(L, { experiment:experiment, isHome:true }));
     }catch(e){ console.error('index', e); res.status(500).send('Erreur'); }
@@ -977,7 +977,7 @@ module.exports = function(services){
 
   router.post('/api/homepage/event', async function(req,res){
     res.set('Cache-Control','private, no-store');
-    try { await homepageExperiment.event(req); await homepageExperiment.evaluate(); } catch(e) { console.error('homepage event',e.message); }
+    // Pricing experiment retired: do not record new events against old assignments.
     res.status(204).end();
   });
 
@@ -989,6 +989,13 @@ module.exports = function(services){
       res.set('Cache-Control','private, no-store');
       res.render('admin-conversions',Object.assign(L,{active:'conversions',experimentState:await homepageExperiment.state(),conversionRows:await homepageExperiment.results()}));
     } catch(e) { console.error('homepage results',e.message); res.status(500).send('Erreur'); }
+  });
+
+  router.get('/richard-tremblay', async function(req,res){
+    try {
+      var L = await baseLocals(req);
+      res.render('demo-broker', Object.assign(L, {experiment:{variant:'visible',preview:false,track:false},isHome:false}));
+    } catch(e) { console.error('demo broker',e.message); res.status(500).send('Erreur'); }
   });
 
   router.get('/journal/:id', async function(req,res){
@@ -1495,7 +1502,7 @@ module.exports = function(services){
           links: []
         })]
       );
-      try { await homepageExperiment.convert(req,ins.id); } catch(e) { console.error('homepage attribution',e.message); }
+      // Preserve historical experiment data without attributing new applications.
       // Manual review gate: NO magic link yet. The broker gets a sealed
       // acknowledgement; the vendvite operator gets pinged to review.
       try { await sendAckEmail(req, ins, lang); } catch(e){ console.error('ack email', e); }
