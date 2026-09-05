@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title><%= moduleLabel %> — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body>
+<div class="admin-wrap">
+<%- include('admin-sidebar',{active:moduleKey}) %>
+<main class="admin-main">
+<header class="admin-top"><button class="admin-burger" id="asb" aria-label="Menu">&#9776;</button><h1><%= moduleLabel %></h1><button class="btn-primary" id="newBtn">+ Nouveau</button></header>
+<div id="msg" class="admin-msg" style="display:none"></div>
+<div class="admin-toolbar"><input id="searchBox" class="admin-search" placeholder="Rechercher…" aria-label="Rechercher"><span id="itemCount" class="admin-count mono"></span></div>
+<div class="table-wrap"><table class="admin-table"><thead id="thead"></thead><tbody id="tbody"></tbody></table></div>
+<div id="emptyState" class="admin-empty" style="display:none">Aucune entrée. Cliquez « + Nouveau » pour commencer.</div>
+</main>
+</div>
+<div class="modal" id="modal"><div class="modal-card"><div class="modal-head"><h2 id="modalTitle">Nouveau</h2><button class="modal-x" id="closeModal" aria-label="Fermer">&times;</button></div><form id="itemForm"><div id="formFields"></div><div class="modal-foot"><button type="button" class="btn-ghost" id="cancelBtn">Annuler</button><button type="submit" class="btn-primary" id="saveBtn">Enregistrer</button></div></form></div></div>
+<script>var MODULE_KEY=<%- JSON.stringify(moduleKey) %>;var MODULE_LABEL=<%- JSON.stringify(moduleLabel) %>;</script>
+<script src="public/js/admin.js"></script>
+<script>(function(){var b=document.getElementById('asb');if(b)b.addEventListener('click',function(){document.body.classList.toggle('sidebar-open');});})();</script>
+</body>
+</html>

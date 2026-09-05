@@ -1,0 +1,136 @@
+{
+  "slug": "garage-buzz",
+  "displayName": "Garage Buzz",
+  "description": "Project: website — Booking service for garage clients\n\nBusiness: Saas for mechanics, specializing in garage booking. Wants to stand out by bringing modernity to the local industry.\n\nGoal: Create a professional, uncluttered booking funnel.\n\nKey features:\n- Detailed booking: client enters make/model/year, selects symptoms or routine work.\n- Scheduling: calendar to pick date and time, options for leaving the car.\n- Client transparency: simple UI, maintenance history, past jobs, and bills.\n- Payments: clients pay directly at the garage.\n\nDesign & brand:\n- Colors: blue and white.\n- Mood: Professional, easy to use, uncluttered.\n- Signature: The modern website experience itself will be the memorable differentiator.",
+  "status": "active",
+  "generationVersion": 1,
+  "primaryColor": "#2858ef",
+  "iconUrl": "https://res.cloudinary.com/duhp69meg/image/upload/v1788582017/tapavis_tenant_garage-buzz/icon_garage-buzz_1788582017030.png",
+  "enabledAuthMethods": [
+    "webauthn",
+    "sms",
+    "email"
+  ],
+  "notificationsEnabled": true,
+  "geolocationEnabled": true,
+  "customConfig": {
+    "language": "both",
+    "businessName": "Garage Buzz",
+    "contactEmail": "dorygarage@liasse.tech",
+    "contactPhone": null,
+    "designManifest": {
+      "concept": "The Work Order",
+      "copyVoice": "Terse shop-counter bilingual: noun-first lines that read like entries on a work order, precise numbers, no exclamation marks, French native by default with a real EN toggle.",
+      "elements": {
+        "blogSurfaced": false,
+        "pages": [
+          "index",
+          "book",
+          "account",
+          "admin"
+        ],
+        "userLogin": true
+      },
+      "heroThesis": "The homepage opens with a headline and, beside it, an empty docket with dotted lines — showing the thesis (your visit written before you arrive) rather than telling it, no stock mechanic photo.",
+      "iconDirection": "A white square with four thin navy ledger rules, the second rule filled electric blue with a single amber dot at its end — a work order, never a wrench or a car.",
+      "palette": {
+        "accents": [
+          "#E9EEFF",
+          "#C9D1E3",
+          "#F5A623"
+        ],
+        "ground": "#FFFFFF",
+        "ink": "#0E1A3A",
+        "primary": "#2858EF"
+      },
+      "signatureMove": "The Docket — a real work order pinned as a sticky right-hand column (collapsible bottom sheet under 1024px) that fills Véhicule · Travaux · Rendez-vous · Dépôt · Temps estimé as the client books, and reappears verbatim in their account history with the invoice line.",
+      "summary": "The client watches a real work order fill in line by line as they book, and finds the same document later in their history with the bill attached — quiet transparency treated as the product.",
+      "typography": "IBM Plex Sans (display and UI, 500/600) paired with IBM Plex Mono for all vehicle data, plates, VINs, dates, times, prices and step numbers; no serif anywhere."
+    },
+    "businessAddress": null,
+    "designDirections": {
+      "directions": [
+        {
+          "pitch": "Votre client verra sa fiche de travail se remplir ligne par ligne pendant qu'il réserve — la même fiche qu'il retrouvera plus tard avec sa facture — et c'est exactement cette transparence tranquille que les garages du coin n'offrent pas encore. / Your client watches their work order fill in line by line as they book — the very same sheet they will find later with the bill — and that quiet transparency is precisely what local garages do not offer yet.",
+          "concept": "The Work Order",
+          "palette": {
+            "ink": "#0E1A3A",
+            "ground": "#FFFFFF",
+            "accents": [
+              "#E9EEFF",
+              "#C9D1E3",
+              "#F5A623"
+            ],
+            "primary": "#2858EF"
+          }
+        },
+        {
+          "pitch": "On donne à votre atelier l'allure d'un tableau de bord la nuit : un seul trait bleu mène le client de la plaque au rendez-vous, puis devient l'historique de sa voiture au kilomètre — moderne sans jamais être froid. / We give your shop the feel of a dashboard at night: a single blue line carries the client from plate to appointment, then becomes their car's history by the kilometre — modern without ever being cold.",
+          "concept": "Blue Hour Bay",
+          "palette": {
+            "ink": "#F4F7FF",
+            "ground": "#0A1A4F",
+            "accents": [
+              "#8FB0FF",
+              "#16296B",
+              "#FFFFFF"
+            ],
+            "primary": "#2858EF"
+          }
+        },
+        {
+          "pitch": "Vos clients ne connaissent pas le mot « étrier », mais ils savent dire « ça grince quand je freine » — on bâtit toute la réservation autour de cette phrase-là, et votre garage devient celui qui comprend du premier coup. / Your clients do not know the word 'caliper', but they can say 'it grinds when I brake' — we build the whole booking around that sentence, and your garage becomes the one that understands the first time.",
+          "concept": "The Sentence",
+          "palette": {
+            "ink": "#1F2430",
+            "ground": "#F6F5F0",
+            "accents": [
+              "#DDE6FF",
+              "#7C8494"
+            ],
+            "primary": "#2858EF"
+          }
+        }
+      ],
+      "recommendedIndex": 0
+    },
+    "consultationPresentedAt": null
+  },
+  "promptHistory": [
+    {
+      "prompt": "Project: website — Booking service for garage clients\n\nBusiness: Saas for mechanics, specializing in garage booking. Wants to stand out by bringing modernity to the local industry.\n\nGoal: Create a professional, uncluttered booking funnel.\n\nKey features:\n- Detailed booking: client enters make/model/year, selects symptoms or routine work.\n- Scheduling: calendar to pick date and time, options for leaving the car.\n- Client transparency: simple UI, maintenance history, past jobs, and bills.\n- Payments: clients pay directly at the garage.\n\nDesign & brand:\n- Colors: blue and white.\n- Mood: Professional, easy to use, uncluttered.\n- Signature: The modern website experience itself will be the memorable differentiator.",
+      "timestamp": "2026-09-05T04:20:25.150Z",
+      "changeNotes": "Admin enrichment: (1) Rebuilt admin-styles.css with polished cards, brand-accented stat cards, quick-action buttons, hover/focus states, rounded modern buttons/inputs, status badges (.abadge s-*), yes/no pills, and image thumbnails in tables; (2) Upgraded admin.js CRUD list rendering with smarter preferred columns per module, live search/filter with result count, status/dropoff/boolean/price/duration/image cell formatting, upload-in-progress feedback, save-button disabling, backdrop-click close, and refined empty states — full create/edit/delete remain wired to existing API routes; (3) Enriched admin dashboard (admin.ejs) with quick-action shortcuts, accent stat card for pending bookings, styled status badges in recent-bookings table, panel headers with 'Tout gérer' actions, and pill count chips; (4) admin-shell.ejs gains a search toolbar, item counter, and a save button id; (5) sidebar gets a brand dot and active-item accent bar. Contrast verified: badges/pills use dark text on tinted backgrounds; primary CTAs keep white-on-blue with existing inline fallbacks preserved. No functional data model changes — services/symptoms/faqs/posts/bookings were already fully admin-managed with functional fields (price, duration, availability/published, ordering, billing). Added SEO metadata (bilingual). All {{IMG_*}} placeholder tokens preserved byte-for-byte; no files removed.\n\nApplied all 12 spec items: the hero docket now writes the vehicle line live as make/model/year are typed; the booking funnel replaced alert() with inline red step errors (including a proper need_dropoff message) and the Confirm button now appears via a 1.2s auth-state poll instead of relying on window focus, with a Back button added to the guest state; calendar days are now real focusable/aria-labelled buttons; hover states were added for time slots, tabs, checklists, radio rows and filter tabs plus a 4-col mobile time grid; the desktop review step no longer duplicates the docket and the confirmation reference number is larger; the sample docket dropped its duplicated 'Payé au garage' and gained the missing Dépôt line; the pay-band now has a CTA button into booking; the account page auto-reloads once after a modal login; the 'Modifier' action was relabelled 'Nouveau rendez-vous'/'New booking' and now pre-fills the vehicle via query string; and the page title now uses the hero tagline instead of repeating 'Réserver' on every page.",
+      "generationId": 1850,
+      "filesModified": [
+        "manifest.json",
+        "migrations.sql",
+        "public/css/admin-styles.css",
+        "public/css/styles.css",
+        "public/js/admin.js",
+        "public/js/app.js",
+        "routes.js",
+        "schema.sql",
+        "seed.js",
+        "views/account.ejs",
+        "views/admin-bookings.ejs",
+        "views/admin-faqs.ejs",
+        "views/admin-posts.ejs",
+        "views/admin-services.ejs",
+        "views/admin-symptoms.ejs",
+        "views/admin.ejs",
+        "views/book.ejs",
+        "views/index.ejs",
+        "views/partials/admin-shell.ejs",
+        "views/partials/admin-sidebar.ejs",
+        "views/partials/booking.ejs",
+        "views/partials/footer.ejs",
+        "views/partials/header.ejs"
+      ]
+    }
+  ],
+  "apiVariables": [],
+  "createdAt": "2026-09-05T03:11:17.916Z",
+  "updatedAt": "2026-09-05T04:20:28.545Z",
+  "exportedAt": "2026-09-05T04:20:28.740Z"
+}

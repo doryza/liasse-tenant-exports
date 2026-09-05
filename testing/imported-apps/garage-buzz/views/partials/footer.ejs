@@ -1,0 +1,13 @@
+<footer class="site-footer"><div class="wrap foot">
+<span class="mono" data-lk="footer-powered"><%= t.footer_powered %></span>
+<button class="linklike" data-push-btn data-lk="footer-notify"><%= t.footer_notify %></button>
+<span class="lang-toggle mono"><a href="?lang=fr" class="<%= lang==='fr'?'active':'' %>">FR</a> | <a href="?lang=en" class="<%= lang==='en'?'active':'' %>">EN</a></span>
+<span data-lk="footer-legal"><%= t.footer_legal %></span>
+</div></footer>
+<script src="public/js/app.js"></script>
+<script>
+try{ if(window.TenantSDK){ TenantSDK.ui.showInstallBanner(); } }catch(e){}
+setTimeout(function(){ try{ if(window.TenantSDK){ TenantSDK.ui.showPushPrompt(); } }catch(e){} }, 9000);
+</script>
+</body>
+</html>

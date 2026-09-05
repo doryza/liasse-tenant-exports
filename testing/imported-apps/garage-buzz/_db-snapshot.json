@@ -1,0 +1,525 @@
+{
+  "exportedAt": "2026-09-05T04:20:28.750Z",
+  "tables": {
+    "admin_invites": {
+      "columns": [
+        "id",
+        "email",
+        "token",
+        "role",
+        "status",
+        "invited_by",
+        "expires_at",
+        "accepted_at",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_users": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "password_hash",
+        "display_name",
+        "role",
+        "active",
+        "activation_token",
+        "invited_by",
+        "invite_token",
+        "invite_expires_at",
+        "last_login_at",
+        "is_active",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_webauthn_credentials": {
+      "columns": [
+        "id",
+        "admin_user_id",
+        "credential_id",
+        "public_key",
+        "counter",
+        "device_name",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_settings": {
+      "columns": [
+        "key",
+        "value",
+        "updated_at"
+      ],
+      "totalRows": 40,
+      "sampleRows": [
+        {
+          "key": "_p_hero_image_url",
+          "value": "https://res.cloudinary.com/duhp69meg/image/upload/v1788579329/tapavis_tenant_garage-buzz/build_garage-buzz_1788579329342.png",
+          "updated_at": "2026-09-05T04:20:08.320Z"
+        },
+        {
+          "key": "_p_trans_image_url",
+          "value": "https://res.cloudinary.com/duhp69meg/image/upload/v1788579329/tapavis_tenant_garage-buzz/build_garage-buzz_1788579329286.png",
+          "updated_at": "2026-09-05T04:20:08.323Z"
+        },
+        {
+          "key": "_p_garage_image_url",
+          "value": "https://res.cloudinary.com/duhp69meg/image/upload/v1788579328/tapavis_tenant_garage-buzz/build_garage-buzz_1788579328799.png",
+          "updated_at": "2026-09-05T04:20:08.326Z"
+        },
+        {
+          "key": "hours_mon",
+          "value": "08:00 – 17:00",
+          "updated_at": "2026-09-05T04:20:08.330Z"
+        },
+        {
+          "key": "hours_tue",
+          "value": "08:00 – 17:00",
+          "updated_at": "2026-09-05T04:20:08.333Z"
+        },
+        {
+          "key": "hours_wed",
+          "value": "08:00 – 17:00",
+          "updated_at": "2026-09-05T04:20:08.336Z"
+        },
+        {
+          "key": "hours_thu",
+          "value": "08:00 – 17:00",
+          "updated_at": "2026-09-05T04:20:08.341Z"
+        },
+        {
+          "key": "hours_fri",
+          "value": "08:00 – 17:00",
+          "updated_at": "2026-09-05T04:20:08.345Z"
+        },
+        {
+          "key": "hours_sat",
+          "value": "09:00 – 13:00",
+          "updated_at": "2026-09-05T04:20:08.349Z"
+        },
+        {
+          "key": "hours_sun",
+          "value": "",
+          "updated_at": "2026-09-05T04:20:08.353Z"
+        }
+      ]
+    },
+    "site_visits": {
+      "columns": [
+        "id",
+        "path",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "posts": {
+      "columns": [
+        "id",
+        "title",
+        "content",
+        "image_url",
+        "category",
+        "published",
+        "sort_order",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Préparez votre véhicule pour l'hiver",
+          "content": "Pneus, batterie, liquide lave-glace : la liste courte avant le premier gel.",
+          "image_url": null,
+          "category": "Conseils",
+          "published": 1,
+          "sort_order": 0,
+          "created_at": "2026-09-05T04:20:08.493Z",
+          "updated_at": "2026-09-05T04:20:08.493Z"
+        },
+        {
+          "id": 2,
+          "title": "Pourquoi la vidange régulière compte",
+          "content": "Un moteur bien huilé dure plus longtemps. Voici l'intervalle recommandé.",
+          "image_url": null,
+          "category": "Conseils",
+          "published": 1,
+          "sort_order": 1,
+          "created_at": "2026-09-05T04:20:08.496Z",
+          "updated_at": "2026-09-05T04:20:08.496Z"
+        },
+        {
+          "id": 3,
+          "title": "Freins : les signes à ne pas ignorer",
+          "content": "Grincement, pédale molle, vibrations — ce qu'ils veulent dire.",
+          "image_url": null,
+          "category": "Sécurité",
+          "published": 1,
+          "sort_order": 2,
+          "created_at": "2026-09-05T04:20:08.502Z",
+          "updated_at": "2026-09-05T04:20:08.502Z"
+        },
+        {
+          "id": 4,
+          "title": "Nouveau : réservez en ligne en deux minutes",
+          "content": "Votre fiche de travail se remplit à mesure. Essayez-la.",
+          "image_url": null,
+          "category": "Nouvelles",
+          "published": 1,
+          "sort_order": 3,
+          "created_at": "2026-09-05T04:20:08.505Z",
+          "updated_at": "2026-09-05T04:20:08.505Z"
+        }
+      ]
+    },
+    "services": {
+      "columns": [
+        "id",
+        "name",
+        "name_en",
+        "description",
+        "description_en",
+        "duration_min",
+        "price",
+        "sort_order",
+        "featured",
+        "image_url",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 6,
+      "sampleRows": [
+        {
+          "id": 1,
+          "name": "Vidange d'huile",
+          "name_en": "Oil change",
+          "description": "Huile et filtre, vérification des niveaux.",
+          "description_en": "Oil and filter, fluid check.",
+          "duration_min": 30,
+          "price": 60,
+          "sort_order": 1,
+          "featured": 1,
+          "image_url": null,
+          "published": 1,
+          "created_at": "2026-09-05T04:20:08.361Z",
+          "updated_at": "2026-09-05T04:20:08.361Z"
+        },
+        {
+          "id": 2,
+          "name": "Freins",
+          "name_en": "Brake service",
+          "description": "Plaquettes et disques, inspection complète.",
+          "description_en": "Pads and rotors, full inspection.",
+          "duration_min": 90,
+          "price": 180,
+          "sort_order": 2,
+          "featured": 1,
+          "image_url": null,
+          "published": 1,
+          "created_at": "2026-09-05T04:20:08.369Z",
+          "updated_at": "2026-09-05T04:20:08.369Z"
+        },
+        {
+          "id": 3,
+          "name": "Pneus — pose et équilibrage",
+          "name_en": "Tire mount & balance",
+          "description": "Montage saisonnier et équilibrage.",
+          "description_en": "Seasonal swap and balancing.",
+          "duration_min": 45,
+          "price": 80,
+          "sort_order": 3,
+          "featured": 0,
+          "image_url": null,
+          "published": 1,
+          "created_at": "2026-09-05T04:20:08.374Z",
+          "updated_at": "2026-09-05T04:20:08.374Z"
+        },
+        {
+          "id": 4,
+          "name": "Inspection",
+          "name_en": "Inspection",
+          "description": "Contrôle mécanique complet du véhicule.",
+          "description_en": "Full mechanical vehicle check.",
+          "duration_min": 60,
+          "price": 90,
+          "sort_order": 4,
+          "featured": 0,
+          "image_url": null,
+          "published": 1,
+          "created_at": "2026-09-05T04:20:08.377Z",
+          "updated_at": "2026-09-05T04:20:08.377Z"
+        },
+        {
+          "id": 5,
+          "name": "Batterie",
+          "name_en": "Battery test & replace",
+          "description": "Test de charge et remplacement au besoin.",
+          "description_en": "Load test and replacement if needed.",
+          "duration_min": 30,
+          "price": 40,
+          "sort_order": 5,
+          "featured": 0,
+          "image_url": null,
+          "published": 1,
+          "created_at": "2026-09-05T04:20:08.381Z",
+          "updated_at": "2026-09-05T04:20:08.381Z"
+        },
+        {
+          "id": 6,
+          "name": "Climatisation",
+          "name_en": "A/C service",
+          "description": "Recharge et vérification du système.",
+          "description_en": "Recharge and system check.",
+          "duration_min": 60,
+          "price": 120,
+          "sort_order": 6,
+          "featured": 0,
+          "image_url": null,
+          "published": 1,
+          "created_at": "2026-09-05T04:20:08.385Z",
+          "updated_at": "2026-09-05T04:20:08.385Z"
+        }
+      ]
+    },
+    "symptoms": {
+      "columns": [
+        "id",
+        "name",
+        "name_en",
+        "category",
+        "sort_order",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 11,
+      "sampleRows": [
+        {
+          "id": 1,
+          "name": "Grincement au freinage",
+          "name_en": "Squealing when braking",
+          "category": "freins",
+          "sort_order": 1,
+          "image_url": null,
+          "created_at": "2026-09-05T04:20:08.393Z",
+          "updated_at": "2026-09-05T04:20:08.393Z"
+        },
+        {
+          "id": 2,
+          "name": "Pédale de frein molle",
+          "name_en": "Soft brake pedal",
+          "category": "freins",
+          "sort_order": 2,
+          "image_url": null,
+          "created_at": "2026-09-05T04:20:08.396Z",
+          "updated_at": "2026-09-05T04:20:08.396Z"
+        },
+        {
+          "id": 3,
+          "name": "Témoin moteur allumé",
+          "name_en": "Check-engine light on",
+          "category": "moteur",
+          "sort_order": 1,
+          "image_url": null,
+          "created_at": "2026-09-05T04:20:08.400Z",
+          "updated_at": "2026-09-05T04:20:08.400Z"
+        },
+        {
+          "id": 4,
+          "name": "Perte de puissance",
+          "name_en": "Loss of power",
+          "category": "moteur",
+          "sort_order": 2,
+          "image_url": null,
+          "created_at": "2026-09-05T04:20:08.404Z",
+          "updated_at": "2026-09-05T04:20:08.404Z"
+        },
+        {
+          "id": 5,
+          "name": "Surchauffe",
+          "name_en": "Overheating",
+          "category": "moteur",
+          "sort_order": 3,
+          "image_url": null,
+          "created_at": "2026-09-05T04:20:08.408Z",
+          "updated_at": "2026-09-05T04:20:08.408Z"
+        },
+        {
+          "id": 6,
+          "name": "Batterie à plat",
+          "name_en": "Dead battery",
+          "category": "electrique",
+          "sort_order": 1,
+          "image_url": null,
+          "created_at": "2026-09-05T04:20:08.416Z",
+          "updated_at": "2026-09-05T04:20:08.416Z"
+        },
+        {
+          "id": 7,
+          "name": "Phares faibles",
+          "name_en": "Dim headlights",
+          "category": "electrique",
+          "sort_order": 2,
+          "image_url": null,
+          "created_at": "2026-09-05T04:20:08.421Z",
+          "updated_at": "2026-09-05T04:20:08.421Z"
+        },
+        {
+          "id": 8,
+          "name": "Usure inégale des pneus",
+          "name_en": "Uneven tire wear",
+          "category": "pneus",
+          "sort_order": 1,
+          "image_url": null,
+          "created_at": "2026-09-05T04:20:08.425Z",
+          "updated_at": "2026-09-05T04:20:08.425Z"
+        },
+        {
+          "id": 9,
+          "name": "Vibration à haute vitesse",
+          "name_en": "Vibration at speed",
+          "category": "pneus",
+          "sort_order": 2,
+          "image_url": null,
+          "created_at": "2026-09-05T04:20:08.434Z",
+          "updated_at": "2026-09-05T04:20:08.434Z"
+        },
+        {
+          "id": 10,
+          "name": "Cognement en roulant",
+          "name_en": "Knocking while driving",
+          "category": "bruits",
+          "sort_order": 1,
+          "image_url": null,
+          "created_at": "2026-09-05T04:20:08.438Z",
+          "updated_at": "2026-09-05T04:20:08.438Z"
+        }
+      ]
+    },
+    "faqs": {
+      "columns": [
+        "id",
+        "question",
+        "question_en",
+        "answer",
+        "answer_en",
+        "sort_order",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 5,
+      "sampleRows": [
+        {
+          "id": 1,
+          "question": "Puis-je laisser ma voiture toute la journée ?",
+          "question_en": "Can I leave my car for the day?",
+          "answer": "Oui. Choisissez « Je laisse la voiture » à l'étape du dépôt et récupérez-la quand elle est prête.",
+          "answer_en": "Yes. Pick \"I leave the car\" at the drop-off step and collect it once ready.",
+          "sort_order": 1,
+          "image_url": null,
+          "created_at": "2026-09-05T04:20:08.456Z",
+          "updated_at": "2026-09-05T04:20:08.456Z"
+        },
+        {
+          "id": 2,
+          "question": "Comment fonctionne la boîte à clés ?",
+          "question_en": "How does the key box work?",
+          "answer": "Déposez vos clés la veille dans la boîte sécurisée à l'entrée. Notez la réservation sur l'enveloppe fournie.",
+          "answer_en": "Drop your keys the night before in the secure box at the entrance. Note the booking on the provided envelope.",
+          "sort_order": 2,
+          "image_url": null,
+          "created_at": "2026-09-05T04:20:08.461Z",
+          "updated_at": "2026-09-05T04:20:08.461Z"
+        },
+        {
+          "id": 3,
+          "question": "Puis-je annuler un rendez-vous ?",
+          "question_en": "Can I cancel an appointment?",
+          "answer": "Oui, depuis « Mon compte », section À venir. Vous pouvez annuler à tout moment avant l'heure prévue.",
+          "answer_en": "Yes, from \"My account\", Upcoming section. You can cancel any time before the slot.",
+          "sort_order": 3,
+          "image_url": null,
+          "created_at": "2026-09-05T04:20:08.469Z",
+          "updated_at": "2026-09-05T04:20:08.469Z"
+        },
+        {
+          "id": 4,
+          "question": "Combien de temps dure un rendez-vous ?",
+          "question_en": "How long does an appointment take?",
+          "answer": "Le temps estimé s'affiche sur votre fiche à mesure que vous choisissez les travaux.",
+          "answer_en": "The estimated time appears on your work order as you choose the work.",
+          "sort_order": 4,
+          "image_url": null,
+          "created_at": "2026-09-05T04:20:08.475Z",
+          "updated_at": "2026-09-05T04:20:08.475Z"
+        },
+        {
+          "id": 5,
+          "question": "Comment changer la langue du site ?",
+          "question_en": "How do I change the language?",
+          "answer": "Utilisez le sélecteur FR | EN en haut de chaque page. Votre choix est retenu.",
+          "answer_en": "Use the FR | EN switch at the top of every page. Your choice is remembered.",
+          "sort_order": 5,
+          "image_url": null,
+          "created_at": "2026-09-05T04:20:08.482Z",
+          "updated_at": "2026-09-05T04:20:08.482Z"
+        }
+      ]
+    },
+    "vehicles": {
+      "columns": [
+        "id",
+        "user_id",
+        "make",
+        "model",
+        "year",
+        "plate",
+        "vin",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "bookings": {
+      "columns": [
+        "id",
+        "user_id",
+        "reference",
+        "make",
+        "model",
+        "year",
+        "plate",
+        "vin",
+        "work_items",
+        "work_summary",
+        "notes",
+        "appt_date",
+        "appt_time",
+        "dropoff",
+        "estimated_min",
+        "customer_name",
+        "customer_phone",
+        "customer_email",
+        "status",
+        "bill_amount",
+        "bill_paid",
+        "bill_date",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    }
+  }
+}

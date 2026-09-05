@@ -1,0 +1,35 @@
+<%- include('partials/header') %>
+<main class="wrap account">
+<h1 class="section-title"><%= t.acct_h %></h1>
+<% if(!user){ %>
+<div class="empty mt2"><%= t.acct_login %><div class="mt"><button class="btn btn-primary" data-login-btn style="background-color:#2858ef;color:#fff"><%= t.nav_login %></button></div></div>
+<% } else { %>
+<section class="acct-section mt2">
+<div class="acct-h"><%= t.acct_vehicles %></div>
+<% if(vehicles.length){ vehicles.forEach(function(v){ %>
+<div class="veh-row"><span class="m"><%= [v.year,v.make,v.model].filter(Boolean).join(' ') %><% if(v.plate){ %> <span class="mono muted">· <%= v.plate %></span><% } %></span><span class="mono muted"><%= v.updated_at?formatDate(v.updated_at,lang):'' %></span></div>
+<% }); } else { %><div class="empty"><%= t.no_vehicles %></div><% } %>
+</section>
+<section class="acct-section">
+<div class="acct-h"><%= t.acct_upcoming %></div>
+<% if(upcoming.length){ upcoming.forEach(function(b){ %><%- include('partials/booking',{b:b,hist:false,t:t,lang:lang,formatPrice:formatPrice,formatDuration:formatDuration,formatDate:formatDate}) %><% }); } else { %><div class="empty"><%= t.no_upcoming %></div><% } %>
+</section>
+<section class="acct-section">
+<div class="acct-h"><%= t.acct_history %></div>
+<% if(history.length){ %>
+<div class="filter-tabs" id="vehTabs"><button class="filter-tab active" data-veh="all"><%= t.all_vehicles %></button>
+<% var seen={}; history.forEach(function(b){ var key=[b.make,b.model].filter(Boolean).join(' '); if(key&&!seen[key]){ seen[key]=1; %><button class="filter-tab" data-veh="<%= key %>"><%= key %></button><% } }); %>
+</div>
+<% history.forEach(function(b){ %><div class="hist-item" data-veh="<%= [b.make,b.model].filter(Boolean).join(' ') %>"><%- include('partials/booking',{b:b,hist:true,t:t,lang:lang,formatPrice:formatPrice,formatDuration:formatDuration,formatDate:formatDate}) %></div><% }); %>
+<% } else { %><div class="empty"><%= t.no_history %></div><% } %>
+</section>
+<% } %>
+</main>
+<script>
+(function(){var tabs=document.querySelectorAll('#vehTabs .filter-tab');if(!tabs.length)return;tabs.forEach(function(tb){tb.addEventListener('click',function(){tabs.forEach(function(x){x.classList.remove('active');});tb.classList.add('active');var v=tb.getAttribute('data-veh');document.querySelectorAll('.hist-item').forEach(function(it){it.style.display=(v==='all'||it.getAttribute('data-veh')===v)?'block':'none';});});});})();
+</script>
+<script>
+(function(){document.querySelectorAll('[data-cancel]').forEach(function(b){b.addEventListener('click',function(){if(!confirm(<%- JSON.stringify(t.cancel_confirm) %>))return;var id=b.getAttribute('data-cancel');var f=(window.TenantSDK&&TenantSDK.fetch)?TenantSDK.fetch:fetch;f('api/bookings/'+id+'/cancel',{method:'POST'}).then(function(r){return r.json();}).then(function(){location.reload();}).catch(function(){});});});})();
+</script>
+<% if(typeof user==='undefined'||!user){ %><script>(function(){var K='gb_acct_reload';function chk(){try{if(window.TenantSDK&&TenantSDK.auth&&TenantSDK.auth.isLoggedIn()&&!sessionStorage.getItem(K)){sessionStorage.setItem(K,'1');location.reload();return true;}}catch(e){}return false;}if(chk())return;var iv=setInterval(function(){if(chk())clearInterval(iv);},1200);})();</script><% } else { %><script>try{sessionStorage.removeItem('gb_acct_reload');}catch(e){}</script><% } %>
+<%- include('partials/footer') %>

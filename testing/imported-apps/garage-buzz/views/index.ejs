@@ -1,0 +1,119 @@
+<%- include('partials/header') %>
+<main>
+<section class="hero"><div class="wrap hero-grid">
+<div>
+<h1 data-lk="hero-h1"><%= t.hero_h1 %></h1>
+<p class="sub" data-lk="hero-sub"><%= t.hero_sub %></p>
+<form class="hero-form" id="heroForm" autocomplete="off">
+<div class="row3">
+<div><label data-lk="hero-make-l"><%= t.hero_make %></label><input class="mono-input" id="hMake" placeholder="Honda"></div>
+<div><label data-lk="hero-model-l"><%= t.hero_model %></label><input class="mono-input" id="hModel" placeholder="Civic"></div>
+<div><label data-lk="hero-year-l"><%= t.hero_year %></label><input class="mono-input" id="hYear" placeholder="2018" inputmode="numeric"></div>
+</div>
+<button type="submit" class="btn btn-primary go mt" style="background-color:#2858ef;color:#fff" data-lk="hero-start"><%= t.hero_start %></button>
+<p class="mono hero-note" data-lk="hero-note"><%= t.hero_note %></p>
+</form>
+</div>
+<div>
+<div class="docket">
+<div class="docket-head"><span data-lk="docket-title"><%= t.docket_title %></span><span class="mono" data-lk="docket-pending"><%= t.docket_pending %></span></div>
+<div class="docket-body">
+<div class="docket-line"><div class="dl-label" data-lk="dl-veh"><%= t.dl_vehicle %></div><div class="dl-val dl-empty"></div></div>
+<div class="docket-line"><div class="dl-label" data-lk="dl-work"><%= t.dl_work %></div><div class="dl-val dl-empty"></div></div>
+<div class="docket-line"><div class="dl-label" data-lk="dl-appt"><%= t.dl_appt %></div><div class="dl-val dl-empty"></div></div>
+<div class="docket-line"><div class="dl-label" data-lk="dl-drop"><%= t.dl_dropoff %></div><div class="dl-val dl-empty"></div></div>
+<div class="docket-line"><div class="dl-label" data-lk="dl-time"><%= t.dl_time %></div><div class="dl-val dl-empty"></div></div>
+</div>
+<div class="docket-foot"><p class="mono" data-lk="docket-hint"><%= t.docket_hint %></p></div>
+</div>
+</div>
+</div></section>
+
+<section class="imgband"><img src="<%= settings._p_hero_image_url ? settings._p_hero_image_url : 'https://placehold.co/1600x600/E9EEFF/0E1A3A/png?text=Atelier' %>" data-setting-key="_p_hero_image_url" alt="Atelier"></section>
+
+<section class="section"><div class="wrap">
+<div class="section-eyebrow" data-lk="how-eyebrow"><%= t.how_eyebrow %></div>
+<h2 class="section-title" data-lk="how-title"><%= t.how_title %></h2>
+<div class="ledger mt2">
+<div class="ledger-row"><div class="ledger-num mono">1</div><div class="ledger-t" data-lk="how1t"><%= t.how1_t %></div><div class="ledger-d" data-lk="how1d"><%= t.how1_d %></div></div>
+<div class="ledger-row"><div class="ledger-num mono">2</div><div class="ledger-t" data-lk="how2t"><%= t.how2_t %></div><div class="ledger-d" data-lk="how2d"><%= t.how2_d %></div></div>
+<div class="ledger-row"><div class="ledger-num mono">3</div><div class="ledger-t" data-lk="how3t"><%= t.how3_t %></div><div class="ledger-d" data-lk="how3d"><%= t.how3_d %></div></div>
+<div class="ledger-row"><div class="ledger-num mono">4</div><div class="ledger-t" data-lk="how4t"><%= t.how4_t %></div><div class="ledger-d" data-lk="how4d"><%= t.how4_d %></div></div>
+</div>
+</div></section>
+
+<section class="section"><div class="wrap">
+<div class="section-eyebrow" data-lk="routine-eyebrow"><%= t.routine_eyebrow %></div>
+<h2 class="section-title" data-lk="routine-title"><%= t.routine_title %></h2>
+<div class="svc-table mt2">
+<% if(typeof servicesList!=='undefined' && servicesList.length){ servicesList.forEach(function(s){ var nm=(lang==='en'&&s.name_en)?s.name_en:s.name; var d=(lang==='en'&&s.description_en)?s.description_en:s.description; %>
+<div class="svc-row">
+<div><div class="svc-name" data-content-source="services:name" data-content-id="<%= s.id %>"><%= nm %></div><% if(d){ %><div class="svc-desc" data-content-source="services:description" data-content-id="<%= s.id %>"><%= d %></div><% } %></div>
+<div class="svc-dur mono"><%= formatDuration(s.duration_min, lang) %></div>
+<a class="svc-book mono" href="book"><%= t.routine_book %></a>
+</div>
+<% }); } else { %><div class="empty" data-lk="routine-empty"><%= t.routine_empty %></div><% } %>
+</div>
+</div></section>
+
+<section class="imgband thin"><img src="<%= settings._p_trans_image_url ? settings._p_trans_image_url : 'https://placehold.co/1600x500/0E1A3A/E9EEFF/png?text=Diagnostic' %>" data-setting-key="_p_trans_image_url" alt="Diagnostic"></section>
+
+<section class="section"><div class="wrap trans">
+<div>
+<div class="section-eyebrow" data-lk="trans-eyebrow"><%= t.trans_eyebrow %></div>
+<h2 class="section-title" data-lk="trans-title"><%= t.trans_title %></h2>
+<p class="sub trans-sub" data-lk="trans-sub"><%= t.trans_sub %></p>
+<ul class="bullets mt">
+<li><span class="b-mono mono">&rarr;</span><span data-lk="trans-b1"><%= t.trans_b1 %></span></li>
+<li><span class="b-mono mono">&rarr;</span><span data-lk="trans-b2"><%= t.trans_b2 %></span></li>
+<li><span class="b-mono mono">&rarr;</span><span data-lk="trans-b3"><%= t.trans_b3 %></span></li>
+</ul>
+</div>
+<div>
+<div class="docket">
+<div class="docket-head"><span class="mono" data-lk="sample-ref">#<%= t.sample_ref %></span><span class="badge b-completed" data-lk="sample-paid"><%= t.sample_paid %></span></div>
+<div class="docket-body">
+<div class="docket-line"><div class="dl-label"><%= t.dl_vehicle %></div><div class="dl-val mono" data-lk="sample-vehicle"><%= t.sample_vehicle %></div></div>
+<div class="docket-line"><div class="dl-label"><%= t.dl_work %></div><div class="dl-val" data-lk="sample-work"><%= t.sample_work %></div></div>
+<div class="docket-line"><div class="dl-label"><%= t.dl_appt %></div><div class="dl-val mono" data-lk="sample-appt"><%= t.sample_appt %></div></div>
+<div class="docket-line"><div class="dl-label"><%= t.dl_dropoff %></div><div class="dl-val" data-lk="sample-dropoff"><%= t.dropoff_leave_t %></div></div>
+<div class="docket-line"><div class="dl-label"><%= t.dl_time %></div><div class="dl-val mono" data-lk="sample-time"><%= t.sample_time %></div></div>
+</div>
+<div class="bill-line"><span data-lk="sample-bill-l"><%= t.sample_bill_label %></span><span class="mono"><span data-lk="sample-bill"><%= t.sample_bill %></span></span></div>
+</div>
+</div>
+</div></section>
+
+<section class="pay-band"><div class="wrap"><p data-lk="pay-band"><%= t.pay_band %></p><a class="btn btn-primary mt" href="book" style="background-color:#2858ef;color:#fff" data-lk="pay-band-cta"><%= t.nav_book %></a></div></section>
+
+<section class="section"><div class="wrap">
+<div class="section-eyebrow" data-lk="garage-eyebrow"><%= t.garage_eyebrow %></div>
+<h2 class="section-title" data-lk="garage-title"><%= t.garage_title %></h2>
+<div class="garage mt2">
+<div>
+<img class="garage-img" src="<%= settings._p_garage_image_url ? settings._p_garage_image_url : 'https://placehold.co/800x600/E9EEFF/0E1A3A/png?text=Garage' %>" data-setting-key="_p_garage_image_url" alt="Garage">
+<p class="mono garage-addr" data-setting-key="garage_address"><%= settings.garage_address || '—' %></p>
+<% if(settings.garage_phone){ %><a class="btn mt" href="tel:<%= settings.garage_phone %>" data-setting-key="garage_phone"><%= t.garage_call %> · <%= settings.garage_phone %></a><% } %>
+</div>
+<div>
+<div class="mono hours-title" data-lk="garage-hours"><%= t.garage_hours %></div>
+<div class="hours">
+<% var days=[['mon',t.day_mon],['tue',t.day_tue],['wed',t.day_wed],['thu',t.day_thu],['fri',t.day_fri],['sat',t.day_sat],['sun',t.day_sun]]; days.forEach(function(dd){ var hv=settings['hours_'+dd[0]]; %>
+<div class="hr"><span class="d"><%= dd[1] %></span><span class="mono" data-setting-key="hours_<%= dd[0] %>"><%= (hv && String(hv).trim())?hv:t.closed %></span></div>
+<% }); %>
+</div>
+</div>
+</div>
+</div></section>
+
+<section class="section"><div class="wrap">
+<div class="section-eyebrow" data-lk="faq-eyebrow"><%= t.faq_eyebrow %></div>
+<h2 class="section-title" data-lk="faq-title"><%= t.faq_title %></h2>
+<div class="faq mt2">
+<% if(typeof faqs!=='undefined' && faqs.length){ faqs.forEach(function(f){ var q=(lang==='en'&&f.question_en)?f.question_en:f.question; var a=(lang==='en'&&f.answer_en)?f.answer_en:f.answer; %>
+<details><summary data-content-source="faqs:question" data-content-id="<%= f.id %>"><%= q %></summary><div class="ans" data-content-source="faqs:answer" data-content-id="<%= f.id %>"><%= a %></div></details>
+<% }); } else { %><div class="empty" data-lk="faq-empty"><%= t.faq_empty %></div><% } %>
+</div>
+</div></section>
+</main>
+<%- include('partials/footer') %>

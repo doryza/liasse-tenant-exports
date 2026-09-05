@@ -1,0 +1,144 @@
+<%- include('partials/header') %>
+<main class="wrap book-layout">
+<div class="book-main">
+<div class="step active" data-step="1">
+<div class="step-head"><span class="step-kicker mono"><%= t.step_of %> 1 / 5</span><h2><%= t.s1_t %></h2></div>
+<div class="field"><label><%= t.v_make %></label><input class="mono-input" id="vMake" list="makes" autocomplete="off" value="<%= prefill.make %>"></div>
+<datalist id="makes"><option>Toyota</option><option>Honda</option><option>Ford</option><option>Chevrolet</option><option>Nissan</option><option>Hyundai</option><option>Kia</option><option>Mazda</option><option>Subaru</option><option>Volkswagen</option><option>BMW</option><option>Mercedes-Benz</option><option>Audi</option><option>Jeep</option><option>RAM</option><option>GMC</option><option>Dodge</option><option>Tesla</option></datalist>
+<div class="field"><label><%= t.v_model %></label><input class="mono-input" id="vModel" autocomplete="off" value="<%= prefill.model %>"></div>
+<div class="field"><label><%= t.v_year %></label><select class="mono-input" id="vYear"><option value=""></option><% for(var y=2026;y>=1998;y--){ %><option value="<%= y %>"<%= (prefill.year==String(y))?' selected':'' %>><%= y %></option><% } %></select></div>
+<div class="field"><label><%= t.v_plate %> <span class="opt">(<%= t.v_optional %>)</span></label><input class="mono-input" id="vPlate" autocomplete="off"></div>
+<div class="field"><label><%= t.v_vin %> <span class="opt">(<%= t.v_optional %>)</span></label><input class="mono-input" id="vVin" autocomplete="off"></div>
+<div class="step-nav"><span></span><button class="btn btn-primary" style="background-color:#2858ef;color:#fff" data-next><%= t.next %></button></div>
+</div>
+
+<div class="step" data-step="2">
+<div class="step-head"><span class="step-kicker mono"><%= t.step_of %> 2 / 5</span><h2><%= t.s2_t %></h2></div>
+<div class="tabs"><button type="button" class="tab active" data-tab="sym"><%= t.tab_sym %></button><button type="button" class="tab" data-tab="ent"><%= t.tab_ent %></button></div>
+<div id="panelSym">
+<% cats.forEach(function(c){ if(grouped[c] && grouped[c].length){ %>
+<div class="sym-group"><div class="sym-cat mono"><%= t['cat_'+c] %></div>
+<% grouped[c].forEach(function(s){ var n=(lang==='en'&&s.name_en)?s.name_en:s.name; %>
+<label class="check-row"><input type="checkbox" class="sym-check" value="<%= n %>"><span><%= n %></span></label>
+<% }); %>
+</div>
+<% } }); %>
+<div class="field mt"><label><%= t.sym_note %></label><textarea id="vNotes" rows="3" placeholder="<%= t.sym_note_ph %>"></textarea></div>
+</div>
+<div id="panelEnt" style="display:none">
+<% if(typeof servicesList!=='undefined' && servicesList.length){ servicesList.forEach(function(s){ var n=(lang==='en'&&s.name_en)?s.name_en:s.name; %>
+<label class="svc-pick"><span class="cr"><input type="checkbox" class="ent-check" value="<%= n %>" data-min="<%= s.duration_min %>"><span><%= n %></span></span><span class="dur mono"><%= formatDuration(s.duration_min, lang) %></span></label>
+<% }); } %>
+</div>
+<div class="step-nav"><button class="btn" data-back><%= t.back %></button><button class="btn btn-primary" style="background-color:#2858ef;color:#fff" data-next><%= t.next %></button></div>
+</div>
+
+<div class="step" data-step="3">
+<div class="step-head"><span class="step-kicker mono"><%= t.step_of %> 3 / 5</span><h2><%= t.s3_t %></h2></div>
+<div class="appt-grid">
+<div><div class="mono field-cap"><%= t.appt_date_h %></div><div class="cal" id="cal"></div><p class="mono note"><%= t.appt_closed_note %></p></div>
+<div><div class="mono field-cap"><%= t.appt_time_h %></div><div class="time-list" id="times"><p class="mono note"><%= t.no_time %></p></div></div>
+</div>
+<div class="step-nav"><button class="btn" data-back><%= t.back %></button><button class="btn btn-primary" style="background-color:#2858ef;color:#fff" data-next><%= t.next %></button></div>
+</div>
+
+<div class="step" data-step="4">
+<div class="step-head"><span class="step-kicker mono"><%= t.step_of %> 4 / 5</span><h2><%= t.s4_t %></h2></div>
+<label class="radio-row"><input type="radio" name="dropoff" value="wait"><span><span class="rt"><%= t.dropoff_wait_t %></span><span class="rd"><%= t.dropoff_wait_d %></span></span></label>
+<label class="radio-row"><input type="radio" name="dropoff" value="leave"><span><span class="rt"><%= t.dropoff_leave_t %></span><span class="rd"><%= t.dropoff_leave_d %></span></span></label>
+<label class="radio-row"><input type="radio" name="dropoff" value="keybox"><span><span class="rt"><%= t.dropoff_keybox_t %></span><span class="rd"><%= t.dropoff_keybox_d %></span></span></label>
+<label class="radio-row"><input type="radio" name="dropoff" value="early"><span><span class="rt"><%= t.dropoff_early_t %></span><span class="rd"><%= t.dropoff_early_d %></span></span></label>
+<div class="step-nav"><button class="btn" data-back><%= t.back %></button><button class="btn btn-primary" style="background-color:#2858ef;color:#fff" data-next><%= t.next %></button></div>
+</div>
+
+<div class="step" data-step="5">
+<div class="step-head"><span class="step-kicker mono"><%= t.step_of %> 5 / 5</span><h2><%= t.s5_t %></h2></div>
+<div class="verify-docket" id="verifyDocket"></div>
+<div class="mt2">
+<h3 class="verify-h"><%= t.verify_h %></h3>
+<div class="field"><label><%= t.v_name %></label><input id="cName" autocomplete="name"></div>
+<div class="field"><label><%= t.v_phone %></label><input id="cPhone" class="mono-input" inputmode="tel" autocomplete="tel"></div>
+<div class="field"><label><%= t.v_email %></label><input id="cEmail" type="email" class="mono-input" autocomplete="email"></div>
+</div>
+<div id="confirmGuest" class="mt"><p class="muted"><%= t.login_confirm %></p><div class="step-nav"><button class="btn" data-back><%= t.back %></button><button class="btn btn-primary" data-login-btn style="background-color:#2858ef;color:#fff"><%= t.nav_login %></button></div></div>
+<div id="confirmAuthed" style="display:none">
+<div class="step-nav"><button class="btn" data-back><%= t.back %></button><button class="btn btn-primary" id="confirmBtn" style="background-color:#2858ef;color:#fff"><%= t.confirm %></button></div>
+</div>
+<p id="bookErr" class="book-err"></p>
+</div>
+
+<div class="step" data-step="done">
+<div class="confirm-box">
+<div class="section-eyebrow"><%= t.confirm_ref_l %></div>
+<div class="ref-num mono" id="confRef">—</div>
+<h2 class="section-title mt"><%= t.confirm_h %></h2>
+<p class="sub confirm-sub"><%= t.confirm_sub %></p>
+<div id="doneDocket" class="mt2"></div>
+<p class="mono note mt"><%= t.confirm_pay %></p>
+<div class="done-links mt2"><button class="linklike" id="printBtn"><%= t.print %></button><button class="linklike" id="icsBtn"><%= t.add_cal %></button><a class="linklike" href="account"><%= t.go_account %></a></div>
+</div>
+</div>
+</div>
+
+<aside class="docket-panel"><div class="docket"><div class="docket-head"><span><%= t.docket_title %></span><span class="mono" id="deskStep">1 / 5</span></div><div class="docket-body" id="docketDesk"></div></div></aside>
+</main>
+
+<div class="docket-sheet" id="sheet">
+<div class="sheet-bar" id="sheetBar"><span class="sheet-step mono" id="sheetStep">1 / 5</span><span class="sheet-last" id="sheetLast"><%= t.docket_hint %></span><span class="mono sheet-caret">&#9650;</span></div>
+<div class="sheet-expand"><div class="docket-body" id="sheetBody"></div></div>
+</div>
+
+<script>
+(function(){
+var LANG=<%- JSON.stringify(lang) %>;
+var TT=<%- JSON.stringify({v:t.dl_vehicle,w:t.dl_work,ap:t.dl_appt,dr:t.dl_dropoff,ti:t.dl_time,hint:t.docket_hint,nv:t.need_vehicle,nw:t.need_work,na:t.need_appt,nd:(t.need_dropoff||t.need_work),eb:t.err_book,title:t.docket_title,notime:t.no_time,dropoff:{wait:t.dropoff_wait_t,leave:t.dropoff_leave_t,keybox:t.dropoff_keybox_t,early:t.dropoff_early_t}}) %>;
+var CLOSED=<%- JSON.stringify(closedDays) %>;
+var SLOTS=['08:00','09:00','10:00','11:00','13:00','14:00','15:00','16:00'];
+var MN=(LANG==='en')?['January','February','March','April','May','June','July','August','September','October','November','December']:['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+var DOW=(LANG==='en')?['M','T','W','T','F','S','S']:['L','M','M','J','V','S','D'];
+var st={make:'',model:'',year:'',plate:'',vin:'',work:[],notes:'',date:'',time:'',dropoff:'',est:0,name:'',phone:'',email:'',step:1};
+var KEY='gb_book_v1';
+function $(s,c){return (c||document).querySelector(s);}
+function $all(s,c){return Array.prototype.slice.call((c||document).querySelectorAll(s));}
+function esc(s){return String(s).replace(/[&<>"]/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch];});}
+function save(){try{sessionStorage.setItem(KEY,JSON.stringify(st));}catch(e){}}
+function fmtDate(s){if(!s)return'';var d=new Date(s+'T00:00:00');if(isNaN(d.getTime()))return s;return d.toLocaleDateString(LANG==='en'?'en-CA':'fr-CA',{weekday:'short',day:'numeric',month:'short'});}
+function fmtDur(m){m=parseInt(m,10)||0;if(!m)return'—';var h=Math.floor(m/60),mm=m%60,o='';if(h)o+=h+' h';if(mm)o+=(o?' ':'')+mm+' min';return o;}
+function lines(){
+var veh=[st.year,st.make,st.model].filter(Boolean).join(' ');if(st.plate)veh+=(veh?' · ':'')+st.plate;
+var work=st.work.map(function(w){return w.name;});if(st.notes)work.push('“'+st.notes+'”');
+var ap=st.date?(fmtDate(st.date)+(st.time?' · '+st.time:'')):'';
+var dr=st.dropoff?TT.dropoff[st.dropoff]:'';
+var ti=st.est?fmtDur(st.est):'';
+return [{l:TT.v,v:veh,mono:1},{l:TT.w,v:work.join(' · ')},{l:TT.ap,v:ap,mono:1},{l:TT.dr,v:dr},{l:TT.ti,v:ti,mono:1}];
+}
+function docketHTML(){return lines().map(function(x){if(x.v)return '<div class="docket-line"><div class="dl-label">'+esc(x.l)+'</div><div class="dl-val '+(x.mono?'mono':'')+'">'+esc(x.v)+'</div></div>';return '<div class="docket-line"><div class="dl-label">'+esc(x.l)+'</div><div class="dl-val dl-empty"></div></div>';}).join('');}
+function renderDocket(){var h=docketHTML();if($('#docketDesk'))$('#docketDesk').innerHTML=h;if($('#sheetBody'))$('#sheetBody').innerHTML=h;var stp=(st.step==='done')?'✓':(st.step+' / 5');if($('#deskStep'))$('#deskStep').textContent=stp;if($('#sheetStep'))$('#sheetStep').textContent=stp;var ls=lines().filter(function(x){return x.v;});if($('#sheetLast'))$('#sheetLast').textContent=ls.length?ls[ls.length-1].v:TT.hint;if($('#verifyDocket'))$('#verifyDocket').innerHTML='<div class="docket"><div class="docket-head"><span>'+esc(TT.title)+'</span></div><div class="docket-body">'+h+'</div></div>';}
+function show(step){st.step=step;$all('.step').forEach(function(el){el.classList.toggle('active',el.getAttribute('data-step')==String(step));});renderDocket();save();window.scrollTo(0,0);}
+function updateWork(){clearErr(2);var ent=$all('.ent-check:checked').map(function(c){return {name:c.value,min:parseInt(c.getAttribute('data-min'),10)||0};});var sym=$all('.sym-check:checked').map(function(c){return {name:c.value,min:0};});st.notes=($('#vNotes')&&$('#vNotes').value.trim())||'';st.work=ent.concat(sym);var em=0;ent.forEach(function(e){em+=e.min;});if(sym.length)em+=45;st.est=em;renderDocket();save();}
+function readVeh(){clearErr(1);st.make=($('#vMake').value||'').trim();st.model=($('#vModel').value||'').trim();st.year=$('#vYear').value||'';st.plate=($('#vPlate').value||'').trim();st.vin=($('#vVin').value||'').trim();renderDocket();save();}
+var view=new Date();view.setDate(1);view.setHours(0,0,0,0);
+function renderCal(){var y=view.getFullYear(),m=view.getMonth();var first=new Date(y,m,1);var startDow=(first.getDay()+6)%7;var days=new Date(y,m+1,0).getDate();var today=new Date();today.setHours(0,0,0,0);var html='<div class="cal-head"><button type="button" class="linklike mono" id="calPrev" aria-label="'+(LANG==='en'?'Previous month':'Mois précédent')+'">&lsaquo;</button><span class="mono">'+MN[m]+' '+y+'</span><button type="button" class="linklike mono" id="calNext" aria-label="'+(LANG==='en'?'Next month':'Mois suivant')+'">&rsaquo;</button></div><div class="cal-grid">';DOW.forEach(function(d){html+='<div class="cal-dow">'+d+'</div>';});var i;for(i=0;i<startDow;i++)html+='<div class="cal-day muted"></div>';for(var d=1;d<=days;d++){var dt=new Date(y,m,d);var iso=y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');var closed=CLOSED.indexOf(dt.getDay())>=0;var past=dt<today;var cls='cal-day';if(closed||past)cls+=' closed';if(st.date===iso)cls+=' sel';if(closed||past){html+='<div class="'+cls+'" aria-disabled="true">'+d+'</div>';}else{html+='<button type="button" class="'+cls+'" data-day="'+iso+'" aria-pressed="'+(st.date===iso?'true':'false')+'">'+d+'</button>';}}html+='</div>';$('#cal').innerHTML=html;$('#calPrev').addEventListener('click',function(){var nv=new Date(y,m-1,1);var mn0=new Date();if(nv>=new Date(mn0.getFullYear(),mn0.getMonth(),1)){view=nv;renderCal();}});$('#calNext').addEventListener('click',function(){view=new Date(y,m+1,1);renderCal();});$all('#cal .cal-day[data-day]').forEach(function(c){c.addEventListener('click',function(){clearErr(3);st.date=c.getAttribute('data-day');st.time='';renderCal();renderTimes();renderDocket();save();});});}
+function renderTimes(){var box=$('#times');if(!st.date){box.innerHTML='<p class="mono note">'+esc(TT.notime)+'</p>';return;}box.innerHTML=SLOTS.map(function(s){return '<button type="button" class="time-opt'+(st.time===s?' sel':'')+'" data-time="'+s+'">'+s+'</button>';}).join('');$all('#times .time-opt').forEach(function(b){b.addEventListener('click',function(){clearErr(3);st.time=b.getAttribute('data-time');renderTimes();renderDocket();save();});});}
+function stepErr(step,msg){var s=$('.step[data-step="'+step+'"]');if(!s)return;var e=s.querySelector('.step-err');if(!e){e=document.createElement('p');e.className='book-err step-err';var nav=s.querySelector('.step-nav');if(nav)s.insertBefore(e,nav);else s.appendChild(e);}e.textContent=msg;e.style.display='block';}
+function clearErr(step){var s=$('.step[data-step="'+step+'"]');var e=s?s.querySelector('.step-err'):null;if(e)e.style.display='none';}
+function valid(step){clearErr(step);if(step===1){readVeh();if(!st.make){stepErr(1,TT.nv);return false;}}if(step===2){updateWork();if(!st.work.length&&!st.notes){stepErr(2,TT.nw);return false;}}if(step===3){if(!st.date||!st.time){stepErr(3,TT.na);return false;}}if(step===4){var r=$('input[name=dropoff]:checked');if(!r){stepErr(4,TT.nd);return false;}st.dropoff=r.value;}return true;}
+$all('[data-next]').forEach(function(b){b.addEventListener('click',function(){var cur=st.step;if(!valid(cur))return;show(cur+1);if(cur+1===3){renderCal();renderTimes();}if(cur+1===5)fillContact();});});
+$all('[data-back]').forEach(function(b){b.addEventListener('click',function(){show(st.step-1);if(st.step===3){renderCal();renderTimes();}});});
+$all('.tab').forEach(function(tb){tb.addEventListener('click',function(){$all('.tab').forEach(function(x){x.classList.remove('active');});tb.classList.add('active');var k=tb.getAttribute('data-tab');$('#panelSym').style.display=(k==='sym')?'block':'none';$('#panelEnt').style.display=(k==='ent')?'block':'none';});});
+$all('.sym-check,.ent-check').forEach(function(c){c.addEventListener('change',updateWork);});
+if($('#vNotes'))$('#vNotes').addEventListener('input',updateWork);
+$all('#vMake,#vModel,#vYear,#vPlate,#vVin').forEach(function(el){el.addEventListener('input',readVeh);el.addEventListener('change',readVeh);});
+$all('input[name=dropoff]').forEach(function(r){r.addEventListener('change',function(){clearErr(4);$all('input[name=dropoff]').forEach(function(x){var row=x.closest('.radio-row');if(row)row.classList.toggle('sel',x.checked);});var ck=$('input[name=dropoff]:checked');st.dropoff=ck?ck.value:'';renderDocket();save();});});
+if($('#sheetBar'))$('#sheetBar').addEventListener('click',function(){$('#sheet').classList.toggle('open');});
+function checkAuth(){try{if(window.TenantSDK&&TenantSDK.auth&&TenantSDK.auth.isLoggedIn()){$('#confirmGuest').style.display='none';$('#confirmAuthed').style.display='block';}else{$('#confirmGuest').style.display='block';$('#confirmAuthed').style.display='none';}}catch(e){}}
+function fillContact(){checkAuth();try{if(window.TenantSDK&&TenantSDK.auth&&TenantSDK.auth.getCurrentUser){TenantSDK.auth.getCurrentUser().then(function(u){if(u){if(u.email&&!$('#cEmail').value)$('#cEmail').value=u.email;if(u.phone&&!$('#cPhone').value)$('#cPhone').value=u.phone;if(u.display_name&&!$('#cName').value)$('#cName').value=u.display_name;}}).catch(function(){});}}catch(e){}}
+function doConfirm(){st.name=$('#cName').value.trim();st.phone=$('#cPhone').value.trim();st.email=$('#cEmail').value.trim();var err=$('#bookErr');err.style.display='none';var names=st.work.map(function(w){return w.name;});var summary=names.concat(st.notes?['“'+st.notes+'”']:[]).join(', ');var payload={make:st.make,model:st.model,year:st.year,plate:st.plate,vin:st.vin,work_items:names,work_summary:summary,notes:st.notes,date:st.date,time:st.time,dropoff:st.dropoff,est_min:st.est,name:st.name,phone:st.phone,email:st.email};var btn=$('#confirmBtn');btn.disabled=true;var f=(window.TenantSDK&&TenantSDK.fetch)?TenantSDK.fetch:fetch;f('api/bookings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).then(function(r){return r.json();}).then(function(d){btn.disabled=false;if(d&&d.success){try{sessionStorage.removeItem(KEY);}catch(e){}$('#confRef').textContent=d.reference;$('#doneDocket').innerHTML='<div class="docket"><div class="docket-body">'+docketHTML()+'</div></div>';show('done');$('#sheet').style.display='none';}else{err.textContent=(d&&d.error)||TT.eb;err.style.display='block';}}).catch(function(){btn.disabled=false;err.textContent=TT.eb;err.style.display='block';});}
+if($('#confirmBtn'))$('#confirmBtn').addEventListener('click',doConfirm);
+if($('#printBtn'))$('#printBtn').addEventListener('click',function(){window.print();});
+if($('#icsBtn'))$('#icsBtn').addEventListener('click',function(){if(!st.date||!st.time)return;var dt=st.date.replace(/-/g,'')+'T'+st.time.replace(':','')+'00';var eh=String(parseInt(st.time,10)+1).padStart(2,'0');var end=st.date.replace(/-/g,'')+'T'+eh+st.time.slice(3).replace(':','')+'00';var ics='BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nSUMMARY:'+((st.make+' '+st.model).trim())+'\nDTSTART:'+dt+'\nDTEND:'+end+'\nEND:VEVENT\nEND:VCALENDAR';var a=document.createElement('a');a.href='data:text/calendar;charset=utf-8,'+encodeURIComponent(ics);a.download='rendez-vous.ics';a.click();});
+function restore(){var raw;try{raw=sessionStorage.getItem(KEY);}catch(e){}if(raw){try{var s=JSON.parse(raw);if(s&&typeof s==='object')st=Object.assign(st,s);}catch(e){}}if($('#vMake')&&st.make)$('#vMake').value=st.make;if($('#vModel')&&st.model)$('#vModel').value=st.model;if($('#vYear')&&st.year)$('#vYear').value=st.year;if($('#vPlate'))$('#vPlate').value=st.plate||'';if($('#vVin'))$('#vVin').value=st.vin||'';if($('#vNotes'))$('#vNotes').value=st.notes||'';var names=(st.work||[]).map(function(w){return w.name;});$all('.sym-check,.ent-check').forEach(function(c){if(names.indexOf(c.value)>=0)c.checked=true;});if(st.dropoff){var rr=$('input[name=dropoff][value="'+st.dropoff+'"]');if(rr){rr.checked=true;var row=rr.closest('.radio-row');if(row)row.classList.add('sel');}}if($('#cName'))$('#cName').value=st.name||'';if($('#cPhone'))$('#cPhone').value=st.phone||'';if($('#cEmail'))$('#cEmail').value=st.email||'';var step=(st.step&&st.step!=='done')?st.step:1;show(step);if(step>=3){renderCal();renderTimes();}if(step===5)fillContact();renderDocket();}
+restore();readVeh();checkAuth();window.addEventListener('focus',checkAuth);var wasAuthed=false;setInterval(function(){var now=false;try{now=!!(window.TenantSDK&&TenantSDK.auth&&TenantSDK.auth.isLoggedIn());}catch(e){}if(now!==wasAuthed){wasAuthed=now;checkAuth();if(now&&st.step===5)fillContact();}},1200);
+})();
+</script>
+<%- include('partials/footer') %>

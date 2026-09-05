@@ -1,0 +1,16 @@
+<div class="docket mt">
+<div class="docket-head"><span class="mono">#<%= b.reference %></span><span class="badge b-<%= b.status %>"><%= t['st_'+b.status]||b.status %></span></div>
+<div class="docket-body">
+<div class="docket-line"><div class="dl-label"><%= t.dl_vehicle %></div><div class="dl-val mono"><%= [b.year,b.make,b.model].filter(Boolean).join(' ') %><%= b.plate?(' · '+b.plate):'' %></div></div>
+<div class="docket-line"><div class="dl-label"><%= t.dl_work %></div><div class="dl-val"><%= b.work_summary||'—' %></div></div>
+<div class="docket-line"><div class="dl-label"><%= t.dl_appt %></div><div class="dl-val mono"><%= b.appt_date?formatDate(b.appt_date,lang):'' %><%= b.appt_time?(' · '+b.appt_time):'' %></div></div>
+<div class="docket-line"><div class="dl-label"><%= t.dl_dropoff %></div><div class="dl-val"><%= b.dropoff?(t['dropoff_'+b.dropoff+'_t']||b.dropoff):'—' %></div></div>
+<div class="docket-line"><div class="dl-label"><%= t.dl_time %></div><div class="dl-val mono"><%= formatDuration(b.estimated_min,lang) %></div></div>
+</div>
+<% if(hist && (b.bill_amount!==null && b.bill_amount!==undefined && b.bill_amount!=='')){ %>
+<div class="bill-line"><span><%= t.bill_l %></span><span class="mono"><%= formatPrice(b.bill_amount,lang) %> · <%= b.bill_paid==1?t.paid_at:t.to_pay %><%= b.bill_date?(' · '+formatDate(b.bill_date,lang)):'' %></span></div>
+<% } %>
+<% if(!hist && (b.status==='pending'||b.status==='confirmed')){ %>
+<div class="docket-actions"><a class="linklike" href="book?make=<%= encodeURIComponent(b.make||'') %>&amp;model=<%= encodeURIComponent(b.model||'') %>&amp;year=<%= encodeURIComponent(b.year||'') %>"><%= t.modify %></a><button class="linklike danger" data-cancel="<%= b.id %>"><%= t.cancel %></button></div>
+<% } %>
+</div>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tableau de bord — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body>
+<div class="admin-wrap">
+<%- include('partials/admin-sidebar',{active:'dashboard'}) %>
+<main class="admin-main">
+<header class="admin-top"><button class="admin-burger" id="asb" aria-label="Menu">&#9776;</button><h1>Tableau de bord</h1><a class="btn-ghost" href="." target="_blank">Voir le site</a></header>
+<div class="quick-actions">
+<a href="admin/bookings"><span class="qa-plus">+</span> Nouveau rendez-vous</a>
+<a href="admin/services"><span class="qa-plus">+</span> Service d'entretien</a>
+<a href="admin/posts"><span class="qa-plus">+</span> Article</a>
+<a href="admin/faqs"><span class="qa-plus">+</span> Question FAQ</a>
+</div>
+<div class="stat-grid">
+<div class="stat-card accent-amber"><div class="stat-n mono"><%= stats.bookingsPending %></div><div class="stat-l">Rendez-vous en attente</div></div>
+<div class="stat-card"><div class="stat-n mono"><%= stats.bookingsTotal %></div><div class="stat-l">Rendez-vous au total</div></div>
+<div class="stat-card"><div class="stat-n mono"><%= stats.users %></div><div class="stat-l">Clients</div></div>
+<div class="stat-card"><div class="stat-n mono"><%= stats.push %></div><div class="stat-l">Abonnés notifications</div></div>
+<div class="stat-card"><div class="stat-n mono"><%= stats.visits7 %></div><div class="stat-l">Visites (7 j)</div></div>
+</div>
+<div class="admin-cols">
+<section class="panel"><div class="panel-head"><h2>Rendez-vous récents</h2><a class="btn-ghost" href="admin/bookings">Tout gérer</a></div>
+<% if(recent&&recent.length){ var SL={pending:'En attente',confirmed:'Confirmé',completed:'Terminé',cancelled:'Annulé'}; %><div class="table-wrap"><table class="admin-table"><thead><tr><th>Réf</th><th>Client</th><th>Véhicule</th><th>Date</th><th>Statut</th></tr></thead><tbody>
+<% recent.forEach(function(b){ %><tr><td class="mono"><%= b.reference %></td><td><%= b.customer_name||'—' %></td><td><%= [b.year,b.make,b.model].filter(Boolean).join(' ')||'—' %></td><td class="mono"><%= b.appt_date||'' %> <%= b.appt_time||'' %></td><td><span class="abadge s-<%= b.status %>"><%= SL[b.status]||b.status %></span></td></tr><% }); %>
+</tbody></table></div><% } else { %><p class="admin-empty">Aucun rendez-vous pour l'instant. Les réservations des clients apparaîtront ici.</p><% } %>
+</section>
+<section class="panel"><div class="panel-head"><h2>Contenu</h2></div>
+<ul class="mod-list">
+<li><a href="admin/bookings">Rendez-vous</a><span class="cnt mono"><%= stats.bookingsTotal %></span></li>
+<li><a href="admin/services">Entretien</a><span class="cnt mono"><%= stats.services %></span></li>
+<li><a href="admin/symptoms">Symptômes</a><span class="cnt mono"><%= stats.symptoms %></span></li>
+<li><a href="admin/faqs">FAQ</a><span class="cnt mono"><%= stats.faqs %></span></li>
+<li><a href="admin/posts">Articles</a><span class="cnt mono"><%= stats.posts %></span></li>
+</ul>
+</section>
+</div>
+</main>
+</div>
+<script>(function(){var b=document.getElementById('asb');if(b)b.addEventListener('click',function(){document.body.classList.toggle('sidebar-open');});})();</script>
+</body>
+</html>
