@@ -2,7 +2,7 @@
 <main class="inv hp" data-variant="<%= experiment.variant %>" data-track="<%= experiment.track ? '1' : '0' %>" data-preview="<%= experiment.preview ? '1' : '0' %>">
   <div class="inv-veil" aria-hidden="true"></div>
   <header class="hp-masthead hp-wrap">
-    <a class="hp-brand" href="." aria-label="VendVite"><img src="https://res.cloudinary.com/duhp69meg/image/upload/f_auto,q_auto,w_120/v1788268189/vendvite/logo.png" alt="" width="42" height="50"><span>VendVite<span class="hp-brand-dot">.</span></span></a>
+    <a class="hp-brand" href="." aria-label="VendVite"><img src="https://res.cloudinary.com/duhp69meg/image/upload/c_crop,g_north,h_538,w_534/f_auto,q_auto,w_160/v1788268189/vendvite/logo.png" alt="" width="58" height="58"><span>VendVite<span class="hp-brand-dot">.</span></span></a>
     <a class="hp-broker-login" data-vv-auth href="connexion"><%= t.ws_login %> ↗</a>
   </header>
   <% if (experiment.preview) { %><p class="hp-preview hp-wrap"><%= t.hp_preview %> <strong><%= experiment.variant === 'visible' ? 'A' : 'B' %></strong></p><% } %>
