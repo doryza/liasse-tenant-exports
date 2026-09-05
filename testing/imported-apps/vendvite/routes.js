@@ -1,12 +1,12 @@
 var express = require('express');
 var invoiceTools = require('./invoice');
 var homepageTools = require('./homepage-experiment-v1');
-var homepageCopy = require('./homepage-copy-v2');
+var homepageCopy = require('./homepage-copy-v3');
 var brokerAuthTools = require('./broker-auth-v1');
-var workspaceCopy = require('./workspace-copy-v1');
+var workspaceCopy = require('./workspace-copy-v2');
 var campaignModel=require('./public/js/campaign-model-v1');
 var campaignDataTools=require('./campaign-data-v1');
-var campaignCopy=require('./campaign-copy-v1');
+var campaignCopy=require('./campaign-copy-v2');
 
 // ── Campagne « 150 portes » — reglages produit.
 //    Declares au SCOPE FICHIER et non dans la fabrique de routes : la plateforme
@@ -145,9 +145,9 @@ module.exports = function(services){
       inv_err_generic:"Un problème est survenu. Veuillez réessayer.",
       inv_err_dup:"Une invitation a déjà été envoyée à ce courriel. Vérifiez votre boîte de réception.",
       esp_nav_my_page:"Ma page",
-      esp_nav_targeted_mail:"Courrier ciblé",
+      esp_nav_targeted_mail:"Campagnes",
       esp_nav_my_leads:"Mes leads",
-      esp_nav_subscription:"Abonnement",
+      esp_nav_subscription:"Adhésion",
       esp_page_in_progress_status:"Page en préparation.",
       esp_preview_button:"Aperçu",
       esp_launch_eyebrow:"Deux étapes pour conquérir votre secteur",
@@ -170,8 +170,8 @@ module.exports = function(services){
       esp_launch_done_status:"Page personnalisée ✓",
       esp_launch_price_reveal:"Votre système de capture est prêt. Découvrez maintenant la licence qui inclut votre première campagne de 150 lettres.",
       esp_setup_gate_eyebrow:"Votre page avant le prix",
-      esp_setup_gate_title:"Finalisez d’abord votre système de capture de prospects.",
-      esp_setup_gate_body:"Prévisualisez votre page, personnalisez-la à votre nom, puis confirmez qu’elle est prête. Nous vous présenterons ensuite la licence et votre première campagne postale intégrée.",
+      esp_setup_gate_title:"Bâtissez d’abord la page que vos lettres annonceront.",
+      esp_setup_gate_body:"Personnalisez votre page de capture, vérifiez l’aperçu, puis confirmez qu’elle est prête. Nous vous présenterons ensuite le tarif et votre première campagne de 150 lettres.",
       esp_setup_gate_cta:"Personnaliser ma page",
       esp_setup_required_error:"Confirmez d’abord que votre page de capture est personnalisée.",
       esp_setup_eyebrow:"Étape 1 · Votre vitrine",
@@ -191,7 +191,7 @@ module.exports = function(services){
       esp_phone_label:"Téléphone",
       esp_phone_help:"Bouton d'appel dans la barre du haut de votre page.",
       esp_email_label:"Courriel",
-      esp_email_help:"C'est ici que chaque nouveau lead vous est envoyé — jamais affiché publiquement.",
+      esp_email_help:"C'est ici que chaque nouvelle demande vous est envoyée — jamais affiché publiquement.",
       esp_section_about_you:"À propos de vous",
       esp_bio_label:"Votre présentation",
       esp_bio_help:"Le paragraphe de la section «&nbsp;L'agent&nbsp;» de votre page — votre philosophie, votre approche, en une ou deux phrases. Videz-le et le texte par défaut revient.",
@@ -267,7 +267,7 @@ module.exports = function(services){
       esp_confirm_launch_mailing_btn:"Confirmer et lancer l'envoi",
       esp_address_source_manual_check:"Les adresses proviennent des données cartographiques publiques. Nous validons chaque liste à la main avant impression&nbsp;; un numéro inexistant est retiré sans vous être facturé.",
       esp_your_campaigns_heading:"Vos campagnes",
-      esp_no_campaigns_first_included:"Aucun tirage pour l'instant. La production et l'envoi de vos 150 premières lettres sont compris dans votre licence.",
+      esp_no_campaigns_first_included:"Aucune campagne pour l’instant. Vos 150 premières lettres — impression, enveloppes et dépôt Postes Canada — sont comprises dans votre adhésion.",
       esp_campaign_col_status:"État",
       esp_campaign_col_territory:"Territoire",
       esp_campaign_col_doors:"Portes",
@@ -275,10 +275,10 @@ module.exports = function(services){
       esp_campaign_col_date:"Date",
       esp_territory_reload_btn:"Recharger ce territoire",
       esp_cancel_reclaim_included_btn:"Annuler et récupérer ma campagne incluse",
-      esp_leads_total_label:"Leads au total",
-      esp_leads_new_label:"Nouveaux",
+      esp_leads_total_label:"Demandes au total",
+      esp_leads_new_label:"À contacter",
       esp_leads_last_30_days_label:"30 derniers jours",
-      esp_leads_empty_state:"Aucun lead pour l'instant.",
+      esp_leads_empty_state:"Aucune demande pour l’instant.",
       esp_lead_private_notes_ph:"Notes privées…",
       esp_paypal_test_success_title:"Test PayPal réussi. Votre accès d’essai est ouvert.",
       esp_paypal_test_success_body:"Aucun paiement réel. Vous pouvez maintenant publier votre page, tester le code QR, recevoir un lead et demander une campagne ciblée.",
@@ -302,11 +302,11 @@ module.exports = function(services){
       esp_cancel_renewal_btn:"Annuler le renouvellement",
       esp_real_subscription_protected_test:"Votre abonnement réel est protégé pendant les essais sandbox. Repassez en mode réel pour gérer son renouvellement.",
       esp_paypal_secure_cancel_anytime:"Paiement sécurisé par PayPal. Annulable en tout temps.",
-      esp_perk_private_page_named:"Votre page privée, à votre nom, sur vendvite.app",
-      esp_perk_targeted_campaign_included:"La production complète et l'envoi annuel de 150 lettres ciblées",
-      esp_perk_unlimited_valuation_capture:"Capture illimitée de demandes d'évaluation",
-      esp_perk_instant_lead_email_alert:"Alerte courriel instantanée à chaque lead",
-      esp_perk_private_lead_register:"Votre registre de leads, à vous seul",
+      esp_perk_private_page_named:"Votre page de capture, à votre nom, sur vendvite.app",
+      esp_perk_targeted_campaign_included:"Une campagne de 150 lettres par année — impression, enveloppes, affranchissement et dépôt Postes Canada compris",
+      esp_perk_unlimited_valuation_capture:"Demandes d’analyse illimitées",
+      esp_perk_instant_lead_email_alert:"Alerte courriel à chaque demande",
+      esp_perk_private_lead_register:"Votre registre de demandes, à vous seul",
       esp_perk_free_edits_anytime:"Modifications en tout temps, sans frais",
       esp_invoices_heading:"Mes factures",
       esp_social_link_label_placeholder:"Libellé (ex. Instagram)",
@@ -436,8 +436,8 @@ module.exports = function(services){
       esp_page_live:"Votre page est en ligne.",
       esp_campaigns_included_plural:"campagnes incluses",
       esp_campaign_included_singular:"campagne incluse",
-      esp_leads_empty_unpublished:"Publiez votre page pour commencer à recevoir des demandes d'évaluation.",
-      esp_leads_empty_published:"Votre page est en ligne. Les demandes apparaîtront ici et vous serez averti par courriel.",
+      esp_leads_empty_unpublished:"Publiez votre page, puis lancez votre première campagne : les demandes d’analyse arriveront ici.",
+      esp_leads_empty_published:"Votre page est en ligne. Chaque demande apparaîtra ici et vous sera envoyée par courriel.",
       esp_credit_rest_lead:" taille de commande&nbsp;; le reste est à ",
       esp_credit_rest_tail:"&nbsp;$ la lettre, taxes en sus.",
       esp_per_letter_taxes_extra:"&nbsp;$ la lettre, taxes en sus.",
@@ -552,9 +552,9 @@ module.exports = function(services){
       inv_err_generic:"Something went wrong. Please try again.",
       inv_err_dup:"An invitation was already sent to this email. Check your inbox.",
       esp_nav_my_page:"My page",
-      esp_nav_targeted_mail:"Targeted mail",
+      esp_nav_targeted_mail:"Campaigns",
       esp_nav_my_leads:"My leads",
-      esp_nav_subscription:"Subscription",
+      esp_nav_subscription:"Membership",
       esp_page_in_progress_status:"Page in progress.",
       esp_preview_button:"Preview",
       esp_launch_eyebrow:"Two steps to own your market",
@@ -577,8 +577,8 @@ module.exports = function(services){
       esp_launch_done_status:"Page personalized ✓",
       esp_launch_price_reveal:"Your lead capture system is ready. Now discover the licence that includes your first 150-letter campaign.",
       esp_setup_gate_eyebrow:"Your page before the price",
-      esp_setup_gate_title:"Finish your lead capture system first.",
-      esp_setup_gate_body:"Preview your page, personalize it with your name and brand, then confirm it is ready. We will then show you the licence and your first integrated mail campaign.",
+      esp_setup_gate_title:"Build the page your letters will announce first.",
+      esp_setup_gate_body:"Personalize your lead-capture page, check the preview, then confirm it is ready. We will then show you the price and your first 150-letter campaign.",
       esp_setup_gate_cta:"Personalize my page",
       esp_setup_required_error:"First confirm that your lead capture page is personalized.",
       esp_setup_eyebrow:"Step 1 · Your showcase",
@@ -598,7 +598,7 @@ module.exports = function(services){
       esp_phone_label:"Phone",
       esp_phone_help:"The call button in the top bar of your page.",
       esp_email_label:"Email",
-      esp_email_help:"This is where every new lead is sent to you — never shown publicly.",
+      esp_email_help:"This is where every new request is sent to you — never shown publicly.",
       esp_section_about_you:"About you",
       esp_bio_label:"Your introduction",
       esp_bio_help:"The paragraph in the «&nbsp;The agent&nbsp;» section of your page — your philosophy, your approach, in one or two sentences. Clear it and the default comes back.",
@@ -674,7 +674,7 @@ module.exports = function(services){
       esp_confirm_launch_mailing_btn:"Confirm and launch the mailing",
       esp_address_source_manual_check:"The addresses come from public mapping data. We check every list by hand before printing; a civic number that doesn't exist is removed and never billed to you.",
       esp_your_campaigns_heading:"Your campaigns",
-      esp_no_campaigns_first_included:"No print runs yet. Production and mailing of your first 150 letters are included in your licence.",
+      esp_no_campaigns_first_included:"No campaigns yet. Your first 150 letters — printing, envelopes and Canada Post handoff — are included in your membership.",
       esp_campaign_col_status:"Status",
       esp_campaign_col_territory:"Territory",
       esp_campaign_col_doors:"Doors",
@@ -682,10 +682,10 @@ module.exports = function(services){
       esp_campaign_col_date:"Date",
       esp_territory_reload_btn:"Reload this territory",
       esp_cancel_reclaim_included_btn:"Cancel and reclaim my included campaign",
-      esp_leads_total_label:"Total leads",
-      esp_leads_new_label:"New",
+      esp_leads_total_label:"Requests in total",
+      esp_leads_new_label:"To contact",
       esp_leads_last_30_days_label:"Last 30 days",
-      esp_leads_empty_state:"No leads yet.",
+      esp_leads_empty_state:"No requests yet.",
       esp_lead_private_notes_ph:"Private notes…",
       esp_paypal_test_success_title:"PayPal test successful. Your trial access is open.",
       esp_paypal_test_success_body:"No real payment. You can now publish your page, test the QR code, receive a lead and request a targeted campaign.",
@@ -709,11 +709,11 @@ module.exports = function(services){
       esp_cancel_renewal_btn:"Cancel renewal",
       esp_real_subscription_protected_test:"Your real subscription is protected during test-mode trials. Switch back to live mode to manage its renewal.",
       esp_paypal_secure_cancel_anytime:"Payment secured by PayPal. Cancel at any time.",
-      esp_perk_private_page_named:"Your private page, in your name, on vendvite.app",
-      esp_perk_targeted_campaign_included:"Full production and annual mailing of 150 targeted letters",
-      esp_perk_unlimited_valuation_capture:"Unlimited capture of valuation requests",
-      esp_perk_instant_lead_email_alert:"Instant email alert on every lead",
-      esp_perk_private_lead_register:"Your lead register, yours alone",
+      esp_perk_private_page_named:"Your lead-capture page, in your name, on vendvite.app",
+      esp_perk_targeted_campaign_included:"One 150-letter campaign every year — printing, envelopes, postage and Canada Post handoff included",
+      esp_perk_unlimited_valuation_capture:"Unlimited analysis requests",
+      esp_perk_instant_lead_email_alert:"Email alert on every request",
+      esp_perk_private_lead_register:"Your request register, yours alone",
       esp_perk_free_edits_anytime:"Changes at any time, at no charge",
       esp_invoices_heading:"My invoices",
       esp_social_link_label_placeholder:"Label (e.g. Instagram)",
@@ -843,8 +843,8 @@ module.exports = function(services){
       esp_page_live:"Your page is live.",
       esp_campaigns_included_plural:"campaigns included",
       esp_campaign_included_singular:"campaign included",
-      esp_leads_empty_unpublished:"Publish your page to start receiving valuation requests.",
-      esp_leads_empty_published:"Your page is live. Requests will appear here and you will be notified by email.",
+      esp_leads_empty_unpublished:"Publish your page, then launch your first campaign: analysis requests will land here.",
+      esp_leads_empty_published:"Your page is live. Every request will appear here and reach your inbox.",
       esp_credit_rest_lead:" order size; the rest is ",
       esp_credit_rest_tail:"&nbsp;$ per letter, plus taxes.",
       esp_per_letter_taxes_extra:"&nbsp;$ per letter, plus taxes.",
@@ -1377,13 +1377,13 @@ module.exports = function(services){
       + '<div style="background:#0D0A0B;padding:34px 20px;font-family:Inter,-apple-system,Segoe UI,Roboto,sans-serif">'
       + '<div style="max-width:520px;margin:0 auto;background:linear-gradient(165deg,#171213,#0f0b0c);border:1px solid rgba(245,239,230,.12);border-radius:10px;padding:32px 28px;color:#F5EFE6">'
       + '<div style="font-family:IBM Plex Mono,monospace;font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:#C79A5B;margin-bottom:18px">'
-      + (fr ? 'Sur invitation seulement' : 'By invitation only') + '</div>'
+      + (fr ? 'Courtiers immobiliers du Québec' : 'Real estate brokers in Quebec') + '</div>'
       + '<h1 style="font-family:Georgia,serif;font-size:25px;line-height:1.15;margin:0 0 14px;color:#F5EFE6">'
       + (fr ? 'Votre accès est accepté, ' : 'Your access is approved, ') + escapeHtml(broker.full_name.split(' ')[0]) + '.</h1>'
       + '<p style="color:rgba(245,239,230,.64);font-size:15px;line-height:1.6;margin:0 0 22px">'
       + (fr
-        ? 'Votre espace vous guide pour personnaliser votre page, activer votre adhésion et préparer votre première campagne. Votre page reste privée tant que vous ne la publiez pas.'
-        : 'Your workspace guides you through personalizing your page, activating your membership and preparing your first campaign. Your page stays private until you publish it.')
+        ? 'Votre espace vous guide : personnalisez votre page de capture, activez votre adhésion, puis choisissez les portes de votre première campagne — 150 lettres comprises, imprimées, mises sous enveloppe et déposées chez Postes Canada par notre équipe. Votre page reste privée tant que vous ne la publiez pas.'
+        : 'Your workspace guides you: personalize your lead-capture page, activate your membership, then choose the doors of your first campaign — 150 letters included, printed, stuffed and handed to Canada Post by our team. Your page stays private until you publish it.')
       + '</p>'
       + '<a href="' + link + '" style="display:block;text-align:center;padding:16px;border-radius:4px;background:#E30B2D;color:#fff;text-decoration:none;font-family:Georgia,serif;font-weight:bold;font-size:16px;box-shadow:inset 0 0 0 1.5px rgba(199,154,91,.5)">'
       + (fr ? 'Ouvrir mon espace' : 'Open my workspace') + '</a>'
@@ -1402,21 +1402,21 @@ module.exports = function(services){
       + '<div style="background:#0D0A0B;padding:34px 20px;font-family:Inter,-apple-system,Segoe UI,Roboto,sans-serif">'
       + '<div style="max-width:520px;margin:0 auto;background:linear-gradient(165deg,#171213,#0f0b0c);border:1px solid rgba(245,239,230,.12);border-radius:10px;padding:32px 28px;color:#F5EFE6">'
       + '<div style="font-family:IBM Plex Mono,monospace;font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:#C79A5B;margin-bottom:18px">'
-      + (fr ? 'Sur invitation seulement' : 'By invitation only') + '</div>'
+      + (fr ? 'Courtiers immobiliers du Québec' : 'Real estate brokers in Quebec') + '</div>'
       + '<h1 style="font-family:Georgia,serif;font-size:24px;line-height:1.2;margin:0 0 14px;color:#F5EFE6">'
-      + (fr ? 'Votre demande est scellée, ' : 'Your request is sealed, ') + escapeHtml(broker.full_name.split(' ')[0]) + '.</h1>'
+      + (fr ? 'Votre demande est reçue, ' : 'Your request was received, ') + escapeHtml(broker.full_name.split(' ')[0]) + '.</h1>'
       + '<p style="color:rgba(245,239,230,.64);font-size:15px;line-height:1.6;margin:0">'
       + (fr
-        ? 'Pour préserver la rareté — et l’efficacité — de la méthode VendVite, nous limitons volontairement le nombre de licences offertes dans chaque marché. Nous vérifions maintenant si une place additionnelle peut être ouverte dans votre secteur. Si oui, vous recevrez par courriel une offre d’accès ainsi que les modalités pour réserver votre licence.'
-        : 'To protect the scarcity — and effectiveness — of the VendVite method, we deliberately limit the number of licences offered in each market. We are now checking whether an additional seat can be opened in your territory. If so, you will receive an access offer by email along with the terms for securing your licence.')
+        ? 'Nous étudions votre demande et votre secteur. Nous limitons le nombre d’accès par marché pour que chaque courtier garde une longueur d’avance dans son quartier. Si un accès peut être ouvert dans le vôtre, vous recevrez par courriel un lien pour bâtir votre page de capture et consulter le tarif.'
+        : 'We are reviewing your request and your area. We limit the number of seats per market so every broker keeps a head start in their neighbourhood. If a seat can be opened in yours, you will receive an email link to build your lead-capture page and see the price.')
       + '</p></div></div>';
     return await services.email.send({
       to: broker.email,
       subject: fr ? 'Votre demande d’accès VendVite est reçue' : 'Your VendVite access request was received',
       html: html,
       text: fr
-        ? 'Votre demande d’accès VendVite est reçue. Nous limitons le nombre de licences par marché afin de préserver l’efficacité de notre méthode. Nous vous écrirons si une place additionnelle peut être ouverte dans votre secteur.'
-        : 'Your VendVite access request was received. We limit licences per market to protect the effectiveness of our method. We will contact you if an additional seat can be opened in your territory.'
+        ? 'Votre demande d’accès VendVite est reçue. Nous limitons le nombre d’accès par marché pour que chaque courtier garde une longueur d’avance dans son quartier. Nous vous écrirons si un accès peut être ouvert dans le vôtre.'
+        : 'Your VendVite access request was received. We limit seats per market so every broker keeps a head start in their neighbourhood. We will contact you if a seat can be opened in yours.'
     });
   }
 

@@ -11,7 +11,7 @@
       <p class="hp-eyebrow"><span aria-hidden="true"></span><%= t.inv_eyebrow %></p>
       <h1 id="hpTitle"><%= t.inv_title %></h1>
       <p class="hp-lede"><%= t.inv_lede %></p>
-      <div class="hp-actions"><a class="hp-cta" data-home-cta href="#invPanel"><%= t.hp_cta %><span aria-hidden="true">↗</span></a><a class="hp-text-link" href="#builder"><%= t.hp_secondary %> <span aria-hidden="true">↓</span></a></div>
+      <div class="hp-actions"><a class="hp-cta" data-home-cta href="#invPanel"><%= t.hp_cta %><span aria-hidden="true">↗</span></a><a class="hp-text-link" href="#compare"><%= t.hp_secondary %> <span aria-hidden="true">↓</span></a></div>
       <p class="hp-reassurance"><%= t.hp_reassurance %></p>
       <div class="hp-included">
         <p class="hp-label"><%= t.hp_included %></p>
@@ -58,7 +58,9 @@
       </div>
     </div>
   </section>
+  <%- include('partials/homepage-compare') %>
   <%- include('partials/homepage-builder') %>
+  <%- include('partials/homepage-page') %>
   <section class="hp-process hp-wrap" id="how" aria-labelledby="hpProcessTitle">
     <p class="hp-eyebrow"><%= t.hp_process_label %></p><h2 id="hpProcessTitle"><%= t.hp_process_title %></h2>
     <ol class="hp-steps"><% t.hp_steps.forEach(function(step,i){ %><li><span class="hp-step-number">0<%= i+1 %></span><h3><%= step[0] %></h3><p><%= step[1] %></p></li><% }); %></ol>
@@ -68,6 +70,6 @@
   <footer class="hp-footer hp-wrap"><span class="hp-brand">VendVite<span class="hp-brand-dot">.</span></span><span><%= t.inv_foot %></span></footer>
   <div class="hp-sticky" id="hpSticky" hidden><span><%= t.hp_sticky %></span><a class="hp-cta" data-home-cta href="#invPanel"><%= t.hp_cta %> ↗</a></div>
 </main>
-<script src="public/js/invite.js?v=campaign-homepage-v2" defer></script>
+<script src="public/js/invite.js?v=pitch-v3" defer></script>
 </body>
 </html>

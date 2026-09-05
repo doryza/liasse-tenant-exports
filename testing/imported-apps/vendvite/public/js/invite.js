@@ -31,12 +31,15 @@
       (form.hidden ? done : field('invName')).focus({preventScroll:true});
     });
   });
-  var builderLink=document.querySelector('.hp-text-link[href="#builder"]');
-  if(builderLink) builderLink.addEventListener('click',function(e){
-    var builder=document.getElementById('builder');
-    if(!builder) return;
-    e.preventDefault();
-    builder.scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});
+  // In-page section links (« Voir la différence », builder…) scroll in place so
+  // the <base href> the platform injects never bounces the visitor to the root.
+  document.querySelectorAll('.hp-text-link[href^="#"]').forEach(function(a){
+    a.addEventListener('click',function(e){
+      var target=document.getElementById(a.getAttribute('href').slice(1));
+      if(!target) return;
+      e.preventDefault();
+      target.scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});
+    });
   });
   var sticky=document.getElementById('hpSticky');
   if(sticky && 'IntersectionObserver' in window){
