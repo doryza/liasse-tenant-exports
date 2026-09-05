@@ -1,5 +1,5 @@
 <section class="hp-builder hp-wrap" id="builder" aria-labelledby="hpBuilderTitle">
-  <p class="hp-eyebrow"><%= t.hp_builder_eyebrow %></p>
+  <p class="hp-eyebrow"><span aria-hidden="true"></span><%= t.hp_builder_eyebrow %></p>
   <div class="hp-builder-heading"><h2 id="hpBuilderTitle"><%= t.hp_builder_title %></h2><p><%= t.hp_builder_lede %></p></div>
   <figure class="hp-studio">
     <div class="hp-studio-bar"><span class="hp-brand">VendVite<span class="hp-brand-dot">.</span></span><strong><%= t.hp_ui_title %></strong><span class="hp-studio-saved">✓ <%= t.hp_ui_saved %></span></div>
@@ -32,12 +32,4 @@
     </div>
     <figcaption><%= t.hp_builder_caption %></figcaption>
   </figure>
-  <div class="hp-products"><% t.hp_products.forEach(function(product){ %><article><p class="hp-label"><%= product[0] %></p><h3><%= product[1] %></h3><p><%= product[2] %></p></article><% }); %></div>
-</section>
-<section class="hp-shipping hp-wrap" aria-labelledby="hpShippingTitle">
-  <div class="hp-shipping-card">
-    <div class="hp-shipping-symbol" aria-hidden="true">✉ <span>✓</span></div>
-    <div><p class="hp-eyebrow"><%= t.hp_shipping_eyebrow %></p><h2 id="hpShippingTitle"><%= t.hp_shipping_title %></h2><p class="hp-shipping-body"><%= t.hp_shipping_body %></p></div>
-    <ol class="hp-shipping-steps"><% t.hp_shipping_steps.forEach(function(step){ %><li><span aria-hidden="true">✓</span><%= step %></li><% }); %></ol>
-  </div>
 </section>
