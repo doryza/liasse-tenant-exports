@@ -17,7 +17,7 @@ The homepage links to `/connexion`. Marked native broker links and signout contr
 
 Overview shows page visibility, membership, incoming requests and the next setup action. Separate pages cover profile, mailing, requests, membership and account. All new copy is FR/EN; navigation supports narrow screens.
 
-Profile updates validate required identity/contact information and use a database revision for optimistic concurrency. A stale tab gets 409 `PROFILE_CONFLICT` without overwriting the stored profile. Finishing setup saves first. Portraits use unique asset names, a revision check, and an 8 MB original-file limit. Failed/conflicting uploads may leave an unreferenced asset; they never replace another tab's existing portrait.
+Profile updates validate required identity/contact information and use a database revision for optimistic concurrency. A stale tab gets 409 `PROFILE_CONFLICT` without overwriting the stored profile. A validated profile save completes personalization without publishing. Publishing also records completion; existing published pages count as personalized. Publishing retains the active-membership check. Portraits use unique asset names, a revision check, and an 8 MB original-file limit. Failed/conflicting uploads may leave an unreferenced asset; they never replace another tab's existing portrait.
 
 Save and network errors are visible. Drafts remain in the current page; leaving warns of unsaved changes. After an expired session, sign in in another tab and retry; CSRF refresh only replays a request rejected before mutation. Lead writes are serialized per row and show saved/error/retry feedback; lead ownership and allowed statuses are checked server-side. Search and status filters operate on the latest 200 displayed requests.
 
@@ -36,3 +36,11 @@ Playwright: homepage login request, sign-in confirmation, six workspace pages at
 Apply the additive block labelled `Persistent broker access and optimistic profile saving` in schema.sql to `tenant_vendvite` before importing files. The Liasse importer does not run migrations. Baseline before this change: generation 50. Keep the automatic import restore point. The added tables/columns may remain after a code rollback.
 
 Liasse can retain nested required modules across tenant updates. Version the auth helper filename whenever changing its exports in a subsequent deployment. No new runtime package is required.
+
+## Save and publish visibility
+
+The editor presents save, preview and publication controls above the fields. The toolbar stays at the top of the viewport while scrolling. Published pages show their live status, save action and public page link; unpublishing remains a secondary action at the bottom.
+
+For active members with a private page, the overview puts publication above the summary cards and permits publishing the saved profile directly. Preview pages link back to the editor toolbar. Unpaid editors save first and continue to membership; publication never starts a payment itself.
+
+`node qa/publish-browser.cjs` exercises FR/EN at 1440×800, 390×568 and 320×568: initial/sticky control visibility, validation, personalization completion on save, no implicit publication, version conflicts blocking publication, preview navigation, publication from editor and overview, legacy live pages, and the unpaid membership handoff. All data is isolated in PGlite with external requests blocked.

@@ -38,7 +38,7 @@ test('broker access, session lifecycle, rate limits, CSRF and workspace save gua
   // Profile conflict detection, required identity, safe embedded script data.
   assert.equal((await mutate('/api/espace/profil',{profileVersion:0,agent_name:''})).status,400);
   const malicious='Broker </script><script>window.pwned=1</script>';
-  const save=await mutate('/api/espace/profil',{profileVersion:0,agent_name:malicious,agent_email:b.email,links:[]});assert.equal(save.status,200);assert.equal((await save.json()).profileVersion,1);
+  const save=await mutate('/api/espace/profil',{profileVersion:0,agent_name:malicious,agent_email:b.email,links:[]});assert.equal(save.status,200);const saved=await save.json();assert.equal(saved.profileVersion,1);assert.equal(saved.setupComplete,true);assert.ok(saved.profile.setup_completed_at);assert.equal((await h.db.get('SELECT published FROM brokers WHERE id=$1',[b.id])).published,0);
   assert.equal((await mutate('/api/espace/profil',{profileVersion:0,agent_name:'Overwrite'})).status,409);
   const profileResponse=await request('/espace/page',{j});assert.equal(profileResponse.status,200);const profileHtml=await profileResponse.text();assert.ok(!profileHtml.includes('</script><script>window.pwned'));assert.match(profileHtml,/\\u003c\/script/);
   assert.equal((await mutate('/api/espace/page-prete',{profileVersion:0})).status,409);

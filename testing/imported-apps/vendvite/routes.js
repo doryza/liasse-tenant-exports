@@ -3,7 +3,7 @@ var invoiceTools = require('./invoice');
 var homepageTools = require('./homepage-experiment-v1');
 var homepageCopy = require('./homepage-copy-v5');
 var brokerAuthTools = require('./broker-auth-v1');
-var workspaceCopy = require('./workspace-copy-v2');
+var workspaceCopy = require('./workspace-copy-v3');
 var campaignModel=require('./public/js/campaign-model-v1');
 var campaignDataTools=require('./campaign-data-v1');
 var campaignCopy=require('./campaign-copy-v2');
@@ -1622,7 +1622,7 @@ module.exports = function(services){
       campModePaypal: cfgPaypal.mode,
       broker: broker,
       profile: brokerProfile(broker),
-      setupComplete: !!brokerProfile(broker).setup_completed_at,
+      setupComplete: !!brokerProfile(broker).setup_completed_at || Number(broker.published) === 1,
       leads: leads || [],
       counts: counts || { total: 0, fresh: 0, recent: 0 },
       invoices: invoices || [],
@@ -1796,16 +1796,17 @@ module.exports = function(services){
       if(!String(next.agent_name||'').trim() || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(String(next.agent_email||'')))return res.status(400).json({code:'PROFILE_INVALID',error:(T[req.lang]||T.fr).ws_required_profile});
       if(Array.isArray(incoming.links) && incoming.links.some(function(l){return !l || !String(l.label||'').trim() || !/^https?:\/\//i.test(String(l.url||''));}))return res.status(400).json({code:'PROFILE_INVALID',error:req.lang==='en'?'Each link needs a label and an http(s) address.':'Chaque lien doit avoir un titre et une adresse http(s).'});
       if(next.agent_photo_url && !/^https:\/\//i.test(next.agent_photo_url))return res.status(400).json({code:'PROFILE_INVALID'});
+      // A validated, explicit save completes personalization without publishing.
+      if(!next.setup_completed_at)next.setup_completed_at=new Date().toISOString();
       var saved=await db.get('UPDATE brokers SET profile=$1,profile_version=profile_version+1,updated_at=NOW() WHERE id=$2 AND profile_version=$3 RETURNING profile,profile_version',[JSON.stringify(next),broker.id,incoming.profileVersion]);
       if(!saved)return res.status(409).json({code:'PROFILE_CONFLICT'});
       await logBrokerEvent(broker.id, 'profile_saved', '');
-      res.json({ success: true, profile: next,profileVersion:saved.profile_version });
+      res.json({ success: true, profile: next,setupComplete:true,profileVersion:saved.profile_version });
     }catch(e){ console.error('profil', e); res.status(500).json({ error: 'server' }); }
   }));
 
-  // The annual offer stays hidden until the broker explicitly confirms that
-  // their lead-capture page is personalized. Keep this milestone in profile
-  // JSON so existing tenants need no schema migration and profile saves retain it.
+  // Keep the legacy completion endpoint for already-open editors. New editors
+  // record this milestone as part of the validated profile save.
   router.post('/api/espace/page-prete', brokerEndpoint(async function(req, res){
     var broker = await requireBrokerApi(req, res);
     if (!broker) return;
@@ -1852,7 +1853,11 @@ module.exports = function(services){
       return res.status(402).json({ error: 'abonnement', code: 'PAYMENT_REQUIRED' });
     }
     try{
-      await db.run('UPDATE brokers SET published=$1, updated_at=NOW() WHERE id=$2', [want, broker.id]);
+      var prof=brokerProfile(broker);
+      if(want===1 && (!String(prof.agent_name||broker.full_name||'').trim() || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(String(prof.agent_email||broker.email||''))))return res.status(400).json({code:'PROFILE_INVALID',error:(T[req.lang]||T.fr).ws_required_profile});
+      // Publishing also completes personalization, including older saved pages.
+      // Patch the current JSON in SQL so a concurrent save cannot be overwritten.
+      await db.run("UPDATE brokers SET published=$1, profile=CASE WHEN $1=1 OR published=1 THEN jsonb_set(COALESCE(profile,'{}'::jsonb),'{setup_completed_at}',COALESCE(NULLIF(profile->'setup_completed_at','null'::jsonb),to_jsonb(NOW())),true) ELSE profile END, profile_version=profile_version+1, updated_at=NOW() WHERE id=$2", [want, broker.id]);
       await logBrokerEvent(broker.id, want ? 'published' : 'unpublished', '');
       res.json({ success: true, published: want === 1 });
     }catch(e){ console.error('publier', e); res.status(500).json({ error: 'server' }); }
@@ -2899,6 +2904,7 @@ module.exports = function(services){
       brokerSlug: broker.slug,
       brokerLinks: otherLinks,
       isPreview: !!isPreview,
+      previewPageLive: isPreview ? (await brokerAccessState(broker)).active && Number(broker.published)===1 : false,
       isDemo: !!isDemo,
       ogImage: settings._p_agent_image_url,
       canonical: absoluteUrl(req, '/' + broker.slug)
