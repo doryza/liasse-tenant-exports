@@ -76,10 +76,12 @@
   $('csEstimatedSelected').hidden=!estimatedSelected;say('csEstimatedSelected',T('estimated_selected').replace('{n}',count(estimatedSelected)));
   $('csTargetProgress').hidden=!state.addresses.length;say('csTargetProgress',T(gap?'target_short':selected.size>state.target?'target_exceeded':'target_reached').replace('{n}',count(gap)));
   $('csTargetRecovery').hidden=!state.addresses.length||!gap;
-  say('csTargetHelp',T(canFill?'fill_help':canEstimate?(Number($('csRadius').value)>=5000?'short_limit_help':'short_help'):Number($('csRadius').value)>=5000?'coverage_limit':'expand_help'));
+  // Excluding mapped addresses does not mean the current area needs to grow.
+  var needsMoreMapped=mapped<=selected.size;
+  say('csTargetHelp',T(canFill?'fill_help':!needsMoreMapped?(canEstimate?'estimates_help':'adjust_selection_help'):canEstimate?(Number($('csRadius').value)>=5000?'short_limit_help':'short_help'):Number($('csRadius').value)>=5000?'coverage_limit':'expand_help'));
   $('csFill').hidden=!canFill;$('csFill').disabled=blocked||!gap;
   $('csAddEstimated').hidden=!!canFill||!canEstimate;$('csAddEstimated').disabled=blocked;say('csAddEstimated',T('add_estimates').replace('{n}',count(canEstimate)));
-  $('csExpandArea').hidden=!pendingCenter||Number($('csRadius').value)>=5000;$('csExpandArea').disabled=searchLoading;
+  $('csExpandArea').hidden=!needsMoreMapped||!pendingCenter||Number($('csRadius').value)>=5000;$('csExpandArea').disabled=searchLoading;
  }
 
  on('csUndo','click',function(){var prev=undo.pop();if(!prev)return;selected=new Set(prev.selected);excluded=new Set(prev.excluded);state.target=prev.target;$('csTarget').value=state.target;$('csUndo').disabled=!undo.length;render(false);changed();});

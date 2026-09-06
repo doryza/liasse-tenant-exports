@@ -99,6 +99,25 @@ async function saved(page){await page.waitForFunction(()=>/Brouillon enregistré
    assert.equal(stored.addresses.length,4000);assert.equal(stored.selected.length,1200);assert.equal(stored.radius,4200);
    assert.ok(stored.addresses.filter(a=>stored.selected.includes(a.id)).every(a=>a.source==='point'));
    assert.equal(await page.locator('body').evaluate(el=>el.scrollWidth<=innerWidth),true);
+
+   // Screenshot case: the area has 1,413 mapped addresses, but exclusions leave
+   // 1,197 mapped + 2 estimated selected. Offer the missing estimate without growth.
+   const screenshotAddresses=legacyAddresses.map((a,i)=>({...a,source:i<1413?'point':'interpole'}));
+   const screenshotMapped=screenshotAddresses.filter(a=>a.source==='point'),screenshotEstimates=screenshotAddresses.filter(a=>a.source==='interpole');
+   const screenshotDraft={...draft,radius:2500,addresses:screenshotAddresses,selected:screenshotMapped.slice(0,1197).concat(screenshotEstimates.slice(0,2)).map(a=>a.id),excluded:screenshotMapped.slice(1197).map(a=>a.id)};
+   await h.db.run('UPDATE broker_campaign_drafts SET revision=revision+1,data=$2 WHERE broker_id=$1',[b.id,JSON.stringify(screenshotDraft)]);
+   await page.reload();await selected(page,1199);await quote(page,1199);
+   assert.equal(number(await page.locator('#csFound').innerText()),1413);
+   assert.equal(await page.locator('#csExpandArea').isVisible(),false,'existing mapped addresses do not trigger radius expansion after exclusions');
+   assert.doesNotMatch(await page.locator('#csTargetHelp').innerText(),/Élarg|Expand|Déplacez|Move/);
+   assert.equal(await page.locator('#csAddEstimated').isVisible(),true);
+   assert.match(await page.locator('#csAddEstimated').innerText(),/\b1\b/);
+   await page.locator('.cs-selection-card').screenshot({path:'/tmp/vendvite-radius-suggestion-'+width+'.png'});
+   await page.locator('#csAddEstimated').click();await selected(page,1200);await quote(page,1200);await saved(page);
+   stored=(await h.db.get('SELECT data FROM broker_campaign_drafts WHERE broker_id=$1',[b.id])).data;
+   assert.equal(stored.radius,2500);assert.equal(stored.selected.length,1200);
+   assert.deepEqual(stored.excluded,screenshotDraft.excluded);
+   assert.equal(number(await page.locator('#csEstimatedSelected').innerText()),3);
    await context.close();console.log('Count and target browser checks passed at '+width+'px ('+lang+').');
   }
   assert.deepEqual(errors,[]);assert.equal(h.emails.length,0);
