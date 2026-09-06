@@ -1,7 +1,7 @@
 var express = require('express');
 var invoiceTools = require('./invoice');
 var solicitationTools = require('./solicitation-v1');
-var mailingService = require('./mailing-service-v2');
+var mailingService = require('./mailing-service-v3');
 var homepageTools = require('./homepage-experiment-v1');
 var homepageCopy = require('./homepage-copy-v6');
 var brokerAuthTools = require('./broker-auth-v1');
@@ -1391,7 +1391,7 @@ module.exports = function(services){
     var link = absoluteUrl(req, '/acces/' + rawToken) + '?lang=' + (lang==='en'?'en':'fr');
     var fr = (lang !== 'en');
     var subject = fr ? 'Votre invitation VendVite' : 'Your VendVite invitation';
-    var pageUrl = absoluteUrl(req, '/' + broker.slug);
+    var pageUrl = absoluteUrl(req, '/espace/apercu');
     var html = ''
       + '<div style="background:#0D0A0B;padding:34px 20px;font-family:Inter,-apple-system,Segoe UI,Roboto,sans-serif">'
       + '<div style="max-width:520px;margin:0 auto;background:linear-gradient(165deg,#171213,#0f0b0c);border:1px solid rgba(245,239,230,.12);border-radius:10px;padding:32px 28px;color:#F5EFE6">'
@@ -1407,7 +1407,7 @@ module.exports = function(services){
       + '<a href="' + link + '" style="display:block;text-align:center;padding:16px;border-radius:4px;background:#E30B2D;color:#fff;text-decoration:none;font-family:Georgia,serif;font-weight:bold;font-size:16px;box-shadow:inset 0 0 0 1.5px rgba(199,154,91,.5)">'
       + (fr ? 'Ouvrir mon espace' : 'Open my workspace') + '</a>'
       + '<p style="color:rgba(245,239,230,.34);font-size:12.5px;line-height:1.6;margin:20px 0 0">'
-      + (fr ? 'Votre adresse réservée : ' : 'Your reserved address: ') + '<span style="color:#C79A5B">' + pageUrl + '</span><br>'
+      + (fr ? 'Votre aperçu privé : ' : 'Your private preview: ') + '<span style="color:#C79A5B">' + pageUrl + '</span><br>'
       + (fr ? 'Ce lien est personnel et valable 72 heures pour une première connexion. Ensuite, retrouvez votre espace depuis la page d’accueil sans redemander de lien sur cet appareil.' : 'This personal link is valid for 72 hours for your first sign-in. Afterwards, return from the homepage without requesting another link on this device.')
       + '</p></div></div>';
     var text = (fr ? 'Votre page privée VendVite : ' : 'Your private VendVite page: ') + link;
@@ -1648,7 +1648,7 @@ module.exports = function(services){
       paymentTest: req.query && req.query.paiement === 'test',
       paypalMode: activePaypal.mode,
       paypalConfigured: paypalReady(activePaypal),
-      pageUrl: absoluteUrl(req, '/' + broker.slug),
+      pageUrl: absoluteUrl(req, '/espace/apercu'),
       ws:true,
       csrf:req._vvSession.csrf,
       sessions:activePage==='compte'?await db.all('SELECT id,device_label,created_at,last_seen_at,absolute_expires_at FROM broker_sessions WHERE broker_id=$1 AND revoked_at IS NULL AND idle_expires_at>NOW() AND absolute_expires_at>NOW() ORDER BY last_seen_at DESC LIMIT 20',[broker.id]):[],
@@ -1677,24 +1677,36 @@ module.exports = function(services){
     }catch(e){ console.error('broker workspace render failed');workspaceUnavailable(req,res); }
   }));
 
+  async function draftPreviewRecipient(broker){
+    var draft=await db.get('SELECT data FROM broker_campaign_drafts WHERE broker_id=$1',[broker.id]);
+    return draft&&draft.data&&(draft.data.addresses||[]).find(function(a){return (draft.data.selected||[]).includes(campaignModel.key(a));});
+  }
+
   // Live preview of the broker's own page, regardless of published/paid state.
   router.get('/espace/apercu', brokerEndpoint(async function(req, res){
     var broker = await requireBroker(req, res);
     if (!broker) return;
-    try{ await renderBrokerPage(req, res, broker, true); }
+    try{
+      if(req.query.proof==='1'){
+        var sample=await draftPreviewRecipient(broker);
+        if(sample){req.vvInitialAddress=mailingService.addressLines(sample).join(', ');if(campaignModel.qc(sample))req.vvInitialLocation={lat:Number(sample.lat),lng:Number(sample.lng)};}
+      }
+      await renderBrokerPage(req, res, broker, true);
+    }
     catch(e){ console.error('apercu', e); res.status(500).send('Erreur'); }
   }));
 
   // Monochrome, print-ready acquisition letter. The QR is generated on the
-  // server so every copy points to this broker's exact VendVite page.
+  // server and opens only the signed-in broker's private sample. Production
+  // recipient codes are generated exclusively in the operator print route.
   router.get('/espace/lettre-proprietaires', brokerEndpoint(async function(req, res){
     var broker = await requireBroker(req, res);
     if (!broker) return;
     try{
       var profile = brokerProfile(broker);
-      var proofAddress=null;
-      if(req.query.proof==='1'){var draft=await db.get('SELECT data FROM broker_campaign_drafts WHERE broker_id=$1',[broker.id]);if(draft&&draft.data){var first=(draft.data.addresses||[]).find(function(a){return (draft.data.selected||[]).includes(campaignModel.key(a));});if(first)proofAddress=mailingService.addressLines(first);}}
-      var pageUrl = absoluteUrl(req, mailingService.isMailing(broker)?'/espace/apercu':'/' + broker.slug);
+      var sample=req.query.proof==='1'?await draftPreviewRecipient(broker):null;
+      var proofAddress=sample?mailingService.addressLines(sample):null;
+      var pageUrl = absoluteUrl(req, '/espace/apercu'+(sample?'?proof=1':''));
       var qrDataUrl = await services.qrcode.toDataURL(pageUrl, {
         errorCorrectionLevel: 'H',
         margin: 2,
@@ -1722,7 +1734,7 @@ module.exports = function(services){
         pageUrl: pageUrl,
         qrDataUrl: qrDataUrl,
         recipients: proofAddress?[proofAddress]:undefined,
-        proof: req.query.proof==='1',
+        proof: true,
         formatPhone: formatPhone
       }));
     }catch(e){ console.error('lettre proprietaires', e); res.status(500).send('Erreur'); }
@@ -2346,7 +2358,7 @@ module.exports = function(services){
     if (!broker) return;
     try{
       var c = await db.get(
-        "SELECT * FROM broker_campaigns WHERE id=$1 AND broker_id=$2 AND payment_status<>'paid' AND status<>'mailed'",
+        "SELECT * FROM broker_campaigns WHERE id=$1 AND broker_id=$2 AND kind='paid' AND payment_status IN ('pending','cancelled') AND status IN ('pending_payment','cancelled')",
         [Math.floor(Number(req.params.id)) || 0, broker.id]
       );
       if (!c) return res.status(404).json({ code: 'NOT_EDITABLE' });
@@ -2356,7 +2368,7 @@ module.exports = function(services){
         rayon: c.radius_m || 0,
         ville: c.city || '',
         notes: c.notes || '',
-        adresses: c.addresses || []
+        adresses: mailingService.addresses(c).map(function(a){var copy=Object.assign({},a);delete copy.mailing_id;return copy;})
       });
     }catch(e){ console.error('territoire', e); res.status(500).json({ error: 'server' }); }
   }));
@@ -2934,6 +2946,7 @@ module.exports = function(services){
       inlineEditor: !!req.vvInlineEditor,
       editor: req.vvInlineEditor?{profile:Object.assign({},prof,{agent_name:settings.agent_name,agent_email:settings.agent_email,agency:settings.agency,agent_phone:settings.agent_phone,agent_title:t.agent_title}),profileVersion:Number(broker.profile_version)||0,csrf:req._vvSession.csrf}:null,
       mailingToken: req.vvMailingToken || null,
+      mailingRecipient: req.vvMailingRecipient || null,
       ogImage: settings._p_agent_image_url,
       canonical: absoluteUrl(req, '/' + broker.slug)
     }));
@@ -2949,21 +2962,11 @@ module.exports = function(services){
     try{
       var broker = await db.get('SELECT * FROM brokers WHERE slug=$1', [req.params.slug]);
       if (!broker) return res.status(404).json({ error: 'introuvable' });
-      var pageLive = await brokerPageLive(broker);
-      if(mailingService.isMailing(broker)){
-        var originCampaign=await mailingService.campaignForToken(db,(req.body||{}).mailingToken);
-        pageLive=pageLive && !!originCampaign && Number(originCampaign.broker_id)===Number(broker.id);
-      }
-      if (!pageLive) {
-        // An invited broker must be able to test the complete funnel from the
-        // private preview. The signed session keeps this exception scoped to
-        // that broker; inactive pages remain closed to everyone else.
-        var previewOwner = await currentBroker(req,res);
-        if (!previewOwner || Number(previewOwner.id) !== Number(broker.id)) {
-          return res.status(403).json({ error: 'inactif' });
-        }
-      }
       var b = req.body || {};
+      var origin=await mailingService.recipientForToken(db,b.mailingToken,b.mailingRecipient);
+      if(!origin || Number(origin.campaign.broker_id)!==Number(broker.id) || !(await brokerPageLive(broker))){
+        return res.status(403).json({ error: 'lien_courrier_requis' });
+      }
       var name = String(b.name || '').trim().slice(0, 120);
       var address = String(b.address || '').trim().slice(0, 300);
       if (!name || !address) return res.status(400).json({ error: (T[req.lang || 'fr'] || T.fr).err_required });
@@ -2975,7 +2978,7 @@ module.exports = function(services){
          isFinite(lat) ? lat : null, isFinite(lng) ? lng : null, String(b.timeframe || '').trim().slice(0, 80), 'nouveau']
       );
       notifyBrokerOfLead(req, broker, row).catch(function(e){ console.error('lead mail', e); });
-      res.json({ success: true, preview: !pageLive });
+      res.json({ success: true });
     }catch(e){ console.error('piste', e); res.status(500).json({ error: 'server' }); }
   });
 
@@ -3085,43 +3088,33 @@ module.exports = function(services){
     }catch(e){ res.status(500).json({ error: 'server' }); }
   });
 
-  router.get(['/courrier/:token','/courrier/:token/:recipient'], brokerEndpoint(async function(req,res){
-    var campaign=await mailingService.campaignForToken(db,req.params.token);
-    if(!campaign)return res.status(404).send('Campagne introuvable.');
-    var broker=await db.get('SELECT * FROM brokers WHERE id=$1',[campaign.broker_id]);
-    if(!broker||!(await brokerPageLive(broker)))return res.status(404).send('Page indisponible.');
-    if(req.params.recipient){
-      if(!/^[a-f0-9]{32}$/.test(req.params.recipient))return res.sendStatus(404);
-      var recipient=mailingService.addresses(campaign).find(function(a){return a.mailing_id===req.params.recipient;});
-      if(!recipient)return res.sendStatus(404);
-      req.vvInitialAddress=mailingService.addressLines(recipient).join(', ');
-      if(campaignModel.qc(recipient))req.vvInitialLocation={lat:Number(recipient.lat),lng:Number(recipient.lng)};
-    }
+  function mailingHome(req,res){
     brokerAuthTools.protect(res);
+    return res.redirect(302,tp(req,'/'));
+  }
+
+  router.get(['/courrier/:token','/courrier/:token/:recipient'], brokerEndpoint(async function(req,res){
+    brokerAuthTools.protect(res);
+    res.set('X-Robots-Tag','noindex, nofollow, noarchive');
+    var origin=await mailingService.recipientForToken(db,req.params.token,req.params.recipient);
+    if(!origin)return mailingHome(req,res);
+    var campaign=origin.campaign,recipient=origin.recipient;
+    var broker=await db.get('SELECT * FROM brokers WHERE id=$1',[campaign.broker_id]);
+    if(!broker||!(await brokerPageLive(broker)))return mailingHome(req,res);
+    req.vvInitialAddress=mailingService.addressLines(recipient).join(', ');
+    if(campaignModel.qc(recipient))req.vvInitialLocation={lat:Number(recipient.lat),lng:Number(recipient.lng)};
     req.vvMailingToken=campaign.mailing_token;
+    req.vvMailingRecipient=recipient.mailing_id;
     await renderBrokerPage(req,res,broker,false,false);
   }));
 
-  // ── GET /:slug — a broker's public page. Must remain the LAST route before
-  //    the catch-all: it matches any single path segment, so every reserved
-  //    platform/app path has to be refused explicitly.
-  router.get('/:slug', async function(req, res, next){
+  // Generic agent URLs always return home. Owners edit and test their page
+  // through authenticated /espace routes; only issued recipient links capture leads.
+  router.get('/:slug', function(req, res, next){
     var slug = String(req.params.slug || '');
     if (!slug || RESERVED_SLUGS.indexOf(slug.toLowerCase()) !== -1) return next();
-    if (slug.indexOf('.') !== -1) return next();
     if (!/^[a-z0-9-]+$/.test(slug)) return next();
-    try{
-      var broker = await db.get('SELECT * FROM brokers WHERE slug=$1', [slug]);
-      if (!broker) return next();
-      if(mailingService.isMailing(broker)){var owner=await currentBroker(req,res);if(!owner||Number(owner.id)!==Number(broker.id))return next();}
-      // Unpaid or unpublished pages do not exist publicly — the broker reaches
-      // their own draft through /espace/apercu instead.
-      if (!(await brokerPageLive(broker))) {
-        var me = await currentBroker(req,res);
-        if (!me || me.id !== broker.id) return next();
-      }
-      await renderBrokerPage(req, res, broker, false);
-    }catch(e){ console.error('broker page', e); next(); }
+    return mailingHome(req,res);
   });
 
 

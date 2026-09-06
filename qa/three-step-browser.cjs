@@ -1,7 +1,7 @@
 const fs=require('fs'),path=require('path'),assert=require('node:assert/strict');
 const {create,root}=require('./harness.cjs');
 const {chromium}=require('/home/liassetech/courtier-outreach/node_modules/playwright-core');
-const authTools=require(root+'/broker-auth-v1'),mail=require(root+'/mailing-service-v2');
+const authTools=require(root+'/broker-auth-v1'),mail=require(root+'/mailing-service-v3');
 const out='/home/liassetech/previews/vendvite-three-step';
 const pixel=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIHWP4z8DwHwAFgAI/ScLbtAAAAABJRU5ErkJggg==','base64');
 (async()=>{
@@ -40,7 +40,7 @@ const pixel=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQ
   await printPage.pdf({path:path.join(out,'personalized-recipient-letters.pdf'),preferCSSPageSize:true,printBackground:true});
   const geometry=await printPage.locator('.letter').evaluateAll(pages=>pages.map(p=>{const y=p.getBoundingClientRect().top;return{lang:p.lang,middle:(p.querySelector('.middle-panel').getBoundingClientRect().bottom-y)/96,bottom:(p.querySelector('.bottom-panel').getBoundingClientRect().bottom-y)/96,footer:(p.querySelector('.fine').getBoundingClientRect().top-y)/96};}));for(const g of geometry){assert(g.middle<7.375,JSON.stringify(g));assert(g.bottom<g.footer,JSON.stringify(g));}
   for(const [i,a] of recipients.entries()){await page.goto(h.url+'/pwa/vendvite/courrier/'+campaign.mailing_token+'/'+a.mailing_id+'?lang=en');assert.equal(await page.locator('#addressInput').inputValue(),mail.addressLines(a).join(', '));assert.equal(await page.locator('#leadForm').isVisible(),true);if(i===0){await page.locator('#changeRecipientAddress').click();await page.locator('#addressInput').fill('987 Nouvelle rue, Laval QC H7W 4Y4');await page.locator('#leadName').fill('Homeowner QA');await page.locator('#leadEmail').fill('homeowner@example.test');await page.locator('#sealBtn').click();await page.locator('#ficheSuccess').waitFor({state:'visible'});assert.equal((await h.db.get('SELECT address FROM broker_leads WHERE broker_id=$1',[b.id])).address,'987 Nouvelle rue, Laval QC H7W 4Y4');}}
-  assert.equal((await page.goto(h.url+'/courrier/'+campaign.mailing_token+'/'+'f'.repeat(32))).status(),404);
+  await page.goto(h.url+'/courrier/'+campaign.mailing_token+'/'+'f'.repeat(32));assert.equal(page.url(),h.url+'/');
   report.checks.push('unique stable recipient QR links on both sides; address edits captured for the correct broker');
   assert.equal(mail.deadline('2026-09-04T12:00:00Z').toISOString(),'2026-09-07T12:00:00.000Z');
   // The editor is the actual page, starts empty, and stages changes until Save.

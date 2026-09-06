@@ -1,6 +1,6 @@
 const {test}=require('node:test'),assert=require('node:assert/strict');
 const {create,root}=require('./harness.cjs');
-const tools=require(root+'/solicitation-v1'),mailing=require(root+'/mailing-service-v2'),authModule=require(root+'/broker-auth-v1');
+const tools=require(root+'/solicitation-v1'),mailing=require(root+'/mailing-service-v3'),authModule=require(root+'/broker-auth-v1');
 const raw='Marie Tremblay {"Agence, Exemple", Courtier immobilier, 514 555-0100, https://example.test/marie.jpg}\n1234 RUE DES ÉRABLES\nLAVAL QC H7W 4Y4';
 function jar(r){return r.headers.getSetCookie().map(c=>c.split(';')[0]).join('; ');}
 test('strict agent parsing separates identity from delivery lines',()=>{
@@ -40,8 +40,10 @@ test('saved campaigns, personalized demos, free onboarding and campaign-only cap
   const paid=await h.db.get("INSERT INTO broker_campaigns(broker_id,kind,status,payment_status,addresses) VALUES($1,'paid','confirmed','paid',$2) RETURNING *",[broker.id,JSON.stringify([{numero:'1234',rue:'RUE TEST',ville:'LAVAL',postal:'H7W 4Y4',unit:'2'}])]);
   const production=await req('/admin/campagnes/'+paid.id+'/lettres',undefined,admin);assert.equal(production.status,200);const letter=await production.text();assert.match(letter,/2-1234 RUE TEST/);assert.match(letter,/H7W 4Y4/);
   const refreshed=await h.db.get('SELECT * FROM broker_campaigns WHERE id=$1',[paid.id]);assert.match(refreshed.mailing_token,/^[a-f0-9]{48}$/);
-  assert.equal((await req('/courrier/'+refreshed.mailing_token)).status,200);
-  assert.equal((await req('/api/courtier/'+broker.slug+'/piste',{...lead,mailingToken:refreshed.mailing_token})).status,200);
-  await h.db.run("UPDATE broker_campaigns SET status='cancelled' WHERE id=$1",[paid.id]);assert.equal((await req('/courrier/'+refreshed.mailing_token)).status,404);assert.equal((await req('/api/courtier/'+broker.slug+'/piste',{...lead,mailingToken:refreshed.mailing_token})).status,403);
+  const recipient=refreshed.addresses[0].mailing_id;
+  assert.equal((await req('/courrier/'+refreshed.mailing_token)).status,302);
+  assert.equal((await req('/courrier/'+refreshed.mailing_token+'/'+recipient)).status,200);
+  assert.equal((await req('/api/courtier/'+broker.slug+'/piste',{...lead,mailingToken:refreshed.mailing_token,mailingRecipient:recipient})).status,200);
+  await h.db.run("UPDATE broker_campaigns SET status='cancelled' WHERE id=$1",[paid.id]);assert.equal((await req('/courrier/'+refreshed.mailing_token+'/'+recipient)).status,302);assert.equal((await req('/api/courtier/'+broker.slug+'/piste',{...lead,mailingToken:refreshed.mailing_token,mailingRecipient:recipient})).status,403);
  }finally{await h.close();}
 });

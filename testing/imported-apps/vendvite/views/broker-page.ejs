@@ -21,6 +21,7 @@ window.VV_INITIAL_LOCATION = <%- scriptJson(typeof initialLocation!=='undefined'
 window.VV_PAGE_PREVIEW = <%- JSON.stringify(!!isPreview) %>;
 window.VV_INITIAL_ADDRESS = <%- scriptJson(typeof initialAddress !== 'undefined' ? initialAddress : null) %>;
 window.VV_MAILING_TOKEN = <%- scriptJson(typeof mailingToken !== 'undefined' ? mailingToken : null) %>;
+window.VV_MAILING_RECIPIENT = <%- scriptJson(typeof mailingRecipient !== 'undefined' ? mailingRecipient : null) %>;
 window.VV_DEMO = <%- JSON.stringify(typeof isDemo !== 'undefined' && isDemo) %>;
 window.VV_BROKER = <%- JSON.stringify(typeof brokerSlug !== 'undefined' ? brokerSlug : null) %>;
 window.VV_LEAD_URL = <%- JSON.stringify(typeof brokerSlug !== 'undefined' && brokerSlug

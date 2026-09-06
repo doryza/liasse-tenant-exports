@@ -1,5 +1,5 @@
 const {test}=require('node:test'),assert=require('node:assert/strict');
-const {create,root}=require('./harness.cjs'),mail=require(root+'/mailing-service-v2');
+const {create,root}=require('./harness.cjs'),mail=require(root+'/mailing-service-v3');
 test('recipient links stay stable, private and specific to confirmed mailings',async()=>{
  const h=await create();
  try{
@@ -15,15 +15,15 @@ test('recipient links stay stable, private and specific to confirmed mailings',a
    const html=await response.text();assert.ok(html.includes('window.VV_INITIAL_ADDRESS = '+JSON.stringify(mail.addressLines(a).join(', '))));
    assert.ok(!html.includes(one.addresses[1-i].mailing_id));
   }
-  assert.equal((await fetch(h.url+prefix+'/'+'f'.repeat(32))).status,404);
-  assert.equal((await fetch(h.url+prefix)).status,200,'old printed campaign links still work');
+  assert.equal((await fetch(h.url+prefix+'/'+'f'.repeat(32),{redirect:'manual'})).status,302);
+  assert.equal((await fetch(h.url+prefix,{redirect:'manual'})).status,302,'campaign-only links return home');
   const admin={'x-test-admin':'yes'};
   await h.db.run("UPDATE broker_campaigns SET status='pending_payment',payment_status='pending' WHERE id=$1",[campaign.id]);
   assert.equal((await fetch(h.url+'/admin/campagnes/'+campaign.id+'/lettres',{headers:admin})).status,409);
-  assert.equal((await fetch(h.url+prefix+'/'+one.addresses[0].mailing_id)).status,404);
+  assert.equal((await fetch(h.url+prefix+'/'+one.addresses[0].mailing_id,{redirect:'manual'})).status,302);
   await h.db.run("UPDATE broker_campaigns SET kind='included',payment_status='none',status='confirmed' WHERE id=$1",[campaign.id]);
   assert.equal((await fetch(h.url+prefix+'/'+one.addresses[0].mailing_id)).status,200,'purchased legacy mailing credits remain usable');
-  await h.db.run("UPDATE broker_campaigns SET status='cancelled' WHERE id=$1",[campaign.id]);assert.equal((await fetch(h.url+prefix)).status,404);
+  await h.db.run("UPDATE broker_campaigns SET status='cancelled' WHERE id=$1",[campaign.id]);assert.equal((await fetch(h.url+prefix,{redirect:'manual'})).status,302);
  }finally{await h.close();}
 });
 test('the mailing deadline is 72 elapsed hours, including weekends',()=>{

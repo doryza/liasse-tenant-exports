@@ -77,7 +77,7 @@
         if(btn){ btn.disabled=true; btn.textContent=T.submitting || '…'; }
         if(window.VV_PAGE_PREVIEW){if(errEl)errEl.textContent=document.documentElement.lang==='en'?'Preview only. No request has been sent.':'Aperçu seulement. Aucune demande envoyée.';if(btn){btn.disabled=false;btn.textContent=orig;}return;}
         if(window.VV_DEMO){ form.reset(); stampFiche(); return; }
-        var payload={ mailingToken:window.VV_MAILING_TOKEN||null, name:name, email:((q('leadEmail') && q('leadEmail').value) || '').trim(), phone:((q('leadPhone') && q('leadPhone').value) || '').trim(), timeframe:((q('leadTime') && q('leadTime').value) || '').trim(), address:address, lat:((q('leadLat') && q('leadLat').value) || ''), lng:((q('leadLng') && q('leadLng').value) || '') };
+        var payload={ mailingToken:window.VV_MAILING_TOKEN||null, mailingRecipient:window.VV_MAILING_RECIPIENT||null, name:name, email:((q('leadEmail') && q('leadEmail').value) || '').trim(), phone:((q('leadPhone') && q('leadPhone').value) || '').trim(), timeframe:((q('leadTime') && q('leadTime').value) || '').trim(), address:address, lat:((q('leadLat') && q('leadLat').value) || ''), lng:((q('leadLng') && q('leadLng').value) || '') };
         // On a broker's page the lead belongs to that broker, not to the
         // house funnel — VV_BROKER is emitted only by broker-page.ejs.
         var leadUrl = window.VV_LEAD_URL || (window.VV_BROKER ? ('api/courtier/' + window.VV_BROKER + '/piste') : 'api/lead');

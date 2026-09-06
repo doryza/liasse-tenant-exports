@@ -73,7 +73,7 @@
   </style>
 </head>
 <body>
-  <% if(typeof proof!=='undefined'&&proof){ %><p class="proof-note"><%= lang==='fr'?'Aperçu — le QR final sera propre à chaque adresse.':'Preview — the final QR will be unique to each address.' %></p><% } %>
+  <% if(typeof proof!=='undefined'&&proof){ %><p class="proof-note"><%= lang==='fr'?'Aperçu privé — ce QR ouvre votre aperçu connecté. Chaque lettre envoyée par VendVite aura son propre code sécurisé.':'Private preview — this QR opens your signed-in preview. Each letter mailed by VendVite will have its own secure code.' %></p><% } %>
   <% if (!embed) { %><div class="printbar"><span><%= TL[lang].ltr_printbar_meta %></span><button type="button" onclick="window.print()"><%= TL[lang].ltr_print_button %></button></div><% } %>
   <% var langues = (lang === 'en') ? ['en', 'fr'] : ['fr', 'en']; %>
   <% (typeof recipients !== 'undefined' && recipients ? recipients : [['ADRESSE DU DESTINATAIRE / RECIPIENT ADDRESS','VILLE QC  A1A 1A1']]).forEach(function(recipient){ var recipientAddress=Array.isArray(recipient)?recipient:recipient.address; %>
