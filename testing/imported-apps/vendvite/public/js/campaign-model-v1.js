@@ -34,7 +34,9 @@
    }
   });
   var dedup=new Map();points.forEach(function(a){if(!a.rue||!valid(a)||!qc(a)||!inside(a,polygon))return;a.metres=distance(center,a);if(a.metres>radius)return;var k=key(a),old=dedup.get(k);if(!old||old.source==='interpole'&&a.source==='point')dedup.set(k,a);});
-  return Array.from(dedup.values()).sort(function(a,b){return a.metres-b.metres;}).slice(0,4000).map(function(a){a.id=key(a);return a;});
+  // Preserve mapped addresses before estimated numbers consume the result cap.
+  // The retained list still follows distance for map/list selection behavior.
+  return Array.from(dedup.values()).sort(function(a,b){return Number(a.source==='interpole')-Number(b.source==='interpole')||a.metres-b.metres;}).slice(0,4000).sort(function(a,b){return a.metres-b.metres;}).map(function(a){a.id=key(a);return a;});
  }
  function summary(list){var s={letters:list.length,knownUnits:0,unknownUnits:0,review:0,house:0,plex:0,apartment:0,condo:0,residential:0,nonresidential:0,unknown:0},buildings=new Set();list.forEach(function(a){var p=a.analysis||classify({});s[['house','plex','apartment','condo','residential','nonresidential','unknown'].includes(p.type)?p.type:'unknown']++;if(a.source==='interpole'||p.type==='unknown'||p.type==='nonresidential')s.review++;if(p.source==='montreal'&&Array.isArray(p.assessments)){p.assessments.forEach(function(record){var id='assessment:'+record.id;if(buildings.has(id))return;buildings.add(id);if(record.units)s.knownUnits+=record.units;else s.unknownUnits++;});return;}var k=p.buildingId||a.id||key(a);if(buildings.has(k))return;buildings.add(k);if(p.units)s.knownUnits+=p.units;else s.unknownUnits++;});return s;}
  function filter(a,f){var p=a.analysis||classify({});return (!f.type||p.type===f.type)&&(!f.search||norm([a.numero,a.rue,a.ville,a.postal].join(' ')).includes(norm(f.search)))&&(!f.source||a.source===f.source)&&(!f.units||p.units!==null&&(f.units==='1'?p.units===1:f.units==='2-5'?p.units>=2&&p.units<=5:p.units>=6));}

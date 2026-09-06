@@ -30,3 +30,13 @@
 .cs-studio.is-expanded .cs-legend,.cs-studio.is-expanded #csProperty{display:none}
 @media(max-width:1100px){.cs-map-pending{align-items:stretch;flex-direction:column}.cs-map-pending-actions>*{flex:1}}
 @media(max-width:520px){.cs-map-radius{padding:10px 12px}.cs-map-radius p{font-size:11px}.cs-map-tools{padding:7px;gap:5px}.cs-map-tools>div{gap:4px}.cs-map-tools button{font-size:10px;padding:7px;min-height:44px}.cs-map-tools #csFullscreen{font-size:10px;padding:7px}.cs-map-pending{padding:12px;gap:10px}.cs-map-pending-actions .esp-btn,.cs-map-pending-actions .esp-ghost{font-size:11px;padding:8px}.cs-studio.is-expanded .cs-map-panel{inset:0;border-radius:0;max-height:100dvh;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}}
+
+/* Explain the selected quantity before offering ways to complete it. */
+.cs-stats .cs-selected-total{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap}
+.cs-stats .cs-selected-total>span{display:inline;font:500 15px var(--sans);color:#c9ad89;margin:0}.cs-selected-total b{font-weight:500}
+.cs-target-progress{font:600 13px/1.6 var(--sans);color:#f2d1a4;margin:14px 0 8px}
+.cs-target-recovery{background:#2c2119;border:1px solid #705334;border-radius:7px;padding:14px;margin-top:13px}
+.cs-target-recovery p{font:12px/1.6 var(--sans);color:#d6c0a4;margin:0 0 12px}
+.cs-target-recovery>div{display:flex;gap:9px;flex-wrap:wrap}.cs-target-recovery button{min-height:44px;font:500 12px/1.5 var(--sans);white-space:normal;text-align:left}
+.cs-target-recovery .esp-ghost{padding:9px 12px}.cs-target-recovery #csAddEstimated{width:100%;padding:8px 0;background:none;border:0;color:#e6c393;text-decoration:underline;text-underline-offset:4px}
+.cs-bulk button:first-child{width:auto}
