@@ -269,6 +269,6 @@
   window.VV_CAMP = { id:<%= Number(broker.id) %>, lang:<%- scriptJson(lang) %>, setupComplete:<%= setupComplete?'true':'false' %>, cible: <%= campCible %>, restantes: <%= campQuota.restantes %>, palier: <%= campPalier %>, max: <%= campMax %>, paliers: <%- scriptJson(campPaliers) %>, peutPayer: <%= campPeutPayer ? 'true' : 'false' %>, mode: <%- scriptJson(campModePaypal) %>, credit: <%= campQuota.creditPortes %>, active: <%= isActive ? 'true' : 'false' %>, published: <%= Number(broker.published) === 1 ? 'true' : 'false' %>, subscriptionTotal: <%= Math.round(price.total * 100) %> };
 </script>
 <script src="public/js/espace.js?v=publish-v1" defer></script>
-<% if(activePage==='courrier'){ %><script src="public/js/campaign-model-v1.js?v=address-counts-v1" defer></script><script src="public/js/campaign-studio-v1.js?v=address-counts-v1" defer></script><% } %>
+<% if(activePage==='courrier'){ %><script src="public/js/campaign-model-v1.js?v=address-counts-v1" defer></script><script src="public/js/campaign-studio-v1.js?v=selection-cap-v1" defer></script><% } %>
 </body>
 </html>

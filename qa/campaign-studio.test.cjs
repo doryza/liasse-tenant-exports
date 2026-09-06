@@ -47,6 +47,10 @@ test('draft isolation, concurrency, source caching and exact mailing quotes',asy
  assert.equal((await req('brouillon',{revision:2,data:{...data,selected:['not-present']}},a,'PUT')).status,400);
  assert.equal((await req('brouillon',{revision:2,data:{...data,addresses:[addr,addr]}},a,'PUT')).status,400);
  assert.equal((await req('brouillon',{revision:2,data:{...data,center:{lat:40,lng:-70}}},a,'PUT')).status,400);
+ const overflow=Array.from({length:1201},(_,i)=>address(10000+i));
+ r=await req('brouillon',{revision:2,data:{...data,target:1200,addresses:overflow,selected:overflow.map(a=>a.id)}},a,'PUT');
+ assert.equal(r.status,400);assert.equal((await r.json()).code,'BAD_DRAFT');
+ saved=await (await req('brouillon',undefined,a,'GET')).json();assert.equal(saved.revision,2);assert.deepEqual(saved.data.selected,data.selected,'overflow cannot overwrite the valid draft');
 
  // Payment creation is mocked, but the stored quantity and PayPal payload
  // come through the real route. No external PayPal call or mail is sent.
@@ -55,6 +59,9 @@ test('draft isolation, concurrency, source caching and exact mailing quotes',asy
  const orders=[];h.services.fetch=async(url,opts)=>{if(url.endsWith('/v1/oauth2/token'))return {ok:true,json:async()=>({access_token:'fake'})};assert.ok(url.endsWith('/v2/checkout/orders'));orders.push({body:JSON.parse(opts.body),key:opts.headers['PayPal-Request-Id']});return {ok:true,json:async()=>({id:'QA-'+orders.length,links:[{rel:'approve',href:'https://example.test/mock-payment'}]})}};
  const batch=Array.from({length:152},(_,i)=>address(5000+i));
  let payload={centre:center,ville:'Montréal',rayon:800,adresses:batch.slice(0,151),quantite:151,expectedTotal:183};
+ assert.equal((await req('commander',{...payload,adresses:overflow,quantite:1201})).status,400);
+ assert.equal((await req('commander',{...payload,adresses:overflow,quantite:1200})).status,400,'understating quantity cannot bypass the address cap');
+ assert.equal(orders.length,0,'overflow never creates a payment');
  assert.equal((await req('commander',{...payload,quantite:150})).status,400);
  assert.equal((await req('commander',{...payload,quantite:151.5})).status,400);
  assert.equal((await req('commander',{...payload,expectedTotal:1})).status,409);

@@ -34,6 +34,8 @@ Quotes and orders use the exact selected quantity with integer-cent pricing and 
 - Existing `qa/broker-access.test.cjs`, `qa/broker-browser.cjs` and `qa/homepage.test.cjs` cover authentication/workspace and homepage experiment regressions.
 - Real-source read check: one bounded 800 m OSM query and one 80-address assessment batch. 72/80 addresses matched official records in that sample. This sample is not a province-wide coverage estimate.
 
+Selection-cap regression: `node qa/campaign-cap-browser.cjs` covers the 1,200-address limit in French and English at 1440, 390 and 320 px. It checks rejected native checkbox changes, disabled list/property/map/bulk additions, removing and replacing a door, keyboard selection, estimated addresses, partial bulk additions, undo, reloading, saved drafts, quotes, review totals and CSV export. `node --test qa/campaign-studio.test.cjs` also verifies that excess addresses cannot overwrite a valid draft or create a payment, including requests that understate the quantity.
+
 ## Deployment
 
 Interactive map selection baseline: tenant 433 `vendvite`, generation 63. No migration is required. Verify the exact live generation/files against the captured baseline before importing VendVite through the scoped Liasse operator endpoint. Retain its automatic restore point and verify the served campaign JavaScript and CSS. The earlier save/publish visibility fix is preserved.
