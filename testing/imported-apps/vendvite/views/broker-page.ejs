@@ -1,8 +1,11 @@
 <%- include('partials/header') %>
-<% if (typeof isDemo !== 'undefined' && isDemo) { %>
+<% if (typeof invitation !== 'undefined' && invitation) { %>
+<div class="bp-demo mailing-invitation"><div class="container bp-demo-inner"><p><strong><%= lang==='fr'?'Votre page de capture à 0 $':'Your $0 lead capture page' %></strong> · <%= lang==='fr'?'Réservée aux campagnes postales VendVite. Démonstration : aucune demande envoyée.':'Reserved for VendVite postal campaigns. Demo: no requests sent.' %></p><a href="demarrer/<%= invitation.tag %>?lang=<%= lang %>"><%= lang==='fr'?'Activer ma page à 0 $':'Activate my $0 page' %> ↗</a></div></div>
+<% } %>
+<% if (typeof isDemo !== 'undefined' && isDemo && !(typeof invitation !== 'undefined' && invitation)) { %>
 <div class="bp-demo" role="note"><div class="container bp-demo-inner">
   <p><strong><%= lang==='fr' ? 'Profil démo' : 'Demo profile' %></strong> · <%= lang==='fr' ? 'Personnage, affiliation et chiffres fictifs. Aucune demande envoyée.' : 'Fictional identity, affiliation and figures. No requests sent.' %></p>
-  <a href=".?lang=<%= lang %>#invPanel"><%= lang==='fr' ? 'Votre page — 599 $ / an' : 'Your page — $599 / year' %> ↗</a>
+  <a href=".?lang=<%= lang %>#invPanel"><%= lang==='fr' ? 'Votre page — 0 $' : 'Your page — $0' %> ↗</a>
 </div></div>
 <% } %>
 <% if (typeof isPreview !== 'undefined' && isPreview) { %>
@@ -13,10 +16,12 @@
 </div>
 <% } %>
 <script>
+window.VV_INITIAL_ADDRESS = <%- scriptJson(typeof initialAddress !== 'undefined' ? initialAddress : null) %>;
+window.VV_MAILING_TOKEN = <%- scriptJson(typeof mailingToken !== 'undefined' ? mailingToken : null) %>;
 window.VV_DEMO = <%- JSON.stringify(typeof isDemo !== 'undefined' && isDemo) %>;
 window.VV_BROKER = <%- JSON.stringify(typeof brokerSlug !== 'undefined' ? brokerSlug : null) %>;
 window.VV_LEAD_URL = <%- JSON.stringify(typeof brokerSlug !== 'undefined' && brokerSlug
-  ? ((typeof isPreview !== 'undefined' && isPreview ? '../' : '') + 'api/courtier/' + brokerSlug + '/piste')
+  ? ('api/courtier/' + brokerSlug + '/piste')
   : null) %>;
 </script>
 <main class="bp-page">

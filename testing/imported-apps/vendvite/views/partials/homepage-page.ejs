@@ -3,7 +3,7 @@
     <div class="hp-page-copy">
       <p class="hp-eyebrow"><span aria-hidden="true"></span><%= t.hp_page_eyebrow %></p>
       <h2 id="hpPageTitle"><%= t.hp_page_title %></h2>
-      <p class="hp-page-lede"><%= lang==='fr' ? 'Voici ce que vos propriétaires découvrent après avoir reçu votre lettre : une page à votre nom, avec votre photo et votre bannière. Explorez la démo de Richard Tremblay, courtier fictif affilié à RE/MAX, puis imaginez la vôtre, incluse dans votre adhésion de 599 $ par année.' : 'This is what homeowners discover after receiving your letter: a page with your name, portrait and brokerage. Explore Richard Tremblay’s demo, a fictional RE/MAX-affiliated broker, then imagine your own, included in your $599 annual membership.' %></p>
+      <p class="hp-page-lede"><%= lang==='fr' ? 'Voici ce que vos propriétaires découvrent après avoir reçu votre lettre : une page à votre nom, avec votre photo et votre bannière. Explorez la démo de Richard Tremblay, courtier fictif affilié à RE/MAX, puis imaginez la vôtre, à 0 $, réservée aux campagnes postales confiées à VendVite.' : 'This is what homeowners discover after receiving your letter: a page with your name, portrait and brokerage. Explore Richard Tremblay’s demo, a fictional RE/MAX-affiliated broker, then imagine your own, $0 and reserved for postal campaigns fulfilled by VendVite.' %></p>
       <ul class="hp-page-points"><% t.hp_page_points.forEach(function(p){ %><li><strong><%= p[0] %></strong><p><%= p[1] %></p></li><% }); %></ul>
     </div>
     <figure class="hp-phone">

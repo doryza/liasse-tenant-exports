@@ -77,6 +77,7 @@
         <p class="cmp-prev"><strong>Centre :</strong> <%= c.centre_label || '' %></p>
         <% if (c.notes) { %><p class="cmp-prev"><strong>Précisions du courtier :</strong> <%= c.notes %></p><% } %>
         <div class="cmp-actions">
+          <a class="btn-ghost btn-sm" href="admin/campagnes/<%= c.id %>/lettres" target="_blank" rel="noopener">Lettres adressées / PDF ↗</a>
           <a class="btn-primary btn-sm" href="admin/campagnes/<%= c.id %>/adresses.csv">Télécharger le CSV</a>
           <button class="btn-ghost btn-sm" data-act="postee" data-id="<%= c.id %>"><%= done ? 'Marquer « à poster »' : 'Marquer comme postée' %></button>
           <% if (c.status !== 'cancelled') { %>

@@ -83,6 +83,8 @@
       return;
     }
 
+    payload.mailing_terms = !!document.getElementById('mailingTerms').checked;
+    if(!payload.mailing_terms){err.textContent=document.getElementById('mailingTerms').dataset.error;return;}
     if(preview) payload.homepage_preview = true;
     busy = true;
     var label = btnCopy.textContent;
@@ -91,7 +93,7 @@
     btn.setAttribute('aria-busy', 'true');
     btnCopy.textContent = btn.getAttribute('data-sending') || 'Envoi…';
     try{
-      var res = await fetch('api/courtier/candidature', {
+      var res = await fetch('api/courtier/demarrer', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)

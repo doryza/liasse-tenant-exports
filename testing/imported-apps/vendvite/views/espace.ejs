@@ -171,7 +171,11 @@
     <% } %>
 
     <!-- ═══ Abonnement ═══ -->
-    <% if (activePage === 'abonnement') { %>
+    <% if (activePage === 'abonnement' && isMailing) { %>
+    <section class="ws-card"><p class="ws-eyebrow"><%= lang==='fr'?'Votre formule courrier ciblé':'Your targeted mailing plan' %></p><h1><%= lang==='fr'?'Votre page : 0 $. Aucun abonnement.':'Your page: $0. No subscription.' %></h1><p><%= lang==='fr'?'Votre page de capture est réservée aux campagnes postales traitées par VendVite. Vous payez uniquement vos envois : 1,59 $ par lettre, avant taxes. Aucune campagne gratuite n’est comprise.':'Your lead capture page is reserved for postal campaigns fulfilled by VendVite. Pay only for your mailings: $1.59 per letter, before tax. No free mailing is included.' %></p><p><%= lang==='fr'?'Choisissez votre quartier et vos adresses. Vérifiez le total avant paiement. Nous nous occupons des données, de l’impression, du pliage, des enveloppes et du dépôt chez Postes Canada.':'Choose your neighbourhood and addresses. Review the total before payment. We handle data, printing, folding, envelopes and Canada Post deposit.' %></p><a class="esp-btn" href="espace/courrier-cible"><%= lang==='fr'?'Préparer ma campagne':'Prepare my campaign' %> ↗</a></section>
+    <% } %>
+    <% if (activePage === 'abonnement' && isMailing && invoices.length) { %><section class="ws-card"><h2><%= t.esp_invoices_heading %></h2><% invoices.forEach(function(invoice){ %><p><a href="espace/factures/<%= invoice.id %>/pdf"><%= invoice.invoice_number %> · <%= (Number(invoice.total_cents)/100).toFixed(2) %> $ · PDF ↓</a></p><% }); %></section><% } %>
+    <% if (activePage === 'abonnement' && !isMailing) { %>
     <section class="esp-panel is-on" data-panel="abonnement">
       <% if (paymentTest) { %>
         <div class="esp-payment-success is-test">

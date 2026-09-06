@@ -1,5 +1,5 @@
 <aside class="admin-sidebar" id="adminSidebar">
-  <% var adminRoot = (typeof active!=='undefined' && active==='dashboard') ? 'admin' : '../admin'; %>
+  <% var adminRoot = 'admin'; %>
   <div class="admin-brand"><span class="admin-seal">V</span><span><%= (typeof settings!=='undefined' && settings.agent_name) ? settings.agent_name : 'VendVite' %></span></div>
   <nav class="admin-nav">
     <a href="<%= adminRoot %>" class="<%= (typeof active!=='undefined' && active==='dashboard') ? 'active' : '' %>">Tableau de bord</a>
@@ -7,6 +7,7 @@
     <a href="<%= adminRoot %>/courtiers" class="<%= (typeof active!=='undefined' && active==='courtiers') ? 'active' : '' %>">Courtiers</a>
     <a href="<%= adminRoot %>/campagnes" class="<%= (typeof active!=='undefined' && active==='campagnes') ? 'active' : '' %>">Campagnes</a>
     <a href="<%= adminRoot %>/conversions" class="<%= (typeof active!=='undefined' && active==='conversions') ? 'active' : '' %>">Test de conversion</a>
+    <a href="<%= adminRoot %>/sollicitations" class="<%= (typeof active!=='undefined' && active==='sollicitations') ? 'active' : '' %>">Sollicitations VendVite</a>
     <a href="<%= adminRoot %>/ventes" class="<%= (typeof active!=='undefined' && active==='ventes') ? 'active' : '' %>">Ventes</a>
     <a href="<%= adminRoot %>/testimonials" class="<%= (typeof active!=='undefined' && active==='testimonials') ? 'active' : '' %>">Témoignages</a>
     <a href="<%= adminRoot %>/posts" class="<%= (typeof active!=='undefined' && active==='posts') ? 'active' : '' %>">Journal</a>

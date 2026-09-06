@@ -1,7 +1,9 @@
 var express = require('express');
 var invoiceTools = require('./invoice');
+var solicitationTools = require('./solicitation-v1');
+var mailingService = require('./mailing-service-v1');
 var homepageTools = require('./homepage-experiment-v1');
-var homepageCopy = require('./homepage-copy-v5');
+var homepageCopy = require('./homepage-copy-v6');
 var brokerAuthTools = require('./broker-auth-v1');
 var workspaceCopy = require('./workspace-copy-v3');
 var campaignModel=require('./public/js/campaign-model-v1');
@@ -1327,7 +1329,7 @@ module.exports = function(services){
       mode: mode,
       realActive: realActive,
       sandboxActive: sandboxActive,
-      active: realActive || sandboxActive,
+      active: realActive || sandboxActive || mailingService.access(b),
       testAccess: !realActive && sandboxActive
     };
   }
@@ -1469,6 +1471,12 @@ module.exports = function(services){
     });
   }
 
+  async function sendMailingInvite(req,broker,raw){
+    var fr=req.lang!=='en',url=absoluteUrl(req,'/acces/'+raw)+'?next=espace/page';
+    return services.email.send({to:broker.email,subject:fr?'Votre espace VendVite à 0 $':'Your $0 VendVite workspace',text:(fr?'Ouvrez votre espace : ':'Open your workspace: ')+url+'\n'+(fr?'Page à 0 $, réservée aux campagnes postales VendVite. Envois à 1,59 $ par lettre, avant taxes. Lien valable une heure.':'$0 page, reserved for VendVite postal campaigns. Mailings at $1.59 per letter, before tax. Link valid for one hour.')});
+  }
+  solicitationTools.register(router,services,{requireAdmin:requireAdmin,baseLocals:baseLocals,absoluteUrl:absoluteUrl,renderBrokerPage:renderBrokerPage,uniqueBrokerSlug:uniqueBrokerSlug,brokerAuth:brokerAuth,sendMailingInvite:sendMailingInvite});
+
   // ── POST /api/courtier/candidature — the homepage form
   router.post('/api/courtier/candidature', async function(req, res){
     try{
@@ -1592,6 +1600,9 @@ module.exports = function(services){
   // ── Broker private space
   async function espaceLocals(req, broker, activePage){
     var L = await baseLocals(req);
+    if(mailingService.isMailing(broker)){
+      L.t=Object.assign({},L.t,require('./mailing-workspace-copy-v1')[req.lang==='en'?'en':'fr']);
+    }
     var leads = await db.all('SELECT * FROM broker_leads WHERE broker_id=$1 ORDER BY created_at DESC LIMIT 200', [broker.id]);
     var counts = await db.get("SELECT COUNT(*)::int AS total, COUNT(*) FILTER (WHERE status='nouveau')::int AS fresh, COUNT(*) FILTER (WHERE created_at > NOW() - INTERVAL '30 days')::int AS recent FROM broker_leads WHERE broker_id=$1", [broker.id]);
     var invoices = await db.all('SELECT * FROM broker_invoices WHERE broker_id=$1 ORDER BY payment_time DESC, id DESC LIMIT 20', [broker.id]);
@@ -1626,6 +1637,7 @@ module.exports = function(services){
       leads: leads || [],
       counts: counts || { total: 0, fresh: 0, recent: 0 },
       invoices: invoices || [],
+      isMailing: mailingService.isMailing(broker),
       isActive: access.active,
       isRealActive: access.realActive,
       isTestAccess: access.testAccess,
@@ -1678,7 +1690,7 @@ module.exports = function(services){
     if (!broker) return;
     try{
       var profile = brokerProfile(broker);
-      var pageUrl = absoluteUrl(req, '/' + broker.slug);
+      var pageUrl = absoluteUrl(req, mailingService.isMailing(broker)?'/espace/apercu':'/' + broker.slug);
       var qrDataUrl = await services.qrcode.toDataURL(pageUrl, {
         errorCorrectionLevel: 'H',
         margin: 2,
@@ -1959,6 +1971,7 @@ module.exports = function(services){
   }
 
   async function campagneQuota(broker){
+    if(mailingService.isMailing(broker)) return {utilisees:0,incluses:0,restantes:0,creditPortes:0,depuis:null,periode:null};
     await libererCampagnesExpirees(broker);
     var depuis = anneeAdhesion(broker);
     var periode = periodeCourante(broker);
@@ -2454,6 +2467,24 @@ module.exports = function(services){
     res.render('admin-campagnes', Object.assign(L, { active: 'campagnes', campagnes: campagnes || [], cc: cc }));
   });
 
+  router.get('/admin/campagnes/:id/lettres',requireAdmin,brokerEndpoint(async function(req,res){
+    var campaign=await db.get('SELECT * FROM broker_campaigns WHERE id=$1',[req.params.id]);
+    if(!campaign)return res.status(404).send('Campagne introuvable.');
+    var broker=await db.get('SELECT * FROM brokers WHERE id=$1',[campaign.broker_id]);
+    if(!broker)return res.sendStatus(404);
+    if(campaign.status==='cancelled'||Number(campaign.is_test)===1||(mailingService.isMailing(broker)&&campaign.payment_status!=='paid'))return res.status(409).send('Une campagne payée et confirmée est requise.');
+    var url=absoluteUrl(req,'/'+broker.slug);
+    if(mailingService.isMailing(broker)){
+      campaign=await db.get('UPDATE broker_campaigns SET mailing_token=COALESCE(mailing_token,$1) WHERE id=$2 RETURNING *',[mailingService.token(),campaign.id]);
+      url=absoluteUrl(req,'/courrier/'+campaign.mailing_token);
+    }
+    var addresses=typeof campaign.addresses==='string'?JSON.parse(campaign.addresses):campaign.addresses;
+    if(!Array.isArray(addresses)||!addresses.length)return res.status(409).send('Aucune adresse à imprimer.');
+    var recipients=addresses.map(function(a){return [(a.unit?a.unit+'-':'')+a.numero+' '+a.rue,[a.ville,a.province||'QC',a.postal||''].filter(Boolean).join(' ')];});
+    var L=await baseLocals(req),settings=await getSettings();
+    res.render('lettre-proprietaires',Object.assign(L,{TL:{fr:applyTextOverrides(Object.assign({},T.fr),settings,'fr'),en:applyTextOverrides(Object.assign({},T.en),settings,'en')},lang:'fr',embed:false,broker:broker,profile:brokerProfile(broker),pageUrl:url,qrDataUrl:await services.qrcode.toDataURL(url,{errorCorrectionLevel:'M',margin:4,width:480}),formatPhone:formatPhone,recipients:recipients}));
+  }));
+
   router.get('/admin/campagnes/:id/adresses.csv', requireAdmin, async function(req, res){
     var c = await db.get('SELECT c.*, b.full_name, b.slug FROM broker_campaigns c JOIN brokers b ON b.id=c.broker_id WHERE c.id=$1', [req.params.id]);
     if (!c) return res.status(404).send('Introuvable');
@@ -2665,6 +2696,7 @@ module.exports = function(services){
   router.post('/api/espace/abonnement', brokerEndpoint(async function(req, res){
     var broker = await requireBrokerApi(req, res);
     if (!broker) return;
+    if(mailingService.isMailing(broker))return res.status(409).json({code:'MAILING_ONLY',error:'Votre page est à 0 $. Commandez une campagne postale depuis votre espace.'});
     if (!brokerProfile(broker).setup_completed_at) {
       return res.status(409).json({ error: 'configuration', code: 'SETUP_REQUIRED' });
     }
@@ -2906,6 +2938,9 @@ module.exports = function(services){
       isPreview: !!isPreview,
       previewPageLive: isPreview ? (await brokerAccessState(broker)).active && Number(broker.published)===1 : false,
       isDemo: !!isDemo,
+      invitation: req.vvInvitation || null,
+      initialAddress: req.vvInitialAddress || null,
+      mailingToken: req.vvMailingToken || null,
       ogImage: settings._p_agent_image_url,
       canonical: absoluteUrl(req, '/' + broker.slug)
     }));
@@ -2922,6 +2957,10 @@ module.exports = function(services){
       var broker = await db.get('SELECT * FROM brokers WHERE slug=$1', [req.params.slug]);
       if (!broker) return res.status(404).json({ error: 'introuvable' });
       var pageLive = await brokerPageLive(broker);
+      if(mailingService.isMailing(broker)){
+        var originCampaign=await mailingService.campaignForToken(db,(req.body||{}).mailingToken);
+        pageLive=pageLive && !!originCampaign && Number(originCampaign.broker_id)===Number(broker.id);
+      }
       if (!pageLive) {
         // An invited broker must be able to test the complete funnel from the
         // private preview. The signed session keeps this exception scoped to
@@ -3053,6 +3092,15 @@ module.exports = function(services){
     }catch(e){ res.status(500).json({ error: 'server' }); }
   });
 
+  router.get('/courrier/:token', brokerEndpoint(async function(req,res){
+    var campaign=await mailingService.campaignForToken(db,req.params.token);
+    if(!campaign)return res.status(404).send('Campagne introuvable.');
+    var broker=await db.get('SELECT * FROM brokers WHERE id=$1',[campaign.broker_id]);
+    if(!broker||!(await brokerPageLive(broker)))return res.status(404).send('Page indisponible.');
+    req.vvMailingToken=campaign.mailing_token;
+    await renderBrokerPage(req,res,broker,false,false);
+  }));
+
   // ── GET /:slug — a broker's public page. Must remain the LAST route before
   //    the catch-all: it matches any single path segment, so every reserved
   //    platform/app path has to be refused explicitly.
@@ -3064,6 +3112,7 @@ module.exports = function(services){
     try{
       var broker = await db.get('SELECT * FROM brokers WHERE slug=$1', [slug]);
       if (!broker) return next();
+      if(mailingService.isMailing(broker)){var owner=await currentBroker(req,res);if(!owner||Number(owner.id)!==Number(broker.id))return next();}
       // Unpaid or unpublished pages do not exist publicly — the broker reaches
       // their own draft through /espace/apercu instead.
       if (!(await brokerPageLive(broker))) {

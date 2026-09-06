@@ -52,6 +52,7 @@
   var ficheRevealTimer = null;
   function initForm(){
     var input=q('addressInput'); var form=q('leadForm');
+    if(input && window.VV_INITIAL_ADDRESS){input.value=window.VV_INITIAL_ADDRESS;revealFiche(input.value);}
     if(input){
       input.addEventListener('input', function(){
         var v=input.value.trim();
@@ -71,7 +72,7 @@
         var btn=q('sealBtn'); var orig=btn ? btn.textContent : '';
         if(btn){ btn.disabled=true; btn.textContent=T.submitting || '…'; }
         if(window.VV_DEMO){ form.reset(); stampFiche(); return; }
-        var payload={ name:name, email:((q('leadEmail') && q('leadEmail').value) || '').trim(), phone:((q('leadPhone') && q('leadPhone').value) || '').trim(), timeframe:((q('leadTime') && q('leadTime').value) || '').trim(), address:address, lat:((q('leadLat') && q('leadLat').value) || ''), lng:((q('leadLng') && q('leadLng').value) || '') };
+        var payload={ mailingToken:window.VV_MAILING_TOKEN||null, name:name, email:((q('leadEmail') && q('leadEmail').value) || '').trim(), phone:((q('leadPhone') && q('leadPhone').value) || '').trim(), timeframe:((q('leadTime') && q('leadTime').value) || '').trim(), address:address, lat:((q('leadLat') && q('leadLat').value) || ''), lng:((q('leadLng') && q('leadLng').value) || '') };
         // On a broker's page the lead belongs to that broker, not to the
         // house funnel — VV_BROKER is emitted only by broker-page.ejs.
         var leadUrl = window.VV_LEAD_URL || (window.VV_BROKER ? ('api/courtier/' + window.VV_BROKER + '/piste') : 'api/lead');
@@ -96,6 +97,23 @@
       var token = new AutocompleteSessionToken();
       var input=q('addressInput'); var box=q('addressSuggest');
       if(!input || !box) return;
+      var prefill=window.VV_INITIAL_ADDRESS;
+      if(prefill){
+        input.value=prefill;revealFiche(prefill);
+        try{
+          var geocoding=await google.maps.importLibrary('geocoding');
+          var found=await new geocoding.Geocoder().geocode({address:prefill,componentRestrictions:{country:'CA'}});
+          if(found.results && found.results[0] && input.value===prefill){
+            var initialLocation=found.results[0].geometry.location;
+            setCoords(initialLocation);loadStreetView(initialLocation);
+          }
+        }catch(prefillError){
+          // Places remains a fallback when Geocoding is not enabled for this key.
+          try{var matches=await AutocompleteSuggestion.fetchAutocompleteSuggestions({input:prefill,includedRegionCodes:['ca']});
+            if(matches.suggestions && matches.suggestions[0] && input.value===prefill)await choose(matches.suggestions[0].placePrediction);
+          }catch(_){var empty=q('fichePhotoEmpty');if(empty)empty.lastElementChild.textContent=document.documentElement.lang==='en'?'Street View unavailable. Try selecting the address.':'Street View indisponible. Essayez de sélectionner l’adresse.';}
+        }
+      }
       var timer=null;
       input.addEventListener('input', function(){
         var v=input.value.trim();
@@ -170,11 +188,11 @@
             var heading=0;
             try{ heading=google.maps.geometry.spherical.computeHeading(pano, loc); }catch(e){}
             new google.maps.StreetViewPanorama(el, { pano:data.location.pano, pov:{ heading:heading, pitch:6 }, zoom:0.6, disableDefaultUI:true, motionTracking:false, motionTrackingControl:false, linksControl:false, addressControl:false, fullscreenControl:false, panControl:false, zoomControl:false, clickToGo:false, scrollwheel:false });
-            if(photo) photo.classList.add('has-view');
+            if(photo){photo.classList.add('has-view');photo.dataset.view='streetview';}
           } else {
             var map=new google.maps.Map(el, { center:loc, zoom:18, disableDefaultUI:true, gestureHandling:'none', keyboardShortcuts:false });
             new google.maps.Marker({ position:loc, map:map });
-            if(photo) photo.classList.add('has-view');
+            if(photo){photo.classList.add('has-view');photo.dataset.view='map';}
           }
         });
       }
