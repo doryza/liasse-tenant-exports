@@ -102,25 +102,15 @@
         var d=await r.json().catch(function(){return {};});
         if(!r.ok){flag.textContent=d.code==='PROFILE_CONFLICT'?T('ws_conflict'):(d.error||T('ws_save_retry'));flag.classList.add('is-error');return false;}
         VV.profileVersion=d.profileVersion;profile=d.profile;dirty=editVersion!==snapshot;
-        flag.textContent=dirty?T('ws_unsaved'):T('ws_saved');return !dirty;
+        flag.textContent=dirty?T('ws_unsaved'):T('ws_saved');
+        if(!dirty && $('profileMilestone'))$('profileMilestone').textContent=VV.live?T('ws_live'):T('ws_profile_ready');
+        return !dirty;
       }catch(e){flag.textContent=T('ws_save_retry');flag.classList.add('is-error');return false;}
       finally{btn.disabled=false;}
     })();
     try{return await savePromise;}finally{savePromise=null;}
   }
   on($('saveBtn'),'click',function(){saveProfile();});
-  on($('setupDoneBtn'),'click',async function(){
-    var btn=$('setupDoneBtn'),err=$('setupDoneError');btn.disabled=true;err.textContent='';
-    if(!await saveProfile()){err.textContent=T('ws_save_retry');btn.disabled=false;return;}
-    try{
-      var r=await apiFetch('api/espace/page-prete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({profileVersion:VV.profileVersion})});
-      var d=await r.json().catch(function(){return {};});
-      if(r.ok){VV.profileVersion=d.profileVersion;if(dirty){err.textContent=T('ws_unsaved');btn.disabled=false;return;}location.href='espace';return;}
-      err.textContent=d.code==='PROFILE_CONFLICT'?T('ws_conflict'):(d.error||T('ws_retry'));
-    }catch(e){err.textContent=T('ws_retry');}
-    btn.disabled=false;
-  });
-
   // ── Photo upload
   on($('photoInput'), 'change', function(e){
     var file = e.target.files && e.target.files[0];
@@ -150,24 +140,31 @@
     reader.readAsDataURL(file);
   });
 
-  // ── Publish toggle
-  on($('pubBtn'), 'click', async function(){
-    var btn = $('pubBtn');
-    if(dirty && !await saveProfile())return;
-    var next = btn.getAttribute('data-published') !== '1';
-    btn.disabled = true;
+  // Save the editor first, then explicitly publish (or continue to membership).
+  // Overview controls publish the saved profile without needing an editor form.
+  var publishing=false;
+  document.querySelectorAll('[data-publish]').forEach(function(btn){on(btn,'click',async function(){
+    if(publishing)return;
+    publishing=true;
+    var next=btn.dataset.publish==='true',label=btn.textContent;
+    document.querySelectorAll('[data-publish]').forEach(function(b){b.disabled=true;});
     try{
-      var r = await apiFetch('api/espace/publier', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ published: next })
+      if((next || dirty) && !await saveProfile())return;
+      if(next && !VV.active){location.href='espace/abonnement';return;}
+      if(next)btn.textContent=T('ws_publish_working');
+      var r=await apiFetch('api/espace/publier',{
+        method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({published:next})
       });
-      if (r.ok) { location.reload(); return; }
-      var d = await r.json().catch(function(){ return {}; });
-      if (d.code === 'PAYMENT_REQUIRED') window.location.href = 'espace/abonnement';
-      else notice(T('ws_retry'));
-    }catch(_){notice(T('ws_retry'));}
-    btn.disabled = false;
-  });
+      if(r.ok){location.reload();return;}
+      var d=await r.json().catch(function(){return {};});
+      if(d.code==='PAYMENT_REQUIRED')location.href='espace/abonnement';
+      else notice(d.error || T('ws_retry'));
+    }catch(e){notice(T('ws_retry'));}
+    finally{
+      publishing=false;btn.textContent=label;
+      document.querySelectorAll('[data-publish]').forEach(function(b){b.disabled=false;});
+    }
+  });});
 
   // ── Subscribe / cancel
   on($('subBtn'), 'click', async function(){

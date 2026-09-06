@@ -1,15 +1,16 @@
 <% var campaignReady=campagnes.some(function(c){return ['confirmed','processing','mailed'].indexOf(c.status)!==-1;});
  var steps=[{done:setupComplete,title:t.ws_step_profile,body:t.ws_step_profile_d,path:'espace/page'},{done:isActive,title:t.ws_step_member,body:t.ws_step_member_d,path:'espace/abonnement'},{done:isLive,title:t.ws_step_publish,body:t.ws_step_publish_d,path:'espace/page'},{done:campaignReady,title:t.ws_step_campaign,body:t.ws_step_campaign_d,path:'espace/courrier-cible'}];
- var nextStep=counts.fresh>0?{title:t.ws_step_leads,body:t.ws_step_leads_d,path:'espace/pistes'}:(steps.find(function(s){return !s.done;})||{title:t.ws_step_leads,body:t.ws_step_leads_d,path:'espace/pistes'});
+ var nextStep=isActive && !isLive ? steps[2] : counts.fresh>0?{title:t.ws_step_leads,body:t.ws_step_leads_d,path:'espace/pistes'}:(steps.find(function(s){return !s.done;})||{title:t.ws_step_leads,body:t.ws_step_leads_d,path:'espace/pistes'});
 %>
 <section class="ws-overview">
   <div class="ws-heading"><p class="ws-eyebrow"><%= t.ws_welcome %></p><h1><%= broker.full_name %><span>.</span></h1><p class="ws-muted"><%= t.ws_intro %></p></div>
+  <div class="ws-next"><div><p class="ws-eyebrow"><%= t.ws_next %></p><h2><%= nextStep.title %></h2><p><%= nextStep.body %></p></div><div class="ws-next-actions"><% if(isActive && !isLive){ %><button class="esp-btn" data-publish="true" type="button"><%= t.ws_step_publish %></button><a class="esp-ghost" href="espace/page"><%= t.ws_step_profile %> ↗</a><% }else{ %><a class="esp-btn" href="<%= nextStep.path %>"><%= nextStep.title %> ↗</a><% } %></div></div>
   <div class="ws-summary">
-    <a href="espace/page"><span><%= t.ws_profile %></span><strong><%= isLive?t.ws_live:t.ws_draft %></strong><small><%= t.ws_preview %> ↗</small></a>
+    <a href="espace/page"><span><%= t.ws_profile %></span><strong><%= isLive?t.ws_live:t.ws_draft %></strong><small><%= isLive?t.ws_step_profile:t.ws_step_publish %> ↗</small></a>
     <a href="espace/pistes"><span><%= t.ws_requests %></span><strong><%= counts.total %></strong><small><%= counts.fresh %> <%= t.ws_new_requests.toLowerCase() %></small></a>
     <a href="espace/abonnement"><span><%= t.ws_membership %></span><strong><%= isTestAccess?'TEST':isActive?(broker.status==='cancelled'?t.ws_member_ending:t.ws_member_active):t.ws_member_pending %></strong><small><%= isActive && broker.membership_expires_at?formatDate(broker.membership_expires_at):t.ws_billing %></small></a>
   </div>
-  <div class="ws-next"><div><p class="ws-eyebrow"><%= t.ws_next %></p><h2><%= nextStep.title %></h2><p><%= nextStep.body %></p></div><a class="esp-btn" href="<%= nextStep.path %>"><%= nextStep.title %> ↗</a></div>
+
   <div class="ws-overview-grid"><section class="ws-card"><h2><%= t.ws_progress %></h2><ol class="ws-checklist"><% steps.forEach(function(step,i){ %><li class="<%= step.done?'is-done':'' %>"><span class="ws-step"><%= step.done?'✓':i+1 %></span><a href="<%= step.path %>"><strong><%= step.title %></strong><small><%= step.done?t.ws_done:t.ws_todo %></small></a></li><% }); %></ol></section>
   <section class="ws-card"><h2><%= t.ws_recent %></h2><% if(!leads.length){ %><p class="ws-muted"><%= t.ws_empty %></p><a class="esp-ghost" href="espace/apercu" target="_blank" rel="noopener"><%= t.ws_preview %> ↗</a><% }else{ %><ul class="ws-recent"><% leads.slice(0,4).forEach(function(lead){ %><li><a href="espace/pistes"><strong><%= lead.name %></strong><span><%= lead.address %></span><small><%= formatDate(lead.created_at) %></small></a></li><% }); %></ul><% } %></section></div>
   <div class="ws-page-link"><div><p class="ws-eyebrow"><%= isLive?t.ws_live:t.ws_draft %></p><a href="<%= isLive?pageUrl:'espace/apercu' %>" target="_blank" rel="noopener"><%= pageUrl %> ↗</a></div><% if(isLive){ %><button class="esp-ghost" id="copyPageLink" data-url="<%= pageUrl %>" type="button"><%= t.ws_copy %></button><% } %></div>

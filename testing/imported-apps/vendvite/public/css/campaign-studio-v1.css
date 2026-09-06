@@ -6,3 +6,37 @@
 @media(prefers-reduced-motion:reduce){.cs-studio *{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 
 .cs-map-summary{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:13px 17px;border-top:1px solid #58432e}.cs-map-summary>div{display:flex;flex-direction:column;gap:5px}.cs-map-summary strong{font:550 18px var(--serif);color:#f2dfc6}.cs-map-summary span{font:12px var(--sans);color:#d1b693}.cs-map-summary button{font-size:11px!important;padding:10px 13px!important}.cs-studio.is-expanded #csMap{height:calc(100dvh - 275px)}
+
+/* Address-based selection, with a single radius on the map. */
+.cs-stats{grid-template-columns:repeat(2,1fr)}
+.cs-list-search{border-top:1px solid #4b382e;margin-top:15px;padding-top:16px}
+.cs-legend .cs-selected-dot{background:#c79959}.cs-legend .cs-removed-dot{background:#7a8185}
+.cs-search-actions #csScan{font-size:13px!important}
+
+/* Map gestures preview the same circle as the radius control. */
+.cs-map-radius{padding:12px 17px 10px;border-top:1px solid #58432e;background:#241a17}
+.cs-map-radius label{display:flex;align-items:center;justify-content:space-between;margin:0;gap:15px}
+.cs-map-radius output{font:600 17px var(--sans);color:#f2d1a4;font-variant-numeric:tabular-nums}
+.cs-studio .cs-map-radius input[type=range]{padding:0;min-height:36px;accent-color:#e30b2d;border:0;background:transparent;cursor:pointer;touch-action:pan-y}
+.cs-map-radius p{margin:0;font:12px/1.5 var(--sans);color:#cbb7a0}
+.cs-map-pending{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:15px 17px;background:#3a291a;border-top:1px solid #ad8250}
+.cs-map-pending strong{font:600 14px var(--sans);color:#ffe2b6}.cs-map-pending p{font:12px/1.5 var(--sans);margin:6px 0 0;color:#dcc3a4}
+.cs-map-pending-actions{display:flex;flex-wrap:wrap;gap:8px;flex-shrink:0}.cs-map-pending-actions .esp-btn,.cs-map-pending-actions .esp-ghost{padding:10px 13px;min-height:44px;font-size:12px}
+.cs-map-error:not(:empty){margin:0;padding:12px 17px;background:#3b141b}
+.cs-map-tools #csFullscreen{font:500 12px var(--sans);min-height:44px;padding:8px 10px}
+.cs-map-panel .leaflet-popup-content button{min-height:44px}.cs-map-panel .leaflet-control-zoom a{width:40px;height:40px;line-height:40px}
+.cs-studio.is-expanded .cs-map-panel{display:flex;flex-direction:column;inset:12px;max-height:calc(100dvh - 24px)}
+.cs-studio.is-expanded .cs-map-shell{flex:1;min-height:160px}.cs-studio.is-expanded #csMap{height:100%!important;min-height:160px}
+.cs-studio.is-expanded .cs-legend,.cs-studio.is-expanded #csProperty{display:none}
+@media(max-width:1100px){.cs-map-pending{align-items:stretch;flex-direction:column}.cs-map-pending-actions>*{flex:1}}
+@media(max-width:520px){.cs-map-radius{padding:10px 12px}.cs-map-radius p{font-size:11px}.cs-map-tools{padding:7px;gap:5px}.cs-map-tools>div{gap:4px}.cs-map-tools button{font-size:10px;padding:7px;min-height:44px}.cs-map-tools #csFullscreen{font-size:10px;padding:7px}.cs-map-pending{padding:12px;gap:10px}.cs-map-pending-actions .esp-btn,.cs-map-pending-actions .esp-ghost{font-size:11px;padding:8px}.cs-studio.is-expanded .cs-map-panel{inset:0;border-radius:0;max-height:100dvh;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}}
+
+/* Explain the selected quantity before offering ways to complete it. */
+.cs-stats .cs-selected-total{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap}
+.cs-stats .cs-selected-total>span{display:inline;font:500 15px var(--sans);color:#c9ad89;margin:0}.cs-selected-total b{font-weight:500}
+.cs-target-progress{font:600 13px/1.6 var(--sans);color:#f2d1a4;margin:14px 0 8px}
+.cs-target-recovery{background:#2c2119;border:1px solid #705334;border-radius:7px;padding:14px;margin-top:13px}
+.cs-target-recovery p{font:12px/1.6 var(--sans);color:#d6c0a4;margin:0 0 12px}
+.cs-target-recovery>div{display:flex;gap:9px;flex-wrap:wrap}.cs-target-recovery button{min-height:44px;font:500 12px/1.5 var(--sans);white-space:normal;text-align:left}
+.cs-target-recovery .esp-ghost{padding:9px 12px}.cs-target-recovery #csAddEstimated{width:100%;padding:8px 0;background:none;border:0;color:#e6c393;text-decoration:underline;text-underline-offset:4px}
+.cs-bulk button:first-child{width:auto}

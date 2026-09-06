@@ -1,0 +1,18 @@
+<section class="hp-compare hp-wrap" id="compare" aria-labelledby="hpCompareTitle">
+  <div class="hp-compare-heading">
+    <div><p class="hp-eyebrow"><span aria-hidden="true"></span><%= t.hp_compare_eyebrow %></p><h2 id="hpCompareTitle"><%= t.hp_compare_title %></h2></div>
+    <p><%= t.hp_compare_lede %></p>
+  </div>
+  <div class="hp-ledger" role="table" aria-label="<%= t.hp_compare_title %>">
+    <div class="hp-ledger-head" role="row"><span role="columnheader" class="hp-ledger-dim"></span><span role="columnheader" class="hp-ledger-fb"><%= t.hp_compare_fb %></span><span role="columnheader" class="hp-ledger-vv"><%= t.hp_compare_vv %></span></div>
+    <% t.hp_compare_rows.forEach(function(row){ %>
+    <div class="hp-ledger-row" role="row">
+      <span role="rowheader" class="hp-ledger-dim"><%= row[0] %></span>
+      <span role="cell" class="hp-ledger-fb" data-col="<%= t.hp_compare_fb %>"><span class="hp-ledger-tag" aria-hidden="true">✕</span><%= row[1] %></span>
+      <span role="cell" class="hp-ledger-vv" data-col="<%= t.hp_compare_vv %>"><span class="hp-ledger-tag" aria-hidden="true">✓</span><%= row[2] %></span>
+    </div>
+    <% }); %>
+  </div>
+  <div class="hp-shipping-strip"><span class="hp-label"><%= t.hp_shipping_label %></span><ol><% t.hp_shipping_steps.forEach(function(step){ %><li><span aria-hidden="true">✓</span><%= step %></li><% }); %></ol></div>
+  <p class="hp-compare-note"><%= t.hp_compare_note %></p>
+</section>
