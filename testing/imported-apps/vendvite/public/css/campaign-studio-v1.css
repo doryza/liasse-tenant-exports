@@ -6,3 +6,9 @@
 @media(prefers-reduced-motion:reduce){.cs-studio *{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 
 .cs-map-summary{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:13px 17px;border-top:1px solid #58432e}.cs-map-summary>div{display:flex;flex-direction:column;gap:5px}.cs-map-summary strong{font:550 18px var(--serif);color:#f2dfc6}.cs-map-summary span{font:12px var(--sans);color:#d1b693}.cs-map-summary button{font-size:11px!important;padding:10px 13px!important}.cs-studio.is-expanded #csMap{height:calc(100dvh - 275px)}
+
+/* Address-based selection, with a single radius on the map. */
+.cs-stats{grid-template-columns:repeat(2,1fr)}
+.cs-list-search{border-top:1px solid #4b382e;margin-top:15px;padding-top:16px}
+.cs-legend .cs-selected-dot{background:#c79959}.cs-legend .cs-removed-dot{background:#7a8185}
+.cs-search-actions #csScan{font-size:13px!important}
