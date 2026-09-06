@@ -916,7 +916,7 @@ module.exports = function(services){
   Object.assign(T.en, homepageCopy.en);
   Object.assign(T.fr,workspaceCopy.fr);
   Object.assign(T.en,workspaceCopy.en);
-  Object.assign(T.fr,campaignCopy.fr,require('./three-step-copy-v1').fr);Object.assign(T.en,campaignCopy.en,require('./three-step-copy-v1').en);
+  Object.assign(T.fr,campaignCopy.fr,require('./three-step-copy-v2').fr);Object.assign(T.en,campaignCopy.en,require('./three-step-copy-v2').en);
 
   function scriptJson(value){ return JSON.stringify(value).replace(/</g,'\\u003c').replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029'); }
   function tp(req, p){ return (typeof req.tenantPath === 'function') ? req.tenantPath(p) : p.replace(/^\//,''); }
@@ -1603,7 +1603,7 @@ module.exports = function(services){
     if(mailingService.isMailing(broker)){
       L.t=Object.assign({},L.t,require('./mailing-workspace-copy-v1')[req.lang==='en'?'en':'fr']);
     }
-    Object.assign(L.t,require('./three-step-copy-v1')[req.lang==='en'?'en':'fr']);
+    Object.assign(L.t,require('./three-step-copy-v2')[req.lang==='en'?'en':'fr']);
     var leads = await db.all('SELECT * FROM broker_leads WHERE broker_id=$1 ORDER BY created_at DESC LIMIT 200', [broker.id]);
     var counts = await db.get("SELECT COUNT(*)::int AS total, COUNT(*) FILTER (WHERE status='nouveau')::int AS fresh, COUNT(*) FILTER (WHERE created_at > NOW() - INTERVAL '30 days')::int AS recent FROM broker_leads WHERE broker_id=$1", [broker.id]);
     var invoices = await db.all('SELECT * FROM broker_invoices WHERE broker_id=$1 ORDER BY payment_time DESC, id DESC LIMIT 20', [broker.id]);
