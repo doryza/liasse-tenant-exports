@@ -7,6 +7,8 @@
   <title><%- TL[lang].ltr_title_prefix %><%= broker.full_name %></title>
   <style>
     @page{size:Letter;margin:0}
+    .proof-note{margin:0;padding:12px;text-align:center;font:12px Arial;background:#fff5df;color:#563e18}
+    @media print{.proof-note{display:none}}
     *{box-sizing:border-box}
     html,body{margin:0;background:#e8e8e8;color:#000;font-family:Arial,Helvetica,sans-serif}
     .printbar{position:sticky;top:0;z-index:10;display:flex;justify-content:center;align-items:center;gap:16px;padding:12px;background:#111;color:#fff;font-size:14px;box-shadow:0 2px 14px rgba(0,0,0,.25)}
@@ -71,10 +73,11 @@
   </style>
 </head>
 <body>
+  <% if(typeof proof!=='undefined'&&proof){ %><p class="proof-note"><%= lang==='fr'?'Aperçu — le QR final sera propre à chaque adresse.':'Preview — the final QR will be unique to each address.' %></p><% } %>
   <% if (!embed) { %><div class="printbar"><span><%= TL[lang].ltr_printbar_meta %></span><button type="button" onclick="window.print()"><%= TL[lang].ltr_print_button %></button></div><% } %>
   <% var langues = (lang === 'en') ? ['en', 'fr'] : ['fr', 'en']; %>
-  <% (typeof recipients !== 'undefined' ? recipients : [['ADRESSE DU DESTINATAIRE / RECIPIENT ADDRESS','VILLE QC  A1A 1A1']]).forEach(function(recipientAddress){ %>
-  <% langues.forEach(function(L, iL){ var t = TL[L]; %>
+  <% (typeof recipients !== 'undefined' && recipients ? recipients : [['ADRESSE DU DESTINATAIRE / RECIPIENT ADDRESS','VILLE QC  A1A 1A1']]).forEach(function(recipient){ var recipientAddress=Array.isArray(recipient)?recipient:recipient.address; %>
+  <% langues.forEach(function(L, iL){ var t = TL[L]; var recipientUrl=recipient.url?recipient.url+'?lang='+L:pageUrl; var recipientQr=recipient.qr?recipient.qr[L]:qrDataUrl; %>
   <main class="letter<%= iL === 0 ? ' recto' : ' verso' %>" lang="<%= L %>">
     <header class="mast">
       <div class="brand"><span>V</span>VendVite</div>
@@ -107,9 +110,9 @@
         <p class="cta-kicker"><%= t.ltr_cta_kicker %></p>
         <h2><%= t.ltr_cta_title %></h2>
         <p><%= t.ltr_cta_terms %></p>
-        <div class="url"><%= pageUrl %></div>
+        <div class="url"><%= recipientUrl %></div>
       </div>
-      <div class="qr"><img src="<%= qrDataUrl %>" alt="<%- t.ltr_qr_alt %><%= broker.full_name %>"></div>
+      <div class="qr"><img src="<%= recipientQr %>" alt="<%- t.ltr_qr_alt %><%= broker.full_name %>"></div>
     </section>
 
     <section class="signature">
@@ -122,5 +125,6 @@
   </main>
   <% }); %>
   <% }); %>
+<% if(embed){ %><script>(function(){function fit(){var scale=Math.min(1,innerWidth/816);document.querySelectorAll('.letter').forEach(function(p){p.style.zoom=scale;});}fit();addEventListener('resize',fit);addEventListener('beforeprint',function(){document.querySelectorAll('.letter').forEach(function(p){p.style.zoom='';});});addEventListener('afterprint',fit);})();</script><% } %>
 </body>
 </html>

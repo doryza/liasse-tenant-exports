@@ -1,0 +1,8 @@
+<header class="pe-toolbar">
+ <div class="pe-toolbar-top"><a data-vv-auth class="pe-back" href="espace">← <%= lang==='fr'?'Ma campagne':'My campaign' %></a><nav aria-label="<%= lang==='fr'?'Langue':'Language' %>"><a href="espace/page?lang=fr" lang="fr" <%- lang==='fr'?'aria-current="page"':'' %>>FR</a> · <a href="espace/page?lang=en" lang="en" <%- lang==='en'?'aria-current="page"':'' %>>EN</a></nav></div>
+ <div class="pe-toolbar-title"><strong><%= lang==='fr'?'Ma page de capture':'My lead capture page' %></strong><span id="pageEditStatus" role="status"><%= lang==='fr'?'Votre page, telle que vos clients la voient.':'Your page, as your clients see it.' %></span></div>
+ <div class="pe-actions"><button id="pageEditStart" type="button">✎ <%= lang==='fr'?'Modifier':'Edit' %></button><button id="pageEditCancel" class="pe-secondary" type="button" hidden><%= lang==='fr'?'Annuler':'Cancel' %></button><button id="pageEditSave" type="button" hidden><%= lang==='fr'?'Enregistrer':'Save' %></button></div>
+</header>
+<p class="pe-hint pe-edit-only"><%= lang==='fr'?'Touchez les textes encadrés pour les modifier directement. Touchez votre photo pour la remplacer.':'Tap the outlined text to edit it directly. Tap your photo to replace it.' %></p>
+<p id="pageEditError" class="pe-error" role="alert" hidden></p>
+<script>window.VV_EDITOR=<%- scriptJson(editor) %>;</script>

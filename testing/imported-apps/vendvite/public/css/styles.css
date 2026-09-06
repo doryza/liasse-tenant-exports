@@ -662,3 +662,8 @@ a:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid var(
 .fiche .field select option{background:#171113;color:#fff8f0}
 .fiche .field input:focus-visible,.fiche .field select:focus-visible{outline:2px solid #e1ba82;outline-offset:2px}
 .mailing-invitation .bp-demo-inner{gap:20px}.mailing-invitation a{white-space:normal}
+
+/* Recipient QR arrival and the broker's visible contact details. */
+.bp-contact{display:flex;flex-wrap:wrap;gap:12px 22px;margin-top:18px}.bp-contact a{font:500 14px/1.6 var(--sans);color:inherit;text-underline-offset:4px;overflow-wrap:anywhere;max-width:100%}
+.bp-prefilled-note{font:12px/1.65 var(--sans);color:#554c3e;margin:0 0 18px}.bp-prefilled-note button{border:0;background:none;color:#9e1c32;text-decoration:underline;text-underline-offset:3px;font:600 12px var(--sans);min-height:40px;padding:0 4px;cursor:pointer}
+@media(max-width:760px){.bp-prefilled .hero{padding-top:26px}.bp-prefilled .hero .eyebrow,.bp-prefilled .hero-sub,.bp-prefilled .hero-note{display:none}.bp-prefilled .hero h1{font-size:29px;line-height:1.13;margin-bottom:18px}.bp-prefilled .hero-inner{gap:18px}.bp-prefilled .bp-broker-byline{font-size:11px}.bp-prefilled .address-slot{margin-top:16px}.bp-prefilled .fiche-photo{height:180px}.bp-prefilled .fiche-form{padding-top:18px}}

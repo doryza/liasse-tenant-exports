@@ -53,9 +53,13 @@
   function initForm(){
     var input=q('addressInput'); var form=q('leadForm');
     if(input && window.VV_INITIAL_ADDRESS){input.value=window.VV_INITIAL_ADDRESS;revealFiche(input.value);}
+    var changeAddress=q('changeRecipientAddress');if(changeAddress)changeAddress.addEventListener('click',function(){input.scrollIntoView({block:'center',behavior:'smooth'});input.focus({preventScroll:true});input.select();});
     if(input){
       input.addEventListener('input', function(){
         var v=input.value.trim();
+        if(q('leadLat'))q('leadLat').value='';if(q('leadLng'))q('leadLng').value='';
+        if(q('fichePhoto')){q('fichePhoto').classList.remove('has-view');delete q('fichePhoto').dataset.view;}if(q('streetview'))q('streetview').replaceChildren();
+        if(v.length<4){form.hidden=true;if(q('ficheAddress'))q('ficheAddress').textContent='—';}
         if(ficheRevealTimer){ clearTimeout(ficheRevealTimer); ficheRevealTimer=null; }
         if(v.length>=4){
           ficheRevealTimer = setTimeout(function(){ revealFiche(v); }, 500);
@@ -71,6 +75,7 @@
         if(!name || !address){ if(errEl) errEl.textContent=T.errRequired || 'Champs requis.'; return; }
         var btn=q('sealBtn'); var orig=btn ? btn.textContent : '';
         if(btn){ btn.disabled=true; btn.textContent=T.submitting || '…'; }
+        if(window.VV_PAGE_PREVIEW){if(errEl)errEl.textContent=document.documentElement.lang==='en'?'Preview only. No request has been sent.':'Aperçu seulement. Aucune demande envoyée.';if(btn){btn.disabled=false;btn.textContent=orig;}return;}
         if(window.VV_DEMO){ form.reset(); stampFiche(); return; }
         var payload={ mailingToken:window.VV_MAILING_TOKEN||null, name:name, email:((q('leadEmail') && q('leadEmail').value) || '').trim(), phone:((q('leadPhone') && q('leadPhone').value) || '').trim(), timeframe:((q('leadTime') && q('leadTime').value) || '').trim(), address:address, lat:((q('leadLat') && q('leadLat').value) || ''), lng:((q('leadLng') && q('leadLng').value) || '') };
         // On a broker's page the lead belongs to that broker, not to the
@@ -101,12 +106,13 @@
       if(prefill){
         input.value=prefill;revealFiche(prefill);
         try{
+          if(window.VV_INITIAL_LOCATION){setCoords(window.VV_INITIAL_LOCATION);loadStreetView(window.VV_INITIAL_LOCATION);}else{
           var geocoding=await google.maps.importLibrary('geocoding');
           var found=await new geocoding.Geocoder().geocode({address:prefill,componentRestrictions:{country:'CA'}});
           if(found.results && found.results[0] && input.value===prefill){
             var initialLocation=found.results[0].geometry.location;
             setCoords(initialLocation);loadStreetView(initialLocation);
-          }
+          }}
         }catch(prefillError){
           // Places remains a fallback when Geocoding is not enabled for this key.
           try{var matches=await AutocompleteSuggestion.fetchAutocompleteSuggestions({input:prefill,includedRegionCodes:['ca']});
@@ -180,9 +186,9 @@
       }
       function loadStreetView(loc){
         var el=q('streetview'); var photo=q('fichePhoto'); if(!el) return;
-        var svc=new google.maps.StreetViewService();
+        var requestedAddress=input.value;var svc=new google.maps.StreetViewService();
         svc.getPanorama({ location:loc, radius:120 }, function(data, status){
-          el.innerHTML='';
+          if(input.value!==requestedAddress)return;el.innerHTML='';
           if(status===google.maps.StreetViewStatus.OK && data && data.location){
             var pano=data.location.latLng;
             var heading=0;

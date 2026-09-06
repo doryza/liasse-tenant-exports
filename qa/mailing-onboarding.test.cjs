@@ -1,6 +1,6 @@
 const {test}=require('node:test'),assert=require('node:assert/strict');
 const {create,root}=require('./harness.cjs');
-const tools=require(root+'/solicitation-v1'),mailing=require(root+'/mailing-service-v1'),authModule=require(root+'/broker-auth-v1');
+const tools=require(root+'/solicitation-v1'),mailing=require(root+'/mailing-service-v2'),authModule=require(root+'/broker-auth-v1');
 const raw='Marie Tremblay {"Agence, Exemple", Courtier immobilier, 514 555-0100, https://example.test/marie.jpg}\n1234 RUE DES ÉRABLES\nLAVAL QC H7W 4Y4';
 function jar(r){return r.headers.getSetCookie().map(c=>c.split(';')[0]).join('; ');}
 test('strict agent parsing separates identity from delivery lines',()=>{

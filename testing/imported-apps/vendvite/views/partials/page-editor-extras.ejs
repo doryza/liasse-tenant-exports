@@ -1,0 +1,6 @@
+<details class="pe-extras pe-edit-only"><summary><%= lang==='fr'?'Mes chiffres, liens et témoignages':'My figures, links and testimonials' %></summary>
+ <div class="pe-stat-grid"><% [['stat_homes',t.esp_stat_properties_sold_label],['stat_days',t.esp_stat_days_on_market_label],['stat_ratio',t.esp_stat_sold_to_list_ratio_label],['stat_volume',t.esp_stat_volume_millions_label]].forEach(function(field){ %><div><span><%= field[1] %></span><strong data-edit-field="<%= field[0] %>" data-label="<%= field[1] %>"><%= editor.profile[field[0]]||'' %></strong></div><% }); %></div>
+ <p class="pe-edit-only"><%= lang==='fr'?'Laissez un chiffre vide pour le masquer.':'Leave a figure empty to hide it.' %></p>
+ <h3><%= lang==='fr'?'Mes liens':'My links' %></h3><div id="pageEditLinks"></div><button class="pe-add pe-edit-only" data-add-list="links" type="button">+ <%= lang==='fr'?'Ajouter un lien':'Add a link' %></button>
+ <h3><%= lang==='fr'?'Mes témoignages':'My testimonials' %></h3><div id="pageEditTestimonials"></div><button class="pe-add pe-edit-only" data-add-list="testimonials" type="button">+ <%= lang==='fr'?'Ajouter un témoignage':'Add a testimonial' %></button>
+</details>

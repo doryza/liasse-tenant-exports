@@ -3,7 +3,7 @@
   <link rel="stylesheet" href="public/vendor/leaflet/leaflet.css" crossorigin="">
   <script src="public/vendor/leaflet/leaflet.js" defer crossorigin=""></script>
 <% } %>
-<main class="esp ws-workspace <%= activePage==='courrier'?'cs-workspace':'' %>">
+<main class="esp ws-workspace ws-mailing-shell <%= activePage==='courrier'?'cs-workspace':'' %>">
   <div class="inv-veil" aria-hidden="true"></div>
 
   <header class="esp-top">
@@ -13,12 +13,10 @@
         <span class="esp-who"><%= broker.full_name %> · <%= broker.agency || '' %></span>
       </div>
       <nav class="esp-tabs" aria-label="<%= lang==='en' ? 'Broker space' : 'Espace courtier' %>">
-        <a data-vv-auth class="esp-tab <%= activePage==='accueil'?'is-on':'' %>" href="espace" <%- activePage==='accueil'?'aria-current="page"':'' %>><%= t.ws_home %></a>
-        <a data-vv-auth class="esp-tab <%= activePage==='page'?'is-on':'' %>" href="espace/page" <%- activePage==='page'?'aria-current="page"':'' %>><%= t.esp_nav_my_page %></a>
-        <a data-vv-auth class="esp-tab <%= activePage==='courrier'?'is-on':'' %>" href="espace/courrier-cible" <%- activePage==='courrier'?'aria-current="page"':'' %>><%= t.esp_nav_targeted_mail %></a>
+        <a data-vv-auth class="esp-tab <%= activePage==='courrier'?'is-on':'' %>" href="espace" <%- activePage==='courrier'?'aria-current="page"':'' %>><%= t.c_nav_campaign %></a>
+        <a data-vv-auth class="esp-tab" href="espace/page"><%= t.c_edit_page %></a>
         <a data-vv-auth class="esp-tab <%= activePage==='pistes'?'is-on':'' %>" href="espace/pistes" <%- activePage==='pistes'?'aria-current="page"':'' %>><%= t.ws_leads %> <span class="esp-pill"><%= counts.total %></span></a>
-        <a data-vv-auth class="esp-tab <%= activePage==='abonnement'?'is-on':'' %>" href="espace/abonnement" <%- activePage==='abonnement'?'aria-current="page"':'' %>><%= t.esp_nav_subscription %></a>
-        <a data-vv-auth class="esp-tab <%= activePage==='compte'?'is-on':'' %>" href="espace/compte" <%- activePage==='compte'?'aria-current="page"':'' %>><%= t.ws_account %></a>
+        <a data-vv-auth class="esp-tab <%= activePage==='compte'||activePage==='abonnement'?'is-on':'' %>" href="espace/compte"><%= t.ws_account %></a>
       </nav>
     </div>
   </header>
@@ -28,100 +26,6 @@
     <% if(activePage==='accueil'){ %><%- include('partials/workspace-overview') %><% } %>
     <% if(activePage==='compte'){ %><%- include('partials/workspace-account') %><% } %>
 
-
-    <% if(activePage==='page'){ %>
-    <section class="ws-profile-heading"><div><p class="ws-eyebrow"><%= t.ws_setup_eyebrow %></p><h1><%= t.ws_setup_title %></h1></div></section>
-    <div class="ws-editor-actions" id="pageActions" role="region" aria-label="<%= t.ws_profile %>">
-      <div class="ws-editor-status"><div class="ws-editor-summary"><strong id="profileMilestone"><%= isLive?t.ws_live:setupComplete?t.ws_profile_ready:t.ws_draft %></strong><a href="espace/apercu" target="_blank" rel="noopener"><%= t.ws_preview %> ↗</a></div><span class="esp-saved" id="savedFlag" role="status" aria-live="polite"><%= setupComplete?t.ws_saved:t.ws_profile_save_hint %></span></div>
-      <div class="ws-editor-buttons">
-        <button class="<%= isLive?'esp-btn':'esp-ghost' %>" id="saveBtn" type="button"><%= t.esp_save_button %></button>
-        <% if(!isLive){ %><button class="esp-btn" data-publish="true" type="button"><%= t.ws_step_publish %></button><% }else{ %><a class="esp-ghost" href="<%= pageUrl %>" target="_blank" rel="noopener"><%= t.ws_view_live %> ↗</a><% } %>
-      </div>
-      <% if(!isLive){ %><p class="ws-action-hint"><%= isActive?t.ws_publish_hint:t.ws_publish_member_hint %></p><% } %>
-    </div>
-    <% } %>
-
-    <!-- ═══ Ma page ═══ -->
-    <% if (activePage === 'page') { %>
-    <section class="esp-panel is-on" data-panel="page">
-      <p class="ws-muted"><%= isLive?t.ws_setup_live_body:t.ws_setup_body %></p>
-      <div class="esp-grid">
-        <div class="esp-col">
-          <h2 class="esp-h"><%= t.esp_section_your_identity %></h2>
-          <div class="esp-portrait">
-            <div class="esp-portrait-img" id="portraitBox">
-              <span class="esp-portrait-empty" id="portraitEmpty" <%= profile.agent_photo_url ? 'hidden' : '' %>><i aria-hidden="true"></i><b><%= t.esp_no_photo_placeholder %></b></span>
-              <img id="portraitImg" src="<%= profile.agent_photo_url || '' %>" <%= profile.agent_photo_url ? '' : 'hidden' %> alt="" onerror="this.hidden=true;var fallback=document.getElementById('portraitEmpty');if(fallback)fallback.hidden=false">
-            </div>
-            <div class="esp-portrait-copy">
-              <label class="esp-upload">
-                <input type="file" id="photoInput" accept="image/png,image/jpeg,image/webp" hidden>
-                <span><%= t.esp_upload_photo_button %></span>
-              </label>
-              <p class="esp-hint" id="photoHint"><%- t.esp_photo_format_size_hint %></p>
-              <p class="esp-help"><%- t.esp_portrait_field_help %></p>
-            </div>
-          </div>
-          <div class="esp-f"><label for="f_agent_name"><%= t.esp_display_name_label %></label><input id="f_agent_name" data-k="agent_name" value="<%= profile.agent_name || broker.full_name %>">
-            <p class="esp-help"><%- t.esp_display_name_help %></p></div>
-          <div class="esp-f"><label for="f_agent_title"><%= t.esp_title_label %></label><input id="f_agent_title" data-k="agent_title" placeholder="<%= t.agent_title %>" value="<%= profile.agent_title || t.agent_title %>">
-            <p class="esp-help"><%- t.esp_title_help_lead %><%= t.agent_title %><%- t.esp_title_help_tail %></p></div>
-          <div class="esp-f"><label for="f_agency"><%= t.esp_agency_label %></label><input id="f_agency" data-k="agency" value="<%= profile.agency || broker.agency || '' %>">
-            <p class="esp-help"><%= t.esp_agency_help %></p></div>
-          <div class="esp-2">
-            <div class="esp-f"><label for="f_agent_phone"><%= t.esp_phone_label %></label><input id="f_agent_phone" data-k="agent_phone" value="<%= profile.agent_phone || broker.phone || '' %>">
-              <p class="esp-help"><%= t.esp_phone_help %></p></div>
-            <div class="esp-f"><label for="f_agent_email"><%= t.esp_email_label %></label><input id="f_agent_email" data-k="agent_email" value="<%= profile.agent_email || broker.email %>">
-              <p class="esp-help"><%= t.esp_email_help %></p></div>
-          </div>
-
-          <h2 class="esp-h"><%= t.esp_section_about_you %></h2>
-          <div class="esp-f"><label for="f_about"><%= t.esp_bio_label %></label>
-            <textarea id="f_about" data-k="about" rows="6" placeholder="<%= t.agent_credo %>"><%= profile.about || t.agent_credo %></textarea>
-            <p class="esp-help"><%- t.esp_bio_help %></p></div>
-          <div class="esp-f"><label for="f_agency_disclaimer"><%= t.esp_disclaimer_label %></label><textarea id="f_agency_disclaimer" data-k="agency_disclaimer" rows="3" placeholder="<%= t.esp_disclaimer_ph %>" maxlength="300"><%= profile.agency_disclaimer || t.footer_disclaimer %></textarea>
-            <p class="esp-help"><%= t.esp_disclaimer_help %></p></div>
-        </div>
-
-        <div class="esp-col">
-          <h2 class="esp-h"><%= t.esp_section_your_hook %></h2>
-          <div class="esp-f"><label for="f_hero_title"><%= t.esp_main_headline_label %></label><textarea id="f_hero_title" data-k="hero_title" rows="3" placeholder="<%= t.hero_title %>"><%= profile.hero_title || t.hero_title %></textarea>
-            <p class="esp-help"><%= t.esp_main_headline_help %></p></div>
-          <div class="esp-f"><label for="f_hero_sub"><%= t.esp_subtitle_label %></label><textarea id="f_hero_sub" data-k="hero_sub" rows="5" placeholder="<%= t.hero_sub %>"><%= profile.hero_sub || t.hero_sub %></textarea>
-            <p class="esp-help"><%= t.esp_subtitle_help %></p></div>
-          <div class="esp-f"><label for="f_hero_note"><%= t.esp_note_under_field_label %></label><input id="f_hero_note" data-k="hero_note" placeholder="<%= t.hero_note %>" value="<%= profile.hero_note || t.hero_note %>">
-            <p class="esp-help"><%= t.esp_note_under_field_help %></p></div>
-
-          <h2 class="esp-h"><%= t.esp_section_your_numbers %></h2>
-          <p class="esp-hint"><%= lang==='fr' ? 'Vos chiffres apparaissent dans votre présentation. Laissez un champ vide pour le masquer.' : 'Your figures appear in your profile. Leave a field empty to hide it.' %></p>
-          <div class="esp-2">
-            <div class="esp-f"><label for="f_stat_homes"><%= t.esp_stat_properties_sold_label %></label><input id="f_stat_homes" data-k="stat_homes" placeholder="—" value="<%= profile.stat_homes || '' %>">
-              <p class="esp-help"><%= t.esp_stat_properties_sold_help %></p></div>
-            <div class="esp-f"><label for="f_stat_days"><%= t.esp_stat_days_on_market_label %></label><input id="f_stat_days" data-k="stat_days" placeholder="—" value="<%= profile.stat_days || '' %>">
-              <p class="esp-help"><%= t.esp_stat_days_on_market_help %></p></div>
-          </div>
-          <div class="esp-2">
-            <div class="esp-f"><label for="f_stat_ratio"><%= t.esp_stat_sold_to_list_ratio_label %></label><input id="f_stat_ratio" data-k="stat_ratio" placeholder="—" value="<%= profile.stat_ratio || '' %>">
-              <p class="esp-help"><%- t.esp_stat_sold_to_list_ratio_help %></p></div>
-            <div class="esp-f"><label for="f_stat_volume"><%= t.esp_stat_volume_millions_label %></label><input id="f_stat_volume" data-k="stat_volume" placeholder="—" value="<%= profile.stat_volume || '' %>">
-              <p class="esp-help"><%- t.esp_stat_volume_millions_help %></p></div>
-          </div>
-        </div>
-      </div>
-
-      <h2 class="esp-h"><%= t.esp_your_links_heading %></h2>
-      <p class="esp-hint"><%- t.esp_links_icons_vs_buttons_help %></p>
-      <div id="linkList" class="esp-links"></div>
-      <button class="esp-ghost" id="addLink" type="button"><%= t.esp_add_link_button %></button>
-
-      <h2 class="esp-h"><%= t.esp_your_testimonials_heading %></h2>
-      <p class="esp-hint"><%= t.esp_testimonials_default_help %></p>
-      <div id="tmList" class="esp-links"></div>
-      <button class="esp-ghost" id="addTm" type="button"><%= t.esp_add_testimonial_button %></button>
-
-      <% if(isLive){ %><div class="ws-ready"><button class="esp-ghost" id="pubBtn" data-publish="false" type="button"><%= t.ws_unpublish %></button></div><% } %>
-    </section>
-    <% } %>
 
     <% if(activePage==='courrier'){ %><%- include('partials/campaign-studio') %><% } %>
 
@@ -270,9 +174,9 @@
   // Dictionnaire du panneau, filtre au prefixe : le navigateur ne recoit que
   // ce qu'il affiche, dans la langue choisie.
   window.VV_T = <%- scriptJson(Object.keys(t).filter(function(k){return k.indexOf('esp_')===0||k.indexOf('ws_')===0||k.indexOf('c_')===0;}).reduce(function(o,k){o[k]=t[k];return o;},{})) %>;
-  window.VV_CAMP = { id:<%= Number(broker.id) %>, lang:<%- scriptJson(lang) %>, setupComplete:<%= setupComplete?'true':'false' %>, cible: <%= campCible %>, restantes: <%= campQuota.restantes %>, palier: <%= campPalier %>, max: <%= campMax %>, paliers: <%- scriptJson(campPaliers) %>, peutPayer: <%= campPeutPayer ? 'true' : 'false' %>, mode: <%- scriptJson(campModePaypal) %>, credit: <%= campQuota.creditPortes %>, active: <%= isActive ? 'true' : 'false' %>, published: <%= Number(broker.published) === 1 ? 'true' : 'false' %>, subscriptionTotal: <%= Math.round(price.total * 100) %> };
+  window.VV_CAMP = { id:<%= Number(broker.id) %>, lang:<%- scriptJson(lang) %>, setupComplete:<%= setupComplete?'true':'false' %>, cible: <%= campCible %>, restantes: <%= campQuota.restantes %>, palier: <%= campPalier %>, max: <%= campMax %>, paliers: <%- scriptJson(campPaliers) %>, peutPayer: <%= campPeutPayer ? 'true' : 'false' %>, mode: <%- scriptJson(campModePaypal) %>, credit: <%= campQuota.creditPortes %>, active: <%= isActive ? 'true' : 'false' %>, published: <%= Number(broker.published) === 1 ? 'true' : 'false' %>, isMailing:<%= isMailing?'true':'false' %>, subscriptionTotal: <%= Math.round(price.total * 100) %> };
 </script>
 <script src="public/js/espace.js?v=publish-v1" defer></script>
-<% if(activePage==='courrier'){ %><script src="public/js/campaign-model-v1.js?v=address-counts-v1" defer></script><script src="public/js/campaign-studio-v1.js?v=radius-suggestion-v1" defer></script><% } %>
+<% if(activePage==='courrier'){ %><script src="public/js/campaign-model-v1.js?v=address-counts-v1" defer></script><script src="public/js/campaign-studio-v1.js?v=three-step-v1" defer></script><% } %>
 </body>
 </html>

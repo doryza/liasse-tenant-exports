@@ -1,7 +1,7 @@
 var express = require('express');
 var invoiceTools = require('./invoice');
 var solicitationTools = require('./solicitation-v1');
-var mailingService = require('./mailing-service-v1');
+var mailingService = require('./mailing-service-v2');
 var homepageTools = require('./homepage-experiment-v1');
 var homepageCopy = require('./homepage-copy-v6');
 var brokerAuthTools = require('./broker-auth-v1');
@@ -916,7 +916,7 @@ module.exports = function(services){
   Object.assign(T.en, homepageCopy.en);
   Object.assign(T.fr,workspaceCopy.fr);
   Object.assign(T.en,workspaceCopy.en);
-  Object.assign(T.fr,campaignCopy.fr);Object.assign(T.en,campaignCopy.en);
+  Object.assign(T.fr,campaignCopy.fr,require('./three-step-copy-v1').fr);Object.assign(T.en,campaignCopy.en,require('./three-step-copy-v1').en);
 
   function scriptJson(value){ return JSON.stringify(value).replace(/</g,'\\u003c').replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029'); }
   function tp(req, p){ return (typeof req.tenantPath === 'function') ? req.tenantPath(p) : p.replace(/^\//,''); }
@@ -1603,6 +1603,7 @@ module.exports = function(services){
     if(mailingService.isMailing(broker)){
       L.t=Object.assign({},L.t,require('./mailing-workspace-copy-v1')[req.lang==='en'?'en':'fr']);
     }
+    Object.assign(L.t,require('./three-step-copy-v1')[req.lang==='en'?'en':'fr']);
     var leads = await db.all('SELECT * FROM broker_leads WHERE broker_id=$1 ORDER BY created_at DESC LIMIT 200', [broker.id]);
     var counts = await db.get("SELECT COUNT(*)::int AS total, COUNT(*) FILTER (WHERE status='nouveau')::int AS fresh, COUNT(*) FILTER (WHERE created_at > NOW() - INTERVAL '30 days')::int AS recent FROM broker_leads WHERE broker_id=$1", [broker.id]);
     var invoices = await db.all('SELECT * FROM broker_invoices WHERE broker_id=$1 ORDER BY payment_time DESC, id DESC LIMIT 20', [broker.id]);
@@ -1669,8 +1670,9 @@ module.exports = function(services){
     if (!broker) return;
     try{
       await db.run('UPDATE brokers SET last_seen_at=NOW() WHERE id=$1', [broker.id]);
+      if(req.path==='/espace/page'){req.vvInlineEditor=true;return await renderBrokerPage(req,res,broker,true);}
       res.render('espace', Object.assign(await espaceLocals(req, broker, ESPACE_PAGES[req.path]), {
-        activePage: ESPACE_PAGES[req.path] || 'page'
+        activePage: req.path==='/espace'?'courrier':ESPACE_PAGES[req.path] || 'courrier'
       }));
     }catch(e){ console.error('broker workspace render failed');workspaceUnavailable(req,res); }
   }));
@@ -1690,6 +1692,8 @@ module.exports = function(services){
     if (!broker) return;
     try{
       var profile = brokerProfile(broker);
+      var proofAddress=null;
+      if(req.query.proof==='1'){var draft=await db.get('SELECT data FROM broker_campaign_drafts WHERE broker_id=$1',[broker.id]);if(draft&&draft.data){var first=(draft.data.addresses||[]).find(function(a){return (draft.data.selected||[]).includes(campaignModel.key(a));});if(first)proofAddress=mailingService.addressLines(first);}}
       var pageUrl = absoluteUrl(req, mailingService.isMailing(broker)?'/espace/apercu':'/' + broker.slug);
       var qrDataUrl = await services.qrcode.toDataURL(pageUrl, {
         errorCorrectionLevel: 'H',
@@ -1717,6 +1721,8 @@ module.exports = function(services){
         profile: profile,
         pageUrl: pageUrl,
         qrDataUrl: qrDataUrl,
+        recipients: proofAddress?[proofAddress]:undefined,
+        proof: req.query.proof==='1',
         formatPhone: formatPhone
       }));
     }catch(e){ console.error('lettre proprietaires', e); res.status(500).send('Erreur'); }
@@ -1850,6 +1856,7 @@ module.exports = function(services){
       });
       var url = (up && (up.secure_url || up.url)) || '';
       if (!url) return res.status(502).json({ error: 'upload' });
+      if(req.body.staged===true)return res.json({success:true,url:url,profileVersion:Number(broker.profile_version)});
       var saved=await db.get("UPDATE brokers SET profile=jsonb_set(COALESCE(profile,'{}'::jsonb),'{agent_photo_url}',to_jsonb($1::text),true),profile_version=profile_version+1,updated_at=NOW() WHERE id=$2 AND profile_version=$3 RETURNING profile_version",[url,broker.id,req.body.profileVersion]);
       if(!saved)return res.status(409).json({code:'PROFILE_CONFLICT'});
       res.json({ success: true, url: url,profileVersion:saved.profile_version });
@@ -1906,24 +1913,6 @@ module.exports = function(services){
   //    flotte et Overpass n'accorde que deux creneaux par IP — une requete
   //    serveur bloquerait les autres locataires et depasserait le plafond
   //    d'origine de Cloudflare. Ici on valide, on borne et on conserve.
-
-  // 72 heures ouvrables : on saute samedi et dimanche — au fuseau du QUEBEC,
-  // pas en UTC. Un vendredi 21 h a Montreal est deja samedi en UTC, et compter
-  // en UTC avancait donc l'echeance d'une journee entiere.
-  function jourQuebec(d){
-    try{ return new Date(d).toLocaleDateString('en-CA', { timeZone: 'America/Toronto', weekday: 'short' }); }
-    catch(e){ return ''; }
-  }
-  function echeanceOuvrable(heures){
-    var d = new Date();
-    var restant = heures;
-    while (restant > 0) {
-      d = new Date(d.getTime() + 3600000);
-      var j = jourQuebec(d);
-      if (j !== 'Sat' && j !== 'Sun') restant--;
-    }
-    return d;
-  }
 
   // Prix d'une campagne payante. Calcul EN AVANT en cents entiers : la fonction
   // taxBreakdown d'invoice.js retro-deduit le partage a partir du total et
@@ -2081,7 +2070,7 @@ module.exports = function(services){
       var ville = String(corps.ville == null ? '' : corps.ville).trim().slice(0, 120);
       var notes = String(corps.notes == null ? '' : corps.notes).trim().slice(0, 1000);
       var rayon = Math.max(0, Math.min(5000, Math.round(Number(corps.rayon) || 0)));
-      var echeance = echeanceOuvrable(CAMPAGNE_HEURES);
+      var echeance = mailingService.deadline();
 
       // Une promesse de 72 h sans destinataire cote operateur serait un mensonge :
       // on refuse plutot que de repondre « recu » dans le vide.
@@ -2410,7 +2399,7 @@ module.exports = function(services){
     var frais = await db.get("SELECT payment_status FROM broker_campaigns WHERE id=$1", [campagne.id]);
     if (frais && frais.payment_status === 'paid') return campagne;
 
-    var echeance = echeanceOuvrable(CAMPAGNE_HEURES);
+    var echeance = mailingService.deadline();
     await db.run(
       "UPDATE broker_campaigns SET status='confirmed', payment_status='paid', paypal_capture_id=$1, deadline_at=$2, updated_at=NOW() WHERE id=$3",
       [capture ? capture.id : null, echeance, campagne.id]
@@ -2472,17 +2461,18 @@ module.exports = function(services){
     if(!campaign)return res.status(404).send('Campagne introuvable.');
     var broker=await db.get('SELECT * FROM brokers WHERE id=$1',[campaign.broker_id]);
     if(!broker)return res.sendStatus(404);
-    if(campaign.status==='cancelled'||Number(campaign.is_test)===1||(mailingService.isMailing(broker)&&campaign.payment_status!=='paid'))return res.status(409).send('Une campagne payée et confirmée est requise.');
-    var url=absoluteUrl(req,'/'+broker.slug);
-    if(mailingService.isMailing(broker)){
-      campaign=await db.get('UPDATE broker_campaigns SET mailing_token=COALESCE(mailing_token,$1) WHERE id=$2 RETURNING *',[mailingService.token(),campaign.id]);
-      url=absoluteUrl(req,'/courrier/'+campaign.mailing_token);
-    }
-    var addresses=typeof campaign.addresses==='string'?JSON.parse(campaign.addresses):campaign.addresses;
+    if(!['confirmed','processing','mailed'].includes(campaign.status)||Number(campaign.is_test)===1||!(campaign.payment_status==='paid'||(campaign.kind==='included'&&campaign.payment_status==='none')))return res.status(409).send('Une campagne payée et confirmée est requise.');
+    campaign=await mailingService.prepareRecipients(db,campaign);
+    var addresses=mailingService.addresses(campaign);
     if(!Array.isArray(addresses)||!addresses.length)return res.status(409).send('Aucune adresse à imprimer.');
-    var recipients=addresses.map(function(a){return [(a.unit?a.unit+'-':'')+a.numero+' '+a.rue,[a.ville,a.province||'QC',a.postal||''].filter(Boolean).join(' ')];});
+    var recipients=[];
+    for(var a of addresses){
+      var url=absoluteUrl(req,'/courrier/'+campaign.mailing_token+'/'+a.mailing_id);
+      var codes={};for(var language of ['fr','en'])codes[language]=await services.qrcode.toDataURL(url+'?lang='+language,{errorCorrectionLevel:'M',margin:4,width:480});
+      recipients.push({address:mailingService.addressLines(a),url:url,qr:codes});
+    }
     var L=await baseLocals(req),settings=await getSettings();
-    res.render('lettre-proprietaires',Object.assign(L,{TL:{fr:applyTextOverrides(Object.assign({},T.fr),settings,'fr'),en:applyTextOverrides(Object.assign({},T.en),settings,'en')},lang:'fr',embed:false,broker:broker,profile:brokerProfile(broker),pageUrl:url,qrDataUrl:await services.qrcode.toDataURL(url,{errorCorrectionLevel:'M',margin:4,width:480}),formatPhone:formatPhone,recipients:recipients}));
+    res.render('lettre-proprietaires',Object.assign(L,{TL:{fr:applyTextOverrides(Object.assign({},T.fr),settings,'fr'),en:applyTextOverrides(Object.assign({},T.en),settings,'en')},lang:'fr',embed:false,broker:broker,profile:brokerProfile(broker),pageUrl:'',qrDataUrl:'',formatPhone:formatPhone,recipients:recipients}));
   }));
 
   router.get('/admin/campagnes/:id/adresses.csv', requireAdmin, async function(req, res){
@@ -2939,7 +2929,10 @@ module.exports = function(services){
       previewPageLive: isPreview ? (await brokerAccessState(broker)).active && Number(broker.published)===1 : false,
       isDemo: !!isDemo,
       invitation: req.vvInvitation || null,
-      initialAddress: req.vvInitialAddress || null,
+      initialAddress: req.vvInlineEditor?null:req.vvInitialAddress || null,
+      initialLocation: req.vvInitialLocation || null,
+      inlineEditor: !!req.vvInlineEditor,
+      editor: req.vvInlineEditor?{profile:Object.assign({},prof,{agent_name:settings.agent_name,agent_email:settings.agent_email,agency:settings.agency,agent_phone:settings.agent_phone,agent_title:t.agent_title}),profileVersion:Number(broker.profile_version)||0,csrf:req._vvSession.csrf}:null,
       mailingToken: req.vvMailingToken || null,
       ogImage: settings._p_agent_image_url,
       canonical: absoluteUrl(req, '/' + broker.slug)
@@ -3092,11 +3085,19 @@ module.exports = function(services){
     }catch(e){ res.status(500).json({ error: 'server' }); }
   });
 
-  router.get('/courrier/:token', brokerEndpoint(async function(req,res){
+  router.get(['/courrier/:token','/courrier/:token/:recipient'], brokerEndpoint(async function(req,res){
     var campaign=await mailingService.campaignForToken(db,req.params.token);
     if(!campaign)return res.status(404).send('Campagne introuvable.');
     var broker=await db.get('SELECT * FROM brokers WHERE id=$1',[campaign.broker_id]);
     if(!broker||!(await brokerPageLive(broker)))return res.status(404).send('Page indisponible.');
+    if(req.params.recipient){
+      if(!/^[a-f0-9]{32}$/.test(req.params.recipient))return res.sendStatus(404);
+      var recipient=mailingService.addresses(campaign).find(function(a){return a.mailing_id===req.params.recipient;});
+      if(!recipient)return res.sendStatus(404);
+      req.vvInitialAddress=mailingService.addressLines(recipient).join(', ');
+      if(campaignModel.qc(recipient))req.vvInitialLocation={lat:Number(recipient.lat),lng:Number(recipient.lng)};
+    }
+    brokerAuthTools.protect(res);
     req.vvMailingToken=campaign.mailing_token;
     await renderBrokerPage(req,res,broker,false,false);
   }));

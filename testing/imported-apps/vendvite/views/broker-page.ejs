@@ -1,4 +1,5 @@
 <%- include('partials/header') %>
+<% if(typeof inlineEditor!=='undefined'&&inlineEditor){ %><%- include('partials/page-editor-toolbar') %><% } %>
 <% if (typeof invitation !== 'undefined' && invitation) { %>
 <div class="bp-demo mailing-invitation"><div class="container bp-demo-inner"><p><strong><%= lang==='fr'?'Votre page de capture à 0 $':'Your $0 lead capture page' %></strong> · <%= lang==='fr'?'Réservée aux campagnes postales VendVite. Démonstration : aucune demande envoyée.':'Reserved for VendVite postal campaigns. Demo: no requests sent.' %></p><a href="demarrer/<%= invitation.tag %>?lang=<%= lang %>"><%= lang==='fr'?'Activer ma page à 0 $':'Activate my $0 page' %> ↗</a></div></div>
 <% } %>
@@ -8,7 +9,7 @@
   <a href=".?lang=<%= lang %>#invPanel"><%= lang==='fr' ? 'Votre page — 0 $' : 'Your page — $0' %> ↗</a>
 </div></div>
 <% } %>
-<% if (typeof isPreview !== 'undefined' && isPreview) { %>
+<% if (typeof isPreview !== 'undefined' && isPreview && !(typeof inlineEditor!=='undefined'&&inlineEditor)) { %>
 <div class="bp-peek" role="status">
   <span class="bp-peek-dot" aria-hidden="true"></span>
   <span class="bp-peek-txt"><%= t.bp_preview_banner %></span>
@@ -16,6 +17,8 @@
 </div>
 <% } %>
 <script>
+window.VV_INITIAL_LOCATION = <%- scriptJson(typeof initialLocation!=='undefined'?initialLocation:null) %>;
+window.VV_PAGE_PREVIEW = <%- JSON.stringify(!!isPreview) %>;
 window.VV_INITIAL_ADDRESS = <%- scriptJson(typeof initialAddress !== 'undefined' ? initialAddress : null) %>;
 window.VV_MAILING_TOKEN = <%- scriptJson(typeof mailingToken !== 'undefined' ? mailingToken : null) %>;
 window.VV_DEMO = <%- JSON.stringify(typeof isDemo !== 'undefined' && isDemo) %>;
@@ -34,7 +37,7 @@ window.VV_LEAD_URL = <%- JSON.stringify(typeof brokerSlug !== 'undefined' && bro
       <p class="hero-sub" data-lk="t:hero_sub"><%= t.hero_sub %></p>
       <div class="address-slot">
         <label for="addressInput" data-lk="t:address_label"><%= t.address_label %></label>
-        <input id="addressInput" class="addr-input" type="text" autocomplete="off" placeholder="<%= t.address_ph %>" aria-label="<%= t.address_label %>">
+        <input value="<%= initialAddress || '' %>" id="addressInput" class="addr-input" type="text" autocomplete="off" placeholder="<%= t.address_ph %>" aria-label="<%= t.address_label %>">
         <ul id="addressSuggest" class="suggest"></ul>
       </div>
       <p class="bp-broker-byline"><%= lang==='fr' ? 'Avec' : 'With' %> <strong><%= settings.agent_name %></strong> · <%= settings.agency %></p>
@@ -55,7 +58,8 @@ window.VV_LEAD_URL = <%- JSON.stringify(typeof brokerSlug !== 'undefined' && bro
           <div class="fiche-address" id="ficheAddress" data-lk="t:fiche_empty"><%= t.fiche_empty %></div>
           <div class="fiche-coords mono" id="ficheCoords">—</div>
         </div>
-        <form class="fiche-form" id="leadForm" hidden>
+        <form class="fiche-form" id="leadForm" <%= initialAddress?'':'hidden' %>>
+          <% if(initialAddress){ %><p class="bp-prefilled-note"><%= lang==='fr'?'Votre adresse est déjà inscrite. Ajoutez simplement vos coordonnées.':'Your address is already filled in. Just add your contact details.' %> <button id="changeRecipientAddress" type="button"><%= lang==='fr'?'Modifier l’adresse':'Change address' %></button></p><% } %>
           <div class="field"><label for="leadName" data-lk="t:form_name"><%= t.form_name %></label><input id="leadName" type="text" placeholder="<%= t.form_name_ph %>" required></div>
           <div class="field-row">
             <div class="field"><label for="leadEmail" data-lk="t:form_email"><%= t.form_email %></label><input id="leadEmail" type="email" placeholder="<%= t.form_email_ph %>"></div>
@@ -91,10 +95,11 @@ window.VV_LEAD_URL = <%- JSON.stringify(typeof brokerSlug !== 'undefined' && bro
 </section>
 
 <section class="section agent" id="agent">
-  <div class="container agent-inner <%= settings._p_agent_image_url ? '' : 'bp-agent-no-photo' %>">
-    <% if(settings._p_agent_image_url){ %>
+  <div class="container agent-inner <%= settings._p_agent_image_url || inlineEditor ? '' : 'bp-agent-no-photo' %>">
+    <% if(settings._p_agent_image_url || inlineEditor){ %>
     <div class="agent-photo">
       <img src="<%= settings._p_agent_image_url ? settings._p_agent_image_url : 'public/img/agent-silhouette.svg' %>" data-setting-key="_p_agent_image_url" alt="<%= settings.agent_name || '' %>">
+      <% if(inlineEditor){ %><button id="pagePhotoButton" class="pe-photo-button pe-edit-only" type="button"><%= lang==='fr'?'Changer la photo':'Change photo' %></button><input id="pagePhotoInput" type="file" accept="image/png,image/jpeg,image/webp" hidden><% } %>
       <span class="clip" aria-hidden="true"></span>
     </div>
     <% } %>
@@ -104,6 +109,8 @@ window.VV_LEAD_URL = <%- JSON.stringify(typeof brokerSlug !== 'undefined' && bro
       <p class="agent-title" data-lk="t:agent_title"><%= t.agent_title %></p>
       <p class="agent-credo" data-lk="t:agent_credo"><%= t.agent_credo %></p>
       <p class="agent-remax" data-lk="t:agent_remax"><%= t.agent_remax %></p>
+      <div class="bp-contact"><% if(settings.agent_phone||inlineEditor){ %><a data-contact="agent_phone" href="tel:<%= String(settings.agent_phone||'').replace(/\D/g,'') %>"><%= settings.agent_phone||'' %></a><% } %><% if(settings.agent_email||inlineEditor){ %><a data-contact="agent_email" href="mailto:<%= settings.agent_email||'' %>"><%= settings.agent_email||'' %></a><% } %></div>
+      <% if(inlineEditor){ %><%- include('partials/page-editor-extras') %><% } %>
       <% if (brokerStats.length) { %>
       <dl class="bp-stats" aria-label="<%= t.stats_title %>">
         <% brokerStats.forEach(function(stat){ %><div><dt><%= stat.label %></dt><dd><%= stat.value %><small><%= stat.unit %></small></dd></div><% }); %>
@@ -145,6 +152,7 @@ window.VV_LEAD_URL = <%- JSON.stringify(typeof brokerSlug !== 'undefined' && bro
 <% } %>
 </main>
 <%- include('partials/footer') %>
+<% if(inlineEditor){ %><script src="public/js/page-editor-v1.js?v=1" defer></script><% } %>
 <% if(googleApiKey){ %>
 <script async src="https://maps.googleapis.com/maps/api/js?key=<%= googleApiKey %>&libraries=places,geometry&callback=initVendvite&v=weekly"></script>
 <% } %>
