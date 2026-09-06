@@ -1,7 +1,7 @@
 var express = require('express');
 var invoiceTools = require('./invoice');
 var solicitationTools = require('./solicitation-v1');
-var mailingService = require('./mailing-service-v3');
+var mailingService = require('./mailing-service-v4');
 var homepageTools = require('./homepage-experiment-v1');
 var homepageCopy = require('./homepage-copy-v6');
 var brokerAuthTools = require('./broker-auth-v1');
@@ -2469,22 +2469,24 @@ module.exports = function(services){
   });
 
   router.get('/admin/campagnes/:id/lettres',requireAdmin,brokerEndpoint(async function(req,res){
+    brokerAuthTools.protect(res);
     var campaign=await db.get('SELECT * FROM broker_campaigns WHERE id=$1',[req.params.id]);
     if(!campaign)return res.status(404).send('Campagne introuvable.');
     var broker=await db.get('SELECT * FROM brokers WHERE id=$1',[campaign.broker_id]);
     if(!broker)return res.sendStatus(404);
-    if(!['confirmed','processing','mailed'].includes(campaign.status)||Number(campaign.is_test)===1||!(campaign.payment_status==='paid'||(campaign.kind==='included'&&campaign.payment_status==='none')))return res.status(409).send('Une campagne payée et confirmée est requise.');
+    if(!['confirmed','processing','mailed'].includes(campaign.status)||!(campaign.payment_status==='paid'||(campaign.kind==='included'&&campaign.payment_status==='none')))return res.status(409).send('Une campagne payée et confirmée est requise.');
+    var sandboxPrint=mailingService.isTest(campaign);
     campaign=await mailingService.prepareRecipients(db,campaign);
     var addresses=mailingService.addresses(campaign);
     if(!Array.isArray(addresses)||!addresses.length)return res.status(409).send('Aucune adresse à imprimer.');
     var recipients=[];
     for(var a of addresses){
-      var url=absoluteUrl(req,'/courrier/'+campaign.mailing_token+'/'+a.mailing_id);
+      var url=absoluteUrl(req,(sandboxPrint?'/courrier-test/':'/courrier/')+campaign.mailing_token+'/'+a.mailing_id);
       var codes={};for(var language of ['fr','en'])codes[language]=await services.qrcode.toDataURL(url+'?lang='+language,{errorCorrectionLevel:'M',margin:4,width:480});
       recipients.push({address:mailingService.addressLines(a),url:url,qr:codes});
     }
     var L=await baseLocals(req),settings=await getSettings();
-    res.render('lettre-proprietaires',Object.assign(L,{TL:{fr:applyTextOverrides(Object.assign({},T.fr),settings,'fr'),en:applyTextOverrides(Object.assign({},T.en),settings,'en')},lang:'fr',embed:false,broker:broker,profile:brokerProfile(broker),pageUrl:'',qrDataUrl:'',formatPhone:formatPhone,recipients:recipients}));
+    res.render('lettre-proprietaires',Object.assign(L,{TL:{fr:applyTextOverrides(Object.assign({},T.fr),settings,'fr'),en:applyTextOverrides(Object.assign({},T.en),settings,'en')},lang:'fr',embed:false,broker:broker,profile:brokerProfile(broker),pageUrl:'',qrDataUrl:'',formatPhone:formatPhone,recipients:recipients,sandboxPrint:sandboxPrint}));
   }));
 
   router.get('/admin/campagnes/:id/adresses.csv', requireAdmin, async function(req, res){
@@ -2938,6 +2940,7 @@ module.exports = function(services){
       brokerSlug: broker.slug,
       brokerLinks: otherLinks,
       isPreview: !!isPreview,
+      isSandboxPreview: !!req.vvSandboxPreview,
       previewPageLive: isPreview ? (await brokerAccessState(broker)).active && Number(broker.published)===1 : false,
       isDemo: !!isDemo,
       invitation: req.vvInvitation || null,
@@ -3092,6 +3095,21 @@ module.exports = function(services){
     brokerAuthTools.protect(res);
     return res.redirect(302,tp(req,'/'));
   }
+
+  router.get(['/courrier-test/:token','/courrier-test/:token/:recipient'],brokerEndpoint(async function(req,res){
+    brokerAuthTools.protect(res);
+    res.set('X-Robots-Tag','noindex, nofollow, noarchive');
+    var admin=services.admin.isAdmin(req),owner=admin?null:await currentBroker(req,res);
+    if(!admin&&!owner)return mailingHome(req,res);
+    var origin=await mailingService.testRecipientForToken(db,req.params.token,req.params.recipient);
+    if(!origin||(!admin&&Number(owner.id)!==Number(origin.campaign.broker_id)))return mailingHome(req,res);
+    var broker=await db.get('SELECT * FROM brokers WHERE id=$1',[origin.campaign.broker_id]);
+    if(!broker)return mailingHome(req,res);
+    req.vvInitialAddress=mailingService.addressLines(origin.recipient).join(', ');
+    if(campaignModel.qc(origin.recipient))req.vvInitialLocation={lat:Number(origin.recipient.lat),lng:Number(origin.recipient.lng)};
+    req.vvSandboxPreview=true;
+    await renderBrokerPage(req,res,broker,true,false);
+  }));
 
   router.get(['/courrier/:token','/courrier/:token/:recipient'], brokerEndpoint(async function(req,res){
     brokerAuthTools.protect(res);

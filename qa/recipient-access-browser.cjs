@@ -1,5 +1,5 @@
 const fs=require('fs'),crypto=require('crypto'),assert=require('node:assert/strict');
-const {create,root}=require('./harness.cjs'),mail=require(root+'/mailing-service-v3'),model=require(root+'/public/js/campaign-model-v1');
+const {create,root}=require('./harness.cjs'),mail=require(root+'/mailing-service-v4'),model=require(root+'/public/js/campaign-model-v1');
 const {chromium}=require('/home/liassetech/courtier-outreach/node_modules/playwright-core');
 const out='/home/liassetech/previews/vendvite-qr-gating';
 (async()=>{

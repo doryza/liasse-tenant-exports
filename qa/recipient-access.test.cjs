@@ -1,5 +1,5 @@
 const {test}=require('node:test'),assert=require('node:assert/strict'),crypto=require('crypto');
-const {create,root}=require('./harness.cjs'),mail=require(root+'/mailing-service-v3'),model=require(root+'/public/js/campaign-model-v1');
+const {create,root}=require('./harness.cjs'),mail=require(root+'/mailing-service-v4'),model=require(root+'/public/js/campaign-model-v1');
 test('only an issued campaign/recipient pair authorizes a page and lead, including legacy accounts and owners',async()=>{
  const h=await create();
  async function request(path,body,headers={}){return fetch(h.url+path,{method:body===undefined?'GET':'POST',redirect:'manual',headers:{'Content-Type':'application/json',...headers},body:body===undefined?undefined:JSON.stringify(body)});}

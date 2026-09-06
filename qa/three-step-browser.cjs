@@ -1,7 +1,7 @@
 const fs=require('fs'),path=require('path'),assert=require('node:assert/strict');
 const {create,root}=require('./harness.cjs');
 const {chromium}=require('/home/liassetech/courtier-outreach/node_modules/playwright-core');
-const authTools=require(root+'/broker-auth-v1'),mail=require(root+'/mailing-service-v3');
+const authTools=require(root+'/broker-auth-v1'),mail=require(root+'/mailing-service-v4');
 const out='/home/liassetech/previews/vendvite-three-step';
 const pixel=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIHWP4z8DwHwAFgAI/ScLbtAAAAABJRU5ErkJggg==','base64');
 (async()=>{

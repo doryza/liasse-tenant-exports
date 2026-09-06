@@ -12,7 +12,7 @@
 <% if (typeof isPreview !== 'undefined' && isPreview && !(typeof inlineEditor!=='undefined'&&inlineEditor)) { %>
 <div class="bp-peek" role="status">
   <span class="bp-peek-dot" aria-hidden="true"></span>
-  <span class="bp-peek-txt"><%= t.bp_preview_banner %></span>
+  <span class="bp-peek-txt"><%= typeof isSandboxPreview!=='undefined'&&isSandboxPreview?(lang==='fr'?'Test PayPal — aperçu du destinataire. Aucune demande envoyée.':'PayPal test — recipient preview. No request is sent.'):t.bp_preview_banner %></span>
   <a class="bp-peek-btn" href="espace/page#pageActions"><%= previewPageLive?t.bp_preview_back:t.ws_step_publish %> ↗</a>
 </div>
 <% } %>

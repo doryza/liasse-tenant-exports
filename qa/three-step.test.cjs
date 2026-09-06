@@ -1,5 +1,5 @@
 const {test}=require('node:test'),assert=require('node:assert/strict');
-const {create,root}=require('./harness.cjs'),mail=require(root+'/mailing-service-v3');
+const {create,root}=require('./harness.cjs'),mail=require(root+'/mailing-service-v4');
 test('recipient links stay stable, private and specific to confirmed mailings',async()=>{
  const h=await create();
  try{
