@@ -6,7 +6,7 @@ var brokerAuthTools = require('./broker-auth-v1');
 var workspaceCopy = require('./workspace-copy-v3');
 var campaignModel=require('./public/js/campaign-model-v1');
 var campaignDataTools=require('./campaign-data-v1');
-var campaignCopy=require('./campaign-copy-v3');
+var campaignCopy=require('./campaign-copy-v4');
 
 // ── Campagne « 150 portes » — reglages produit.
 //    Declares au SCOPE FICHIER et non dans la fabrique de routes : la plateforme
