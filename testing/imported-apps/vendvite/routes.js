@@ -1,12 +1,12 @@
 var express = require('express');
 var invoiceTools = require('./invoice');
 var homepageTools = require('./homepage-experiment-v1');
-var homepageCopy = require('./homepage-copy');
+var homepageCopy = require('./homepage-copy-v5');
 var brokerAuthTools = require('./broker-auth-v1');
-var workspaceCopy = require('./workspace-copy-v1');
+var workspaceCopy = require('./workspace-copy-v2');
 var campaignModel=require('./public/js/campaign-model-v1');
 var campaignDataTools=require('./campaign-data-v1');
-var campaignCopy=require('./campaign-copy-v1');
+var campaignCopy=require('./campaign-copy-v2');
 
 // ── Campagne « 150 portes » — reglages produit.
 //    Declares au SCOPE FICHIER et non dans la fabrique de routes : la plateforme
@@ -145,9 +145,9 @@ module.exports = function(services){
       inv_err_generic:"Un problème est survenu. Veuillez réessayer.",
       inv_err_dup:"Une invitation a déjà été envoyée à ce courriel. Vérifiez votre boîte de réception.",
       esp_nav_my_page:"Ma page",
-      esp_nav_targeted_mail:"Courrier ciblé",
+      esp_nav_targeted_mail:"Campagnes",
       esp_nav_my_leads:"Mes leads",
-      esp_nav_subscription:"Abonnement",
+      esp_nav_subscription:"Adhésion",
       esp_page_in_progress_status:"Page en préparation.",
       esp_preview_button:"Aperçu",
       esp_launch_eyebrow:"Deux étapes pour conquérir votre secteur",
@@ -170,8 +170,8 @@ module.exports = function(services){
       esp_launch_done_status:"Page personnalisée ✓",
       esp_launch_price_reveal:"Votre système de capture est prêt. Découvrez maintenant la licence qui inclut votre première campagne de 150 lettres.",
       esp_setup_gate_eyebrow:"Votre page avant le prix",
-      esp_setup_gate_title:"Finalisez d’abord votre système de capture de prospects.",
-      esp_setup_gate_body:"Prévisualisez votre page, personnalisez-la à votre nom, puis confirmez qu’elle est prête. Nous vous présenterons ensuite la licence et votre première campagne postale intégrée.",
+      esp_setup_gate_title:"Bâtissez d’abord la page que vos lettres annonceront.",
+      esp_setup_gate_body:"Personnalisez votre page de capture, vérifiez l’aperçu, puis confirmez qu’elle est prête. Nous vous présenterons ensuite le tarif et votre première campagne de 150 lettres.",
       esp_setup_gate_cta:"Personnaliser ma page",
       esp_setup_required_error:"Confirmez d’abord que votre page de capture est personnalisée.",
       esp_setup_eyebrow:"Étape 1 · Votre vitrine",
@@ -191,7 +191,7 @@ module.exports = function(services){
       esp_phone_label:"Téléphone",
       esp_phone_help:"Bouton d'appel dans la barre du haut de votre page.",
       esp_email_label:"Courriel",
-      esp_email_help:"C'est ici que chaque nouveau lead vous est envoyé — jamais affiché publiquement.",
+      esp_email_help:"C'est ici que chaque nouvelle demande vous est envoyée — jamais affiché publiquement.",
       esp_section_about_you:"À propos de vous",
       esp_bio_label:"Votre présentation",
       esp_bio_help:"Le paragraphe de la section «&nbsp;L'agent&nbsp;» de votre page — votre philosophie, votre approche, en une ou deux phrases. Videz-le et le texte par défaut revient.",
@@ -216,7 +216,7 @@ module.exports = function(services){
       esp_links_icons_vs_buttons_help:"Facebook, Instagram, LinkedIn, YouTube et TikTok deviennent des icônes au pied de page&nbsp;; les autres liens (site d'agence, fiche Centris…) s'affichent en boutons. Aucun lien = rien n'apparaît.",
       esp_add_link_button:"+ Ajouter un lien",
       esp_your_testimonials_heading:"Vos témoignages",
-      esp_testimonials_default_help:"Laissez vide pour afficher les témoignages par défaut de la page.",
+      esp_testimonials_default_help:"Ajoutez vos propres témoignages. Sans témoignage, cette section reste masquée.",
       esp_add_testimonial_button:"+ Ajouter un témoignage",
       esp_save_button:"Enregistrer",
       esp_campaign_included_canada_post:"Centre de production postale VendVite",
@@ -267,7 +267,7 @@ module.exports = function(services){
       esp_confirm_launch_mailing_btn:"Confirmer et lancer l'envoi",
       esp_address_source_manual_check:"Les adresses proviennent des données cartographiques publiques. Nous validons chaque liste à la main avant impression&nbsp;; un numéro inexistant est retiré sans vous être facturé.",
       esp_your_campaigns_heading:"Vos campagnes",
-      esp_no_campaigns_first_included:"Aucun tirage pour l'instant. La production et l'envoi de vos 150 premières lettres sont compris dans votre licence.",
+      esp_no_campaigns_first_included:"Aucune campagne pour l’instant. Vos 150 premières lettres — impression, enveloppes et dépôt Postes Canada — sont comprises dans votre adhésion.",
       esp_campaign_col_status:"État",
       esp_campaign_col_territory:"Territoire",
       esp_campaign_col_doors:"Portes",
@@ -275,10 +275,10 @@ module.exports = function(services){
       esp_campaign_col_date:"Date",
       esp_territory_reload_btn:"Recharger ce territoire",
       esp_cancel_reclaim_included_btn:"Annuler et récupérer ma campagne incluse",
-      esp_leads_total_label:"Leads au total",
-      esp_leads_new_label:"Nouveaux",
+      esp_leads_total_label:"Demandes au total",
+      esp_leads_new_label:"À contacter",
       esp_leads_last_30_days_label:"30 derniers jours",
-      esp_leads_empty_state:"Aucun lead pour l'instant.",
+      esp_leads_empty_state:"Aucune demande pour l’instant.",
       esp_lead_private_notes_ph:"Notes privées…",
       esp_paypal_test_success_title:"Test PayPal réussi. Votre accès d’essai est ouvert.",
       esp_paypal_test_success_body:"Aucun paiement réel. Vous pouvez maintenant publier votre page, tester le code QR, recevoir un lead et demander une campagne ciblée.",
@@ -302,11 +302,11 @@ module.exports = function(services){
       esp_cancel_renewal_btn:"Annuler le renouvellement",
       esp_real_subscription_protected_test:"Votre abonnement réel est protégé pendant les essais sandbox. Repassez en mode réel pour gérer son renouvellement.",
       esp_paypal_secure_cancel_anytime:"Paiement sécurisé par PayPal. Annulable en tout temps.",
-      esp_perk_private_page_named:"Votre page privée, à votre nom, sur vendvite.app",
-      esp_perk_targeted_campaign_included:"La production complète et l'envoi annuel de 150 lettres ciblées",
-      esp_perk_unlimited_valuation_capture:"Capture illimitée de demandes d'évaluation",
-      esp_perk_instant_lead_email_alert:"Alerte courriel instantanée à chaque lead",
-      esp_perk_private_lead_register:"Votre registre de leads, à vous seul",
+      esp_perk_private_page_named:"Votre page de capture, à votre nom, sur vendvite.app",
+      esp_perk_targeted_campaign_included:"Une campagne de 150 lettres par année — impression, enveloppes, affranchissement et dépôt Postes Canada compris",
+      esp_perk_unlimited_valuation_capture:"Demandes d’analyse illimitées",
+      esp_perk_instant_lead_email_alert:"Alerte courriel à chaque demande",
+      esp_perk_private_lead_register:"Votre registre de demandes, à vous seul",
       esp_perk_free_edits_anytime:"Modifications en tout temps, sans frais",
       esp_invoices_heading:"Mes factures",
       esp_social_link_label_placeholder:"Libellé (ex. Instagram)",
@@ -436,8 +436,8 @@ module.exports = function(services){
       esp_page_live:"Votre page est en ligne.",
       esp_campaigns_included_plural:"campagnes incluses",
       esp_campaign_included_singular:"campagne incluse",
-      esp_leads_empty_unpublished:"Publiez votre page pour commencer à recevoir des demandes d'évaluation.",
-      esp_leads_empty_published:"Votre page est en ligne. Les demandes apparaîtront ici et vous serez averti par courriel.",
+      esp_leads_empty_unpublished:"Publiez votre page, puis lancez votre première campagne : les demandes d’analyse arriveront ici.",
+      esp_leads_empty_published:"Votre page est en ligne. Chaque demande apparaîtra ici et vous sera envoyée par courriel.",
       esp_credit_rest_lead:" taille de commande&nbsp;; le reste est à ",
       esp_credit_rest_tail:"&nbsp;$ la lettre, taxes en sus.",
       esp_per_letter_taxes_extra:"&nbsp;$ la lettre, taxes en sus.",
@@ -552,9 +552,9 @@ module.exports = function(services){
       inv_err_generic:"Something went wrong. Please try again.",
       inv_err_dup:"An invitation was already sent to this email. Check your inbox.",
       esp_nav_my_page:"My page",
-      esp_nav_targeted_mail:"Targeted mail",
+      esp_nav_targeted_mail:"Campaigns",
       esp_nav_my_leads:"My leads",
-      esp_nav_subscription:"Subscription",
+      esp_nav_subscription:"Membership",
       esp_page_in_progress_status:"Page in progress.",
       esp_preview_button:"Preview",
       esp_launch_eyebrow:"Two steps to own your market",
@@ -577,8 +577,8 @@ module.exports = function(services){
       esp_launch_done_status:"Page personalized ✓",
       esp_launch_price_reveal:"Your lead capture system is ready. Now discover the licence that includes your first 150-letter campaign.",
       esp_setup_gate_eyebrow:"Your page before the price",
-      esp_setup_gate_title:"Finish your lead capture system first.",
-      esp_setup_gate_body:"Preview your page, personalize it with your name and brand, then confirm it is ready. We will then show you the licence and your first integrated mail campaign.",
+      esp_setup_gate_title:"Build the page your letters will announce first.",
+      esp_setup_gate_body:"Personalize your lead-capture page, check the preview, then confirm it is ready. We will then show you the price and your first 150-letter campaign.",
       esp_setup_gate_cta:"Personalize my page",
       esp_setup_required_error:"First confirm that your lead capture page is personalized.",
       esp_setup_eyebrow:"Step 1 · Your showcase",
@@ -598,7 +598,7 @@ module.exports = function(services){
       esp_phone_label:"Phone",
       esp_phone_help:"The call button in the top bar of your page.",
       esp_email_label:"Email",
-      esp_email_help:"This is where every new lead is sent to you — never shown publicly.",
+      esp_email_help:"This is where every new request is sent to you — never shown publicly.",
       esp_section_about_you:"About you",
       esp_bio_label:"Your introduction",
       esp_bio_help:"The paragraph in the «&nbsp;The agent&nbsp;» section of your page — your philosophy, your approach, in one or two sentences. Clear it and the default comes back.",
@@ -623,7 +623,7 @@ module.exports = function(services){
       esp_links_icons_vs_buttons_help:"Facebook, Instagram, LinkedIn, YouTube and TikTok become icons in the footer; other links (agency site, Centris listing…) appear as buttons. No links = nothing appears.",
       esp_add_link_button:"+ Add a link",
       esp_your_testimonials_heading:"Your testimonials",
-      esp_testimonials_default_help:"Leave empty to show the page's default testimonials.",
+      esp_testimonials_default_help:"Add your own testimonials. The section stays hidden when none are provided.",
       esp_add_testimonial_button:"+ Add a testimonial",
       esp_save_button:"Save",
       esp_campaign_included_canada_post:"VendVite postal production centre",
@@ -674,7 +674,7 @@ module.exports = function(services){
       esp_confirm_launch_mailing_btn:"Confirm and launch the mailing",
       esp_address_source_manual_check:"The addresses come from public mapping data. We check every list by hand before printing; a civic number that doesn't exist is removed and never billed to you.",
       esp_your_campaigns_heading:"Your campaigns",
-      esp_no_campaigns_first_included:"No print runs yet. Production and mailing of your first 150 letters are included in your licence.",
+      esp_no_campaigns_first_included:"No campaigns yet. Your first 150 letters — printing, envelopes and Canada Post handoff — are included in your membership.",
       esp_campaign_col_status:"Status",
       esp_campaign_col_territory:"Territory",
       esp_campaign_col_doors:"Doors",
@@ -682,10 +682,10 @@ module.exports = function(services){
       esp_campaign_col_date:"Date",
       esp_territory_reload_btn:"Reload this territory",
       esp_cancel_reclaim_included_btn:"Cancel and reclaim my included campaign",
-      esp_leads_total_label:"Total leads",
-      esp_leads_new_label:"New",
+      esp_leads_total_label:"Requests in total",
+      esp_leads_new_label:"To contact",
       esp_leads_last_30_days_label:"Last 30 days",
-      esp_leads_empty_state:"No leads yet.",
+      esp_leads_empty_state:"No requests yet.",
       esp_lead_private_notes_ph:"Private notes…",
       esp_paypal_test_success_title:"PayPal test successful. Your trial access is open.",
       esp_paypal_test_success_body:"No real payment. You can now publish your page, test the QR code, receive a lead and request a targeted campaign.",
@@ -709,11 +709,11 @@ module.exports = function(services){
       esp_cancel_renewal_btn:"Cancel renewal",
       esp_real_subscription_protected_test:"Your real subscription is protected during test-mode trials. Switch back to live mode to manage its renewal.",
       esp_paypal_secure_cancel_anytime:"Payment secured by PayPal. Cancel at any time.",
-      esp_perk_private_page_named:"Your private page, in your name, on vendvite.app",
-      esp_perk_targeted_campaign_included:"Full production and annual mailing of 150 targeted letters",
-      esp_perk_unlimited_valuation_capture:"Unlimited capture of valuation requests",
-      esp_perk_instant_lead_email_alert:"Instant email alert on every lead",
-      esp_perk_private_lead_register:"Your lead register, yours alone",
+      esp_perk_private_page_named:"Your lead-capture page, in your name, on vendvite.app",
+      esp_perk_targeted_campaign_included:"One 150-letter campaign every year — printing, envelopes, postage and Canada Post handoff included",
+      esp_perk_unlimited_valuation_capture:"Unlimited analysis requests",
+      esp_perk_instant_lead_email_alert:"Email alert on every request",
+      esp_perk_private_lead_register:"Your request register, yours alone",
       esp_perk_free_edits_anytime:"Changes at any time, at no charge",
       esp_invoices_heading:"My invoices",
       esp_social_link_label_placeholder:"Label (e.g. Instagram)",
@@ -843,8 +843,8 @@ module.exports = function(services){
       esp_page_live:"Your page is live.",
       esp_campaigns_included_plural:"campaigns included",
       esp_campaign_included_singular:"campaign included",
-      esp_leads_empty_unpublished:"Publish your page to start receiving valuation requests.",
-      esp_leads_empty_published:"Your page is live. Requests will appear here and you will be notified by email.",
+      esp_leads_empty_unpublished:"Publish your page, then launch your first campaign: analysis requests will land here.",
+      esp_leads_empty_published:"Your page is live. Every request will appear here and reach your inbox.",
       esp_credit_rest_lead:" order size; the rest is ",
       esp_credit_rest_tail:"&nbsp;$ per letter, plus taxes.",
       esp_per_letter_taxes_extra:"&nbsp;$ per letter, plus taxes.",
@@ -968,8 +968,8 @@ module.exports = function(services){
     homepageTools.privateResponse(res);
     try{
       var L=await baseLocals(req);
-      var experiment = { variant:'visible', preview:false, track:false };
-      try { experiment = await homepageExperiment.assign(req,res); } catch(e) { console.error('homepage assignment',e.message); }
+      var experiment = { variant:'visible', preview:['visible','gated'].includes(req.query.vv_preview), track:false };
+      if (experiment.preview) res.set('X-Liasse-Preview','homepage-demo');
       res.set('Cache-Control','private, no-store');
       res.render('index', Object.assign(L, { experiment:experiment, isHome:true }));
     }catch(e){ console.error('index', e); res.status(500).send('Erreur'); }
@@ -977,7 +977,7 @@ module.exports = function(services){
 
   router.post('/api/homepage/event', async function(req,res){
     res.set('Cache-Control','private, no-store');
-    try { await homepageExperiment.event(req); await homepageExperiment.evaluate(); } catch(e) { console.error('homepage event',e.message); }
+    // Pricing experiment retired: do not record new events against old assignments.
     res.status(204).end();
   });
 
@@ -989,6 +989,23 @@ module.exports = function(services){
       res.set('Cache-Control','private, no-store');
       res.render('admin-conversions',Object.assign(L,{active:'conversions',experimentState:await homepageExperiment.state(),conversionRows:await homepageExperiment.results()}));
     } catch(e) { console.error('homepage results',e.message); res.status(500).send('Erreur'); }
+  });
+
+  router.get('/richard-tremblay', async function(req,res){
+    try {
+      var fr = req.lang === 'fr';
+      await renderBrokerPage(req, res, {
+        slug:'richard-tremblay', full_name:'Richard Tremblay', agency:'RE/MAX', phone:'', email:'',
+        profile:{
+          agent_name:'Richard Tremblay', agency:'RE/MAX',
+          agent_title:fr ? 'Courtier immobilier résidentiel' : 'Residential real estate broker',
+          agent_photo_url:'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=800&q=85',
+          about:fr ? 'Une approche humaine, une écoute attentive et un plan adapté à votre prochaine étape.' : 'A personal approach, attentive listening and a plan tailored to your next step.',
+          agency_disclaimer:fr ? 'Profil fictif de démonstration. Photo illustrative, affiliation RE/MAX et statistiques présentées à titre d’exemple.' : 'Fictional demo profile. Illustrative portrait, RE/MAX affiliation and statistics shown as examples.',
+          stat_homes:'120', stat_days:'28', stat_ratio:'98', stat_volume:'65', links:[]
+        }
+      }, false, true);
+    } catch(e) { console.error('demo broker',e.message); res.status(500).send('Erreur'); }
   });
 
   router.get('/journal/:id', async function(req,res){
@@ -1270,7 +1287,7 @@ module.exports = function(services){
   }
 
   // Paths the broker-slug catch-all must never swallow.
-  var RESERVED_SLUGS = ['api','admin','acces','espace','journal','public','manifest.json','sw.js','favicon.ico','robots.txt','_platform','__preview','courtier','courtiers','index','connexion','acces-expire'];
+  var RESERVED_SLUGS = ['api','admin','acces','espace','journal','public','manifest.json','sw.js','favicon.ico','robots.txt','_platform','__preview','courtier','courtiers','index','connexion','acces-expire','richard-tremblay'];
 
   function slugifyPart(s){
     return String(s || '')
@@ -1377,13 +1394,13 @@ module.exports = function(services){
       + '<div style="background:#0D0A0B;padding:34px 20px;font-family:Inter,-apple-system,Segoe UI,Roboto,sans-serif">'
       + '<div style="max-width:520px;margin:0 auto;background:linear-gradient(165deg,#171213,#0f0b0c);border:1px solid rgba(245,239,230,.12);border-radius:10px;padding:32px 28px;color:#F5EFE6">'
       + '<div style="font-family:IBM Plex Mono,monospace;font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:#C79A5B;margin-bottom:18px">'
-      + (fr ? 'Sur invitation seulement' : 'By invitation only') + '</div>'
+      + (fr ? 'Courtiers immobiliers du Québec' : 'Real estate brokers in Quebec') + '</div>'
       + '<h1 style="font-family:Georgia,serif;font-size:25px;line-height:1.15;margin:0 0 14px;color:#F5EFE6">'
       + (fr ? 'Votre accès est accepté, ' : 'Your access is approved, ') + escapeHtml(broker.full_name.split(' ')[0]) + '.</h1>'
       + '<p style="color:rgba(245,239,230,.64);font-size:15px;line-height:1.6;margin:0 0 22px">'
       + (fr
-        ? 'Votre espace vous guide pour personnaliser votre page, activer votre adhésion et préparer votre première campagne. Votre page reste privée tant que vous ne la publiez pas.'
-        : 'Your workspace guides you through personalizing your page, activating your membership and preparing your first campaign. Your page stays private until you publish it.')
+        ? 'Votre espace vous guide : personnalisez votre page de capture, activez votre adhésion, puis choisissez les portes de votre première campagne — 150 lettres comprises, imprimées, mises sous enveloppe et déposées chez Postes Canada par notre équipe. Votre page reste privée tant que vous ne la publiez pas.'
+        : 'Your workspace guides you: personalize your lead-capture page, activate your membership, then choose the doors of your first campaign — 150 letters included, printed, stuffed and handed to Canada Post by our team. Your page stays private until you publish it.')
       + '</p>'
       + '<a href="' + link + '" style="display:block;text-align:center;padding:16px;border-radius:4px;background:#E30B2D;color:#fff;text-decoration:none;font-family:Georgia,serif;font-weight:bold;font-size:16px;box-shadow:inset 0 0 0 1.5px rgba(199,154,91,.5)">'
       + (fr ? 'Ouvrir mon espace' : 'Open my workspace') + '</a>'
@@ -1402,21 +1419,21 @@ module.exports = function(services){
       + '<div style="background:#0D0A0B;padding:34px 20px;font-family:Inter,-apple-system,Segoe UI,Roboto,sans-serif">'
       + '<div style="max-width:520px;margin:0 auto;background:linear-gradient(165deg,#171213,#0f0b0c);border:1px solid rgba(245,239,230,.12);border-radius:10px;padding:32px 28px;color:#F5EFE6">'
       + '<div style="font-family:IBM Plex Mono,monospace;font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:#C79A5B;margin-bottom:18px">'
-      + (fr ? 'Sur invitation seulement' : 'By invitation only') + '</div>'
+      + (fr ? 'Courtiers immobiliers du Québec' : 'Real estate brokers in Quebec') + '</div>'
       + '<h1 style="font-family:Georgia,serif;font-size:24px;line-height:1.2;margin:0 0 14px;color:#F5EFE6">'
-      + (fr ? 'Votre demande est scellée, ' : 'Your request is sealed, ') + escapeHtml(broker.full_name.split(' ')[0]) + '.</h1>'
+      + (fr ? 'Votre demande est reçue, ' : 'Your request was received, ') + escapeHtml(broker.full_name.split(' ')[0]) + '.</h1>'
       + '<p style="color:rgba(245,239,230,.64);font-size:15px;line-height:1.6;margin:0">'
       + (fr
-        ? 'Pour préserver la rareté — et l’efficacité — de la méthode VendVite, nous limitons volontairement le nombre de licences offertes dans chaque marché. Nous vérifions maintenant si une place additionnelle peut être ouverte dans votre secteur. Si oui, vous recevrez par courriel une offre d’accès ainsi que les modalités pour réserver votre licence.'
-        : 'To protect the scarcity — and effectiveness — of the VendVite method, we deliberately limit the number of licences offered in each market. We are now checking whether an additional seat can be opened in your territory. If so, you will receive an access offer by email along with the terms for securing your licence.')
+        ? 'Nous préparons votre accès. Vous recevrez par courriel un lien pour bâtir votre page de capture et consulter le tarif.'
+        : 'We are preparing your access. You will receive an email link to build your lead-capture page and see the price.')
       + '</p></div></div>';
     return await services.email.send({
       to: broker.email,
       subject: fr ? 'Votre demande d’accès VendVite est reçue' : 'Your VendVite access request was received',
       html: html,
       text: fr
-        ? 'Votre demande d’accès VendVite est reçue. Nous limitons le nombre de licences par marché afin de préserver l’efficacité de notre méthode. Nous vous écrirons si une place additionnelle peut être ouverte dans votre secteur.'
-        : 'Your VendVite access request was received. We limit licences per market to protect the effectiveness of our method. We will contact you if an additional seat can be opened in your territory.'
+        ? 'Votre demande d’accès VendVite est reçue. Vous recevrez par courriel un lien pour bâtir votre page de capture et consulter le tarif.'
+        : 'Your VendVite access request was received. You will receive an email link to build your lead-capture page and see the price.'
     });
   }
 
@@ -1466,7 +1483,7 @@ module.exports = function(services){
       var targetRegion = String(b.target_region || '').trim().slice(0, 200);
       var phone = String(b.phone || '').trim().slice(0, 40);
       var email = String(b.email || '').trim().toLowerCase().slice(0, 190);
-      if (!name || !agency || !targetRegion || !phone || !email) return res.status(400).json({ error: TT.inv_err_required });
+      if (!name || !agency || !phone || !email) return res.status(400).json({ error: TT.inv_err_required });
       if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return res.status(400).json({ error: TT.inv_err_email });
 
       var existing = await db.get('SELECT * FROM brokers WHERE LOWER(email)=$1', [email]);
@@ -1495,7 +1512,7 @@ module.exports = function(services){
           links: []
         })]
       );
-      try { await homepageExperiment.convert(req,ins.id); } catch(e) { console.error('homepage attribution',e.message); }
+      // Preserve historical experiment data without attributing new applications.
       // Manual review gate: NO magic link yet. The broker gets a sealed
       // acknowledgement; the vendvite operator gets pinged to review.
       try { await sendAckEmail(req, ins, lang); } catch(e){ console.error('ack email', e); }
@@ -2820,7 +2837,7 @@ module.exports = function(services){
   });
 
   // ── Public broker page. Renders the lead funnel under the broker's identity.
-  async function renderBrokerPage(req, res, broker, isPreview){
+  async function renderBrokerPage(req, res, broker, isPreview, isDemo){
     var L = await baseLocals(req);
     var prof = brokerProfile(broker);
     var settings = Object.assign({}, L.settings, {
@@ -2829,9 +2846,13 @@ module.exports = function(services){
       agent_email: prof.agent_email || broker.email,
       agent_title: prof.agent_title || broker.agency,
       agency: prof.agency || broker.agency,
-      _p_agent_image_url: prof.agent_photo_url || L.settings._p_agent_image_url || ''
+      _p_agent_image_url: prof.agent_photo_url || ''
     });
     var t = Object.assign({}, L.t);
+    if (isDemo) {
+      t.success_title = L.lang === 'fr' ? 'Démonstration terminée.' : 'Demo complete.';
+      t.success_text = L.lang === 'fr' ? 'Sur votre page VendVite, cette demande vous serait transmise pour le suivi. Aucune demande n’a été envoyée dans cette démo.' : 'On your VendVite page, this request would reach you for follow-up. No request was sent in this demo.';
+    }
     if (prof.hero_title) t.hero_title = prof.hero_title;
     // Ignore the former seeded promise if it was persisted unchanged in an
     // existing profile; genuine broker-written custom copy remains respected.
@@ -2841,10 +2862,14 @@ module.exports = function(services){
     ];
     if (prof.hero_sub && legacyHeroSubs.indexOf(prof.hero_sub) === -1) t.hero_sub = prof.hero_sub;
     if (prof.hero_note) t.hero_note = prof.hero_note;
-    // Profile keys → the TEMPLATE's real setting keys (the page reads
-    // stat_homes_sold / stat_avg_days / stat_list_to_sale / stat_career_volume).
-    var STAT_MAP = { stat_homes:'stat_homes_sold', stat_days:'stat_avg_days', stat_ratio:'stat_list_to_sale', stat_volume:'stat_career_volume' };
-    Object.keys(STAT_MAP).forEach(function(k){ if (prof[k]) settings[STAT_MAP[k]] = prof[k]; });
+    // Show only figures supplied by this broker; never inherit site-wide samples.
+    var brokerStats = [
+      {key:'stat_homes',label:t.stat_homes_label,unit:''},
+      {key:'stat_days',label:t.stat_days_label,unit:t.stat_days_unit},
+      {key:'stat_ratio',label:t.stat_ratio_label,unit:'%'},
+      {key:'stat_volume',label:t.stat_volume_label,unit:t.stat_volume_unit}
+    ].map(function(stat){ return Object.assign({},stat,{value:String(prof[stat.key] || '').trim()}); })
+      .filter(function(stat){ return /^(?:\d+(?:[.,]\d+)?)$/.test(stat.value) && Number(stat.value.replace(',','.'))>0; });
     // Identity into the « Votre courtier » section (t-keys, not settings)
     if (prof.agent_title) t.agent_title = prof.agent_title;
     if (prof.agency || broker.agency) t.agent_remax = prof.agency || broker.agency;
@@ -2862,22 +2887,28 @@ module.exports = function(services){
       var hit = Object.keys(SOCIAL_RE).find(function(k){ return SOCIAL_RE[k].test(l.url) && !settings[k]; });
       if (hit) settings[hit] = l.url; else otherLinks.push(l);
     });
-    var testimonials = Array.isArray(prof.testimonials) && prof.testimonials.length
-      ? prof.testimonials.map(function(x, i){ return Object.assign({ id: 'p' + i, published: 1, sort_order: i }, x); })
-      : await db.all('SELECT * FROM testimonials WHERE published=1 ORDER BY sort_order ASC, created_at DESC');
-    var posts = await db.all('SELECT * FROM posts WHERE published=1 ORDER BY created_at DESC LIMIT 3');
+    var testimonials = (Array.isArray(prof.testimonials) ? prof.testimonials : [])
+      .filter(function(x){return x && String(x.quote || '').trim() && String(x.author || '').trim();})
+      .map(function(x,i){return Object.assign({id:'p'+i},x);});
     res.render('broker-page', Object.assign(L, {
       t: t,
       settings: settings,
       testimonials: testimonials || [],
-      posts: posts || [],
+      brokerStats: brokerStats,
       isHome: true,
       brokerSlug: broker.slug,
       brokerLinks: otherLinks,
       isPreview: !!isPreview,
+      isDemo: !!isDemo,
+      ogImage: settings._p_agent_image_url,
       canonical: absoluteUrl(req, '/' + broker.slug)
     }));
   }
+
+  // The public demo is never a real broker account or a lead destination.
+  router.post('/api/courtier/richard-tremblay/piste', function(req,res){
+    res.json({success:true,demo:true});
+  });
 
   // ── Lead capture from a broker page → broker_leads + instant email
   router.post('/api/courtier/:slug/piste', async function(req, res){

@@ -2,34 +2,32 @@
 <main class="inv hp" data-variant="<%= experiment.variant %>" data-track="<%= experiment.track ? '1' : '0' %>" data-preview="<%= experiment.preview ? '1' : '0' %>">
   <div class="inv-veil" aria-hidden="true"></div>
   <header class="hp-masthead hp-wrap">
-    <a class="hp-brand" href="." aria-label="VendVite"><img src="https://res.cloudinary.com/duhp69meg/image/upload/f_auto,q_auto,w_120/v1788268189/vendvite/logo.png" alt="" width="42" height="50"><span>VendVite<span class="hp-brand-dot">.</span></span></a>
+    <a class="hp-brand" href="." aria-label="VendVite"><img src="https://res.cloudinary.com/duhp69meg/image/upload/c_crop,g_north,h_538,w_534/f_auto,q_auto,w_160/v1788268189/vendvite/logo.png" alt="" width="58" height="58"><span>VendVite<span class="hp-brand-dot">.</span></span></a>
     <a class="hp-broker-login" data-vv-auth href="connexion"><%= t.ws_login %> ↗</a>
   </header>
-  <% if (experiment.preview) { %><p class="hp-preview hp-wrap"><%= t.hp_preview %> <strong><%= experiment.variant === 'visible' ? 'A' : 'B' %></strong></p><% } %>
+  <% if (experiment.preview) { %><p class="hp-preview hp-wrap"><%= t.hp_preview %> </p><% } %>
   <section class="hp-hero hp-wrap" aria-labelledby="hpTitle">
     <div class="hp-pitch">
       <p class="hp-eyebrow"><span aria-hidden="true"></span><%= t.inv_eyebrow %></p>
       <h1 id="hpTitle"><%= t.inv_title %></h1>
       <p class="hp-lede"><%= t.inv_lede %></p>
-      <div class="hp-actions"><a class="hp-cta" data-home-cta href="#invPanel"><%= t.hp_cta %><span aria-hidden="true">↗</span></a><a class="hp-text-link" href="#how"><%= t.hp_secondary %> <span aria-hidden="true">↓</span></a></div>
+      <div class="hp-actions"><a class="hp-cta" data-home-cta href="#invPanel"><%= t.hp_cta %><span aria-hidden="true">↗</span></a><a class="hp-text-link" href="#compare"><%= t.hp_secondary %> <span aria-hidden="true">↓</span></a></div>
       <p class="hp-reassurance"><%= t.hp_reassurance %></p>
+      <a class="hp-text-link" href="richard-tremblay?lang=<%= lang %>"><%= lang==='fr' ? 'Voir la page démo de Richard Tremblay' : 'Explore Richard Tremblay’s demo page' %> ↗</a>
       <div class="hp-included">
         <p class="hp-label"><%= t.hp_included %></p>
         <ul class="hp-benefits">
-          <li><span class="hp-benefit-mark" aria-hidden="true">150</span><div><strong><%= t.hp_letters %></strong><p><%= t.hp_letters_detail %></p></div></li>
+          <li><span class="hp-benefit-mark" aria-hidden="true">⌖</span><div><strong><%= t.hp_letters %></strong><p><%= t.hp_letters_detail %></p></div></li>
           <li><span class="hp-benefit-mark" aria-hidden="true">↗</span><div><strong><%= t.hp_page %></strong><p><%= t.hp_page_detail %></p></div></li>
-          <li><span class="hp-benefit-mark" aria-hidden="true">↳</span><div><strong><%= t.hp_leads %></strong><p><%= t.hp_leads_detail %></p></div></li>
+          <li><span class="hp-benefit-mark" aria-hidden="true">✉</span><div><strong><%= t.hp_leads %></strong><p><%= t.hp_leads_detail %></p></div></li>
         </ul>
+        <p class="hp-allowance"><%= t.hp_mail_allowance %></p>
       </div>
     </div>
     <div class="hp-conversion">
       <div class="hp-offer" id="hpOffer">
-        <% if (experiment.variant === 'visible') { %>
-          <div class="hp-offer-price"><strong><%= t.inv_price_amount %></strong><span><%= t.inv_price_term %></span></div>
-          <p><%= t.hp_price_note %></p>
-        <% } else { %>
-          <strong class="hp-offer-title"><%= t.hp_gate_title %></strong><p><%= t.hp_gate_note %></p>
-        <% } %>
+        <div class="hp-offer-price"><strong><%= t.inv_price_amount %></strong><span><%= t.inv_price_term %></span></div>
+        <p><%= t.hp_price_note %></p>
       </div>
       <div class="inv-panel" id="invPanel">
         <p class="hp-label hp-form-intro"><%= t.hp_form_note %></p>
@@ -37,10 +35,7 @@
         <p class="inv-panel-sub"><%= t.inv_form_sub %></p>
         <form id="invForm" class="inv-form" novalidate data-err-required="<%= t.inv_err_required %>" data-err-email="<%= t.inv_err_email %>" data-err-generic="<%= t.inv_err_generic %>">
           <div class="inv-field"><label for="invName"><%= t.inv_f_name %></label><input id="invName" name="name" type="text" autocomplete="name" maxlength="120" placeholder="<%= t.inv_f_name_ph %>" aria-describedby="invError" required></div>
-          <div class="inv-row">
-            <div class="inv-field"><label for="invAgency"><%= t.inv_f_agency %></label><input id="invAgency" name="agency" type="text" autocomplete="organization" maxlength="120" placeholder="<%= t.inv_f_agency_ph %>" aria-describedby="invError" required></div>
-            <div class="inv-field"><label for="invRegion"><%= t.inv_f_region %></label><input id="invRegion" name="target_region" type="text" autocomplete="address-level2" maxlength="200" placeholder="<%= t.inv_f_region_ph %>" aria-describedby="invError" required></div>
-          </div>
+          <div class="inv-field"><label for="invAgency"><%= t.inv_f_agency %></label><input id="invAgency" name="agency" type="text" autocomplete="organization" maxlength="120" placeholder="<%= t.inv_f_agency_ph %>" aria-describedby="invError" required></div>
           <div class="inv-field"><label for="invEmail"><%= t.inv_f_email %></label><input id="invEmail" name="email" type="email" autocomplete="email" maxlength="190" placeholder="<%= t.inv_f_email_ph %>" aria-describedby="invError" required></div>
           <div class="inv-field"><label for="invPhone"><%= t.inv_f_phone %></label><input id="invPhone" name="phone" type="tel" autocomplete="tel" maxlength="40" placeholder="<%= t.inv_f_phone_ph %>" aria-describedby="invError" required></div>
           <p class="inv-error" id="invError" role="alert"></p>
@@ -57,6 +52,9 @@
       </div>
     </div>
   </section>
+  <%- include('partials/homepage-compare') %>
+  <%- include('partials/homepage-builder') %>
+  <%- include('partials/homepage-page') %>
   <section class="hp-process hp-wrap" id="how" aria-labelledby="hpProcessTitle">
     <p class="hp-eyebrow"><%= t.hp_process_label %></p><h2 id="hpProcessTitle"><%= t.hp_process_title %></h2>
     <ol class="hp-steps"><% t.hp_steps.forEach(function(step,i){ %><li><span class="hp-step-number">0<%= i+1 %></span><h3><%= step[0] %></h3><p><%= step[1] %></p></li><% }); %></ol>
@@ -66,6 +64,6 @@
   <footer class="hp-footer hp-wrap"><span class="hp-brand">VendVite<span class="hp-brand-dot">.</span></span><span><%= t.inv_foot %></span></footer>
   <div class="hp-sticky" id="hpSticky" hidden><span><%= t.hp_sticky %></span><a class="hp-cta" data-home-cta href="#invPanel"><%= t.hp_cta %> ↗</a></div>
 </main>
-<script src="public/js/invite.js?v=homepage-price-v1" defer></script>
+<script src="public/js/invite.js?v=pitch-v5" defer></script>
 </body>
 </html>

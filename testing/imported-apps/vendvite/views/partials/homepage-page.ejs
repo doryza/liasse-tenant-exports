@@ -1,0 +1,29 @@
+<section class="hp-page hp-wrap" id="page" aria-labelledby="hpPageTitle">
+  <div class="hp-page-grid">
+    <div class="hp-page-copy">
+      <p class="hp-eyebrow"><span aria-hidden="true"></span><%= t.hp_page_eyebrow %></p>
+      <h2 id="hpPageTitle"><%= t.hp_page_title %></h2>
+      <p class="hp-page-lede"><%= lang==='fr' ? 'Voici ce que vos propriétaires découvrent après avoir reçu votre lettre : une page à votre nom, avec votre photo et votre bannière. Explorez la démo de Richard Tremblay, courtier fictif affilié à RE/MAX, puis imaginez la vôtre, incluse dans votre adhésion de 599 $ par année.' : 'This is what homeowners discover after receiving your letter: a page with your name, portrait and brokerage. Explore Richard Tremblay’s demo, a fictional RE/MAX-affiliated broker, then imagine your own, included in your $599 annual membership.' %></p>
+      <ul class="hp-page-points"><% t.hp_page_points.forEach(function(p){ %><li><strong><%= p[0] %></strong><p><%= p[1] %></p></li><% }); %></ul>
+    </div>
+    <figure class="hp-phone">
+      <a class="demo-identity" href="richard-tremblay?lang=<%= lang %>">
+        <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=800&q=85" alt="Richard Tremblay — <%= lang==='fr' ? 'portrait illustratif' : 'illustrative portrait' %>" width="80" height="96" loading="lazy">
+        <span><small><%= lang==='fr' ? 'PROFIL DÉMO' : 'DEMO PROFILE' %></small><strong>Richard Tremblay</strong><span class="demo-remax">RE/MAX</span></span>
+      </a>
+      <div class="hp-phone-screen" aria-hidden="true">
+        <div class="hp-phone-bar"><span class="hp-phone-seal">V</span><span>Richard Tremblay</span></div>
+        <p class="hp-phone-eyebrow"><%= t.hero_eyebrow %></p>
+        <h3><%= t.hero_title %></h3>
+        <div class="hp-phone-field"><span><%= t.address_label %></span><strong><%= t.hp_page_ui_addr %></strong></div>
+        <div class="hp-phone-fiche">
+          <div class="hp-phone-fiche-top"><span><%= t.fiche_label %></span><span><%= t.hp_page_ui_ref %></span></div>
+          <div class="hp-phone-photo"><svg viewBox="0 0 320 96" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice"><rect width="320" height="96" fill="#9fb2c2"/><rect y="56" width="320" height="40" fill="#556a45"/><path d="M0 60Q80 50 160 58T320 56V96H0Z" fill="#41522f"/><path d="M118 62V34L160 12L202 34V62Z" fill="#e8e1d3"/><path d="M112 36L160 10L208 36" stroke="#8c2c2c" stroke-width="5" fill="none"/><rect x="150" y="42" width="20" height="20" fill="#5a3a2a"/><rect x="126" y="40" width="14" height="12" fill="#c9dbe6"/><rect x="180" y="40" width="14" height="12" fill="#c9dbe6"/><rect x="236" y="28" width="6" height="34" fill="#5a4636"/><circle cx="239" cy="24" r="14" fill="#6f8f4f"/></svg></div>
+          <div class="hp-phone-plaque"><strong><%= t.hp_page_ui_addr %></strong><span class="hp-phone-coords"><%= t.hp_page_ui_coords %></span></div>
+        </div>
+        <span class="hp-phone-btn"><%= t.form_submit %></span>
+      </div>
+      <figcaption><a class="hp-text-link" href="richard-tremblay?lang=<%= lang %>"><%= lang==='fr' ? 'Essayer sa page de capture' : 'Try his lead-capture page' %> ↗</a><p><%= lang==='fr' ? 'Profil fictif · Photo illustrative · Aucune affiliation réelle revendiquée.' : 'Fictional profile · Illustrative photo · No actual affiliation claimed.' %></p></figcaption>
+    </figure>
+  </div>
+</section>
