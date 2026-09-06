@@ -20,3 +20,10 @@
 .cs-wizard .camp-histo-card{background:#fff;border-color:#d4d3c8}.cs-wizard .camp-histo-card h3{color:#404936}.cs-wizard .camp-histo-card .esp-hint,.cs-wizard .camp-histo-t,.cs-wizard .camp-histo-q,.cs-wizard .camp-histo-m,.cs-wizard .camp-histo-d,.cs-wizard .camp-histo-t-head{color:#606953}.cs-wizard .camp-histo-l{border-color:#d9dace}.cs-wizard .camp-histo-b{color:#535c45;border-color:#c9cdbf}.cs-wizard .cs-history summary{color:#525e42;font-size:17px}
 @media(max-width:760px){.cs-wizard .cs-heading .ws-eyebrow{display:none}.cs-wizard .cs-heading h1{font-size:30px}.cs-wizard[data-current-step="2"] .cs-heading h1,.cs-wizard[data-current-step="3"] .cs-heading h1{font-size:22px}.cs-wizard .cs-proof-aside{order:initial}.cs-proof-tools a{display:none}.cs-proof-approval{padding-top:18px}.cs-wizard .cs-proof-aside .cs-qr-explainer{font-size:12px}.cs-wizard .cs-proof-aside .cs-qr-explainer p{margin-bottom:0}.cs-wizard .cs-proof-aside .cs-qr-explainer .cs-fine{display:none}}
 .cs-wizard .cs-checkout-layout>.cs-order-card{order:0}.cs-wizard .cs-checkout-layout>.cs-launch-aside{order:1}
+/* Leads use the light workspace palette, including inherited secondary text. */
+.ws-mailing-shell [data-panel="pistes"]{--ink:#303b28;--ink-dim:#505a46;--ink-faint:#606953;--gold:#79571e;--hair:#d7d7ca}
+.ws-mailing-shell [data-panel="pistes"] .ws-muted,.ws-mailing-shell [data-panel="pistes"] .ws-lead-filters label>span,.ws-mailing-shell [data-panel="pistes"] .ws-lead-save{color:#606953}
+.ws-mailing-shell [data-panel="pistes"] .ws-lead-filters input,.ws-mailing-shell [data-panel="pistes"] .ws-lead-filters select{background:#fafbf6;color:#303b28;border-color:#cdd2c3}
+.ws-mailing-shell [data-panel="pistes"] input::placeholder,.ws-mailing-shell [data-panel="pistes"] textarea::placeholder{color:#606953;opacity:1}
+.ws-mailing-shell [data-panel="pistes"] .esp-lead-meta a{color:#79571e;text-decoration:underline;text-underline-offset:3px}
+.ws-mailing-shell [data-panel="pistes"] .ws-lead-save .is-error{color:#a21d35}
