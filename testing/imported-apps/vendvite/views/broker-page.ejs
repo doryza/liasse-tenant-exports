@@ -1,7 +1,7 @@
 <%- include('partials/header') %>
 <% if(typeof inlineEditor!=='undefined'&&inlineEditor){ %><%- include('partials/page-editor-toolbar') %><% } %>
 <% if (typeof invitation !== 'undefined' && invitation) { %>
-<div class="bp-demo mailing-invitation"><div class="container bp-demo-inner"><p><strong><%= lang==='fr'?'Votre page de capture à 0 $':'Your $0 lead capture page' %></strong> · <%= lang==='fr'?'Réservée aux campagnes postales VendVite. Démonstration : aucune demande envoyée.':'Reserved for VendVite postal campaigns. Demo: no requests sent.' %></p><a href="demarrer/<%= invitation.tag %>?lang=<%= lang %>"><%= lang==='fr'?'Activer ma page gratuitement':'Activate my page for free' %> ↗</a></div></div>
+<div class="bp-demo mailing-invitation"><div class="container bp-demo-inner"><p><span><strong><%= lang==='fr'?'Votre page de capture de prospect sans frais':'Your free lead capture page' %></strong> · <%= lang==='fr'?'Réservée aux campagnes postales VendVite.':'Reserved for VendVite postal campaigns.' %></span><em class="mailing-demo-notice"><%= lang==='fr'?'Démonstration : aucune demande envoyée.':'Demo: no requests sent.' %></em></p><a href="demarrer/<%= invitation.tag %>?lang=<%= lang %>"><%= lang==='fr'?'Activer ma page gratuitement':'Activate my page for free' %> ↗</a></div></div>
 <% } %>
 <% if (typeof isDemo !== 'undefined' && isDemo && !(typeof invitation !== 'undefined' && invitation)) { %>
 <div class="bp-demo" role="note"><div class="container bp-demo-inner">
