@@ -973,6 +973,7 @@ module.exports = function(services){
   async function baseLocals(req){
     var lang=req.lang; var settings=await getSettings();
     var t=applyTextOverrides(Object.assign({}, T[lang]||T.fr), settings, lang);
+    if(req.vvEnglishOnly){t.footer_disclaimer='Each agency is independently owned and operated.';t.agent_remax='Real estate professional.';}
     var ogImage = settings._p_agent_image_url || '';
     var canonical = '';
     try{ if(typeof req.tenantUrl==='function') canonical=req.tenantUrl('/'); }catch(e){}

@@ -28,7 +28,7 @@ test('campaign sent workflow preserves recipients, filters and advances; provinc
   }
   const detail=await (await req('/pwa/vendvite/admin/sollicitations/'+en.id,undefined,admin)).text();assert.match(detail,/data-advance="true"/);assert.match(detail,/\?lang=en/);
   for(const path of ['/invitation/'+original.tag,'/demarrer/'+original.tag]){
-   const r=await req(path+'?lang=fr',undefined,{cookie:'pwa_lang=fr'});const html=await r.text();assert.equal(r.status,200);assert.match(html,/<html lang="en">/);assert.doesNotMatch(html,/class="inv-lang"|class="footer-lang/);
+   const r=await req(path+'?lang=fr',undefined,{cookie:'pwa_lang=fr'});const html=await r.text();assert.equal(r.status,200);assert.match(html,/<html lang="en">/);assert.doesNotMatch(html,/class="inv-lang"|class="footer-lang|OACIQ/);
   }
   const signup=await req('/api/courtier/demarrer?lang=fr',{name:original.name,agency:original.agency,phone:original.phone,email:'english@example.test',tag:original.tag,mailing_terms:true},{cookie:'pwa_lang=fr'});assert.equal(signup.status,201);assert.match((await signup.json()).message,/Check your email/);
   assert.equal(h.emails.length,1);assert.equal(h.emails[0].subject,'VendVite — Your workspace is ready');
