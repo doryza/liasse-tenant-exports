@@ -10,7 +10,7 @@ Marie Tremblay {Agence Exemple, Courtier immobilier, 514 555-0100, https://examp
 LAVAL QC H7W 4Y4
 ```
 
-Quote a metadata value containing a comma. Empty metadata values are allowed; a full agent name and both address lines are required. Duplicate blocks, malformed metadata, invalid portrait URLs and address lines too wide for the window are rejected before campaign creation. Identity metadata never appears in the window. The parsed preview uses text nodes, and letter templates escape all imported text.
+Quote a metadata value containing a comma. Empty metadata values are allowed; a full agent name and both address lines are required. Duplicate blocks, malformed metadata, invalid portrait URLs and address lines too wide for the window are rejected before campaign creation. The full agent name is the first of three window lines, followed by both delivery address lines. Agency, title, phone and portrait metadata stay outside the window; portraits are omitted from the printed solicitation letter and remain available to the personalized demo. The parsed preview uses text nodes, and letter templates escape all imported text.
 
 Campaigns and agents are inserted atomically. Each saved agent has a stable random `VV-…` tag, visible in the campaign and on the letter. Print one French page, one English page, or French/English duplex per agent. Print Letter at 100%; for duplex select long-edge flipping. Fold at 3 11/16 and 7 3/8 inches, leaving the addressed panel outside. The layout assumes the standard lower-left #10 window; test the actual stock before a batch.
 
