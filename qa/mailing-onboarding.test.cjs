@@ -26,9 +26,16 @@ test('saved campaigns, personalized demos, free onboarding and campaign-only cap
   const body={name:'Marie Tremblay',agency:'Agence Exemple',phone:'5145550100',email:'qa@example.test',tag:agent.tag,mailing_terms:true};
   assert.equal((await req('/api/courtier/demarrer',{...body,mailing_terms:false})).status,400);
   const signup=await req('/api/courtier/demarrer',body);assert.equal(signup.status,201);assert.equal(h.emails.length,1);assert.match(h.emails[0].text,/0 \$/);
+  const welcome=h.emails[0];
+  assert.equal(welcome.subject,'VendVite — Votre espace vous attend');
+  assert.equal(welcome.from.email,'notifications@vendvite.app');assert.equal(welcome.replyTo.email,'notifications@vendvite.app');assert.equal(welcome.skipInbox,true);
+  assert.match(welcome.html,/Bonjour Marie Tremblay,/);assert.match(welcome.html,/vendvite\/logo\.png/);assert.match(welcome.html,/Ouvrir mon espace/);assert.match(welcome.html,/valable 72 heures/);
+  const accessUrl=welcome.text.match(/https?:\/\/\S+\/acces\/[a-f0-9]{64}\?\S+/)[0];
+  assert.ok(welcome.html.includes('href="'+accessUrl.replace(/&/g,'&amp;')+'"'),'HTML button and text use the same activation URL');
+  assert.equal(new URL(accessUrl).searchParams.get('lang'),'fr');assert.equal(new URL(accessUrl).searchParams.get('next'),'espace/page');
   const broker=await h.db.get('SELECT * FROM brokers WHERE email=$1',[body.email]);assert.equal(broker.access_plan,'mailing');assert.equal(broker.profile.agent_photo_url,'https://example.test/marie.jpg');assert.equal(broker.profile.solicitation_tag,agent.tag);assert.ok(mailing.access(broker));assert.equal(broker.membership_expires_at,null);
   // Authenticate with the normal emailed-link challenge/confirmation protocol.
-  const token=h.emails[0].text.match(/\/acces\/([a-f0-9]{64})/)[1];const access=await req('/acces/'+token);const challenge=(await access.text()).match(/name="challenge" value="([^"]*)"/)[1];const confirm=await req('/acces/'+token,{challenge,next:'espace/page'},{cookie:jar(access)});assert.equal(confirm.status,303);const cookie=jar(confirm);
+  const token=h.emails[0].text.match(/\/acces\/([a-f0-9]{64})/)[1];const access=await req(new URL(accessUrl).pathname+new URL(accessUrl).search);const challenge=(await access.text()).match(/name="challenge" value="([^"]*)"/)[1];const confirm=await req('/acces/'+token,{challenge,next:'espace/page'},{cookie:jar(access)});assert.equal(confirm.status,303);assert.equal(confirm.headers.get('location'),'/espace/page');const cookie=jar(confirm);
   const session=await req('/api/espace/session',undefined,{cookie});const csrf=(await session.json()).csrf;const headers={cookie,'x-vv-csrf':csrf};
   const account=await req('/espace/abonnement',undefined,{cookie});assert.equal(account.status,200);assert.doesNotMatch(await account.text(),/id="subBtn"|id="cancelBtn"/);
   const studio=await req('/espace/courrier-cible',undefined,{cookie});assert.equal(studio.status,200);assert.match(await studio.text(),/credit: 0/);
@@ -45,5 +52,14 @@ test('saved campaigns, personalized demos, free onboarding and campaign-only cap
   assert.equal((await req('/courrier/'+refreshed.mailing_token+'/'+recipient)).status,200);
   assert.equal((await req('/api/courtier/'+broker.slug+'/piste',{...lead,mailingToken:refreshed.mailing_token,mailingRecipient:recipient})).status,200);
   await h.db.run("UPDATE broker_campaigns SET status='cancelled' WHERE id=$1",[paid.id]);assert.equal((await req('/courrier/'+refreshed.mailing_token+'/'+recipient)).status,302);assert.equal((await req('/api/courtier/'+broker.slug+'/piste',{...lead,mailingToken:refreshed.mailing_token,mailingRecipient:recipient})).status,403);
+  // Returning QR visitors receive the same brand treatment in their language,
+  // with the shorter expiry of a newly requested sign-in link.
+  await h.db.run("UPDATE mailing_signup_limits SET last_at=NOW()-INTERVAL '3 minutes'");
+  const emailCount=h.emails.length;
+  assert.equal((await req('/api/courtier/demarrer?lang=en',body)).status,200);
+  assert.equal(h.emails.length,emailCount+1);const english=h.emails[emailCount];
+  assert.equal(english.subject,'VendVite — Your workspace is ready');assert.match(english.html,/Open my workspace/);assert.match(english.html,/Valid for one hour/);assert.doesNotMatch(english.html,/valable 72 heures/);
+  const englishUrl=english.text.match(/https?:\/\/\S+\/acces\/[a-f0-9]{64}\?\S+/)[0];assert.equal(new URL(englishUrl).searchParams.get('lang'),'en');
+  const englishAccess=await req(new URL(englishUrl).pathname+new URL(englishUrl).search);assert.equal(englishAccess.status,200);assert.match(await englishAccess.text(),/lang="en"/);
  }finally{await h.close();}
 });

@@ -2,6 +2,7 @@ var express = require('express');
 var invoiceTools = require('./invoice-v3');
 var invoiceEmail = require('./invoice-email-v3');
 var invoiceSettings = require('./invoice-settings-v1');
+var workspaceInviteEmail = require('./workspace-invite-email-v1');
 var solicitationTools = require('./solicitation-v2');
 var mailingService = require('./mailing-service-v4');
 var homepageTools = require('./homepage-experiment-v1');
@@ -1530,8 +1531,12 @@ module.exports = function(services){
   }
 
   async function sendMailingInvite(req,broker,raw){
-    var fr=req.lang!=='en',url=absoluteUrl(req,'/acces/'+raw)+'?next=espace/page';
-    return services.email.send({to:broker.email,subject:fr?'Votre espace VendVite à 0 $':'Your $0 VendVite workspace',text:(fr?'Ouvrez votre espace : ':'Open your workspace: ')+url+'\n'+(fr?'Page à 0 $, réservée aux campagnes postales VendVite. Envois à 1,59 $ par lettre, avant taxes. Lien valable une heure.':'$0 page, reserved for VendVite postal campaigns. Mailings at $1.59 per letter, before tax. Link valid for one hour.')});
+    var lang=req.lang==='en'?'en':'fr',query='?next=espace/page&lang='+lang;
+    // First activation links last 72 hours; requested sign-in links last one.
+    var token=await db.get('SELECT purpose FROM broker_tokens WHERE broker_id=$1 AND token_hash=$2',[broker.id,brokerAuthTools.hash(raw)]);
+    return services.email.send(workspaceInviteEmail.build({broker:broker,lang:lang,
+      url:absoluteUrl(req,'/acces/'+raw)+query,loginUrl:absoluteUrl(req,'/connexion')+query,
+      validHours:token&&token.purpose==='access'?72:1}));
   }
   solicitationTools.register(router,services,{requireAdmin:requireAdmin,baseLocals:baseLocals,absoluteUrl:absoluteUrl,renderBrokerPage:renderBrokerPage,uniqueBrokerSlug:uniqueBrokerSlug,brokerAuth:brokerAuth,sendMailingInvite:sendMailingInvite});
 
