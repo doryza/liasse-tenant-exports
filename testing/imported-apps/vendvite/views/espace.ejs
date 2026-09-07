@@ -24,6 +24,7 @@
   <div class="esp-wrap">
     <div id="workspaceNotice" class="ws-notice" role="status" aria-live="polite" hidden><span id="workspaceNoticeText"></span> <a data-vv-auth id="workspaceReconnect" href="connexion" target="_blank" rel="noopener" hidden><%= t.ws_session_link %> ↗</a></div>
     <% if(activePage==='accueil'){ %><%- include('partials/workspace-overview') %><% } %>
+    <% if(activePage==='compte'||activePage==='abonnement'){ %><%- include('partials/billing-address') %><% } %>
     <% if(activePage==='compte'){ %><%- include('partials/workspace-account') %><% } %>
 
 
@@ -104,12 +105,12 @@
           <p class="esp-eyebrow"><%= t.esp_annual_membership_heading %></p>
           <% if (paypalMode === 'sandbox') { %><div class="esp-sandbox-flag"><strong><%= t.esp_paypal_test_mode_badge %></strong><span><%= t.esp_test_account_only_note %></span></div><% } %>
           <h2 class="esp-price"><%= price.base.toFixed(2) %>&nbsp;$ <span>/ an</span></h2>
-          <ul class="esp-bill-lines">
+          <% if(legacyTaxReady){ %><ul class="esp-bill-lines">
             <li><span><%= t.esp_invoice_line_membership %></span><span><%= price.base.toFixed(2) %>&nbsp;$</span></li>
             <li><span><%- t.esp_invoice_line_gst %></span><span><%= price.gst.toFixed(2) %>&nbsp;$</span></li>
             <li><span><%- t.esp_invoice_line_qst %></span><span><%= price.qst.toFixed(2) %>&nbsp;$</span></li>
             <li class="esp-bill-total"><span><%= t.esp_invoice_line_total %></span><span><%= price.total.toFixed(2) %>&nbsp;$</span></li>
-          </ul>
+          </ul><% }else{ %><p class="ws-notice"><%= lang==='en'?'This legacy subscription uses Quebec taxes. Confirm a Quebec billing address or contact VendVite for a reviewed plan before subscribing.':'Cet ancien abonnement utilise les taxes du Québec. Confirmez une adresse au Québec ou contactez VendVite pour vérifier votre formule avant de vous abonner.' %></p><% } %>
           <% if (isTestAccess) { %>
             <div class="esp-active-note">
               <strong><%= t.esp_test_access_active_title %></strong>
@@ -121,7 +122,7 @@
               <strong><%= t.esp_renewal_cancelled_title %></strong>
               <p><%- t.esp_page_online_until_lead %><%= formatDate(broker.membership_expires_at, lang) %><%- t.esp_page_online_until_tail %></p>
             </div>
-            <button class="esp-btn esp-btn-wide" id="subBtn" type="button"><%= t.esp_reactivate_btn %></button>
+            <button class="esp-btn esp-btn-wide" id="subBtn" type="button" <%= legacyTaxReady?'':'disabled' %>><%= t.esp_reactivate_btn %></button>
           <% } else if (isActive) { %>
             <div class="esp-active-note">
               <strong><%= t.esp_subscription_active_title %></strong>
@@ -129,7 +130,7 @@
             </div>
             <% if(paypalMode==='live'){ %><button class="esp-ghost esp-danger" id="cancelBtn" type="button"><%= t.esp_cancel_renewal_btn %></button><% } else { %><p class="esp-hint" style="text-align:center"><%= t.esp_real_subscription_protected_test %></p><% } %>
           <% } else { %>
-            <button class="esp-btn esp-btn-wide" id="subBtn" type="button"><%= paypalMode==='sandbox'?(lang==='fr'?'Tester l’abonnement PayPal':'Test the PayPal subscription'):t.esp_launch_cta %></button>
+            <button class="esp-btn esp-btn-wide" id="subBtn" type="button" <%= legacyTaxReady?'':'disabled' %>><%= paypalMode==='sandbox'?(lang==='fr'?'Tester l’abonnement PayPal':'Test the PayPal subscription'):t.esp_launch_cta %></button>
             <p class="esp-hint" style="text-align:center"><%= t.esp_paypal_secure_cancel_anytime %></p>
           <% } %>
           <p class="esp-error" id="billError" role="alert"></p>
@@ -177,6 +178,8 @@
   window.VV_CAMP = { id:<%= Number(broker.id) %>, lang:<%- scriptJson(lang) %>, setupComplete:<%= setupComplete?'true':'false' %>, cible: <%= campCible %>, restantes: <%= campQuota.restantes %>, palier: <%= campPalier %>, max: <%= campMax %>, paliers: <%- scriptJson(campPaliers) %>, peutPayer: <%= campPeutPayer ? 'true' : 'false' %>, mode: <%- scriptJson(campModePaypal) %>, credit: <%= campQuota.creditPortes %>, active: <%= isActive ? 'true' : 'false' %>, published: <%= Number(broker.published) === 1 ? 'true' : 'false' %>, isMailing:<%= isMailing?'true':'false' %>, subscriptionTotal: <%= Math.round(price.total * 100) %> };
 </script>
 <script src="public/js/espace.js?v=publish-v1" defer></script>
-<% if(activePage==='courrier'){ %><script src="public/js/campaign-model-v1.js?v=address-counts-v1" defer></script><script src="public/js/campaign-studio-v1.js?v=campaign-summary-v2" defer></script><% } %>
+<% if(activePage==='courrier'){ %><script src="public/js/campaign-model-v1.js?v=address-counts-v1" defer></script><script src="public/js/campaign-studio-v1.js?v=canadian-tax-v1" defer></script><% } %>
 </body>
 </html>
+
+<script src="public/js/billing-address-v1.js" defer></script>

@@ -1,0 +1,9 @@
+<section class="ws-card" id="billingAddressCard">
+<h2><%= lang==='en'?'Business billing address':'Adresse professionnelle de facturation' %></h2>
+<p><%= lang==='en'?'Confirm the address of the business buying this service. If you have several offices, use the one most closely connected to this purchase. Your campaign area does not replace your billing address.':'Confirmez l’adresse de l’entreprise qui achète ce service. Si vous avez plusieurs bureaux, utilisez celui le plus lié à cet achat. Le secteur ciblé ne remplace pas votre adresse de facturation.' %></p>
+<form id="billingAddressForm" style="display:grid;gap:12px;max-width:620px">
+<% [['legal_name','Nom légal / Legal name'],['line1','Adresse / Street address'],['city','Ville / City'],['postal_code','Code postal / Postal code']].forEach(function(f){ %><label style="display:grid;gap:4px"><%= f[1] %><input name="<%= f[0] %>" value="<%= billingAddress[f[0]]||'' %>" required maxlength="160" style="width:100%;box-sizing:border-box;padding:12px"></label><% }); %>
+<label style="display:grid;gap:4px">Province / Territory<select name="province" required style="padding:12px"><option value="">—</option><% Object.keys(billingProvinces).forEach(function(p){ %><option value="<%= p %>" <%= billingAddress.province===p?'selected':'' %>><%= billingProvinces[p] %></option><% }); %></select></label>
+<label><input name="confirmed" type="checkbox" required> <%= lang==='en'?'I confirm this is the Canadian business address connected to this purchase.':'Je confirme que cette adresse professionnelle canadienne est liée à cet achat.' %></label>
+<button class="esp-btn" type="submit"><%= lang==='en'?'Confirm billing address':'Confirmer l’adresse de facturation' %></button><p id="billingAddressStatus" role="status"><%= billingConfirmed?(lang==='en'?'Saved. Confirm again if your address changes.':'Enregistrée. Confirmez à nouveau si votre adresse change.') : '' %></p>
+</form></section>

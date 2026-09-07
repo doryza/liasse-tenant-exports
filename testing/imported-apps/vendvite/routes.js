@@ -1,6 +1,7 @@
+var canadianTax = require('./canadian-tax-v1');
 var express = require('express');
-var invoiceTools = require('./invoice-v3');
-var invoiceEmail = require('./invoice-email-v3');
+var invoiceTools = require('./invoice-v4');
+var invoiceEmail = require('./invoice-email-v4');
 var invoiceSettings = require('./invoice-settings-v1');
 var workspaceInviteEmail = require('./workspace-invite-email-v1');
 var solicitationTools = require('./solicitation-v4');
@@ -1098,7 +1099,7 @@ module.exports = function(services){
   router.get('/admin/ventes', requireAdmin, async function(req,res){
     try{
       var L=await baseLocals(req);
-      var totals=await db.get('SELECT COUNT(*)::int invoice_count, COUNT(DISTINCT broker_id)::int customer_count, COALESCE(SUM(subtotal_cents),0)::bigint subtotal_cents, COALESCE(SUM(gst_cents),0)::bigint gst_cents, COALESCE(SUM(qst_cents),0)::bigint qst_cents, COALESCE(SUM(total_cents),0)::bigint total_cents FROM broker_invoices WHERE COALESCE(is_test,0)=0');
+      var totals=await db.get('SELECT COUNT(*)::int invoice_count, COUNT(DISTINCT broker_id)::int customer_count, COALESCE(SUM(subtotal_cents),0)::bigint subtotal_cents, COALESCE(SUM(gst_cents),0)::bigint gst_cents, COALESCE(SUM(qst_cents),0)::bigint qst_cents, COALESCE(SUM(hst_cents),0)::bigint hst_cents, COALESCE(SUM(pst_cents),0)::bigint pst_cents, COALESCE(SUM(total_cents),0)::bigint total_cents FROM broker_invoices WHERE COALESCE(is_test,0)=0');
       var members=await db.get("SELECT COUNT(*) FILTER (WHERE status='active' AND membership_expires_at>NOW())::int active_count, COUNT(*) FILTER (WHERE status='cancelled' AND membership_expires_at>NOW())::int ending_count FROM brokers");
       var invoices=await db.all('SELECT i.*,b.full_name,b.agency,b.email FROM broker_invoices i JOIN brokers b ON b.id=i.broker_id ORDER BY i.payment_time DESC,i.id DESC LIMIT 250');
       var monthly=await db.all("SELECT date_trunc('month',payment_time) AS period_month,COUNT(*)::int invoice_count,COALESCE(SUM(total_cents),0)::bigint total_cents FROM broker_invoices WHERE COALESCE(is_test,0)=0 AND payment_time>NOW()-INTERVAL '12 months' GROUP BY 1 ORDER BY 1");
@@ -1699,7 +1700,7 @@ module.exports = function(services){
       var pq = pi * CAMPAGNE_PALIER;
       // Calcules AVEC le credit courant : le client ne refait jamais l'arrondi
       // des taxes, il lit la meme valeur que le serveur facturera.
-      var pp = prixCampagne(pq, quota.creditPortes);
+      var pp = await prixCampagne(pq, quota.creditPortes,broker);
       paliers.push({ quantite: pq, offert: pp.offert, facturable: pp.facturable, sousTotal: pp.sousTotal, tps: pp.tps, tvq: pp.tvq, total: pp.total });
     }
     var cfgPaypal = await paypalCfg();
@@ -1715,6 +1716,9 @@ module.exports = function(services){
       campPrixCents: CAMPAGNE_PRIX_CENTS,
       campPeutPayer: paypalPeutEncaisser(cfgPaypal),
       campModePaypal: cfgPaypal.mode,
+      billingAddress: canadianTax.prefill(broker),
+      billingConfirmed: !!broker.billing_confirmed_at,
+      billingProvinces: canadianTax.provinces,
       broker: broker,
       profile: brokerProfile(broker),
       setupComplete: !!brokerProfile(broker).setup_completed_at || Number(broker.published) === 1,
@@ -1726,6 +1730,7 @@ module.exports = function(services){
       isRealActive: access.realActive,
       isTestAccess: access.testAccess,
       isLive: access.active && Number(broker.published) === 1,
+      legacyTaxReady: !!broker.billing_confirmed_at && canadianTax.prefill(broker).province==='QC',
       price: priceLines(),
       paymentConfirmed: req.query && req.query.paiement === 'confirme',
       paymentTest: req.query && req.query.paiement === 'test',
@@ -1812,7 +1817,10 @@ module.exports = function(services){
         // Dans l'apercu integre au panneau, la barre d'impression n'a pas de
         // sens : on montre la feuille seule.
         embed: !!(req.query && req.query._embed === '1'),
-        broker: broker,
+        billingAddress: canadianTax.prefill(broker),
+      billingConfirmed: !!broker.billing_confirmed_at,
+      billingProvinces: canadianTax.provinces,
+      broker: broker,
         profile: profile,
         pageUrl: pageUrl,
         qrDataUrl: qrDataUrl,
@@ -2012,14 +2020,33 @@ module.exports = function(services){
   // Prix d'une campagne payante. Calcul EN AVANT en cents entiers : la fonction
   // taxBreakdown d'invoice.js retro-deduit le partage a partir du total et
   // diverge d'un cent sur les gros volumes, ce qui ferait mentir la facture.
-  function prixCampagne(quantite, credit){
-    var offert = Math.max(0, Math.min(Number(credit) || 0, quantite));
-    var facturable = quantite - offert;
-    var sous = facturable * CAMPAGNE_PRIX_CENTS;
-    var tps = Math.round(sous * 0.05);
-    var tvq = Math.round(sous * 0.09975);
-    return { quantite: quantite, offert: offert, facturable: facturable, sousTotal: sous, tps: tps, tvq: tvq, total: sous + tps + tvq };
+  async function taxPolicy(){
+    var p=canadianTax.object(services.externalVars.VENDVITE_TAX_POLICY);
+    var issuer=(await invoiceConfiguration()).issuer;
+    return Object.assign({},p,{gst_number:p.gst_number||issuer.gst,qst_number:p.qst_number||issuer.qst});
   }
+  async function prixCampagne(quantite,credit,broker){
+    var offert=Math.max(0,Math.min(Number(credit)||0,quantite)),facturable=quantite-offert,sous=facturable*CAMPAGNE_PRIX_CENTS;
+    var result={quantite:quantite,offert:offert,facturable:facturable,sousTotal:sous,tps:0,tvq:0,hst:0,pst:0,total:null,taxLines:[],taxReady:false};
+    try{
+      var policy=await taxPolicy();
+      var snapshot=canadianTax.calculate(sous,canadianTax.billing(broker),policy);
+      var a=canadianTax.amounts(snapshot);
+      Object.assign(result,{tps:a.gst,tvq:a.qst,hst:a.hst,pst:a.pst,total:snapshot.total_cents,taxLines:snapshot.lines,taxSnapshot:snapshot});
+      canadianTax.assertCollectable(snapshot,policy);result.taxReady=true;
+    }catch(e){result.taxError=e.code||'TAX_REVIEW_REQUIRED';}
+    if(!facturable){result.total=0;result.taxReady=true;}
+    return result;
+  }
+  router.put('/api/espace/billing-address',brokerEndpoint(async function(req,res){
+    var broker=await requireBrokerApi(req,res);if(!broker)return;
+    try{
+      if(req.body.confirmed!==true)return res.status(400).json({code:'BILLING_CONFIRMATION_REQUIRED'});
+      var address=canadianTax.validate(req.body.address);
+      await db.run('UPDATE brokers SET billing_address=$1::jsonb,billing_confirmed_at=NOW(),updated_at=NOW() WHERE id=$2',[JSON.stringify(address),broker.id]);
+      res.json({success:true});
+    }catch(e){res.status(400).json({code:e.code||'BILLING_SAVE_FAILED'});}
+  }));
 
   // L'ancre de l'annee d'adhesion. membership_started_at est NULL pour tout
   // courtier active a la main ou en bac a sable — c'est le cas des deux
@@ -2088,7 +2115,7 @@ module.exports = function(services){
   router.post('/api/espace/campagne/devis',brokerEndpoint(async function(req,res){
     var broker=await requireBrokerApi(req,res);if(!broker)return;
     var count=Number(req.body.count);if(!Number.isInteger(count)||count<1||count>CAMPAGNE_MAX)return res.status(400).json({code:'BAD_QUANTITY'});
-    var quota=await campagneQuota(broker);res.json({price:prixCampagne(count,await campaignCredit(broker,quota,req.body.reprise)),remaining:quota.restantes});
+    var quota=await campagneQuota(broker);res.json({price:await prixCampagne(count,await campaignCredit(broker,quota,req.body.reprise),broker),remaining:quota.restantes});
   }));
   router.post('/api/espace/campagne/analyse',brokerEndpoint(async function(req,res){
     var broker=await requireBrokerApi(req,res);if(!broker)return;
@@ -2178,6 +2205,7 @@ module.exports = function(services){
       // simultanees le passeraient toutes les deux, et la Map en memoire ne vit
       // que dans un seul processus.
       var periode = quota.periode;
+      if(existante&&existante.paypal_order_id){if(existante.payment_status==='pending')return res.status(409).json({code:'PENDING_ORDER_EXISTS'});existante=null;}
       var campagne;
       try{
         campagne = await db.get(
@@ -2253,8 +2281,8 @@ module.exports = function(services){
       var cle = 'campagne:' + mode + ':' + captureId;
       var quand = new Date();
       var row = await db.get(
-        'INSERT INTO broker_invoices (broker_id,kind,campaign_id,payment_key,paypal_order_id,paypal_transaction_id,payment_time,subtotal_cents,gst_cents,qst_cents,total_cents,currency,is_test,paypal_mode) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14) ON CONFLICT(payment_key) DO NOTHING RETURNING *',
-        [broker.id, 'campagne', campagne.id, cle, campagne.paypal_order_id, capture && capture.id ? capture.id : null, quand, campagne.subtotal_cents, campagne.gst_cents, campagne.qst_cents, campagne.total_cents, 'CAD', mode === 'sandbox' ? 1 : 0, mode]
+        'INSERT INTO broker_invoices (broker_id,kind,campaign_id,payment_key,paypal_order_id,paypal_transaction_id,payment_time,subtotal_cents,gst_cents,qst_cents,total_cents,currency,is_test,paypal_mode,tax_snapshot,hst_cents,pst_cents) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15::jsonb,$16,$17) ON CONFLICT(payment_key) DO NOTHING RETURNING *',
+        [broker.id, 'campagne', campagne.id, cle, campagne.paypal_order_id, capture && capture.id ? capture.id : null, quand, campagne.subtotal_cents, campagne.gst_cents, campagne.qst_cents, campagne.total_cents, 'CAD', mode === 'sandbox' ? 1 : 0, mode,campagne.tax_snapshot?JSON.stringify(campagne.tax_snapshot):null,campagne.hst_cents||0,campagne.pst_cents||0]
       );
       if(!row)row=await db.get('SELECT * FROM broker_invoices WHERE payment_key=$1',[cle]);
       row=await db.get('UPDATE broker_invoices SET invoice_number=COALESCE(invoice_number,$1) WHERE id=$2 RETURNING *',
@@ -2321,7 +2349,9 @@ module.exports = function(services){
       // commande : 450 portes avec credit se facturent 300.
       var quota = await campagneQuota(broker);
       var credit = await campaignCredit(broker,quota,corps.reprend);
-      var prix = prixCampagne(quantite, credit);
+      var prix = await prixCampagne(quantite, credit,broker);
+      if(!prix.taxReady)return res.status(409).json({code:prix.taxError});
+      if(corps.expectedTotal==null)return res.status(400).json({code:'PRICE_CONFIRMATION_REQUIRED'});
       if(corps.expectedTotal!=null&&Number(corps.expectedTotal)!==prix.total)return res.status(409).json({code:'PRICE_CHANGED'});
       if (prix.facturable <= 0) return res.status(400).json({ code: 'USE_INCLUDED' });
       var ville = String(corps.ville == null ? '' : corps.ville).trim().slice(0, 120);
@@ -2345,23 +2375,24 @@ module.exports = function(services){
       // parmi les commandes non payees.
       var repriseId = Math.floor(Number(corps.reprend)) || 0;
       var existante = repriseId
-        ? await db.get("SELECT id FROM broker_campaigns WHERE id=$1 AND broker_id=$2 AND payment_status<>'paid' AND status<>'mailed'", [repriseId, broker.id])
+        ? await db.get("SELECT id,paypal_order_id,payment_status FROM broker_campaigns WHERE id=$1 AND broker_id=$2 AND payment_status<>'paid' AND status<>'mailed'", [repriseId, broker.id])
         : await db.get(
-            "SELECT id FROM broker_campaigns WHERE broker_id=$1 AND kind='paid' AND payment_status<>'paid' AND status<>'mailed' AND centre_label=$2 AND quantity=$3 AND address_count=$4 ORDER BY id DESC LIMIT 1",
+            "SELECT id,paypal_order_id,payment_status FROM broker_campaigns WHERE broker_id=$1 AND kind='paid' AND payment_status<>'paid' AND status<>'mailed' AND centre_label=$2 AND quantity=$3 AND address_count=$4 ORDER BY id DESC LIMIT 1",
             [broker.id, libelle, quantite, adresses.length]
           );
 
+      if(existante&&existante.paypal_order_id){if(existante.payment_status==='pending')return res.status(409).json({code:'PENDING_ORDER_EXISTS'});existante=null;}
       var campagne;
       try{
         if (existante) {
           campagne = await db.get(
-            "UPDATE broker_campaigns SET kind='paid', status='pending_payment', payment_status='pending', centre_label=$1, centre_lat=$2, centre_lng=$3, radius_m=$4, quantity=$5, address_count=$6, addresses=$7, city=$8, notes=$9, subtotal_cents=$10, gst_cents=$11, qst_cents=$12, total_cents=$13, paypal_mode=$14, is_test=$15, quota_period=$16, paypal_order_id=NULL, paypal_capture_id=NULL, updated_at=NOW() WHERE id=$17 AND payment_status<>'paid' AND status<>'mailed' RETURNING *",
-            [libelle, cLat, cLng, rayon, quantite, adresses.length, JSON.stringify(adresses), ville, notes, prix.sousTotal, prix.tps, prix.tvq, prix.total, c.mode, estTest, periodeCredit, existante.id]
+            "UPDATE broker_campaigns SET kind='paid', status='pending_payment', payment_status='pending', centre_label=$1, centre_lat=$2, centre_lng=$3, radius_m=$4, quantity=$5, address_count=$6, addresses=$7, city=$8, notes=$9, subtotal_cents=$10, gst_cents=$11, qst_cents=$12, total_cents=$13, paypal_mode=$14, is_test=$15, quota_period=$16, tax_snapshot=$18::jsonb,hst_cents=$19,pst_cents=$20, paypal_order_id=NULL, paypal_capture_id=NULL, updated_at=NOW() WHERE id=$17 AND payment_status<>'paid' AND status<>'mailed' RETURNING *",
+            [libelle, cLat, cLng, rayon, quantite, adresses.length, JSON.stringify(adresses), ville, notes, prix.sousTotal, prix.tps, prix.tvq, prix.total, c.mode, estTest, periodeCredit, existante.id,JSON.stringify(prix.taxSnapshot),prix.hst,prix.pst]
           );
         } else {
           campagne = await db.get(
-            'INSERT INTO broker_campaigns (broker_id,kind,status,payment_status,centre_label,centre_lat,centre_lng,radius_m,quantity,address_count,addresses,city,notes,subtotal_cents,gst_cents,qst_cents,total_cents,paypal_mode,is_test,quota_period) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20) RETURNING *',
-            [broker.id, 'paid', 'pending_payment', 'pending', libelle, cLat, cLng, rayon, quantite, adresses.length, JSON.stringify(adresses), ville, notes, prix.sousTotal, prix.tps, prix.tvq, prix.total, c.mode, estTest, periodeCredit]
+            'INSERT INTO broker_campaigns (broker_id,kind,status,payment_status,centre_label,centre_lat,centre_lng,radius_m,quantity,address_count,addresses,city,notes,subtotal_cents,gst_cents,qst_cents,total_cents,paypal_mode,is_test,quota_period,tax_snapshot,hst_cents,pst_cents) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21::jsonb,$22,$23) RETURNING *',
+            [broker.id, 'paid', 'pending_payment', 'pending', libelle, cLat, cLng, rayon, quantite, adresses.length, JSON.stringify(adresses), ville, notes, prix.sousTotal, prix.tps, prix.tvq, prix.total, c.mode, estTest, periodeCredit,JSON.stringify(prix.taxSnapshot),prix.hst,prix.pst]
           );
         }
       }catch(err){
@@ -2380,7 +2411,7 @@ module.exports = function(services){
           'Content-Type': 'application/json',
           // A changed selection is a different order; retries of the same
           // selection retain their idempotency key. Hash fits PayPal's limit.
-          'PayPal-Request-Id': 'vvc-'+services.crypto.sha256(JSON.stringify({id:campagne.id,total:prix.total,addresses:adresses.map(campaignModel.key).sort(),centre:[cLat,cLng],notes:notes})).slice(0,32)
+          'PayPal-Request-Id': 'vvc-'+services.crypto.sha256(JSON.stringify({id:campagne.id,total:prix.total,tax:prix.taxSnapshot,addresses:adresses.map(campaignModel.key).sort(),centre:[cLat,cLng],notes:notes})).slice(0,32)
         },
         body: JSON.stringify({
           intent: 'CAPTURE',
@@ -2394,7 +2425,7 @@ module.exports = function(services){
               value: (prix.total / 100).toFixed(2),
               breakdown: {
                 item_total: { currency_code: 'CAD', value: (prix.sousTotal / 100).toFixed(2) },
-                tax_total: { currency_code: 'CAD', value: ((prix.tps + prix.tvq) / 100).toFixed(2) }
+                tax_total: { currency_code: 'CAD', value: ((prix.tps + prix.tvq + prix.hst + prix.pst) / 100).toFixed(2) }
               }
             }
           }],
@@ -2474,6 +2505,7 @@ module.exports = function(services){
       await facturerCampagne(req,broker,recorded,recorded.paypal_capture_id?{id:recorded.paypal_capture_id}:null,recorded.paypal_mode);
       return recorded;
     }
+    if(!recorded||recorded.payment_status!=='pending'||recorded.paypal_order_id!==campagne.paypal_order_id)return null;
     var token = await paypalToken(c);
     var base = c.base + '/v2/checkout/orders/' + encodeURIComponent(campagne.paypal_order_id);
     var lu = await services.fetch(base, { headers: { 'Authorization': 'Bearer ' + token } });
@@ -2481,6 +2513,7 @@ module.exports = function(services){
     if (!lu.ok) return null;
 
     var capture = null;
+    if(campagne.tax_snapshot){var unit=ordre.purchase_units&&ordre.purchase_units[0];if(!unit||!unit.amount||unit.amount.currency_code!=='CAD'||Math.round(Number(unit.amount.value)*100)!==Number(campagne.total_cents)||unit.custom_id!=='camp:'+broker.id+':'+campagne.id)return null;}
     if (ordre.status === 'APPROVED') {
       var cap = await services.fetch(base + '/capture', {
         method: 'POST',
@@ -2493,6 +2526,8 @@ module.exports = function(services){
     try{
       capture = ordre.purchase_units[0].payments.captures[0];
     }catch(e){ capture = null; }
+
+    if(campagne.tax_snapshot&&(!capture||capture.status!=='COMPLETED'||!capture.amount||capture.amount.currency_code!=='CAD'||Math.round(Number(capture.amount.value)*100)!==Number(campagne.total_cents)))return null;
 
     // L'index unique sur paypal_order_id et ce garde-fou rendent une capture
     // rejouee (retour du navigateur + webhook) sans effet.
@@ -2764,6 +2799,8 @@ module.exports = function(services){
   router.post('/api/espace/abonnement', brokerEndpoint(async function(req, res){
     var broker = await requireBrokerApi(req, res);
     if (!broker) return;
+    try{if(canadianTax.billing(broker).province!=='QC')return res.status(409).json({code:'LEGACY_PLAN_TAX_REVIEW'});}
+    catch(e){return res.status(409).json({code:e.code});}
     if(mailingService.isMailing(broker))return res.status(409).json({code:'MAILING_ONLY',error:'Votre page est à 0 $. Commandez une campagne postale depuis votre espace.'});
     if (!brokerProfile(broker).setup_completed_at) {
       return res.status(409).json({ error: 'configuration', code: 'SETUP_REQUIRED' });

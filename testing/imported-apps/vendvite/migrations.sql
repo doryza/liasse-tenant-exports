@@ -112,3 +112,13 @@ CREATE UNIQUE INDEX IF NOT EXISTS solicitation_campaigns_batch_number ON solicit
 ALTER TABLE solicitation_agents ADD COLUMN IF NOT EXISTS source_key TEXT;
 ALTER TABLE solicitation_agents ADD COLUMN IF NOT EXISTS source_meta JSONB NOT NULL DEFAULT '{}'::jsonb;
 CREATE UNIQUE INDEX IF NOT EXISTS solicitation_agents_source_key ON solicitation_agents(source_key) WHERE source_key IS NOT NULL;
+
+-- Canada billing: nullable snapshots deliberately preserve historical Quebec invoices.
+ALTER TABLE brokers ADD COLUMN IF NOT EXISTS billing_address JSONB;
+ALTER TABLE brokers ADD COLUMN IF NOT EXISTS billing_confirmed_at TIMESTAMPTZ;
+ALTER TABLE broker_campaigns ADD COLUMN IF NOT EXISTS tax_snapshot JSONB;
+ALTER TABLE broker_campaigns ADD COLUMN IF NOT EXISTS hst_cents INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE broker_campaigns ADD COLUMN IF NOT EXISTS pst_cents INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE broker_invoices ADD COLUMN IF NOT EXISTS tax_snapshot JSONB;
+ALTER TABLE broker_invoices ADD COLUMN IF NOT EXISTS hst_cents INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE broker_invoices ADD COLUMN IF NOT EXISTS pst_cents INTEGER NOT NULL DEFAULT 0;

@@ -52,7 +52,7 @@
       <div class="scard scard-accent"><div class="scard-num"><%= (Number(totals.total_cents||0)/100).toLocaleString('fr-CA',{minimumFractionDigits:2,maximumFractionDigits:2}) %>&nbsp;$</div><div class="scard-label">Total encaissé</div></div>
       <div class="scard"><div class="scard-num"><%= Number(totals.invoice_count||0) %></div><div class="scard-label">Paiements facturés</div></div>
       <div class="scard"><div class="scard-num"><%= Number(members.active_count||0) %></div><div class="scard-label">Abonnements actifs</div></div>
-      <div class="scard"><div class="scard-num"><%= ((Number(totals.gst_cents||0)+Number(totals.qst_cents||0))/100).toLocaleString('fr-CA',{minimumFractionDigits:2,maximumFractionDigits:2}) %>&nbsp;$</div><div class="scard-label">Taxes perçues</div></div>
+      <div class="scard"><div class="scard-num"><%= ((Number(totals.gst_cents||0)+Number(totals.qst_cents||0)+Number(totals.hst_cents||0)+Number(totals.pst_cents||0))/100).toLocaleString('fr-CA',{minimumFractionDigits:2,maximumFractionDigits:2}) %>&nbsp;$</div><div class="scard-label">Taxes perçues</div></div>
       <div class="scard"><div class="scard-num"><%= Number(members.ending_count||0) %></div><div class="scard-label">Non renouvelés · encore actifs</div></div>
     </div>
 
@@ -75,6 +75,7 @@
       <div><span>Sous-total</span><strong><%= (Number(totals.subtotal_cents||0)/100).toLocaleString('fr-CA',{minimumFractionDigits:2,maximumFractionDigits:2}) %>&nbsp;$</strong></div>
       <div><span>TPS perçue</span><strong><%= (Number(totals.gst_cents||0)/100).toLocaleString('fr-CA',{minimumFractionDigits:2,maximumFractionDigits:2}) %>&nbsp;$</strong></div>
       <div><span>TVQ perçue</span><strong><%= (Number(totals.qst_cents||0)/100).toLocaleString('fr-CA',{minimumFractionDigits:2,maximumFractionDigits:2}) %>&nbsp;$</strong></div>
+      <% [['TVH / HST','hst_cents'],['PST / RST','pst_cents']].forEach(function(row){ %><div><span><%= row[0] %></span><strong><%= (Number(totals[row[1]]||0)/100).toFixed(2) %> $</strong></div><% }); %>
     </div>
 
     <div class="admin-section-head"><h2 class="admin-h2">Factures</h2><span class="row-count"><%= invoices.length %> affichée<%= invoices.length===1?'':'s' %></span></div>
@@ -89,7 +90,7 @@
               <td><%= formatDate(i.payment_time,lang) %></td>
               <td><span class="sales-paypal"><%= i.paypal_transaction_id || i.paypal_subscription_id %></span></td>
               <td><%= (Number(i.subtotal_cents||0)/100).toFixed(2).replace('.',',') %>&nbsp;$</td>
-              <td><%= ((Number(i.gst_cents||0)+Number(i.qst_cents||0))/100).toFixed(2).replace('.',',') %>&nbsp;$</td>
+              <td><%= ((Number(i.gst_cents||0)+Number(i.qst_cents||0)+Number(i.hst_cents||0)+Number(i.pst_cents||0))/100).toFixed(2).replace('.',',') %>&nbsp;$</td>
               <td><strong><%= (Number(i.total_cents||0)/100).toFixed(2).replace('.',',') %>&nbsp;$</strong></td>
               <td><span data-invoice-status="<%= i.id %>" class="pill <%= i.emailed_at ? 'pill-on' : 'pill-off' %>" role="status"><%= i.emailed_at ? 'Envoyée' : 'À envoyer' %></span></td>
               <td class="row-actions"><a class="btn-sm sales-download" href="admin/ventes/factures/<%= i.id %>/pdf">PDF ↓</a><% if(i.kind==='campagne'&&!i.emailed_at){ %><button type="button" class="btn-sm" data-send-invoice="<%= i.id %>">Envoyer par courriel</button><% } %></td>
