@@ -106,7 +106,7 @@
       if(prefill){
         input.value=prefill;revealFiche(prefill);
         try{
-          if(window.VV_INITIAL_LOCATION){setCoords(window.VV_INITIAL_LOCATION);loadStreetView(window.VV_INITIAL_LOCATION);}else{
+          if(window.VV_INITIAL_LOCATION){setCoords(window.VV_INITIAL_LOCATION);loadStreetView(window.VV_INITIAL_LOCATION,window.VV_DEMO_STREET_VIEW);}else{
           var geocoding=await google.maps.importLibrary('geocoding');
           var found=await new geocoding.Geocoder().geocode({address:prefill,componentRestrictions:{country:'CA'}});
           if(found.results && found.results[0] && input.value===prefill){
@@ -184,23 +184,25 @@
         var ew=lng>=0 ? (T.dirE||'E') : (T.dirW||'O');
         var c=q('ficheCoords'); if(c) c.textContent=Math.abs(lat).toFixed(4)+'° '+ns+', '+Math.abs(lng).toFixed(4)+'° '+ew;
       }
-      function loadStreetView(loc){
+      function loadStreetView(loc, demoView){
         var el=q('streetview'); var photo=q('fichePhoto'); if(!el) return;
         var requestedAddress=input.value;var svc=new google.maps.StreetViewService();
-        svc.getPanorama({ location:loc, radius:120 }, function(data, status){
+        function show(data, status){
+          if(demoView && status!==google.maps.StreetViewStatus.OK){demoView=null;svc.getPanorama({location:loc,radius:120},show);return;}
           if(input.value!==requestedAddress)return;el.innerHTML='';
           if(status===google.maps.StreetViewStatus.OK && data && data.location){
             var pano=data.location.latLng;
             var heading=0;
             try{ heading=google.maps.geometry.spherical.computeHeading(pano, loc); }catch(e){}
-            new google.maps.StreetViewPanorama(el, { pano:data.location.pano, pov:{ heading:heading, pitch:6 }, zoom:0.6, disableDefaultUI:true, motionTracking:false, motionTrackingControl:false, linksControl:false, addressControl:false, fullscreenControl:false, panControl:false, zoomControl:false, clickToGo:false, scrollwheel:false });
+            new google.maps.StreetViewPanorama(el, { pano:data.location.pano, pov:{ heading:demoView?demoView.heading:heading, pitch:demoView?demoView.pitch:6 }, zoom:demoView?demoView.zoom:0.6, disableDefaultUI:true, motionTracking:false, motionTrackingControl:false, linksControl:false, addressControl:false, fullscreenControl:false, panControl:false, zoomControl:false, clickToGo:false, scrollwheel:false });
             if(photo){photo.classList.add('has-view');photo.dataset.view='streetview';}
           } else {
             var map=new google.maps.Map(el, { center:loc, zoom:18, disableDefaultUI:true, gestureHandling:'none', keyboardShortcuts:false });
             new google.maps.Marker({ position:loc, map:map });
             if(photo){photo.classList.add('has-view');photo.dataset.view='map';}
           }
-        });
+        }
+        svc.getPanorama(demoView?{pano:demoView.pano}:{location:loc,radius:120},show);
       }
     }catch(e){ console.error('Maps init', e); }
   };

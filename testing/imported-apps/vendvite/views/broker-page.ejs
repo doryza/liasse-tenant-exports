@@ -17,6 +17,7 @@
 </div>
 <% } %>
 <script>
+window.VV_DEMO_STREET_VIEW = <%- scriptJson(typeof demoStreetView!=='undefined'?demoStreetView:null) %>;
 window.VV_INITIAL_LOCATION = <%- scriptJson(typeof initialLocation!=='undefined'?initialLocation:null) %>;
 window.VV_PAGE_PREVIEW = <%- JSON.stringify(!!isPreview) %>;
 window.VV_INITIAL_ADDRESS = <%- scriptJson(typeof initialAddress !== 'undefined' ? initialAddress : null) %>;

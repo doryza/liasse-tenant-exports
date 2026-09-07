@@ -3,7 +3,7 @@ var invoiceTools = require('./invoice-v3');
 var invoiceEmail = require('./invoice-email-v3');
 var invoiceSettings = require('./invoice-settings-v1');
 var workspaceInviteEmail = require('./workspace-invite-email-v1');
-var solicitationTools = require('./solicitation-v3');
+var solicitationTools = require('./solicitation-v4');
 var mailingService = require('./mailing-service-v4');
 var homepageTools = require('./homepage-experiment-v1');
 var homepageCopy = require('./homepage-copy-v6');
@@ -3011,6 +3011,7 @@ module.exports = function(services){
       invitation: req.vvInvitation || null,
       initialAddress: req.vvInlineEditor?null:req.vvInitialAddress || null,
       initialLocation: req.vvInitialLocation || null,
+      demoStreetView: req.vvInvitation ? req.vvDemoStreetView || null : null,
       inlineEditor: !!req.vvInlineEditor,
       editor: req.vvInlineEditor?{profile:Object.assign({},prof,{agent_name:settings.agent_name,agent_email:settings.agent_email,agency:settings.agency,agent_phone:settings.agent_phone,agent_title:t.agent_title}),profileVersion:Number(broker.profile_version)||0,csrf:req._vvSession.csrf}:null,
       mailingToken: req.vvMailingToken || null,
