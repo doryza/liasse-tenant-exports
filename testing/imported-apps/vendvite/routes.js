@@ -1,5 +1,6 @@
 var express = require('express');
-var invoiceTools = require('./invoice');
+var invoiceTools = require('./invoice-v2');
+var campaignInvoiceEmail = require('./campaign-invoice-email-v1');
 var solicitationTools = require('./solicitation-v1');
 var mailingService = require('./mailing-service-v4');
 var homepageTools = require('./homepage-experiment-v1');
@@ -1170,7 +1171,7 @@ module.exports = function(services){
     try{
       var invoice=await db.get('SELECT i.*,b.full_name,b.agency,b.email FROM broker_invoices i JOIN brokers b ON b.id=i.broker_id WHERE i.id=$1',[req.params.id]);
       if(!invoice) return res.status(404).send('Facture introuvable');
-      var pdf=invoiceTools.buildInvoicePdf(invoice,invoice,invoiceIssuer());
+      var pdf=invoiceTools.buildInvoicePdf(await invoiceDetails(invoice),invoice,invoiceIssuer());
       res.setHeader('Content-Type','application/pdf');
       res.setHeader('Content-Disposition','attachment; filename="'+invoice.invoice_number+'.pdf"');
       res.setHeader('Cache-Control','private, no-store');
@@ -1287,6 +1288,31 @@ module.exports = function(services){
       qst: String(services.externalVars.VENDVITE_QST_NUMBER || '').trim()
     };
   }
+
+  async function invoiceDetails(invoice){
+    if(invoice.kind!=='campagne')return invoice;
+    var campaign=await db.get('SELECT id,address_count,quantity,centre_label,deadline_at,is_test,paypal_mode,status,payment_status FROM broker_campaigns WHERE id=$1 AND broker_id=$2',[invoice.campaign_id,invoice.broker_id]);
+    return Object.assign({},invoice,{campaign:campaign});
+  }
+
+  async function sendCampaignInvoice(req,broker,invoice){
+    return campaignInvoiceEmail.send({db:db,email:services.email,invoice:await invoiceDetails(invoice),broker:broker,issuer:invoiceIssuer(),url:absoluteUrl(req,'/espace/factures/'+invoice.id+'/pdf')});
+  }
+
+  router.post('/api/admin/ventes/factures/:id/envoyer',async function(req,res){
+    if(!apiAdmin(req,res))return;
+    var origin=req.get('origin'),site=req.get('sec-fetch-site');
+    var sameOrigin=!origin||(origin==='null'&&site==='same-origin')||origin==='https://'+req.get('host')||origin==='http://'+req.get('host');
+    if(!req.is('application/json')||site==='cross-site'||!sameOrigin)return res.status(403).json({error:'Forbidden'});
+    try{
+      var invoice=await db.get("SELECT * FROM broker_invoices WHERE id=$1 AND kind='campagne'",[req.params.id]);
+      if(!invoice)return res.status(404).json({error:'Facture introuvable'});
+      var broker=await db.get('SELECT * FROM brokers WHERE id=$1',[invoice.broker_id]);
+      if(!broker)return res.status(404).json({error:'Courtier introuvable'});
+      var result=await sendCampaignInvoice(req,broker,invoice);
+      res.status(result.status==='sending'?202:200).json({success:result.status!=='sending',status:result.status,invoiceNumber:invoice.invoice_number,emailedAt:result.emailedAt||null});
+    }catch(e){console.error('campaign invoice email',e.message);res.status(502).json({error:'Envoi impossible. La facture est conservée; réessayez.'});}
+  });
 
   // Paths the broker-slug catch-all must never swallow.
   var RESERVED_SLUGS = ['api','admin','acces','espace','journal','public','manifest.json','sw.js','favicon.ico','robots.txt','_platform','__preview','courtier','courtiers','index','connexion','acces-expire','richard-tremblay'];
@@ -2168,15 +2194,15 @@ module.exports = function(services){
     try{
       var captureId = capture && capture.id ? capture.id : ('order:' + campagne.paypal_order_id);
       var cle = 'campagne:' + mode + ':' + captureId;
-      var deja = await db.get('SELECT id FROM broker_invoices WHERE payment_key=$1', [cle]);
-      if (deja) return deja;
       var quand = new Date();
       var row = await db.get(
-        'INSERT INTO broker_invoices (broker_id,kind,campaign_id,payment_key,paypal_order_id,paypal_transaction_id,payment_time,subtotal_cents,gst_cents,qst_cents,total_cents,currency,is_test,paypal_mode) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14) RETURNING *',
+        'INSERT INTO broker_invoices (broker_id,kind,campaign_id,payment_key,paypal_order_id,paypal_transaction_id,payment_time,subtotal_cents,gst_cents,qst_cents,total_cents,currency,is_test,paypal_mode) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14) ON CONFLICT(payment_key) DO NOTHING RETURNING *',
         [broker.id, 'campagne', campagne.id, cle, campagne.paypal_order_id, capture && capture.id ? capture.id : null, quand, campagne.subtotal_cents, campagne.gst_cents, campagne.qst_cents, campagne.total_cents, 'CAD', mode === 'sandbox' ? 1 : 0, mode]
       );
-      await db.run('UPDATE broker_invoices SET invoice_number=$1 WHERE id=$2 AND invoice_number IS NULL',
-        [invoiceTools.invoiceNumber(row.id, quand, mode === 'sandbox'), row.id]);
+      if(!row)row=await db.get('SELECT * FROM broker_invoices WHERE payment_key=$1',[cle]);
+      row=await db.get('UPDATE broker_invoices SET invoice_number=COALESCE(invoice_number,$1) WHERE id=$2 RETURNING *',
+        [invoiceTools.invoiceNumber(row.id, row.payment_time, mode === 'sandbox'), row.id]);
+      await sendCampaignInvoice(req,broker,row);
       return row;
     }catch(e){ console.error('facture campagne', e); return null; }
   }
@@ -2386,6 +2412,11 @@ module.exports = function(services){
   }));
 
   async function finaliserCampagnePayee(req, broker, campagne, c){
+    var recorded=await db.get('SELECT * FROM broker_campaigns WHERE id=$1 AND broker_id=$2',[campagne.id,broker.id]);
+    if(recorded&&recorded.payment_status==='paid'){
+      await facturerCampagne(req,broker,recorded,recorded.paypal_capture_id?{id:recorded.paypal_capture_id}:null,recorded.paypal_mode);
+      return recorded;
+    }
     var token = await paypalToken(c);
     var base = c.base + '/v2/checkout/orders/' + encodeURIComponent(campagne.paypal_order_id);
     var lu = await services.fetch(base, { headers: { 'Authorization': 'Bearer ' + token } });
@@ -2409,19 +2440,28 @@ module.exports = function(services){
     // L'index unique sur paypal_order_id et ce garde-fou rendent une capture
     // rejouee (retour du navigateur + webhook) sans effet.
     var frais = await db.get("SELECT payment_status FROM broker_campaigns WHERE id=$1", [campagne.id]);
-    if (frais && frais.payment_status === 'paid') return campagne;
+    if (frais && frais.payment_status === 'paid') {
+      await facturerCampagne(req,broker,campagne,capture,c.mode);
+      return campagne;
+    }
 
     var echeance = mailingService.deadline();
-    await db.run(
-      "UPDATE broker_campaigns SET status='confirmed', payment_status='paid', paypal_capture_id=$1, deadline_at=$2, updated_at=NOW() WHERE id=$3",
+    var paid=await db.get(
+      "UPDATE broker_campaigns SET status='confirmed', payment_status='paid', paypal_capture_id=$1, deadline_at=$2, updated_at=NOW() WHERE id=$3 AND payment_status<>'paid' RETURNING *",
       [capture ? capture.id : null, echeance, campagne.id]
     );
+    if(!paid){
+      var settled=await db.get('SELECT * FROM broker_campaigns WHERE id=$1',[campagne.id]);
+      await facturerCampagne(req,broker,settled,settled.paypal_capture_id?{id:settled.paypal_capture_id}:capture,c.mode);
+      return settled;
+    }
     await logBrokerEvent(broker.id, c.mode === 'sandbox' ? 'sandbox_campaign_paid' : 'campaign_paid',
       JSON.stringify({ id: campagne.id, n: campagne.address_count, cents: campagne.total_cents }));
 
-    var frais2 = Object.assign({}, campagne, { deadline_at: echeance });
-    await envoyerCampagneOperateur(req, broker, frais2, campagne.addresses || [], c.mode === 'sandbox');
+    var frais2 = paid;
     await facturerCampagne(req, broker, frais2, capture, c.mode);
+    try{await envoyerCampagneOperateur(req, broker, frais2, campagne.addresses || [], c.mode === 'sandbox');}
+    catch(e){console.error('campaign operator email',e.message);}
     return frais2;
   }
 
@@ -2798,7 +2838,7 @@ module.exports = function(services){
     try{
       var invoice = await db.get('SELECT * FROM broker_invoices WHERE id=$1 AND broker_id=$2', [req.params.id, broker.id]);
       if (!invoice) return res.status(404).send('Facture introuvable');
-      var pdf = invoiceTools.buildInvoicePdf(invoice, broker, invoiceIssuer());
+      var pdf = invoiceTools.buildInvoicePdf(await invoiceDetails(invoice), broker, invoiceIssuer());
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader('Content-Disposition', 'attachment; filename="' + invoice.invoice_number + '.pdf"');
       res.setHeader('Cache-Control', 'private, no-store');

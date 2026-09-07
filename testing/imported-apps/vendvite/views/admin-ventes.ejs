@@ -91,8 +91,8 @@
               <td><%= (Number(i.subtotal_cents||0)/100).toFixed(2).replace('.',',') %>&nbsp;$</td>
               <td><%= ((Number(i.gst_cents||0)+Number(i.qst_cents||0))/100).toFixed(2).replace('.',',') %>&nbsp;$</td>
               <td><strong><%= (Number(i.total_cents||0)/100).toFixed(2).replace('.',',') %>&nbsp;$</strong></td>
-              <td><span class="pill <%= i.emailed_at ? 'pill-on' : 'pill-off' %>"><%= i.emailed_at ? 'Envoyée' : 'À envoyer' %></span></td>
-              <td class="row-actions"><a class="btn-sm sales-download" href="admin/ventes/factures/<%= i.id %>/pdf">PDF ↓</a></td>
+              <td><span data-invoice-status="<%= i.id %>" class="pill <%= i.emailed_at ? 'pill-on' : 'pill-off' %>" role="status"><%= i.emailed_at ? 'Envoyée' : 'À envoyer' %></span></td>
+              <td class="row-actions"><a class="btn-sm sales-download" href="admin/ventes/factures/<%= i.id %>/pdf">PDF ↓</a><% if(i.kind==='campagne'&&!i.emailed_at){ %><button type="button" class="btn-sm" data-send-invoice="<%= i.id %>">Envoyer par courriel</button><% } %></td>
             </tr>
           <% }); } else { %>
             <tr><td colspan="9" class="empty">Aucun paiement PayPal facturé pour le moment. La première vente apparaîtra ici automatiquement.</td></tr>
@@ -105,6 +105,16 @@
 <script>(function(){
   var b=document.getElementById('adminBurger'),s=document.getElementById('adminSidebar');
   if(b&&s)b.addEventListener('click',function(){s.classList.toggle('open')});
+  document.querySelectorAll('[data-send-invoice]').forEach(function(button){button.addEventListener('click',async function(){
+    var id=button.dataset.sendInvoice,label=document.querySelector('[data-invoice-status="'+id+'"]');
+    button.disabled=true;label.textContent='Envoi…';
+    try{
+      var response=await fetch('api/admin/ventes/factures/'+id+'/envoyer',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'}),result=await response.json();
+      if(!response.ok)throw Error(result.error||'Envoi impossible');
+      if(result.status==='sending'){label.textContent='Envoi en cours';return;}
+      label.textContent='Envoyée';label.className='pill pill-on';button.hidden=true;
+    }catch(error){label.textContent=error.message;button.disabled=false;}
+  });});
   var modeBtn=document.getElementById('paypalModeBtn'),status=document.getElementById('paypalModeStatus');
   var planBtn=document.getElementById('paypalPlanBtn'),planStatus=document.getElementById('paypalPlanStatus');
   if(planBtn) planBtn.addEventListener('click',async function(){
