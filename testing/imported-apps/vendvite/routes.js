@@ -1,6 +1,7 @@
 var express = require('express');
 var invoiceTools = require('./invoice-v2');
-var campaignInvoiceEmail = require('./campaign-invoice-email-v1');
+var invoiceEmail = require('./invoice-email-v1');
+var invoiceSettings = require('./invoice-settings-v1');
 var solicitationTools = require('./solicitation-v1');
 var mailingService = require('./mailing-service-v4');
 var homepageTools = require('./homepage-experiment-v1');
@@ -1171,21 +1172,21 @@ module.exports = function(services){
     try{
       var invoice=await db.get('SELECT i.*,b.full_name,b.agency,b.email FROM broker_invoices i JOIN brokers b ON b.id=i.broker_id WHERE i.id=$1',[req.params.id]);
       if(!invoice) return res.status(404).send('Facture introuvable');
-      var pdf=invoiceTools.buildInvoicePdf(await invoiceDetails(invoice),invoice,invoiceIssuer());
+      var pdf=invoiceTools.buildInvoicePdf(await invoiceDetails(invoice),invoice,(await invoiceConfiguration()).issuer);
       res.setHeader('Content-Type','application/pdf');
       res.setHeader('Content-Disposition','attachment; filename="'+invoice.invoice_number+'.pdf"');
       res.setHeader('Cache-Control','private, no-store');
       res.send(pdf);
     }catch(e){ console.error('admin invoice pdf',e); res.status(500).send('Impossible de générer la facture'); }
   });
-    router.get('/admin/settings', requireAdmin, async function(req,res){ var L=await baseLocals(req); res.render('admin-settings', Object.assign(L, { active:'settings', settingsGroups:SETTINGS_GROUPS })); });
+  router.get('/admin/settings', requireAdmin, async function(req,res){ var L=await baseLocals(req); res.render('admin-settings', Object.assign(L, { active:'settings', settingsGroups:SETTINGS_GROUPS,invoiceConfig:await invoiceConfiguration(),invoiceFields:invoiceSettings.fields,invoiceVariables:invoiceSettings.variables })); });
 
   router.get('/api/admin/stats', async function(req,res){ if(!apiAdmin(req,res))return; try{ var s=await gatherStats(); res.json({ userCount:s.userCount, pushSubscriberCount:s.pushCount, totalVisits:s.visits, recentVisits:s.recentVisits, leads:s.leads, newLeads:s.newLeads, testimonials:s.testimonials, posts:s.posts, sales:s.sales, revenueCents:s.revenueCents }); }catch(e){ res.status(500).json({ error:'server' }); } });
 
   router.get('/api/admin/modules', function(req,res){ if(!apiAdmin(req,res))return; res.json({ modules:MODULES.map(function(m){ return { key:m.key, label:m.label, icon:m.icon, fields:m.fields }; }), settingsFields:SETTINGS_FIELDS }); });
 
   router.get('/api/admin/settings', async function(req,res){ if(!apiAdmin(req,res))return; res.json(await getSettings()); });
-  router.put('/api/admin/settings', async function(req,res){ if(!apiAdmin(req,res))return; try{ var k=req.body.key, v=req.body.value; if(!k) return res.status(400).json({ error:'key' }); await db.run('INSERT INTO admin_settings (key,value,updated_at) VALUES ($1,$2,NOW()) ON CONFLICT (key) DO UPDATE SET value=EXCLUDED.value, updated_at=NOW()',[k,v]); res.json({ success:true }); }catch(e){ res.status(500).json({ error:'server' }); } });
+  router.put('/api/admin/settings', async function(req,res){ if(!apiAdmin(req,res))return; try{ var k=req.body.key, v=req.body.value; if(!k) return res.status(400).json({ error:'key' }); if(String(k).startsWith('invoice_')){if(!invoiceAdminMutation(req,res))return;try{v=invoiceSettings.validate({[k]:v})[k];}catch(e){return res.status(400).json({error:e.message});}} await db.run('INSERT INTO admin_settings (key,value,updated_at) VALUES ($1,$2,NOW()) ON CONFLICT (key) DO UPDATE SET value=EXCLUDED.value, updated_at=NOW()',[k,v]); res.json({ success:true }); }catch(e){ res.status(500).json({ error:'server' }); } });
 
   function normalize(m, body){ var data={}; m.fields.forEach(function(f){ if(body[f.name]===undefined) return; var v=body[f.name]; if(f.type==='boolean'){ v=(v===true||v==='true'||v===1||v==='1'||v==='on')?1:0; } else if(f.type==='number'){ v=(v===''||v===null)?null:Number(v); } data[f.name]=v; }); return data; }
 
@@ -1296,14 +1297,45 @@ module.exports = function(services){
   }
 
   async function sendCampaignInvoice(req,broker,invoice){
-    return campaignInvoiceEmail.send({db:db,email:services.email,invoice:await invoiceDetails(invoice),broker:broker,issuer:invoiceIssuer(),url:absoluteUrl(req,'/espace/factures/'+invoice.id+'/pdf')});
+    var config=await invoiceConfiguration();
+    return invoiceEmail.send({db:db,email:services.email,invoice:await invoiceDetails(invoice),broker:broker,issuer:config.issuer,settings:config.settings,url:absoluteUrl(req,'/espace/factures/'+invoice.id+'/pdf')});
   }
 
-  router.post('/api/admin/ventes/factures/:id/envoyer',async function(req,res){
-    if(!apiAdmin(req,res))return;
+  async function invoiceConfiguration(){return invoiceSettings.configuration(await getSettings(),invoiceIssuer());}
+  function invoiceAdminMutation(req,res){
+    if(!apiAdmin(req,res))return false;
     var origin=req.get('origin'),site=req.get('sec-fetch-site');
     var sameOrigin=!origin||(origin==='null'&&site==='same-origin')||origin==='https://'+req.get('host')||origin==='http://'+req.get('host');
-    if(!req.is('application/json')||site==='cross-site'||!sameOrigin)return res.status(403).json({error:'Forbidden'});
+    if(!req.is('application/json')||site==='cross-site'||!sameOrigin){res.status(403).json({error:'Forbidden'});return false;}
+    return true;
+  }
+  router.get('/api/admin/invoice-settings',async function(req,res){
+    if(!apiAdmin(req,res))return;
+    res.set('Cache-Control','private, no-store');res.json(await invoiceConfiguration());
+  });
+  router.put('/api/admin/invoice-settings',async function(req,res){
+    if(!invoiceAdminMutation(req,res))return;
+    var values;try{values=invoiceSettings.validate(req.body.settings);}catch(e){return res.status(400).json({error:e.message});}
+    try{
+      var rows=Object.keys(values).map(function(key){return {key:key,value:values[key]};});
+      if(!rows.length)return res.status(400).json({error:'Aucun réglage fourni.'});
+      await db.run('INSERT INTO admin_settings(key,value,updated_at) SELECT key,value,NOW() FROM jsonb_to_recordset($1::jsonb) AS x(key text,value text) ON CONFLICT(key) DO UPDATE SET value=EXCLUDED.value,updated_at=NOW()',[JSON.stringify(rows)]);
+      res.json({success:true,config:await invoiceConfiguration()});
+    }catch(e){res.status(500).json({error:'Enregistrement impossible. Réessayez.'});}
+  });
+  router.post('/api/admin/invoice-settings/preview',async function(req,res){
+    if(!invoiceAdminMutation(req,res))return;
+    try{
+      var current=await invoiceConfiguration(),values=invoiceSettings.validate(req.body.settings);
+      var config=invoiceSettings.configuration(Object.assign({},current.settings,values),current.issuer);
+      var invoice={id:0,broker_id:0,kind:'campagne',invoice_number:'EXEMPLE-001',campaign_id:1,payment_time:new Date(),subtotal_cents:23850,gst_cents:1193,qst_cents:2379,total_cents:27422,is_test:req.body.sandbox===true?1:0,campaign:{address_count:150,centre_label:'1383 Boulevard Élisabeth, Laval',payment_status:'paid'}};
+      var preview=invoiceEmail.message(invoice,{id:0,full_name:'Camille Exemple',agency:'Agence Exemple',email:'camille@example.com'},config.issuer,absoluteUrl(req,'/espace/factures/0/pdf'),config.settings);
+      res.set('Cache-Control','private, no-store');res.json({subject:preview.subject,html:preview.html,hasAttachment:!!preview.attachments});
+    }catch(e){res.status(400).json({error:e.message});}
+  });
+
+  router.post('/api/admin/ventes/factures/:id/envoyer',async function(req,res){
+    if(!invoiceAdminMutation(req,res))return;
     try{
       var invoice=await db.get("SELECT * FROM broker_invoices WHERE id=$1 AND kind='campagne'",[req.params.id]);
       if(!invoice)return res.status(404).json({error:'Facture introuvable'});
@@ -2658,41 +2690,8 @@ module.exports = function(services){
 
   async function emailBrokerInvoice(req, broker, invoice){
     if (!invoice || invoice.emailed_at) return invoice;
-    var issuer = invoiceIssuer();
-    var pdf = invoiceTools.buildInvoicePdf(invoice, broker, issuer);
-    var firstName = String(broker.full_name || '').split(' ')[0] || 'Courtier';
-    var invoiceUrl = absoluteUrl(req, '/espace/factures/' + invoice.id + '/pdf');
-    var total = invoiceTools.money(invoice.total_cents);
-    var isTest = Number(invoice.is_test) === 1 || invoice.is_test === true;
-    var html = ''
-      + '<div style="background:#0D0A0B;padding:34px 20px;font-family:Inter,-apple-system,Segoe UI,Roboto,sans-serif">'
-      + '<div style="max-width:540px;margin:0 auto;background:#171213;border:1px solid rgba(245,239,230,.14);border-radius:10px;padding:32px 28px;color:#F5EFE6">'
-      + '<div style="font-family:monospace;font-size:11px;letter-spacing:.25em;text-transform:uppercase;color:#C79A5B;margin-bottom:16px">' + (isTest?'Test PayPal réussi':'Paiement confirmé') + '</div>'
-      + '<h1 style="font-family:Georgia,serif;font-size:26px;line-height:1.15;margin:0 0 14px">' + (isTest?'Le parcours sandbox fonctionne, ':'Votre licence VendVite est active, ') + escapeHtml(firstName) + '.</h1>'
-      + '<p style="color:rgba(245,239,230,.66);font-size:15px;line-height:1.6;margin:0 0 18px">' + (isTest?'Aucun paiement réel n’a été encaissé. Votre accès d’essai est maintenant ouvert pour publier la page et vérifier tout le parcours. La facture test ':'Nous avons reçu votre paiement annuel de <strong style="color:#F5EFE6">'+escapeHtml(total)+'</strong>. Votre facture ') + '<strong style="color:#C79A5B">' + escapeHtml(invoice.invoice_number) + '</strong> est jointe à ce courriel et demeure disponible dans votre espace.</p>'
-      + '<table style="width:100%;border-collapse:collapse;margin:20px 0;color:#F5EFE6;font-size:14px">'
-      + '<tr><td style="padding:9px 0;border-bottom:1px solid rgba(245,239,230,.1);color:rgba(245,239,230,.45)">Abonnement</td><td style="padding:9px 0;border-bottom:1px solid rgba(245,239,230,.1);text-align:right">599,00 $ + taxes</td></tr>'
-      + '<tr><td style="padding:9px 0;color:rgba(245,239,230,.45)">' + (isTest?'Total simulé':'Total payé') + '</td><td style="padding:9px 0;text-align:right;font-weight:700">' + escapeHtml(total) + '</td></tr>'
-      + '</table>'
-      + '<a href="' + invoiceUrl + '" style="display:block;text-align:center;padding:15px;border-radius:4px;background:#E30B2D;color:#fff;text-decoration:none;font-family:Georgia,serif;font-weight:bold">Télécharger ma facture</a>'
-      + '<p style="color:rgba(245,239,230,.4);font-size:12px;line-height:1.55;margin:18px 0 0">' + (isTest?'Document de test sans valeur comptable. Cet accès fonctionne uniquement pendant que PayPal est en mode sandbox.':'Votre page reste sous votre contrôle : ouvrez votre espace pour la publier lorsque vous êtes prêt.') + '</p>'
-      + '</div></div>';
-    var result = await services.email.send({
-      to: broker.email,
-      subject: (isTest?'[TEST PAYPAL] ':'') + 'Votre facture VendVite ' + invoice.invoice_number,
-      html: html,
-      text: isTest ? 'Test PayPal réussi. Aucun paiement réel. Votre accès d’essai est ouvert pour publier la page et tester le parcours complet en mode sandbox. Facture test '+invoice.invoice_number+', total simulé '+total+'. Télécharger : '+invoiceUrl : 'Paiement confirmé. Votre licence VendVite est active. Facture ' + invoice.invoice_number + ', total payé ' + total + '. Télécharger : ' + invoiceUrl,
-      attachments: [{
-        content: pdf.toString('base64'),
-        filename: invoice.invoice_number + '.pdf',
-        type: 'application/pdf',
-        disposition: 'attachment'
-      }]
-    });
-    if (!result || result.success !== false) {
-      await db.run('UPDATE broker_invoices SET emailed_at=NOW() WHERE id=$1', [invoice.id]);
-      invoice.emailed_at = new Date().toISOString();
-    }
+    var result=await sendCampaignInvoice(req,broker,invoice);
+    if(result.emailedAt)invoice.emailed_at=result.emailedAt;
     return invoice;
   }
 
@@ -2838,7 +2837,7 @@ module.exports = function(services){
     try{
       var invoice = await db.get('SELECT * FROM broker_invoices WHERE id=$1 AND broker_id=$2', [req.params.id, broker.id]);
       if (!invoice) return res.status(404).send('Facture introuvable');
-      var pdf = invoiceTools.buildInvoicePdf(await invoiceDetails(invoice), broker, invoiceIssuer());
+      var pdf = invoiceTools.buildInvoicePdf(await invoiceDetails(invoice), broker, (await invoiceConfiguration()).issuer);
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader('Content-Disposition', 'attachment; filename="' + invoice.invoice_number + '.pdf"');
       res.setHeader('Cache-Control', 'private, no-store');

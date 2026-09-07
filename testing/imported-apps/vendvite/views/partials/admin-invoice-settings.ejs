@@ -1,0 +1,38 @@
+<section id="factures" class="settings-card invoice-settings">
+  <h2 class="settings-h2">Factures et courriels</h2>
+  <p class="invoice-help">Personnalisez les prochains courriels de facturation. Le détail de la commande, les taxes et le total figurent toujours dans le message.</p>
+  <form id="invoiceSettingsForm">
+    <fieldset id="invoiceSettingsFields">
+      <div class="invoice-options">
+        <% invoiceFields.filter(function(f){return f.type==='checkbox';}).forEach(function(f){ %>
+        <label class="invoice-check" for="<%= f.key %>"><input id="<%= f.key %>" data-invoice-key="<%= f.key %>" type="checkbox" <%= invoiceConfig.settings[f.key]==='1'?'checked':'' %>><span><%= f.label %></span></label>
+        <% }); %>
+      </div>
+      <h3>Message du courriel</h3>
+      <div class="settings-grid">
+        <% invoiceFields.filter(function(f){return f.type!=='checkbox'&&!f.issuer;}).forEach(function(f){ %>
+        <div class="fld <%= f.type==='textarea'?'invoice-wide':'' %>">
+          <label for="<%= f.key %>"><%= f.label %></label>
+          <% if(f.type==='textarea'){ %><textarea id="<%= f.key %>" data-invoice-key="<%= f.key %>" maxlength="<%= f.max %>" rows="4"><%= invoiceConfig.settings[f.key] %></textarea>
+          <% }else{ %><input id="<%= f.key %>" data-invoice-key="<%= f.key %>" type="<%= f.type %>" maxlength="<%= f.max %>" value="<%= invoiceConfig.settings[f.key] %>" <%= f.required?'required':'' %>><% } %>
+        </div>
+        <% }); %>
+      </div>
+      <details class="invoice-variables"><summary>Variables pour personnaliser l’objet, le titre et les messages</summary><dl><% Object.keys(invoiceVariables).forEach(function(key){ %><div><dt><code>{<%= key %>}</code></dt><dd><%= invoiceVariables[key] %></dd></div><% }); %></dl></details>
+      <h3>Entreprise qui facture</h3>
+      <p class="invoice-help">Ces coordonnées figurent dans le courriel et sur la facture PDF.</p>
+      <div class="settings-grid">
+        <% invoiceFields.filter(function(f){return !!f.issuer;}).forEach(function(f){ %>
+        <div class="fld"><label for="<%= f.key %>"><%= f.label %></label><input id="<%= f.key %>" data-invoice-key="<%= f.key %>" type="<%= f.type %>" maxlength="<%= f.max %>" value="<%= invoiceConfig.settings[f.key] %>" <%= f.required?'required':'' %>></div>
+        <% }); %>
+      </div>
+      <div class="invoice-actions"><button type="submit" class="btn-primary" id="saveInvoiceSettings">Enregistrer la facturation</button><button type="button" class="btn-sm" id="previewInvoiceEmail">Prévisualiser le courriel</button><label class="invoice-check"><input type="checkbox" id="previewInvoiceSandbox"><span>Aperçu en mode test PayPal</span></label></div>
+    </fieldset>
+    <p id="invoiceSettingsStatus" class="invoice-help" role="status" aria-live="polite"></p>
+  </form>
+  <div id="invoiceEmailPreview" hidden>
+    <h3>Aperçu du courriel</h3><p class="invoice-help">Exemple avec vos réglages actuels. Aucun courriel n’est envoyé.</p>
+    <p><strong>Objet :</strong> <span id="invoicePreviewSubject"></span></p><p id="invoicePreviewAttachment" class="invoice-help"></p>
+    <iframe id="invoicePreviewFrame" title="Aperçu du courriel de facture" sandbox="" referrerpolicy="no-referrer"></iframe>
+  </div>
+</section>

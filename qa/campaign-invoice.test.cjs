@@ -18,6 +18,7 @@ const send=(h,id,headers=admin,body={})=>fetch(h.url+'/api/admin/ventes/factures
 
 test('confirmed campaign payments email an accurate PDF once in live and sandbox mode',async()=>{
  const h=await create(),calls=mockPaypal(h);h.services.config.contactEmail='operator@example.test';
+ await h.db.run("UPDATE admin_settings SET value='1' WHERE key='invoice_attach_pdf'");
  try{for(const mode of ['live','sandbox']){
   const f=await fixture(h,mode);const r=await fetch(f.url,{headers:{cookie:f.cookie},redirect:'manual'});assert.equal(r.status,302);
   const i=await h.db.get('SELECT * FROM broker_invoices WHERE campaign_id=$1',[f.c.id]);assert(i.emailed_at);assert.equal(i.total_cents,27422);

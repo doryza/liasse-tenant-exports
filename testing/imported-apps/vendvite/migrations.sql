@@ -58,6 +58,8 @@ ALTER TABLE broker_invoices ADD COLUMN IF NOT EXISTS paypal_order_id TEXT;
 ALTER TABLE broker_invoices ADD COLUMN IF NOT EXISTS email_claimed_at TIMESTAMPTZ;
 ALTER TABLE broker_invoices ADD COLUMN IF NOT EXISTS email_error TEXT;
 ALTER TABLE broker_invoices ADD COLUMN IF NOT EXISTS email_message_id TEXT;
+-- Invoice emails include their billing details in the body by default.
+INSERT INTO admin_settings(key,value,updated_at) VALUES('invoice_attach_pdf','0',NOW()) ON CONFLICT(key) DO NOTHING;
 ALTER TABLE broker_campaigns ADD COLUMN IF NOT EXISTS quota_period DATE;
 DROP INDEX IF EXISTS broker_campaigns_quota_idx;
 CREATE UNIQUE INDEX IF NOT EXISTS broker_campaigns_credit_idx ON broker_campaigns (broker_id, quota_period) WHERE quota_period IS NOT NULL AND status<>'cancelled' AND is_test=0;
