@@ -2024,6 +2024,12 @@ module.exports = function(services){
     // Owner-approved operating strategy: bill the managed advertising service
     // using the purchaser's confirmed business address. Numbers are optional.
     var p=Object.assign({campaign_classification:'general_service'},canadianTax.object(services.externalVars.VENDVITE_TAX_POLICY));
+    // Owner approved collection on the full paid mailing bundle, 2026-09-07.
+    // Keep explicit province overrides and the separate destination-review gate.
+    p.pst=Object.assign({
+      MB:{treatment:'taxable',review_reference:'Owner approved mailing bundle RST, 2026-09-07'},
+      SK:{treatment:'taxable',review_reference:'Owner approved mailing bundle PST, 2026-09-07'}
+    },canadianTax.object(p.pst));
     var issuer=(await invoiceConfiguration()).issuer;
     return Object.assign({},p,{gst_number:p.gst_number||issuer.gst,qst_number:p.qst_number||issuer.qst});
   }

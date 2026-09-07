@@ -41,3 +41,41 @@ test('real routes: confirm address, freeze Ontario tax through PayPal, invoice a
  await fetch(h.url+'/espace/campagne/retour?token=ORDER-CA&mode=live',{headers:f.headers,redirect:'manual'});assert.equal(captureCalls,1);
  }finally{await h.close();}
 });
+
+test('default MB/SK treatment: number-free quote, PayPal and invoice; provincial overrides and destination holds',async()=>{
+ for(const [province,city,lat,lng,taxCode,provincialCents,total] of [
+  ['MB','Winnipeg',49.8951,-97.1384,'RST',1670,26713],
+  ['SK','Regina',50.4452,-104.6189,'PST',1431,26474]
+ ]){
+  const h=await create();try{
+   const f=await broker(h),post=(path,body,method='POST')=>fetch(h.url+path,{method,headers:f.headers,body:JSON.stringify(body)});
+   Object.assign(h.services.externalVars,{PAYPAL_MODE:'live',PAYPAL_CLIENT_ID:'test',PAYPAL_CLIENT_SECRET:'test'});
+   assert.equal((await post('/api/espace/billing-address',{confirmed:true,address:address(province)},'PUT')).status,200);
+   let q=await (await post('/api/espace/campagne/devis',{count:150,destinations:[province]})).json();
+   assert.equal(q.price.taxReady,true,province);assert.equal(q.price.total,total);assert.equal(q.price.tps,1193);assert.equal(q.price.pst,provincialCents);
+   assert.deepEqual(q.price.taxLines.map(l=>l.code),['GST',taxCode]);assert(q.price.taxLines.every(l=>l.registration===''));
+   const cross=await (await post('/api/espace/campagne/devis',{count:150,destinations:[province==='MB'?'SK':'MB']})).json();
+   assert.equal(cross.price.taxReady,false);assert.equal(cross.price.taxError,'PROVINCIAL_TAX_REVIEW');
+   h.services.externalVars.VENDVITE_TAX_POLICY=JSON.stringify({pst:{BC:{treatment:'not_applicable',review_reference:'QA unrelated override'}}});
+   q=await (await post('/api/espace/campagne/devis',{count:150,destinations:[province]})).json();assert.equal(q.price.total,total);assert.equal(q.price.taxReady,true);
+   h.services.externalVars.VENDVITE_TAX_POLICY=JSON.stringify({pst:{[province]:{treatment:'not_applicable',review_reference:'QA explicit override'}}});
+   const override=await (await post('/api/espace/campagne/devis',{count:150,destinations:[province]})).json();assert.equal(override.price.total,25043);assert.equal(override.price.taxReady,true);
+   delete h.services.externalVars.VENDVITE_TAX_POLICY;
+   let orderBody;
+   h.services.fetch=async(url,opts)=>{
+    if(url.endsWith('/v1/oauth2/token'))return {ok:true,json:async()=>({access_token:'fake'})};
+    if(url.endsWith('/v2/checkout/orders')){orderBody=JSON.parse(opts.body);return {ok:true,json:async()=>({id:'ORDER-'+province,links:[{rel:'approve',href:'https://example.test/approve'}]})};}
+    if(url.endsWith('/capture'))return {ok:true,json:async()=>({status:'COMPLETED',purchase_units:[{payments:{captures:[{id:'CAPTURE-'+province,status:'COMPLETED',amount:{currency_code:'CAD',value:(total/100).toFixed(2)}}]}}]})};
+    return {ok:true,json:async()=>({status:'APPROVED',purchase_units:orderBody.purchase_units})};
+   };
+   const adresses=Array.from({length:150},(_,i)=>({numero:String(100+i),rue:'Main Street',ville:city,postal:postal[province],source:'point',lat,lng}));
+   const r=await post('/api/espace/campagne/commander',{centre:{libelle:city,lat,lng},adresses,quantite:150,expectedTotal:total});assert.equal(r.status,200,await r.clone().text());
+   const order=await r.json();assert.equal(orderBody.purchase_units[0].amount.breakdown.tax_total.value,((1193+provincialCents)/100).toFixed(2));
+   await fetch(h.url+'/espace/campagne/retour?token=ORDER-'+province+'&mode=live',{headers:f.headers,redirect:'manual'});
+   const invoice=await h.db.get('SELECT * FROM broker_invoices WHERE campaign_id=$1',[order.id]);
+   assert(invoice);assert.equal(invoice.total_cents,total);assert.equal(invoice.gst_cents,1193);assert.equal(invoice.pst_cents,provincialCents);
+   assert.deepEqual(invoice.tax_snapshot.destination_provinces,[province]);assert.deepEqual(invoice.tax_snapshot.lines.map(l=>l.code),['GST',taxCode]);
+   assert.match(h.emails[0].text,new RegExp(taxCode));assert.doesNotMatch(h.emails[0].text,/QST/);
+  }finally{await h.close();}
+ }
+});

@@ -14,7 +14,7 @@ This is conditional on supply classification. Printed advertising sold and deliv
 
 - Canadian address and postal/province validation; no automatic Quebec fallback.
 - GST 5%; HST ON 13%, NS 14%, NB/NL/PE 15%; Quebec GST plus QST 9.975%. All 13 provinces/territories covered by the calculator. NS's pre-April 2025 rate is distinguished.
-- Separate configured PST/RST treatment for BC (7%), MB (7%) and SK (6%). Those rates are NOT automatic proof of taxability. Unknown applicability blocks payment; it is not treated as exempt.
+- Owner-approved default treatment on September 7, 2026: the full paid mailing bundle is taxable for Manitoba RST (7%) and Saskatchewan PST (6%), in addition to GST (5%), using the confirmed business billing province. Registration numbers remain optional. BC treatment is still unconfigured and blocks payment; it is not treated as exempt.
 - Integer-cent calculation after included campaign credits. A quote with unresolved tax can be reviewed but cannot be paid.
 - Frozen order snapshots contain the confirmed address, province, supply classification, rule version, date, tax rates, registration numbers and amounts. Invoices, email/PDF receipts and sales totals use those saved amounts. Historical invoices keep their original Quebec breakdown.
 - PayPal receives the same tax and total. Returned order identity, CAD amount and completed capture amount are checked for new orders. Pending PayPal orders cannot have their tax snapshot overwritten; cancel them before changing the purchase. Retries do not create duplicate invoices.
@@ -24,20 +24,19 @@ This is conditional on supply classification. Printed advertising sold and deliv
 
 The owner's approved operating strategy treats the managed advertising campaign as a general service and uses the purchaser's confirmed business address. The server defaults `campaign_classification` to `general_service`. This is an operating assumption, not a tax-authority ruling. Registration numbers may be supplied later in invoice settings (or existing `VENDVITE_GST_NUMBER` / `VENDVITE_QST_NUMBER`); they are not required to calculate tax or pay.
 
-Use server-owned `VENDVITE_TAX_POLICY` JSON to configure reviewed provincial treatment. Example SHAPE, not an approved production policy:
+The one-time MB/SK product-tax setup is now in the server defaults: Manitoba `taxable` with a dated owner decision, and Saskatchewan `taxable` with a dated owner decision. Normal same-province campaigns calculate those taxes automatically through quote, PayPal and invoice. Brokers confirm their purchasing business address; they do not approve tax treatment per order or enter registration numbers.
+
+Server-owned `VENDVITE_TAX_POLICY` JSON can override individual provincial defaults. Unspecified provinces retain their defaults; an explicit province entry replaces that province's entire entry and must include a supported `treatment` and `review_reference`. For example, a later documented provincial decision can be supplied as:
 
 ```json
 {
-  "campaign_classification": "general_service",
   "pst": {
-    "BC": {"treatment": "taxable", "registration": "ACTUAL NUMBER", "review_reference": "Dated applicability decision"},
-    "MB": {"treatment": "not_applicable", "review_reference": "Dated grounds for not collecting"},
-    "SK": {"treatment": "taxable", "registration": "ACTUAL NUMBER", "review_reference": "Dated applicability decision"}
+    "BC": {"treatment": "taxable", "registration": "ACTUAL NUMBER IF AVAILABLE", "review_reference": "Dated applicability decision"}
   }
 }
 ```
 
-Do not copy this illustrative provincial mix into production. `not_applicable` needs a reason; lack of registration alone is not an exemption. Missing or unsupported provincial treatment blocks the affected paid campaigns, including sandbox. Cross-province campaigns targeting BC, MB or SK require allocation review even when the purchaser is in another province. The code does not support goods/delivery allocation, partial provincial taxable bases or multi-province use allocation; if those apply, implement that classification before enabling collection. Test fixtures use fictitious registrations only.
+This BC example is not a production decision. `not_applicable` needs a reason; lack of registration alone is not an exemption. Unknown or unsupported treatment still blocks the affected paid campaigns, including sandbox. The separate existing destination gate remains: campaigns targeting BC, MB or SK from a different billing province require allocation review. Enabling MB/SK billing-province collection does not resolve destination/use allocation. The code does not support goods/delivery allocation, partial provincial taxable bases or multi-province use allocation; if those apply, implement that classification before enabling those orders. Test fixtures use fictitious registrations only.
 
 Confirm with the accountant/tax authority: whether the $1.59 printing/envelope/data/postage bundle is a single service, goods or multiple supplies; the provincial taxable base and any destination/use allocation; and provincial registration obligations. Software cannot register the business or remit taxes by itself.
 
@@ -47,7 +46,7 @@ The campaign map/data model now supports all 13 provinces/territories. The Quebe
 
 ## Validation
 
-Run `node --test qa/canadian-tax.test.cjs qa/campaign-studio.test.cjs qa/campaign-invoice.test.cjs qa/invoice-settings.test.cjs` and `node qa/tax-browser.cjs`. Tests exercise all 13 jurisdictions, rounding/credits, missing address and review gates, postal mismatch, authenticated billing saves, PayPal amounts/mismatch rejection, immutable orders, changed customer addresses, invoice snapshots, replay handling and historical invoice/email behavior. The mobile form and generated Ontario PDF were rendered and visually inspected.
+Run `node --test qa/canadian-tax.test.cjs qa/campaign-studio.test.cjs qa/campaign-invoice.test.cjs qa/invoice-settings.test.cjs` and `node qa/tax-browser.cjs`. Tests additionally exercise the default MB/SK number-free policy through authenticated quotes, real campaign routes with mocked PayPal capture, invoice/email tax lines, per-province overrides, and retained cross-province holds. Tests exercise all 13 jurisdictions, rounding/credits, missing address and review gates, postal mismatch, authenticated billing saves, PayPal amounts/mismatch rejection, immutable orders, changed customer addresses, invoice snapshots, replay handling and historical invoice/email behavior. The mobile form and generated Ontario PDF were rendered and visually inspected.
 
 ## Primary sources checked September 7, 2026
 
