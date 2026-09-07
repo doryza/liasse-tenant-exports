@@ -1,6 +1,6 @@
 const {test}=require('node:test'),assert=require('node:assert/strict');
 const {create,root}=require('./harness.cjs');
-const M=require(root+'/public/js/campaign-model-v1'),D=require(root+'/campaign-data-v1'),authTools=require(root+'/broker-auth-v1');
+const M=require(root+'/public/js/campaign-model-v2'),D=require(root+'/campaign-data-v2'),authTools=require(root+'/broker-auth-v1');
 const center={lat:45.522,lng:-73.581,libelle:'Montréal'};
 const address=(n=3936)=>{let a={numero:String(n),rue:'avenue Henri-Julien',ville:'Montréal',lat:45.522,lng:-73.581,source:'point',unit:'',postal:'H2W 2A2'};a.id=M.key(a);return a};
 const record=(extra={})=>({ID_UEV:'test-1',MUNICIPALITE:'50',CIVIQUE_DEBUT:'3936',CIVIQUE_FIN:'3938',NOM_RUE:'avenue Henri-Julien (MTL)',NOMBRE_LOGEMENT:'2',CODE_UTILISATION:'1000',CATEGORIE_UEF:'Régulier',ANNEE_CONSTRUCTION:'1885',ETAGE_HORS_SOL:'2',...extra});

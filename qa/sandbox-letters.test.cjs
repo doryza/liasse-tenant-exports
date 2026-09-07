@@ -1,5 +1,5 @@
 const {test}=require('node:test'),assert=require('node:assert/strict'),crypto=require('crypto');
-const {create,root}=require('./harness.cjs'),mail=require(root+'/mailing-service-v4');
+const {create,root}=require('./harness.cjs'),mail=require(root+'/mailing-service-v5');
 test('sandbox letters reproduce recipient output with stable private QR codes, never production access',async()=>{
  const h=await create(),admin={'x-test-admin':'yes'},targets=[];
  h.services.qrcode.toDataURL=async url=>{targets.push(url);return ''};

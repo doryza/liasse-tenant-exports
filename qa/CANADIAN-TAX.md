@@ -1,6 +1,6 @@
 # VendVite Canadian sales-tax strategy
 
-Implemented against the live tenant 433 generation 98 export on September 7, 2026. Branch: `feat/vendvite-canadian-tax`. This change is local and has not been published. No production customers, payments, subscriptions or registrations were changed.
+Implemented against the live tenant 433 generation 98 export on September 7, 2026. Branch: `feat/vendvite-canadian-tax`. The owner authorized publication and explicitly requested operation without registration numbers. Registration numbers are optional; none are invented. Existing subscriptions are not repriced.
 
 ## Which address?
 
@@ -20,9 +20,11 @@ This is conditional on supply classification. Printed advertising sold and deliv
 - PayPal receives the same tax and total. Returned order identity, CAD amount and completed capture amount are checked for new orders. Pending PayPal orders cannot have their tax snapshot overwritten; cancel them before changing the purchase. Retries do not create duplicate invoices.
 - Existing legacy annual subscriptions are not repriced. New legacy subscriptions require a confirmed Quebec address; other provinces require a reviewed replacement plan. Do not market the old Quebec-priced subscription nationally.
 
-## Configuration required before publication
+## Operating policy and remaining configuration
 
-Confirm seller GST/HST and QST registration numbers in the invoice settings (or existing `VENDVITE_GST_NUMBER` / `VENDVITE_QST_NUMBER`). Supply a server-owned `VENDVITE_TAX_POLICY` JSON value only after the actual campaign contract/bundle has been reviewed. Example SHAPE, not an approved production policy:
+The owner's approved operating strategy treats the managed advertising campaign as a general service and uses the purchaser's confirmed business address. The server defaults `campaign_classification` to `general_service`. This is an operating assumption, not a tax-authority ruling. Registration numbers may be supplied later in invoice settings (or existing `VENDVITE_GST_NUMBER` / `VENDVITE_QST_NUMBER`); they are not required to calculate tax or pay.
+
+Use server-owned `VENDVITE_TAX_POLICY` JSON to configure reviewed provincial treatment. Example SHAPE, not an approved production policy:
 
 ```json
 {
@@ -35,13 +37,13 @@ Confirm seller GST/HST and QST registration numbers in the invoice settings (or 
 }
 ```
 
-Do not copy this illustrative provincial mix into production. `not_applicable` needs a reason; lack of registration alone is not an exemption. Missing registration/classification intentionally blocks paid campaigns, including sandbox. The code does not support goods/delivery allocation, partial provincial taxable bases or multi-province use allocation; if those apply, implement that classification before enabling collection. Test fixtures use fictitious registrations only.
+Do not copy this illustrative provincial mix into production. `not_applicable` needs a reason; lack of registration alone is not an exemption. Missing or unsupported provincial treatment blocks the affected paid campaigns, including sandbox. Cross-province campaigns targeting BC, MB or SK require allocation review even when the purchaser is in another province. The code does not support goods/delivery allocation, partial provincial taxable bases or multi-province use allocation; if those apply, implement that classification before enabling collection. Test fixtures use fictitious registrations only.
 
 Confirm with the accountant/tax authority: whether the $1.59 printing/envelope/data/postage bundle is a single service, goods or multiple supplies; the provincial taxable base and any destination/use allocation; and provincial registration obligations. Software cannot register the business or remit taxes by itself.
 
-Before release, compare current tenant generation/files with the captured baseline at `/home/liassetech/.liasse-ops/vendvite-tax-20260907/live-baseline.json`, reconcile any changes, run migrations through the tenant importer, then test in sandbox. Existing orders with no snapshot retain their historical behavior. Retain recorded order and invoice snapshots for accounting; do not backfill historical tax from today's customer address.
+Before release, compare current tenant generation/files with the captured baseline at `/home/liassetech/.liasse-ops/vendvite-tax-20260907/live-baseline.json`, reconcile any changes, apply the additive SQL migration to `tenant_vendvite` before using the tenant importer (the importer does not execute SQL), then test in sandbox. Existing orders with no snapshot retain their historical behavior. Retain recorded order and invoice snapshots for accounting; do not backfill historical tax from today's customer address.
 
-The campaign map/data model is still Quebec-limited. Expanding the tax calculator does not enable nationwide mailing geography.
+The campaign map/data model now supports all 13 provinces/territories. The Quebec city overlay is removed. Search is restricted to Canada, initial framing uses the saved billing/profile province when available, and per-address provinces survive drafts, orders, CSV exports and letter formatting. Montreal property assessment enrichment remains Montreal-only; elsewhere the available OpenStreetMap address/property data is used.
 
 ## Validation
 
@@ -55,3 +57,9 @@ Run `node --test qa/canadian-tax.test.cjs qa/campaign-studio.test.cjs qa/campaig
 - [BC advertising agencies, PST 125](https://www2.gov.bc.ca/assets/gov/taxes/sales-taxes/publications/pst-125-advertising-agencies.pdf)
 - [Manitoba printing and related services, bulletin 015](https://www.gov.mb.ca/finance/taxation/pubs/bulletins/015.pdf) and [advertising materials/services, bulletin 035](https://www.gov.mb.ca/finance/taxation/pubs/bulletins/035.pdf)
 - [Saskatchewan advertising services, PST-67](https://sets.saskatchewan.ca/rptp/wcm/connect/a14b1339-3418-4973-ac53-47147e0012b0/PST.067%2BAdvertising.pdf?MOD=AJPERES)
+
+## National map validation and data source
+
+`node --test qa/canada-map.test.cjs` verifies all 13 provinces/territories, coastal and border Canadian cities, rejection of nearby US/Alaska/Greenland points, national draft persistence and number-free tax quotes. `node qa/canada-map-browser.cjs` checks desktop/mobile Vancouver, Toronto and Iqaluit searches/scans, Canada search restriction, CSV province retention, saved drafts, no overlay and no JavaScript errors. External geocoding/Overpass/tiles are mocked in browser tests.
+
+Map coverage geometry is derived from Statistics Canada's [2021 province/territory digital boundaries](https://www12.statcan.gc.ca/census-recensement/2021/geo/sip-pis/boundary-limites/files-fichiers/lpr_000a21a_e.zip), simplified by 20 metres in the original projection and rounded to five decimal places after reprojection to WGS84. All 13 regions, holes and islands in the source are retained. This is geographic filtering, not a legal/tax-boundary determination. Source: Statistics Canada, 2021 Census, reproduced and adapted under the [Statistics Canada Open Licence](https://www.statcan.gc.ca/en/reference/licence). This does not constitute Statistics Canada endorsement.

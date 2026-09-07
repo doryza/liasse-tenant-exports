@@ -5,14 +5,14 @@ var invoiceEmail = require('./invoice-email-v4');
 var invoiceSettings = require('./invoice-settings-v1');
 var workspaceInviteEmail = require('./workspace-invite-email-v1');
 var solicitationTools = require('./solicitation-v4');
-var mailingService = require('./mailing-service-v4');
+var mailingService = require('./mailing-service-v5');
 var homepageTools = require('./homepage-experiment-v1');
 var homepageCopy = require('./homepage-copy-v6');
 var brokerAuthTools = require('./broker-auth-v1');
 var workspaceCopy = require('./workspace-copy-v3');
-var campaignModel=require('./public/js/campaign-model-v1');
-var campaignDataTools=require('./campaign-data-v1');
-var campaignCopy=require('./campaign-copy-v5');
+var campaignModel=require('./public/js/campaign-model-v2');
+var campaignDataTools=require('./campaign-data-v2');
+var campaignCopy=require('./campaign-copy-v6');
 
 // ── Campagne « 150 portes » — reglages produit.
 //    Declares au SCOPE FICHIER et non dans la fabrique de routes : la plateforme
@@ -920,7 +920,7 @@ module.exports = function(services){
   Object.assign(T.en, homepageCopy.en);
   Object.assign(T.fr,workspaceCopy.fr);
   Object.assign(T.en,workspaceCopy.en);
-  Object.assign(T.fr,campaignCopy.fr,require('./three-step-copy-v2').fr);Object.assign(T.en,campaignCopy.en,require('./three-step-copy-v2').en);
+  Object.assign(T.fr,campaignCopy.fr,require('./three-step-copy-v3').fr);Object.assign(T.en,campaignCopy.en,require('./three-step-copy-v3').en);
 
   function scriptJson(value){ return JSON.stringify(value).replace(/</g,'\\u003c').replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029'); }
   function tp(req, p){ return (typeof req.tenantPath === 'function') ? req.tenantPath(p) : p.replace(/^\//,''); }
@@ -1686,7 +1686,7 @@ module.exports = function(services){
     if(mailingService.isMailing(broker)){
       L.t=Object.assign({},L.t,require('./mailing-workspace-copy-v1')[req.lang==='en'?'en':'fr']);
     }
-    Object.assign(L.t,require('./three-step-copy-v2')[req.lang==='en'?'en':'fr']);
+    Object.assign(L.t,require('./three-step-copy-v3')[req.lang==='en'?'en':'fr']);
     if(req.vvEnglishOnly){L.t.c_all_in='Data, single-sided printing, folding, envelopes, postage and postal handoff included.';L.t.esp_letter_spec_before_page_url='Our centre prints it in English, folds it and inserts it into an envelope with your contact details and a unique QR code pointing to';}
     var leads = await db.all('SELECT * FROM broker_leads WHERE broker_id=$1 ORDER BY created_at DESC LIMIT 200', [broker.id]);
     var counts = await db.get("SELECT COUNT(*)::int AS total, COUNT(*) FILTER (WHERE status='nouveau')::int AS fresh, COUNT(*) FILTER (WHERE created_at > NOW() - INTERVAL '30 days')::int AS recent FROM broker_leads WHERE broker_id=$1", [broker.id]);
@@ -1777,7 +1777,7 @@ module.exports = function(services){
     try{
       if(req.query.proof==='1'){
         var sample=await draftPreviewRecipient(broker);
-        if(sample){req.vvInitialAddress=mailingService.addressLines(sample).join(', ');if(campaignModel.qc(sample))req.vvInitialLocation={lat:Number(sample.lat),lng:Number(sample.lng)};}
+        if(sample){req.vvInitialAddress=mailingService.addressLines(sample).join(', ');if(campaignModel.canada(sample))req.vvInitialLocation={lat:Number(sample.lat),lng:Number(sample.lng)};}
       }
       await renderBrokerPage(req, res, broker, true);
     }
@@ -2021,16 +2021,19 @@ module.exports = function(services){
   // taxBreakdown d'invoice.js retro-deduit le partage a partir du total et
   // diverge d'un cent sur les gros volumes, ce qui ferait mentir la facture.
   async function taxPolicy(){
-    var p=canadianTax.object(services.externalVars.VENDVITE_TAX_POLICY);
+    // Owner-approved operating strategy: bill the managed advertising service
+    // using the purchaser's confirmed business address. Numbers are optional.
+    var p=Object.assign({campaign_classification:'general_service'},canadianTax.object(services.externalVars.VENDVITE_TAX_POLICY));
     var issuer=(await invoiceConfiguration()).issuer;
     return Object.assign({},p,{gst_number:p.gst_number||issuer.gst,qst_number:p.qst_number||issuer.qst});
   }
-  async function prixCampagne(quantite,credit,broker){
+  async function prixCampagne(quantite,credit,broker,destinations){
     var offert=Math.max(0,Math.min(Number(credit)||0,quantite)),facturable=quantite-offert,sous=facturable*CAMPAGNE_PRIX_CENTS;
     var result={quantite:quantite,offert:offert,facturable:facturable,sousTotal:sous,tps:0,tvq:0,hst:0,pst:0,total:null,taxLines:[],taxReady:false};
     try{
       var policy=await taxPolicy();
       var snapshot=canadianTax.calculate(sous,canadianTax.billing(broker),policy);
+      snapshot.destination_provinces=Array.from(new Set((destinations||[]).map(canadianTax.province).filter(Boolean))).sort();
       var a=canadianTax.amounts(snapshot);
       Object.assign(result,{tps:a.gst,tvq:a.qst,hst:a.hst,pst:a.pst,total:snapshot.total_cents,taxLines:snapshot.lines,taxSnapshot:snapshot});
       canadianTax.assertCollectable(snapshot,policy);result.taxReady=true;
@@ -2115,7 +2118,7 @@ module.exports = function(services){
   router.post('/api/espace/campagne/devis',brokerEndpoint(async function(req,res){
     var broker=await requireBrokerApi(req,res);if(!broker)return;
     var count=Number(req.body.count);if(!Number.isInteger(count)||count<1||count>CAMPAGNE_MAX)return res.status(400).json({code:'BAD_QUANTITY'});
-    var quota=await campagneQuota(broker);res.json({price:await prixCampagne(count,await campaignCredit(broker,quota,req.body.reprise),broker),remaining:quota.restantes});
+    var quota=await campagneQuota(broker);res.json({price:await prixCampagne(count,await campaignCredit(broker,quota,req.body.reprise),broker,Array.isArray(req.body.destinations)?req.body.destinations.slice(0,13):[]),remaining:quota.restantes});
   }));
   router.post('/api/espace/campagne/analyse',brokerEndpoint(async function(req,res){
     var broker=await requireBrokerApi(req,res);if(!broker)return;
@@ -2137,12 +2140,12 @@ module.exports = function(services){
     var broker=await requireBrokerApi(req,res);if(!broker)return;
     var data=req.body.data,revision=req.body.revision;
     if(!Number.isInteger(revision)||revision<0||!data||!Array.isArray(data.addresses)||data.addresses.length>4000||!Array.isArray(data.selected)||data.selected.length>CAMPAGNE_MAX||JSON.stringify(data).length>3500000)return res.status(400).json({code:'BAD_DRAFT'});
-    if(data.center&&!campaignModel.qc(data.center))return res.status(400).json({code:'BAD_DRAFT'});
+    if(data.center&&!campaignModel.canada(data.center))return res.status(400).json({code:'BAD_DRAFT'});
     var addresses=data.addresses.map(function(a){var clean=assainirAdresse(a);if(!clean)return null;var p=a.analysis||{};clean.analysis={type:['house','plex','apartment','condo','residential','nonresidential','unknown'].includes(p.type)?p.type:'unknown',units:campaignModel.integer(p.units),levels:campaignModel.integer(p.levels,200),year:campaignModel.integer(p.year,2100),source:'osm',confidence:'mapped',buildingId:String(p.buildingId||'').slice(0,160),unitScope:p.units?'building':null};return clean;});
     if(addresses.some(function(a){return !a;}))return res.status(400).json({code:'BAD_DRAFT'});
     var ids=new Set(addresses.map(function(a){return a.id;}));if(ids.size!==addresses.length||data.excluded&&!Array.isArray(data.excluded)||data.selected.some(function(id){return !ids.has(id);}))return res.status(400).json({code:'BAD_DRAFT'});
     var trusted=await campaignData.trusted(addresses);trusted.forEach(function(a,i){if(!a.analysis)a.analysis=addresses[i].analysis;});
-    var clean={center:data.center?{lat:Number(data.center.lat),lng:Number(data.center.lng),libelle:String(data.center.libelle||'').slice(0,300)}:null,city:String(data.city||'').slice(0,120),radius:Math.min(5000,Math.max(200,Number(data.radius)||800)),target:Math.min(CAMPAGNE_MAX,Math.max(1,Math.floor(Number(data.target))||150)),addresses:trusted,selected:Array.from(new Set(data.selected)),excluded:Array.from(new Set((data.excluded||[]).filter(function(id){return ids.has(id)&&!data.selected.includes(id);}))),notes:String(data.notes||'').slice(0,1000),polygon:Array.isArray(data.polygon)?data.polygon.slice(0,30).filter(function(p){return Array.isArray(p)&&campaignModel.qc({lat:p[0],lng:p[1]});}):[],reprise:Number(data.reprise)||0};
+    var clean={center:data.center?{lat:Number(data.center.lat),lng:Number(data.center.lng),libelle:String(data.center.libelle||'').slice(0,300)}:null,city:String(data.city||'').slice(0,120),radius:Math.min(5000,Math.max(200,Number(data.radius)||800)),target:Math.min(CAMPAGNE_MAX,Math.max(1,Math.floor(Number(data.target))||150)),addresses:trusted,selected:Array.from(new Set(data.selected)),excluded:Array.from(new Set((data.excluded||[]).filter(function(id){return ids.has(id)&&!data.selected.includes(id);}))),notes:String(data.notes||'').slice(0,1000),polygon:Array.isArray(data.polygon)?data.polygon.slice(0,30).filter(function(p){return Array.isArray(p)&&campaignModel.canada({lat:p[0],lng:p[1]});}):[],reprise:Number(data.reprise)||0};
     var row=await db.get("INSERT INTO broker_campaign_drafts(broker_id,revision,data) SELECT $1,1,$2::jsonb WHERE $3=0 ON CONFLICT(broker_id) DO NOTHING RETURNING revision",[broker.id,JSON.stringify(clean),revision]);
     if(!row)row=await db.get('UPDATE broker_campaign_drafts SET revision=revision+1,data=$1,updated_at=NOW() WHERE broker_id=$2 AND revision=$3 RETURNING revision',[JSON.stringify(clean),broker.id,revision]);
     if(!row)return res.status(409).json({code:'DRAFT_CONFLICT'});res.json(row);
@@ -2170,7 +2173,7 @@ module.exports = function(services){
       var centre = corps.centre && typeof corps.centre === 'object' ? corps.centre : {};
       var libelle = String(centre.libelle == null ? '' : centre.libelle).trim().slice(0, 300);
       var cLat = Number(centre.lat), cLng = Number(centre.lng);
-      if (!libelle || !campaignModel.qc({lat:cLat,lng:cLng})) {
+      if (!libelle || !campaignModel.canada({lat:cLat,lng:cLng})) {
         return res.status(400).json({ code: 'CENTRE_REQUIRED' });
       }
 
@@ -2319,7 +2322,7 @@ module.exports = function(services){
       var centre = corps.centre && typeof corps.centre === 'object' ? corps.centre : {};
       var libelle = String(centre.libelle == null ? '' : centre.libelle).trim().slice(0, 300);
       var cLat = Number(centre.lat), cLng = Number(centre.lng);
-      if (!libelle || !campaignModel.qc({lat:cLat,lng:cLng})) {
+      if (!libelle || !campaignModel.canada({lat:cLat,lng:cLng})) {
         return res.status(400).json({ code: 'CENTRE_REQUIRED' });
       }
 
@@ -2349,7 +2352,7 @@ module.exports = function(services){
       // commande : 450 portes avec credit se facturent 300.
       var quota = await campagneQuota(broker);
       var credit = await campaignCredit(broker,quota,corps.reprend);
-      var prix = await prixCampagne(quantite, credit,broker);
+      var prix = await prixCampagne(quantite, credit,broker,adresses.map(function(a){return a.province;}));
       if(!prix.taxReady)return res.status(409).json({code:prix.taxError});
       if(corps.expectedTotal==null)return res.status(400).json({code:'PRICE_CONFIRMATION_REQUIRED'});
       if(corps.expectedTotal!=null&&Number(corps.expectedTotal)!==prix.total)return res.status(409).json({code:'PRICE_CHANGED'});
@@ -2634,7 +2637,7 @@ module.exports = function(services){
     };
     var lignes = ['distance_m,house_number,street,unit,city,province,postal_code,address_source,property_type,recorded_dwellings,dwelling_scope,construction_year,property_source,source_checked_at'];
     (c.addresses || []).forEach(function(a){
-      lignes.push([a.metres == null ? '' : a.metres,a.numero,a.rue,a.unit||'',a.ville||c.city||'',c.province||'QC',a.postal||'',a.source,(a.analysis||{}).type||'',(a.analysis||{}).units||'',(a.analysis||{}).unitScope||'',(a.analysis||{}).year||'',(a.analysis||{}).source||'',(a.analysis||{}).fetchedAt||''].map(cell).join(','));
+      lignes.push([a.metres == null ? '' : a.metres,a.numero,a.rue,a.unit||'',a.ville||c.city||'',a.province||campaignModel.province(a)||'',a.postal||'',a.source,(a.analysis||{}).type||'',(a.analysis||{}).units||'',(a.analysis||{}).unitScope||'',(a.analysis||{}).year||'',(a.analysis||{}).source||'',(a.analysis||{}).fetchedAt||''].map(cell).join(','));
     });
     res.set('Content-Type', 'text/csv; charset=utf-8');
     res.set('Content-Disposition', 'attachment; filename="campagne-' + c.id + '-' + c.slug + '.csv"');
@@ -3209,7 +3212,7 @@ module.exports = function(services){
     var broker=await db.get('SELECT * FROM brokers WHERE id=$1',[origin.campaign.broker_id]);
     if(!broker)return mailingHome(req,res);
     req.vvInitialAddress=mailingService.addressLines(origin.recipient).join(', ');
-    if(campaignModel.qc(origin.recipient))req.vvInitialLocation={lat:Number(origin.recipient.lat),lng:Number(origin.recipient.lng)};
+    if(campaignModel.canada(origin.recipient))req.vvInitialLocation={lat:Number(origin.recipient.lat),lng:Number(origin.recipient.lng)};
     req.vvSandboxPreview=true;
     await renderBrokerPage(req,res,broker,true,false);
   }));
@@ -3223,7 +3226,7 @@ module.exports = function(services){
     var broker=await db.get('SELECT * FROM brokers WHERE id=$1',[campaign.broker_id]);
     if(!broker||!(await brokerPageLive(broker)))return mailingHome(req,res);
     req.vvInitialAddress=mailingService.addressLines(recipient).join(', ');
-    if(campaignModel.qc(recipient))req.vvInitialLocation={lat:Number(recipient.lat),lng:Number(recipient.lng)};
+    if(campaignModel.canada(recipient))req.vvInitialLocation={lat:Number(recipient.lat),lng:Number(recipient.lng)};
     req.vvMailingToken=campaign.mailing_token;
     req.vvMailingRecipient=recipient.mailing_id;
     await renderBrokerPage(req,res,broker,false,false);

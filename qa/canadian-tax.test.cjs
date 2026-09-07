@@ -10,6 +10,7 @@ test('13 jurisdictions, current HST rates, integer rounding and paid-review gate
  assert.throws(()=>tax.billing({profile:{province:'QC'}}),/BILLING_ADDRESS_REQUIRED/);
  assert.throws(()=>tax.validate({...address('ON'),postal_code:'H2X 1A1'}),/BILLING_POSTAL_MISMATCH/);
  assert.throws(()=>tax.calculate(-1,address('ON'),policy),/BAD_SUBTOTAL/);
+ const noNumbers=tax.calculate(10000,address('ON'),{});tax.assertCollectable(noNumbers,{campaign_classification:'general_service'});assert.equal(noNumbers.total_cents,11300);assert.equal(noNumbers.lines[0].registration,'');
  const bc=tax.calculate(10000,address('BC'),{});assert.throws(()=>tax.assertCollectable(bc,policy.gst_number?{...policy,pst:{}}:{}),/PROVINCIAL_TAX_REVIEW/);
  assert.throws(()=>tax.assertCollectable(bc,{gst_number:'123'}),/TAX_CLASSIFICATION_REVIEW/);
  assert.equal(tax.rows({gst_cents:1193,qst_cents:2379})[1].amount_cents,2379);
