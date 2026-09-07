@@ -77,7 +77,7 @@
   <% if(typeof sandboxPrint!=='undefined'&&sandboxPrint){ %><p class="proof-note"><%= lang==='fr'?'TEST PAYPAL — mêmes lettres et adresses qu’un envoi réel. Les QR ouvrent un aperçu privé; aucune demande ni aucun envoi postal réel.':'PAYPAL TEST — the same letters and addresses as a real mailing. QR codes open a private preview; no real lead requests or postal mailing.' %></p><% } %>
   <% if(typeof proof!=='undefined'&&proof){ %><p class="proof-note"><%= lang==='fr'?'Aperçu privé — ce QR ouvre votre aperçu connecté. Chaque lettre envoyée par VendVite aura son propre code sécurisé.':'Private preview — this QR opens your signed-in preview. Each letter mailed by VendVite will have its own secure code.' %></p><% } %>
   <% if (!embed) { %><div class="printbar"><span><%= TL[lang].ltr_printbar_meta %></span><button type="button" onclick="window.print()"><%= TL[lang].ltr_print_button %></button></div><% } %>
-  <% var langues = (lang === 'en') ? ['en', 'fr'] : ['fr', 'en']; %>
+  <% var langues = (typeof englishOnly!=='undefined'&&englishOnly) ? ['en'] : ((lang === 'en') ? ['en', 'fr'] : ['fr', 'en']); %>
   <% (typeof recipients !== 'undefined' && recipients ? recipients : [['ADRESSE DU DESTINATAIRE / RECIPIENT ADDRESS','VILLE QC  A1A 1A1']]).forEach(function(recipient){ var recipientAddress=Array.isArray(recipient)?recipient:recipient.address; %>
   <% langues.forEach(function(L, iL){ var t = TL[L]; var recipientUrl=recipient.url?recipient.url+'?lang='+L:pageUrl; var recipientQr=recipient.qr?recipient.qr[L]:qrDataUrl; %>
   <main class="letter<%= iL === 0 ? ' recto' : ' verso' %>" lang="<%= L %>">

@@ -49,3 +49,12 @@ CREATE TABLE IF NOT EXISTS solicitation_campaigns(id SERIAL PRIMARY KEY,name TEX
 CREATE TABLE IF NOT EXISTS solicitation_agents(id SERIAL PRIMARY KEY,campaign_id INTEGER NOT NULL REFERENCES solicitation_campaigns(id),tag TEXT UNIQUE NOT NULL,name TEXT NOT NULL,agency TEXT NOT NULL DEFAULT '',title TEXT NOT NULL DEFAULT '',phone TEXT NOT NULL DEFAULT '',photo_url TEXT NOT NULL DEFAULT '',address1 TEXT NOT NULL,address2 TEXT NOT NULL,broker_id INTEGER REFERENCES brokers(id),visits INTEGER NOT NULL DEFAULT 0,last_visited_at TIMESTAMPTZ,created_at TIMESTAMPTZ NOT NULL DEFAULT NOW());
 CREATE INDEX IF NOT EXISTS solicitation_agents_campaign ON solicitation_agents(campaign_id);
 CREATE TABLE IF NOT EXISTS mailing_signup_limits(key TEXT PRIMARY KEY,last_at TIMESTAMPTZ NOT NULL DEFAULT NOW());
+
+-- Postal solicitation batches and manual shipment tracking (2026-09-07).
+ALTER TABLE solicitation_campaigns ADD COLUMN IF NOT EXISTS sent_at TIMESTAMPTZ;
+ALTER TABLE solicitation_campaigns ADD COLUMN IF NOT EXISTS batch_number INTEGER;
+ALTER TABLE solicitation_campaigns ADD COLUMN IF NOT EXISTS batch_summary JSONB NOT NULL DEFAULT '{}'::jsonb;
+CREATE UNIQUE INDEX IF NOT EXISTS solicitation_campaigns_batch_number ON solicitation_campaigns(batch_number) WHERE batch_number IS NOT NULL;
+ALTER TABLE solicitation_agents ADD COLUMN IF NOT EXISTS source_key TEXT;
+ALTER TABLE solicitation_agents ADD COLUMN IF NOT EXISTS source_meta JSONB NOT NULL DEFAULT '{}'::jsonb;
+CREATE UNIQUE INDEX IF NOT EXISTS solicitation_agents_source_key ON solicitation_agents(source_key) WHERE source_key IS NOT NULL;

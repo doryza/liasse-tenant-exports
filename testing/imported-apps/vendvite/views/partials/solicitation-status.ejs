@@ -1,0 +1,6 @@
+<div class="sol-status-bar">
+  <span class="sol-badge <%= campaign.sent_at?'is-sent':'is-pending' %>"><%= campaign.sent_at?'Envoyée':'À préparer' %></span>
+  <% if(campaign.sent_at){ %><span>Déclarée envoyée le <%= formatDate(campaign.sent_at) %></span><% } %>
+  <button type="button" class="<%= campaign.sent_at?'btn-ghost':'btn-primary' %>" data-campaign-sent="<%= campaign.id %>" data-sent="<%= campaign.sent_at?'false':'true' %>" <% if(advance){ %>data-advance="true"<% } %>><%= campaign.sent_at?'Remettre à préparer':'Déclarer envoyée' %></button>
+  <span class="sol-action-error" role="alert"></span>
+</div>

@@ -8,5 +8,19 @@
 <textarea id="mailingAddresses" rows="13" aria-describedby="addressHelp" required placeholder="Marie Tremblay {Agence Exemple, Courtier immobilier, 514 555-0100, https://exemple.com/marie.jpg}&#10;1234 RUE DES ÉRABLES&#10;LAVAL QC H7W 4Y4"></textarea>
 <p>La fenêtre affiche trois lignes : le nom complet de l’agent, l’adresse 1 et l’adresse 2. L’agence, le titre et le téléphone personnalisent la lettre. Le portrait est réservé à la démonstration et à la page de l’agent.</p><button class="btn-ghost" type="button" id="previewAddresses">Vérifier les adresses</button> <button class="btn-primary" type="submit" id="saveCampaign">Créer la campagne</button><p id="solError" role="alert"></p></section>
 <section class="sol-card"><h2>Aperçu des destinataires</h2><p id="solCount">Collez vos agents, puis vérifiez les adresses.</p><div id="solPreview"></div><p>Format Lettre · 100 % · enveloppe no 10 à fenêtre en bas à gauche. En recto-verso : retourner sur le bord long. Chaque agent reçoit ses propres codes QR et son identifiant.</p></section></div></form>
-<section class="sol-card"><h2>Campagnes enregistrées</h2><% if(!campaigns.length){ %><p>Aucune campagne pour le moment.</p><% } %><% campaigns.forEach(function(c){ %><p><a href="admin/sollicitations/<%= c.id %>"><strong><%= c.name %></strong></a> · <%= c.count %> agents · <%= c.registered %> inscriptions · <%= formatDate(c.created_at) %> <a href="admin/sollicitations/<%= c.id %>/imprimer" target="_blank" rel="noopener">Imprimer / PDF ↗</a></p><% }); %></section>
-</div></main><script src="public/js/admin.js" defer></script><script src="public/js/solicitations-v1.js" defer></script></body></html>
+<section class="sol-card"><h2>Campagnes enregistrées</h2>
+<p><strong><%= pendingCount %></strong> lots à préparer · <strong><%= sentCount %></strong> envoyés</p>
+<% if(nextCampaign){ %><div class="sol-next"><span>Prochain envoi</span><a href="admin/sollicitations/<%= nextCampaign.id %>"><strong><%= nextCampaign.name %></strong> →</a></div><% } %>
+<nav class="sol-filters" aria-label="État des campagnes"><% [['pending','À préparer'],['sent','Envoyées'],['all','Toutes']].forEach(function(item){ %><a href="admin/sollicitations?status=<%= item[0] %>" <%- filter===item[0]?'aria-current="page"':'' %>><%= item[1] %></a><% }); %></nav>
+<p>« Déclarer envoyée » consigne votre dépôt postal. Cette action ne déclenche aucun envoi. Vous pouvez annuler cette déclaration.</p>
+<% var shown=campaigns.filter(function(c){return c.batch_number!=null&&(filter==='all'||(filter==='sent'?!!c.sent_at:!c.sent_at));}); %>
+<% if(!shown.length){ %><p>Aucun lot dans cette catégorie.</p><% } %>
+<div class="sol-batch-list"><% shown.forEach(function(c){ %><article class="sol-batch">
+<div><h3><a href="admin/sollicitations/<%= c.id %>"><%= c.name %></a></h3><p><%= c.count %> agents · <%= c.format==='duplex'?'FR au recto / EN au verso':'English · recto seulement' %> · <%= c.registered %> inscriptions<% if(c.batch_summary.uniqueAddresses){ %> · <%= c.batch_summary.uniqueAddresses %> adresses distinctes<% } %></p></div>
+<%- include('partials/solicitation-status',{campaign:c,advance:false}) %>
+<div class="sol-batch-links"><a href="admin/sollicitations/<%= c.id %>">Voir les destinataires</a><a href="admin/sollicitations/<%= c.id %>/imprimer" target="_blank" rel="noopener">Imprimer / PDF ↗</a></div>
+<% if(c.batch_summary.provinces){ %><details><summary>Répartition du lot</summary><p><%= Object.entries(c.batch_summary.provinces).map(function(x){return x[0]+' : '+x[1];}).join(' · ') %></p><p><%= Object.entries(c.batch_summary.brands||{}).map(function(x){return x[0]+' : '+x[1];}).join(' · ') %></p></details><% } %>
+</article><% }); %></div>
+<% var others=campaigns.filter(function(c){return c.batch_number==null;});if(others.length){ %><details class="sol-other"><summary>Autres campagnes et essais (<%= others.length %>)</summary><% others.forEach(function(c){ %><p><a href="admin/sollicitations/<%= c.id %>"><strong><%= c.name %></strong></a> · <%= c.count %> agents · <%= c.registered %> inscriptions · <%= formatDate(c.created_at) %></p><% }); %></details><% } %>
+</section>
+</div></main><script src="public/js/admin.js" defer></script><script src="public/js/solicitations-v1.js" defer></script><script src="public/js/solicitation-status-v1.js" defer></script></body></html>

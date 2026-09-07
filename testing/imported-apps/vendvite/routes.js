@@ -3,7 +3,7 @@ var invoiceTools = require('./invoice-v3');
 var invoiceEmail = require('./invoice-email-v3');
 var invoiceSettings = require('./invoice-settings-v1');
 var workspaceInviteEmail = require('./workspace-invite-email-v1');
-var solicitationTools = require('./solicitation-v2');
+var solicitationTools = require('./solicitation-v3');
 var mailingService = require('./mailing-service-v4');
 var homepageTools = require('./homepage-experiment-v1');
 var homepageCopy = require('./homepage-copy-v6');
@@ -954,6 +954,22 @@ module.exports = function(services){
     next();
   });
 
+  router.use(async function(req,res,next){
+    try{
+      if(req.path.startsWith('/admin')||req.path.startsWith('/api/admin/'))return next();
+      var language=require('./mailing-language-v1'),record=null;
+      var tagged=req.path.match(/^\/(?:invitation|demarrer)\/(VV-[a-f0-9]{32})$/);
+      var tag=tagged?tagged[1]:(req.path==='/api/courtier/demarrer'?(req.body||{}).tag:null);
+      if(tag)record=await db.get('SELECT source_meta FROM solicitation_agents WHERE tag=$1',[String(tag)]);
+      if(!record && /^\/(?:espace|api\/espace|connexion|acces)(?:\/|$)/.test(req.path))record=await brokerAuth.current(req,res);
+      if(!record && /^\/acces\/[a-f0-9]{64}$/.test(req.path)){
+        var valid=await brokerAuth.inspect(req.path.split('/').pop());
+        if(valid)record=await db.get('SELECT b.profile FROM brokers b JOIN broker_tokens t ON t.broker_id=b.id WHERE t.id=$1',[valid.id]);
+      }
+      language.apply(req,res,record);next();
+    }catch(e){next(e);}
+  });
+
   async function baseLocals(req){
     var lang=req.lang; var settings=await getSettings();
     var t=applyTextOverrides(Object.assign({}, T[lang]||T.fr), settings, lang);
@@ -966,7 +982,7 @@ module.exports = function(services){
     // chemin courant, sans barre oblique initiale, pour rester sur place sous
     // les deux montages.
     var cheminCourant = String(req.path || '/').replace(/^\//, '');
-    return { scriptJson:scriptJson,t:t, lang:lang, settings:settings, formatDate:function(d){ return formatDate(d, lang); }, formatPhone:formatPhone, googleApiKey:(services.google && services.google.mapsApiKey) || '', ogImage:ogImage, canonical:canonical, statusClass:statusClass, cheminCourant:cheminCourant, langueVisible:true };
+    return { scriptJson:scriptJson,t:t, lang:lang, settings:settings, formatDate:function(d){ return formatDate(d, lang); }, formatPhone:formatPhone, googleApiKey:(services.google && services.google.mapsApiKey) || '', ogImage:ogImage, canonical:canonical, statusClass:statusClass, cheminCourant:cheminCourant, langueVisible:!req.vvEnglishOnly,englishOnly:!!req.vvEnglishOnly };
   }
 
   router.get('/', async function(req,res){
@@ -1414,7 +1430,7 @@ module.exports = function(services){
   }
 
   async function mintBrokerToken(brokerId,purpose){ return brokerAuth.mint(brokerId,purpose); }
-  async function currentBroker(req,res){ return brokerAuth.current(req,res); }
+  async function currentBroker(req,res){ var broker=await brokerAuth.current(req,res);require('./mailing-language-v1').apply(req,res,broker);return broker; }
   function workspaceUnavailable(req,res){
     if(res.headersSent)return;
     brokerAuthTools.protect(res);res.set('Retry-After','10');
@@ -1447,6 +1463,7 @@ module.exports = function(services){
 
   // ── Invitation email
   async function sendInviteEmail(req, broker, rawToken, lang){
+    if(require('./mailing-language-v1').englishOnly(broker))lang='en';
     var link = absoluteUrl(req, '/acces/' + rawToken) + '?lang=' + (lang==='en'?'en':'fr');
     var fr = (lang !== 'en');
     var subject = fr ? 'Votre invitation VendVite' : 'Your VendVite invitation';
@@ -1531,7 +1548,7 @@ module.exports = function(services){
   }
 
   async function sendMailingInvite(req,broker,raw){
-    var lang=req.lang==='en'?'en':'fr',query='?next=espace/page&lang='+lang;
+    var lang=require('./mailing-language-v1').englishOnly(broker)?'en':(req.lang==='en'?'en':'fr'),query='?next=espace/page&lang='+lang;
     // First activation links last 72 hours; requested sign-in links last one.
     var token=await db.get('SELECT purpose FROM broker_tokens WHERE broker_id=$1 AND token_hash=$2',[broker.id,brokerAuthTools.hash(raw)]);
     return services.email.send(workspaceInviteEmail.build({broker:broker,lang:lang,
@@ -1616,6 +1633,7 @@ module.exports = function(services){
     try{
       var next=brokerAuthTools.safeNext(req.body.next);
       var outcome=await brokerAuth.requestLink(req,email,async function(b,raw){
+        require('./mailing-language-v1').apply(req,res,b);TT=T[req.lang]||T.fr;
         var link=absoluteUrl(req,'/acces/'+raw)+'?lang='+req.lang+'&next='+encodeURIComponent(next);
         var fr=req.lang!=='en';
         return services.email.send({to:b.email,subject:fr?'Votre lien de connexion VendVite':'Your VendVite sign-in link',text:(fr?'Ouvrir mon espace : ':'Open my workspace: ')+link+'\n'+TT.ws_login_hint,html:'<div style="font-family:Arial,sans-serif;max-width:560px;padding:32px"><h1>VendVite</h1><p>'+escapeHtml(TT.ws_login_title)+'</p><p><a href="'+escapeHtml(link)+'">'+escapeHtml(TT.ws_confirm)+'</a></p><p>'+escapeHtml(TT.ws_login_hint)+'</p></div>'});
@@ -1667,6 +1685,7 @@ module.exports = function(services){
       L.t=Object.assign({},L.t,require('./mailing-workspace-copy-v1')[req.lang==='en'?'en':'fr']);
     }
     Object.assign(L.t,require('./three-step-copy-v2')[req.lang==='en'?'en':'fr']);
+    if(req.vvEnglishOnly){L.t.c_all_in='Data, single-sided printing, folding, envelopes, postage and postal handoff included.';L.t.esp_letter_spec_before_page_url='Our centre prints it in English, folds it and inserts it into an envelope with your contact details and a unique QR code pointing to';}
     var leads = await db.all('SELECT * FROM broker_leads WHERE broker_id=$1 ORDER BY created_at DESC LIMIT 200', [broker.id]);
     var counts = await db.get("SELECT COUNT(*)::int AS total, COUNT(*) FILTER (WHERE status='nouveau')::int AS fresh, COUNT(*) FILTER (WHERE created_at > NOW() - INTERVAL '30 days')::int AS recent FROM broker_leads WHERE broker_id=$1", [broker.id]);
     var invoices = await db.all('SELECT * FROM broker_invoices WHERE broker_id=$1 ORDER BY payment_time DESC, id DESC LIMIT 20', [broker.id]);
@@ -2563,7 +2582,7 @@ module.exports = function(services){
       recipients.push({address:mailingService.addressLines(a),url:url,qr:codes});
     }
     var L=await baseLocals(req),settings=await getSettings();
-    res.render('lettre-proprietaires',Object.assign(L,{TL:{fr:applyTextOverrides(Object.assign({},T.fr),settings,'fr'),en:applyTextOverrides(Object.assign({},T.en),settings,'en')},lang:'fr',embed:false,broker:broker,profile:brokerProfile(broker),pageUrl:'',qrDataUrl:'',formatPhone:formatPhone,recipients:recipients,sandboxPrint:sandboxPrint}));
+    res.render('lettre-proprietaires',Object.assign(L,{TL:{fr:applyTextOverrides(Object.assign({},T.fr),settings,'fr'),en:applyTextOverrides(Object.assign({},T.en),settings,'en')},lang:require('./mailing-language-v1').englishOnly(broker)?'en':'fr',englishOnly:require('./mailing-language-v1').englishOnly(broker),embed:false,broker:broker,profile:brokerProfile(broker),pageUrl:'',qrDataUrl:'',formatPhone:formatPhone,recipients:recipients,sandboxPrint:sandboxPrint}));
   }));
 
   router.get('/admin/campagnes/:id/adresses.csv', requireAdmin, async function(req, res){
@@ -2923,6 +2942,7 @@ module.exports = function(services){
 
   // ── Public broker page. Renders the lead funnel under the broker's identity.
   async function renderBrokerPage(req, res, broker, isPreview, isDemo){
+    require('./mailing-language-v1').apply(req,res,broker);
     var L = await baseLocals(req);
     var prof = brokerProfile(broker);
     var settings = Object.assign({}, L.settings, {
@@ -3030,18 +3050,18 @@ module.exports = function(services){
   });
 
   async function notifyBrokerOfLead(req, broker, lead){
-    var fr = true;
     var esc = escapeHtml;
     // The espace « Courriel » field is where pistes land — account email as fallback.
     var leadInbox = (brokerProfile(broker).agent_email || broker.email);
+    var fr=!require('./mailing-language-v1').englishOnly(broker);
     var rows = [
-      ['Nom', lead.name], ['Adresse', lead.address], ['Courriel', lead.email],
-      ['Téléphone', lead.phone ? formatPhone(lead.phone) : ''], ['Échéancier', lead.timeframe]
+      [fr?'Nom':'Name', lead.name], [fr?'Adresse':'Address', lead.address], [fr?'Courriel':'Email', lead.email],
+      [fr?'Téléphone':'Phone', lead.phone ? formatPhone(lead.phone) : ''], [fr?'Échéancier':'Timeframe', lead.timeframe]
     ].filter(function(r){ return r[1]; });
     var html = ''
       + '<div style="background:#0D0A0B;padding:30px 20px;font-family:Inter,-apple-system,Segoe UI,Roboto,sans-serif">'
       + '<div style="max-width:520px;margin:0 auto;background:linear-gradient(165deg,#171213,#0f0b0c);border:1px solid rgba(245,239,230,.12);border-radius:10px;padding:28px;color:#F5EFE6">'
-      + '<div style="font-family:IBM Plex Mono,monospace;font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:#C79A5B;margin-bottom:14px">Nouveau lead</div>'
+      + '<div style="font-family:IBM Plex Mono,monospace;font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:#C79A5B;margin-bottom:14px">' + (fr?'Nouveau lead':'New lead') + '</div>'
       + '<h1 style="font-family:Georgia,serif;font-size:22px;margin:0 0 18px">' + esc(lead.name) + '</h1>'
       + '<table style="width:100%;border-collapse:collapse;font-size:14px">'
       + rows.map(function(r){
@@ -3049,13 +3069,13 @@ module.exports = function(services){
             + '<td style="padding:7px 0;color:#F5EFE6">' + esc(r[1]) + '</td></tr>';
         }).join('')
       + '</table>'
-      + '<a href="' + absoluteUrl(req, '/espace') + '" style="display:block;text-align:center;margin-top:22px;padding:14px;border-radius:4px;background:#E30B2D;color:#fff;text-decoration:none;font-family:Georgia,serif;font-weight:bold">Ouvrir mon espace</a>'
+      + '<a href="' + absoluteUrl(req, '/espace') + '" style="display:block;text-align:center;margin-top:22px;padding:14px;border-radius:4px;background:#E30B2D;color:#fff;text-decoration:none;font-family:Georgia,serif;font-weight:bold">' + (fr?'Ouvrir mon espace':'Open my workspace') + '</a>'
       + '</div></div>';
     return await services.email.send({
       to: leadInbox,
-      subject: 'Nouveau lead — ' + lead.name,
+      subject: (fr?'Nouveau lead — ':'New lead — ') + lead.name,
       html: html,
-      text: 'Nouveau lead: ' + lead.name + ' — ' + lead.address
+      text: (fr?'Nouveau lead: ':'New lead: ') + lead.name + ' — ' + lead.address
     });
   }
 

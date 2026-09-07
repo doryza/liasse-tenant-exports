@@ -33,10 +33,10 @@
       <span class="seal" aria-hidden="true">V</span>
       <span>VendVite</span>
     </a>
-    <div class="lang-toggle">
+    <% if(typeof langueVisible==='undefined'||langueVisible){ %><div class="lang-toggle">
       <a href="<%= (typeof cheminCourant !== 'undefined' ? cheminCourant : '') %>?lang=fr" class="<%= lang==='fr'?'active':'' %>">FR</a><span aria-hidden="true">·</span><a href="<%= (typeof cheminCourant !== 'undefined' ? cheminCourant : '') %>?lang=en" class="<%= lang==='en'?'active':'' %>">EN</a>
     </div>
-    <div class="topbar-right">
+    <% } %><div class="topbar-right">
       <% if(settings.agent_phone){ %><a class="topbar-phone" href="tel:<%= String(settings.agent_phone).replace(/\D/g,'') %>" data-setting-key="agent_phone"><%= formatPhone(settings.agent_phone) %></a><% } %>
       <a class="topbar-cta" href="./#evaluation"<%= (typeof isHome!=='undefined' && isHome) ? ' data-scroll-eval' : '' %> data-lk="t:topbar_cta"><%= t.topbar_cta %></a>
     </div>
