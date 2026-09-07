@@ -1,64 +1,68 @@
-# VendVite Canadian sales-tax strategy
+# VendVite Canadian postal campaign taxes
 
-Implemented against the live tenant 433 generation 98 export on September 7, 2026. Branch: `feat/vendvite-canadian-tax`. The owner authorized publication and explicitly requested operation without registration numbers. Registration numbers are optional; none are invented. Existing subscriptions are not repriced.
+Current policy implemented September 7, 2026, after the owner authorized BC and cross-province treatment. The owner also explicitly requested operation without registration numbers. Numbers remain optional; none are invented. This release changes future postal campaign calculations. Existing order/invoice tax snapshots and annual subscriptions keep their recorded treatment.
 
-## Which address?
+## Product and place of supply
 
-For a supply governed by the general GST/HST service rules, use the Canadian home/business address of the purchaser obtained in the ordinary course of business; where there are several, use the one most closely connected to the supply. VendVite now asks the purchaser to confirm the business address connected to the purchase. A sole proprietor may legitimately operate from home. A brokerage buying centrally may have a different purchasing address from an individual agent.
+The paid product is a printed promotional letter for one realtor, with data, printing, folding, envelope, postage and postal handoff bundled into a single per-letter price. VendVite arranges mailing directly to the selected recipients. Treat that product as `printed_direct_mail`, with a single taxable delivered-letter price.
 
-Existing profile information can prefill the form. A contact-list province, licence province, campaign location, language, IP address or PayPal payer address is not silently accepted as the purchaser's confirmed address. Billing details are stored in dedicated columns that profile edits cannot overwrite.
+**Use each letter's delivery province for GST/HST, QST and PST/RST.** This replaces the earlier general-service business-billing-address assumption for postal campaigns. The customer's office, residence, licence or invoice address does not substitute for the delivery province. This is the implementation's classification of the current printed-and-mailed product based on the official guidance below, not a tax-authority ruling.
 
-This is conditional on supply classification. Printed advertising sold and delivered as goods can follow delivery-based rules; separately supplied postage/transportation has special rules. Merely calling the bundle a service does not establish its tax treatment. A campaign advertising a realtor is not automatically a real-property service because the customer is a realtor.
+The purchaser still confirms a Canadian business billing address for the invoice. Existing profile details may prefill it, but are not silently accepted. Separate billing columns prevent profile changes from overwriting confirmed details.
 
-## Implemented behavior
+## Rates and tax base
 
-- Canadian address and postal/province validation; no automatic Quebec fallback.
-- GST 5%; HST ON 13%, NS 14%, NB/NL/PE 15%; Quebec GST plus QST 9.975%. All 13 provinces/territories covered by the calculator. NS's pre-April 2025 rate is distinguished.
-- Owner-approved default treatment on September 7, 2026: the full paid mailing bundle is taxable for Manitoba RST (7%) and Saskatchewan PST (6%), in addition to GST (5%), using the confirmed business billing province. Registration numbers remain optional. BC treatment is still unconfigured and blocks payment; it is not treated as exempt.
-- Integer-cent calculation after included campaign credits. A quote with unresolved tax can be reviewed but cannot be paid.
-- Frozen order snapshots contain the confirmed address, province, supply classification, rule version, date, tax rates, registration numbers and amounts. Invoices, email/PDF receipts and sales totals use those saved amounts. Historical invoices keep their original Quebec breakdown.
-- PayPal receives the same tax and total. Returned order identity, CAD amount and completed capture amount are checked for new orders. Pending PayPal orders cannot have their tax snapshot overwritten; cancel them before changing the purchase. Retries do not create duplicate invoices.
-- Existing legacy annual subscriptions are not repriced. New legacy subscriptions require a confirmed Quebec address; other provinces require a reviewed replacement plan. Do not market the old Quebec-priced subscription nationally.
+- GST 5% in non-HST provinces/territories.
+- HST: Ontario 13%; Nova Scotia 14% (15% before April 1, 2025); New Brunswick, Newfoundland and Labrador, Prince Edward Island 15%.
+- Quebec: GST plus QST 9.975%.
+- BC: GST plus PST 7%; Manitoba: GST plus RST 7%; Saskatchewan: GST plus PST 6%.
+- Alberta, Northwest Territories, Nunavut and Yukon: GST only.
 
-## Operating policy and remaining configuration
+BC's direct-mail rule covers promotional materials for a specific customer, including delivery/shipping, and distinguishes direct shipment outside BC. Manitoba's advertising and promotional-distribution guidance distinguishes in-province distribution from materials shipped out. Saskatchewan's bulletin taxes printed advertising and related production and exempts physical goods shipped outside the province by the vendor/common carrier. CRA and Revenu Québec use mailing destination for sales of shipped goods.
 
-The owner's approved operating strategy treats the managed advertising campaign as a general service and uses the purchaser's confirmed business address. The server defaults `campaign_classification` to `general_service`. This is an operating assumption, not a tax-authority ruling. Registration numbers may be supplied later in invoice settings (or existing `VENDVITE_GST_NUMBER` / `VENDVITE_QST_NUMBER`); they are not required to calculate tax or pay.
+The entire delivered-letter price is used as the taxable base; postage is not presented as a separately supplied exempt item. A new product selling advertising space shared by several customers, digital-only design, separate services, or customer pickup/forwarding needs its own product rule. None of those products are automatically inferred from this postal campaign rule.
 
-The one-time MB/SK product-tax setup is now in the server defaults: Manitoba `taxable` with a dated owner decision, and Saskatchewan `taxable` with a dated owner decision. Normal same-province campaigns calculate those taxes automatically through quote, PayPal and invoice. Brokers confirm their purchasing business address; they do not approve tax treatment per order or enter registration numbers.
+## Allocation, checkout and invoicing
 
-Server-owned `VENDVITE_TAX_POLICY` JSON can override individual provincial defaults. Unspecified provinces retain their defaults; an explicit province entry replaces that province's entire entry and must include a supported `treatment` and `review_reference`. For example, a later documented provincial decision can be supplied as:
+`canadian-tax-v2.js` owns the default policy, destination validation and allocation. `VENDVITE_TAX_POLICY` may override a province's treatment; any explicit entry must include `treatment` (`taxable` or `not_applicable`) and a dated `review_reference`. Unspecified provinces retain their defaults. An incompatible explicit product classification or unknown provincial override stops checkout rather than silently exempting the transaction. The default configuration supports every Canadian province/territory and cross-province combination without a review gate.
 
-```json
-{
-  "pst": {
-    "BC": {"treatment": "taxable", "registration": "ACTUAL NUMBER IF AVAILABLE", "review_reference": "Dated applicability decision"}
-  }
-}
-```
+Quotes require a `destinationCounts` object with canonical province codes, positive integer quantities and a sum exactly equal to the selected quantity. Missing or ambiguous counts produce an unresolved quote. The browser groups selected addresses and includes each province's count in its quote cache key. Old browser requests without counts must reload; they cannot accidentally use a billing-province tax fallback.
 
-This BC example is not a production decision. `not_applicable` needs a reason; lack of registration alone is not an exemption. Unknown or unsupported treatment still blocks the affected paid campaigns, including sandbox. The separate existing destination gate remains: campaigns targeting BC, MB or SK from a different billing province require allocation review. Enabling MB/SK billing-province collection does not resolve destination/use allocation. The code does not support goods/delivery allocation, partial provincial taxable bases or multi-province use allocation; if those apply, implement that classification before enabling those orders. Test fixtures use fictitious registrations only.
+Checkout rebuilds the distribution from sanitized recipient coordinates, not client-provided tax or province claims. Invalid addresses/counts and an expected total different from the final calculation are rejected before PayPal creation. The existing Canada-wide boundary model provides province attribution.
 
-Confirm with the accountant/tax authority: whether the $1.59 printing/envelope/data/postage bundle is a single service, goods or multiple supplies; the provincial taxable base and any destination/use allocation; and provincial registration obligations. Software cannot register the business or remit taxes by itself.
+The pre-tax subtotal after included campaign credits is allocated proportionally by letter count. Integer cents are assigned using largest remainder, with a province-code tie break. The result is independent of selection order and the allocations sum exactly to the paid subtotal. GST and each HST rate are aggregated across matching taxable bases and rounded once per tax/rate; provincial taxes remain distinct by jurisdiction. No province's tax is applied to another province's allocation.
 
-Before release, compare current tenant generation/files with the captured baseline at `/home/liassetech/.liasse-ops/vendvite-tax-20260907/live-baseline.json`, reconcile any changes, apply the additive SQL migration to `tenant_vendvite` before using the tenant importer (the importer does not execute SQL), then test in sandbox. Existing orders with no snapshot retain their historical behavior. Retain recorded order and invoice snapshots for accounting; do not backfill historical tax from today's customer address.
+Frozen snapshots contain the product/rule version, calculation date, billing address, delivery provinces, quantities, allocated net subtotals, discount-allocation method, tax bases, rates, provincial treatment references and optional registration numbers. The campaign keeps the actual recipient list. PayPal receives the same aggregate tax/total, and invoice/email/PDF lines use the saved snapshot. Capture validates order identity, amount and currency; retries are idempotent. Changes to addresses or policy do not reprice paid/pending PayPal orders. Pending orders must be cancelled before editing.
 
-The campaign map/data model now supports all 13 provinces/territories. The Quebec city overlay is removed. Search is restricted to Canada, initial framing uses the saved billing/profile province when available, and per-address provinces survive drafts, orders, CSV exports and letter formatting. Montreal property assessment enrichment remains Montreal-only; elsewhere the available OpenStreetMap address/property data is used.
+`invoice-v5.js` supports all eight possible tax lines without overlap. `invoice-email-v5.js` identifies BC PST, SK PST and MB RST separately. Legacy snapshots and invoices without snapshots remain readable through the retained legacy tax helpers. New annual subscriptions still use the existing Quebec-only plan restriction; this release is for postal campaigns.
+
+## Records and operations
+
+Retain the campaign's recipient list, saved allocation and actual mailing/shipping records to substantiate out-of-province delivery. A tax snapshot records the intended destination, not proof of completed delivery. If fulfillment destinations change, cancel/requote before payment or use the appropriate accounting correction after payment; do not overwrite recorded invoice taxes.
+
+Registration numbers can be added later in invoice settings/server policy. Software configuration does not itself register the business, file returns or remit collected taxes. There is no registration-number entry requirement for a broker's order.
+
+Deploy through the Liasse tenant importer, after comparing production generation and files to the captured baseline. No SQL migration is needed for this release: existing JSONB tax snapshots and GST/HST/QST/PST cent columns support allocations. Retain versioned modules to avoid stale runtime/browser code; do not deploy this export directory as a separate Railway service.
 
 ## Validation
 
-Run `node --test qa/canadian-tax.test.cjs qa/campaign-studio.test.cjs qa/campaign-invoice.test.cjs qa/invoice-settings.test.cjs` and `node qa/tax-browser.cjs`. Tests additionally exercise the default MB/SK number-free policy through authenticated quotes, real campaign routes with mocked PayPal capture, invoice/email tax lines, per-province overrides, and retained cross-province holds. Tests exercise all 13 jurisdictions, rounding/credits, missing address and review gates, postal mismatch, authenticated billing saves, PayPal amounts/mismatch rejection, immutable orders, changed customer addresses, invoice snapshots, replay handling and historical invoice/email behavior. The mobile form and generated Ontario PDF were rendered and visually inspected.
+- `node --test qa/destination-tax.test.cjs qa/canadian-tax.test.cjs qa/canada-map.test.cjs qa/campaign-invoice.test.cjs qa/invoice-settings.test.cjs`
+- `node qa/canada-map-browser.cjs`
+- `node qa/destination-tax-browser.cjs`
 
-## Primary sources checked September 7, 2026
+Tests cover all 169 billing/destination pairs, mixed campaigns, exact net-subtotal allocation, credits/rounding, malformed/missing counts, per-province overrides, false recipient province claims, stale/forged totals, PayPal amounts, snapshot preservation after policy/address changes, invoice/email tax lines, retries and legacy invoices. The mixed invoice PDF is rendered for visual inspection. Browser tests exercise real destination-count requests, national search/scans, saved recipient provinces, mobile layout and the removal of the city overlay.
 
-- [CRA general services place-of-supply rules](https://www.canada.ca/en/revenue-agency/services/forms-publications/publications/3-3-6/plc-spply-prvnc-gnrl-rls-fr-srvcs.html)
-- [CRA current GST/HST rates](https://www.canada.ca/en/revenue-agency/services/tax/businesses/topics/gst-hst-businesses/charge-collect-which-rate.html)
-- [Revenu Québec: sales of services](https://www.revenuquebec.ca/en/businesses/consumption-taxes/gsthst-and-qst/basic-rules-for-applying-the-gsthst-and-qst/place-of-supply/sales-of-services/)
-- [BC advertising agencies, PST 125](https://www2.gov.bc.ca/assets/gov/taxes/sales-taxes/publications/pst-125-advertising-agencies.pdf)
-- [Manitoba printing and related services, bulletin 015](https://www.gov.mb.ca/finance/taxation/pubs/bulletins/015.pdf) and [advertising materials/services, bulletin 035](https://www.gov.mb.ca/finance/taxation/pubs/bulletins/035.pdf)
-- [Saskatchewan advertising services, PST-67](https://sets.saskatchewan.ca/rptp/wcm/connect/a14b1339-3418-4973-ac53-47147e0012b0/PST.067%2BAdvertising.pdf?MOD=AJPERES)
+## Official sources checked September 7, 2026
 
-## National map validation and data source
+- [CRA GST/HST rates and place-of-supply rules: sale of mailed goods](https://www.canada.ca/en/revenue-agency/services/tax/businesses/topics/gst-hst-businesses/charge-collect-place-supply.html)
+- [Revenu Québec: sales of corporeal movable property](https://www.revenuquebec.ca/en/businesses/consumption-taxes/gsthst-and-qst/basic-rules-for-applying-the-gsthst-and-qst/place-of-supply/sales-of-corporeal-movable-property/)
+- [BC PST 125: advertising agencies, direct mailing](https://www2.gov.bc.ca/assets/gov/taxes/sales-taxes/publications/pst-125-advertising-agencies.pdf)
+- [Manitoba 035: advertising materials and services](https://www.gov.mb.ca/finance/taxation/pubs/bulletins/035.pdf)
+- [Manitoba 037: promotional distribution inside/outside Manitoba](https://www.gov.mb.ca/finance/taxation/pubs/bulletins/037.pdf)
+- [Saskatchewan PST-67: advertising services](https://sets.saskatchewan.ca/rptp/wcm/connect/a14b1339-3418-4973-ac53-47147e0012b0/PST.067%2BAdvertising.pdf?MOD=AJPERES)
 
-`node --test qa/canada-map.test.cjs` verifies all 13 provinces/territories, coastal and border Canadian cities, rejection of nearby US/Alaska/Greenland points, national draft persistence and number-free tax quotes. `node qa/canada-map-browser.cjs` checks desktop/mobile Vancouver, Toronto and Iqaluit searches/scans, Canada search restriction, CSV province retention, saved drafts, no overlay and no JavaScript errors. External geocoding/Overpass/tiles are mocked in browser tests.
+## National map
 
-Map coverage geometry is derived from Statistics Canada's [2021 province/territory digital boundaries](https://www12.statcan.gc.ca/census-recensement/2021/geo/sip-pis/boundary-limites/files-fichiers/lpr_000a21a_e.zip), simplified by 20 metres in the original projection and rounded to five decimal places after reprojection to WGS84. All 13 regions, holes and islands in the source are retained. This is geographic filtering, not a legal/tax-boundary determination. Source: Statistics Canada, 2021 Census, reproduced and adapted under the [Statistics Canada Open Licence](https://www.statcan.gc.ca/en/reference/licence). This does not constitute Statistics Canada endorsement.
+All 13 provinces/territories remain supported, with the Quebec city overlay removed. Canada-only search, province-aware initial framing, saved recipient provinces, CSV exports and letter formatting remain in place. Montreal property assessment enrichment remains local to Montreal.
+
+Geometry is derived from Statistics Canada's [2021 province/territory digital boundaries](https://www12.statcan.gc.ca/census-recensement/2021/geo/sip-pis/boundary-limites/files-fichiers/lpr_000a21a_e.zip), simplified by 20 metres and reprojected to WGS84 with five decimal places. Source: Statistics Canada, 2021 Census, adapted under the [Statistics Canada Open Licence](https://www.statcan.gc.ca/en/reference/licence). This does not constitute Statistics Canada endorsement or a legal tax-boundary determination.

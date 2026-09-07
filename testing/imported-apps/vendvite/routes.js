@@ -1,7 +1,7 @@
-var canadianTax = require('./canadian-tax-v1');
+var canadianTax = require('./canadian-tax-v2');
 var express = require('express');
-var invoiceTools = require('./invoice-v4');
-var invoiceEmail = require('./invoice-email-v4');
+var invoiceTools = require('./invoice-v5');
+var invoiceEmail = require('./invoice-email-v5');
 var invoiceSettings = require('./invoice-settings-v1');
 var workspaceInviteEmail = require('./workspace-invite-email-v1');
 var solicitationTools = require('./solicitation-v4');
@@ -2021,15 +2021,8 @@ module.exports = function(services){
   // taxBreakdown d'invoice.js retro-deduit le partage a partir du total et
   // diverge d'un cent sur les gros volumes, ce qui ferait mentir la facture.
   async function taxPolicy(){
-    // Owner-approved operating strategy: bill the managed advertising service
-    // using the purchaser's confirmed business address. Numbers are optional.
-    var p=Object.assign({campaign_classification:'general_service'},canadianTax.object(services.externalVars.VENDVITE_TAX_POLICY));
-    // Owner approved collection on the full paid mailing bundle, 2026-09-07.
-    // Keep explicit province overrides and the separate destination-review gate.
-    p.pst=Object.assign({
-      MB:{treatment:'taxable',review_reference:'Owner approved mailing bundle RST, 2026-09-07'},
-      SK:{treatment:'taxable',review_reference:'Owner approved mailing bundle PST, 2026-09-07'}
-    },canadianTax.object(p.pst));
+    // Printed letters mailed directly by VendVite use delivery-province rules.
+    var p=canadianTax.policy(services.externalVars.VENDVITE_TAX_POLICY);
     var issuer=(await invoiceConfiguration()).issuer;
     return Object.assign({},p,{gst_number:p.gst_number||issuer.gst,qst_number:p.qst_number||issuer.qst});
   }
@@ -2038,11 +2031,10 @@ module.exports = function(services){
     var result={quantite:quantite,offert:offert,facturable:facturable,sousTotal:sous,tps:0,tvq:0,hst:0,pst:0,total:null,taxLines:[],taxReady:false};
     try{
       var policy=await taxPolicy();
-      var snapshot=canadianTax.calculate(sous,canadianTax.billing(broker),policy);
-      snapshot.destination_provinces=Array.from(new Set((destinations||[]).map(canadianTax.province).filter(Boolean))).sort();
+      var snapshot=canadianTax.calculateMailing(sous,canadianTax.billing(broker),destinations,quantite,policy);
       var a=canadianTax.amounts(snapshot);
       Object.assign(result,{tps:a.gst,tvq:a.qst,hst:a.hst,pst:a.pst,total:snapshot.total_cents,taxLines:snapshot.lines,taxSnapshot:snapshot});
-      canadianTax.assertCollectable(snapshot,policy);result.taxReady=true;
+      result.taxReady=true;
     }catch(e){result.taxError=e.code||'TAX_REVIEW_REQUIRED';}
     if(!facturable){result.total=0;result.taxReady=true;}
     return result;
@@ -2124,7 +2116,7 @@ module.exports = function(services){
   router.post('/api/espace/campagne/devis',brokerEndpoint(async function(req,res){
     var broker=await requireBrokerApi(req,res);if(!broker)return;
     var count=Number(req.body.count);if(!Number.isInteger(count)||count<1||count>CAMPAGNE_MAX)return res.status(400).json({code:'BAD_QUANTITY'});
-    var quota=await campagneQuota(broker);res.json({price:await prixCampagne(count,await campaignCredit(broker,quota,req.body.reprise),broker,Array.isArray(req.body.destinations)?req.body.destinations.slice(0,13):[]),remaining:quota.restantes});
+    var quota=await campagneQuota(broker);res.json({price:await prixCampagne(count,await campaignCredit(broker,quota,req.body.reprise),broker,req.body.destinationCounts),remaining:quota.restantes});
   }));
   router.post('/api/espace/campagne/analyse',brokerEndpoint(async function(req,res){
     var broker=await requireBrokerApi(req,res);if(!broker)return;
@@ -2358,7 +2350,7 @@ module.exports = function(services){
       // commande : 450 portes avec credit se facturent 300.
       var quota = await campagneQuota(broker);
       var credit = await campaignCredit(broker,quota,corps.reprend);
-      var prix = await prixCampagne(quantite, credit,broker,adresses.map(function(a){return a.province;}));
+      var prix = await prixCampagne(quantite, credit,broker,canadianTax.countsFromAddresses(adresses));
       if(!prix.taxReady)return res.status(409).json({code:prix.taxError});
       if(corps.expectedTotal==null)return res.status(400).json({code:'PRICE_CONFIRMATION_REQUIRED'});
       if(corps.expectedTotal!=null&&Number(corps.expectedTotal)!==prix.total)return res.status(409).json({code:'PRICE_CHANGED'});

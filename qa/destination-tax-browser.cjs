@@ -1,0 +1,23 @@
+const assert=require('node:assert/strict'),crypto=require('crypto'),fs=require('fs');
+const {create,root}=require('./harness.cjs'),M=require(root+'/public/js/campaign-model-v2'),{chromium}=require('/home/liassetech/liasse.tech/node_modules/playwright');
+(async()=>{const h=await create();let browser;try{
+ const b=await h.db.get("INSERT INTO brokers(slug,full_name,email,status,published,access_plan,billing_address,billing_confirmed_at) VALUES('mixed-browser','Canada Broker','qa@example.test','invited',1,'mailing',$1,NOW()) RETURNING *",[JSON.stringify({legal_name:'Canada Broker',line1:'123 Main Street',city:'Toronto',province:'ON',postal_code:'M5V 1A1',country:'CA'})]);
+ const coords={AB:[51.0447,-114.0719],BC:[49.2827,-123.1207],MB:[49.8951,-97.1384],SK:[50.4452,-104.6189],QC:[45.5017,-73.5673],ON:[43.6532,-79.3832],NS:[44.6488,-63.5752],NB:[45.9636,-66.6431]};
+ const addresses=Object.entries(coords).flatMap(([p,[lat,lng]])=>Array.from({length:p==='BC'?3:2},(_,i)=>M.sanitize({numero:String(100+i),rue:'Main Street',ville:p+' City',lat,lng,source:'point'})));
+ const extra=addresses.find(a=>a.province==='BC'&&a.numero==='102');
+ await h.db.run('INSERT INTO broker_campaign_drafts(broker_id,revision,data) VALUES($1,1,$2)',[b.id,JSON.stringify({center:{lat:43.6532,lng:-79.3832,libelle:'Canada'},city:'Canada',radius:800,target:16,addresses,selected:addresses.filter(a=>a!==extra).map(M.key),excluded:[],notes:'',polygon:[],reprise:0})]);
+ const raw=crypto.randomBytes(32).toString('hex');await h.db.run("INSERT INTO broker_sessions(broker_id,token_hash,idle_expires_at,absolute_expires_at) VALUES($1,$2,NOW()+INTERVAL '1 hour',NOW()+INTERVAL '1 hour')",[b.id,crypto.createHash('sha256').update(raw).digest('hex')]);
+ browser=await chromium.launch({headless:true});const c=await browser.newContext({viewport:{width:1440,height:1000}});await c.addCookies([{name:'vv_broker_session',value:raw,url:h.url}]);
+ await c.route('https://tile.openstreetmap.org/**',r=>r.fulfill({contentType:'image/png',body:Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Y9ZQmcAAAAASUVORK5CYII=','base64')}));
+ await c.route('**/espace/lettre-proprietaires?**',r=>r.fulfill({contentType:'text/html',body:'<html><body><article class="letter">QA letter preview</article></body></html>'}));
+ const page=await c.newPage(),errors=[],quotes=[];page.on('pageerror',e=>errors.push(e.message));page.on('response',async r=>{if(r.url().endsWith('/api/espace/campagne/devis'))quotes.push({body:r.request().postDataJSON(),data:await r.json()});});
+ await page.goto(h.url+'/espace?lang=en');await page.waitForFunction(()=>document.querySelectorAll('#csTaxBreakdown p').length===8);assert.equal(quotes.at(-1).data.price.total,2853);
+ const remove=M.key(addresses.find(a=>a.province==='AB')),add=M.key(extra);
+ await page.evaluate(({remove,add})=>{for(const [id,checked] of [[remove,false],[add,true]]){const row=[...document.querySelectorAll('.cs-address')].find(r=>r.dataset.addressId===id),input=row.querySelector('input[type=checkbox]');input.checked=checked;input.dispatchEvent(new Event('change',{bubbles:true}));}},{remove,add});
+ await page.waitForFunction(()=>document.querySelector('#csTaxBreakdown').textContent.includes('0.33'));
+ assert.equal(quotes.at(-1).body.count,16);assert.equal(quotes.at(-1).body.destinationCounts.AB,1);assert.equal(quotes.at(-1).body.destinationCounts.BC,3);assert.equal(quotes.at(-1).data.price.total,2864);
+ await page.locator('#csNextLetter').click();await page.waitForFunction(()=>!document.querySelector('#csLetterApproved').disabled);await page.locator('#csLetterApproved').check();await page.locator('#csNextTotal').click();
+ await page.locator('#csTaxBreakdown').scrollIntoViewIfNeeded();fs.mkdirSync(__dirname+'/tax-preview',{recursive:true});await page.screenshot({path:__dirname+'/tax-preview/mixed-tax-desktop.png'});
+ await page.setViewportSize({width:390,height:844});await page.locator('#csTaxBreakdown').scrollIntoViewIfNeeded();await page.screenshot({path:__dirname+'/tax-preview/mixed-tax-mobile.png'});assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));assert.deepEqual(errors,[]);
+ console.log('Mixed destination breakdown, equal-count province redistribution, fresh server totals and desktop/mobile layout passed.');
+ }finally{if(browser)await browser.close();await h.close();}})().catch(e=>{console.error(e);process.exitCode=1});

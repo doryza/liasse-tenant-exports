@@ -19,15 +19,15 @@ async function broker(h){const b=await h.db.get("INSERT INTO brokers(slug,full_n
 test('real routes: confirm address, freeze Ontario tax through PayPal, invoice and changed customer address',async()=>{
  const h=await create();try{
  const f=await broker(h),post=async(path,body,method='POST')=>fetch(h.url+path,{method,headers:f.headers,body:JSON.stringify(body)});
- Object.assign(h.services.externalVars,{VENDVITE_TAX_POLICY:JSON.stringify(policy),PAYPAL_MODE:'live',PAYPAL_CLIENT_ID:'test',PAYPAL_CLIENT_SECRET:'test'});
- let q=await (await post('/api/espace/campagne/devis',{count:150})).json();assert.equal(q.price.taxReady,false);assert.equal(q.price.total,null);
+ Object.assign(h.services.externalVars,{VENDVITE_TAX_POLICY:JSON.stringify({...policy,campaign_classification:'printed_direct_mail'}),PAYPAL_MODE:'live',PAYPAL_CLIENT_ID:'test',PAYPAL_CLIENT_SECRET:'test'});
+ let q=await (await post('/api/espace/campagne/devis',{count:150,destinationCounts:{ON:150}})).json();assert.equal(q.price.taxReady,false);assert.equal(q.price.total,null);
  assert.equal((await post('/api/espace/billing-address',{confirmed:false,address:address('ON')},'PUT')).status,400);
  assert.equal((await post('/api/espace/billing-address',{confirmed:true,address:address('ON')},'PUT')).status,200);
- q=await (await post('/api/espace/campagne/devis',{count:150})).json();assert.equal(q.price.total,26951);assert.equal(q.price.taxReady,true);
+ q=await (await post('/api/espace/campagne/devis',{count:150,destinationCounts:{ON:150}})).json();assert.equal(q.price.total,26951);assert.equal(q.price.taxReady,true);
  const html=await (await fetch(h.url+'/espace',{headers:f.headers})).text();assert.match(html,/billingAddressForm/);assert.match(html,/Ontario/);
  let orderBody,captureCalls=0,badAmount=false;
  h.services.fetch=async(url,opts)=>{if(url.endsWith('/v1/oauth2/token'))return {ok:true,json:async()=>({access_token:'fake'})};if(url.endsWith('/v2/checkout/orders')){orderBody=JSON.parse(opts.body);return {ok:true,json:async()=>({id:'ORDER-CA',links:[{rel:'approve',href:'https://example.test/approve'}]})};}if(url.endsWith('/capture')){captureCalls++;return {ok:true,json:async()=>({status:'COMPLETED',purchase_units:[{payments:{captures:[{id:'CAPTURE-CA',status:'COMPLETED',amount:{currency_code:'CAD',value:'269.51'}}]}}]})};}return {ok:true,json:async()=>({status:'APPROVED',purchase_units:badAmount?[{...orderBody.purchase_units[0],amount:{currency_code:'CAD',value:'1.00'}}]:orderBody.purchase_units})};};
- const adresses=Array.from({length:150},(_,i)=>({numero:String(100+i),rue:'Rue Test',ville:'Montreal',postal:'H2X 1A1',source:'point',lat:45.5,lng:-73.6}));
+ const adresses=Array.from({length:150},(_,i)=>({numero:String(100+i),rue:'Rue Test',ville:'Toronto',postal:'M5V 1A1',source:'point',lat:43.65,lng:-79.38}));
  const payload={centre:{libelle:'Montreal',lat:45.5,lng:-73.6},adresses,quantite:150,expectedTotal:q.price.total};
  assert.equal((await post('/api/espace/campagne/commander',{...payload,expectedTotal:1})).status,409);
  const r=await post('/api/espace/campagne/commander',payload);assert.equal(r.status,200,await r.clone().text());const order=await r.json();assert.equal(orderBody.purchase_units[0].amount.breakdown.tax_total.value,'31.01');
@@ -37,12 +37,12 @@ test('real routes: confirm address, freeze Ontario tax through PayPal, invoice a
  await post('/api/espace/billing-address',{confirmed:true,address:address('QC')},'PUT');
  await fetch(h.url+'/espace/campagne/retour?token=ORDER-CA&mode=live',{headers:f.headers,redirect:'manual'});
  const invoice=await h.db.get('SELECT * FROM broker_invoices WHERE campaign_id=$1',[order.id]);assert(invoice);assert.equal(invoice.hst_cents,3101);assert.equal(invoice.tax_snapshot.billing_address.province,'ON');assert.equal(invoice.total_cents,26951);assert.equal(captureCalls,1);assert.match(h.emails[0].text,/HST/);assert.doesNotMatch(h.emails[0].text,/QST/);
- const pdf=require(root+'/invoice-v4').buildInvoicePdf({...invoice,campaign:stored},f.b,{name:'Liasse',gst:policy.gst_number,email:'billing@example.test'});fs.mkdirSync(__dirname+'/tax-preview',{recursive:true});fs.writeFileSync(__dirname+'/tax-preview/invoice-on.pdf',pdf);
+ const pdf=require(root+'/invoice-v5').buildInvoicePdf({...invoice,campaign:stored},f.b,{name:'Liasse',gst:policy.gst_number,email:'billing@example.test'});fs.mkdirSync(__dirname+'/tax-preview',{recursive:true});fs.writeFileSync(__dirname+'/tax-preview/invoice-on.pdf',pdf);
  await fetch(h.url+'/espace/campagne/retour?token=ORDER-CA&mode=live',{headers:f.headers,redirect:'manual'});assert.equal(captureCalls,1);
  }finally{await h.close();}
 });
 
-test('default MB/SK treatment: number-free quote, PayPal and invoice; provincial overrides and destination holds',async()=>{
+test('default MB/SK treatment: number-free quote, PayPal and invoice; provincial overrides and cross-province destinations',async()=>{
  for(const [province,city,lat,lng,taxCode,provincialCents,total] of [
   ['MB','Winnipeg',49.8951,-97.1384,'RST',1670,26713],
   ['SK','Regina',50.4452,-104.6189,'PST',1431,26474]
@@ -51,15 +51,15 @@ test('default MB/SK treatment: number-free quote, PayPal and invoice; provincial
    const f=await broker(h),post=(path,body,method='POST')=>fetch(h.url+path,{method,headers:f.headers,body:JSON.stringify(body)});
    Object.assign(h.services.externalVars,{PAYPAL_MODE:'live',PAYPAL_CLIENT_ID:'test',PAYPAL_CLIENT_SECRET:'test'});
    assert.equal((await post('/api/espace/billing-address',{confirmed:true,address:address(province)},'PUT')).status,200);
-   let q=await (await post('/api/espace/campagne/devis',{count:150,destinations:[province]})).json();
+   let q=await (await post('/api/espace/campagne/devis',{count:150,destinationCounts:{[province]:150}})).json();
    assert.equal(q.price.taxReady,true,province);assert.equal(q.price.total,total);assert.equal(q.price.tps,1193);assert.equal(q.price.pst,provincialCents);
    assert.deepEqual(q.price.taxLines.map(l=>l.code),['GST',taxCode]);assert(q.price.taxLines.every(l=>l.registration===''));
-   const cross=await (await post('/api/espace/campagne/devis',{count:150,destinations:[province==='MB'?'SK':'MB']})).json();
-   assert.equal(cross.price.taxReady,false);assert.equal(cross.price.taxError,'PROVINCIAL_TAX_REVIEW');
+   const cross=await (await post('/api/espace/campagne/devis',{count:150,destinationCounts:{[province==='MB'?'SK':'MB']:150}})).json();
+   assert.equal(cross.price.taxReady,true);assert.equal(cross.price.total,province==='MB'?26474:26713);
    h.services.externalVars.VENDVITE_TAX_POLICY=JSON.stringify({pst:{BC:{treatment:'not_applicable',review_reference:'QA unrelated override'}}});
-   q=await (await post('/api/espace/campagne/devis',{count:150,destinations:[province]})).json();assert.equal(q.price.total,total);assert.equal(q.price.taxReady,true);
+   q=await (await post('/api/espace/campagne/devis',{count:150,destinationCounts:{[province]:150}})).json();assert.equal(q.price.total,total);assert.equal(q.price.taxReady,true);
    h.services.externalVars.VENDVITE_TAX_POLICY=JSON.stringify({pst:{[province]:{treatment:'not_applicable',review_reference:'QA explicit override'}}});
-   const override=await (await post('/api/espace/campagne/devis',{count:150,destinations:[province]})).json();assert.equal(override.price.total,25043);assert.equal(override.price.taxReady,true);
+   const override=await (await post('/api/espace/campagne/devis',{count:150,destinationCounts:{[province]:150}})).json();assert.equal(override.price.total,25043);assert.equal(override.price.taxReady,true);
    delete h.services.externalVars.VENDVITE_TAX_POLICY;
    let orderBody;
    h.services.fetch=async(url,opts)=>{

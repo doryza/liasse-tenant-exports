@@ -32,12 +32,12 @@ test('draft isolation, concurrency, source caching and exact mailing quotes',asy
  async function sign(slug){const b=await h.db.get("INSERT INTO brokers(slug,full_name,email,status) VALUES($1,'QA Broker',$2,'invited') RETURNING *",[slug,slug+'@example.test']);let token=await auth.mint(b.id,'access'),r=await fetch(h.url+'/acces/'+token),j={};function cookies(r){r.headers.getSetCookie().forEach(c=>{let [k,...v]=c.split(';')[0].split('=');j[k]=v.join('=')})}cookies(r);let html=await r.text();r=await fetch(h.url+'/acces/'+token,{method:'POST',redirect:'manual',headers:{'content-type':'application/json',cookie:Object.entries(j).map(([k,v])=>k+'='+v).join('; ')},body:JSON.stringify({challenge:html.match(/name="challenge" value="([^"]*)"/)[1]})});cookies(r);let cookie=Object.entries(j).map(([k,v])=>k+'='+v).join('; ');let session=await (await fetch(h.url+'/api/espace/session',{headers:{cookie}})).json();return {b,headers:{cookie,'content-type':'application/json','x-vv-csrf':session.csrf}};}
  try{
  const a=await sign('campaign-a'),b=await sign('campaign-b');
- h.services.externalVars.VENDVITE_TAX_POLICY=JSON.stringify({campaign_classification:'general_service',gst_number:'QA-GST',qst_number:'QA-QST'});
+ h.services.externalVars.VENDVITE_TAX_POLICY=JSON.stringify({campaign_classification:'printed_direct_mail',gst_number:'QA-GST',qst_number:'QA-QST'});
  await h.db.run("UPDATE brokers SET billing_confirmed_at=NOW(),billing_address=$1::jsonb",[JSON.stringify({legal_name:'QA Broker',line1:'123 Rue Test',city:'Montreal',province:'QC',postal_code:'H2X 1A1',country:'CA'})]);
  const req=(path,body,who=a,method='POST')=>fetch(h.url+'/api/espace/campagne/'+path,{method,headers:who.headers,body:body===undefined?undefined:JSON.stringify(body)});
  assert.equal((await req('devis',{count:151},{headers:{}})).status,401);
  assert.equal((await req('devis',{count:151},{headers:{cookie:a.headers.cookie,'content-type':'application/json'}})).status,403);
- for(const n of [1,149,150,151,299,301,1200]){let r=await req('devis',{count:n});assert.equal(r.status,200);let {price:p}=await r.json();assert.equal(p.quantite,n);assert.equal(p.facturable,Math.max(0,n-150));assert.equal(p.sousTotal,p.facturable*159);assert.equal(p.total,p.sousTotal+Math.round(p.sousTotal*.05)+Math.round(p.sousTotal*.09975));}
+ for(const n of [1,149,150,151,299,301,1200]){let r=await req('devis',{count:n,destinationCounts:{QC:n}});assert.equal(r.status,200);let {price:p}=await r.json();assert.equal(p.quantite,n);assert.equal(p.facturable,Math.max(0,n-150));assert.equal(p.sousTotal,p.facturable*159);assert.equal(p.total,p.sousTotal+Math.round(p.sousTotal*.05)+Math.round(p.sousTotal*.09975));}
  assert.equal((await req('devis',{count:1201})).status,400);assert.equal((await req('devis',{count:1.5})).status,400);
  const addr=address();let r=await req('analyse',{addresses:[addr]});assert.equal(r.status,200);let result=await r.json();assert.equal(result.results[0].analysis.units,2);assert.equal(calls,1);
  await req('analyse',{addresses:[addr]});assert.equal(calls,1,'public property cache avoids repeated upstream calls');
@@ -62,7 +62,7 @@ test('draft isolation, concurrency, source caching and exact mailing quotes',asy
  assert.equal((await req('commander',{...payload,expectedTotal:1})).status,409);
  r=await req('commander',payload);assert.equal(r.status,200);let order=await r.json();assert.equal(order.total,183);assert.equal(orders[0].body.purchase_units[0].amount.value,'1.83');
  let stored=await h.db.get('SELECT * FROM broker_campaigns WHERE id=$1',[order.id]);assert.equal(stored.address_count,151);assert.equal(stored.quantity,151);
- let resumed=await (await req('devis',{count:152,reprise:order.id})).json();assert.equal(resumed.price.offert,150,'resuming retains its reserved credit');
+ let resumed=await (await req('devis',{count:152,reprise:order.id,destinationCounts:{QC:152}})).json();assert.equal(resumed.price.offert,150,'resuming retains its reserved credit');
  r=await req('commander',{...payload,adresses:batch,quantite:152,expectedTotal:resumed.price.total,reprend:order.id});assert.equal(r.status,409,'An approvable order must remain immutable');
  await req(order.id+'/annuler',{});
  r=await req('commander',{...payload,adresses:batch,quantite:152,expectedTotal:resumed.price.total,reprend:order.id});assert.equal(r.status,200);order=await r.json();assert.notEqual(orders[0].key,orders[1].key,'changed address selection cannot reuse the old PayPal order');assert.ok(orders[1].key.length<=38);
