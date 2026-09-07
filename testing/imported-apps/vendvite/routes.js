@@ -1,6 +1,6 @@
 var express = require('express');
 var invoiceTools = require('./invoice-v2');
-var invoiceEmail = require('./invoice-email-v1');
+var invoiceEmail = require('./invoice-email-v2');
 var invoiceSettings = require('./invoice-settings-v1');
 var solicitationTools = require('./solicitation-v1');
 var mailingService = require('./mailing-service-v4');

@@ -1,5 +1,5 @@
 const {test}=require('node:test'),assert=require('node:assert/strict');
-const {create,root}=require('./harness.cjs'),email=require(root+'/invoice-email-v1'),config=require(root+'/invoice-settings-v1');
+const {create,root}=require('./harness.cjs'),email=require(root+'/invoice-email-v2'),config=require(root+'/invoice-settings-v1');
 const admin={'x-test-admin':'yes','Content-Type':'application/json'};
 async function fixture(h){
  const b=await h.db.get("INSERT INTO brokers(slug,full_name,email,agency) VALUES('invoice-settings','Camille Exemple','camille@example.test','Agence Exemple') RETURNING *");
