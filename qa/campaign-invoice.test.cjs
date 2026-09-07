@@ -1,5 +1,5 @@
 const {test}=require('node:test'),assert=require('node:assert/strict'),crypto=require('crypto'),fs=require('fs'),os=require('os'),path=require('path'),{execFileSync}=require('child_process');
-const {create,root}=require('./harness.cjs'),pdfTools=require(root+'/invoice-v2');
+const {create,root}=require('./harness.cjs'),pdfTools=require(root+'/invoice-v3');
 function pdfText(pdf){const dir=fs.mkdtempSync(path.join(os.tmpdir(),'vv-invoice-'));try{fs.writeFileSync(dir+'/invoice.pdf',pdf);return execFileSync('pdftotext',['-layout',dir+'/invoice.pdf','-'],{encoding:'utf8'});}finally{fs.rmSync(dir,{recursive:true,force:true});}}
 async function fixture(h,mode='sandbox',state='pending'){
  const name='invoice-'+crypto.randomBytes(4).toString('hex');

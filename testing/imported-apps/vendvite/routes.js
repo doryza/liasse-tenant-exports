@@ -1,6 +1,6 @@
 var express = require('express');
-var invoiceTools = require('./invoice-v2');
-var invoiceEmail = require('./invoice-email-v2');
+var invoiceTools = require('./invoice-v3');
+var invoiceEmail = require('./invoice-email-v3');
 var invoiceSettings = require('./invoice-settings-v1');
 var solicitationTools = require('./solicitation-v1');
 var mailingService = require('./mailing-service-v4');
@@ -1284,7 +1284,7 @@ module.exports = function(services){
     return {
       name: String(services.externalVars.VENDVITE_LEGAL_NAME || 'Liasse Technologique').trim(),
       address: String(services.externalVars.VENDVITE_BILLING_ADDRESS || 'Québec, Canada').trim(),
-      email: String(services.externalVars.VENDVITE_BILLING_EMAIL || 'notifications@liasse.tech').trim(),
+      email: String(services.externalVars.VENDVITE_BILLING_EMAIL || 'notifications@vendvite.app').trim(),
       gst: String(services.externalVars.VENDVITE_GST_NUMBER || '').trim(),
       qst: String(services.externalVars.VENDVITE_QST_NUMBER || '').trim()
     };
