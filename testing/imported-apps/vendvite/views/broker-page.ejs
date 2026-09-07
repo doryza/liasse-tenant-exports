@@ -1,7 +1,7 @@
 <%- include('partials/header') %>
 <% if(typeof inlineEditor!=='undefined'&&inlineEditor){ %><%- include('partials/page-editor-toolbar') %><% } %>
 <% if (typeof invitation !== 'undefined' && invitation) { %>
-<div class="bp-demo mailing-invitation"><div class="container bp-demo-inner"><p><span><strong><%= lang==='fr'?'Votre page de capture de prospect sans frais':'Your free lead capture page' %></strong> · <%= lang==='fr'?'Réservée aux campagnes postales VendVite.':'Reserved for VendVite postal campaigns.' %></span><em class="mailing-demo-notice"><%= lang==='fr'?'Démonstration : aucune demande envoyée.':'Demo: no requests sent.' %></em></p><a href="demarrer/<%= invitation.tag %>?lang=<%= lang %>"><%= lang==='fr'?'Activer ma page gratuitement':'Activate my page for free' %> ↗</a></div></div>
+<div class="bp-demo mailing-invitation"><div class="container bp-demo-inner"><p><span><strong><%= lang==='fr'?'Votre page de capture de prospect sans frais':'Your free lead capture page' %></strong> · <%= lang==='fr'?'Réservée aux campagnes postales VendVite.':'Reserved for VendVite postal campaigns.' %></span><em class="mailing-demo-notice"><%= lang==='fr'?'Cette démonstration est réservée au destinataire de la lettre adressée à '+invitation.name+'.':'This demo is intended for the recipient of the letter addressed to '+invitation.name+'.' %></em></p><a href="demarrer/<%= invitation.tag %>?lang=<%= lang %>"><%= lang==='fr'?'Activer ma page gratuitement':'Activate my page for free' %> ↗</a></div></div>
 <% } %>
 <% if (typeof isDemo !== 'undefined' && isDemo && !(typeof invitation !== 'undefined' && invitation)) { %>
 <div class="bp-demo" role="note"><div class="container bp-demo-inner">
@@ -152,7 +152,7 @@ window.VV_LEAD_URL = <%- JSON.stringify(typeof brokerSlug !== 'undefined' && bro
 
 <% } %>
 </main>
-<%- include('partials/footer') %>
+<%- include('partials/footer', { showSalesAlerts: false }) %>
 <% if(inlineEditor){ %><script src="public/js/page-editor-v1.js?v=1" defer></script><% } %>
 <% if(googleApiKey){ %>
 <script async src="https://maps.googleapis.com/maps/api/js?key=<%= googleApiKey %>&libraries=places,geometry&callback=initVendvite&v=weekly"></script>
