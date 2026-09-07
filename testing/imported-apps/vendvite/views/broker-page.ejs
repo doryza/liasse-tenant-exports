@@ -57,10 +57,12 @@ window.VV_LEAD_URL = <%- JSON.stringify(typeof brokerSlug !== 'undefined' && bro
         </div>
         <div class="fiche-plaque">
           <div class="fiche-address" id="ficheAddress" data-lk="t:fiche_empty"><%= t.fiche_empty %></div>
-          <div class="fiche-coords mono" id="ficheCoords">—</div>
+          <div class="fiche-location-row">
+            <div class="fiche-coords mono" id="ficheCoords">—</div>
+            <% if(initialAddress){ %><button class="bp-address-edit" id="changeRecipientAddress" type="button" aria-label="<%= lang==='fr'?'Modifier l’adresse':'Edit address' %>" aria-controls="addressInput"><%= lang==='fr'?'Modifier':'Edit' %></button><% } %>
+          </div>
         </div>
         <form class="fiche-form" id="leadForm" <%= initialAddress?'':'hidden' %>>
-          <% if(initialAddress){ %><p class="bp-prefilled-note"><%= lang==='fr'?'Votre adresse est déjà inscrite. Ajoutez simplement vos coordonnées.':'Your address is already filled in. Just add your contact details.' %> <button id="changeRecipientAddress" type="button"><%= lang==='fr'?'Modifier l’adresse':'Change address' %></button></p><% } %>
           <div class="field"><label for="leadName" data-lk="t:form_name"><%= t.form_name %></label><input id="leadName" type="text" placeholder="<%= t.form_name_ph %>" required></div>
           <div class="field-row">
             <div class="field"><label for="leadEmail" data-lk="t:form_email"><%= t.form_email %></label><input id="leadEmail" type="email" placeholder="<%= t.form_email_ph %>"></div>
