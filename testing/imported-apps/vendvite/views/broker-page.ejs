@@ -1,7 +1,18 @@
 <%- include('partials/header') %>
 <% if(typeof inlineEditor!=='undefined'&&inlineEditor){ %><%- include('partials/page-editor-toolbar') %><% } %>
 <% if (typeof invitation !== 'undefined' && invitation) { %>
-<div class="bp-demo mailing-invitation"><div class="container bp-demo-inner"><p><span><strong><%= lang==='fr'?'Votre page de capture de prospect sans frais':'Your free lead capture page' %></strong> · <%= lang==='fr'?'Réservée aux campagnes postales VendVite.':'Reserved for VendVite postal campaigns.' %></span><em class="mailing-demo-notice"><%= lang==='fr'?'Démo réservée à '+invitation.name+', destinataire de notre lettre, et créée à partir de son profil public.':'Demo reserved for '+invitation.name+', the recipient of our letter, and created from their public profile.' %></em></p><a href="demarrer/<%= invitation.tag %>?lang=<%= lang %>"><%= lang==='fr'?'Activer ma page gratuitement':'Activate my page for free' %> ↗</a></div></div>
+<% var invitationFirstName=String(invitation.name||'').trim().split(/\s+/)[0]; %>
+<section class="bp-demo mailing-invitation" aria-labelledby="claimPageTitle"><div class="container bp-demo-inner">
+  <div class="mailing-claim-copy">
+    <h2 id="claimPageTitle"><%= lang==='fr'?(invitationFirstName?invitationFirstName+', cette page vous attend.':'Cette page vous attend.'):(invitationFirstName?invitationFirstName+', this page is waiting for you.':'This page is waiting for you.') %></h2>
+    <p class="mailing-claim-description"><%= lang==='fr'?'Découvrez votre démo personnalisée. Faites-en votre page pour recevoir les demandes de propriétaires générées par vos campagnes postales VendVite.':'Explore your personalized demo. Make it yours to receive homeowner inquiries from your VendVite mailing campaigns.' %></p>
+    <p class="mailing-demo-notice"><%= lang==='fr'?'Démo créée à partir de votre profil public.':'Demo created from your public profile.' %></p>
+  </div>
+  <div class="mailing-claim-action">
+    <a class="mailing-claim-button" href="demarrer/<%= invitation.tag %>?lang=<%= lang %>"><%= lang==='fr'?'Oui, je veux ma page':'Yes, I want my page' %> <span aria-hidden="true">→</span></a>
+    <p class="mailing-claim-price"><%= lang==='fr'?'Page gratuite · Envois postaux facturés séparément.':'Free page · Postal campaigns billed separately.' %></p>
+  </div>
+</div></section>
 <% } %>
 <% if (typeof isDemo !== 'undefined' && isDemo && !(typeof invitation !== 'undefined' && invitation)) { %>
 <div class="bp-demo" role="note"><div class="container bp-demo-inner">
