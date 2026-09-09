@@ -11,6 +11,7 @@ var homepageCopy = require('./homepage-copy-v6');
 var brokerAuthTools = require('./broker-auth-v1');
 var workspaceCopy = require('./workspace-copy-v3');
 var campaignModel=require('./public/js/campaign-model-v2');
+var campaignHistory=require('./campaign-history-v1');
 var campaignDataTools=require('./campaign-data-v2');
 var campaignCopy=require('./campaign-copy-v6');
 
@@ -2113,6 +2114,20 @@ module.exports = function(services){
   // Une adresse arrive du navigateur : on ne fait confiance a rien.
   function assainirAdresse(a){return campaignModel.sanitize(a);}
 
+  router.post('/api/espace/campagne/historique-adresses',brokerEndpoint(async function(req,res){
+    var broker=await requireBrokerApi(req,res);if(!broker)return;
+    var filter;try{filter=campaignHistory.policy(req.body.historyFilter);}catch(e){return res.status(400).json({code:'BAD_HISTORY_FILTER'});}
+    if(!Array.isArray(req.body.addresses)||req.body.addresses.length>4000)return res.status(400).json({code:'BAD_ADDRESSES'});
+    var addresses=req.body.addresses.map(assainirAdresse);if(addresses.some(function(a){return !a;}))return res.status(400).json({code:'BAD_ADDRESSES'});
+    res.json({matches:await campaignHistory.matches(db,broker.id,addresses,filter)});
+  }));
+  async function checkCampaignHistory(req,res,broker,addresses){
+    var draft=await db.get('SELECT data FROM broker_campaign_drafts WHERE broker_id=$1',[broker.id]);
+    var filter;try{filter=campaignHistory.policy(req.body.historyFilter===undefined?draft&&draft.data&&draft.data.historyFilter:req.body.historyFilter);}catch(e){res.status(400).json({code:'BAD_HISTORY_FILTER'});return false;}
+    var matches=await campaignHistory.matches(db,broker.id,addresses,filter);
+    if(matches.length){res.status(409).json({code:'ALREADY_TARGETED',matches:matches});return false;}return true;
+  }
+
   router.post('/api/espace/campagne/devis',brokerEndpoint(async function(req,res){
     var broker=await requireBrokerApi(req,res);if(!broker)return;
     var count=Number(req.body.count);if(!Number.isInteger(count)||count<1||count>CAMPAGNE_MAX)return res.status(400).json({code:'BAD_QUANTITY'});
@@ -2142,11 +2157,13 @@ module.exports = function(services){
     var addresses=data.addresses.map(function(a){var clean=assainirAdresse(a);if(!clean)return null;var p=a.analysis||{};clean.analysis={type:['house','plex','apartment','condo','residential','nonresidential','unknown'].includes(p.type)?p.type:'unknown',units:campaignModel.integer(p.units),levels:campaignModel.integer(p.levels,200),year:campaignModel.integer(p.year,2100),source:'osm',confidence:'mapped',buildingId:String(p.buildingId||'').slice(0,160),unitScope:p.units?'building':null};return clean;});
     if(addresses.some(function(a){return !a;}))return res.status(400).json({code:'BAD_DRAFT'});
     var ids=new Set(addresses.map(function(a){return a.id;}));if(ids.size!==addresses.length||data.excluded&&!Array.isArray(data.excluded)||data.selected.some(function(id){return !ids.has(id);}))return res.status(400).json({code:'BAD_DRAFT'});
+    var historyFilter;try{historyFilter=campaignHistory.policy(data.historyFilter);}catch(e){return res.status(400).json({code:'BAD_HISTORY_FILTER'});}
+    var historyMatches=await campaignHistory.matches(db,broker.id,addresses,historyFilter),historyIds=new Set(historyMatches.map(function(a){return a.id;}));
     var trusted=await campaignData.trusted(addresses);trusted.forEach(function(a,i){if(!a.analysis)a.analysis=addresses[i].analysis;});
-    var clean={center:data.center?{lat:Number(data.center.lat),lng:Number(data.center.lng),libelle:String(data.center.libelle||'').slice(0,300)}:null,city:String(data.city||'').slice(0,120),radius:Math.min(5000,Math.max(200,Number(data.radius)||800)),target:Math.min(CAMPAGNE_MAX,Math.max(1,Math.floor(Number(data.target))||150)),addresses:trusted,selected:Array.from(new Set(data.selected)),excluded:Array.from(new Set((data.excluded||[]).filter(function(id){return ids.has(id)&&!data.selected.includes(id);}))),notes:String(data.notes||'').slice(0,1000),polygon:Array.isArray(data.polygon)?data.polygon.slice(0,30).filter(function(p){return Array.isArray(p)&&campaignModel.canada({lat:p[0],lng:p[1]});}):[],reprise:Number(data.reprise)||0};
+    var clean={center:data.center?{lat:Number(data.center.lat),lng:Number(data.center.lng),libelle:String(data.center.libelle||'').slice(0,300)}:null,city:String(data.city||'').slice(0,120),radius:Math.min(5000,Math.max(200,Number(data.radius)||800)),target:Math.min(CAMPAGNE_MAX,Math.max(1,Math.floor(Number(data.target))||150)),historyFilter:historyFilter,addresses:trusted,selected:Array.from(new Set(data.selected)).filter(function(id){return !historyIds.has(id);}),excluded:Array.from(new Set((data.excluded||[]).filter(function(id){return ids.has(id)&&!data.selected.includes(id);}))),notes:String(data.notes||'').slice(0,1000),polygon:Array.isArray(data.polygon)?data.polygon.slice(0,30).filter(function(p){return Array.isArray(p)&&campaignModel.canada({lat:p[0],lng:p[1]});}):[],reprise:Number(data.reprise)||0};
     var row=await db.get("INSERT INTO broker_campaign_drafts(broker_id,revision,data) SELECT $1,1,$2::jsonb WHERE $3=0 ON CONFLICT(broker_id) DO NOTHING RETURNING revision",[broker.id,JSON.stringify(clean),revision]);
     if(!row)row=await db.get('UPDATE broker_campaign_drafts SET revision=revision+1,data=$1,updated_at=NOW() WHERE broker_id=$2 AND revision=$3 RETURNING revision',[JSON.stringify(clean),broker.id,revision]);
-    if(!row)return res.status(409).json({code:'DRAFT_CONFLICT'});res.json(row);
+    if(!row)return res.status(409).json({code:'DRAFT_CONFLICT'});res.json(Object.assign(row,{historyMatches:historyMatches,selected:clean.selected}));
   }));
 
   router.post('/api/espace/campagne', brokerEndpoint(async function(req, res){
@@ -2188,6 +2205,7 @@ module.exports = function(services){
         adresses.push(a);
       }
       if (adresses.length < 1) return res.status(400).json({ code: 'NO_ADDRESSES' });
+      if(!await checkCampaignHistory(req,res,broker,adresses))return;
       adresses=await campaignData.trusted(adresses);
 
       var ville = String(corps.ville == null ? '' : corps.ville).trim().slice(0, 120);
@@ -2342,6 +2360,7 @@ module.exports = function(services){
         return res.status(400).json({ code: 'COUNT_MISMATCH', trouvees: adresses.length, requises: quantite });
       }
 
+      if(!await checkCampaignHistory(req,res,broker,adresses))return;
       adresses=await campaignData.trusted(adresses);
       var c = await paypalCfg();
       if (!paypalPeutEncaisser(c)) return res.status(503).json({ error: 'paypal_absent', code: 'NOT_CONFIGURED' });
