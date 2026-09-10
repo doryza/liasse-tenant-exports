@@ -37,7 +37,6 @@ module.exports = function(services){
 
   var db = services.db;
   var cfg = services.config || {};
-  var homepageExperiment = homepageTools.create(services);
   var brokerAuth = brokerAuthTools.create(services);
   var campaignData=campaignDataTools.create(services);
 
@@ -1005,14 +1004,10 @@ module.exports = function(services){
     res.status(204).end();
   });
 
-  router.get('/admin/conversions', requireAdmin, async function(req,res){
+  // The homepage uses one version. Keep old bookmarks useful without evaluating the retired test.
+  router.get('/admin/conversions', requireAdmin, function(req,res){
     homepageTools.privateResponse(res);
-    try {
-      await homepageExperiment.evaluate();
-      var L=await baseLocals(req);
-      res.set('Cache-Control','private, no-store');
-      res.render('admin-conversions',Object.assign(L,{active:'conversions',experimentState:await homepageExperiment.state(),conversionRows:await homepageExperiment.results()}));
-    } catch(e) { console.error('homepage results',e.message); res.status(500).send('Erreur'); }
+    res.redirect(tp(req,'/admin/campagnes'));
   });
 
   router.get('/richard-tremblay', async function(req,res){
