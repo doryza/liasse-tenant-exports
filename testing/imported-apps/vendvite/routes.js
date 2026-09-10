@@ -988,7 +988,7 @@ module.exports = function(services){
   }
 
   var agentTracking=require('./agent-tracking-v1').create(services);agentTracking.register(router);
-  var operations=require('./admin-operations-v1').register(router,services,{requireAdmin:requireAdmin,baseLocals:baseLocals,currentBroker:currentBroker,tp:tp});
+  var operations=require('./admin-operations-v2').register(router,services,{requireAdmin:requireAdmin,baseLocals:baseLocals,currentBroker:currentBroker,tp:tp});
 
   router.get('/', async function(req,res){
     homepageTools.privateResponse(res);
