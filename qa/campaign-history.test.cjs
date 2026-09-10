@@ -1,5 +1,5 @@
 const {test}=require('node:test'),assert=require('node:assert/strict'),crypto=require('crypto');
-const {create,root}=require('./harness.cjs'),M=require(root+'/public/js/campaign-model-v2'),H=require(root+'/campaign-history-v1');
+const {create,root}=require('./harness.cjs'),M=require(root+'/public/js/campaign-model-v2'),H=require(root+'/campaign-history-v2');
 const address=(n,extra={})=>M.sanitize({numero:String(n),rue:'Rue Mélanie',ville:'Saint-Jérôme',lat:45.78,lng:-74,source:'point',...extra});
 test('history policy validation and stable unit/province identity',()=>{
  for(const value of [{mode:'days',days:0},{mode:'days',days:1.5},{mode:'days',days:36501},{mode:'unknown'},'all'])assert.throws(()=>H.policy(value));

@@ -1,18 +1,4 @@
-<aside class="admin-sidebar" id="adminSidebar">
-  <% var adminRoot = 'admin'; %>
-  <div class="admin-brand"><span class="admin-seal">V</span><span><%= (typeof settings!=='undefined' && settings.agent_name) ? settings.agent_name : 'VendVite' %></span></div>
-  <nav class="admin-nav">
-    <a href="<%= adminRoot %>" class="<%= (typeof active!=='undefined' && active==='dashboard') ? 'active' : '' %>">Tableau de bord</a>
-    <a href="<%= adminRoot %>/leads" class="<%= (typeof active!=='undefined' && active==='leads') ? 'active' : '' %>">Demandes</a>
-    <a href="<%= adminRoot %>/courtiers" class="<%= (typeof active!=='undefined' && active==='courtiers') ? 'active' : '' %>">Courtiers</a>
-    <a href="<%= adminRoot %>/campagnes" class="<%= (typeof active!=='undefined' && active==='campagnes') ? 'active' : '' %>">Campagnes</a>
-    <a href="<%= adminRoot %>/sollicitations" class="<%= (typeof active!=='undefined' && active==='sollicitations') ? 'active' : '' %>">Sollicitations VendVite</a>
-    <a href="<%= adminRoot %>/ventes" class="<%= (typeof active!=='undefined' && active==='ventes') ? 'active' : '' %>">Ventes</a>
-    <a href="<%= adminRoot %>/testimonials" class="<%= (typeof active!=='undefined' && active==='testimonials') ? 'active' : '' %>">Témoignages</a>
-    <a href="<%= adminRoot %>/posts" class="<%= (typeof active!=='undefined' && active==='posts') ? 'active' : '' %>">Journal</a>
-    <a href="<%= adminRoot %>/settings" class="<%= (typeof active!=='undefined' && active==='settings') ? 'active' : '' %>">Réglages</a>
-  </nav>
-  <div class="admin-nav-foot">
-    <a href="<%= (typeof active!=='undefined' && active==='dashboard') ? '.' : '../' %>" target="_blank">Voir le site</a>
-  </div>
-</aside>
+<aside class="admin-sidebar" id="adminSidebar"><div class="admin-brand"><span class="admin-seal">V</span><span>VendVite · opérations</span></div><nav class="admin-nav">
+<% [['admin','dashboard','Suivi & conversions'],['admin/sollicitations','sollicitations','Sollicitations'],['admin/courtiers','courtiers','Agents'],['admin/campagnes','campagnes','Commandes postales']].forEach(function(link){ %><a href="<%= link[0] %>" class="<%= typeof active!=='undefined'&&active===link[1]?'active':'' %>"><%= link[2] %></a><% }); %>
+</nav><div class="admin-nav-foot"><a href="admin/operations-settings">Paiements & réglages</a><a href="." target="_blank" rel="noopener">Voir le site ↗</a></div></aside>
+<script>document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('#adminBurger');if(!b)return;e.preventDefault();e.stopImmediatePropagation();var panel=document.getElementById('adminSidebar');panel.classList.toggle('open');b.setAttribute('aria-expanded',String(panel.classList.contains('open')));},true);</script>

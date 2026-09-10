@@ -4,14 +4,14 @@ var invoiceTools = require('./invoice-v5');
 var invoiceEmail = require('./invoice-email-v5');
 var invoiceSettings = require('./invoice-settings-v1');
 var workspaceInviteEmail = require('./workspace-invite-email-v1');
-var solicitationTools = require('./solicitation-v4');
-var mailingService = require('./mailing-service-v5');
+var solicitationTools = require('./solicitation-v5');
+var mailingService = require('./mailing-service-v6');
 var homepageTools = require('./homepage-experiment-v1');
 var homepageCopy = require('./homepage-copy-v6');
 var brokerAuthTools = require('./broker-auth-v1');
 var workspaceCopy = require('./workspace-copy-v3');
 var campaignModel=require('./public/js/campaign-model-v2');
-var campaignHistory=require('./campaign-history-v1');
+var campaignHistory=require('./campaign-history-v2');
 var campaignDataTools=require('./campaign-data-v2');
 var campaignCopy=require('./campaign-copy-v6');
 
@@ -987,6 +987,9 @@ module.exports = function(services){
     return { scriptJson:scriptJson,t:t, lang:lang, settings:settings, formatDate:function(d){ return formatDate(d, lang); }, formatPhone:formatPhone, googleApiKey:(services.google && services.google.mapsApiKey) || '', ogImage:ogImage, canonical:canonical, statusClass:statusClass, cheminCourant:cheminCourant, langueVisible:!req.vvEnglishOnly,englishOnly:!!req.vvEnglishOnly };
   }
 
+  var agentTracking=require('./agent-tracking-v1').create(services);agentTracking.register(router);
+  var operations=require('./admin-operations-v1').register(router,services,{requireAdmin:requireAdmin,baseLocals:baseLocals,currentBroker:currentBroker,tp:tp});
+
   router.get('/', async function(req,res){
     homepageTools.privateResponse(res);
     try{
@@ -1075,9 +1078,7 @@ module.exports = function(services){
   router.get('/admin', requireAdmin, async function(req,res){
     try{
       var L=await baseLocals(req);
-      var stats=await gatherStats();
-      var recentLeads=await db.all('SELECT * FROM leads ORDER BY created_at DESC LIMIT 8');
-      res.render('admin', Object.assign(L, { active:'dashboard', stats:stats, recentLeads:recentLeads }));
+      brokerAuthTools.protect(res);res.render('admin-operations',Object.assign(L,{active:'dashboard'}));
     }catch(e){ console.error('admin', e); res.status(500).send('Erreur'); }
   });
 
@@ -1103,8 +1104,8 @@ module.exports = function(services){
       var sandboxPaypal=await paypalCfg('sandbox');
       var paypalState={
         mode:(await currentPaypalMode()),
-        liveReady:paypalReady(livePaypal),
-        sandboxReady:paypalReady(sandboxPaypal),
+        liveReady:paypalPeutEncaisser(livePaypal),
+        sandboxReady:paypalPeutEncaisser(sandboxPaypal),
         sandboxCredentialsReady:!!(sandboxPaypal.clientId&&sandboxPaypal.secret),
         sandboxPlanId:sandboxPaypal.planId||''
       };
@@ -1114,12 +1115,12 @@ module.exports = function(services){
     }catch(e){ console.error('admin ventes',e); res.status(500).send('Erreur'); }
   });
   router.post('/api/admin/paypal/mode', async function(req,res){
-    if(!apiAdmin(req,res)) return;
+    if(!invoiceAdminMutation(req,res)) return;
     try{
       var mode=String(req.body&&req.body.mode||'').trim().toLowerCase();
       if(mode!=='live'&&mode!=='sandbox') return res.status(400).json({ error:'mode' });
       var selected=await paypalCfg(mode);
-      if(!paypalReady(selected)) return res.status(409).json({ error:'paypal_absent', code:'NOT_CONFIGURED', mode:mode });
+      if(!paypalPeutEncaisser(selected)) return res.status(409).json({ error:'paypal_absent', code:'NOT_CONFIGURED', mode:mode });
       await db.run("INSERT INTO admin_settings (key,value,updated_at) VALUES ('paypal_mode',$1,NOW()) ON CONFLICT (key) DO UPDATE SET value=EXCLUDED.value,updated_at=NOW()",[mode]);
       res.json({ success:true, mode:mode });
     }catch(e){ console.error('paypal mode',e); res.status(500).json({ error:'server' }); }
@@ -1689,7 +1690,7 @@ module.exports = function(services){
     var invoices = await db.all('SELECT * FROM broker_invoices WHERE broker_id=$1 ORDER BY payment_time DESC, id DESC LIMIT 20', [broker.id]);
     var activePaypal = await paypalCfg();
     var access = await brokerAccessState(broker, activePaypal.mode);
-    var campagnes = await db.all("SELECT id, kind, status, payment_status, centre_label, quantity, address_count, city, total_cents, is_test, deadline_at, mailed_at, created_at FROM broker_campaigns WHERE broker_id=$1 AND NOT (kind='paid' AND payment_status='pending' AND created_at < NOW() - INTERVAL '2 hours') ORDER BY created_at DESC LIMIT 24", [broker.id]);
+    var campagnes = await db.all("SELECT id, kind, status, payment_status, centre_label, quantity, address_count, city, total_cents, is_test, deadline_at, mailed_at, created_at,production FROM broker_campaigns WHERE broker_id=$1 AND NOT (kind='paid' AND payment_status='pending' AND created_at < NOW() - INTERVAL '2 hours') ORDER BY created_at DESC LIMIT 24", [broker.id]);
     var quota = await campagneQuota(broker);
     var paliers = [];
     for (var pi = 1; pi <= CAMPAGNE_PALIERS_MAX; pi++) {
@@ -2609,10 +2610,10 @@ module.exports = function(services){
   //    de 72 h porterait sur des donnees qu'aucun humain ne peut recuperer.
   router.get('/admin/campagnes', requireAdmin, async function(req, res){
     var L = await baseLocals(req);
-    var campagnes = await db.all('SELECT c.*, b.full_name, b.agency, b.email AS broker_email, b.phone AS broker_phone, b.slug FROM broker_campaigns c JOIN brokers b ON b.id=c.broker_id ORDER BY c.created_at DESC LIMIT 200');
-    var cc = { confirmed: 0, mailed: 0 };
-    (campagnes || []).forEach(function(c){ if (c.status === 'confirmed') cc.confirmed++; else if (c.status === 'mailed') cc.mailed++; });
-    res.render('admin-campagnes', Object.assign(L, { active: 'campagnes', campagnes: campagnes || [], cc: cc }));
+    var filter=['todo','mailed','pending','test','cancelled'].includes(req.query.status)?req.query.status:'todo';
+    var clauses={todo:"c.is_test=0 AND c.paypal_mode<>'sandbox' AND c.status IN ('confirmed','processing') AND (c.payment_status='paid' OR c.kind='included' AND c.payment_status='none')",mailed:"c.is_test=0 AND c.paypal_mode<>'sandbox' AND c.status='mailed'",pending:"c.is_test=0 AND c.paypal_mode<>'sandbox' AND c.status='pending_payment'",test:"(c.is_test=1 OR c.paypal_mode='sandbox')",cancelled:"c.is_test=0 AND c.paypal_mode<>'sandbox' AND c.status='cancelled'"};
+    var campagnes=await db.all('SELECT c.*,b.full_name,b.agency FROM broker_campaigns c JOIN brokers b ON b.id=c.broker_id WHERE '+clauses[filter]+' ORDER BY c.deadline_at ASC NULLS LAST,c.id DESC LIMIT 200');
+    res.render('admin-orders',Object.assign(L,{active:'campagnes',campagnes:campagnes,filter:filter}));
   });
 
   router.get('/admin/campagnes/:id/lettres',requireAdmin,brokerEndpoint(async function(req,res){
@@ -2622,6 +2623,7 @@ module.exports = function(services){
     var broker=await db.get('SELECT * FROM brokers WHERE id=$1',[campaign.broker_id]);
     if(!broker)return res.sendStatus(404);
     if(!['confirmed','processing','mailed'].includes(campaign.status)||!(campaign.payment_status==='paid'||(campaign.kind==='included'&&campaign.payment_status==='none')))return res.status(409).send('Une campagne payée et confirmée est requise.');
+    if(campaign.status!=='mailed'&&!require('./production-v1').ready(campaign))return res.status(409).send('Importez les codes postaux et validez la liste dans Préparation avant d’imprimer.');
     var sandboxPrint=mailingService.isTest(campaign);
     campaign=await mailingService.prepareRecipients(db,campaign);
     var addresses=mailingService.addresses(campaign);
@@ -2636,30 +2638,14 @@ module.exports = function(services){
     res.render('lettre-proprietaires',Object.assign(L,{TL:{fr:applyTextOverrides(Object.assign({},T.fr),settings,'fr'),en:applyTextOverrides(Object.assign({},T.en),settings,'en')},lang:require('./mailing-language-v1').englishOnly(broker)?'en':'fr',englishOnly:require('./mailing-language-v1').englishOnly(broker),embed:false,broker:broker,profile:brokerProfile(broker),pageUrl:'',qrDataUrl:'',formatPhone:formatPhone,recipients:recipients,sandboxPrint:sandboxPrint}));
   }));
 
-  router.get('/admin/campagnes/:id/adresses.csv', requireAdmin, async function(req, res){
-    var c = await db.get('SELECT c.*, b.full_name, b.slug FROM broker_campaigns c JOIN brokers b ON b.id=c.broker_id WHERE c.id=$1', [req.params.id]);
-    if (!c) return res.status(404).send('Introuvable');
-    // Les valeurs viennent du navigateur du courtier. Une cellule commencant par
-    // = + - @ ou une tabulation est EXECUTEE comme formule par Excel : on la
-    // prefixe d'une apostrophe. Les guillemets seuls ne protegent pas.
-    var cell = function(v){
-      var s = String(v == null ? '' : v);
-      if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
-      return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
-    };
-    var lignes = ['distance_m,house_number,street,unit,city,province,postal_code,address_source,property_type,recorded_dwellings,dwelling_scope,construction_year,property_source,source_checked_at'];
-    (c.addresses || []).forEach(function(a){
-      lignes.push([a.metres == null ? '' : a.metres,a.numero,a.rue,a.unit||'',a.ville||c.city||'',a.province||campaignModel.province(a)||'',a.postal||'',a.source,(a.analysis||{}).type||'',(a.analysis||{}).units||'',(a.analysis||{}).unitScope||'',(a.analysis||{}).year||'',(a.analysis||{}).source||'',(a.analysis||{}).fetchedAt||''].map(cell).join(','));
-    });
-    res.set('Content-Type', 'text/csv; charset=utf-8');
-    res.set('Content-Disposition', 'attachment; filename="campagne-' + c.id + '-' + c.slug + '.csv"');
-    res.send('\uFEFF' + lignes.join('\n') + '\n');
+  router.get('/admin/campagnes/:id/adresses.csv',requireAdmin,function(req,res){
+    brokerAuthTools.protect(res);res.redirect(tp(req,'/admin/campagnes/'+encodeURIComponent(req.params.id)+'/modele.csv'));
   });
 
   // Levier operateur : annuler n'importe quelle campagne et rendre au courtier
   // sa campagne incluse, meme une commande payante restee en travers.
   router.post('/api/admin/campagnes/:id/annuler', async function(req, res){
-    if (!apiAdmin(req, res)) return;
+    if (!invoiceAdminMutation(req, res)) return;
     try{
       var c = await db.get('SELECT * FROM broker_campaigns WHERE id=$1', [req.params.id]);
       if (!c) return res.status(404).json({ error: 'introuvable' });
@@ -2670,12 +2656,13 @@ module.exports = function(services){
   });
 
   router.post('/api/admin/campagnes/:id/postee', async function(req, res){
-    if (!apiAdmin(req, res)) return;
+    if (!invoiceAdminMutation(req, res)) return;
     try{
       var c = await db.get('SELECT * FROM broker_campaigns WHERE id=$1', [req.params.id]);
       if (!c) return res.status(404).json({ error: 'introuvable' });
-      var vise = c.status === 'mailed' ? 'confirmed' : 'mailed';
-      await db.run('UPDATE broker_campaigns SET status=$1, mailed_at=$2, updated_at=NOW() WHERE id=$3', [vise, vise === 'mailed' ? new Date() : null, c.id]);
+      if(!['processing','mailed'].includes(c.status)||!require('./production-v1').ready(c)||!(c.payment_status==='paid'||c.kind==='included'&&c.payment_status==='none'))return res.status(409).json({error:'Liste postale validée requise.'});
+      var vise = c.status === 'mailed' ? 'processing' : 'mailed';
+      var updated=await db.get('UPDATE broker_campaigns SET status=$1, mailed_at=$2, updated_at=NOW() WHERE id=$3 AND status=$4 AND production=$5::jsonb RETURNING id', [vise, vise === 'mailed' ? new Date() : null, c.id,c.status,JSON.stringify(c.production)]);if(!updated)return res.status(409).json({error:'Commande modifiée ailleurs. Actualisez.'});
       res.json({ success: true, status: vise });
     }catch(e){ res.status(500).json({ error: 'server' }); }
   });
@@ -3055,6 +3042,7 @@ module.exports = function(services){
       brokerStats: brokerStats,
       isHome: true,
       brokerSlug: broker.slug,
+      activityToken: await agentTracking.issue(req,res,isPreview?null:req.vvInvitation?{kind:'invitation',agentId:req.vvInvitation.id,brokerId:req.vvInvitation.broker_id}:req.vvMailingToken?{kind:'mailer',brokerId:broker.id}:null),
       brokerLinks: otherLinks,
       isPreview: !!isPreview,
       isSandboxPreview: !!req.vvSandboxPreview,

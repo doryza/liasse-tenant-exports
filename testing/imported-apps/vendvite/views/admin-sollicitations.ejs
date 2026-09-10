@@ -18,7 +18,7 @@
 <div class="sol-batch-list"><% shown.forEach(function(c){ %><article class="sol-batch">
 <div><h3><a href="admin/sollicitations/<%= c.id %>"><%= c.name %></a></h3><p><%= c.count %> agents · <%= c.format==='duplex'?'FR au recto / EN au verso':'English · recto seulement' %> · <%= c.registered %> inscriptions<% if(c.batch_summary.uniqueAddresses){ %> · <%= c.batch_summary.uniqueAddresses %> adresses distinctes<% } %></p></div>
 <%- include('partials/solicitation-status',{campaign:c,advance:false}) %>
-<div class="sol-batch-links"><a href="admin/sollicitations/<%= c.id %>">Voir les destinataires</a><a href="admin/sollicitations/<%= c.id %>/imprimer" target="_blank" rel="noopener">Imprimer / PDF ↗</a></div>
+<div class="sol-batch-links"><a href="admin?batch=<%= c.id %>">Suivi & conversions</a><a href="admin/sollicitations/<%= c.id %>">Voir les destinataires</a><a href="admin/sollicitations/<%= c.id %>/imprimer" target="_blank" rel="noopener">Imprimer / PDF ↗</a></div>
 <% if(c.batch_summary.provinces){ %><details><summary>Répartition du lot</summary><p><%= Object.entries(c.batch_summary.provinces).map(function(x){return x[0]+' : '+x[1];}).join(' · ') %></p><p><%= Object.entries(c.batch_summary.brands||{}).map(function(x){return x[0]+' : '+x[1];}).join(' · ') %></p></details><% } %>
 </article><% }); %></div>
 <% var others=campaigns.filter(function(c){return c.batch_number==null;});if(others.length){ %><details class="sol-other"><summary>Autres campagnes et essais (<%= others.length %>)</summary><% others.forEach(function(c){ %><p><a href="admin/sollicitations/<%= c.id %>"><strong><%= c.name %></strong></a> · <%= c.count %> agents · <%= c.registered %> inscriptions · <%= formatDate(c.created_at) %></p><% }); %></details><% } %>

@@ -24,6 +24,7 @@
               <span class="camp-histo-q"><%= c.address_count %></span>
               <span class="camp-histo-m"><%= c.kind === 'paid' ? ((c.total_cents||0)/100).toFixed(2).replace('.', ',') + ' $' : 'Incluse' %></span>
               <span class="camp-histo-d"><%= new Date(c.created_at).toLocaleDateString('fr-CA', { day:'numeric', month:'short', year:'numeric' }) %></span>
+              <% if(c.production&&c.production.approvedAt){ %><a href="espace/campagnes/<%= c.id %>/preparation"><%= lang==='en'?'Preparation report':'Rapport de préparation' %> →</a><% } %>
               <% if (reprenable || c.payment_status === 'pending') { %>
                 <span class="camp-histo-act">
                   <% if (reprenable) { %>

@@ -28,6 +28,7 @@
 </div>
 <% } %>
 <script>
+window.VV_ACTIVITY = <%- scriptJson(typeof activityToken!=='undefined'?activityToken:null) %>;
 window.VV_DEMO_STREET_VIEW = <%- scriptJson(typeof demoStreetView!=='undefined'?demoStreetView:null) %>;
 window.VV_INITIAL_LOCATION = <%- scriptJson(typeof initialLocation!=='undefined'?initialLocation:null) %>;
 window.VV_PAGE_PREVIEW = <%- JSON.stringify(!!isPreview) %>;
@@ -169,5 +170,5 @@ window.VV_LEAD_URL = <%- JSON.stringify(typeof brokerSlug !== 'undefined' && bro
 <% if(googleApiKey){ %>
 <script async src="https://maps.googleapis.com/maps/api/js?key=<%= googleApiKey %>&libraries=places,geometry&callback=initVendvite&v=weekly"></script>
 <% } %>
-</body>
+<script src="public/js/page-activity-v1.js" defer></script></body>
 </html>
