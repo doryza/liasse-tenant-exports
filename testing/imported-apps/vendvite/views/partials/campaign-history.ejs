@@ -1,4 +1,4 @@
-      <details class="cs-history"><summary><%= t.c_history %> · <%= campagnes.length %></summary><div class="camp-histo-card">
+      <details class="cs-history" <%- campaignPage>1?'open':'' %>><summary><%= t.c_history %> · <%= campaignCount %></summary><div class="camp-histo-card">
         <h3><%= t.esp_your_campaigns_heading %></h3>
         <% if (!campagnes.length) { %>
           <p class="esp-hint"><%= t.esp_no_campaigns_first_included %></p>
@@ -7,10 +7,10 @@
           <% campagnes.forEach(function(c){
                var libelle = c.centre_label ? c.centre_label.split(',').slice(0,2).join(',') : (c.city || '—');
                var annulee = c.status === 'cancelled';
-               var etat = annulee ? 'Abandonnée'
-                        : c.status === 'mailed' ? 'Postée'
-                        : c.payment_status === 'pending' ? 'Paiement en attente'
-                        : 'En préparation';
+               var etat = annulee ? (lang==='en'?'Cancelled':'Annulée')
+                        : c.status === 'mailed' ? (lang==='en'?'Mailed':'Postée')
+                        : c.payment_status === 'pending' ? (lang==='en'?'Payment pending':'Paiement en attente')
+                        : (lang==='en'?'In preparation':'En préparation');
                var cls  = annulee ? 'is-off'
                         : c.status === 'mailed' ? 'is-ok'
                         : c.payment_status === 'pending' ? 'is-wait' : '';
@@ -20,10 +20,10 @@
           %>
             <div class="camp-histo-l">
               <span class="camp-histo-b <%= cls %>"><%= etat %><% if (Number(c.is_test) === 1) { %> · test<% } %></span>
-              <span class="camp-histo-t" title="<%= c.centre_label || '' %>"><%= libelle %></span>
+              <a class="camp-histo-t" href="espace/commandes/<%= c.id %>" title="<%= c.centre_label || '' %>">#<%= c.id %> · <%= libelle %> →</a>
               <span class="camp-histo-q"><%= c.address_count %></span>
-              <span class="camp-histo-m"><%= c.kind === 'paid' ? ((c.total_cents||0)/100).toFixed(2).replace('.', ',') + ' $' : 'Incluse' %></span>
-              <span class="camp-histo-d"><%= new Date(c.created_at).toLocaleDateString('fr-CA', { day:'numeric', month:'short', year:'numeric' }) %></span>
+              <span class="camp-histo-m"><%= c.kind === 'paid' ? ((c.total_cents||0)/100).toLocaleString(lang==='en'?'en-CA':'fr-CA',{style:'currency',currency:'CAD'}) : (lang==='en'?'Included':'Incluse') %></span>
+              <span class="camp-histo-d"><%= new Date(c.created_at).toLocaleDateString(lang==='en'?'en-CA':'fr-CA', { day:'numeric', month:'short', year:'numeric' }) %></span>
               <% if(c.production&&c.production.approvedAt){ %><a href="espace/campagnes/<%= c.id %>/preparation"><%= lang==='en'?'Preparation report':'Rapport de préparation' %> →</a><% } %>
               <% if (reprenable || c.payment_status === 'pending') { %>
                 <span class="camp-histo-act">
@@ -38,4 +38,4 @@
             </div>
           <% }); %>
         <% } %>
-      </div></details>
+      <nav class="cs-history-pages" aria-label="<%= lang==='en'?'Order history pages':'Pages des commandes' %>"><% if(campaignPage>1){ %><a href="espace/courrier-cible?lang=<%= lang %>&campaignPage=<%= campaignPage-1 %>"><%= lang==='en'?'Previous':'Précédentes' %></a><% } %><span><%= lang==='en'?'Page':'Page' %> <%= campaignPage %></span><% if(campaignMore){ %><a href="espace/courrier-cible?lang=<%= lang %>&campaignPage=<%= campaignPage+1 %>"><%= lang==='en'?'Next':'Suivantes' %></a><% } %><a href="espace/commandes?lang=<%= lang %>"><%= lang==='en'?'All my orders':'Toutes mes commandes' %> →</a></nav></div></details>

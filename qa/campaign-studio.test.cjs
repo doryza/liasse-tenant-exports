@@ -54,7 +54,7 @@ test('draft isolation, concurrency, source caching and exact mailing quotes',asy
  // come through the real route. No external PayPal call or mail is sent.
  await h.db.run("UPDATE brokers SET status='active',published=1,membership_expires_at=NOW()+INTERVAL '1 year' WHERE id=$1",[a.b.id]);
  Object.assign(h.services.externalVars,{PAYPAL_MODE:'live',PAYPAL_CLIENT_ID:'test',PAYPAL_CLIENT_SECRET:'test'});
- const orders=[];h.services.fetch=async(url,opts)=>{if(url.endsWith('/v1/oauth2/token'))return {ok:true,json:async()=>({access_token:'fake'})};assert.ok(url.endsWith('/v2/checkout/orders'));orders.push({body:JSON.parse(opts.body),key:opts.headers['PayPal-Request-Id']});return {ok:true,json:async()=>({id:'QA-'+orders.length,links:[{rel:'approve',href:'https://example.test/mock-payment'}]})}};
+ const orders=[];h.services.fetch=async(url,opts)=>{if(url.endsWith('/v1/oauth2/token'))return {ok:true,json:async()=>({access_token:'fake'})};if(url.endsWith('/v2/checkout/orders')){const id='QA-ORDER-'+(orders.length+1);orders.push({id,body:JSON.parse(opts.body),key:opts.headers['PayPal-Request-Id']});return {ok:true,json:async()=>({id,links:[{rel:'approve',href:'https://www.paypal.com/checkoutnow'}]})};}const order=orders.find(o=>url.endsWith('/'+o.id));assert(order,'Only look up a stored provider order');return {ok:true,json:async()=>({id:order.id,status:'CREATED',purchase_units:order.body.purchase_units,links:[{rel:'approve',href:'https://www.paypal.com/checkoutnow'}]})};};
  const batch=Array.from({length:152},(_,i)=>address(5000+i));
  let payload={centre:center,ville:'Montréal',rayon:800,adresses:batch.slice(0,151),quantite:151,expectedTotal:183};
  assert.equal((await req('commander',{...payload,quantite:150})).status,400);
@@ -64,7 +64,7 @@ test('draft isolation, concurrency, source caching and exact mailing quotes',asy
  let stored=await h.db.get('SELECT * FROM broker_campaigns WHERE id=$1',[order.id]);assert.equal(stored.address_count,151);assert.equal(stored.quantity,151);
  let resumed=await (await req('devis',{count:152,reprise:order.id,destinationCounts:{QC:152}})).json();assert.equal(resumed.price.offert,150,'resuming retains its reserved credit');
  r=await req('commander',{...payload,adresses:batch,quantite:152,expectedTotal:resumed.price.total,reprend:order.id});assert.equal(r.status,409,'An approvable order must remain immutable');
- await req(order.id+'/annuler',{});
+ assert.equal((await req(order.id+'/annuler',{})).status,200,'Cancellation must first verify no capture at PayPal');
  r=await req('commander',{...payload,adresses:batch,quantite:152,expectedTotal:resumed.price.total,reprend:order.id});assert.equal(r.status,200);order=await r.json();assert.notEqual(orders[0].key,orders[1].key,'changed address selection cannot reuse the old PayPal order');assert.ok(orders[1].key.length<=38);
  stored=await h.db.get('SELECT * FROM broker_campaigns WHERE id=$1',[order.id]);assert.equal(stored.address_count,152);assert.equal(stored.total_cents,resumed.price.total);
  assert.equal(h.emails.length,0);console.log('Campaign API: exact quotes, broker isolation, exclusions, CAS conflicts and cached official data passed.');

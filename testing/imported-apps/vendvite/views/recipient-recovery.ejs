@@ -1,0 +1,10 @@
+<%- include('partials/invite-header') %>
+<main class="inv-page"><div class="inv-wrap" style="max-width:640px;margin:60px auto;padding:28px;color:#262125;background:#fff;border-radius:16px">
+<p style="font-weight:700;color:#a20d2b"><%= lang==='en'?'Your property analysis':'Votre analyse immobilière' %></p>
+<h1 style="color:#262125"><%= lang==='en'?'We could not open this letter’s link.':'Nous n’avons pas pu ouvrir le lien de cette lettre.' %></h1>
+<p><%= lang==='en'?'Try scanning the complete QR code on your letter again. Your request has not been submitted.':'Essayez de scanner de nouveau le code QR complet sur votre lettre. Aucune demande n’a été transmise.' %></p>
+<% if(contact){ %><h2 style="color:#262125"><%= contact.name %></h2><p><%= lang==='en'?'You can contact your broker directly to request your comparative market analysis.':'Vous pouvez joindre votre courtier directement pour demander votre analyse comparative de marché.' %></p>
+<% if(contact.email){ %><p><a style="color:#a20d2b" href="mailto:<%= contact.email %>"><%= contact.email %></a></p><% } %>
+<% if(contact.phone){ %><p><a style="color:#a20d2b" href="tel:<%= String(contact.phone).replace(/[^+\d]/g,'') %>"><%= contact.phone %></a></p><% } %>
+<% }else{ %><p><%= lang==='en'?'Use the broker’s phone number or email printed on your letter. They can help you request your analysis.':'Utilisez le numéro de téléphone ou le courriel du courtier imprimé sur votre lettre. Il pourra vous aider à demander votre analyse.' %></p><% } %>
+</div></main></body></html>

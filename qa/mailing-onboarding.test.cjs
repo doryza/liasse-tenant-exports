@@ -1,6 +1,6 @@
-const {test}=require('node:test'),assert=require('node:assert/strict');
+const {test}=require('node:test'),assert=require('node:assert/strict'),crypto=require('crypto');
 const {create,root}=require('./harness.cjs');
-const tools=require(root+'/solicitation-v2'),mailing=require(root+'/mailing-service-v4'),authModule=require(root+'/broker-auth-v1');
+const tools=require(root+'/solicitation-v6'),mailing=require(root+'/mailing-service-v7'),authModule=require(root+'/broker-auth-v2');
 const raw='Marie Tremblay {"Agence, Exemple", Courtier immobilier, 514 555-0100, https://example.test/marie.jpg}\n1234 RUE DES ÉRABLES\nLAVAL QC H7W 4Y4';
 function jar(r){return r.headers.getSetCookie().map(c=>c.split(';')[0]).join('; ');}
 test('strict agent parsing separates identity from delivery lines',()=>{
@@ -34,24 +34,32 @@ test('saved campaigns, personalized demos, free onboarding and campaign-only cap
   assert.ok(welcome.html.includes('href="'+accessUrl.replace(/&/g,'&amp;')+'"'),'HTML button and text use the same activation URL');
   assert.equal(new URL(accessUrl).searchParams.get('lang'),'fr');assert.equal(new URL(accessUrl).searchParams.get('next'),'espace/page');
   const broker=await h.db.get('SELECT * FROM brokers WHERE email=$1',[body.email]);assert.equal(broker.access_plan,'mailing');assert.equal(broker.profile.agent_photo_url,'https://example.test/marie.jpg');assert.equal(broker.profile.solicitation_tag,agent.tag);assert.ok(mailing.access(broker));assert.equal(broker.membership_expires_at,null);
+  assert.equal((await h.db.get('SELECT verified_at FROM solicitation_claims WHERE agent_id=$1',[agent.id])).verified_at,null);
   // Authenticate with the normal emailed-link challenge/confirmation protocol.
   const token=h.emails[0].text.match(/\/acces\/([a-f0-9]{64})/)[1];const access=await req(new URL(accessUrl).pathname+new URL(accessUrl).search);const challenge=(await access.text()).match(/name="challenge" value="([^"]*)"/)[1];const confirm=await req('/acces/'+token,{challenge,next:'espace/page'},{cookie:jar(access)});assert.equal(confirm.status,303);assert.equal(confirm.headers.get('location'),'/espace/page');const cookie=jar(confirm);
+  assert((await h.db.get('SELECT verified_at FROM solicitation_claims WHERE agent_id=$1',[agent.id])).verified_at);
+  assert.equal((await h.db.get('SELECT broker_id FROM solicitation_agents WHERE id=$1',[agent.id])).broker_id,broker.id);
   const session=await req('/api/espace/session',undefined,{cookie});const csrf=(await session.json()).csrf;const headers={cookie,'x-vv-csrf':csrf};
   const account=await req('/espace/abonnement',undefined,{cookie});assert.equal(account.status,200);assert.doesNotMatch(await account.text(),/id="subBtn"|id="cancelBtn"/);
   const studio=await req('/espace/courrier-cible',undefined,{cookie});assert.equal(studio.status,200);assert.match(await studio.text(),/credit: 0/);
   assert.equal((await req('/api/espace/abonnement',{},headers)).status,409);
   assert.equal((await req('/api/espace/publier',{published:true},headers)).status,200);
   const direct=await req('/'+broker.slug);assert.notEqual(direct.status,200,'free page is not a standalone public website');
-  const lead={name:'Homeowner',address:'123 Test',email:'home@example.test'};
+  const lead={name:'Homeowner',address:'123 Test',email:'home@example.test',submissionKey:crypto.randomUUID()};
   assert.equal((await req('/api/courtier/'+broker.slug+'/piste',lead)).status,403);
-  const paid=await h.db.get("INSERT INTO broker_campaigns(broker_id,kind,status,payment_status,addresses) VALUES($1,'paid','confirmed','paid',$2) RETURNING *",[broker.id,JSON.stringify([{numero:'1234',rue:'RUE TEST',ville:'LAVAL',postal:'H7W 4Y4',unit:'2'}])]);
+  const paid=await h.db.get("INSERT INTO broker_campaigns(broker_id,kind,status,payment_status,addresses,address_count,quantity) VALUES($1,'paid','confirmed','paid',$2,1,1) RETURNING *",[broker.id,JSON.stringify([{numero:'1234',rue:'RUE TEST',ville:'LAVAL',postal:'H7W 4Y4',unit:'2'}])]);
+  assert.equal((await req('/admin/campagnes/'+paid.id+'/lettres',undefined,admin)).status,409,'paid orders need postal preparation before printing');
+  const postal=require(root+'/production-v2'),base='/api/admin/campagnes/'+paid.id;
+  const imported=await req(base+'/import-postal',{revision:0,csv:postal.template(paid)},admin);assert.equal(imported.status,200,await imported.clone().text());
+  const staged=await h.db.get('SELECT * FROM broker_campaigns WHERE id=$1',[paid.id]);const approved=await req(base+'/approve-postal',{revision:staged.production.revision,selected:staged.production.candidates.map(a=>a.id),acknowledge:true},admin);assert.equal(approved.status,200,await approved.clone().text());
   const production=await req('/admin/campagnes/'+paid.id+'/lettres',undefined,admin);assert.equal(production.status,200);const letter=await production.text();assert.match(letter,/2-1234 RUE TEST/);assert.match(letter,/H7W 4Y4/);
   const refreshed=await h.db.get('SELECT * FROM broker_campaigns WHERE id=$1',[paid.id]);assert.match(refreshed.mailing_token,/^[a-f0-9]{48}$/);
-  const recipient=refreshed.addresses[0].mailing_id;
-  assert.equal((await req('/courrier/'+refreshed.mailing_token)).status,302);
+  const recipient=mailing.addresses(refreshed)[0].mailing_id;
+  assert.equal((await req('/courrier/'+refreshed.mailing_token)).status,404);
   assert.equal((await req('/courrier/'+refreshed.mailing_token+'/'+recipient)).status,200);
   assert.equal((await req('/api/courtier/'+broker.slug+'/piste',{...lead,mailingToken:refreshed.mailing_token,mailingRecipient:recipient})).status,200);
-  await h.db.run("UPDATE broker_campaigns SET status='cancelled' WHERE id=$1",[paid.id]);assert.equal((await req('/courrier/'+refreshed.mailing_token+'/'+recipient)).status,302);assert.equal((await req('/api/courtier/'+broker.slug+'/piste',{...lead,mailingToken:refreshed.mailing_token,mailingRecipient:recipient})).status,403);
+  await h.db.run("UPDATE broker_campaigns SET status='cancelled' WHERE id=$1",[paid.id]);assert.equal((await req('/courrier/'+refreshed.mailing_token+'/'+recipient)).status,404);assert.equal((await req('/api/courtier/'+broker.slug+'/piste',{...lead,mailingToken:refreshed.mailing_token,mailingRecipient:recipient})).status,403);
+  assert.equal((await h.db.get('SELECT COUNT(*)::int n FROM notification_jobs')).n,2);assert.equal(h.emails.length,1,'lead notification is durably queued');const delivery=await require(root+'/notification-outbox-v1').create(h.services).run();assert.equal(delivery.sent,2);assert.equal(h.emails.length,3);
   // Returning QR visitors receive the same brand treatment in their language,
   // with the shorter expiry of a newly requested sign-in link.
   await h.db.run("UPDATE mailing_signup_limits SET last_at=NOW()-INTERVAL '3 minutes'");

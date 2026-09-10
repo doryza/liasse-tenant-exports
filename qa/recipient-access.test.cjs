@@ -1,9 +1,10 @@
 const {test}=require('node:test'),assert=require('node:assert/strict'),crypto=require('crypto');
-const {create,root}=require('./harness.cjs'),mail=require(root+'/mailing-service-v5'),model=require(root+'/public/js/campaign-model-v2');
+const {create,root}=require('./harness.cjs'),mail=require(root+'/mailing-service-v7'),model=require(root+'/public/js/campaign-model-v2');
 test('only an issued campaign/recipient pair authorizes a page and lead, including legacy accounts and owners',async()=>{
  const h=await create();
  async function request(path,body,headers={}){return fetch(h.url+path,{method:body===undefined?'GET':'POST',redirect:'manual',headers:{'Content-Type':'application/json',...headers},body:body===undefined?undefined:JSON.stringify(body)});}
  async function home(path,headers){const r=await request(path,undefined,headers);assert.equal(r.status,302,path);assert.equal(r.headers.get('location'),path.startsWith('/pwa/vendvite/')?'/pwa/vendvite/':'/');assert.match(r.headers.get('cache-control'),/no-store/);}
+ async function recovery(path){const r=await request(path);assert.equal(r.status,404,path);assert.match(r.headers.get('cache-control'),/no-store/);const html=await r.text();assert.match(html,/code QR complet/);assert.doesNotMatch(html,/window.VV_INITIAL_ADDRESS/);}
  try{
   const brokers=[];
   for(const plan of ['mailing','legacy'])brokers.push(await h.db.get("INSERT INTO brokers(slug,full_name,email,access_plan,status,published,membership_expires_at) VALUES($1,'QA Agent',$3,$2,'active',1,NOW()+INTERVAL '1 year') RETURNING *",['qa-'+plan,plan,'qa-'+plan+'@example.test']));
@@ -16,11 +17,12 @@ test('only an issued campaign/recipient pair authorizes a page and lead, includi
   const raw=crypto.randomBytes(32).toString('hex');await h.db.run("INSERT INTO broker_sessions(broker_id,token_hash,device_label,idle_expires_at,absolute_expires_at) VALUES($1,$2,'QA',NOW()+INTERVAL '1 hour',NOW()+INTERVAL '1 hour')",[brokers[0].id,crypto.createHash('sha256').update(raw).digest('hex')]);const owner={cookie:'vv_broker_session='+raw};
   for(const prefix of ['', '/pwa/vendvite']){
    for(const b of brokers)for(const suffix of ['', '?address=123+Fake&lat=45&lng=-73'])await home(prefix+'/'+b.slug+suffix,owner);
-   for(const p of ['/courrier/'+c.mailing_token,'/courrier/'+c.mailing_token+'?address=123+Fake','/courrier/'+c.mailing_token+'/'+'f'.repeat(32),'/courrier/'+c.mailing_token+'/'+campaigns[1].addresses[0].mailing_id,'/courrier/invalid/'+a.mailing_id])await home(prefix+p);
+   for(const p of ['/courrier/'+c.mailing_token,'/courrier/'+c.mailing_token+'?address=123+Fake','/courrier/'+c.mailing_token+'/'+'f'.repeat(32),'/courrier/'+c.mailing_token+'/'+campaigns[1].addresses[0].mailing_id,'/courrier/invalid/'+a.mailing_id])await recovery(prefix+p);
    const valid=await request(prefix+path+'?address=123+Fake&lang=en');assert.equal(valid.status,200);assert.match(valid.headers.get('x-robots-tag'),/noindex/);assert.equal(valid.headers.get('referrer-policy'),'no-referrer');const html=await valid.text();assert.match(html,/window.VV_INITIAL_ADDRESS = "4410 Pl. de la Meuse, Laval QC H7W 4Y4"/);assert.ok(html.includes('window.VV_MAILING_RECIPIENT = "'+a.mailing_id+'"'));assert.ok(!html.includes(campaigns[1].mailing_token));
   }
+  const activity=await h.db.all("SELECT campaign_id,recipient_hash FROM agent_page_activity WHERE kind='mailer'");assert(activity.length>=2);activity.forEach(row=>{assert.equal(row.campaign_id,c.id);assert.equal(row.recipient_hash,crypto.createHash('sha256').update(a.mailing_id).digest('hex'));});
   for(const [i,b] of brokers.entries()){
-   const camp=campaigns[i],key=camp.addresses[0].mailing_id,lead={name:'Homeowner',address:'987 Updated address, Laval QC H7W 4Y4'},url='/api/courtier/'+b.slug+'/piste';
+   const camp=campaigns[i],key=camp.addresses[0].mailing_id,lead={name:'Homeowner',address:'987 Updated address, Laval QC H7W 4Y4',email:'homeowner'+i+'@example.test',submissionKey:crypto.randomUUID()},url='/api/courtier/'+b.slug+'/piste';
    for(const credentials of [{},{mailingToken:camp.mailing_token},{mailingRecipient:key},{mailingToken:camp.mailing_token,mailingRecipient:'f'.repeat(32)},{mailingToken:camp.mailing_token,mailingRecipient:campaigns[1-i].addresses[0].mailing_id},{mailingToken:campaigns[1-i].mailing_token,mailingRecipient:campaigns[1-i].addresses[0].mailing_id},{mailingToken:[camp.mailing_token],mailingRecipient:key}])assert.equal((await request(url,{...lead,...credentials},owner)).status,403,JSON.stringify(credentials));
    assert.equal((await request(url,{...lead,mailingToken:camp.mailing_token,mailingRecipient:key})).status,200);
    const saved=await h.db.all('SELECT address FROM broker_leads WHERE broker_id=$1',[b.id]);assert.deepEqual(saved.map(r=>r.address),[lead.address]);
@@ -37,10 +39,11 @@ test('only an issued campaign/recipient pair authorizes a page and lead, includi
   assert.equal((await request('/api/espace/campagne/'+c.id+'/territoire',undefined,owner)).status,404,'included campaigns must not expose recipient keys in territory APIs');
   const payload={name:'Blocked',address:'123 Test',mailingToken:c.mailing_token,mailingRecipient:a.mailing_id};
   for(const state of [{status:'cancelled',payment_status:'paid',is_test:0},{status:'confirmed',payment_status:'pending',is_test:0},{status:'confirmed',payment_status:'paid',is_test:1}]){
-   await h.db.run('UPDATE broker_campaigns SET status=$1,payment_status=$2,is_test=$3 WHERE id=$4',[state.status,state.payment_status,state.is_test,c.id]);await home(path);assert.equal((await request('/api/courtier/'+brokers[0].slug+'/piste',payload,owner)).status,403);
+   await h.db.run('UPDATE broker_campaigns SET status=$1,payment_status=$2,is_test=$3 WHERE id=$4',[state.status,state.payment_status,state.is_test,c.id]);await recovery(path);assert.equal((await request('/api/courtier/'+brokers[0].slug+'/piste',payload,owner)).status,403);
   }
   await h.db.run("UPDATE broker_campaigns SET status='mailed',payment_status='paid',is_test=0 WHERE id=$1",[c.id]);assert.equal((await request(path)).status,200);
-  await h.db.run('UPDATE brokers SET published=0 WHERE id=$1',[brokers[0].id]);await home(path);assert.equal((await request('/api/courtier/'+brokers[0].slug+'/piste',payload,owner)).status,403);
+  await h.db.run('UPDATE brokers SET published=0 WHERE id=$1',[brokers[0].id]);await recovery(path);assert.equal((await request('/api/courtier/'+brokers[0].slug+'/piste',payload,owner)).status,403);
   assert.equal((await h.db.get('SELECT COUNT(*)::int AS n FROM broker_leads')).n,2);
+  assert.equal(h.emails.length,0,'capture persists jobs without sending inline');assert.equal((await h.db.get('SELECT COUNT(*)::int AS n FROM notification_jobs')).n,4);const sent=await require(root+'/notification-outbox-v1').create(h.services).run();assert.equal(sent.sent,4);assert.equal(h.emails.length,4);
  }finally{await h.close();}
 });

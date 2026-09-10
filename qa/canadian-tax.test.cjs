@@ -25,8 +25,8 @@ test('real routes: confirm address, freeze Ontario tax through PayPal, invoice a
  assert.equal((await post('/api/espace/billing-address',{confirmed:true,address:address('ON')},'PUT')).status,200);
  q=await (await post('/api/espace/campagne/devis',{count:150,destinationCounts:{ON:150}})).json();assert.equal(q.price.total,26951);assert.equal(q.price.taxReady,true);
  const html=await (await fetch(h.url+'/espace',{headers:f.headers})).text();assert.match(html,/billingAddressForm/);assert.match(html,/Ontario/);
- let orderBody,captureCalls=0,badAmount=false;
- h.services.fetch=async(url,opts)=>{if(url.endsWith('/v1/oauth2/token'))return {ok:true,json:async()=>({access_token:'fake'})};if(url.endsWith('/v2/checkout/orders')){orderBody=JSON.parse(opts.body);return {ok:true,json:async()=>({id:'ORDER-CA',links:[{rel:'approve',href:'https://example.test/approve'}]})};}if(url.endsWith('/capture')){captureCalls++;return {ok:true,json:async()=>({status:'COMPLETED',purchase_units:[{payments:{captures:[{id:'CAPTURE-CA',status:'COMPLETED',amount:{currency_code:'CAD',value:'269.51'}}]}}]})};}return {ok:true,json:async()=>({status:'APPROVED',purchase_units:badAmount?[{...orderBody.purchase_units[0],amount:{currency_code:'CAD',value:'1.00'}}]:orderBody.purchase_units})};};
+ let orderBody,captureCalls=0,badAmount=false,providerStatus='APPROVED';
+ h.services.fetch=async(url,opts)=>{if(url.endsWith('/v1/oauth2/token'))return {ok:true,json:async()=>({access_token:'fake'})};if(url.endsWith('/v2/checkout/orders')){orderBody=JSON.parse(opts.body);return {ok:true,json:async()=>({id:'ORDER-CA',links:[{rel:'approve',href:'https://www.paypal.com/checkoutnow'}]})};}if(url.endsWith('/capture')){captureCalls++;providerStatus='COMPLETED';return {ok:true,json:async()=>({status:'COMPLETED',purchase_units:[{payments:{captures:[{id:'CAPTURE-CA',status:'COMPLETED',amount:{currency_code:'CAD',value:'269.51'}}]}}]})};}return {ok:true,json:async()=>({id:'ORDER-CA',status:providerStatus,purchase_units:(badAmount?[{...orderBody.purchase_units[0],amount:{currency_code:'CAD',value:'1.00'}}]:orderBody.purchase_units).map(u=>({...u,...(providerStatus==='COMPLETED'?{payments:{captures:[{id:'CAPTURE-CA',status:'COMPLETED',amount:{currency_code:'CAD',value:'269.51'}}]}}:{})}))})};};
  const adresses=Array.from({length:150},(_,i)=>({numero:String(100+i),rue:'Rue Test',ville:'Toronto',postal:'M5V 1A1',source:'point',lat:43.65,lng:-79.38}));
  const payload={centre:{libelle:'Montreal',lat:45.5,lng:-73.6},adresses,quantite:150,expectedTotal:q.price.total};
  assert.equal((await post('/api/espace/campagne/commander',{...payload,expectedTotal:1})).status,409);
@@ -61,12 +61,12 @@ test('default MB/SK treatment: number-free quote, PayPal and invoice; provincial
    h.services.externalVars.VENDVITE_TAX_POLICY=JSON.stringify({pst:{[province]:{treatment:'not_applicable',review_reference:'QA explicit override'}}});
    const override=await (await post('/api/espace/campagne/devis',{count:150,destinationCounts:{[province]:150}})).json();assert.equal(override.price.total,25043);assert.equal(override.price.taxReady,true);
    delete h.services.externalVars.VENDVITE_TAX_POLICY;
-   let orderBody;
+   let orderBody,providerStatus='APPROVED';
    h.services.fetch=async(url,opts)=>{
     if(url.endsWith('/v1/oauth2/token'))return {ok:true,json:async()=>({access_token:'fake'})};
-    if(url.endsWith('/v2/checkout/orders')){orderBody=JSON.parse(opts.body);return {ok:true,json:async()=>({id:'ORDER-'+province,links:[{rel:'approve',href:'https://example.test/approve'}]})};}
-    if(url.endsWith('/capture'))return {ok:true,json:async()=>({status:'COMPLETED',purchase_units:[{payments:{captures:[{id:'CAPTURE-'+province,status:'COMPLETED',amount:{currency_code:'CAD',value:(total/100).toFixed(2)}}]}}]})};
-    return {ok:true,json:async()=>({status:'APPROVED',purchase_units:orderBody.purchase_units})};
+    if(url.endsWith('/v2/checkout/orders')){orderBody=JSON.parse(opts.body);return {ok:true,json:async()=>({id:'ORDER-'+province,links:[{rel:'approve',href:'https://www.paypal.com/checkoutnow'}]})};}
+    if(url.endsWith('/capture')){providerStatus='COMPLETED';return {ok:true,json:async()=>({status:'COMPLETED',purchase_units:[{payments:{captures:[{id:'CAPTURE-'+province,status:'COMPLETED',amount:{currency_code:'CAD',value:(total/100).toFixed(2)}}]}}]})};}
+    return {ok:true,json:async()=>({id:'ORDER-'+province,status:providerStatus,purchase_units:orderBody.purchase_units.map(u=>({...u,...(providerStatus==='COMPLETED'?{payments:{captures:[{id:'CAPTURE-'+province,status:'COMPLETED',amount:{currency_code:'CAD',value:(total/100).toFixed(2)}}]}}:{})}))})};
    };
    const adresses=Array.from({length:150},(_,i)=>({numero:String(100+i),rue:'Main Street',ville:city,postal:postal[province],source:'point',lat,lng}));
    const r=await post('/api/espace/campagne/commander',{centre:{libelle:city,lat,lng},adresses,quantite:150,expectedTotal:total});assert.equal(r.status,200,await r.clone().text());

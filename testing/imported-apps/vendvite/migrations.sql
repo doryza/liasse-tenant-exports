@@ -130,3 +130,80 @@ CREATE TABLE IF NOT EXISTS agent_page_activity (
 CREATE INDEX IF NOT EXISTS agent_page_activity_agent ON agent_page_activity(agent_id,last_seen_at);
 CREATE INDEX IF NOT EXISTS agent_page_activity_broker ON agent_page_activity(broker_id,last_seen_at);
 CREATE INDEX IF NOT EXISTS agent_page_activity_recent ON agent_page_activity(last_seen_at) WHERE first_seen_at IS NOT NULL;
+
+-- Integrated tracking-auth-migration-v1.sql
+ALTER TABLE brokers ADD COLUMN IF NOT EXISTS email_verified_at TIMESTAMPTZ;
+ALTER TABLE solicitation_agents ADD COLUMN IF NOT EXISTS claimed_at TIMESTAMPTZ;
+ALTER TABLE broker_tokens ADD COLUMN IF NOT EXISTS invitation_id INTEGER REFERENCES solicitation_agents(id);
+CREATE TABLE IF NOT EXISTS solicitation_claims (
+ agent_id INTEGER NOT NULL REFERENCES solicitation_agents(id),
+ broker_id INTEGER NOT NULL REFERENCES brokers(id),
+ started_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+ verified_at TIMESTAMPTZ,
+ PRIMARY KEY(agent_id,broker_id)
+);
+UPDATE brokers b SET email_verified_at=v.verified_at FROM (SELECT broker_id,MIN(used_at) verified_at FROM broker_tokens WHERE used_at IS NOT NULL GROUP BY broker_id) v WHERE b.id=v.broker_id AND b.email_verified_at IS NULL;
+INSERT INTO solicitation_claims(agent_id,broker_id,started_at,verified_at) SELECT a.id,a.broker_id,COALESCE(b.created_at,NOW()),b.email_verified_at FROM solicitation_agents a JOIN brokers b ON b.id=a.broker_id ON CONFLICT(agent_id,broker_id) DO NOTHING;
+UPDATE solicitation_agents a SET claimed_at=b.email_verified_at FROM brokers b WHERE b.id=a.broker_id AND b.email_verified_at IS NOT NULL AND a.claimed_at IS NULL;
+ALTER TABLE agent_page_activity ADD COLUMN IF NOT EXISTS campaign_id INTEGER REFERENCES broker_campaigns(id);
+ALTER TABLE agent_page_activity ADD COLUMN IF NOT EXISTS recipient_hash TEXT;
+CREATE INDEX IF NOT EXISTS agent_page_activity_campaign_idx ON agent_page_activity(campaign_id,last_seen_at) WHERE campaign_id IS NOT NULL;
+CREATE TABLE IF NOT EXISTS operations_job_runs (
+ name TEXT PRIMARY KEY,
+ started_at TIMESTAMPTZ,
+ finished_at TIMESTAMPTZ,
+ last_error TEXT,
+ details JSONB NOT NULL DEFAULT '{}'::jsonb
+);
+
+ALTER TABLE operations_job_runs ADD COLUMN IF NOT EXISTS lease_until TIMESTAMPTZ;
+ALTER TABLE operations_job_runs ADD COLUMN IF NOT EXISTS lease_token TEXT;
+
+-- Integrated payment-recovery-migration-v1.sql
+-- Durable PayPal attempts and cross-process leases; monetary snapshots are unchanged.
+ALTER TABLE broker_campaigns ADD COLUMN IF NOT EXISTS payment_recovery JSONB NOT NULL DEFAULT '{}'::jsonb;
+ALTER TABLE broker_campaigns ADD COLUMN IF NOT EXISTS payment_check_after TIMESTAMPTZ NOT NULL DEFAULT NOW();
+ALTER TABLE broker_campaigns ADD COLUMN IF NOT EXISTS payment_lease_until TIMESTAMPTZ;
+ALTER TABLE broker_campaigns ADD COLUMN IF NOT EXISTS payment_lease_token TEXT;
+CREATE INDEX IF NOT EXISTS broker_campaigns_payment_recovery_due ON broker_campaigns(payment_check_after) WHERE kind='paid';
+ALTER TABLE broker_campaigns ADD COLUMN IF NOT EXISTS checkout_key TEXT;
+CREATE UNIQUE INDEX IF NOT EXISTS broker_campaigns_pending_checkout ON broker_campaigns(broker_id,checkout_key) WHERE kind='paid' AND payment_status='pending' AND checkout_key IS NOT NULL;
+
+-- Integrated production-migration-v2.sql
+ALTER TABLE broker_campaigns ADD COLUMN IF NOT EXISTS history_policy JSONB NOT NULL DEFAULT '{"mode":"off"}'::jsonb;
+CREATE TABLE IF NOT EXISTS production_broker_locks (
+ broker_id INTEGER PRIMARY KEY REFERENCES brokers(id),
+ owner TEXT NOT NULL,
+ expires_at TIMESTAMPTZ NOT NULL
+);
+
+-- Integrated lead-followup-migration-v1.sql
+ALTER TABLE broker_leads ADD COLUMN IF NOT EXISTS campaign_id INTEGER REFERENCES broker_campaigns(id);
+ALTER TABLE broker_leads ADD COLUMN IF NOT EXISTS recipient_id TEXT;
+ALTER TABLE broker_leads ADD COLUMN IF NOT EXISTS lang TEXT NOT NULL DEFAULT 'fr';
+ALTER TABLE broker_leads ADD COLUMN IF NOT EXISTS submission_key TEXT;
+ALTER TABLE broker_leads ADD COLUMN IF NOT EXISTS duplicate_key TEXT;
+ALTER TABLE broker_leads ADD COLUMN IF NOT EXISTS duplicate_window BIGINT;
+ALTER TABLE broker_leads ADD COLUMN IF NOT EXISTS response_due_at TIMESTAMPTZ;
+ALTER TABLE broker_leads ADD COLUMN IF NOT EXISTS contacted_at TIMESTAMPTZ;
+ALTER TABLE broker_leads ADD COLUMN IF NOT EXISTS analysis_delivered_at TIMESTAMPTZ;
+ALTER TABLE broker_leads ADD COLUMN IF NOT EXISTS delivery_method TEXT;
+ALTER TABLE broker_leads ADD COLUMN IF NOT EXISTS delivery_reference TEXT;
+CREATE UNIQUE INDEX IF NOT EXISTS broker_leads_submission_idx ON broker_leads(broker_id,submission_key);
+CREATE UNIQUE INDEX IF NOT EXISTS broker_leads_duplicate_idx ON broker_leads(broker_id,duplicate_key,duplicate_window);
+CREATE INDEX IF NOT EXISTS broker_leads_campaign_idx ON broker_leads(campaign_id,created_at);
+CREATE INDEX IF NOT EXISTS broker_leads_due_idx ON broker_leads(response_due_at) WHERE contacted_at IS NULL;
+CREATE TABLE IF NOT EXISTS notification_jobs (
+ id BIGSERIAL PRIMARY KEY, job_key TEXT NOT NULL UNIQUE, kind TEXT NOT NULL,
+ payload JSONB NOT NULL, broker_id INTEGER, lead_id INTEGER, campaign_id INTEGER,
+ status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending','sending','sent','failed','cancelled')),
+ attempts INTEGER NOT NULL DEFAULT 0, next_attempt_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+ lease_token TEXT, lease_until TIMESTAMPTZ, sent_at TIMESTAMPTZ, last_error TEXT,
+ created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS notification_jobs_due_idx ON notification_jobs(status,next_attempt_at);
+CREATE INDEX IF NOT EXISTS notification_jobs_lead_idx ON notification_jobs(lead_id);
+CREATE TABLE IF NOT EXISTS lead_request_limits (
+ scope_hash TEXT PRIMARY KEY, window_started_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+ requests INTEGER NOT NULL DEFAULT 1
+);

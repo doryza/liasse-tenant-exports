@@ -33,13 +33,13 @@ test('mixed destinations: checkout rejects forged/stale totals, freezes allocati
  const destinationCounts=Object.fromEntries(Object.keys(centres).map(p=>[p,10]));
  const quote=await (await post('/api/espace/campagne/devis',{count:80,destinationCounts})).json();assert.equal(quote.price.taxReady,true);assert.equal(quote.price.total,14263);assert.equal(quote.price.taxLines.length,8);
  const missing=await (await post('/api/espace/campagne/devis',{count:80,destinations:['BC','MB']})).json();assert.equal(missing.price.taxReady,false);assert.equal(missing.price.total,null);
- let calls=0,orderBody,captures=0;
+ let calls=0,orderBody,captures=0,providerStatus='CREATED';
  h.services.fetch=async(url,opts)=>{
   calls++;
   if(url.endsWith('/v1/oauth2/token'))return {ok:true,json:async()=>({access_token:'fake'})};
-  if(url.endsWith('/v2/checkout/orders')){orderBody=JSON.parse(opts.body);return {ok:true,json:async()=>({id:'ORDER-MIXED',links:[{rel:'approve',href:'https://example.test/approve'}]})};}
-  if(url.endsWith('/capture')){captures++;return {ok:true,json:async()=>({status:'COMPLETED',purchase_units:[{payments:{captures:[{id:'CAPTURE-MIXED',status:'COMPLETED',amount:{currency_code:'CAD',value:'142.63'}}]}}]})};}
-  return {ok:true,json:async()=>({status:'APPROVED',purchase_units:orderBody.purchase_units})};
+  if(url.endsWith('/v2/checkout/orders')){orderBody=JSON.parse(opts.body);return {ok:true,json:async()=>({id:'ORDER-MIXED',links:[{rel:'approve',href:'https://www.paypal.com/checkoutnow?token=ORDER-MIXED'}]})};}
+  if(url.endsWith('/capture')){captures++;providerStatus='COMPLETED';return {ok:true,json:async()=>({status:'COMPLETED',purchase_units:[{payments:{captures:[{id:'CAPTURE-MIXED',status:'COMPLETED',amount:{currency_code:'CAD',value:'142.63'}}]}}]})};}
+  return {ok:true,json:async()=>({id:'ORDER-MIXED',status:providerStatus,purchase_units:orderBody.purchase_units.map(u=>({...u,...(providerStatus==='COMPLETED'?{payments:{captures:[{id:'CAPTURE-MIXED',status:'COMPLETED',amount:{currency_code:'CAD',value:'142.63'}}]}}:{})})),links:[{rel:'approve',href:'https://www.paypal.com/checkoutnow?token=ORDER-MIXED'}]})};
  };
  // Claimed province is deliberately false: checkout must use coordinates.
  const adresses=Object.entries(centres).flatMap(([p,[lat,lng]])=>Array.from({length:10},(_,i)=>({numero:String(100+i),rue:'Main Street',ville:p+' City',postal:postal[p],lat,lng,source:'point',province:'AB'})));
@@ -49,6 +49,7 @@ test('mixed destinations: checkout rejects forged/stale totals, freezes allocati
  const r=await post('/api/espace/campagne/commander',payload);assert.equal(r.status,200,await r.clone().text());const order=await r.json();assert.equal(orderBody.purchase_units[0].amount.breakdown.tax_total.value,'15.43');
  const stored=await h.db.get('SELECT * FROM broker_campaigns WHERE id=$1',[order.id]);assert.deepEqual(stored.tax_snapshot,quote.price.taxSnapshot);
  await h.db.run('UPDATE brokers SET billing_address=$1 WHERE id=$2',[JSON.stringify(address('QC')),b.id]);h.services.externalVars.VENDVITE_TAX_POLICY=JSON.stringify({pst:{BC:{treatment:'not_applicable',review_reference:'Changed later'}}});
+ providerStatus='APPROVED';
  await fetch(h.url+'/espace/campagne/retour?token=ORDER-MIXED&mode=live',{headers,redirect:'manual'});
  const invoice=await h.db.get('SELECT * FROM broker_invoices WHERE campaign_id=$1',[order.id]);assert(invoice);assert.equal(invoice.total_cents,14263);assert.deepEqual(invoice.tax_snapshot,stored.tax_snapshot);assert.equal(invoice.pst_cents,317);assert.match(h.emails[0].text,/PST.*BC/);assert.match(h.emails[0].text,/PST.*SK/);assert.match(h.emails[0].text,/RST.*MB/);
  fs.mkdirSync(__dirname+'/tax-preview',{recursive:true});fs.writeFileSync(__dirname+'/tax-preview/invoice-mixed.pdf',require(root+'/invoice-v5').buildInvoicePdf({...invoice,campaign:stored},b,{name:'Liasse Technologique',email:'billing@example.test'}));

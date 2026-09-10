@@ -204,16 +204,34 @@
     record.running=true;record.failed=false;retry.hidden=true;
     while(record.pending){
       record.pending=false;flag.textContent=T('ws_saving');flag.className='';
-      var payload={status:article.querySelector('.esp-lead-status').value,notes:article.querySelector('.esp-lead-notes').value};
+      var payload=Object.assign({status:article.querySelector('.esp-lead-status').value,notes:article.querySelector('.esp-lead-notes').value},record.delivery||{});
       try{
         var r=await apiFetch('api/espace/leads/'+id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-        if(!r.ok)throw Error('save');
+        var result=await r.json();if(!r.ok)throw Error(result.error||T('ws_save_retry'));
+        record.delivery=null;
+        var lead=result.lead,en=document.documentElement.lang==='en';
+        if(lead){
+          var fresh=document.querySelector('[data-leads-fresh]');if(fresh){var delta=(lead.status==='nouveau'?1:0)-(article.dataset.status==='nouveau'?1:0);fresh.textContent=String(Math.max(0,Number(fresh.textContent)+delta));}article.dataset.status=lead.status;
+          article.dataset.contacted=lead.contacted_at||'';article.dataset.delivered=lead.analysis_delivered_at||'';
+          var progress=article.querySelector('[data-lead-progress]');
+          if(lead.analysis_delivered_at){progress.textContent=(en?'Analysis delivered: ':'Analyse remise : ')+new Date(lead.analysis_delivered_at).toLocaleString(en?'en-CA':'fr-CA');article.querySelector('[data-lead-delivery-panel]')?.setAttribute('hidden','');var option=article.querySelector('.esp-lead-status option[value="évalué"]');option.disabled=false;article.querySelector('.esp-lead-status').value='évalué';}
+          else if(lead.contacted_at)progress.textContent=(en?'Contact recorded: ':'Contact consigné : ')+new Date(lead.contacted_at).toLocaleString(en?'en-CA':'fr-CA');
+          else if(lead.status==='fermé')progress.textContent=en?'Closed':'Fermée';
+          if(lead.contacted_at||lead.status==='fermé')progress.style.color='inherit';
+        }
         flag.textContent=T('ws_saved');
-      }catch(e){record.failed=true;record.pending=true;flag.textContent=T('ws_save_retry');flag.className='is-error';retry.hidden=false;break;}
+      }catch(e){record.failed=true;record.pending=true;flag.textContent=e.message||T('ws_save_retry');flag.className='is-error';retry.hidden=false;break;}
     }
     record.running=false;
   }
   function queueLead(id,delay){var r=leadRecord(id);r.pending=true;clearTimeout(r.timer);r.timer=setTimeout(function(){flushLead(id);},delay);}
+  document.querySelectorAll('[data-lead-deliver]').forEach(function(btn){on(btn,'click',function(){
+    var id=btn.dataset.leadDeliver,article=btn.closest('.esp-lead'),flag=article.querySelector('[data-lead-save]'),en=document.documentElement.lang==='en';
+    if(!article.querySelector('[data-delivery-ack]').checked){flag.textContent=en?'Confirm that you have delivered the analysis first.':'Confirmez avoir d’abord remis l’analyse.';return;}
+    var method=article.querySelector('[data-delivery-method]').value,ref=article.querySelector('[data-delivery-reference]').value.trim();
+    if(method==='other'&&!ref){flag.textContent=en?'Describe how you delivered the analysis.':'Précisez comment vous avez remis l’analyse.';return;}
+    leadRecord(id).delivery={status:'évalué',deliveryAcknowledged:true,deliveryMethod:method,deliveryReference:ref};queueLead(id,0);
+  });});
   document.querySelectorAll('.esp-lead-status').forEach(function(el){on(el,'change',function(){queueLead(el.dataset.id,0);filterLeads();});});
   document.querySelectorAll('.esp-lead-notes').forEach(function(el){on(el,'input',function(){queueLead(el.dataset.id,700);document.querySelector('[data-lead-save="'+el.dataset.id+'"]').textContent=T('ws_unsaved');});});
   document.querySelectorAll('[data-lead-retry]').forEach(function(btn){on(btn,'click',function(){queueLead(btn.dataset.leadRetry,0);});});

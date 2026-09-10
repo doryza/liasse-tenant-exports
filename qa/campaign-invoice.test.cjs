@@ -10,7 +10,8 @@ async function fixture(h,mode='sandbox',state='pending'){
 }
 function mockPaypal(h){
  const calls=[];Object.assign(h.services.externalVars,{PAYPAL_CLIENT_ID:'mock',PAYPAL_CLIENT_SECRET:'mock',PAYPAL_SANDBOX_CLIENT_ID:'mock',PAYPAL_SANDBOX_CLIENT_SECRET:'mock'});
- h.services.fetch=async(url,options)=>{calls.push(url);if(url.endsWith('/v1/oauth2/token'))return {ok:true,json:async()=>({access_token:'fake'})};assert.match(url,/\/v2\/checkout\/orders\//);return {ok:true,json:async()=>url.endsWith('/capture')?{status:'COMPLETED',purchase_units:[{payments:{captures:[{id:url.split('/').at(-2)+'-capture'}]}}]}:{status:'APPROVED'}};};
+ const captured=new Set();
+ h.services.fetch=async(url,options)=>{calls.push(url);if(url.endsWith('/v1/oauth2/token'))return {ok:true,json:async()=>({access_token:'fake'})};assert.match(url,/\/v2\/checkout\/orders\//);const id=url.endsWith('/capture')?url.split('/').at(-2):url.split('/').at(-1),c=await h.db.get('SELECT * FROM broker_campaigns WHERE paypal_order_id=$1',[id]);assert(c);if(url.endsWith('/capture'))captured.add(id);const amount={currency_code:'CAD',value:(c.total_cents/100).toFixed(2)};return {ok:true,json:async()=>({id,status:captured.has(id)?'COMPLETED':'APPROVED',purchase_units:[{custom_id:'camp:'+c.broker_id+':'+c.id,amount,...(captured.has(id)?{payments:{captures:[{id:id+'-capture',status:'COMPLETED',amount}]}}:{})}]})};};
  return calls;
 }
 const admin={'x-test-admin':'yes','Content-Type':'application/json'};
