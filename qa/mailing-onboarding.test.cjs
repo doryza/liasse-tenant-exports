@@ -11,7 +11,7 @@ test('strict agent parsing separates identity from delivery lines',()=>{
  assert.equal(tools.parseAddresses('A {"agency":"B","title":"C","phone":"123","headshot_url":""}\n12 RUE TEST\nLAVAL QC H7W 4Y4')[0].agency,'B');
 });
 test('saved campaigns, personalized demos, free onboarding and campaign-only capture',async()=>{
- const h=await create();h.services.qrcode=require('/home/liassetech/liasse.tech/node_modules/qrcode');
+ const h=await create();h.services.externalVars.PAYPAL_MODE='live';h.services.qrcode=require('/home/liassetech/liasse.tech/node_modules/qrcode');
  const auth=authModule.create(h.services);
  async function req(path,body,headers={}){return fetch(h.url+path,{method:body===undefined?'GET':'POST',redirect:'manual',headers:{'Content-Type':'application/json',...headers},body:body===undefined?undefined:JSON.stringify(body)});}
  const admin={'x-test-admin':'yes'};

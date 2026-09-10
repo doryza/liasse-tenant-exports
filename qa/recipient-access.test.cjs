@@ -1,7 +1,7 @@
 const {test}=require('node:test'),assert=require('node:assert/strict'),crypto=require('crypto');
 const {create,root}=require('./harness.cjs'),mail=require(root+'/mailing-service-v7'),model=require(root+'/public/js/campaign-model-v2');
 test('only an issued campaign/recipient pair authorizes a page and lead, including legacy accounts and owners',async()=>{
- const h=await create();
+ const h=await create();h.services.externalVars.PAYPAL_MODE='live';
  async function request(path,body,headers={}){return fetch(h.url+path,{method:body===undefined?'GET':'POST',redirect:'manual',headers:{'Content-Type':'application/json',...headers},body:body===undefined?undefined:JSON.stringify(body)});}
  async function home(path,headers){const r=await request(path,undefined,headers);assert.equal(r.status,302,path);assert.equal(r.headers.get('location'),path.startsWith('/pwa/vendvite/')?'/pwa/vendvite/':'/');assert.match(r.headers.get('cache-control'),/no-store/);}
  async function recovery(path){const r=await request(path);assert.equal(r.status,404,path);assert.match(r.headers.get('cache-control'),/no-store/);const html=await r.text();assert.match(html,/code QR complet/);assert.doesNotMatch(html,/window.VV_INITIAL_ADDRESS/);}
@@ -14,7 +14,7 @@ test('only an issued campaign/recipient pair authorizes a page and lead, includi
    const c=await h.db.get("INSERT INTO broker_campaigns(broker_id,kind,status,payment_status,addresses) VALUES($1,'paid','confirmed','paid',$2) RETURNING *",[broker.id,JSON.stringify([address])]);campaigns.push(await mail.prepareRecipients(h.db,c));
   }
   const c=campaigns[0],a=c.addresses[0],path='/courrier/'+c.mailing_token+'/'+a.mailing_id;
-  const raw=crypto.randomBytes(32).toString('hex');await h.db.run("INSERT INTO broker_sessions(broker_id,token_hash,device_label,idle_expires_at,absolute_expires_at) VALUES($1,$2,'QA',NOW()+INTERVAL '1 hour',NOW()+INTERVAL '1 hour')",[brokers[0].id,crypto.createHash('sha256').update(raw).digest('hex')]);const owner={cookie:'vv_broker_session='+raw};
+  const raw=crypto.randomBytes(32).toString('hex');await h.db.run("INSERT INTO broker_sessions(broker_id,token_hash,device_label,idle_expires_at,absolute_expires_at) VALUES($1,$2,'QA',NOW()+INTERVAL '1 hour',NOW()+INTERVAL '1 hour')",[brokers[0].id,crypto.createHash('sha256').update(raw).digest('hex')]);const owner={cookie:'vv_broker_session='+raw,'X-VV-Payment-Mode':'live'};
   for(const prefix of ['', '/pwa/vendvite']){
    for(const b of brokers)for(const suffix of ['', '?address=123+Fake&lat=45&lng=-73'])await home(prefix+'/'+b.slug+suffix,owner);
    for(const p of ['/courrier/'+c.mailing_token,'/courrier/'+c.mailing_token+'?address=123+Fake','/courrier/'+c.mailing_token+'/'+'f'.repeat(32),'/courrier/'+c.mailing_token+'/'+campaigns[1].addresses[0].mailing_id,'/courrier/invalid/'+a.mailing_id])await recovery(prefix+p);
@@ -30,7 +30,7 @@ test('only an issued campaign/recipient pair authorizes a page and lead, includi
   // A copied private sample cannot submit leads, even for its signed-in owner.
   await h.db.run('INSERT INTO broker_campaign_drafts(broker_id,data) VALUES($1,$2)',[brokers[0].id,JSON.stringify({addresses:[address],selected:[model.key(address)]})]);
   const qrTargets=[];h.services.qrcode.toDataURL=async target=>{qrTargets.push(target);return ''};
-  const proof=await request('/espace/lettre-proprietaires?proof=1',undefined,owner);assert.equal(proof.status,200);assert.match(await proof.text(),/Aperçu privé/);assert.deepEqual(qrTargets,[h.url+'/espace/apercu?proof=1']);
+  const proof=await request('/espace/lettre-proprietaires?proof=1',undefined,owner);assert.equal(proof.status,200);assert.match(await proof.text(),/Aperçu privé/);assert.deepEqual(qrTargets,[h.url+'/espace/apercu?proof=1&paymentMode=live']);
   const sample=await request('/espace/apercu?proof=1',undefined,owner);assert.equal(sample.status,200);const html=await sample.text();assert.match(html,/window.VV_PAGE_PREVIEW = true/);assert.match(html,/window.VV_INITIAL_ADDRESS = "4410 Pl. de la Meuse, Laval QC H7W 4Y4"/);assert.match(html,/window.VV_MAILING_TOKEN = null/);assert.match(html,/window.VV_MAILING_RECIPIENT = null/);
   const anonymous=await request('/espace/apercu?proof=1');assert.doesNotMatch(await anonymous.text(),/window.VV_INITIAL_ADDRESS/);
   assert.match(await (await request('/espace/page',undefined,owner)).text(),/window.VV_INITIAL_ADDRESS = null/);

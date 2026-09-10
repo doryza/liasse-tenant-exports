@@ -17,6 +17,7 @@
         <a data-vv-auth class="esp-tab" href="espace/page"><%= t.c_edit_page %></a>
         <a data-vv-auth class="esp-tab <%= activePage==='pistes'?'is-on':'' %>" href="espace/pistes" <%- activePage==='pistes'?'aria-current="page"':'' %>><%= t.ws_leads %> <span class="esp-pill"><%= counts.total %></span></a>
         <a data-vv-auth class="esp-tab <%= activePage==='compte'||activePage==='abonnement'?'is-on':'' %>" href="espace/compte"><%= t.ws_account %></a>
+        <a data-vv-auth class="esp-tab" href="espace/tests"><%= lang==='en'?'Test mode':'Mode test' %><%= sandboxSession?' •':'' %></a>
       </nav>
     </div>
   </header>
@@ -32,58 +33,7 @@
 
     <!-- ═══ Mes pistes ═══ -->
     <% if (activePage === 'pistes') { %>
-    <section class="esp-panel is-on" data-panel="pistes">
-      <h1 class="ws-section-title"><%= t.ws_leads %></h1>
-      <div class="ws-card"><strong><%= lang==='en'?'Your follow-up responsibilities':'Votre suivi auprès des propriétaires' %></strong><p><%= lang==='en'?'Contact each homeowner within 24 hours of their request. Agree on delivery timing, prepare the analysis, and deliver it yourself. Record contact here, then confirm delivery. A reminder is sent for overdue first contacts.':'Contactez chaque propriétaire dans les 24 heures suivant sa demande. Convenez du délai de remise, préparez l’analyse et remettez-la vous-même. Consignez ici le contact, puis confirmez la remise. Un rappel est envoyé lorsque le premier contact est en retard.' %></p><p><%= lang==='en'?'Request emails are retried during delivery outages. This inbox is the source of record.':'Les courriels de demande sont réessayés lors d’une panne de livraison. Toutes les demandes restent disponibles ici.' %></p></div>
-      <div class="esp-stats">
-        <div class="esp-stat"><span class="esp-stat-n"><%= counts.total %></span><span class="esp-stat-l"><%= t.esp_leads_total_label %></span></div>
-        <div class="esp-stat"><span class="esp-stat-n" data-leads-fresh><%= counts.fresh %></span><span class="esp-stat-l"><%= t.esp_leads_new_label %></span></div>
-        <div class="esp-stat"><span class="esp-stat-n"><%= counts.recent %></span><span class="esp-stat-l"><%= t.esp_leads_last_30_days_label %></span></div>
-      </div>
-      <% if (!leads.length) { %>
-        <div class="esp-empty">
-          <div class="esp-empty-sigil" aria-hidden="true">&#10022;</div>
-          <h3><%= t.esp_leads_empty_state %></h3>
-          <p><% if (!isLive) { %><%= t.esp_leads_empty_unpublished %><% } else { %><%= t.esp_leads_empty_published %><% } %></p>
-        </div>
-      <% } else { %>
-        <div class="ws-lead-filters"><label><span><%= t.ws_filter %></span><input id="leadSearch" type="search" placeholder="<%= t.ws_search %>"></label><label><span><%= t.ws_lead_status %></span><select id="leadFilter"><option value=""><%= t.ws_all %></option><% ['nouveau','contacté','évalué','fermé'].forEach(function(status,i){ %><option value="<%= status %>"><%= [t.ws_status_new,t.ws_status_contacted,lang==='en'?'Analysis delivered':'Analyse remise',t.ws_status_closed][i] %></option><% }); %></select></label></div><p id="leadNoMatches" class="ws-muted" hidden><%= t.ws_no_matches %></p>
-        <div class="esp-leads">
-          <% leads.forEach(function(l){ %>
-            <article class="esp-lead" data-id="<%= l.id %>" data-status="<%= l.status %>" data-contacted="<%= l.contacted_at||'' %>" data-delivered="<%= l.analysis_delivered_at||'' %>" data-due="<%= l.response_due_at||'' %>">
-              <p data-lead-progress style="font-weight:700;color:<%= !l.contacted_at&&l.status!=='fermé'&&l.response_due_at&&new Date(l.response_due_at)<new Date()?'#ad1231':'inherit' %>"><%= l.analysis_delivered_at?(lang==='en'?'Analysis delivered: ':'Analyse remise : ')+formatDate(l.analysis_delivered_at,lang):l.contacted_at?(lang==='en'?'Contact recorded: ':'Contact consigné : ')+formatDate(l.contacted_at,lang):l.status==='fermé'?(lang==='en'?'Closed':'Fermée'):l.response_due_at?(new Date(l.response_due_at)<new Date()?(lang==='en'?'Overdue — contact this homeowner now':'En retard — contactez ce propriétaire maintenant'):(lang==='en'?'Contact due: ':'À contacter avant : ')+new Date(l.response_due_at).toLocaleString(lang==='en'?'en-CA':'fr-CA')):(lang==='en'?'To contact':'À contacter') %></p>
-              <div class="esp-lead-head">
-                <div>
-                  <h3><%= l.name %></h3>
-                  <p class="esp-lead-addr"><%= l.address || '' %></p>
-                </div>
-                <select class="esp-lead-status" data-id="<%= l.id %>" aria-label="<%= t.ws_lead_status %>">
-                  <% ['nouveau','contacté','évalué','fermé'].forEach(function(s,i){ %>
-                    <option value="<%= s %>" <%= (l.status===s?'selected':'') %> <%= s==='évalué'&&!l.analysis_delivered_at?'disabled':'' %>><%= [t.ws_status_new,t.ws_status_contacted,lang==='en'?'Analysis delivered':'Analyse remise',t.ws_status_closed][i] %></option>
-                  <% }); %>
-                </select>
-              </div>
-              <div class="esp-lead-meta">
-                <% if (l.phone) { %><a href="tel:<%= String(l.phone).replace(/\D/g,'') %>"><%= formatPhone(l.phone) %></a><% } %>
-                <% if (l.email) { %><a href="mailto:<%= l.email %>"><%= l.email %></a><% } %>
-                <% if (l.timeframe) { %><span><%= l.timeframe %></span><% } %>
-                <span class="esp-lead-when"><%= formatDate(l.created_at, lang) %></span>
-              </div>
-              <% if(l.campaign_id){ %><p><%= lang==='en'?'Mailing order':'Commande postale' %> #<%= l.campaign_id %></p><% } %>
-              <details data-lead-delivery-panel <%= l.analysis_delivered_at?'hidden':'' %>><summary><%= lang==='en'?'Record analysis delivery':'Consigner la remise de l’analyse' %></summary>
-                <p><%= lang==='en'?'Deliver the analysis to the homeowner first. This action records your confirmation; it does not send a report.':'Remettez d’abord l’analyse au propriétaire. Cette action consigne votre confirmation; elle n’envoie aucun rapport.' %></p>
-                <label><%= lang==='en'?'Delivery method':'Mode de remise' %> <select data-delivery-method><option value="email"><%= lang==='en'?'Email':'Courriel' %></option><option value="phone"><%= lang==='en'?'Phone presentation':'Présentation par téléphone' %></option><option value="in_person"><%= lang==='en'?'In person':'En personne' %></option><option value="other"><%= lang==='en'?'Other':'Autre' %></option></select></label>
-                <label style="display:block;margin:12px 0"><%= lang==='en'?'Private reference or detail (required for Other)':'Référence ou précision privée (requise pour Autre)' %> <input data-delivery-reference type="text" maxlength="500" style="width:100%"></label>
-                <label style="display:block;margin:12px 0"><input data-delivery-ack type="checkbox"> <%= lang==='en'?'I confirm that I have delivered the comparative market analysis to this homeowner.':'Je confirme avoir remis l’analyse comparative de marché à ce propriétaire.' %></label>
-                <button type="button" class="esp-btn" data-lead-deliver="<%= l.id %>"><%= lang==='en'?'Confirm delivery':'Confirmer la remise' %></button>
-              </details>
-              <% if(l.analysis_delivered_at){ %><p><%= lang==='en'?'Delivery recorded by you':'Remise attestée par vous' %> · <%= ({email:lang==='en'?'Email':'Courriel',phone:lang==='en'?'Phone':'Téléphone',in_person:lang==='en'?'In person':'En personne',other:lang==='en'?'Other':'Autre'})[l.delivery_method]||'' %><% if(l.delivery_reference){ %> · <%= l.delivery_reference %><% } %></p><% } %>
-              <textarea class="esp-lead-notes" data-id="<%= l.id %>" rows="2" aria-label="<%= t.ws_notes %>" placeholder="<%= t.esp_lead_private_notes_ph %>"><%= l.notes || '' %></textarea><div class="ws-lead-save"><span data-lead-save="<%= l.id %>" role="status" aria-live="polite"></span><button class="esp-ghost" type="button" data-lead-retry="<%= l.id %>" hidden><%= t.ws_reload %></button></div>
-            </article>
-          <% }); %>
-        </div>
-      <% } %>
-    </section>
+    <%- include('espace-pistes') %>
     <% } %>
 
     <!-- ═══ Abonnement ═══ -->
@@ -188,9 +138,9 @@
   window.VV_T = <%- scriptJson(Object.keys(t).filter(function(k){return k.indexOf('esp_')===0||k.indexOf('ws_')===0||k.indexOf('c_')===0;}).reduce(function(o,k){o[k]=t[k];return o;},{})) %>;
   window.VV_CAMP = { id:<%= Number(broker.id) %>, lang:<%- scriptJson(lang) %>, setupComplete:<%= setupComplete?'true':'false' %>, homeProvince:<%- scriptJson(billingAddress.province||'') %>, cible: <%= campCible %>, restantes: <%= campQuota.restantes %>, palier: <%= campPalier %>, max: <%= campMax %>, paliers: <%- scriptJson(campPaliers) %>, peutPayer: <%= campPeutPayer ? 'true' : 'false' %>, mode: <%- scriptJson(campModePaypal) %>, credit: <%= campQuota.creditPortes %>, active: <%= isActive ? 'true' : 'false' %>, published: <%= Number(broker.published) === 1 ? 'true' : 'false' %>, isMailing:<%= isMailing?'true':'false' %>, subscriptionTotal: <%= Math.round(price.total * 100) %> };
 </script>
-<script src="public/js/espace.js?v=lead-followup-v1" defer></script>
-<% if(activePage==='courrier'){ %><script src="public/js/canada-boundaries-v1.js" defer></script><script src="public/js/canada-geography-v1.js" defer></script><script src="public/js/campaign-model-v2.js" defer></script><script src="public/js/address-search-v1.js" defer></script><script src="public/js/campaign-studio-v7.js" defer></script><% } %>
+<script src="public/js/espace-v2.js" defer></script>
+<% if(activePage==='courrier'){ %><script src="public/js/canada-boundaries-v1.js" defer></script><script src="public/js/canada-geography-v1.js" defer></script><script src="public/js/campaign-model-v2.js" defer></script><script src="public/js/address-search-v1.js" defer></script><script src="public/js/campaign-studio-v8.js" defer></script><% } %>
 </body>
 </html>
 
-<script src="public/js/billing-address-v1.js" defer></script>
+<script src="public/js/billing-address-v2.js" defer></script>

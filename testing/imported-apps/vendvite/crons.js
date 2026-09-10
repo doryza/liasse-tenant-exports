@@ -18,8 +18,8 @@ module.exports=function(services){
   // Rebuilding the router only registers handlers; it executes no requests.
   if(s.db!==services.db)require('./routes')(s);
   if(!s.vendvitePaymentRecovery)throw Error('Payment recovery is not registered');
-  const result=await s.vendvitePaymentRecovery.run({req,limit:5});return {checked:result.length};
+  const result=await s.vendvitePaymentRecovery.run({req,limit:5});return {checked:result.length,liveChecked:result.filter(x=>x.mode==='live').length,sandboxChecked:result.filter(x=>x.mode==='sandbox').length};
  });
- task('vendvite-notifications-v1',60000,s=>require('./notification-outbox-v1').create(s).run({limit:10}));
- task('vendvite-reminders-v1',300000,async s=>({queued:await require('./lead-service-v1').create(s).enqueueOverdue({limit:100,workspaceUrl:canonical+'/espace/pistes'})}));
+ task('vendvite-notifications-v1',60000,s=>require('./notification-outbox-v2').create(s).run({limit:10}));
+ task('vendvite-reminders-v1',300000,async s=>({queued:await require('./lead-service-v2').create(s).enqueueOverdue({limit:100,workspaceUrl:canonical+'/espace/pistes'})}));
 };

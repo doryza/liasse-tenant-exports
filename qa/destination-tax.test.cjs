@@ -26,7 +26,7 @@ test('mixed destinations: checkout rejects forged/stale totals, freezes allocati
  const h=await create();try{
  const b=await h.db.get("INSERT INTO brokers(slug,full_name,email,status,published,access_plan,billing_address,billing_confirmed_at) VALUES('destination-tax','Tax Tester','tax@example.test','invited',1,'mailing',$1,NOW()) RETURNING *",[JSON.stringify(address('ON'))]);
  const raw=crypto.randomBytes(32).toString('hex');await h.db.run("INSERT INTO broker_sessions(broker_id,token_hash,idle_expires_at,absolute_expires_at) VALUES($1,$2,NOW()+INTERVAL '1 hour',NOW()+INTERVAL '1 hour')",[b.id,crypto.createHash('sha256').update(raw).digest('hex')]);
- const cookie='vv_broker_session='+raw,session=await (await fetch(h.url+'/api/espace/session',{headers:{cookie}})).json(),headers={cookie,'Content-Type':'application/json','x-vv-csrf':session.csrf};
+ const cookie='vv_broker_session='+raw,session=await (await fetch(h.url+'/api/espace/session',{headers:{cookie}})).json(),headers={cookie,'X-VV-Payment-Mode':'live','Content-Type':'application/json','x-vv-csrf':session.csrf};
  const post=(path,body)=>fetch(h.url+path,{method:'POST',headers,body:JSON.stringify(body)});
  Object.assign(h.services.externalVars,{PAYPAL_MODE:'live',PAYPAL_CLIENT_ID:'test',PAYPAL_CLIENT_SECRET:'test'});
  const centres={AB:[51.0447,-114.0719],BC:[49.2827,-123.1207],MB:[49.8951,-97.1384],SK:[50.4452,-104.6189],QC:[45.5017,-73.5673],ON:[43.6532,-79.3832],NS:[44.6488,-63.5752],NB:[45.9636,-66.6431]};

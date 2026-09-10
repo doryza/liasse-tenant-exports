@@ -1,17 +1,17 @@
 var canadianTax = require('./canadian-tax-v2');
 var express = require('express');
 var invoiceTools = require('./invoice-v5');
-var invoiceEmail = require('./invoice-email-v5');
+var invoiceEmail = require('./invoice-email-v6');
 var invoiceSettings = require('./invoice-settings-v1');
 var workspaceInviteEmail = require('./workspace-invite-email-v1');
 var solicitationTools = require('./solicitation-v6');
 var mailingService = require('./mailing-service-v7');
 var homepageTools = require('./homepage-experiment-v1');
 var homepageCopy = require('./homepage-copy-v6');
-var brokerAuthTools = require('./broker-auth-v2');
+var brokerAuthTools = require('./broker-auth-v3');
 var workspaceCopy = require('./workspace-copy-v3');
 var campaignModel=require('./public/js/campaign-model-v2');
-var campaignHistory=require('./campaign-history-v2');
+var campaignHistory=require('./campaign-history-v3');
 var campaignDataTools=require('./campaign-data-v2');
 var campaignCopy=require('./campaign-copy-v6');
 
@@ -991,11 +991,11 @@ module.exports = function(services){
   async function notifyShortfall(req,c,shortfall){
     var b=await db.get('SELECT * FROM brokers WHERE id=$1',[c.broker_id]);if(!b)throw Error('Broker missing');var en=require('./mailing-language-v1').englishOnly(b),url=absoluteUrl(req,'/espace/campagnes/'+c.id+'/decision'),subject=en?'Your mailing needs your decision':'Votre envoi attend votre décision';
     var body=en?'Some ordered addresses could not be prepared. Review the exact quantity, unchanged price and omitted addresses, then accept or decline this proposed mailing in your secure workspace. Production is paused until your decision.':'Certaines adresses commandées ne peuvent pas être préparées. Consultez la quantité exacte, le prix inchangé et les adresses omises, puis acceptez ou refusez cet envoi dans votre espace sécurisé. La production est suspendue avant votre décision.';
-    return require('./notification-outbox-v1').create(services).enqueue('campaign:'+c.id+':shortfall:'+shortfall.fingerprint,{to:b.email,subject:subject,text:body+'\n'+url,html:'<p>'+escapeHtml(body)+'</p><p><a href="'+escapeHtml(url)+'">'+escapeHtml(subject)+'</a></p>'},{kind:'campaign_shortfall',brokerId:b.id,campaignId:c.id});
+    return require('./notification-outbox-v2').create(services).enqueue('campaign:'+c.id+':shortfall:'+shortfall.fingerprint,{to:b.email,subject:subject,text:body+'\n'+url,html:'<p>'+escapeHtml(body)+'</p><p><a href="'+escapeHtml(url)+'">'+escapeHtml(subject)+'</a></p>'},{kind:'campaign_shortfall',brokerId:b.id,campaignId:c.id});
   }
   var agentTracking=require('./agent-tracking-v2').create(services);agentTracking.register(router);
-  var operations=require('./admin-operations-v3').register(router,services,{requireAdmin:requireAdmin,baseLocals:baseLocals,currentBroker:currentBroker,tp:tp});
-  var productionOperations=require('./admin-production-v2').register(router,services,{requireAdmin:requireAdmin,baseLocals:baseLocals,currentBroker:currentBroker,tp:tp,absoluteUrl:absoluteUrl,notifyShortfall:notifyShortfall,printLocals:async function(req,broker){var settings=await getSettings();return Object.assign(await baseLocals(req),{TL:{fr:applyTextOverrides(Object.assign({},T.fr),settings,'fr'),en:applyTextOverrides(Object.assign({},T.en),settings,'en')},lang:require('./mailing-language-v1').englishOnly(broker)?'en':'fr',englishOnly:require('./mailing-language-v1').englishOnly(broker),embed:false,broker:broker,profile:brokerProfile(broker),pageUrl:'',qrDataUrl:'',formatPhone:formatPhone});}});
+  var operations=require('./admin-operations-v4').register(router,services,{requireAdmin:requireAdmin,baseLocals:baseLocals,currentBroker:currentBroker,tp:tp});
+  var productionOperations=require('./admin-production-v3').register(router,services,{requireAdmin:requireAdmin,baseLocals:baseLocals,currentBroker:currentBroker,tp:tp,absoluteUrl:absoluteUrl,notifyShortfall:notifyShortfall,printLocals:async function(req,broker){var settings=await getSettings();return Object.assign(await baseLocals(req),{TL:{fr:applyTextOverrides(Object.assign({},T.fr),settings,'fr'),en:applyTextOverrides(Object.assign({},T.en),settings,'en')},lang:require('./mailing-language-v1').englishOnly(broker)?'en':'fr',englishOnly:require('./mailing-language-v1').englishOnly(broker),embed:false,broker:broker,profile:brokerProfile(broker),pageUrl:'',qrDataUrl:'',formatPhone:formatPhone});}});
 
   router.get('/', async function(req,res){
     homepageTools.privateResponse(res);
@@ -1095,7 +1095,7 @@ module.exports = function(services){
   router.get('/admin/courtiers', requireAdmin, async function(req,res){
     var L=await baseLocals(req);
     var courtiers=await db.all(
-      'SELECT b.*, (SELECT COUNT(*)::int FROM broker_leads l WHERE l.broker_id=b.id) AS lead_count FROM brokers b ORDER BY (b.status=\'applied\') DESC, b.created_at DESC');
+      'SELECT b.*, (SELECT COUNT(*)::int FROM broker_leads l WHERE l.broker_id=b.id AND l.is_test=0) AS lead_count FROM brokers b ORDER BY (b.status=\'applied\') DESC, b.created_at DESC');
     var cc={ applied:0, invited:0, active:0, other:0 };
     (courtiers||[]).forEach(function(b){ if(cc[b.status]!=null) cc[b.status]++; else cc.other++; });
     res.render('admin-courtiers', Object.assign(L, { active:'courtiers', courtiers:courtiers||[], cc:cc }));
@@ -1365,7 +1365,7 @@ module.exports = function(services){
       var broker=await db.get('SELECT * FROM brokers WHERE id=$1',[invoice.broker_id]);
       if(!broker)return res.status(404).json({error:'Courtier introuvable'});
       var result=await sendCampaignInvoice(req,broker,invoice);
-      res.status(result.status==='sending'?202:200).json({success:result.status!=='sending',status:result.status,invoiceNumber:invoice.invoice_number,emailedAt:result.emailedAt||null});
+      res.status(result.status==='sending'?202:200).json({success:result.status!=='sending',status:result.status,invoiceNumber:invoice.invoice_number,emailedAt:result.emailedAt||null,previewedAt:result.previewedAt||null});
     }catch(e){console.error('campaign invoice email',e.message);res.status(502).json({error:'Envoi impossible. La facture est conservée; réessayez.'});}
   });
 
@@ -1684,6 +1684,8 @@ module.exports = function(services){
     res.json({success:true,csrf:req._vvSession.csrf});
   }));
 
+  require('./sandbox-workspace-v1').register(router,services,{endpoint:brokerEndpoint,requireBroker:requireBroker,requireBrokerApi:requireBrokerApi,baseLocals:baseLocals,paypalCfg:paypalCfg,absoluteUrl:absoluteUrl});
+
   // ── Broker private space
   async function espaceLocals(req, broker, activePage){
     var L = await baseLocals(req);
@@ -1692,10 +1694,13 @@ module.exports = function(services){
     }
     Object.assign(L.t,require('./three-step-copy-v3')[req.lang==='en'?'en':'fr']);
     if(req.vvEnglishOnly){L.t.c_all_in='Data, single-sided printing, folding, envelopes, postage and postal handoff included.';L.t.esp_letter_spec_before_page_url='Our centre prints it in English, folds it and inserts it into an envelope with your contact details and a unique QR code pointing to';}
-    var leads = await db.all('SELECT * FROM broker_leads WHERE broker_id=$1 ORDER BY created_at DESC LIMIT 200', [broker.id]);
-    var counts = await db.get("SELECT COUNT(*)::int AS total, COUNT(*) FILTER (WHERE status='nouveau')::int AS fresh, COUNT(*) FILTER (WHERE created_at > NOW() - INTERVAL '30 days')::int AS recent FROM broker_leads WHERE broker_id=$1", [broker.id]);
+    var testLeads=activePage==='pistes'&&req.query.mode==='test';
+    var leads = await db.all('SELECT * FROM broker_leads WHERE broker_id=$1 AND is_test=$2 ORDER BY created_at DESC,id DESC LIMIT 200', [broker.id,testLeads?1:0]);
+    var counts = await db.get("SELECT COUNT(*)::int AS total, COUNT(*) FILTER (WHERE status='nouveau')::int AS fresh, COUNT(*) FILTER (WHERE created_at > NOW() - INTERVAL '30 days')::int AS recent FROM broker_leads WHERE broker_id=$1 AND is_test=$2", [broker.id,testLeads?1:0]);
+    var leadModeCounts=await db.get('SELECT COUNT(*) FILTER(WHERE is_test=0)::int AS live,COUNT(*) FILTER(WHERE is_test=1)::int AS test FROM broker_leads WHERE broker_id=$1',[broker.id]);
     var invoices = await db.all('SELECT * FROM broker_invoices WHERE broker_id=$1 ORDER BY payment_time DESC, id DESC LIMIT 20', [broker.id]);
-    var activePaypal = await paypalCfg();
+    var activePaypal = await paypalCfg(undefined,req);
+    broker=campaignBillingBroker(broker,activePaypal.mode);
     var access = await brokerAccessState(broker, activePaypal.mode);
     var campaignPage=Math.max(1,Math.floor(Number(req.query.campaignPage)||1));
     var campaignRows=await db.all('SELECT id,kind,status,payment_status,centre_label,quantity,address_count,city,total_cents,is_test,deadline_at,mailed_at,created_at,production FROM broker_campaigns WHERE broker_id=$1 ORDER BY created_at DESC,id DESC LIMIT 25 OFFSET $2',[broker.id,(campaignPage-1)*24]);
@@ -1710,7 +1715,8 @@ module.exports = function(services){
       var pp = await prixCampagne(pq, quota.creditPortes,broker);
       paliers.push({ quantite: pq, offert: pp.offert, facturable: pp.facturable, sousTotal: pp.sousTotal, tps: pp.tps, tvq: pp.tvq, total: pp.total });
     }
-    var cfgPaypal = await paypalCfg();
+    var cfgPaypal = await paypalCfg(undefined,req);
+    if(cfgPaypal.mode==='sandbox')Object.assign(L.t,req.lang==='en'?{c_pay:'Simulate payment with PayPal',c_confirm:'Confirm this test mailing',c_promise_title:'Rehearse postal preparation.',c_promise_body:'The real service targets a handoff within 72 hours. This test records a simulated deposit; no letters are posted.',c_review_note:'TEST — no real payment or mailing. Order emails are stored as previews.'}:{c_pay:'Simuler le paiement avec PayPal',c_confirm:'Confirmer cet envoi de test',c_promise_title:'Répétez la préparation postale.',c_promise_body:'Le service réel vise un dépôt sous 72 heures. Ce test enregistre un dépôt simulé; aucune lettre n’est postée.',c_review_note:'TEST — aucun paiement réel ni envoi postal. Les courriels de commande sont conservés en aperçu.'});
     return Object.assign(L, {
       isHome: false,
       campagnes: campagnes || [],
@@ -1724,13 +1730,14 @@ module.exports = function(services){
       campPrixCents: CAMPAGNE_PRIX_CENTS,
       campPeutPayer: paypalPeutEncaisser(cfgPaypal),
       campModePaypal: cfgPaypal.mode,
+      sandboxSession:require('./broker-sandbox-v1').enabled(req),
       billingAddress: canadianTax.prefill(broker),
       billingConfirmed: !!broker.billing_confirmed_at,
       billingProvinces: canadianTax.provinces,
       broker: broker,
       profile: brokerProfile(broker),
       setupComplete: !!brokerProfile(broker).setup_completed_at || Number(broker.published) === 1,
-      leads: leads || [],
+      leads: leads || [],testLeads:testLeads,leadModeCounts:leadModeCounts,
       counts: counts || { total: 0, fresh: 0, recent: 0 },
       invoices: invoices || [],
       isMailing: mailingService.isMailing(broker),
@@ -1773,8 +1780,9 @@ module.exports = function(services){
     }catch(e){ console.error('broker workspace render failed');workspaceUnavailable(req,res); }
   }));
 
-  async function draftPreviewRecipient(broker){
-    var draft=await db.get('SELECT data FROM broker_campaign_drafts WHERE broker_id=$1',[broker.id]);
+  async function draftPreviewRecipient(broker,req,res){
+    var cfg=await campaignRequestMode(req,res,false);if(!cfg)return null;
+    var draft=await db.get('SELECT data FROM '+campaignDraftTable(cfg.mode)+' WHERE broker_id=$1',[broker.id]);
     return draft&&draft.data&&(draft.data.addresses||[]).find(function(a){return (draft.data.selected||[]).includes(campaignModel.key(a));});
   }
 
@@ -1784,7 +1792,7 @@ module.exports = function(services){
     if (!broker) return;
     try{
       if(req.query.proof==='1'){
-        var sample=await draftPreviewRecipient(broker);
+        var sample=await draftPreviewRecipient(broker,req,res);if(res.headersSent)return;
         if(sample){req.vvInitialAddress=mailingService.addressLines(sample).join(', ');if(campaignModel.canada(sample))req.vvInitialLocation={lat:Number(sample.lat),lng:Number(sample.lng)};}
       }
       await renderBrokerPage(req, res, broker, true);
@@ -1800,9 +1808,9 @@ module.exports = function(services){
     if (!broker) return;
     try{
       var profile = brokerProfile(broker);
-      var sample=req.query.proof==='1'?await draftPreviewRecipient(broker):null;
+      var sample=req.query.proof==='1'?await draftPreviewRecipient(broker,req,res):null;if(res.headersSent)return;
       var proofAddress=sample?mailingService.addressLines(sample):null;
-      var pageUrl = absoluteUrl(req, '/espace/apercu'+(sample?'?proof=1':''));
+      var pageUrl = absoluteUrl(req, '/espace/apercu'+(sample?'?proof=1&paymentMode='+encodeURIComponent((await paypalCfg(undefined,req)).mode):''));
       var qrDataUrl = await services.qrcode.toDataURL(pageUrl, {
         errorCorrectionLevel: 'H',
         margin: 2,
@@ -1844,6 +1852,8 @@ module.exports = function(services){
   router.post('/api/espace/campagne-postale', brokerEndpoint(async function(req, res){
     var broker = await requireBrokerApi(req, res);
     if (!broker) return;
+    var requestMode=await campaignRequestMode(req,res,false);if(!requestMode)return;
+    if(requestMode.mode==='sandbox')return res.status(409).json({code:'SANDBOX_LEGACY_REQUEST_DISABLED',error:req.lang==='en'?'Use the test mailing builder to rehearse an order.':'Utilisez le parcours de commande test pour simuler un envoi.'});
     try{
       var access = await brokerAccessState(broker);
       if (!(access.active && Number(broker.published) === 1)) {
@@ -1977,8 +1987,10 @@ module.exports = function(services){
   router.post('/api/espace/publier', brokerEndpoint(async function(req, res){
     var broker = await requireBrokerApi(req, res);
     if (!broker) return;
+    var cfg=await campaignRequestMode(req,res,false);if(!cfg)return;
+    if(cfg.mode==='sandbox')return res.status(409).json({code:'SANDBOX_PUBLISH_DISABLED',error:req.lang==='en'?'Turn off test mode before changing your public page publication.':'Désactivez le mode test avant de modifier la publication de votre page publique.'});
     var want = req.body && req.body.published === false ? 0 : 1;
-    var access = await brokerAccessState(broker);
+    var access = await brokerAccessState(broker,cfg.mode);
     if (want === 1 && !access.active) {
       return res.status(402).json({ error: 'abonnement', code: 'PAYMENT_REQUIRED' });
     }
@@ -1997,8 +2009,9 @@ module.exports = function(services){
     var broker = await requireBrokerApi(req, res);
     if (!broker) return;
     try{
-      var rows = await db.all('SELECT * FROM broker_leads WHERE broker_id=$1 ORDER BY created_at DESC LIMIT 500', [broker.id]);
-      res.json({ leads: rows || [] });
+      var isTest=req.query.mode==='test';
+      var rows = await db.all('SELECT * FROM broker_leads WHERE broker_id=$1 AND is_test=$2 ORDER BY created_at DESC,id DESC LIMIT 500', [broker.id,isTest?1:0]);
+      res.json({ leads: rows || [],mode:isTest?'test':'live' });
     }catch(e){ res.status(500).json({ error: 'server' }); }
   }));
 
@@ -2006,7 +2019,7 @@ module.exports = function(services){
     var broker = await requireBrokerApi(req, res);
     if (!broker) return;
     try{
-      var lead=await require('./lead-service-v1').create(services).update(broker.id,req.params.id,req.body||{},req.lang||'fr');
+      var lead=await require('./lead-service-v2').create(services).update(broker.id,req.params.id,req.body||{},req.lang||'fr');
       res.json({success:true,lead:lead});
     }catch(e){ res.status(e.status||500).json({code:e.code||'SERVER',error:e.status?e.message:'server'}); }
   }));
@@ -2044,11 +2057,13 @@ module.exports = function(services){
   }
   router.put('/api/espace/billing-address',brokerEndpoint(async function(req,res){
     var broker=await requireBrokerApi(req,res);if(!broker)return;
+    var cfg=await campaignRequestMode(req,res);if(!cfg)return;
     try{
       if(req.body.confirmed!==true)return res.status(400).json({code:'BILLING_CONFIRMATION_REQUIRED'});
       var address=canadianTax.validate(req.body.address);
-      await db.run('UPDATE brokers SET billing_address=$1::jsonb,billing_confirmed_at=NOW(),updated_at=NOW() WHERE id=$2',[JSON.stringify(address),broker.id]);
-      res.json({success:true});
+      if(cfg.mode==='sandbox')await db.run('UPDATE brokers SET sandbox_billing_address=$1::jsonb,sandbox_billing_confirmed_at=NOW() WHERE id=$2',[JSON.stringify(address),broker.id]);
+      else await db.run('UPDATE brokers SET billing_address=$1::jsonb,billing_confirmed_at=NOW(),updated_at=NOW() WHERE id=$2',[JSON.stringify(address),broker.id]);
+      res.json({success:true,paymentMode:cfg.mode});
     }catch(e){res.status(400).json({code:e.code||'BILLING_SAVE_FAILED'});}
   }));
 
@@ -2099,10 +2114,31 @@ module.exports = function(services){
   }
 
   // Resuming an unpaid campaign keeps the credit already reserved for it.
-  async function campaignCredit(broker,quota,reprise){
+  async function campaignCredit(broker,quota,reprise,mode){
     if(quota.creditPortes||!Number.isInteger(Number(reprise))||Number(reprise)<1)return quota.creditPortes;
-    var reserved=await db.get("SELECT quota_period FROM broker_campaigns WHERE id=$1 AND broker_id=$2 AND payment_status='pending' AND status='pending_payment' AND is_test=0",[Number(reprise),broker.id]);
+    var reserved=await db.get("SELECT quota_period FROM broker_campaigns WHERE id=$1 AND broker_id=$2 AND payment_status='pending' AND status='pending_payment' AND is_test=$3 AND paypal_mode=$4",[Number(reprise),broker.id,mode==='sandbox'?1:0,mode||'live']);
     return reserved&&reserved.quota_period&&new Date(reserved.quota_period).toISOString().slice(0,10)===quota.periode?CAMPAGNE_CIBLE:0;
+  }
+
+  // A signed account choice only selects the current workspace. Existing orders
+  // always use their stored mode; stale tabs must reload before changing a draft.
+  function campaignBillingBroker(broker,mode){
+    return mode==='sandbox'&&broker.sandbox_billing_confirmed_at?Object.assign({},broker,{billing_address:broker.sandbox_billing_address,billing_confirmed_at:broker.sandbox_billing_confirmed_at}):broker;
+  }
+  function campaignDraftTable(mode){return mode==='sandbox'?'broker_sandbox_campaign_drafts':'broker_campaign_drafts';}
+  async function campaignRequestMode(req,res,required){
+    var cfg=await paypalCfg(undefined,req),header=req.get('X-VV-Payment-Mode'),body=req.body&&req.body.paymentMode,query=req.query&&req.query.paymentMode;
+    var values=[header,body,query].filter(function(v){return v!==undefined;});
+    if((required!==false&&!values.length)||values.some(function(v){return v!==cfg.mode;})){
+      res.status(409).json({code:'PAYMENT_MODE_CHANGED',paymentMode:cfg.mode,reloadUrl:tp(req,'/espace/courrier-cible')});return null;
+    }
+    req._vvCampaignCfg=cfg;return cfg;
+  }
+  async function campaignRepriseAllowed(req,res,broker,reprise,mode){
+    if(!reprise)return true;
+    if(!Number.isSafeInteger(Number(reprise))||Number(reprise)<1){res.status(400).json({code:'BAD_CAMPAIGN'});return false;}
+    var row=await db.get('SELECT id FROM broker_campaigns WHERE id=$1 AND broker_id=$2 AND paypal_mode=$3 AND is_test=$4',[Number(reprise)||0,broker.id,mode,mode==='sandbox'?1:0]);
+    if(!row){res.status(409).json({code:'ORDER_MODE_MISMATCH'});return false;}return true;
   }
 
   // Une adresse arrive du navigateur : on ne fait confiance a rien.
@@ -2110,25 +2146,31 @@ module.exports = function(services){
 
   router.post('/api/espace/campagne/historique-adresses',brokerEndpoint(async function(req,res){
     var broker=await requireBrokerApi(req,res);if(!broker)return;
+    var cfg=await campaignRequestMode(req,res);if(!cfg)return;
     var filter;try{filter=campaignHistory.policy(req.body.historyFilter);}catch(e){return res.status(400).json({code:'BAD_HISTORY_FILTER'});}
     if(!Array.isArray(req.body.addresses)||req.body.addresses.length>4000)return res.status(400).json({code:'BAD_ADDRESSES'});
     var addresses=req.body.addresses.map(assainirAdresse);if(addresses.some(function(a){return !a;}))return res.status(400).json({code:'BAD_ADDRESSES'});
-    res.json({matches:await campaignHistory.matches(db,broker.id,addresses,filter)});
+    res.json({matches:await campaignHistory.matches(db,broker.id,addresses,filter,new Date(),cfg.mode)});
   }));
   async function checkCampaignHistory(req,res,broker,addresses){
-    var draft=await db.get('SELECT data FROM broker_campaign_drafts WHERE broker_id=$1',[broker.id]);
+    var cfg=req._vvCampaignCfg||await campaignRequestMode(req,res);if(!cfg)return false;
+    var draft=await db.get('SELECT data FROM '+campaignDraftTable(cfg.mode)+' WHERE broker_id=$1',[broker.id]);
     var filter;try{filter=campaignHistory.policy(req.body.historyFilter===undefined?draft&&draft.data&&draft.data.historyFilter:req.body.historyFilter);}catch(e){res.status(400).json({code:'BAD_HISTORY_FILTER'});return false;}
-    var matches=await campaignHistory.matches(db,broker.id,addresses,filter);
+    var matches=await campaignHistory.matches(db,broker.id,addresses,filter,new Date(),cfg.mode);
     if(matches.length){res.status(409).json({code:'ALREADY_TARGETED',matches:matches});return false;}return true;
   }
 
   router.post('/api/espace/campagne/devis',brokerEndpoint(async function(req,res){
     var broker=await requireBrokerApi(req,res);if(!broker)return;
+    var cfg=await campaignRequestMode(req,res);if(!cfg)return;
+    broker=campaignBillingBroker(broker,cfg.mode);
     var count=Number(req.body.count);if(!Number.isInteger(count)||count<1||count>CAMPAGNE_MAX)return res.status(400).json({code:'BAD_QUANTITY'});
-    var quota=await campagneQuota(broker);res.json({price:await prixCampagne(count,await campaignCredit(broker,quota,req.body.reprise),broker,req.body.destinationCounts),remaining:quota.restantes});
+    if(!await campaignRepriseAllowed(req,res,broker,req.body.reprise,cfg.mode))return;
+    var quota=await campagneQuota(broker);res.json({paymentMode:cfg.mode,price:await prixCampagne(count,await campaignCredit(broker,quota,req.body.reprise,cfg.mode),broker,req.body.destinationCounts),remaining:quota.restantes});
   }));
   router.post('/api/espace/campagne/analyse',brokerEndpoint(async function(req,res){
     var broker=await requireBrokerApi(req,res);if(!broker)return;
+    var cfg=await campaignRequestMode(req,res);if(!cfg)return;
     if(!Array.isArray(req.body.addresses)||req.body.addresses.length>100)return res.status(400).json({code:'BAD_ADDRESSES'});
     var addresses=req.body.addresses.map(assainirAdresse);if(addresses.some(function(a){return !a;}))return res.status(400).json({code:'BAD_ADDRESSES'});
     if(!await campaignData.limit(broker.id,'analysis',75))return res.status(429).json({code:'RATE_LIMITED'});
@@ -2136,43 +2178,47 @@ module.exports = function(services){
   }));
   router.get('/api/espace/campagne/brouillon',brokerEndpoint(async function(req,res){
     var broker=await requireBrokerApi(req,res);if(!broker)return;
-    var draft=await db.get('SELECT revision,data,updated_at FROM broker_campaign_drafts WHERE broker_id=$1',[broker.id]);
+    var cfg=await campaignRequestMode(req,res);if(!cfg)return;
+    var draft=await db.get('SELECT revision,data,updated_at FROM '+campaignDraftTable(cfg.mode)+' WHERE broker_id=$1',[broker.id]);
     if(draft&&draft.data&&draft.data.reprise){
-      var done=await db.get("SELECT id,addresses FROM broker_campaigns WHERE id=$1 AND broker_id=$2 AND payment_status='paid'",[draft.data.reprise,broker.id]);
+      var done=await db.get("SELECT id,addresses FROM broker_campaigns WHERE id=$1 AND broker_id=$2 AND payment_status='paid' AND paypal_mode=$3 AND is_test=$4",[draft.data.reprise,broker.id,cfg.mode,cfg.mode==='sandbox'?1:0]);
       if(done){var completedIds=(done.addresses||[]).map(campaignModel.key).sort();if(JSON.stringify(completedIds)===JSON.stringify((draft.data.selected||[]).slice().sort()))draft.completedCampaign=done.id;}
     }
-    res.json(draft||{revision:0,data:null});
+    res.json(Object.assign({paymentMode:cfg.mode},draft||{revision:0,data:null}));
   }));
   router.put('/api/espace/campagne/brouillon',brokerEndpoint(async function(req,res){
     var broker=await requireBrokerApi(req,res);if(!broker)return;
+    var cfg=await campaignRequestMode(req,res);if(!cfg)return;
     var data=req.body.data,revision=req.body.revision;
     if(!Number.isInteger(revision)||revision<0||!data||!Array.isArray(data.addresses)||data.addresses.length>4000||!Array.isArray(data.selected)||data.selected.length>CAMPAGNE_MAX||JSON.stringify(data).length>3500000)return res.status(400).json({code:'BAD_DRAFT'});
     if(data.center&&!campaignModel.canada(data.center))return res.status(400).json({code:'BAD_DRAFT'});
+    if(!await campaignRepriseAllowed(req,res,broker,data.reprise,cfg.mode))return;
     var addresses=data.addresses.map(function(a){var clean=assainirAdresse(a);if(!clean)return null;var p=a.analysis||{};clean.analysis={type:['house','plex','apartment','condo','residential','nonresidential','unknown'].includes(p.type)?p.type:'unknown',units:campaignModel.integer(p.units),levels:campaignModel.integer(p.levels,200),year:campaignModel.integer(p.year,2100),source:'osm',confidence:'mapped',buildingId:String(p.buildingId||'').slice(0,160),unitScope:p.units?'building':null};return clean;});
     if(addresses.some(function(a){return !a;}))return res.status(400).json({code:'BAD_DRAFT'});
     var ids=new Set(addresses.map(function(a){return a.id;}));if(ids.size!==addresses.length||data.excluded&&!Array.isArray(data.excluded)||data.selected.some(function(id){return !ids.has(id);}))return res.status(400).json({code:'BAD_DRAFT'});
     var historyFilter;try{historyFilter=campaignHistory.policy(data.historyFilter);}catch(e){return res.status(400).json({code:'BAD_HISTORY_FILTER'});}
-    var historyMatches=await campaignHistory.matches(db,broker.id,addresses,historyFilter),historyIds=new Set(historyMatches.map(function(a){return a.id;}));
+    var historyMatches=await campaignHistory.matches(db,broker.id,addresses,historyFilter,new Date(),cfg.mode),historyIds=new Set(historyMatches.map(function(a){return a.id;}));
     var trusted=await campaignData.trusted(addresses);trusted.forEach(function(a,i){if(!a.analysis)a.analysis=addresses[i].analysis;});
     var clean={center:data.center?{lat:Number(data.center.lat),lng:Number(data.center.lng),libelle:String(data.center.libelle||'').slice(0,300)}:null,city:String(data.city||'').slice(0,120),radius:Math.min(5000,Math.max(200,Number(data.radius)||800)),target:Math.min(CAMPAGNE_MAX,Math.max(1,Math.floor(Number(data.target))||150)),historyFilter:historyFilter,addresses:trusted,selected:Array.from(new Set(data.selected)).filter(function(id){return !historyIds.has(id);}),excluded:Array.from(new Set((data.excluded||[]).filter(function(id){return ids.has(id)&&!data.selected.includes(id);}))),notes:String(data.notes||'').slice(0,1000),polygon:Array.isArray(data.polygon)?data.polygon.slice(0,30).filter(function(p){return Array.isArray(p)&&campaignModel.canada({lat:p[0],lng:p[1]});}):[],reprise:Number(data.reprise)||0};
-    var row=await db.get("INSERT INTO broker_campaign_drafts(broker_id,revision,data) SELECT $1,1,$2::jsonb WHERE $3=0 ON CONFLICT(broker_id) DO NOTHING RETURNING revision",[broker.id,JSON.stringify(clean),revision]);
-    if(!row)row=await db.get('UPDATE broker_campaign_drafts SET revision=revision+1,data=$1,updated_at=NOW() WHERE broker_id=$2 AND revision=$3 RETURNING revision',[JSON.stringify(clean),broker.id,revision]);
-    if(!row)return res.status(409).json({code:'DRAFT_CONFLICT'});res.json(Object.assign(row,{historyMatches:historyMatches,selected:clean.selected}));
+    var row=await db.get("INSERT INTO "+campaignDraftTable(cfg.mode)+"(broker_id,revision,data) SELECT $1,1,$2::jsonb WHERE $3=0 ON CONFLICT(broker_id) DO NOTHING RETURNING revision",[broker.id,JSON.stringify(clean),revision]);
+    if(!row)row=await db.get('UPDATE '+campaignDraftTable(cfg.mode)+' SET revision=revision+1,data=$1,updated_at=NOW() WHERE broker_id=$2 AND revision=$3 RETURNING revision',[JSON.stringify(clean),broker.id,revision]);
+    if(!row)return res.status(409).json({code:'DRAFT_CONFLICT'});res.json(Object.assign(row,{paymentMode:cfg.mode,historyMatches:historyMatches,selected:clean.selected}));
   }));
 
   router.post('/api/espace/campagne', brokerEndpoint(async function(req, res){
     var broker = await requireBrokerApi(req, res);
     if (!broker) return;
+    var cfg=await campaignRequestMode(req,res);if(!cfg)return;
     try{
-      var access = await brokerAccessState(broker);
+      var access = await brokerAccessState(broker,cfg.mode);
       if (!access.active) return res.status(409).json({ code: 'MEMBERSHIP_REQUIRED' });
-      if (Number(broker.published) !== 1) return res.status(409).json({ code: 'PAGE_NOT_LIVE' });
+      if (cfg.mode==='live'&&Number(broker.published) !== 1) return res.status(409).json({ code: 'PAGE_NOT_LIVE' });
 
       // On LIT le verrou ici mais on ne l'arme qu'apres l'enregistrement : il
       // existe pour empecher une campagne en double, pas pour punir une faute
       // de frappe. L'armer avant la validation bloquerait 20 s un courtier qui
       // vient simplement de se tromper d'adresse.
-      var precedent = campagneDerniere.get(broker.id) || 0;
+      var precedent = campagneDerniere.get(broker.id+':'+cfg.mode) || 0;
       if (new Date().getTime() - precedent < CAMPAGNE_DELAI_MS) return res.status(429).json({ code: 'TOO_FAST' });
 
       var quota = await campagneQuota(broker);
@@ -2217,28 +2263,27 @@ module.exports = function(services){
       // BASE. Le COUNT plus haut n'est qu'une politesse : deux confirmations
       // simultanees le passeraient toutes les deux, et la Map en memoire ne vit
       // que dans un seul processus.
-      var periode = quota.periode;
-      if(existante&&existante.paypal_order_id){if(existante.payment_status==='pending')return res.status(409).json({code:'PENDING_ORDER_EXISTS'});existante=null;}
+      var periode = cfg.mode==='sandbox'?null:quota.periode;
       var campagne;
       try{
         campagne = await db.get(
-          'INSERT INTO broker_campaigns (broker_id,kind,status,payment_status,centre_label,centre_lat,centre_lng,radius_m,quantity,address_count,addresses,city,notes,is_test,quota_period,deadline_at) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16) RETURNING *',
-          [broker.id, 'included', 'confirmed', 'none', libelle, cLat, cLng, rayon, adresses.length, adresses.length, JSON.stringify(adresses), ville, notes, access.testAccess ? 1 : 0, periode, echeance]
+          'INSERT INTO broker_campaigns (broker_id,kind,status,payment_status,centre_label,centre_lat,centre_lng,radius_m,quantity,address_count,addresses,city,notes,is_test,quota_period,deadline_at,paypal_mode,history_policy) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18::jsonb) RETURNING *',
+          [broker.id, 'included', 'confirmed', 'none', libelle, cLat, cLng, rayon, adresses.length, adresses.length, JSON.stringify(adresses), ville, notes, cfg.mode==='sandbox' ? 1 : 0, periode, echeance,cfg.mode,JSON.stringify(campaignHistory.policy(corps.historyFilter))]
         );
       }catch(err){
         if (String(err && err.code) === '23505') return res.status(409).json({ code: 'QUOTA_SPENT' });
         throw err;
       }
 
-      campagneDerniere.set(broker.id, new Date().getTime());
+      campagneDerniere.set(broker.id+':'+cfg.mode, new Date().getTime());
 
-      await logBrokerEvent(broker.id, access.testAccess ? 'sandbox_campaign_confirmed' : 'campaign_confirmed',
+      await logBrokerEvent(broker.id, cfg.mode==='sandbox' ? 'sandbox_campaign_confirmed' : 'campaign_confirmed',
         JSON.stringify({ id: campagne.id, n: adresses.length, centre: libelle.slice(0, 120) }));
 
-      await envoyerCampagneOperateur(req, broker, campagne, adresses, access.testAccess);
+      await envoyerCampagneOperateur(req, broker, campagne, adresses, cfg.mode==='sandbox');
 
       var apres = await campagneQuota(broker);
-      res.json({ success: true, id: campagne.id, count: adresses.length, deadline: echeance.toISOString(), restantes: apres.restantes });
+      res.json({ success: true, mode:cfg.mode, id: campagne.id, count: adresses.length, deadline: echeance.toISOString(), restantes: apres.restantes });
     }catch(e){ console.error('campagne', e); res.status(500).json({ error: 'server' }); }
   }));
 
@@ -2276,7 +2321,7 @@ module.exports = function(services){
       + '<p style="margin-top:18px;color:#777;font-size:12px">Les codes postaux absents doivent être complétés avant le dépôt. Les comptes de logements sont indicatifs du bâti : une lettre par adresse sélectionnée, sans appartement ajouté automatiquement. Les adresses marquées « interpolé » sont déduites d\'une plage municipale et peuvent inclure un numéro inexistant.</p>'
       + '</div>';
 
-    await require('./notification-outbox-v1').create(services).enqueue('campaign:'+campagne.id+':operator',{
+    await require('./notification-outbox-v2').create(services).enqueue('campaign:'+campagne.id+':operator',{
       to: ownerEmail,
       replyTo: broker.email,
       subject: (estTest ? '[TEST SANDBOX] ' : '') + 'VendVite — campagne ' + campagne.address_count + ' portes — ' + broker.full_name,
@@ -2318,10 +2363,12 @@ module.exports = function(services){
   router.post('/api/espace/campagne/commander', brokerEndpoint(async function(req, res){
     var broker = await requireBrokerApi(req, res);
     if (!broker) return;
+    var c=await campaignRequestMode(req,res);if(!c)return;
+    broker=campaignBillingBroker(broker,c.mode);
     try{
-      var access = await brokerAccessState(broker);
+      var access = await brokerAccessState(broker,c.mode);
       if (!access.active) return res.status(409).json({ code: 'MEMBERSHIP_REQUIRED' });
-      if (Number(broker.published) !== 1) return res.status(409).json({ code: 'PAGE_NOT_LIVE' });
+      if (c.mode==='live'&&Number(broker.published) !== 1) return res.status(409).json({ code: 'PAGE_NOT_LIVE' });
 
       var corps = req.body && typeof req.body === 'object' ? req.body : {};
       var quantite = Number(corps.quantite);
@@ -2356,13 +2403,13 @@ module.exports = function(services){
 
       if(!await checkCampaignHistory(req,res,broker,adresses))return;
       adresses=await campaignData.trusted(adresses);
-      var c = await paypalCfg();
       if (!paypalPeutEncaisser(c)) return res.status(503).json({ error: 'paypal_absent', code: 'NOT_CONFIGURED' });
 
       // La campagne incluse s'applique en credit sur n'importe quelle taille de
       // commande : 450 portes avec credit se facturent 300.
       var quota = await campagneQuota(broker);
-      var credit = await campaignCredit(broker,quota,corps.reprend);
+      if(!await campaignRepriseAllowed(req,res,broker,corps.reprend,c.mode))return;
+      var credit = await campaignCredit(broker,quota,corps.reprend,c.mode);
       var prix = await prixCampagne(quantite, credit,broker,canadianTax.countsFromAddresses(adresses));
       if(!prix.taxReady)return res.status(409).json({code:prix.taxError});
       if(corps.expectedTotal==null)return res.status(400).json({code:'PRICE_CONFIRMATION_REQUIRED'});
@@ -2390,10 +2437,10 @@ module.exports = function(services){
       // parmi les commandes non payees.
       var repriseId = Math.floor(Number(corps.reprend)) || 0;
       var existante = repriseId
-        ? await db.get("SELECT id,paypal_order_id,payment_status,payment_recovery FROM broker_campaigns WHERE id=$1 AND broker_id=$2 AND payment_status<>'paid' AND status<>'mailed'", [repriseId, broker.id])
+        ? await db.get("SELECT id,paypal_order_id,payment_status,payment_recovery FROM broker_campaigns WHERE id=$1 AND broker_id=$2 AND payment_status<>'paid' AND status<>'mailed' AND paypal_mode=$3 AND is_test=$4", [repriseId, broker.id,c.mode,estTest])
         : await db.get(
-            "SELECT id,paypal_order_id,payment_status,payment_recovery FROM broker_campaigns WHERE broker_id=$1 AND kind='paid' AND payment_status<>'paid' AND status<>'mailed' AND centre_label=$2 AND quantity=$3 AND address_count=$4 ORDER BY id DESC LIMIT 1",
-            [broker.id, libelle, quantite, adresses.length]
+            "SELECT id,paypal_order_id,payment_status,payment_recovery FROM broker_campaigns WHERE broker_id=$1 AND kind='paid' AND payment_status<>'paid' AND status<>'mailed' AND centre_label=$2 AND quantity=$3 AND address_count=$4 AND paypal_mode=$5 AND is_test=$6 ORDER BY id DESC LIMIT 1",
+            [broker.id, libelle, quantite, adresses.length,c.mode,estTest]
           );
 
       if(existante&&(existante.paypal_order_id||(existante.payment_recovery||{}).createKey)){if(existante.payment_status==='pending')return res.status(409).json({code:'PENDING_ORDER_EXISTS',orderUrl:tp(req,'/espace/commandes/'+existante.id)});existante=null;}
@@ -2401,7 +2448,7 @@ module.exports = function(services){
       try{
         if (existante) {
           campagne = await db.get(
-            "UPDATE broker_campaigns SET kind='paid', status='pending_payment', payment_status='pending', centre_label=$1, centre_lat=$2, centre_lng=$3, radius_m=$4, quantity=$5, address_count=$6, addresses=$7, city=$8, notes=$9, subtotal_cents=$10, gst_cents=$11, qst_cents=$12, total_cents=$13, paypal_mode=$14, is_test=$15, quota_period=$16, tax_snapshot=$18::jsonb,hst_cents=$19,pst_cents=$20,history_policy=$21::jsonb,checkout_key=$22,payment_recovery='{}'::jsonb,production='{}'::jsonb, paypal_order_id=NULL, paypal_capture_id=NULL, updated_at=NOW() WHERE id=$17 AND payment_status<>'paid' AND status<>'mailed' AND paypal_order_id IS NULL AND NOT (payment_recovery ? 'createKey') RETURNING *",
+            "UPDATE broker_campaigns SET kind='paid', status='pending_payment', payment_status='pending', centre_label=$1, centre_lat=$2, centre_lng=$3, radius_m=$4, quantity=$5, address_count=$6, addresses=$7, city=$8, notes=$9, subtotal_cents=$10, gst_cents=$11, qst_cents=$12, total_cents=$13, paypal_mode=$14, is_test=$15, quota_period=$16, tax_snapshot=$18::jsonb,hst_cents=$19,pst_cents=$20,history_policy=$21::jsonb,checkout_key=$22,payment_recovery='{}'::jsonb,production='{}'::jsonb, paypal_order_id=NULL, paypal_capture_id=NULL, updated_at=NOW() WHERE id=$17 AND paypal_mode=$14 AND is_test=$15 AND payment_status<>'paid' AND status<>'mailed' AND paypal_order_id IS NULL AND NOT (payment_recovery ? 'createKey') RETURNING *",
             [libelle, cLat, cLng, rayon, quantite, adresses.length, JSON.stringify(adresses), ville, notes, prix.sousTotal, prix.tps, prix.tvq, prix.total, c.mode, estTest, periodeCredit, existante.id,JSON.stringify(prix.taxSnapshot),prix.hst,prix.pst,JSON.stringify(campaignHistory.policy(corps.historyFilter)),checkoutKey]
           );
         } else {
@@ -2434,13 +2481,16 @@ module.exports = function(services){
   router.get('/api/espace/campagne/:id/territoire', brokerEndpoint(async function(req, res){
     var broker = await requireBrokerApi(req, res);
     if (!broker) return;
+    var cfg=await campaignRequestMode(req,res);if(!cfg)return;
+    if(!await campaignRepriseAllowed(req,res,broker,Number(req.params.id)||0,cfg.mode))return;
     try{
       var c = await db.get(
-        "SELECT * FROM broker_campaigns WHERE id=$1 AND broker_id=$2 AND kind='paid' AND payment_status IN ('pending','cancelled') AND status IN ('pending_payment','cancelled')",
-        [Math.floor(Number(req.params.id)) || 0, broker.id]
+        "SELECT * FROM broker_campaigns WHERE id=$1 AND broker_id=$2 AND kind='paid' AND payment_status IN ('pending','cancelled') AND status IN ('pending_payment','cancelled') AND paypal_mode=$3 AND is_test=$4",
+        [Math.floor(Number(req.params.id)) || 0, broker.id,cfg.mode,cfg.mode==='sandbox'?1:0]
       );
       if (!c) return res.status(404).json({ code: 'NOT_EDITABLE' });
       res.json({
+        paymentMode:cfg.mode,
         centre: { libelle: c.centre_label, lat: c.centre_lat, lng: c.centre_lng },
         quantite: c.quantity || c.address_count,
         rayon: c.radius_m || 0,
@@ -2461,17 +2511,19 @@ module.exports = function(services){
 
   // The independent recovery worker and browser return share the same lease,
   // provider verification, capture key and recorded monetary snapshot.
-  var paymentRecovery=require('./payment-recovery-v1').create(services,{
+  var paymentRecovery=require('./payment-recovery-v2').create(services,{
     cfg:paypalCfg,token:paypalToken,deadline:mailingService.deadline,
     afterPaid:async function(req,broker,campaign){
       var invoice=await facturerCampagne(req,broker,campaign,{id:campaign.paypal_capture_id},campaign.paypal_mode);
       await envoyerCampagneOperateur(req,broker,campaign,mailingService.addresses(campaign),campaign.paypal_mode==='sandbox');
-      return !!invoice;
+      if(!invoice)return false;
+      var delivery=await db.get('SELECT emailed_at,email_previewed_at FROM broker_invoices WHERE id=$1 AND campaign_id=$2 AND paypal_mode=$3 AND is_test=$4',[invoice.id,campaign.id,campaign.paypal_mode,campaign.paypal_mode==='sandbox'?1:0]);
+      return !!(delivery&&(campaign.paypal_mode==='sandbox'?delivery.email_previewed_at:delivery.emailed_at));
     }
   });
   services.vendvitePaymentRecovery=paymentRecovery;
   async function finaliserCampagnePayee(req,broker,campaign){var result=await paymentRecovery.reconcile(campaign.id,{req:req});return result.state==='paid'?result.campaign:null;}
-  require('./campaign-order-v1').register(router,services,{requireBroker:requireBroker,requireBrokerApi:requireBrokerApi,endpoint:brokerEndpoint,baseLocals:baseLocals,recovery:paymentRecovery,tp:tp});
+  require('./campaign-order-v2').register(router,services,{requireBroker:requireBroker,requireBrokerApi:requireBrokerApi,endpoint:brokerEndpoint,baseLocals:baseLocals,recovery:paymentRecovery,tp:tp});
 
   router.get('/espace/campagne/retour',brokerEndpoint(async function(req,res){
     var broker=await requireBroker(req,res);if(!broker)return;
@@ -2542,10 +2594,11 @@ module.exports = function(services){
     var mode=String(saved||services.externalVars.PAYPAL_MODE||'sandbox').trim().toLowerCase();
     return mode==='live'?'live':'sandbox';
   }
-  async function paypalCfg(forcedMode){
+  async function paypalCfg(forcedMode,req){
     // Literal accesses make all six secure fields discoverable in the tenant
     // dashboard. Sandbox never falls back to production credentials.
-    var mode=await currentPaypalMode(forcedMode);
+    var explicit=String(forcedMode||'').trim().toLowerCase();
+    var mode=await currentPaypalMode(explicit==='live'||explicit==='sandbox'?explicit:req&&require('./broker-sandbox-v1').enabled(req)?'sandbox':undefined);
     var generatedSandboxPlan=mode==='sandbox'?await readAdminSetting('paypal_sandbox_plan_id'):'';
     return {
       mode: mode,
@@ -2657,13 +2710,14 @@ module.exports = function(services){
   router.post('/api/espace/abonnement', brokerEndpoint(async function(req, res){
     var broker = await requireBrokerApi(req, res);
     if (!broker) return;
+    var c=await campaignRequestMode(req,res,false);if(!c)return;
+    if(c.mode==='sandbox')return res.status(409).json({code:'SANDBOX_SUBSCRIPTION_DISABLED',error:req.lang==='en'?'Subscription changes require leaving test mode.':'Quittez le mode test pour modifier un abonnement.'});
     try{if(canadianTax.billing(broker).province!=='QC')return res.status(409).json({code:'LEGACY_PLAN_TAX_REVIEW'});}
     catch(e){return res.status(409).json({code:e.code});}
     if(mailingService.isMailing(broker))return res.status(409).json({code:'MAILING_ONLY',error:'Votre page est à 0 $. Commandez une campagne postale depuis votre espace.'});
     if (!brokerProfile(broker).setup_completed_at) {
       return res.status(409).json({ error: 'configuration', code: 'SETUP_REQUIRED' });
     }
-    var c = await paypalCfg();
     var intentCampagne = !!(req.body && req.body.intent === 'campaign');
     if (!paypalReady(c)) return res.status(503).json({ error: 'paypal_absent', code: 'NOT_CONFIGURED' });
     try{
@@ -2768,7 +2822,8 @@ module.exports = function(services){
   router.post('/api/espace/abonnement/annuler', brokerEndpoint(async function(req, res){
     var broker = await requireBrokerApi(req, res);
     if (!broker) return;
-    var c = await paypalCfg();
+    var c=await campaignRequestMode(req,res,false);if(!c)return;
+    if(c.mode==='sandbox')return res.status(409).json({code:'SANDBOX_SUBSCRIPTION_DISABLED',error:req.lang==='en'?'Subscription changes require leaving test mode.':'Quittez le mode test pour modifier un abonnement.'});
     var subId = c.mode==='sandbox' ? broker.paypal_sandbox_subscription_id : broker.paypal_subscription_id;
     try{
       if (paypalReady(c) && subId) {
@@ -2855,6 +2910,11 @@ module.exports = function(services){
       t.success_title = L.lang === 'fr' ? 'Démonstration terminée.' : 'Demo complete.';
       t.success_text = L.lang === 'fr' ? 'Sur votre page VendVite, cette demande vous serait transmise pour le suivi. Aucune demande n’a été envoyée dans cette démo.' : 'On your VendVite page, this request would reach you for follow-up. No request was sent in this demo.';
     }
+    if(req.vvSandboxPreview){
+      t.success_title=L.lang==='fr'?'Demande de test enregistrée.':'Test request saved.';
+      t.success_text=L.lang==='fr'?'Retrouvez-la dans les demandes de test pour simuler le contact et la remise de l’analyse. Les courriels de cette demande sont des aperçus : aucun message de suivi n’est envoyé.':'Find it in test requests to rehearse contact and analysis delivery. Request emails are previews: no follow-up message is sent.';
+      t.form_submit=L.lang==='fr'?'Envoyer ma demande de test':'Submit my test request';
+    }
     if (prof.hero_title) t.hero_title = prof.hero_title;
     // Ignore the former seeded promise if it was persisted unchanged in an
     // existing profile; genuine broker-written custom copy remains respected.
@@ -2903,6 +2963,9 @@ module.exports = function(services){
       brokerLinks: otherLinks,
       isPreview: !!isPreview,
       isSandboxPreview: !!req.vvSandboxPreview,
+      sandboxCsrf:req.vvSandboxPreview&&req._vvSession?req._vvSession.csrf:null,
+      sandboxInboxUrl:req.vvSandboxPreview?(req.vvSandboxAdmin?'admin/tests/leads?campaign='+req.vvCampaignId:'espace/pistes?mode=test'):null,
+      sandboxNotificationUrl:req.vvSandboxPreview?(req.vvSandboxAdmin?'admin/tests/notifications?campaign=':'espace/tests/notifications?campaign=')+req.vvCampaignId:null,
       previewPageLive: isPreview ? (await brokerAccessState(broker)).active && Number(broker.published)===1 : false,
       isDemo: !!isDemo,
       invitation: req.vvInvitation || null,
@@ -2910,6 +2973,7 @@ module.exports = function(services){
       initialLocation: req.vvInitialLocation || null,
       demoStreetView: req.vvInvitation ? req.vvDemoStreetView || null : null,
       inlineEditor: !!req.vvInlineEditor,
+      sandboxEditorShared:!!req.vvInlineEditor&&require('./broker-sandbox-v1').enabled(req),
       editor: req.vvInlineEditor?{profile:Object.assign({},prof,{agent_name:settings.agent_name,agent_email:settings.agent_email,agency:settings.agency,agent_phone:settings.agent_phone,agent_title:t.agent_title}),profileVersion:Number(broker.profile_version)||0,csrf:req._vvSession.csrf}:null,
       mailingToken: req.vvMailingToken || null,
       mailingRecipient: req.vvMailingRecipient || null,
@@ -2933,10 +2997,32 @@ module.exports = function(services){
       if(!origin || Number(origin.campaign.broker_id)!==Number(broker.id) || !(await brokerPageLive(broker))){
         return res.status(403).json({ error: 'lien_courrier_requis' });
       }
-      var result=await require('./lead-service-v1').create(services).capture({broker:broker,origin:origin,input:b,lang:req.lang||'fr',workspaceUrl:absoluteUrl(req,'/espace/pistes')});
+      var result=await require('./lead-service-v2').create(services).capture({broker:broker,origin:origin,input:b,lang:req.lang||'fr',workspaceUrl:absoluteUrl(req,'/espace/pistes')});
       res.json(result);
     }catch(e){ console.error('piste',e.code||'server'); res.status(e.status||500).json({code:e.code||'SERVER',error:e.status?e.message:'server'}); }
   });
+
+
+  // A private rehearsal persists a test request through the same lead service.
+  // Both the page and this endpoint verify the owning broker or tenant admin.
+  router.post('/api/courtier/:slug/piste-test',brokerEndpoint(async function(req,res){
+    brokerAuthTools.protect(res);
+    if(!require('./agent-tracking-v2').sameOrigin(req)||!req.is('application/json'))return res.status(403).json({error:'origin',code:'ORIGIN_INVALID'});
+    var admin=services.admin.isAdmin(req),owner=admin?null:await requireBrokerApi(req,res);
+    if(!admin&&!owner)return;
+    try{
+      var broker=await db.get('SELECT * FROM brokers WHERE slug=$1',[req.params.slug]);
+      if(!broker||(!admin&&Number(owner.id)!==Number(broker.id)))return res.status(404).json({error:'introuvable'});
+      var b=req.body||{},origin=await mailingService.testRecipientForToken(db,b.mailingToken,b.mailingRecipient);
+      if(!origin||Number(origin.campaign.broker_id)!==Number(broker.id))return res.status(403).json({error:'lien_test_requis'});
+      require('./mailing-language-v1').apply(req,res,broker);
+      var result=await require('./lead-service-v2').create(services).capture({broker:broker,origin:origin,input:b,lang:req.lang||'fr',workspaceUrl:absoluteUrl(req,'/espace/pistes?mode=test')});
+      // Generate only this broker's owned test previews. Real jobs stay queued
+      // for the regular delivery worker, independent of the rehearsal action.
+      await require('./notification-outbox-v2').create(services).run({isTest:true,brokerId:broker.id,limit:10});
+      res.json(result);
+    }catch(e){console.error('test piste',e.code||'server');res.status(e.status||500).json({code:e.code||'SERVER',error:e.status?e.message:'server'});}
+  }));
 
 
   // ── Operator: roster + manual activation. Needed because a broker cannot
@@ -2945,7 +3031,7 @@ module.exports = function(services){
     if(!apiAdmin(req,res)) return;
     try{
       var rows = await db.all(
-        'SELECT b.*, (SELECT COUNT(*)::int FROM broker_leads l WHERE l.broker_id=b.id) AS lead_count'
+        'SELECT b.*, (SELECT COUNT(*)::int FROM broker_leads l WHERE l.broker_id=b.id AND l.is_test=0) AS lead_count'
         + ' FROM brokers b ORDER BY b.created_at DESC'
       );
       res.json({ courtiers: rows || [] });
@@ -3023,14 +3109,15 @@ module.exports = function(services){
     brokerAuthTools.protect(res);
     res.set('X-Robots-Tag','noindex, nofollow, noarchive');
     var admin=services.admin.isAdmin(req),owner=admin?null:await currentBroker(req,res);
-    if(!admin&&!owner)return mailingHome(req,res);
+    if(!admin&&!owner){var next=brokerAuthTools.safeNext(req.path.replace(/^\//,'')+(req.query.lang?'?lang='+encodeURIComponent(req.query.lang):''));return res.redirect(tp(req,'/connexion')+'?next='+encodeURIComponent(next));}
     var origin=await mailingService.testRecipientForToken(db,req.params.token,req.params.recipient);
-    if(!origin||(!admin&&Number(owner.id)!==Number(origin.campaign.broker_id)))return mailingHome(req,res);
+    if(!origin||(!admin&&Number(owner.id)!==Number(origin.campaign.broker_id)))return recipientRecovery(req,res);
     var broker=await db.get('SELECT * FROM brokers WHERE id=$1',[origin.campaign.broker_id]);
     if(!broker)return mailingHome(req,res);
     req.vvInitialAddress=mailingService.addressLines(origin.recipient).join(', ');
     if(campaignModel.canada(origin.recipient))req.vvInitialLocation={lat:Number(origin.recipient.lat),lng:Number(origin.recipient.lng)};
-    req.vvSandboxPreview=true;
+    req.vvSandboxPreview=true;req.vvSandboxAdmin=!!admin;
+    req.vvMailingToken=origin.campaign.mailing_token;req.vvMailingRecipient=origin.recipient.mailing_id;req.vvCampaignId=origin.campaign.id;
     await renderBrokerPage(req,res,broker,true,false);
   }));
 

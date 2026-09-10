@@ -82,8 +82,8 @@
               <td><%= (Number(i.subtotal_cents||0)/100).toFixed(2).replace('.',',') %>&nbsp;$</td>
               <td><%= ((Number(i.gst_cents||0)+Number(i.qst_cents||0)+Number(i.hst_cents||0)+Number(i.pst_cents||0))/100).toFixed(2).replace('.',',') %>&nbsp;$</td>
               <td><strong><%= (Number(i.total_cents||0)/100).toFixed(2).replace('.',',') %>&nbsp;$</strong></td>
-              <td><span data-invoice-status="<%= i.id %>" class="pill <%= i.emailed_at ? 'pill-on' : 'pill-off' %>" role="status"><%= i.emailed_at ? 'Envoyée' : 'À envoyer' %></span></td>
-              <td class="row-actions"><a class="btn-sm sales-download" href="admin/ventes/factures/<%= i.id %>/pdf">PDF ↓</a><% if(i.kind==='campagne'&&!i.emailed_at){ %><button type="button" class="btn-sm" data-send-invoice="<%= i.id %>">Envoyer par courriel</button><% } %></td>
+              <td><span data-invoice-status="<%= i.id %>" class="pill <%= i.emailed_at ? 'pill-on' : 'pill-off' %>" role="status"><%= i.emailed_at ? 'Envoyée' : i.email_previewed_at?'Aperçu simulé':Number(i.is_test)===1||i.paypal_mode==='sandbox'?'Aperçu à préparer':'À envoyer' %></span></td>
+              <td class="row-actions"><a class="btn-sm sales-download" href="admin/ventes/factures/<%= i.id %>/pdf">PDF ↓</a><% if(i.kind==='campagne'&&!i.emailed_at&&!i.email_previewed_at){ %><button type="button" class="btn-sm" data-send-invoice="<%= i.id %>"><%= Number(i.is_test)===1||i.paypal_mode==='sandbox'?'Préparer l’aperçu simulé':'Envoyer par courriel' %></button><% } %></td>
             </tr>
           <% }); } else { %>
             <tr><td colspan="9" class="empty">Aucun paiement PayPal facturé pour le moment. La première vente apparaîtra ici automatiquement.</td></tr>
@@ -103,7 +103,7 @@
       var response=await fetch('api/admin/ventes/factures/'+id+'/envoyer',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'}),result=await response.json();
       if(!response.ok)throw Error(result.error||'Envoi impossible');
       if(result.status==='sending'){label.textContent='Envoi en cours';return;}
-      label.textContent='Envoyée';label.className='pill pill-on';button.hidden=true;
+      label.textContent=result.status==='previewed'?'Aperçu simulé':'Envoyée';label.className='pill pill-on';button.hidden=true;
     }catch(error){label.textContent=error.message;button.disabled=false;}
   });});
   var modeBtn=document.getElementById('paypalModeBtn'),status=document.getElementById('paypalModeStatus');

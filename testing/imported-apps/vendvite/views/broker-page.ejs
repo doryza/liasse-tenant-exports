@@ -1,5 +1,6 @@
 <%- include('partials/header') %>
 <% if(typeof inlineEditor!=='undefined'&&inlineEditor){ %><%- include('partials/page-editor-toolbar') %><% } %>
+<% if(typeof sandboxEditorShared!=='undefined'&&sandboxEditorShared){ %><aside data-sandbox-profile-boundary role="note" style="max-width:1100px;margin:20px auto;padding:18px 22px;border:1px solid #d1ae68;border-radius:10px;background:#fff4d6;color:#352712"><strong><%= lang==='fr'?'MODE TEST — Votre profil reste partagé':'TEST MODE — Your profile remains shared' %></strong><p style="margin:8px 0"><%= lang==='fr'?'Toute modification enregistrée ici s’applique aussi à votre vraie page. Les commandes et les demandes de test restent séparées. Désactivez le mode test pour modifier la publication de votre page.':'Changes saved here also apply to your real page. Test orders and requests remain separate. Turn off test mode before changing your page’s publication.' %></p><a href="espace/tests" style="color:inherit;font-weight:700"><%= lang==='fr'?'Gérer le mode test':'Manage test mode' %> →</a></aside><% } %>
 <% if (typeof invitation !== 'undefined' && invitation) { %>
 <% var invitationFirstName=String(invitation.name||'').trim().split(/\s+/)[0]; %>
 <section class="bp-demo mailing-invitation" aria-labelledby="claimPageTitle"><div class="container bp-demo-inner">
@@ -23,14 +24,16 @@
 <% if (typeof isPreview !== 'undefined' && isPreview && !(typeof inlineEditor!=='undefined'&&inlineEditor)) { %>
 <div class="bp-peek" role="status">
   <span class="bp-peek-dot" aria-hidden="true"></span>
-  <span class="bp-peek-txt"><%= typeof isSandboxPreview!=='undefined'&&isSandboxPreview?(lang==='fr'?'Test PayPal — aperçu du destinataire. Aucune demande envoyée.':'PayPal test — recipient preview. No request is sent.'):t.bp_preview_banner %></span>
-  <a class="bp-peek-btn" href="espace/page#pageActions"><%= previewPageLive?t.bp_preview_back:t.ws_step_publish %> ↗</a>
+  <span class="bp-peek-txt"><%= typeof isSandboxPreview!=='undefined'&&isSandboxPreview?(lang==='fr'?'TEST — Parcours propriétaire privé. Les demandes et leurs courriels de suivi sont simulés.':'TEST — Private homeowner journey. Requests and their follow-up emails are simulated.'):t.bp_preview_banner %></span>
+  <a class="bp-peek-btn" href="<%= isSandboxPreview?sandboxInboxUrl:'espace/page#pageActions' %>"><%= isSandboxPreview?(lang==='fr'?'Ouvrir les demandes de test':'Open test requests'):(previewPageLive?t.bp_preview_back:t.ws_step_publish) %> ↗</a>
 </div>
 <% } %>
 <script>
 window.VV_ACTIVITY = <%- scriptJson(typeof activityToken!=='undefined'?activityToken:null) %>;
 window.VV_DEMO_STREET_VIEW = <%- scriptJson(typeof demoStreetView!=='undefined'?demoStreetView:null) %>;
 window.VV_INITIAL_LOCATION = <%- scriptJson(typeof initialLocation!=='undefined'?initialLocation:null) %>;
+window.VV_SANDBOX = <%- JSON.stringify(!!isSandboxPreview) %>;
+window.VV_SANDBOX_CSRF = <%- scriptJson(sandboxCsrf||null) %>;
 window.VV_PAGE_PREVIEW = <%- JSON.stringify(!!isPreview) %>;
 window.VV_INITIAL_ADDRESS = <%- scriptJson(typeof initialAddress !== 'undefined' ? initialAddress : null) %>;
 window.VV_MAILING_TOKEN = <%- scriptJson(typeof mailingToken !== 'undefined' ? mailingToken : null) %>;
@@ -38,7 +41,7 @@ window.VV_MAILING_RECIPIENT = <%- scriptJson(typeof mailingRecipient !== 'undefi
 window.VV_DEMO = <%- JSON.stringify(typeof isDemo !== 'undefined' && isDemo) %>;
 window.VV_BROKER = <%- JSON.stringify(typeof brokerSlug !== 'undefined' ? brokerSlug : null) %>;
 window.VV_LEAD_URL = <%- JSON.stringify(typeof brokerSlug !== 'undefined' && brokerSlug
-  ? ('api/courtier/' + brokerSlug + '/piste')
+  ? ('api/courtier/' + brokerSlug + (isSandboxPreview?'/piste-test':'/piste'))
   : null) %>;
 </script>
 <main class="bp-page">
@@ -93,11 +96,13 @@ window.VV_LEAD_URL = <%- JSON.stringify(typeof brokerSlug !== 'undefined' && bro
           </div>
           <div aria-hidden="true" style="position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden"><label>Website<input id="leadWebsite" tabindex="-1" autocomplete="off"></label></div><input type="hidden" id="leadLat"><input type="hidden" id="leadLng">
           <div class="form-error" id="formError" role="alert"></div>
+          <% if(isSandboxPreview){ %><p><a id="testFormReconnect" href="connexion?next=<%= encodeURIComponent('courrier-test/'+mailingToken+'/'+mailingRecipient) %>" target="_blank" rel="noopener" hidden><%= lang==='fr'?'Rouvrir ma session, puis réessayer ici':'Sign in again, then retry here' %> →</a></p><% } %>
           <button type="submit" class="seal-btn" id="sealBtn" style="background-color:#E30B2D;color:#fff" data-lk="t:form_submit"><%= t.form_submit %></button>
         </form>
         <div class="fiche-success" id="ficheSuccess" hidden>
           <h3 id="ficheSuccessTitle" data-lk="t:success_title"><%= t.success_title %></h3>
           <p id="ficheSuccessText" data-lk="t:success_text"><%= t.success_text %></p>
+          <% if(isSandboxPreview){ %><p><a href="<%= sandboxInboxUrl %>"><%= lang==='fr'?'Continuer dans les demandes de test':'Continue to test requests' %> →</a></p><p><a href="<%= sandboxNotificationUrl %>"><%= lang==='fr'?'Voir les courriels simulés':'View simulated emails' %> →</a></p><% } %>
         </div>
       </div>
     </div>

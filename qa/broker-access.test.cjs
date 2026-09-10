@@ -4,7 +4,7 @@ function jar(res,old={}){for(const entry of res.headers.getSetCookie()){const it
 function cookies(j){return Object.entries(j).map(([k,v])=>k+'='+v).join('; ');}
 function hidden(html,name){const m=html.match(new RegExp('name="'+name+'" value="([^"]*)"'));assert.ok(m,'hidden '+name);return m[1];}
 test('broker access, session lifecycle, rate limits, CSRF and workspace save guarantees',async()=>{
- const h=await create(),auth=authTools.create(h.services),base=h.url;
+ const h=await create(),auth=authTools.create(h.services),base=h.url;h.services.externalVars.PAYPAL_MODE='live';
  const headers={'user-agent':'Broker QA browser','content-type':'application/json'};
  async function request(path,{method='GET',body,j={},extra={}}={}){return fetch(base+path,{method,redirect:'manual',headers:{...headers,cookie:cookies(j),...extra},body:body===undefined?undefined:JSON.stringify(body)});}
  async function broker(status='invited',suffix='one'){return h.db.get("INSERT INTO brokers(slug,full_name,email,status,profile) VALUES ($1,'Test Broker',$2,$3,$4) RETURNING *",['qa-'+suffix,suffix+'@example.test',status,JSON.stringify({agent_name:'Test Broker',agent_email:suffix+'@example.test'})]);}
