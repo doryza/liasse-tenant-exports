@@ -1,0 +1,141 @@
+{
+  "slug": "econo-plus",
+  "displayName": "Econo Plus",
+  "description": "Project: website — Storefront pour liquidations\nBusiness: Econo Plus, magasin d'électroménager à Saint-Jérôme. Vend frigos, cuisinières, etc. en liquidation.\nGoal: Attirer les clients en magasin avec les liquidations.\nTarget audience: Gens de Saint-Jérôme et environs.\n\nKey features:\n- Galerie de produits en liquidation\n- Carte Google Maps pour la localisation du magasin\n- Informations de contact (téléphone, adresse)\n\nDesign & brand:\n- Colors: Bleu ciel, jaune (pour Écono) et blanc (pour Plus).\n- Mood: Punché.\n- Signature: Les plus gros spéciaux sur l'électroménager.\n- First impression: Le logo est composé uniquement des lettres de \"Écono Plus\".\n\nIntegrations & extras: Carte Google Maps.",
+  "status": "active",
+  "generationVersion": 1,
+  "primaryColor": "#2858ef",
+  "iconUrl": "https://res.cloudinary.com/duhp69meg/image/upload/v1789500023/tapavis_tenant_econo-plus/icon_econo-plus_df63569e-a651-488d-9de3-1f7ff37541ee.png",
+  "enabledAuthMethods": [
+    "webauthn",
+    "sms",
+    "email"
+  ],
+  "notificationsEnabled": true,
+  "geolocationEnabled": true,
+  "customConfig": {
+    "language": "both",
+    "businessName": "Econo Plus",
+    "contactEmail": "dory@liasse.tech",
+    "contactPhone": "4384356829",
+    "designManifest": {
+      "concept": "L’affiche des aubaines",
+      "copyVoice": "Français québécois direct, énergique et accueillant; anglais canadien naturel, sans urgence, disponibilité ni économies inventées.",
+      "elements": {
+        "blogSurfaced": false,
+        "pages": [
+          "/fr — vitrine et liquidations",
+          "/en — English storefront",
+          "/fr/magasin et /en/magasin — localisation",
+          "/fr/appareils/:id et /en/appareils/:id — fiches permanentes",
+          "/admin — tableau de bord",
+          "/admin/products — appareils",
+          "/admin/posts — publications non exposées au public",
+          "/admin/settings — coordonnées, textes et images"
+        ],
+        "userLogin": false
+      },
+      "heroThesis": "Les gros spéciaux sur les électroménagers donnent une raison concrète de visiter Écono Plus à Saint-Jérôme; faute de photo de stock validée, l’image d’ambiance est clairement identifiée comme générée.",
+      "iconDirection": "Monogramme purement typographique « É+ » : É jaune et signe plus blanc sur un carré #15338D, sans pictogramme d’appareil; le mot-symbole public reste exclusivement composé des lettres Écono Plus.",
+      "palette": {
+        "accents": [
+          "#FFDD22",
+          "#BFE8FF",
+          "#15338D"
+        ],
+        "ground": "#FFFFFF",
+        "ink": "#132B63",
+        "primary": "#2858EF"
+      },
+      "signatureMove": "Un bandeau jaune traverse le bas du hero et chevauche la photo : il affiche une offre publiée et vérifiée avec son prix, ou simplement « Liquidations en magasin » lorsqu’aucune offre n’est confirmée.",
+      "summary": "Une affiche de liquidation locale devient une vitrine bilingue : des titres condensés, une photo d’appareil sur bleu ciel et une grande bande jaune conduisent directement aux appareils et au magasin.",
+      "typography": "Barlow Condensed ExtraBold pour les titres, les prix et le mot-symbole; Inter Regular et Semibold pour les descriptions, la navigation et les coordonnées. Titres principaux de 88 px sur ordinateur et 46 px sur mobile."
+    },
+    "businessAddress": null,
+    "designDirections": {
+      "directions": [
+        {
+          "pitch": "Cette direction donne à Écono Plus la force d’une grande affiche de liquidation : vos voisins voient les spéciaux, repèrent le magasin et savent immédiatement pourquoi se déplacer.",
+          "concept": "L’affiche des aubaines",
+          "palette": {
+            "ink": "#132B63",
+            "ground": "#FFFFFF",
+            "accents": [
+              "#FFDD22",
+              "#BFE8FF",
+              "#15338D"
+            ],
+            "primary": "#2858EF"
+          }
+        },
+        {
+          "pitch": "Cette direction met vos appareils et vos renseignements au premier plan, pour que les gens de Saint-Jérôme arrivent chez vous avec une idée claire de ce qu’ils veulent voir.",
+          "concept": "Le stock franc",
+          "palette": {
+            "ink": "#162D3B",
+            "ground": "#EFF3F5",
+            "accents": [
+              "#BEE8FF",
+              "#F5E135",
+              "#FFFFFF"
+            ],
+            "primary": "#075B91"
+          }
+        },
+        {
+          "pitch": "Cette direction présente vos liquidations comme de belles trouvailles pour la maison, tout en donnant aux familles du coin une raison simple et chaleureuse de passer chez Écono Plus.",
+          "concept": "La vitrine solaire",
+          "palette": {
+            "ink": "#24344B",
+            "ground": "#FFFCF2",
+            "accents": [
+              "#A9DDF5",
+              "#FFD34E",
+              "#FFFFFF"
+            ],
+            "primary": "#244596"
+          }
+        }
+      ],
+      "recommendedIndex": 0
+    },
+    "consultationPresentedAt": null
+  },
+  "promptHistory": [
+    {
+      "prompt": "Project: website — Storefront pour liquidations\nBusiness: Econo Plus, magasin d'électroménager à Saint-Jérôme. Vend frigos, cuisinières, etc. en liquidation.\nGoal: Attirer les clients en magasin avec les liquidations.\nTarget audience: Gens de Saint-Jérôme et environs.\n\nKey features:\n- Galerie de produits en liquidation\n- Carte Google Maps pour la localisation du magasin\n- Informations de contact (téléphone, adresse)\n\nDesign & brand:\n- Colors: Bleu ciel, jaune (pour Écono) et blanc (pour Plus).\n- Mood: Punché.\n- Signature: Les plus gros spéciaux sur l'électroménager.\n- First impression: Le logo est composé uniquement des lettres de \"Écono Plus\".\n\nIntegrations & extras: Carte Google Maps.",
+      "timestamp": "2026-09-15T19:20:24.488Z",
+      "changeNotes": "Built the bilingual storefront around the supplied L’affiche des aubaines identity, with section-preserving language navigation, accessible appliance panels, permanent detail pages and a dedicated store page. Added authenticated administration, complete content management, image upload and generation, store settings, visit statistics, installation and notification flows. Seeded six appliance drafts rather than inventing live inventory or clearance prices; generated imagery remains explicitly illustrative until replaced and verified. Store contact details come from business configuration and require confirmation before public display.\n\nRebuilt the admin workspace with active navigation, actionable module cards, publication counts, verification tasks and direct links to edit recent appliances.,Enriched both content managers with full create/edit/delete forms, grouped fields, image previews, status/category filters, search, pagination, public previews and clear feedback.,Added unsaved-change warnings, protected in-progress operations, accessible modal controls, upload/generation progress and safer verification workflows.,Organized settings into contact, imagery and bilingual text sections while preserving per-setting saves and contact verification requirements.,Improved mobile layouts, typography, focus visibility, button contrast, public filter clearing and template fallback safety.,Preserved all existing image tokens, content tables and public editor annotations; hero seeding no longer overwrites an owner’s saved image.,Added bilingual SEO/social metadata, canonical links and no-index handling for administration pages.\n\nThe store-call panel now appears directly after pricing details with consistent vertical spacing, keeping the primary conversion visible before descriptions and specifications. The catalogue introduction and availability message now respond cleanly to whether published categories and verified contact details exist. Map, product-card, and hero-image styling were refined to reduce empty-state height, normalize card rhythm, reserve two title lines on larger screens, and preserve original image colours.",
+      "generationId": 2049,
+      "filesModified": [
+        "manifest.json",
+        "public/css/admin-styles.css",
+        "public/css/styles.css",
+        "public/images/appliance.svg",
+        "public/js/admin.js",
+        "public/js/app.js",
+        "routes.js",
+        "schema.sql",
+        "seed.js",
+        "views/admin-posts.ejs",
+        "views/admin-products.ejs",
+        "views/admin-settings.ejs",
+        "views/admin.ejs",
+        "views/error.ejs",
+        "views/index.ejs",
+        "views/partials/admin-sidebar.ejs",
+        "views/partials/admin-table.ejs",
+        "views/partials/appliance.ejs",
+        "views/partials/footer.ejs",
+        "views/partials/header.ejs",
+        "views/partials/location.ejs",
+        "views/product.ejs",
+        "views/store.ejs"
+      ]
+    }
+  ],
+  "apiVariables": [],
+  "createdAt": "2026-09-15T16:32:52.065Z",
+  "updatedAt": "2026-09-15T19:20:27.513Z",
+  "exportedAt": "2026-09-15T19:20:27.868Z"
+}

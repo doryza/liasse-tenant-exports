@@ -1,0 +1,388 @@
+{
+  "exportedAt": "2026-09-15T19:20:27.902Z",
+  "tables": {
+    "admin_invites": {
+      "columns": [
+        "id",
+        "email",
+        "token",
+        "role",
+        "status",
+        "invited_by",
+        "expires_at",
+        "accepted_at",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_users": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "password_hash",
+        "display_name",
+        "role",
+        "active",
+        "activation_token",
+        "invited_by",
+        "invite_token",
+        "invite_expires_at",
+        "last_login_at",
+        "is_active",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_webauthn_credentials": {
+      "columns": [
+        "id",
+        "admin_user_id",
+        "credential_id",
+        "public_key",
+        "counter",
+        "device_name",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_settings": {
+      "columns": [
+        "key",
+        "value",
+        "updated_at"
+      ],
+      "totalRows": 43,
+      "sampleRows": [
+        {
+          "key": "hero_title",
+          "value": "Les plus gros spéciaux sur l’électroménager.",
+          "updated_at": "2026-09-15T19:20:09.263Z"
+        },
+        {
+          "key": "hero_subtitle",
+          "value": "Liquidations à Saint-Jérôme. Venez voir les appareils disponibles en magasin.",
+          "updated_at": "2026-09-15T19:20:09.275Z"
+        },
+        {
+          "key": "tagline",
+          "value": "Électroménagers · Saint-Jérôme",
+          "updated_at": "2026-09-15T19:20:09.283Z"
+        },
+        {
+          "key": "about_text",
+          "value": "Les articles présentés sont à découvrir en magasin. Un appel avant votre visite permet de confirmer les renseignements de l’appareil qui vous intéresse.",
+          "updated_at": "2026-09-15T19:20:09.296Z"
+        },
+        {
+          "key": "text_hero_title_en",
+          "value": "Big deals on major appliances.",
+          "updated_at": "2026-09-15T19:20:09.310Z"
+        },
+        {
+          "key": "text_hero_subtitle_en",
+          "value": "Clearance in Saint-Jérôme. Come see the appliances available in store.",
+          "updated_at": "2026-09-15T19:20:09.323Z"
+        },
+        {
+          "key": "text_tagline_en",
+          "value": "Major appliances · Saint-Jérôme",
+          "updated_at": "2026-09-15T19:20:09.331Z"
+        },
+        {
+          "key": "text_about_text_en",
+          "value": "The featured appliances are available to explore in store. Calling before your visit lets you confirm the details of the appliance that interests you.",
+          "updated_at": "2026-09-15T19:20:09.344Z"
+        },
+        {
+          "key": "contact_verified",
+          "value": "false",
+          "updated_at": "2026-09-15T19:20:09.354Z"
+        },
+        {
+          "key": "hero_real",
+          "value": "false",
+          "updated_at": "2026-09-15T19:20:09.364Z"
+        }
+      ]
+    },
+    "site_visits": {
+      "columns": [
+        "id",
+        "path",
+        "visited_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "posts": {
+      "columns": [
+        "id",
+        "title",
+        "title_en",
+        "content",
+        "content_en",
+        "image_url",
+        "category",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Avant de venir au magasin",
+          "title_en": "Before visiting the store",
+          "content": "Repérez la référence de l’appareil qui vous intéresse et appelez pour confirmer sa disponibilité avant votre déplacement.",
+          "content_en": "Find the reference of the appliance that interests you and call to confirm availability before making the trip.",
+          "image_url": null,
+          "category": "Préparer sa visite",
+          "published": 0,
+          "created_at": "2026-09-15T19:20:09.494Z",
+          "updated_at": "2026-09-15T19:20:09.494Z"
+        },
+        {
+          "id": 2,
+          "title": "Les mesures à avoir sous la main",
+          "title_en": "Measurements to bring",
+          "content": "Notez la largeur, la hauteur et la profondeur de l’espace prévu. Apportez ces mesures pour discuter du format de l’appareil en magasin.",
+          "content_en": "Write down the width, height and depth of the intended space. Bring these measurements to discuss appliance size in store.",
+          "image_url": null,
+          "category": "Préparer sa visite",
+          "published": 0,
+          "created_at": "2026-09-15T19:20:09.504Z",
+          "updated_at": "2026-09-15T19:20:09.504Z"
+        },
+        {
+          "id": 3,
+          "title": "Regarder l’état de l’appareil",
+          "title_en": "Inspecting the appliance",
+          "content": "Les renseignements d’une fiche peuvent inclure l’état et les défauts connus. Posez vos questions au magasin pour obtenir les précisions nécessaires.",
+          "content_en": "A listing may include condition details and known defects. Ask the store for any clarification you need.",
+          "image_url": null,
+          "category": "Renseignements",
+          "published": 0,
+          "created_at": "2026-09-15T19:20:09.514Z",
+          "updated_at": "2026-09-15T19:20:09.514Z"
+        },
+        {
+          "id": 4,
+          "title": "Une fiche utile pour votre appel",
+          "title_en": "A useful listing for your call",
+          "content": "Gardez le nom du modèle et sa référence à portée de main. Ils permettent d’identifier l’appareil dont vous souhaitez discuter.",
+          "content_en": "Keep the model name and reference handy. They help identify the appliance you would like to discuss.",
+          "image_url": null,
+          "category": "Renseignements",
+          "published": 0,
+          "created_at": "2026-09-15T19:20:09.523Z",
+          "updated_at": "2026-09-15T19:20:09.523Z"
+        }
+      ]
+    },
+    "products": {
+      "columns": [
+        "id",
+        "title",
+        "title_en",
+        "description",
+        "description_en",
+        "category",
+        "price",
+        "previous_price",
+        "comparison_evidence",
+        "price_note",
+        "price_note_en",
+        "condition",
+        "condition_en",
+        "reference",
+        "dimensions",
+        "dimensions_en",
+        "defects",
+        "defects_en",
+        "image_url",
+        "image_url_2",
+        "photos_verified",
+        "facts_verified",
+        "featured",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 6,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Réfrigérateur à congélateur supérieur",
+          "title_en": "Top-freezer refrigerator",
+          "description": "Gabarit de fiche pour un réfrigérateur. Ajoutez la marque, le modèle, les mesures et les photos de l’appareil réellement présenté avant publication.",
+          "description_en": "Listing template for a refrigerator. Add the brand, model, measurements and actual appliance photographs before publishing.",
+          "category": "refrigerator",
+          "price": null,
+          "previous_price": null,
+          "comparison_evidence": null,
+          "price_note": null,
+          "price_note_en": null,
+          "condition": null,
+          "condition_en": null,
+          "reference": null,
+          "dimensions": null,
+          "dimensions_en": null,
+          "defects": null,
+          "defects_en": null,
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1789491014/tapavis_tenant_econo-plus/build_econo-plus_dcbb6174-ced9-47e5-8609-752feac6d0f0.png",
+          "image_url_2": null,
+          "photos_verified": false,
+          "facts_verified": false,
+          "featured": false,
+          "published": 0,
+          "created_at": "2026-09-15T19:20:09.421Z",
+          "updated_at": "2026-09-15T19:20:09.421Z"
+        },
+        {
+          "id": 2,
+          "title": "Cuisinière électrique à surface lisse",
+          "title_en": "Smooth-top electric range",
+          "description": "Gabarit de fiche pour une cuisinière. Confirmez le type de cuisson, les dimensions et les défauts observés sur l’appareil réel.",
+          "description_en": "Listing template for a range. Confirm the cooking type, dimensions and observed defects of the actual appliance.",
+          "category": "range",
+          "price": null,
+          "previous_price": null,
+          "comparison_evidence": null,
+          "price_note": null,
+          "price_note_en": null,
+          "condition": null,
+          "condition_en": null,
+          "reference": null,
+          "dimensions": null,
+          "dimensions_en": null,
+          "defects": null,
+          "defects_en": null,
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1789491018/tapavis_tenant_econo-plus/build_econo-plus_f6206cb9-37ca-446b-a00a-733ceadc5485.png",
+          "image_url_2": null,
+          "photos_verified": false,
+          "facts_verified": false,
+          "featured": false,
+          "published": 0,
+          "created_at": "2026-09-15T19:20:09.431Z",
+          "updated_at": "2026-09-15T19:20:09.431Z"
+        },
+        {
+          "id": 3,
+          "title": "Laveuse à chargement frontal",
+          "title_en": "Front-load washer",
+          "description": "Gabarit de fiche pour une laveuse. Indiquez les caractéristiques vérifiées, les dimensions et les accessoires inclus seulement après inspection.",
+          "description_en": "Listing template for a washer. Enter verified features, dimensions and included accessories only after inspection.",
+          "category": "washer",
+          "price": null,
+          "previous_price": null,
+          "comparison_evidence": null,
+          "price_note": null,
+          "price_note_en": null,
+          "condition": null,
+          "condition_en": null,
+          "reference": null,
+          "dimensions": null,
+          "dimensions_en": null,
+          "defects": null,
+          "defects_en": null,
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1789491019/tapavis_tenant_econo-plus/build_econo-plus_19fa5845-4c34-40a1-af09-97c9683095cd.png",
+          "image_url_2": null,
+          "photos_verified": false,
+          "facts_verified": false,
+          "featured": false,
+          "published": 0,
+          "created_at": "2026-09-15T19:20:09.443Z",
+          "updated_at": "2026-09-15T19:20:09.443Z"
+        },
+        {
+          "id": 4,
+          "title": "Sécheuse électrique",
+          "title_en": "Electric dryer",
+          "description": "Gabarit de fiche pour une sécheuse. Remplacez cette description par les renseignements de l’appareil en magasin.",
+          "description_en": "Listing template for a dryer. Replace this description with details of the appliance in store.",
+          "category": "dryer",
+          "price": null,
+          "previous_price": null,
+          "comparison_evidence": null,
+          "price_note": null,
+          "price_note_en": null,
+          "condition": null,
+          "condition_en": null,
+          "reference": null,
+          "dimensions": null,
+          "dimensions_en": null,
+          "defects": null,
+          "defects_en": null,
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1789491017/tapavis_tenant_econo-plus/build_econo-plus_ef2204ce-bbf3-4530-850d-b348fdfa2ac8.png",
+          "image_url_2": null,
+          "photos_verified": false,
+          "facts_verified": false,
+          "featured": false,
+          "published": 0,
+          "created_at": "2026-09-15T19:20:09.458Z",
+          "updated_at": "2026-09-15T19:20:09.458Z"
+        },
+        {
+          "id": 5,
+          "title": "Lave-vaisselle encastrable",
+          "title_en": "Built-in dishwasher",
+          "description": "Gabarit de fiche pour un lave-vaisselle. Vérifiez la largeur, l’état des paniers et les défauts connus avant publication.",
+          "description_en": "Listing template for a dishwasher. Verify the width, rack condition and known defects before publishing.",
+          "category": "dishwasher",
+          "price": null,
+          "previous_price": null,
+          "comparison_evidence": null,
+          "price_note": null,
+          "price_note_en": null,
+          "condition": null,
+          "condition_en": null,
+          "reference": null,
+          "dimensions": null,
+          "dimensions_en": null,
+          "defects": null,
+          "defects_en": null,
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1789491013/tapavis_tenant_econo-plus/build_econo-plus_bb174485-2b08-46aa-a498-9b8bccdcbb7d.png",
+          "image_url_2": null,
+          "photos_verified": false,
+          "facts_verified": false,
+          "featured": false,
+          "published": 0,
+          "created_at": "2026-09-15T19:20:09.475Z",
+          "updated_at": "2026-09-15T19:20:09.475Z"
+        },
+        {
+          "id": 6,
+          "title": "Congélateur vertical",
+          "title_en": "Upright freezer",
+          "description": "Gabarit de fiche pour un congélateur. Ajoutez uniquement les mesures et les caractéristiques confirmées de l’appareil réel.",
+          "description_en": "Listing template for a freezer. Add only confirmed measurements and features of the actual appliance.",
+          "category": "freezer",
+          "price": null,
+          "previous_price": null,
+          "comparison_evidence": null,
+          "price_note": null,
+          "price_note_en": null,
+          "condition": null,
+          "condition_en": null,
+          "reference": null,
+          "dimensions": null,
+          "dimensions_en": null,
+          "defects": null,
+          "defects_en": null,
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1789491016/tapavis_tenant_econo-plus/build_econo-plus_65208795-4e5b-45e8-8f43-ebde7956dc58.png",
+          "image_url_2": null,
+          "photos_verified": false,
+          "facts_verified": false,
+          "featured": false,
+          "published": 0,
+          "created_at": "2026-09-15T19:20:09.486Z",
+          "updated_at": "2026-09-15T19:20:09.486Z"
+        }
+      ]
+    }
+  }
+}
