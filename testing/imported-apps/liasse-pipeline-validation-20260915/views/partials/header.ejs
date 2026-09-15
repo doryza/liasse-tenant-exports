@@ -1,0 +1,23 @@
+<% const headerLang=typeof lang!=='undefined'?lang:'fr';const headerPath=typeof pagePath!=='undefined'?pagePath:'.';const headerAdmin=typeof adminPage!=='undefined'&&adminPage;const headerLinks=typeof langLinks!=='undefined'&&langLinks?langLinks:{fr:headerPath+'?lang=fr',en:headerPath+'?lang=en'}; %>
+<!DOCTYPE html>
+<html lang="<%= headerLang %>">
+<head>
+<base href="<%= tenantBase %>">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#2858EF"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="description" content="<%= t.description %>">
+<% if(headerAdmin){ %><meta name="robots" content="noindex,nofollow"><% } %>
+<title><%= typeof pageTitle!=='undefined'?pageTitle:t.siteName %> — Liasse</title>
+<link rel="manifest" href="manifest.json"><link rel="icon" href="public/icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="icon.png"><link rel="stylesheet" href="public/css/styles.css">
+<% if(headerAdmin){ %><link rel="stylesheet" href="public/css/admin-styles.css"><% } %>
+<noscript><style>.site-nav{display:flex!important}.menu-toggle{display:none!important}.admin-sidebar nav{display:flex!important}.admin-sidebar>button{display:none!important}</style></noscript>
+</head>
+<body class="<%= headerAdmin?'admin-body':'public-body' %>" data-lang="<%= headerLang %>">
+<a class="skip-link" href="<%= headerPath %>#main" data-lk="t:skip"><%= t.skip %></a>
+<header class="site-header"><div class="header-inner">
+<a class="wordmark" href="." data-lk="t:brand"><%= t.brand %></a>
+<button class="menu-toggle" id="menu-toggle" type="button" aria-label="<%= t.menu %>" aria-controls="site-nav" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span data-lk="t:menu"><%= t.menu %></span></button>
+<nav id="site-nav" class="site-nav" aria-label="<%= t.menu %>"><a href="." <%- headerPath==='.'?'aria-current="page"':'' %> data-lk="t:navHome"><%= t.navHome %></a><a href="a-propos" <%- headerPath==='a-propos'?'aria-current="page"':'' %> data-lk="t:navAbout"><%= t.navAbout %></a></nav>
+<nav class="language-nav" aria-label="<%= t.language %>"><a href="<%= headerLinks.fr %>" lang="fr" hreflang="fr" <%- headerLang==='fr'?'aria-current="true"':'' %> data-lk="t:fr"><%= t.fr %></a><span aria-hidden="true">/</span><a href="<%= headerLinks.en %>" lang="en" hreflang="en" <%- headerLang==='en'?'aria-current="true"':'' %> data-lk="t:en"><%= t.en %></a></nav>
+</div></header>
+<script>
+(function(){const button=document.getElementById('menu-toggle'),nav=document.getElementById('site-nav');function close(returnFocus){nav.classList.remove('is-open');button.setAttribute('aria-expanded','false');if(returnFocus)button.focus();}button.addEventListener('click',function(){const open=button.getAttribute('aria-expanded')!=='true';button.setAttribute('aria-expanded',String(open));nav.classList.toggle('is-open',open);});document.addEventListener('keydown',function(event){if(event.key==='Escape'&&button.getAttribute('aria-expanded')==='true')close(true);});nav.addEventListener('click',function(event){if(event.target.closest('a'))close(false);});document.addEventListener('click',function(event){if(!event.target.closest('.site-header')&&button.getAttribute('aria-expanded')==='true')close(false);});const media=window.matchMedia('(min-width:760px)');if(media.addEventListener)media.addEventListener('change',function(){close(false);});})();
+</script>

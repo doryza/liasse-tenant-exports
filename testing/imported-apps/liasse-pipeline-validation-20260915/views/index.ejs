@@ -1,0 +1,18 @@
+<%- include('partials/header') %>
+<main id="main" class="container" tabindex="-1">
+<div class="local-notice" id="local-notice" hidden><p data-lk="t:localActive"><%= t.localActive %></p><a href="admin/editor" data-lk="t:manageLocal"><%= t.manageLocal %></a></div>
+<section class="hero-grid">
+<div class="hero-copy"><p class="eyebrow" data-lk="t:demo"><%= t.demo %></p>
+<% const g=typeof groups!=='undefined'&&groups?groups:{intro:[],scope:[],card:[],note:[]}; %>
+<%- include('partials/content',{item:g.intro[0]||null,level:'h1'}) %>
+<a class="button primary" style="background-color:#2858ef;color:#fff" href="a-propos" data-lk="t:aboutLink"><%= t.aboutLink %></a>
+<% g.intro.slice(1).forEach(function(item){ %><div class="extra-intro"><%- include('partials/content',{item,level:'h2'}) %></div><% }); %>
+</div>
+<aside class="scope-panel"><% if(g.scope.length){ %><% g.scope.forEach(function(item){ %><div><%- include('partials/content',{item,level:'h2'}) %></div><% }); %><% }else{ %><%- include('partials/content',{item:null,level:'h2'}) %><% } %></aside>
+</section>
+<section class="control-band" aria-label="<%= t.pagesModule %>">
+<% if(g.card.length){ %><% g.card.forEach(function(item){ %><article class="control-card"><%- include('partials/icon',{icon:item.icon}) %><%- include('partials/content',{item,level:'h2'}) %></article><% }); %><% }else{ %><p class="empty-state" data-lk="t:emptyCards"><%= t.emptyCards %></p><% } %>
+</section>
+<section class="limit-notes"><% if(g.note.length){ %><% g.note.forEach(function(item){ %><div><%- include('partials/content',{item,level:'h2'}) %></div><% }); %><% }else{ %><p data-lk="t:demo"><%= t.demo %></p><% } %></section>
+</main>
+<%- include('partials/footer') %>

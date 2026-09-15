@@ -1,0 +1,7 @@
+<% const row=typeof item!=='undefined'&&item?item:null;const heading=typeof level!=='undefined'?level:'h2';const titleColumn=typeof lang!=='undefined'&&lang==='en'?'title_en':'title';const bodyColumn=typeof lang!=='undefined'&&lang==='en'?'content_en':'content'; %>
+<% if(row){ %>
+<% if(heading==='h1'){ %><h1 data-content-source="lab_content:<%= titleColumn %>" data-content-id="<%= row.id %>" data-local-key="<%= row.content_key %>" data-local-field="<%= titleColumn %>"><%= row[titleColumn]||t.siteName %></h1><% }else if(row[titleColumn]){ %><h2 data-content-source="lab_content:<%= titleColumn %>" data-content-id="<%= row.id %>" data-local-key="<%= row.content_key %>" data-local-field="<%= titleColumn %>"><%= row[titleColumn] %></h2><% }else{ %><h2 hidden data-content-source="lab_content:<%= titleColumn %>" data-content-id="<%= row.id %>" data-local-key="<%= row.content_key %>" data-local-field="<%= titleColumn %>"></h2><% } %>
+<p class="content-paragraph" data-content-source="lab_content:<%= bodyColumn %>" data-content-id="<%= row.id %>" data-local-key="<%= row.content_key %>" data-local-field="<%= bodyColumn %>"><%= row[bodyColumn] %></p>
+<% }else{ %>
+<% if(heading==='h1'){ %><h1 data-lk="t:emptyTitle"><%= t.emptyTitle %></h1><% }else{ %><h2 data-lk="t:emptyTitle"><%= t.emptyTitle %></h2><% } %><p data-lk="t:emptyBody"><%= t.emptyBody %></p>
+<% } %>

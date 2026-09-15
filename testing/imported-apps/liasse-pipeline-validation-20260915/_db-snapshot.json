@@ -1,0 +1,358 @@
+{
+  "exportedAt": "2026-09-15T22:15:20.477Z",
+  "tables": {
+    "admin_settings": {
+      "columns": [
+        "key",
+        "value",
+        "updated_at"
+      ],
+      "totalRows": 35,
+      "sampleRows": [
+        {
+          "key": "tagline",
+          "value": "Démonstration interne",
+          "updated_at": "2026-09-15T22:15:04.325Z"
+        },
+        {
+          "key": "hero_title",
+          "value": "Laboratoire de validation",
+          "updated_at": "2026-09-15T22:15:04.340Z"
+        },
+        {
+          "key": "hero_subtitle",
+          "value": "Un site interne pour éprouver notre constructeur de sites.",
+          "updated_at": "2026-09-15T22:15:04.357Z"
+        },
+        {
+          "key": "about_text",
+          "value": "Ce site est un support de démonstration interne de Liasse. Il sert à essayer notre constructeur de sites.",
+          "updated_at": "2026-09-15T22:15:04.367Z"
+        },
+        {
+          "key": "_p_hero_image_url",
+          "value": "https://res.cloudinary.com/duhp69meg/image/upload/v1789508413/tapavis_tenant_liasse-pipeline-validation-20260915/build_liasse-pipeline-validation-20260915_6bd5bf0c-1bf2-4f0f-8b37-dd238dedab4f.png",
+          "updated_at": "2026-09-15T22:15:04.382Z"
+        },
+        {
+          "key": "_seed_version",
+          "value": "730eee2c9bb6",
+          "updated_at": "2026-09-15T22:15:04.660Z"
+        },
+        {
+          "key": "_seeded_at",
+          "value": "2026-09-15 22:15:04.672144+00",
+          "updated_at": "2026-09-15T22:15:04.672Z"
+        },
+        {
+          "key": "_p_seo_title_fr",
+          "value": "Liasse — Laboratoire de validation",
+          "updated_at": "2026-09-15T22:15:04.991Z"
+        },
+        {
+          "key": "_p_seo_source_title_fr",
+          "value": "ai",
+          "updated_at": "2026-09-15T22:15:04.999Z"
+        },
+        {
+          "key": "_p_seo_description_fr",
+          "value": "Explorez la démonstration interne Liasse : création initiale, affichage mobile et accessibilité. Deux pages bilingues, sans résultat de certification.",
+          "updated_at": "2026-09-15T22:15:05.023Z"
+        }
+      ]
+    },
+    "admin_invites": {
+      "columns": [
+        "id",
+        "email",
+        "token",
+        "role",
+        "status",
+        "invited_by",
+        "expires_at",
+        "accepted_at",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_users": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "password_hash",
+        "display_name",
+        "role",
+        "active",
+        "activation_token",
+        "invited_by",
+        "invite_token",
+        "invite_expires_at",
+        "last_login_at",
+        "is_active",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_webauthn_credentials": {
+      "columns": [
+        "id",
+        "admin_user_id",
+        "credential_id",
+        "public_key",
+        "counter",
+        "device_name",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "site_visits": {
+      "columns": [
+        "id",
+        "path",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "posts": {
+      "columns": [
+        "id",
+        "title",
+        "content",
+        "image_url",
+        "category",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Préparer une création initiale",
+          "content": "Décrire les deux pages attendues, les langues et les contenus à rendre éditables. Conserver le périmètre de démonstration dans la description.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1789508412/tapavis_tenant_liasse-pipeline-validation-20260915/build_liasse-pipeline-validation-20260915_cb60a464-f40d-47f3-a56e-80e630f29254.png",
+          "category": "Construction",
+          "published": 0,
+          "created_at": "2026-09-15T22:15:04.527Z",
+          "updated_at": "2026-09-15T22:15:04.527Z"
+        },
+        {
+          "id": 2,
+          "title": "Observer une navigation mobile",
+          "content": "Ouvrir les deux pages sur un écran étroit. Examiner le menu, les liens de langue et la lisibilité. Cette note ne contient aucun résultat de test.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1789508411/tapavis_tenant_liasse-pipeline-validation-20260915/build_liasse-pipeline-validation-20260915_c552f271-723c-490d-b247-82dfa2402afb.png",
+          "category": "Navigation",
+          "published": 0,
+          "created_at": "2026-09-15T22:15:04.535Z",
+          "updated_at": "2026-09-15T22:15:04.535Z"
+        },
+        {
+          "id": 3,
+          "title": "Examiner le parcours clavier",
+          "content": "Parcourir les liens et les boutons au clavier. Observer le focus et la hiérarchie des titres sans transformer ces observations en certification.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1789508415/tapavis_tenant_liasse-pipeline-validation-20260915/build_liasse-pipeline-validation-20260915_a3396114-ad21-49d4-aa31-4a01e152e018.png",
+          "category": "Accessibilité",
+          "published": 0,
+          "created_at": "2026-09-15T22:15:04.544Z",
+          "updated_at": "2026-09-15T22:15:04.544Z"
+        },
+        {
+          "id": 4,
+          "title": "Maintenir une identité interne",
+          "content": "Conserver les mentions de démonstration interne et distinguer clairement les essais locaux des modifications partagées.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1789508414/tapavis_tenant_liasse-pipeline-validation-20260915/build_liasse-pipeline-validation-20260915_46648c09-5a00-4465-b8dd-f9c764354bcd.png",
+          "category": "Périmètre",
+          "published": 0,
+          "created_at": "2026-09-15T22:15:04.558Z",
+          "updated_at": "2026-09-15T22:15:04.558Z"
+        }
+      ]
+    },
+    "lab_content": {
+      "columns": [
+        "id",
+        "content_key",
+        "page",
+        "area",
+        "title",
+        "title_en",
+        "content",
+        "content_en",
+        "icon",
+        "sort_order",
+        "published",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 11,
+      "sampleRows": [
+        {
+          "id": 1,
+          "content_key": "home-intro",
+          "page": "home",
+          "area": "intro",
+          "title": "Laboratoire de validation",
+          "title_en": "Validation Lab",
+          "content": "Un site interne pour éprouver notre constructeur de sites.",
+          "content_en": "An internal site for testing our website builder.",
+          "icon": "none",
+          "sort_order": 10,
+          "published": 1,
+          "image_url": null,
+          "created_at": "2026-09-15T22:15:04.394Z",
+          "updated_at": "2026-09-15T22:15:04.394Z"
+        },
+        {
+          "id": 2,
+          "content_key": "home-scope",
+          "page": "home",
+          "area": "scope",
+          "title": "Périmètre",
+          "title_en": "Scope",
+          "content": "Deux pages publiques, deux langues et un éditeur de contenu.",
+          "content_en": "Two public pages, two languages and a content editor.",
+          "icon": "none",
+          "sort_order": 20,
+          "published": 1,
+          "image_url": null,
+          "created_at": "2026-09-15T22:15:04.408Z",
+          "updated_at": "2026-09-15T22:15:04.408Z"
+        },
+        {
+          "id": 3,
+          "content_key": "initial-build",
+          "page": "home",
+          "area": "card",
+          "title": "Création initiale",
+          "title_en": "Initial build",
+          "content": "Examiner la structure, les titres et les contenus produits au premier passage.",
+          "content_en": "Review the structure, headings and content produced in the first build.",
+          "icon": "document",
+          "sort_order": 30,
+          "published": 1,
+          "image_url": null,
+          "created_at": "2026-09-15T22:15:04.425Z",
+          "updated_at": "2026-09-15T22:15:04.425Z"
+        },
+        {
+          "id": 4,
+          "content_key": "mobile-check",
+          "page": "home",
+          "area": "card",
+          "title": "Vérification mobile",
+          "title_en": "Mobile check",
+          "content": "Observer la navigation et la lisibilité sur un écran étroit.",
+          "content_en": "Check navigation and readability on a narrow screen.",
+          "icon": "phone",
+          "sort_order": 40,
+          "published": 1,
+          "image_url": null,
+          "created_at": "2026-09-15T22:15:04.442Z",
+          "updated_at": "2026-09-15T22:15:04.442Z"
+        },
+        {
+          "id": 5,
+          "content_key": "accessibility",
+          "page": "home",
+          "area": "card",
+          "title": "Accessibilité",
+          "title_en": "Accessibility",
+          "content": "Vérifier les contrastes, le parcours clavier et la hiérarchie des titres.",
+          "content_en": "Check contrast, keyboard navigation and heading hierarchy.",
+          "icon": "focus",
+          "sort_order": 50,
+          "published": 1,
+          "image_url": null,
+          "created_at": "2026-09-15T22:15:04.451Z",
+          "updated_at": "2026-09-15T22:15:04.451Z"
+        },
+        {
+          "id": 6,
+          "content_key": "home-limit",
+          "page": "home",
+          "area": "note",
+          "title": "",
+          "title_en": "",
+          "content": "Ces rubriques décrivent des essais à effectuer, pas des résultats de validation.",
+          "content_en": "These topics describe checks to perform, not validation results.",
+          "icon": "none",
+          "sort_order": 60,
+          "published": 1,
+          "image_url": null,
+          "created_at": "2026-09-15T22:15:04.460Z",
+          "updated_at": "2026-09-15T22:15:04.460Z"
+        },
+        {
+          "id": 7,
+          "content_key": "about-intro",
+          "page": "about",
+          "area": "intro",
+          "title": "À propos du laboratoire",
+          "title_en": "About the lab",
+          "content": "Ce site est un support de démonstration interne de Liasse. Il sert à essayer notre constructeur de sites.",
+          "content_en": "This site is an internal Liasse demonstration. It is used to test our website builder.",
+          "icon": "none",
+          "sort_order": 10,
+          "published": 1,
+          "image_url": null,
+          "created_at": "2026-09-15T22:15:04.476Z",
+          "updated_at": "2026-09-15T22:15:04.476Z"
+        },
+        {
+          "id": 8,
+          "content_key": "about-examine",
+          "page": "about",
+          "area": "card",
+          "title": "Ce que nous examinons",
+          "title_en": "What we examine",
+          "content": "Nous examinons la création initiale, l’affichage sur mobile et les contrôles d’accessibilité. Ces rubriques indiquent des essais à effectuer, sans annoncer de résultat.",
+          "content_en": "We examine the initial build, the mobile display and accessibility checks. These topics describe checks to perform without reporting a result.",
+          "icon": "document",
+          "sort_order": 20,
+          "published": 1,
+          "image_url": null,
+          "created_at": "2026-09-15T22:15:04.487Z",
+          "updated_at": "2026-09-15T22:15:04.487Z"
+        },
+        {
+          "id": 9,
+          "content_key": "about-edit",
+          "page": "about",
+          "area": "card",
+          "title": "Ce que nous modifions",
+          "title_en": "What we edit",
+          "content": "Les titres et les paragraphes sont éditables en français et en anglais. L’éditeur local permet d’essayer des textes dans ce navigateur ; les modules d’administration modifient les contenus partagés.",
+          "content_en": "Headings and paragraphs can be edited in French and English. The local editor lets you try text in this browser; administration modules change shared content.",
+          "icon": "phone",
+          "sort_order": 30,
+          "published": 1,
+          "image_url": null,
+          "created_at": "2026-09-15T22:15:04.495Z",
+          "updated_at": "2026-09-15T22:15:04.495Z"
+        },
+        {
+          "id": 10,
+          "content_key": "about-not",
+          "page": "about",
+          "area": "card",
+          "title": "Ce que ce site n’est pas",
+          "title_en": "What this site is not",
+          "content": "Ce site n’est ni une offre commerciale ni un rapport de certification. Il ne présente aucun client, témoignage, prix ou résultat de validation.",
+          "content_en": "This site is neither a commercial offer nor a certification report. It presents no clients, testimonials, prices or validation results.",
+          "icon": "focus",
+          "sort_order": 40,
+          "published": 1,
+          "image_url": null,
+          "created_at": "2026-09-15T22:15:04.505Z",
+          "updated_at": "2026-09-15T22:15:04.505Z"
+        }
+      ]
+    }
+  }
+}

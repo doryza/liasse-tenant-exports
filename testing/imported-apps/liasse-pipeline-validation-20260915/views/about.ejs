@@ -1,0 +1,10 @@
+<%- include('partials/header') %>
+<main id="main" class="container about-page" tabindex="-1">
+<div class="local-notice" id="local-notice" hidden><p data-lk="t:localActive"><%= t.localActive %></p><a href="admin/editor" data-lk="t:manageLocal"><%= t.manageLocal %></a></div>
+<% const g = typeof groups !== 'undefined' && groups ? groups : {intro:[],scope:[],card:[],note:[]}; %>
+<section class="about-intro"><p class="eyebrow" data-lk="t:demo"><%= t.demo %></p><%- include('partials/content',{item:g.intro[0] || null,level:'h1'}) %><% g.intro.slice(1).forEach(function(item){ %><div class="extra-intro"><%- include('partials/content',{item,level:'h2'}) %></div><% }); %></section>
+<section class="about-grid"><% if (g.card.length) { %><% g.card.forEach(function(item){ %><article><%- include('partials/content',{item,level:'h2'}) %></article><% }); %><% } else { %><p class="empty-state" data-lk="t:emptyCards"><%= t.emptyCards %></p><% } %></section>
+<section class="boundary-panel"><% if (g.scope.length) { %><% g.scope.forEach(function(item){ %><div><%- include('partials/content',{item,level:'h2'}) %></div><% }); %><% } else { %><p data-lk="t:demo"><%= t.demo %></p><% } %><div class="inline-actions"><a href="." data-lk="t:backHome"><%= t.backHome %></a><a href="admin" data-lk="t:openAdmin"><%= t.openAdmin %></a></div></section>
+<% if (g.note.length) { %><section class="limit-notes"><% g.note.forEach(function(item){ %><div><%- include('partials/content',{item,level:'h2'}) %></div><% }); %></section><% } %>
+</main>
+<%- include('partials/footer') %>

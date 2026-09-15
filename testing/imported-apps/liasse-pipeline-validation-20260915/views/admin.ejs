@@ -1,0 +1,19 @@
+<%- include('partials/header') %>
+<div class="admin-layout"><%- include('partials/admin-sidebar') %><main id="main" class="admin-main" tabindex="-1">
+<div class="module-heading"><div><p class="eyebrow"><%= t.demo %></p><h1><%= t.adminTitle %></h1><p><%= t.adminIntro %></p></div><a class="button primary" style="background-color:var(--admin-brand,#2858ef);color:#fff" href="admin/lab_content?new=1"><%= t.add %></a></div>
+<div class="admin-notice"><%= t.databaseNotice %></div>
+<section aria-labelledby="quick-title"><h2 id="quick-title"><%= t.quickActions %></h2><div class="module-card-grid">
+<% if (typeof modules !== 'undefined' && Array.isArray(modules)) { modules.forEach(function(m){ %>
+<article class="module-card"><span class="badge"><%= t.sharedBadge %></span><h3><%= m.label %></h3><p><%= m.key==='posts'?t.draftsHint:t.manageHint %></p><a class="button" href="admin/<%= m.key %>"><%= t.openModule %><span class="sr-only"> — <%= m.label %></span><span aria-hidden="true"> →</span></a></article>
+<% }); } %>
+<article class="module-card"><span class="badge"><%= t.sharedBadge %></span><h3><%= t.settingsTitle %></h3><p><%= t.settingsHint %></p><a class="button" href="admin/settings"><%= t.openModule %><span class="sr-only"> — <%= t.settingsTitle %></span><span aria-hidden="true"> →</span></a></article>
+</div></section>
+<section class="local-callout"><div><span class="badge badge-local"><%= t.localBadge %></span><h2><%= t.localContent %></h2><p><%= t.localNotice %></p><p class="help"><%= t.localOverlayHelp %></p></div><a class="button" href="admin/editor"><%= t.localEditor %></a></section>
+<section aria-labelledby="counts-title"><h2 id="counts-title"><%= t.countsTitle %></h2><% const s=typeof stats!=='undefined'&&stats?stats:{}; %>
+<dl class="stat-grid"><div><dt><%= t.contentCount %></dt><dd><%= s.contentCount==null?t.unavailable:s.contentCount %></dd></div><div><dt><%= t.postCount %></dt><dd><%= s.postCount==null?t.unavailable:s.postCount %></dd></div><div><dt><%= t.visits %></dt><dd><%= s.totalVisits==null?t.unavailable:s.totalVisits %></dd></div><div><dt><%= t.recentVisits %></dt><dd><%= s.recentVisits==null?t.unavailable:s.recentVisits %></dd></div><div><dt><%= t.users %></dt><dd><%= s.userCount==null?t.unavailable:s.userCount %></dd></div><div><dt><%= t.subscribers %></dt><dd><%= s.pushSubscriberCount==null?t.unavailable:s.pushSubscriberCount %></dd></div></dl><p class="help"><%= t.statsNotice %></p></section>
+<section class="admin-panel"><div class="panel-heading"><h2><%= t.recentEdits %></h2><a href="admin/lab_content"><%= t.pagesModule %></a></div>
+<% if(typeof recent!=='undefined'&&recent.length){ %><ul class="recent-list"><% recent.forEach(function(item){ const d=new Date(item.updated_at); const valid=item.updated_at&&!Number.isNaN(d.getTime()); %><li><div><a href="admin/lab_content?edit=<%= item.id %>"><%= (lang==='en'?item.title_en:item.title)||t.note %></a><span class="row-meta"><%= item.page==='home'?t.navHome:t.navAbout %> · <%= Number(item.published)===1?t.visible:t.hidden %></span></div><% if(valid){ %><time datetime="<%= d.toISOString() %>"><%= d.toLocaleDateString(lang==='fr'?'fr-CA':'en-CA') %></time><% }else{ %><span><%= t.unavailable %></span><% } %></li><% }); %></ul><% }else{ %><div class="empty-state"><p><%= t.noEdits %></p><a href="admin/lab_content?new=1"><%= t.add %></a></div><% } %>
+<p class="help panel-footnote"><%= t.noSubmissions %></p></section>
+<details class="admin-panel"><summary><%= t.reference %></summary><p><%= t.referenceHelp %></p><% if(typeof settings!=='undefined'&&settings._p_hero_image_url){ %><img class="reference-image" src="<%= settings._p_hero_image_url %>" data-setting-key="_p_hero_image_url" alt="<%= t.reference %>" loading="lazy"><% }else{ %><p><%= t.noReference %></p><% } %></details>
+</main></div>
+<%- include('partials/footer') %>

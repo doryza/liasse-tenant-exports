@@ -1,0 +1,142 @@
+{
+  "slug": "liasse-pipeline-validation-20260915",
+  "displayName": "Liasse — Validation du pipeline",
+  "description": "Crée un petit site bilingue français/anglais de démonstration interne pour Liasse, intitulé « Laboratoire de validation ». Le site explique clairement qu’il sert aux essais de notre constructeur de sites. Il doit présenter trois cartes : Création initiale, Vérification mobile, Accessibilité. Fournis une page d’accueil, une page À propos, une navigation responsive, un sélecteur FR/EN et une administration permettant de modifier les titres et paragraphes. Style simple, professionnel, accessible, fond clair et accent bleu. N’invente aucun client, témoignage, prix, adresse ou contact. Aucun formulaire de contact, envoi de courriel, service externe, paiement ni recherche Web. Utilise du texte, des formes CSS et des icônes SVG simples; aucune photographie n’est nécessaire. Le contenu public doit rester clairement une démonstration interne.",
+  "status": "active",
+  "generationVersion": 1,
+  "primaryColor": "#2858ef",
+  "iconUrl": "https://res.cloudinary.com/duhp69meg/image/upload/v1789510516/tapavis_tenant_liasse-pipeline-validation-20260915/icon_liasse-pipeline-validation-20260915_f7c82e07-43fb-47ed-81f6-85d08d5d35f6.png",
+  "enabledAuthMethods": [
+    "webauthn",
+    "sms",
+    "email"
+  ],
+  "notificationsEnabled": true,
+  "geolocationEnabled": true,
+  "customConfig": {
+    "language": "both",
+    "businessName": "Liasse",
+    "contactEmail": "dory@liasse.tech",
+    "contactPhone": null,
+    "designManifest": {
+      "concept": "Grille de contrôle",
+      "copyVoice": "Français et anglais directs, factuels et parallèles ; vérifier plutôt que garantir.",
+      "elements": {
+        "blogSurfaced": false,
+        "pages": [
+          "Accueil",
+          "À propos",
+          "Administration authentifiée de la plateforme",
+          "Éditeur local",
+          "Contenus des pages",
+          "Brouillons internes",
+          "Textes de l’interface"
+        ],
+        "userLogin": false
+      },
+      "heroThesis": "Le laboratoire se présente comme un environnement interne délimité, avec son objet à gauche et son périmètre à droite, sans promesse commerciale ni résultat de certification.",
+      "iconDirection": "Carré blanc avec un L géométrique bleu construit par deux traits épais et trois petites encoches parallèles, sans coche de certification.",
+      "palette": {
+        "accents": [
+          "#EDF2FF",
+          "#C7D5F5",
+          "#64748B"
+        ],
+        "ground": "#FFFFFF",
+        "ink": "#17233B",
+        "primary": "#2858EF"
+      },
+      "signatureMove": "Les trois cartes informatives partagent un trait bleu de 4 px, horizontal sur ordinateur et continu à gauche sur mobile ; des SVG de document, téléphone et focus remplacent les compteurs décoratifs, sans suggérer de progression ni de validation acquise.",
+      "summary": "Un cadre blanc, une grille précise et une bande bleue commune distinguent le périmètre du laboratoire, les essais à effectuer et les contenus modifiables.",
+      "typography": "Space Grotesk 600 pour les titres et IBM Plex Sans 400/500 pour les textes lorsque ces polices sont disponibles localement, avec repli Arial sans requête distante ni fichiers de police binaires fournis. H1 principal 64/68 px sur ordinateur et 38/42 px sur mobile ; corps 17/27 px."
+    },
+    "businessAddress": null,
+    "designDirections": {
+      "directions": [
+        {
+          "pitch": "Cette grille donne à votre laboratoire Liasse un cadre précis où l’on comprend immédiatement ce qui est présenté, ce qui doit être vérifié et ce que l’on peut modifier.",
+          "concept": "Grille de contrôle",
+          "palette": {
+            "ink": "#17233B",
+            "ground": "#FFFFFF",
+            "accents": [
+              "#EDF2FF",
+              "#C7D5F5",
+              "#64748B"
+            ],
+            "primary": "#2858EF"
+          }
+        },
+        {
+          "pitch": "Ce cahier fait de votre démonstration un document accueillant et facile à lire, idéal pour expliquer les essais Liasse sans donner au site l’apparence d’un produit commercial.",
+          "concept": "Cahier d’essais",
+          "palette": {
+            "ink": "#292D35",
+            "ground": "#FAF7F0",
+            "accents": [
+              "#EEE7D9",
+              "#E2E9F7",
+              "#77736C"
+            ],
+            "primary": "#244AA5"
+          }
+        },
+        {
+          "pitch": "Ces trois modules rendent vos essais Liasse immédiatement repérables et donnent à l’équipe une démonstration chaleureuse, aussi simple à parcourir sur téléphone qu’à modifier.",
+          "concept": "Modules ouverts",
+          "palette": {
+            "ink": "#142F46",
+            "ground": "#F5FAFF",
+            "accents": [
+              "#DDEFFC",
+              "#BEDCF2",
+              "#597489"
+            ],
+            "primary": "#0067B8"
+          }
+        }
+      ],
+      "recommendedIndex": 0
+    },
+    "consultationPresentedAt": null
+  },
+  "promptHistory": [
+    {
+      "prompt": "Crée un petit site bilingue français/anglais de démonstration interne pour Liasse, intitulé « Laboratoire de validation ». Le site explique clairement qu’il sert aux essais de notre constructeur de sites. Il doit présenter trois cartes : Création initiale, Vérification mobile, Accessibilité. Fournis une page d’accueil, une page À propos, une navigation responsive, un sélecteur FR/EN et une administration permettant de modifier les titres et paragraphes. Style simple, professionnel, accessible, fond clair et accent bleu. N’invente aucun client, témoignage, prix, adresse ou contact. Aucun formulaire de contact, envoi de courriel, service externe, paiement ni recherche Web. Utilise du texte, des formes CSS et des icônes SVG simples; aucune photographie n’est nécessaire. Le contenu public doit rester clairement une démonstration interne.",
+      "timestamp": "2026-09-15T22:15:17.211Z",
+      "changeNotes": "Implemented the supplied control-grid identity with two bilingual public pages, accessible navigation, and no public photography or commercial content. The platform requires authenticated database administration, so I separated shared-content management from a clearly labelled browser-only editor that preserves drafts across server-rendered language changes. Decorative numbered counters were omitted, and the requested fonts use locally installed faces with a sans-serif fallback rather than remote font requests. Required generated illustrations are confined to internal administrative references and social previews; there are no contact forms, emails, payments, web searches, or third-party API integrations.\n\nReorganized administration around shared content, private drafts and browser-only experiments, with richer module cards, useful shortcuts and direct links to recent edits.,Enhanced both content modules with full create/edit/delete dialogs, page and status filters, display-order sorting, result counts, GET-based refresh, descriptive deletion confirmations and unsaved-change protection.,Improved bilingual forms, validation feedback, image previews, upload/generation loading states, keyboard focus, responsive tables and explicit high-contrast button fallbacks.,Preserved public copy, editor annotations, database structure and every image placeholder; prevented reseeding from overwriting the saved reference image.,Fixed script-data escaping, missing template-variable guards, misleading draft statuses, the no-icon option and navigation without JavaScript.,Added a safe administration access page, mount-aware redirects and compatible module discovery while retaining administrator authorization.,Added bilingual SEO and social-sharing metadata without inventing contacts, addresses, commercial offerings or validation results.\n\nThe shared-content editor now presents French and English titles and paragraphs as adjacent pairs before placement metadata, while preserving the posts form and payload behavior. Table actions retain keyboard focus across saves and refreshes, including separate handling for row-title and Edit controls. Desktop hero whitespace was reduced, and a narrow-screen header override improves fit without reducing language-link touch widths or hiding labels.",
+      "generationId": 2070,
+      "filesModified": [
+        "manifest.json",
+        "public/css/admin-styles.css",
+        "public/css/styles.css",
+        "public/icon.svg",
+        "public/js/admin.js",
+        "public/js/app.js",
+        "public/js/editor.js",
+        "routes.js",
+        "schema.sql",
+        "seed.js",
+        "views/about.ejs",
+        "views/admin-access.ejs",
+        "views/admin-editor.ejs",
+        "views/admin-lab_content.ejs",
+        "views/admin-posts.ejs",
+        "views/admin-settings.ejs",
+        "views/admin.ejs",
+        "views/error.ejs",
+        "views/index.ejs",
+        "views/partials/admin-sidebar.ejs",
+        "views/partials/admin-table.ejs",
+        "views/partials/content.ejs",
+        "views/partials/footer.ejs",
+        "views/partials/header.ejs",
+        "views/partials/icon.ejs"
+      ]
+    }
+  ],
+  "apiVariables": [],
+  "createdAt": "2026-09-15T21:26:02.273Z",
+  "updatedAt": "2026-09-15T22:15:20.180Z",
+  "exportedAt": "2026-09-15T22:15:20.457Z"
+}

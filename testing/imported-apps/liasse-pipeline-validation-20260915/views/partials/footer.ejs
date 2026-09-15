@@ -1,0 +1,6 @@
+<footer class="site-footer"><div class="footer-inner"><p data-lk="t:footer"><%= t.footer %></p><div class="footer-actions"><button type="button" class="text-button" data-push-btn data-lk="t:notifications" hidden><%= t.notifications %></button><a href="admin" data-lk="t:administration"><%= t.administration %></a></div></div></footer>
+<script id="public-data" type="application/json"><%- JSON.stringify({pushTitle:t.pushTitle,pushDescription:t.pushDescription}).replace(/</g,'\\u003c') %></script>
+<script src="public/js/app.js" defer></script>
+<% if(typeof adminPage!=='undefined'&&adminPage){ %><script src="public/js/admin.js" defer></script><% } %>
+</body>
+</html>
