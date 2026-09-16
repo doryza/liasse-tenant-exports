@@ -1,0 +1,3 @@
+<%- include('partials/header') %>
+<main id='main' class='wrap error-page'><h1 data-lk='t:errorTitle'><%= t.errorTitle %></h1><p data-lk='t:requestFailed'><%= typeof errorMessage !== 'undefined' ? errorMessage : t.requestFailed %></p><a class='button button-yellow' style='background-color:#ffe04b;color:#132b54' href='.' data-lk='t:backHome'><%= t.backHome %></a></main>
+<%- include('partials/footer') %>

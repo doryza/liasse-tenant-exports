@@ -1,0 +1,365 @@
+{
+  "exportedAt": "2026-09-16T04:25:20.299Z",
+  "tables": {
+    "admin_invites": {
+      "columns": [
+        "id",
+        "email",
+        "token",
+        "role",
+        "status",
+        "invited_by",
+        "expires_at",
+        "accepted_at",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_users": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "password_hash",
+        "display_name",
+        "role",
+        "active",
+        "activation_token",
+        "invited_by",
+        "invite_token",
+        "invite_expires_at",
+        "last_login_at",
+        "is_active",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_webauthn_credentials": {
+      "columns": [
+        "id",
+        "admin_user_id",
+        "credential_id",
+        "public_key",
+        "counter",
+        "device_name",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_settings": {
+      "columns": [
+        "key",
+        "value",
+        "updated_at"
+      ],
+      "totalRows": 44,
+      "sampleRows": [
+        {
+          "key": "brand_electro",
+          "value": "Electro",
+          "updated_at": "2026-09-16T04:25:03.505Z"
+        },
+        {
+          "key": "brand_plus",
+          "value": "Plus",
+          "updated_at": "2026-09-16T04:25:03.513Z"
+        },
+        {
+          "key": "contact_verified",
+          "value": "0",
+          "updated_at": "2026-09-16T04:25:03.519Z"
+        },
+        {
+          "key": "location_verified",
+          "value": "0",
+          "updated_at": "2026-09-16T04:25:03.528Z"
+        },
+        {
+          "key": "hours_verified",
+          "value": "0",
+          "updated_at": "2026-09-16T04:25:03.533Z"
+        },
+        {
+          "key": "hero_photo_real",
+          "value": "0",
+          "updated_at": "2026-09-16T04:25:03.539Z"
+        },
+        {
+          "key": "hero_title",
+          "value": "{\"fr\":\"Les plus gros spéciaux sur l’électroménager.\",\"en\":\"The biggest deals on appliances.\"}",
+          "updated_at": "2026-09-16T04:25:03.546Z"
+        },
+        {
+          "key": "hero_subtitle",
+          "value": "{\"fr\":\"Frigos, cuisinières et autres trouvailles en liquidation, à voir en magasin.\",\"en\":\"Refrigerators, ranges and more clearance finds, ready to explore in store.\"}",
+          "updated_at": "2026-09-16T04:25:03.558Z"
+        },
+        {
+          "key": "visit_title",
+          "value": "{\"fr\":\"Votre prochain arrêt : Electro Plus\",\"en\":\"Your next stop: Electro Plus\"}",
+          "updated_at": "2026-09-16T04:25:03.565Z"
+        },
+        {
+          "key": "visit_text",
+          "value": "{\"fr\":\"Venez voir les appareils de près. Pour un modèle précis, vérifiez sa disponibilité avant de partir.\",\"en\":\"See the appliances up close. For a specific model, check availability before heading over.\"}",
+          "updated_at": "2026-09-16T04:25:03.575Z"
+        }
+      ]
+    },
+    "site_visits": {
+      "columns": [
+        "id",
+        "path",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "posts": {
+      "columns": [
+        "id",
+        "title",
+        "content",
+        "image_url",
+        "category",
+        "published",
+        "created_at",
+        "updated_at",
+        "title_en",
+        "content_en",
+        "seed_key"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Préparer sa visite",
+          "content": "Notez le modèle qui vous intéresse et les dimensions de l’espace où il sera placé. Appelez pour confirmer les détails de l’appareil.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1789530612/tapavis_tenant_electro-plus/build_electro-plus_9dcda947-7bda-41fc-ab6d-39dc0a3f32c7.png",
+          "category": "Préparation",
+          "published": 0,
+          "created_at": "2026-09-16T04:25:03.642Z",
+          "updated_at": "2026-09-16T04:25:03.642Z",
+          "title_en": "Prepare your visit",
+          "content_en": "Write down the model you are interested in and the dimensions of its intended space. Call to confirm the appliance details.",
+          "seed_key": "preparer"
+        },
+        {
+          "id": 2,
+          "title": "Bien regarder l’état déclaré",
+          "content": "Une fiche utile décrit l’appareil tel qu’il est. Ajoutez des photos précises des marques visibles et des détails connus.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1789530613/tapavis_tenant_electro-plus/build_electro-plus_d3bd3c4f-ecf8-4533-a78e-1e0b78c2b214.png",
+          "category": "Fiches",
+          "published": 0,
+          "created_at": "2026-09-16T04:25:03.648Z",
+          "updated_at": "2026-09-16T04:25:03.648Z",
+          "title_en": "Read the reported condition",
+          "content_en": "A useful listing describes the appliance as it is. Add clear photos of visible marks and known details.",
+          "seed_key": "etat"
+        },
+        {
+          "id": 3,
+          "title": "Garder la référence du modèle",
+          "content": "Le nom de la marque et le numéro de modèle aident à parler du bon appareil lors d’un appel ou en magasin.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1789530613/tapavis_tenant_electro-plus/build_electro-plus_1769b127-2745-4186-b893-e4b377dbb840.png",
+          "category": "Préparation",
+          "published": 0,
+          "created_at": "2026-09-16T04:25:03.654Z",
+          "updated_at": "2026-09-16T04:25:03.654Z",
+          "title_en": "Keep the model reference",
+          "content_en": "The brand and model number help identify the right appliance when calling or visiting.",
+          "seed_key": "reference"
+        },
+        {
+          "id": 4,
+          "title": "Des photos qui montrent l’appareil",
+          "content": "Photographiez l’appareil entier et les détails importants. Une illustration ne doit jamais remplacer une photo réelle dans une offre confirmée.",
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1789530613/tapavis_tenant_electro-plus/build_electro-plus_7dfa017a-b27f-4bcb-be1b-5b4b5de857ba.png",
+          "category": "Fiches",
+          "published": 0,
+          "created_at": "2026-09-16T04:25:03.663Z",
+          "updated_at": "2026-09-16T04:25:03.663Z",
+          "title_en": "Photographs that show the appliance",
+          "content_en": "Photograph the entire appliance and important details. An illustration must never replace an actual photograph in a confirmed offer.",
+          "seed_key": "photos"
+        }
+      ]
+    },
+    "products": {
+      "columns": [
+        "id",
+        "title",
+        "title_en",
+        "category",
+        "brand",
+        "model",
+        "condition_text",
+        "condition_en",
+        "description",
+        "description_en",
+        "dimensions",
+        "dimensions_en",
+        "price",
+        "image_url",
+        "image_extra_url",
+        "is_example",
+        "verified",
+        "published",
+        "featured",
+        "seed_key",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 6,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Réfrigérateur à portes françaises",
+          "title_en": "French-door refrigerator",
+          "category": "fridge",
+          "brand": "",
+          "model": "",
+          "condition_text": "",
+          "condition_en": "",
+          "description": "Un format à explorer. Demandez au magasin le modèle exact, les dimensions et l’état de chaque appareil réellement proposé.",
+          "description_en": "A format to explore. Ask the store for the exact model, dimensions and condition of appliances actually available.",
+          "dimensions": "",
+          "dimensions_en": "",
+          "price": null,
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1789530612/tapavis_tenant_electro-plus/build_electro-plus_9dcda947-7bda-41fc-ab6d-39dc0a3f32c7.png",
+          "image_extra_url": "",
+          "is_example": 1,
+          "verified": 0,
+          "published": 1,
+          "featured": 0,
+          "seed_key": "example-fridge",
+          "created_at": "2026-09-16T04:25:03.606Z",
+          "updated_at": "2026-09-16T04:25:03.606Z"
+        },
+        {
+          "id": 2,
+          "title": "Cuisinière à surface lisse",
+          "title_en": "Smooth-top range",
+          "category": "range",
+          "brand": "",
+          "model": "",
+          "condition_text": "",
+          "condition_en": "",
+          "description": "Repérez le type de commandes et la configuration qui vous conviennent. Les caractéristiques d’une offre réelle seront indiquées sur sa fiche.",
+          "description_en": "Explore the controls and layout you prefer. Verified features of a real offer will appear in its listing.",
+          "dimensions": "",
+          "dimensions_en": "",
+          "price": null,
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1789530613/tapavis_tenant_electro-plus/build_electro-plus_d3bd3c4f-ecf8-4533-a78e-1e0b78c2b214.png",
+          "image_extra_url": "",
+          "is_example": 1,
+          "verified": 0,
+          "published": 1,
+          "featured": 0,
+          "seed_key": "example-range",
+          "created_at": "2026-09-16T04:25:03.611Z",
+          "updated_at": "2026-09-16T04:25:03.611Z"
+        },
+        {
+          "id": 3,
+          "title": "Laveuse à chargement frontal",
+          "title_en": "Front-load washer",
+          "category": "washer",
+          "brand": "",
+          "model": "",
+          "condition_text": "",
+          "condition_en": "",
+          "description": "Préparez les dimensions de votre espace avant de choisir. Ce visuel ne correspond pas à un appareil disponible confirmé.",
+          "description_en": "Have your space measurements ready before choosing. This illustration does not represent a confirmed available appliance.",
+          "dimensions": "",
+          "dimensions_en": "",
+          "price": null,
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1789530613/tapavis_tenant_electro-plus/build_electro-plus_1769b127-2745-4186-b893-e4b377dbb840.png",
+          "image_extra_url": "",
+          "is_example": 1,
+          "verified": 0,
+          "published": 1,
+          "featured": 0,
+          "seed_key": "example-washer",
+          "created_at": "2026-09-16T04:25:03.618Z",
+          "updated_at": "2026-09-16T04:25:03.618Z"
+        },
+        {
+          "id": 4,
+          "title": "Sécheuse avec porte vitrée",
+          "title_en": "Dryer with glass door",
+          "category": "dryer",
+          "brand": "",
+          "model": "",
+          "condition_text": "",
+          "condition_en": "",
+          "description": "Une idée de format pour votre coin lavage. Confirmez le modèle, les dimensions et les détails de l’appareil avec le magasin.",
+          "description_en": "A possible format for your laundry space. Confirm the model, measurements and appliance details with the store.",
+          "dimensions": "",
+          "dimensions_en": "",
+          "price": null,
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1789530614/tapavis_tenant_electro-plus/build_electro-plus_6ed453ce-a0ee-4969-99f7-4148ff38659c.png",
+          "image_extra_url": "",
+          "is_example": 1,
+          "verified": 0,
+          "published": 1,
+          "featured": 0,
+          "seed_key": "example-dryer",
+          "created_at": "2026-09-16T04:25:03.625Z",
+          "updated_at": "2026-09-16T04:25:03.625Z"
+        },
+        {
+          "id": 5,
+          "title": "Lave-vaisselle en acier inoxydable",
+          "title_en": "Stainless-steel dishwasher",
+          "category": "dishwasher",
+          "brand": "",
+          "model": "",
+          "condition_text": "",
+          "condition_en": "",
+          "description": "Comparez les dimensions et la disposition intérieure des modèles réellement présentés en magasin.",
+          "description_en": "Compare the dimensions and interior layouts of models actually displayed in the store.",
+          "dimensions": "",
+          "dimensions_en": "",
+          "price": null,
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1789530613/tapavis_tenant_electro-plus/build_electro-plus_7dfa017a-b27f-4bcb-be1b-5b4b5de857ba.png",
+          "image_extra_url": "",
+          "is_example": 1,
+          "verified": 0,
+          "published": 1,
+          "featured": 0,
+          "seed_key": "example-dishwasher",
+          "created_at": "2026-09-16T04:25:03.630Z",
+          "updated_at": "2026-09-16T04:25:03.630Z"
+        },
+        {
+          "id": 6,
+          "title": "Congélateur vertical",
+          "title_en": "Upright freezer",
+          "category": "freezer",
+          "brand": "",
+          "model": "",
+          "condition_text": "",
+          "condition_en": "",
+          "description": "Un format de rangement à découvrir. Demandez quelles options sont réellement offertes avant de vous déplacer.",
+          "description_en": "A storage format to explore. Ask which options are actually offered before visiting.",
+          "dimensions": "",
+          "dimensions_en": "",
+          "price": null,
+          "image_url": "https://res.cloudinary.com/duhp69meg/image/upload/v1789530612/tapavis_tenant_electro-plus/build_electro-plus_97830977-12e1-45af-be58-e586129398a2.png",
+          "image_extra_url": "",
+          "is_example": 1,
+          "verified": 0,
+          "published": 1,
+          "featured": 0,
+          "seed_key": "example-freezer",
+          "created_at": "2026-09-16T04:25:03.635Z",
+          "updated_at": "2026-09-16T04:25:03.635Z"
+        }
+      ]
+    }
+  }
+}

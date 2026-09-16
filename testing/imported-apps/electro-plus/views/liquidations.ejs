@@ -1,0 +1,6 @@
+<% const clearanceS=typeof s==='function'?s:function(k){return t[k]||'';}; %>
+<%- include('partials/header') %>
+<main id='main'><section class='page-intro wrap'><p class='place-label' data-lk='t:region'><%= t.region %></p><h1 data-lk='t:navClearance'><%= t.navClearance %></h1><p data-setting-key='hero_subtitle'><%= clearanceS('hero_subtitle') %></p></section>
+<%- include('partials/gallery') %>
+<section class='visit-band'><div class='wrap visit-band-inner'><div><h2 data-setting-key='visit_title'><%= clearanceS('visit_title') %></h2><p data-setting-key='visit_text'><%= clearanceS('visit_text') %></p></div><a class='button' style='background-color:#2858ef;color:#fff' href='nous-trouver' data-lk='t:navFind'><%= t.navFind %><svg viewBox='0 0 24 24' aria-hidden='true'><path d='M4 12h15m-6-6 6 6-6 6'/></svg></a></div></section>
+</main><%- include('partials/footer') %>

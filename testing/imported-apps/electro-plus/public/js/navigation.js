@@ -1,0 +1,9 @@
+(function(){
+function wireMenu(button,nav){if(!button||!nav)return;function close(){nav.classList.remove('open');button.setAttribute('aria-expanded','false');}button.addEventListener('click',function(){const open=button.getAttribute('aria-expanded')!=='true';button.setAttribute('aria-expanded',String(open));nav.classList.toggle('open',open);});document.addEventListener('keydown',function(e){if(e.key==='Escape'&&nav.classList.contains('open')){close();button.focus();}});document.addEventListener('click',function(e){if(!nav.contains(e.target)&&!button.contains(e.target))close();});nav.querySelectorAll('a').forEach(function(a){a.addEventListener('click',close);});}
+wireMenu(document.getElementById('menu-toggle'),document.getElementById('site-nav'));
+wireMenu(document.getElementById('admin-menu-toggle'),document.getElementById('admin-sidebar'));
+document.querySelectorAll('[data-lang-link]').forEach(function(a){a.addEventListener('click',function(){const next=new URL(a.href,document.baseURI);next.hash=window.location.hash;a.href=next.href;});});
+function openLinkedProduct(){if(!/^#appareil-\d+$/.test(location.hash))return;const article=document.getElementById(location.hash.slice(1));if(article){const details=article.querySelector('details');if(details)details.open=true;}}
+openLinkedProduct();window.addEventListener('hashchange',openLinkedProduct);
+document.querySelectorAll('.product-details').forEach(function(details){details.addEventListener('toggle',function(){if(details.open){const article=details.closest('article');const next=new URL(location.href);next.hash=article.id;history.replaceState(null,'',next);}});});
+})();

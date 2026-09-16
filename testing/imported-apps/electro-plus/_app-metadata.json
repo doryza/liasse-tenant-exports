@@ -1,0 +1,148 @@
+{
+  "slug": "electro-plus",
+  "displayName": "Electro Plus",
+  "description": "Project: website — Storefront pour liquidations\nBusiness: Electro Plus, magasin d'électroménager à Saint-Jérôme. Vend frigos, cuisinières, etc. en liquidation.\nGoal: Attirer les clients en magasin avec les liquidations.\nTarget audience: Gens de Saint-Jérôme et environs.\n\nKey features:\n- Galerie de produits en liquidation\n- Carte Google Maps pour la localisation du magasin\n- Informations de contact (téléphone, adresse)\n\nDesign & brand:\n- Colors: Bleu ciel, jaune (pour Electro) et blanc (pour Plus).\n- Mood: Punché.\n- Signature: Les plus gros spéciaux sur l'électroménager.\n- First impression: Le logo est composé uniquement des lettres de \"Electro Plus\".\n\nIntegrations & extras: Carte Google Maps.",
+  "status": "active",
+  "generationVersion": 1,
+  "primaryColor": "#2858ef",
+  "iconUrl": "https://res.cloudinary.com/duhp69meg/image/upload/v1789532716/tapavis_tenant_electro-plus/icon_electro-plus_984b423c-025b-47b5-94a0-c2c2d9f9a637.png",
+  "enabledAuthMethods": [
+    "webauthn",
+    "sms",
+    "email"
+  ],
+  "notificationsEnabled": true,
+  "geolocationEnabled": true,
+  "customConfig": {
+    "language": "both",
+    "businessName": "Electro Plus",
+    "contactEmail": "dory@liasse.tech",
+    "contactPhone": "4384356829",
+    "designManifest": {
+      "concept": "Les grands spéciaux",
+      "copyVoice": "Français québécois direct et accueillant, avec version anglaise complète; aucun prix, rabais, état, horaire ou stock inventé.",
+      "elements": {
+        "blogSurfaced": false,
+        "pages": [
+          "Accueil",
+          "Liquidations",
+          "Nous trouver",
+          "Administration",
+          "Gestion des appareils",
+          "Notes éditoriales internes",
+          "Textes, images et coordonnées"
+        ],
+        "userLogin": false
+      },
+      "heroThesis": "Une affiche à deux colonnes ouvre sur la signature du magasin et un appareil réellement confirmé avec son prix; tant qu’aucune offre n’est validée, une illustration de showroom explicitement identifiée remplace toute fausse promotion.",
+      "iconDirection": "Lettres EP condensées extra-grasses sur carré bleu #2858EF : E jaune #FFE04B et P blanc, sans éclair, pictogramme ni signe plus indépendant.",
+      "palette": {
+        "accents": [
+          "#FFE04B",
+          "#91DFFF",
+          "#FFFFFF"
+        ],
+        "ground": "#2858EF",
+        "ink": "#132B54",
+        "primary": "#2858EF"
+      },
+      "signatureMove": "La bande de prix traversante jaune porte uniquement le prix CAD d’une offre réelle confirmée, déborde de l’affiche vedette et devient le pied des fiches; les exemples illustratifs restent volontairement sans bande de prix.",
+      "summary": "Une affiche de liquidation bleue et jaune mène des appareils présentés honnêtement aux coordonnées vérifiées du magasin, avec une composition typographique forte et sans fausses promotions.",
+      "typography": "Barlow Condensed 800 pour les titres, les prix et le mot-symbole; DM Sans 400/500/700 pour le texte et les commandes. H1 de 96 px sur grand écran et 52 px sur mobile; prix de galerie à chiffres tabulaires de 48 px."
+    },
+    "businessAddress": null,
+    "designDirections": {
+      "directions": [
+        {
+          "pitch": "Cette direction transforme vos vrais prix de liquidation en grandes affiches faciles à repérer et donne aux gens de Saint-Jérôme un chemin direct vers votre magasin.",
+          "concept": "Les grands spéciaux",
+          "palette": {
+            "ink": "#132B54",
+            "ground": "#2858EF",
+            "accents": [
+              "#91DFFF",
+              "#FFFFFF"
+            ],
+            "primary": "#FFE04B"
+          }
+        },
+        {
+          "pitch": "Cette direction aide vos clients à comparer rapidement vos appareils et à vous appeler avec le bon modèle en tête, comme s’ils étaient déjà à votre comptoir.",
+          "concept": "Le comptoir liquidation",
+          "palette": {
+            "ink": "#F4F8FA",
+            "ground": "#13232B",
+            "accents": [
+              "#80D8F3",
+              "#2858EF",
+              "#FFFFFF"
+            ],
+            "primary": "#F7D347"
+          }
+        },
+        {
+          "pitch": "Cette direction présente vos liquidations avec le soin d’une vraie salle de montre et donne aux familles du coin envie de venir chercher leur prochaine bonne trouvaille chez vous.",
+          "concept": "La vitrine solaire",
+          "palette": {
+            "ink": "#16354B",
+            "ground": "#FFF9EC",
+            "accents": [
+              "#C4EAF5",
+              "#F3D348",
+              "#FFFFFF"
+            ],
+            "primary": "#1C6588"
+          }
+        }
+      ],
+      "recommendedIndex": 0
+    },
+    "consultationPresentedAt": null
+  },
+  "promptHistory": [
+    {
+      "prompt": "Project: website — Storefront pour liquidations\nBusiness: Electro Plus, magasin d'électroménager à Saint-Jérôme. Vend frigos, cuisinières, etc. en liquidation.\nGoal: Attirer les clients en magasin avec les liquidations.\nTarget audience: Gens de Saint-Jérôme et environs.\n\nKey features:\n- Galerie de produits en liquidation\n- Carte Google Maps pour la localisation du magasin\n- Informations de contact (téléphone, adresse)\n\nDesign & brand:\n- Colors: Bleu ciel, jaune (pour Electro) et blanc (pour Plus).\n- Mood: Punché.\n- Signature: Les plus gros spéciaux sur l'électroménager.\n- First impression: Le logo est composé uniquement des lettres de \"Electro Plus\".\n\nIntegrations & extras: Carte Google Maps.",
+      "timestamp": "2026-09-16T04:25:17.011Z",
+      "changeNotes": "Built the supplied Les grands spéciaux identity as a complete bilingual storefront with searchable appliance galleries, inline details, store directions and a full authenticated admin backend. Because verified inventory and authentic store photographs were not supplied, the initial appliances are clearly labelled examples without prices; confirmed real listings automatically replace them. Business contact details come from configuration and remain private until approved in administration.\n\nRebuilt the admin experience with inventory metrics, an actionable launch checklist, richer module cards and direct record-editing links.,Added responsive product/note lists with thumbnails, prices, status/category filters, full CRUD, grouped forms, deletion confirmation and post-save list refresh.,Improved bilingual settings navigation, image previews, inline AI prompts, upload feedback, unsaved-change warnings and operation locking.,Strengthened contrast, mobile controls, focus states, template fallbacks and safe JSON embedding; corrected the admin route-loop structure.,Preserved existing data, editable-content annotations and image placeholders; reseeding no longer overwrites the saved hero image.,Added bilingual SEO/social metadata, mount-aware canonical and alternate URLs, and noindex directives for admin pages.\n\nThe hero now stacks safely at intermediate widths, keeps appliance imagery behavior intact, and gains narrow-screen headline protection. Active catalog filters can be cleared beside the search controls, featured offers link directly to their details, and redundant unconfigured mobile actions were removed. Empty map placeholders and multi-column product-title rhythm were also tightened without changing configured maps or mobile cards.",
+      "generationId": 2087,
+      "filesModified": [
+        "lib/catalog.js",
+        "lib/content.js",
+        "lib/i18n.js",
+        "lib/site.js",
+        "manifest.json",
+        "public/css/admin-styles.css",
+        "public/css/styles.css",
+        "public/icon.svg",
+        "public/js/admin-tools.js",
+        "public/js/admin.js",
+        "public/js/app.js",
+        "public/js/map.js",
+        "public/js/navigation.js",
+        "public/js/settings.js",
+        "routes.js",
+        "schema.sql",
+        "seed.js",
+        "site.contract.json",
+        "views/admin-posts.ejs",
+        "views/admin-products.ejs",
+        "views/admin-settings.ejs",
+        "views/admin.ejs",
+        "views/error.ejs",
+        "views/index.ejs",
+        "views/liquidations.ejs",
+        "views/nous-trouver.ejs",
+        "views/partials/admin-shell.ejs",
+        "views/partials/admin-sidebar.ejs",
+        "views/partials/footer.ejs",
+        "views/partials/gallery.ejs",
+        "views/partials/header.ejs",
+        "views/partials/visit.ejs"
+      ]
+    }
+  ],
+  "apiVariables": [],
+  "createdAt": "2026-09-16T03:32:58.917Z",
+  "updatedAt": "2026-09-16T04:25:19.988Z",
+  "exportedAt": "2026-09-16T04:25:20.283Z"
+}

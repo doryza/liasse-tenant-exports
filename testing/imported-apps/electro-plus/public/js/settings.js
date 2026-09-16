@@ -1,0 +1,16 @@
+(function(){
+const root=document.getElementById('settings-data');if(!root||!window.AdminTools)return;
+const data=JSON.parse(root.textContent),t=data.t,A=window.AdminTools,container=document.getElementById('settings-fields'),inputs={},groups={},form=document.getElementById('settings-form'),button=document.getElementById('settings-save'),status=document.getElementById('settings-status'),dirtyLabel=document.getElementById('settings-dirty');let dirty=false,saving=false,mediaCount=0;
+function markDirty(){dirty=true;dirtyLabel.textContent=t.unsaved;}
+['groupContact','groupBrand','groupCopy','groupStoreImage'].forEach(function(group){const section=A.node('section',undefined,'admin-panel settings-section');section.id=group;section.setAttribute('aria-labelledby',group+'-title');const heading=A.node('h2',t[group]);heading.id=group+'-title';const grid=A.node('div',undefined,'admin-fields');section.append(heading,grid);container.appendChild(section);groups[group]=grid;});
+data.fields.forEach(function(f){
+const group=groups[f.group]||groups.groupCopy;
+if(f.localized){let value={fr:'',en:''};try{const parsed=JSON.parse(data.settings[f.name]||'{}');if(parsed&&typeof parsed==='object')value=Object.assign(value,parsed);}catch(e){value.fr=data.settings[f.name]||'';}
+const box=A.node('fieldset',undefined,'admin-field wide localized-group');box.appendChild(A.node('legend',f.label));const pair={};['fr','en'].forEach(function(lang){const spec=Object.assign({},f,{name:f.name+'_'+lang,label:lang==='fr'?t.french:t.english,description:'',type:'textarea'});const field=A.field(spec,value[lang],t);field.input.lang=lang;pair[lang]=field.input;box.appendChild(field.box);});box.appendChild(A.node('p',f.description,'help'));group.appendChild(box);inputs[f.name]=pair;
+}else{const field=A.field(f,data.settings[f.name]||'',t,function(){if(inputs.hero_photo_real)inputs.hero_photo_real.checked=false;markDirty();return t.illustrationReady;});inputs[f.name]=field.input;group.appendChild(field.box);}
+});
+form.addEventListener('input',markDirty);form.addEventListener('change',markDirty);
+form.addEventListener('admin-media-busy',function(e){mediaCount=Math.max(0,mediaCount+(e.detail?1:-1));button.disabled=saving||mediaCount>0;});
+window.addEventListener('beforeunload',function(e){if(dirty||saving||mediaCount){e.preventDefault();e.returnValue='';}});
+form.addEventListener('submit',async function(e){e.preventDefault();if(saving||mediaCount)return;const values={};data.fields.forEach(function(f){values[f.name]=f.localized?JSON.stringify({fr:inputs[f.name].fr.value,en:inputs[f.name].en.value}):f.type==='boolean'?(inputs[f.name].checked?'1':'0'):inputs[f.name].value;});saving=true;const unlock=A.lock(form);button.textContent=t.saving;A.feedback(status,'','info');try{const result=await A.request('api/admin/settings',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({values})},t);data.settings=result.settings||data.settings;dirty=false;dirtyLabel.textContent=t.noChanges;A.feedback(status,t.settingsSaved,'success');}catch(err){A.feedback(status,err.message,'error');status.focus();}finally{saving=false;unlock();button.textContent=t.save;button.disabled=mediaCount>0;}});
+})();

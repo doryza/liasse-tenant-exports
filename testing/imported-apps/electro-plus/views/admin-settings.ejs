@@ -1,0 +1,7 @@
+<%- include('partials/header',{adminMode:true}) %>
+<div class='admin-layout'><%- include('partials/admin-sidebar') %><main class='admin-main' id='main'><header class='admin-page-heading'><p class='admin-eyebrow'><%= t.adminLink %></p><h1><%= t.settingsTitle %></h1><p><%= t.settingsIntro %></p></header>
+<nav class='settings-nav' aria-label='<%= t.settingsNavigation %>'><% ['groupContact','groupBrand','groupCopy','groupStoreImage'].forEach(function(group){ %><a href='admin/settings#<%= group %>'><%= t[group] %></a><% }); %></nav>
+<noscript><p class='admin-notice'><%= t.noJs %></p></noscript>
+<form id='settings-form' action='api/admin/settings' method='post'><div id='settings-fields'></div><div class='settings-savebar'><div><p id='settings-dirty' class='help' aria-live='polite'><%= t.noChanges %></p><p id='settings-status' class='feedback' role='status' aria-live='polite' tabindex='-1'></p></div><button class='button' style='background-color:#2858ef;color:#fff' type='submit' id='settings-save'><%= t.save %></button></div></form>
+<script id='settings-data' type='application/json'><%- JSON.stringify({settings:typeof settings!=='undefined'&&settings?settings:{},fields:typeof settingFields!=='undefined'?settingFields:[],t,lang}).replace(/</g,'\\u003c') %></script><script src='public/js/admin-tools.js' defer></script><script src='public/js/settings.js' defer></script>
+</main></div><%- include('partials/footer',{adminMode:true}) %>
