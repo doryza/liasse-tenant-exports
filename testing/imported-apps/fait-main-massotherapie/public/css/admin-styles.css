@@ -1,0 +1,116 @@
+/* Admin console — same palette as the site, denser and calmer. */
+.admin-body { background: var(--paper-deep); padding-bottom: 0; }
+.admin-shell { display: grid; grid-template-columns: 264px minmax(0, 1fr); min-height: 100vh; }
+
+.admin-sidebar {
+  background: var(--ink); color: rgba(251, 248, 244, .82);
+  padding: 26px 18px calc(26px + env(safe-area-inset-bottom, 0px));
+  display: flex; flex-direction: column; gap: 26px;
+  position: sticky; top: 0; height: 100vh; overflow-y: auto;
+}
+.admin-brand { display: flex; flex-direction: column; text-decoration: none; color: var(--white); padding: 0 10px; }
+.admin-brand strong { font-family: var(--display); font-size: 1.3rem; font-weight: 400; }
+.admin-brand span { font-size: .68rem; letter-spacing: .18em; text-transform: uppercase; color: var(--sage); margin-top: 3px; }
+.admin-nav { display: grid; gap: 3px; }
+.admin-nav a {
+  display: flex; align-items: center; gap: 11px; padding: 11px 12px; border-radius: var(--radius-sm);
+  color: rgba(251, 248, 244, .8); text-decoration: none; font-size: .92rem;
+}
+.admin-nav a:hover { background: rgba(251, 248, 244, .09); color: var(--white); }
+.admin-nav a[aria-current='page'] { background: var(--sage-deep); color: var(--white); font-weight: 600; }
+.admin-nav svg, .admin-sidebar-foot svg { width: 17px; height: 17px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.7; }
+.admin-sidebar-foot { margin-top: auto; border-top: 1px solid rgba(251, 248, 244, .16); padding-top: 18px; }
+.admin-sidebar-foot a { display: flex; align-items: center; gap: 10px; color: rgba(251, 248, 244, .8); text-decoration: none; font-size: .9rem; padding: 8px 12px; }
+.admin-sidebar-foot a:hover { color: var(--white); }
+
+.admin-main-wrap { display: flex; flex-direction: column; min-width: 0; }
+.admin-topbar {
+  position: sticky; top: 0; z-index: 30; display: flex; align-items: center; gap: 14px;
+  background: rgba(244, 239, 232, .94); backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line); padding: 16px clamp(18px, 3vw, 34px);
+}
+.admin-topbar h1 { font-size: 1.32rem; margin: 0; }
+.admin-user { margin-left: auto; font-size: .87rem; color: var(--ink-soft); }
+.admin-menu-toggle { display: none; width: 42px; height: 42px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--white); cursor: pointer; }
+.admin-menu-toggle svg { width: 19px; height: 19px; fill: none; stroke: var(--ink); stroke-width: 1.7; }
+.admin-main { padding: clamp(20px, 3vw, 34px); display: grid; gap: 22px; align-content: start; }
+
+.admin-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 16px; }
+.stat { background: var(--white); border: 1px solid var(--line-soft); border-radius: var(--radius); padding: 20px; display: grid; gap: 5px; }
+.stat--flag { border-color: var(--rose); box-shadow: 0 0 0 3px var(--rose-tint); }
+.stat-label { font-size: .78rem; letter-spacing: .09em; text-transform: uppercase; color: var(--ink-faint); font-weight: 700; }
+.stat-value { font-family: var(--display); font-size: 2.2rem; line-height: 1; }
+.stat-sub { font-size: .84rem; color: var(--ink-soft); }
+
+.admin-card { background: var(--white); border: 1px solid var(--line-soft); border-radius: var(--radius); padding: clamp(18px, 2.4vw, 26px); }
+.admin-card h2 { font-size: 1.24rem; margin: 0; }
+.admin-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 18px; flex-wrap: wrap; }
+.admin-card--todo { border-color: var(--sage); box-shadow: 0 0 0 3px var(--sage-tint); }
+.admin-card--link { text-decoration: none; color: inherit; position: relative; display: block; transition: box-shadow .2s ease, transform .2s ease; }
+.admin-card--link:hover { box-shadow: var(--shadow-lift); transform: translateY(-2px); }
+.admin-count { position: absolute; top: 20px; right: 22px; font-family: var(--display); font-size: 1.7rem; color: var(--sage-deep); }
+.admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; }
+
+.admin-todo { list-style: none; margin: 16px 0 0; padding: 0; display: grid; gap: 10px; }
+.admin-todo li { position: relative; padding-left: 26px; }
+.admin-todo li::before { content: ''; position: absolute; left: 2px; top: .45em; width: 11px; height: 11px; border: 2px solid var(--sage); border-radius: 3px; }
+
+.admin-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.admin-list li { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; padding-bottom: 12px; border-bottom: 1px solid var(--line-soft); }
+.admin-list li:last-child { border-bottom: 0; padding-bottom: 0; }
+.admin-list strong { font-weight: 600; font-size: .95rem; }
+.admin-list .pill, .admin-list .muted { margin-left: auto; }
+
+.pill { display: inline-flex; align-items: center; padding: 4px 11px; border-radius: var(--radius-pill); font-size: .76rem; font-weight: 700; letter-spacing: .03em; }
+.pill--ok { background: var(--sage-tint); color: #46583A; }
+.pill--wait { background: var(--rose-tint); color: #8A5C5C; }
+.pill--off { background: var(--paper-deep); color: var(--ink-faint); }
+
+.admin-toolbar { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; flex-wrap: wrap; }
+.admin-toolbar input { max-width: 300px; min-height: 44px; }
+.admin-row-actions { white-space: nowrap; }
+.admin-row-actions .text-button { margin-left: 14px; font-size: .84rem; }
+.text-button.danger { color: var(--rose-deep); }
+.text-button.danger:hover { color: #8A5C5C; }
+
+.admin-toggles { display: grid; gap: 4px; margin-top: 18px; }
+.admin-toggle { display: flex; align-items: flex-start; gap: 14px; padding: 14px; border-radius: var(--radius-sm); cursor: pointer; }
+.admin-toggle:hover { background: var(--paper-deep); }
+.admin-toggle input { width: 22px; height: 22px; min-height: 22px; flex: none; margin-top: 2px; accent-color: var(--sage-deep); }
+.admin-toggle > span { display: grid; gap: 3px; }
+
+.admin-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 0 20px; margin-top: 18px; }
+.admin-fields--wide { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+.admin-fields textarea { min-height: 130px; }
+.admin-save-bar { min-height: 24px; margin: 0; }
+
+.admin-modal {
+  border: 0; border-radius: var(--radius); padding: 0; width: min(680px, calc(100vw - 32px));
+  max-height: min(86vh, 900px); box-shadow: var(--shadow-lift); color: var(--ink); background: var(--white);
+}
+.admin-modal::backdrop { background: rgba(41, 41, 41, .55); }
+.admin-modal form { display: flex; flex-direction: column; max-height: inherit; }
+.admin-modal header { display: flex; align-items: center; gap: 14px; padding: 20px 24px; border-bottom: 1px solid var(--line-soft); }
+.admin-modal header h2 { font-size: 1.16rem; margin: 0; flex: 1; }
+.admin-modal-body { padding: 22px 24px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 0 20px; }
+.admin-modal-body .check { grid-column: 1 / -1; }
+.admin-modal-body textarea { min-height: 110px; }
+.admin-modal footer { display: flex; align-items: center; gap: 12px; padding: 16px 24px calc(16px + env(safe-area-inset-bottom, 0px)); border-top: 1px solid var(--line-soft); }
+.admin-modal footer [data-form-error] { flex: 1; color: var(--rose-deep); margin: 0; }
+.icon-button { width: 38px; height: 38px; border: 0; background: none; border-radius: 50%; cursor: pointer; color: var(--ink-soft); display: grid; place-items: center; }
+.icon-button:hover { background: var(--paper-deep); color: var(--ink); }
+.icon-button svg { width: 18px; height: 18px; }
+
+.admin-backdrop { display: none; }
+@media (max-width: 900px) {
+  .admin-shell { grid-template-columns: 1fr; }
+  .admin-sidebar {
+    position: fixed; inset: 0 auto 0 0; width: min(280px, 84vw); z-index: 60;
+    transform: translateX(-100%); transition: transform .26s ease; height: 100vh;
+  }
+  .admin-sidebar.open { transform: none; }
+  .admin-menu-toggle { display: grid; place-items: center; }
+  .admin-backdrop { display: block; position: fixed; inset: 0; background: rgba(41, 41, 41, .42); z-index: 50; opacity: 0; pointer-events: none; transition: opacity .24s ease; }
+  .admin-backdrop.show { opacity: 1; pointer-events: auto; }
+  .admin-count { top: 16px; right: 18px; }
+}

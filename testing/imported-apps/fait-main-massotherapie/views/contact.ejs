@@ -1,0 +1,90 @@
+<%- include('partials/header') %>
+
+<section class="section">
+  <div class="wrap split split--top">
+    <div>
+      <nav class="breadcrumb" aria-label="fil d’Ariane" style="margin-bottom:18px"><a href="<%= urls.home %>"><%= t.home %></a> · <%= t.contact %></nav>
+      <hr class="hand-rule">
+      <h1 data-lk="contact-title">Passez nous dire bonjour!</h1>
+      <p data-setting-key="contact_intro"><%= settings.contact_intro %></p>
+
+      <div class="stack" style="margin-top:32px">
+        <% if (flags.address && settings.business_address) { %>
+          <div>
+            <h3 style="font-size:1.05rem;margin-bottom:6px" data-lk="contact-visit">Visitez-nous</h3>
+            <p class="preserve" data-setting-key="business_address"><%= settings.business_address %></p>
+            <a class="text-button" href="<%= directionsHref %>" target="_blank" rel="noopener" data-lk="t:directions"><%= t.directions %></a>
+          </div>
+        <% } %>
+        <% if (flags.contact && settings.contact_phone) { %>
+          <div>
+            <h3 style="font-size:1.05rem;margin-bottom:6px" data-lk="contact-call">Appelez-nous</h3>
+            <p><a href="<%= phoneHref %>" data-setting-key="contact_phone"><%= settings.contact_phone %></a></p>
+          </div>
+        <% } %>
+        <% if (flags.contact && settings.contact_email) { %>
+          <div>
+            <h3 style="font-size:1.05rem;margin-bottom:6px" data-lk="contact-write">Écrivez-nous</h3>
+            <p><a href="<%= emailHref %>" data-setting-key="contact_email"><%= settings.contact_email %></a></p>
+          </div>
+        <% } %>
+        <% if (!flags.contact && !flags.address) { %>
+          <div class="notice notice--plain"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg><p data-lk="t:contact_pending"><%= t.contact_pending %></p></div>
+        <% } %>
+
+        <div>
+          <h3 style="font-size:1.05rem;margin-bottom:10px" data-lk="t:hours"><%= t.hours %></h3>
+          <p class="small muted" data-setting-key="hours_note"><%= settings.hours_note %></p>
+          <div class="table-scroll">
+            <table class="data" style="max-width:340px">
+              <tbody>
+                <% hours.forEach(function (h) { %>
+                  <tr>
+                    <th scope="row" style="font-size:.9rem;text-transform:none;letter-spacing:0;color:var(--ink);font-weight:500"><%= t['day' + h.weekday] %></th>
+                    <td class="num"><% if (h.closed) { %><%= t.closed %><% } else { %><%= h.opens %> – <%= h.closes %><% } %></td>
+                  </tr>
+                <% }); %>
+              </tbody>
+            </table>
+          </div>
+          <% if (!flags.hours) { %><p class="small muted" style="margin-top:10px"><%= t.pending_note %></p><% } %>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="form-card">
+        <h2 style="font-size:1.45rem" data-lk="contact-form-title">Une question?</h2>
+        <% if (!flags.messages) { %>
+          <div class="notice notice--plain" style="margin-top:10px">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>
+            <p data-lk="t:requests_closed"><%= t.requests_closed %></p>
+          </div>
+          <% if (flags.contact && settings.contact_phone) { %>
+            <a class="button primary block" style="margin-top:16px" href="<%= phoneHref %>"><%= settings.contact_phone %></a>
+          <% } %>
+        <% } else { %>
+          <form data-message-form>
+            <div class="form-row">
+              <label class="field"><span><%= t.first_name %></span><input name="firstName" required maxlength="80" autocomplete="given-name"></label>
+              <label class="field"><span><%= t.last_name %></span><input name="lastName" maxlength="80" autocomplete="family-name"></label>
+            </div>
+            <label class="field"><span><%= t.email %></span><input name="email" type="email" required maxlength="190" autocomplete="email"></label>
+            <label class="field"><span><%= t.phone %> <span class="hint">(<%= lang === 'en' ? 'optional' : 'facultatif' %>)</span></span><input name="phone" type="tel" maxlength="40" autocomplete="tel"></label>
+            <label class="field"><span><%= t.subject %></span><input name="subject" maxlength="160"></label>
+            <label class="field"><span><%= t.message %></span><textarea name="body" required maxlength="4000"></textarea></label>
+            <label class="check"><input type="checkbox" name="consent" required><span><%= t.consent %> <a href="<%= urls.privacy %>"><%= t.privacy %></a>.</span></label>
+            <p class="small" data-message-status role="status" hidden></p>
+            <button class="button primary block" type="submit"><%= t.send %></button>
+          </form>
+        <% } %>
+      </div>
+
+      <figure class="portrait" style="margin-top:24px;aspect-ratio:16/10">
+        <img src="<%= settings._p_contact_image_url %>" data-setting-key="_p_contact_image_url" alt="" width="720" height="450" loading="lazy" style="height:100%;object-fit:cover">
+      </figure>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

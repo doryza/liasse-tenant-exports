@@ -1,0 +1,59 @@
+<%- include('partials/header') %>
+
+<article class="section">
+  <div class="wrap">
+    <nav class="breadcrumb" aria-label="fil d’Ariane" style="margin-bottom:22px"><a href="<%= urls.home %>"><%= t.home %></a> · <a href="<%= urls.blog %>"><%= t.blog %></a> · <%= field(post, 'title') %></nav>
+    <hr class="hand-rule">
+    <% if (post.published_on) { %><p class="article-date"><%= formatDate(post.published_on) %></p><% } %>
+    <h1 style="max-width:20ch" data-content-source="posts:title" data-content-id="<%= post.id %>"><%= field(post, 'title') %></h1>
+
+    <% if (post.image_url) { %>
+      <figure class="portrait" style="margin:32px 0;aspect-ratio:16/9">
+        <img src="<%= post.image_url %>" alt="<%= field(post, 'title') %>" width="1200" height="675" style="height:100%;object-fit:cover">
+      </figure>
+    <% } %>
+
+    <div class="prose">
+      <% if (field(post, 'content')) { %>
+        <div class="preserve" data-content-source="posts:content" data-content-id="<%= post.id %>"><%= field(post, 'content') %></div>
+      <% } else { %>
+        <% if (field(post, 'excerpt')) { %>
+          <p style="font-size:1.2rem;color:var(--ink)"><%= field(post, 'excerpt') %></p>
+        <% } %>
+        <div class="notice notice--plain" style="margin-top:24px">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>
+          <p data-lk="article-coming">La suite de cet article arrive bientôt sur le nouveau site. En attendant, passez nous voir en boutique — on se fera un plaisir de vous en parler.</p>
+        </div>
+        <% if (isOwner) { %>
+          <div class="notice notice--warn" style="margin-top:12px">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
+            <p>Annie : le texte complet de cet article n’a pas pu être importé. Collez-le dans <a href="admin/posts">Administration → Blog</a> et il remplacera ce message.</p>
+          </div>
+        <% } %>
+      <% } %>
+    </div>
+
+    <p style="margin-top:38px"><a class="button secondary" href="<%= urls.blog %>" data-lk="t:back"><%= t.back %></a></p>
+  </div>
+</article>
+
+<% if (more && more.length) { %>
+<section class="section section--paper">
+  <div class="wrap">
+    <div class="section-head"><hr class="hand-rule"><h2 data-lk="article-more">À lire aussi</h2></div>
+    <div class="grid grid--2">
+      <% more.forEach(function (other) { %>
+        <article class="article-card">
+          <% if (other.image_url) { %><a class="article-media" href="<%= urls.article %><%= other.slug %>"><img src="<%= other.image_url %>" alt="<%= field(other, 'title') %>" width="600" height="450" loading="lazy"></a><% } %>
+          <div class="article-body">
+            <% if (other.published_on) { %><span class="article-date"><%= formatDate(other.published_on) %></span><% } %>
+            <h3><a href="<%= urls.article %><%= other.slug %>"><%= field(other, 'title') %></a></h3>
+          </div>
+        </article>
+      <% }); %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,35 @@
+<article class="soin<%= item.family === 'forfait' ? ' soin--rose' : '' %>">
+  <h3 data-content-source="services:name" data-content-id="<%= item.id %>"><%= field(item, 'name') %></h3>
+  <% if (field(item, 'description')) { %>
+    <p data-content-source="services:description" data-content-id="<%= item.id %>"><%= field(item, 'description') %></p>
+  <% } %>
+  <% if (field(item, 'details')) { %>
+    <p class="small muted preserve"><%= field(item, 'details') %></p>
+  <% } %>
+
+  <div class="soin-meta">
+    <% if (field(item, 'duration_label')) { %>
+      <span class="soin-duration">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        <%= field(item, 'duration_label') %>
+      </span>
+    <% } %>
+
+    <% if (!item.price_verified) { %>
+      <span class="soin-price" style="font-size:.95rem"><span class="muted" data-lk="t:price_on_call"><%= t.price_on_call %></span></span>
+    <% } else if (item.price_cents === 0) { %>
+      <span class="soin-price soin-price--free" data-lk="t:free"><%= t.free %></span>
+    <% } else if (item.price_cents != null) { %>
+      <span class="soin-price">
+        <%= money(item.price_cents) %>
+        <% if (item.price_from) { %><small data-lk="t:from"><%= t.from %></small><% } %>
+      </span>
+    <% } %>
+  </div>
+
+  <div class="soin-cta">
+    <a class="button ghost small" href="<%= item.booking_url || bookingUrl || urls.reservation %>"<%= (item.booking_url || bookingUrl) ? ' target="_blank" rel="noopener"' : '' %>>
+      <%= t.book_short %>
+    </a>
+  </div>
+</article>

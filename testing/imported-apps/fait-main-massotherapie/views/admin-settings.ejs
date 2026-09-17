@@ -1,0 +1,80 @@
+<%- include('partials/admin-shell', { adminSection: 'settings', adminTitle: 'Réglages' }) %>
+
+<section class="admin-card">
+  <h2 data-lk="admin-set-gates">Ce que le site est autorisé à faire</h2>
+  <p class="muted small" data-lk="admin-set-gates-sub">Chaque interrupteur ci-dessous active quelque chose qui parle en votre nom ou qui encaisse de l’argent. Tant qu’il est fermé, le site reste prudent.</p>
+  <div class="admin-toggles" data-settings-toggles>
+    <% settingsFields.forEach(function (field) { %>
+      <label class="admin-toggle">
+        <input type="checkbox" data-setting-toggle="<%= field.name %>" <%= rawSettings[field.name] === '1' ? 'checked' : '' %>>
+        <span>
+          <strong><%= field.label %></strong>
+          <span class="muted small"><%= field.description %></span>
+        </span>
+      </label>
+    <% }); %>
+  </div>
+  <% if (!paypalConfigured) { %>
+    <div class="notice notice--warn" style="margin-top:18px">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 9v4m0 4h.01"/><circle cx="12" cy="12" r="9"/></svg>
+      <p data-lk="admin-paypal-missing">Les clés PayPal ne sont pas encore enregistrées. Ajoutez PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, PAYPAL_MODE et PAYPAL_MERCHANT_ID dans votre tableau de bord Liasse, puis revenez activer le paiement.</p>
+    </div>
+  <% } %>
+</section>
+
+<section class="admin-card">
+  <h2 data-lk="admin-set-business">Coordonnées</h2>
+  <div class="admin-fields">
+    <label class="field"><span>Nom de l’entreprise</span><input data-setting="business_name" value="<%= rawSettings.business_name || '' %>" maxlength="200"></label>
+    <label class="field"><span>Téléphone</span><input data-setting="contact_phone" value="<%= rawSettings.contact_phone || '' %>" maxlength="40"></label>
+    <label class="field"><span>Courriel</span><input data-setting="contact_email" type="email" value="<%= rawSettings.contact_email || '' %>" maxlength="190"></label>
+    <label class="field"><span>Adresse</span><input data-setting="business_address" value="<%= rawSettings.business_address || '' %>" maxlength="240"></label>
+    <label class="field"><span>Lien de réservation</span><input data-setting="booking_url" value="<%= rawSettings.booking_url || '' %>" maxlength="500"><span class="hint">Doit commencer par https://. C’est le lien derrière tous les boutons « Prendre rendez-vous ».</span></label>
+  </div>
+</section>
+
+<section class="admin-card">
+  <h2 data-lk="admin-set-shop">Boutique, livraison et taxes</h2>
+  <div class="admin-fields">
+    <label class="field"><span>Tarif de livraison (en cents)</span><input data-setting="shipping_flat_cents" inputmode="numeric" value="<%= rawSettings.shipping_flat_cents || '' %>"><span class="hint">Ex. 1200 pour 12,00 $. Requis avant d’activer la livraison.</span></label>
+    <label class="field"><span>Livraison gratuite à partir de (en cents)</span><input data-setting="free_shipping_threshold_cents" inputmode="numeric" value="<%= rawSettings.free_shipping_threshold_cents || '' %>"><span class="hint">Ex. 7500 pour 75,00 $. Mettez 0 pour désactiver.</span></label>
+    <label class="field"><span>TPS (points de base)</span><input data-setting="gst_rate_bp" inputmode="numeric" value="<%= rawSettings.gst_rate_bp || '' %>"><span class="hint">500 = 5,000 %.</span></label>
+    <label class="field"><span>TVQ (points de base)</span><input data-setting="qst_rate_bp" inputmode="numeric" value="<%= rawSettings.qst_rate_bp || '' %>"><span class="hint">998 = 9,975 %.</span></label>
+    <label class="field"><span>Numéro de TPS</span><input data-setting="gst_number" value="<%= rawSettings.gst_number || '' %>" maxlength="40"></label>
+    <label class="field"><span>Numéro de TVQ</span><input data-setting="qst_number" value="<%= rawSettings.qst_number || '' %>" maxlength="40"></label>
+  </div>
+</section>
+
+<section class="admin-card">
+  <h2 data-lk="admin-set-legal">Textes légaux</h2>
+  <p class="muted small" data-lk="admin-set-legal-sub">Ces deux textes doivent être rédigés en français ET en anglais avant de pouvoir être approuvés.</p>
+  <div class="admin-fields admin-fields--wide">
+    <label class="field"><span>Avis de confidentialité — français</span><textarea data-setting-json="privacy_notice" data-lang="fr"><%= jsonField(rawSettings.privacy_notice, 'fr') %></textarea></label>
+    <label class="field"><span>Avis de confidentialité — anglais</span><textarea data-setting-json="privacy_notice" data-lang="en"><%= jsonField(rawSettings.privacy_notice, 'en') %></textarea></label>
+    <label class="field"><span>Conditions de vente — français</span><textarea data-setting-json="payment_terms" data-lang="fr"><%= jsonField(rawSettings.payment_terms, 'fr') %></textarea></label>
+    <label class="field"><span>Conditions de vente — anglais</span><textarea data-setting-json="payment_terms" data-lang="en"><%= jsonField(rawSettings.payment_terms, 'en') %></textarea></label>
+  </div>
+</section>
+
+<section class="admin-card">
+  <h2 data-lk="admin-set-texts">Textes du site</h2>
+  <p class="muted small" data-lk="admin-set-texts-sub">Vous pouvez aussi modifier n’importe quel texte directement sur le site, en le survolant depuis votre tableau de bord Liasse.</p>
+  <div class="admin-fields admin-fields--wide">
+    <% ['hero_title', 'hero_subtitle', 'story_text', 'about_text', 'boutique_text', 'contact_intro'].forEach(function (key) { %>
+      <label class="field">
+        <span><%= key.replace(/_/g, ' ') %> — français</span>
+        <textarea data-setting-json="<%= key %>" data-lang="fr"><%= jsonField(rawSettings[key], 'fr') %></textarea>
+      </label>
+      <label class="field">
+        <span><%= key.replace(/_/g, ' ') %> — anglais</span>
+        <textarea data-setting-json="<%= key %>" data-lang="en"><%= jsonField(rawSettings[key], 'en') %></textarea>
+      </label>
+    <% }); %>
+  </div>
+</section>
+
+<p class="admin-save-bar">
+  <span class="small muted" data-settings-status role="status"></span>
+</p>
+
+<%- include('partials/admin-footer') %>

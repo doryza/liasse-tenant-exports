@@ -1,0 +1,68 @@
+<%- include('partials/header') %>
+
+<section class="page-banner <%= settings[bannerKey] ? 'has-media' : '' %>">
+  <% if (settings[bannerKey]) { %>
+    <div class="page-banner-media"><img src="<%= settings[bannerKey] %>" data-setting-key="<%= bannerKey %>" alt="" width="1440" height="380"></div>
+  <% } %>
+  <div class="wrap">
+    <div class="page-banner-inner">
+      <nav class="breadcrumb" aria-label="fil d’Ariane"><a href="<%= urls.home %>"><%= t.home %></a> · <%= t[page] %></nav>
+      <h1><%= t[page] %></h1>
+      <% if (settings[introKey]) { %><p><%= settings[introKey] %></p><% } %>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <% if (!groups.length) { %>
+      <p class="empty" data-lk="t:no_results"><%= t.no_results %></p>
+    <% } %>
+
+    <% groups.forEach(function (group, index) { %>
+      <div <%= index ? 'style="margin-top:72px"' : '' %>>
+        <% if (groups.length > 1) { %>
+          <div class="section-head">
+            <hr class="hand-rule">
+            <h2><%= t[group.family] || group.family %></h2>
+            <% if (group.family === 'epilation' && settings.epilation_intro) { %><p><%= settings.epilation_intro %></p><% } %>
+          </div>
+        <% } %>
+        <div class="grid grid--3">
+          <% group.items.forEach(function (item) { %><%- include('partials/soin', { item: item }) %><% }); %>
+        </div>
+      </div>
+    <% }); %>
+  </div>
+</section>
+
+<section class="section section--sage section--tight">
+  <div class="wrap">
+    <div class="split">
+      <div>
+        <h2 style="margin-bottom:14px" data-lk="famille-cta-title">Un soin vous intéresse?</h2>
+        <p data-lk="famille-cta-sub">Planifiez votre visite en moins de deux minutes, ou téléphonez-nous : il nous fera plaisir de vous guider vers le soin qui vous convient.</p>
+      </div>
+      <div class="row" style="justify-content:flex-end">
+        <a class="button primary" href="<%= bookingUrl || urls.reservation %>"<%= bookingUrl ? ' target="_blank" rel="noopener"' : '' %> data-lk="t:book"><%= t.book %></a>
+        <% if (flags.contact && settings.contact_phone) { %>
+          <a class="button ghost" href="<%= phoneHref %>"><%= settings.contact_phone %></a>
+        <% } else { %>
+          <a class="button ghost" href="<%= urls.contact %>"><%= t.contact %></a>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section--tight">
+  <div class="wrap">
+    <div class="grid grid--3">
+      <a class="card" href="<%= urls.forfaits %>" style="text-decoration:none"><div class="card-body"><h3><%= t.forfaits %></h3><p class="muted" data-lk="famille-x-forfaits">Des formules à plusieurs séances pour économiser et garder l’habitude.</p></div></a>
+      <a class="card" href="<%= urls.boutique %>" style="text-decoration:none"><div class="card-body"><h3><%= t.boutique %></h3><p class="muted" data-lk="famille-x-boutique">Prolongez les bienfaits de vos soins à la maison.</p></div></a>
+      <a class="card" href="<%= urls.about %>" style="text-decoration:none"><div class="card-body"><h3><%= t.about %></h3><p class="muted" data-lk="famille-x-about">Rencontrez Annie et l’équipe de Fait Main.</p></div></a>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

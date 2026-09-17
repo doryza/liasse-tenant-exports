@@ -1,0 +1,88 @@
+<%- include('partials/header') %>
+
+<section class="page-banner <%= settings._p_banner_forfaits_url ? 'has-media' : '' %>">
+  <% if (settings._p_banner_forfaits_url) { %>
+    <div class="page-banner-media"><img src="<%= settings._p_banner_forfaits_url %>" data-setting-key="_p_banner_forfaits_url" alt="" width="1440" height="372"></div>
+  <% } %>
+  <div class="wrap">
+    <div class="page-banner-inner">
+      <nav class="breadcrumb" aria-label="fil d’Ariane"><a href="<%= urls.home %>"><%= t.home %></a> · <%= t.forfaits %></nav>
+      <h1 data-lk="forfaits-title">Forfaits douceurs et bien-être</h1>
+      <p data-lk="forfaits-sub">Des formules sur mesure pour vous faire économiser — et pour que prendre soin de vous devienne une habitude.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <hr class="hand-rule">
+      <p class="eyebrow eyebrow--rose" data-lk="forfaits-eyebrow">Formules</p>
+      <h2 data-lk="forfaits-formules-title">Trouvez celle qui vous convient</h2>
+    </div>
+    <div class="grid grid--3">
+      <% packages.forEach(function (p) { %>
+        <article class="forfait<%= p.popular ? ' forfait--popular' : '' %>">
+          <% if (p.popular) { %><span class="forfait-flag" data-lk="forfaits-popular">Populaire</span><% } %>
+          <h3><%= field(p, 'name') %></h3>
+          <div class="forfait-price"><%= money(p.price_cents) %></div>
+          <% if (field(p, 'validity')) { %><div class="forfait-validity"><%= field(p, 'validity') %></div><% } %>
+          <% if (field(p, 'summary')) { %><p class="muted small"><%= field(p, 'summary') %></p><% } %>
+          <% var perks = listField(p, 'perks'); %>
+          <% if (perks.length) { %>
+            <ul><% perks.forEach(function (perk) { %><li><%= perk %></li><% }); %></ul>
+          <% } %>
+          <a class="button rose" style="margin-top:14px" href="<%= bookingUrl || urls.reservation %>"<%= bookingUrl ? ' target="_blank" rel="noopener"' : '' %>><%= t.book_short %></a>
+        </article>
+      <% }); %>
+    </div>
+    <div class="notice notice--plain" style="margin-top:28px">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>
+      <p data-lk="forfaits-note">Les forfaits s’achètent et se réservent directement avec nous. Téléphonez-nous ou passez en boutique : nous préparons tout avec vous.</p>
+    </div>
+  </div>
+</section>
+
+<% if (combos && combos.length) { %>
+<section class="section section--paper">
+  <div class="wrap">
+    <div class="section-head">
+      <hr class="hand-rule">
+      <h2 data-lk="forfaits-combos-title">Forfaits bien-être</h2>
+      <p data-lk="forfaits-combos-sub">Des soins combinés pour un moment détente parfait. Choisissez le vôtre.</p>
+    </div>
+    <div class="grid grid--3">
+      <% combos.forEach(function (item) { %><%- include('partials/soin', { item: item }) %><% }); %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<section class="section">
+  <div class="wrap split split--top">
+    <div>
+      <hr class="hand-rule">
+      <h2 data-lk="forfaits-stress-title">Les effets courants du stress et de l’anxiété</h2>
+      <ul class="tick-list preserve" style="margin-top:18px">
+        <% lines(settings.stress_effects).forEach(function (line) { %>
+          <li><%= line %></li>
+        <% }); %>
+      </ul>
+    </div>
+    <div class="form-card">
+      <h3 data-lk="forfaits-chronic-title">Le stress chronique non traité est associé à :</h3>
+      <ul class="tick-list">
+        <li data-lk="forfaits-chronic-1">L’anxiété</li>
+        <li data-lk="forfaits-chronic-2">L’insomnie</li>
+        <li data-lk="forfaits-chronic-3">Les douleurs musculaires</li>
+        <li data-lk="forfaits-chronic-4">L’hypertension artérielle</li>
+        <li data-lk="forfaits-chronic-5">Un affaiblissement du système immunitaire</li>
+        <li data-lk="forfaits-chronic-6">La maladie du cœur</li>
+        <li data-lk="forfaits-chronic-7">La dépression</li>
+        <li data-lk="forfaits-chronic-8">L’obésité</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,38 @@
+<%- include('partials/header') %>
+
+<section class="page-banner">
+  <div class="wrap">
+    <div class="page-banner-inner">
+      <nav class="breadcrumb" aria-label="fil d’Ariane"><a href="<%= urls.home %>"><%= t.home %></a> · <%= t.blog %></nav>
+      <hr class="hand-rule">
+      <h1 data-lk="blog-title">Mes bien-être</h1>
+      <p data-lk="blog-sub">Des rituels, des recettes et des petites douceurs, écrits par Annie.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <% if (!posts.length) { %>
+      <p class="empty" data-lk="t:no_posts"><%= t.no_posts %></p>
+    <% } else { %>
+      <div class="grid grid--3">
+        <% posts.forEach(function (post) { %>
+          <article class="article-card">
+            <% if (post.image_url) { %>
+              <a class="article-media" href="<%= urls.article %><%= post.slug %>"><img src="<%= post.image_url %>" alt="<%= field(post, 'title') %>" width="600" height="450" loading="lazy"></a>
+            <% } %>
+            <div class="article-body">
+              <% if (post.published_on) { %><span class="article-date"><%= formatDate(post.published_on) %></span><% } %>
+              <h3><a href="<%= urls.article %><%= post.slug %>"><%= field(post, 'title') %></a></h3>
+              <% if (field(post, 'excerpt')) { %><p class="muted small"><%= field(post, 'excerpt') %></p><% } %>
+              <p style="margin-top:auto;padding-top:8px"><a class="text-button" href="<%= urls.article %><%= post.slug %>"><%= t.learn_more %></a></p>
+            </div>
+          </article>
+        <% }); %>
+      </div>
+    <% } %>
+  </div>
+</section>
+
+<%- include('partials/footer') %>
