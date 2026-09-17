@@ -1,0 +1,432 @@
+{
+  "exportedAt": "2026-09-17T12:42:38.228Z",
+  "tables": {
+    "admin_invites": {
+      "columns": [
+        "id",
+        "email",
+        "token",
+        "role",
+        "status",
+        "invited_by",
+        "expires_at",
+        "accepted_at",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_users": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "password_hash",
+        "display_name",
+        "role",
+        "active",
+        "activation_token",
+        "invited_by",
+        "invite_token",
+        "invite_expires_at",
+        "last_login_at",
+        "is_active",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_webauthn_credentials": {
+      "columns": [
+        "id",
+        "admin_user_id",
+        "credential_id",
+        "public_key",
+        "counter",
+        "device_name",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_settings": {
+      "columns": [
+        "key",
+        "value",
+        "updated_at"
+      ],
+      "totalRows": 33,
+      "sampleRows": [
+        {
+          "key": "hero_title",
+          "value": "{\"fr\":\"Un moment à vous, avec Karin-Alexys.\",\"en\":\"A moment for yourself, with Karin-Alexys.\"}",
+          "updated_at": "2026-09-17T12:42:19.446Z"
+        },
+        {
+          "key": "hero_subtitle",
+          "value": "{\"fr\":\"À Mirabel, des soins adaptés à vos besoins et une invitation à ralentir, à relâcher les tensions et à retrouver votre équilibre.\",\"en\":\"In Mirabel, care adapted to your needs and an invitation to slow down, ease tension and find your balance.\"}",
+          "updated_at": "2026-09-17T12:42:19.453Z"
+        },
+        {
+          "key": "tagline",
+          "value": "{\"fr\":\"Sens-Ô-Réel · Mirabel, Saint-Janvier\",\"en\":\"Sens-Ô-Réel · Mirabel, Saint-Janvier\"}",
+          "updated_at": "2026-09-17T12:42:19.461Z"
+        },
+        {
+          "key": "about_text",
+          "value": "{\"fr\":\"Massothérapeute spécialisée, professeure de yoga et accompagnatrice à la méditation, Karin-Alexys Canuel possède plus de 17 ans d’expérience. Sa pratique réunit différentes techniques pour proposer un soin adapté à chaque personne.\",\"en\":\"A specialized massage therapist, yoga teacher and meditation guide, Karin-Alexys Canuel has more than 17 years of experience. Her practice brings together different techniques to offer care adapted to each person.\"}",
+          "updated_at": "2026-09-17T12:42:19.470Z"
+        },
+        {
+          "key": "origin_text",
+          "value": "{\"fr\":\"Sens-Ô-Réel évoque « l’essence de la vie ». Ce jeu de mots choisi par Karin-Alexys exprime sa passion pour l’être humain et le bien-être, ainsi que son intérêt pour l’équilibre entre le corps et l’esprit.\",\"en\":\"Sens-Ô-Réel evokes “the essence of life.” Karin-Alexys chose this play on words to express her care for people and well-being, and her interest in balance between body and mind.\"}",
+          "updated_at": "2026-09-17T12:42:19.477Z"
+        },
+        {
+          "key": "welcome_text",
+          "value": "{\"fr\":\"Dans le secteur de Saint-Janvier, Karin-Alexys vous accueille dans un environnement pensé pour la détente. Prenez le temps de lui faire part de vos attentes afin de choisir ensemble l’approche qui vous convient.\",\"en\":\"In Saint-Janvier, Karin-Alexys welcomes you into an environment intended for relaxation. Take a moment to share your expectations and choose an approach together.\"}",
+          "updated_at": "2026-09-17T12:42:19.485Z"
+        },
+        {
+          "key": "privacy_notice",
+          "value": "{\"fr\":\"Le formulaire recueille vos coordonnées et vos préférences pour traiter votre demande de rendez-vous. Votre espace personnel permet de retrouver son suivi. Ne transmettez aucun renseignement de santé. Les paiements éventuels sont traités par PayPal; aucun numéro de carte n’est enregistré dans ce site. Communiquez avec l’entreprise pour toute question concernant vos renseignements.\",\"en\":\"The form collects your contact details and preferences to handle your appointment request. Your personal space lets you follow its progress. Do not submit health information. Any online payment is processed by PayPal; this site does not store card numbers. Contact the business with questions about your information.\"}",
+          "updated_at": "2026-09-17T12:42:19.493Z"
+        },
+        {
+          "key": "payment_terms",
+          "value": "{\"fr\":\"\",\"en\":\"\"}",
+          "updated_at": "2026-09-17T12:42:19.503Z"
+        },
+        {
+          "key": "contact_verified",
+          "value": "0",
+          "updated_at": "2026-09-17T12:42:19.509Z"
+        },
+        {
+          "key": "address_verified",
+          "value": "0",
+          "updated_at": "2026-09-17T12:42:19.516Z"
+        }
+      ]
+    },
+    "site_visits": {
+      "columns": [
+        "id",
+        "path",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "posts": {
+      "columns": [
+        "id",
+        "title",
+        "title_en",
+        "content",
+        "content_en",
+        "image_url",
+        "category",
+        "published",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Préparer votre première visite",
+          "title_en": "Preparing for your first visit",
+          "content": "Prenez le temps de choisir vos préférences de rendez-vous. Pour toute question avant de venir, communiquez directement avec Karin-Alexys.",
+          "content_en": "Take a moment to choose your appointment preferences. For any questions before your visit, contact Karin-Alexys directly.",
+          "image_url": null,
+          "category": "Informations",
+          "published": 0,
+          "created_at": "2026-09-17T12:42:19.697Z",
+          "updated_at": "2026-09-17T12:42:19.697Z"
+        },
+        {
+          "id": 2,
+          "title": "Choisir son moment de yoga",
+          "title_en": "Choosing your yoga time",
+          "content": "Les cours individuels et les petits groupes permettent différents formats de rencontre. Les modalités actuelles sont à confirmer.",
+          "content_en": "Individual classes and small groups offer different ways to meet. Current arrangements are to be confirmed.",
+          "image_url": null,
+          "category": "Informations",
+          "published": 0,
+          "created_at": "2026-09-17T12:42:19.704Z",
+          "updated_at": "2026-09-17T12:42:19.704Z"
+        },
+        {
+          "id": 3,
+          "title": "Découvrir la méditation",
+          "title_en": "Discovering meditation",
+          "content": "Sens-Ô-Réel présente trois parcours de méditation. Demandez conseil pour choisir celui qui correspond à vos attentes.",
+          "content_en": "Sens-Ô-Réel presents three meditation programs. Ask for guidance to choose the one that matches your expectations.",
+          "image_url": null,
+          "category": "Informations",
+          "published": 0,
+          "created_at": "2026-09-17T12:42:19.712Z",
+          "updated_at": "2026-09-17T12:42:19.712Z"
+        },
+        {
+          "id": 4,
+          "title": "Votre demande de rendez-vous",
+          "title_en": "Your appointment request",
+          "content": "Une demande en ligne n’est pas un créneau confirmé. Retrouvez la réponse de Karin-Alexys dans votre espace de suivi.",
+          "content_en": "An online request is not a confirmed time slot. Find Karin-Alexys’s response in your appointment area.",
+          "image_url": null,
+          "category": "Informations",
+          "published": 0,
+          "created_at": "2026-09-17T12:42:19.719Z",
+          "updated_at": "2026-09-17T12:42:19.719Z"
+        }
+      ]
+    },
+    "hours": {
+      "columns": [
+        "id",
+        "weekday",
+        "opens",
+        "closes",
+        "closed",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 7,
+      "sampleRows": [
+        {
+          "id": 1,
+          "weekday": 1,
+          "opens": "10:00",
+          "closes": "16:00",
+          "closed": 0,
+          "image_url": null,
+          "created_at": "2026-09-17T12:42:19.643Z",
+          "updated_at": "2026-09-17T12:42:19.643Z"
+        },
+        {
+          "id": 2,
+          "weekday": 2,
+          "opens": "10:00",
+          "closes": "20:00",
+          "closed": 0,
+          "image_url": null,
+          "created_at": "2026-09-17T12:42:19.653Z",
+          "updated_at": "2026-09-17T12:42:19.653Z"
+        },
+        {
+          "id": 3,
+          "weekday": 3,
+          "opens": "10:00",
+          "closes": "16:00",
+          "closed": 0,
+          "image_url": null,
+          "created_at": "2026-09-17T12:42:19.660Z",
+          "updated_at": "2026-09-17T12:42:19.660Z"
+        },
+        {
+          "id": 4,
+          "weekday": 4,
+          "opens": "10:00",
+          "closes": "20:00",
+          "closed": 0,
+          "image_url": null,
+          "created_at": "2026-09-17T12:42:19.667Z",
+          "updated_at": "2026-09-17T12:42:19.667Z"
+        },
+        {
+          "id": 5,
+          "weekday": 5,
+          "opens": "10:00",
+          "closes": "20:00",
+          "closed": 0,
+          "image_url": null,
+          "created_at": "2026-09-17T12:42:19.674Z",
+          "updated_at": "2026-09-17T12:42:19.674Z"
+        },
+        {
+          "id": 6,
+          "weekday": 6,
+          "opens": "10:00",
+          "closes": "16:00",
+          "closed": 0,
+          "image_url": null,
+          "created_at": "2026-09-17T12:42:19.682Z",
+          "updated_at": "2026-09-17T12:42:19.682Z"
+        },
+        {
+          "id": 7,
+          "weekday": 7,
+          "opens": "",
+          "closes": "",
+          "closed": 1,
+          "image_url": null,
+          "created_at": "2026-09-17T12:42:19.690Z",
+          "updated_at": "2026-09-17T12:42:19.690Z"
+        }
+      ]
+    },
+    "services": {
+      "columns": [
+        "id",
+        "name",
+        "name_en",
+        "description",
+        "description_en",
+        "details",
+        "details_en",
+        "category",
+        "duration_minutes",
+        "format",
+        "format_en",
+        "price_cents",
+        "tax_note",
+        "tax_note_en",
+        "price_verified",
+        "published",
+        "sort_order",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "name": "Traitements Sens-Ô-Réel",
+          "name_en": "Sens-Ô-Réel treatments",
+          "description": "Un moment de relaxation, avec une approche adaptée à vos besoins.",
+          "description_en": "A moment of relaxation, with an approach adapted to your needs.",
+          "details": "Les traitements réunissent différentes techniques de massothérapie. Discutez avec Karin-Alexys du soin qui vous convient; les modalités et les tarifs sont à confirmer.",
+          "details_en": "Treatments bring together different massage therapy techniques. Talk with Karin-Alexys about the care that suits you; details and rates are to be confirmed.",
+          "category": "massage",
+          "duration_minutes": null,
+          "format": null,
+          "format_en": null,
+          "price_cents": null,
+          "tax_note": null,
+          "tax_note_en": null,
+          "price_verified": 0,
+          "published": 1,
+          "sort_order": 1,
+          "image_url": null,
+          "created_at": "2026-09-17T12:42:19.613Z",
+          "updated_at": "2026-09-17T12:42:19.613Z"
+        },
+        {
+          "id": 2,
+          "name": "Soins ayurvédiques",
+          "name_en": "Ayurvedic care",
+          "description": "Une autre façon de prendre un moment pour vous.",
+          "description_en": "Another way to make time for yourself.",
+          "details": "Des soins ayurvédiques font partie des services présentés par Sens-Ô-Réel. Communiquez avec Karin-Alexys pour connaître les soins actuellement offerts, leur déroulement et leurs tarifs.",
+          "details_en": "Ayurvedic care is among the services presented by Sens-Ô-Réel. Contact Karin-Alexys to discuss the treatments currently offered, what they involve and their rates.",
+          "category": "ayurveda",
+          "duration_minutes": null,
+          "format": null,
+          "format_en": null,
+          "price_cents": null,
+          "tax_note": null,
+          "tax_note_en": null,
+          "price_verified": 0,
+          "published": 1,
+          "sort_order": 2,
+          "image_url": null,
+          "created_at": "2026-09-17T12:42:19.622Z",
+          "updated_at": "2026-09-17T12:42:19.622Z"
+        },
+        {
+          "id": 3,
+          "name": "Yoga",
+          "name_en": "Yoga",
+          "description": "Respirer, bouger et prendre le temps de se recentrer.",
+          "description_en": "Breathe, move and take time to reconnect.",
+          "details": "Des cours individuels et en petit groupe de six personnes maximum sont présentés. Vérifiez les formats et les disponibilités actuels avant de faire votre choix.",
+          "details_en": "Individual classes and small groups of up to six people are described. Please check current formats and availability before choosing.",
+          "category": "yoga",
+          "duration_minutes": null,
+          "format": null,
+          "format_en": null,
+          "price_cents": null,
+          "tax_note": null,
+          "tax_note_en": null,
+          "price_verified": 0,
+          "published": 1,
+          "sort_order": 3,
+          "image_url": null,
+          "created_at": "2026-09-17T12:42:19.629Z",
+          "updated_at": "2026-09-17T12:42:19.629Z"
+        },
+        {
+          "id": 4,
+          "name": "Méditation",
+          "name_en": "Meditation",
+          "description": "Un accompagnement pour faire une place à la quiétude.",
+          "description_en": "Guidance to make room for quiet moments.",
+          "details": "Trois parcours sont présentés : Intégration à la méditation, Éveil à la méditation et Le chemin de la méditation. Les modalités, durées et tarifs de chaque parcours sont à confirmer.",
+          "details_en": "Three programs are presented: Introduction to meditation, Awakening to meditation and The path of meditation. Details, duration and rates for each program are to be confirmed.",
+          "category": "meditation",
+          "duration_minutes": null,
+          "format": null,
+          "format_en": null,
+          "price_cents": null,
+          "tax_note": null,
+          "tax_note_en": null,
+          "price_verified": 0,
+          "published": 1,
+          "sort_order": 4,
+          "image_url": null,
+          "created_at": "2026-09-17T12:42:19.637Z",
+          "updated_at": "2026-09-17T12:42:19.637Z"
+        }
+      ]
+    },
+    "appointments": {
+      "columns": [
+        "id",
+        "user_id",
+        "request_key",
+        "name",
+        "email",
+        "phone",
+        "service_id",
+        "preferred_date",
+        "time_window",
+        "consent",
+        "privacy_snapshot",
+        "status",
+        "start_at",
+        "end_at",
+        "service_label",
+        "service_label_en",
+        "response",
+        "response_en",
+        "total_cents",
+        "amount_cents",
+        "tax_cents",
+        "payment_kind",
+        "billing_verified",
+        "terms_snapshot",
+        "cancel_requested",
+        "payment_status",
+        "order_key",
+        "capture_key",
+        "paypal_order_id",
+        "paypal_capture_id",
+        "paypal_mode",
+        "paypal_client_hash",
+        "order_started_at",
+        "paid_at",
+        "checked_at",
+        "email_state",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    }
+  }
+}

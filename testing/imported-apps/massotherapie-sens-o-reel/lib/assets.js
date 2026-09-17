@@ -1,0 +1,2 @@
+const base='https://pub-007338adea45415ba231abbf2404da85.r2.dev/website-imports/c7004086-d0d5-448e-abda-b9a31c087809/';
+module.exports={logo:base+'2f2f1aaf1a994467d74e1708dae566b99f89cdcac2adf421518b0d32e27a4a4f.webp',seal:base+'0bef026520f1aff9817dfb3c565c1e7d39dd361a6a3ba6f957c654d0a19dbeed.webp',portrait:base+'322bd1f030a17a25eeaecc5502b1bc0e2ace554281b65dfb5c61592c9ade925e.webp'};
