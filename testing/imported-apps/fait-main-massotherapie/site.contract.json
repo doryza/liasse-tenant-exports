@@ -1,0 +1,183 @@
+{
+  "version": 1,
+  "slug": "fait-main-massotherapie",
+  "canonical": "https://liasse.tech/pwa/fait-main-massotherapie/",
+  "reference": "LIASSE-SIGNUP-1077",
+  "languages": {
+    "default": "fr",
+    "supported": ["fr", "en"],
+    "selection": "?lang= wins, then an explicit /en/ path, then the scoped pwa_lang cookie. Language links preserve the current page and its shop filters.",
+    "content": "One JSON-valued admin_settings row per bilingual editorial text; domain tables carry explicit _en columns. text_<key>_<lang> rows override any dictionary key at render time."
+  },
+  "design": {
+    "concept": "Tracé à la main",
+    "thesis": "The business is called Fait Main — handmade — so the single repeated graphic device is a hand-drawn line: a soft sage wave that opens every section, underlines the active nav item and separates ideas. Everything else stays quiet so the owner's own photography and words carry the page.",
+    "tokens": {
+      "ink": "#292929",
+      "paper": "#FBF8F4",
+      "paperDeep": "#F4EFE8",
+      "sage": "#91AB78",
+      "sageDeep": "#6B8455",
+      "rose": "#E6BEBE",
+      "roseDeep": "#C08E8E",
+      "line": "#E8E0D6"
+    },
+    "paletteRationale": "The two source brand colours were kept exactly (#E6BEBE powder rose, #91AB78 sage) and given a hierarchy the old site lacked: anthracite for all text, sage for wellness and every primary action, powder rose reserved for gifting, packages and offers. The old site's default blue links (rgb(0,0,238)) are gone.",
+    "type": "Fraunces 400/500/600 for display, Figtree 400/500/600/700 for body and UI. Replaces the source's Arial + Sora mix.",
+    "structure": "1180px container, generous vertical rhythm, uniform card system with one image ratio per card type (products 1:1, collections and articles 4:3), pill buttons, 52px minimum control height.",
+    "deviations": [
+      "Treatment cards are typographic rather than photographic. The imported per-treatment thumbnails are 84–309px and could not be reliably matched to individual treatments, so attaching them would have risked showing the wrong photo for a paid service.",
+      "Products without a positively identified photo show a quiet sage sprig mark instead of a stretched or borrowed image.",
+      "The mobile drawer opens from the left. A fixed panel parked off-canvas to the right counts toward document scroll width in Chrome and made every page scroll sideways on a phone."
+    ]
+  },
+  "pages": [
+    { "fr": "/", "en": "/en/", "view": "index", "job": "Carry the promise of softness, then route to booking and to the shop" },
+    { "fr": "/massotherapie/", "en": "/en/massage-therapy/", "view": "famille", "job": "The 11 massage treatments with duration and rate" },
+    { "fr": "/esthetique/", "en": "/en/skin-care/", "view": "famille", "job": "Facials, lashes and brows, plus the full waxing menu" },
+    { "fr": "/ongles/", "en": "/en/nail-care/", "view": "famille", "job": "Manicure, pedicure and nail enhancement" },
+    { "fr": "/soins-corps/", "en": "/en/body-treatments/", "view": "famille", "job": "Maderotherapy, wraps, back care and anti-cellulite" },
+    { "fr": "/forfaits/", "en": "/en/packages/", "view": "forfaits", "job": "The five multi-session packages and the combined wellness treatments" },
+    { "fr": "/boutique/", "en": "/en/shop/", "view": "boutique", "job": "Browse 28 products by collection or search" },
+    { "fr": "/boutique/produit/:slug", "en": "/en/shop/product/:slug", "view": "produit", "job": "One product, its options and add-to-cart" },
+    { "fr": "/panier/", "en": "/en/cart/", "view": "panier", "job": "Review the basket and place an order" },
+    { "fr": "/commande/:id", "en": "/en/order/:id", "view": "commande", "job": "One order, its totals and PayPal payment" },
+    { "fr": "/mes-commandes/", "en": "/en/my-orders/", "view": "mes-commandes", "job": "A customer's own order history" },
+    { "fr": "/location-de-salle/", "en": "/en/room-rental/", "view": "location", "job": "The meeting and workshop space" },
+    { "fr": "/a-propos/", "en": "/en/about/", "view": "about", "job": "Annie Bouchard, the team's approach and qualifications" },
+    { "fr": "/blog/", "en": "/en/journal/", "view": "blog", "job": "Annie's wellness journal" },
+    { "fr": "/blog/:slug", "en": "/en/journal/:slug", "view": "article", "job": "One article" },
+    { "fr": "/contact/", "en": "/en/contact/", "view": "contact", "job": "Address, phone, hours and the contact form" },
+    { "fr": "/reservation/", "en": "/en/booking/", "view": "reservation", "job": "Hand off to the booking system with the full service catalogue visible" },
+    { "fr": "/confidentialite/", "en": "/en/privacy/", "view": "privacy", "job": "The owner-approved privacy notice and terms of sale" }
+  ],
+  "redirects": [
+    { "from": "/soins-massotherapie", "to": "/massotherapie/", "status": 301 },
+    { "from": "/pricing-plans/list", "to": "/forfaits/", "status": 301 },
+    { "from": "/copie-de-ongles", "to": "/ongles/", "status": 301 },
+    { "from": "/locationdesalle", "to": "/location-de-salle/", "status": 301 },
+    { "from": "/book-online", "to": "/reservation/", "status": 301 },
+    { "from": "/product-page/:slug", "to": "/boutique/produit/:slug", "status": 301 },
+    { "note": "Every canonical page also answers on its bare (no trailing slash) form with a 301. The router runs with Express strict routing precisely so those redirects cannot match the canonical URL and loop." }
+  ],
+  "tables": {
+    "content": ["services", "packages", "products", "posts", "hours"],
+    "transactions": ["orders", "order_items", "messages"],
+    "platformSupport": ["admin_settings", "site_visits"],
+    "seeding": "57 treatments, 5 packages, 28 products, 3 articles and 7 opening-hour rows, all transcribed from the authorized import. No fabricated customer, order, payment or review records. The platform _seed_version sentinel prevents reseeding over edited content."
+  },
+  "features": {
+    "booking": {
+      "implementation": "Every Réserver button points at the booking_url admin setting, which is seeded with the source site's own booking page.",
+      "why": "The brief asked to preserve the existing booking link. The business runs a real multi-practitioner schedule, so no native booking was built — a second scheduler would risk double-booking.",
+      "gate": "booking_url_verified. Until Annie confirms it, the booking page says the link is to be confirmed.",
+      "risk": "The seeded URL lives on the old domain. It must be repointed before that domain is retired."
+    },
+    "shop": {
+      "files": ["lib/orders.js", "views/boutique.ejs", "views/produit.ejs", "views/panier.ejs", "public/js/cart.js", "public/js/checkout.js"],
+      "cart": "Held in the visitor's own browser (localStorage, guarded for private windows). It carries only slug, chosen option and quantity.",
+      "pricing": "Every amount is computed server-side in lib/orders.js from the products table. The browser never sends a price. Options are validated against the product's own list, and an out-of-stock or unpublished item fails the whole basket.",
+      "taxes": "GST and QST are read from admin_settings in basis points (500 / 998 by default) and applied to the pre-tax amount including shipping, which is how QST has worked since 2013.",
+      "fulfilment": "Pickup is always offered and always free. Shipping only appears once the owner has both enabled it and entered a rate — no delivery price is ever invented.",
+      "idempotency": "A per-basket request key plus a UNIQUE(user_id, request_key) constraint makes a double submit return the original order instead of creating a second one."
+    },
+    "payments": {
+      "files": ["lib/paypal.js", "views/commande.ejs", "public/js/checkout.js", "crons.js"],
+      "provider": "PayPal Orders v2, Payments v2 and the official JavaScript SDK v6",
+      "credentials": ["PAYPAL_CLIENT_ID", "PAYPAL_CLIENT_SECRET", "PAYPAL_MODE", "PAYPAL_MERCHANT_ID"],
+      "checks": [
+        "Authenticated ownership of the order",
+        "Fixed CAD amount read from the database, never from the browser",
+        "Exact custom_id (order:<id>) and invoice_id (order_key)",
+        "Merchant id, order id and CAPTURE intent",
+        "Capture currency, gross amount and final_capture",
+        "Credential and environment bound to the row at order creation",
+        "Stable create and capture request ids so a retry cannot double-charge"
+      ],
+      "recovery": "Customer-triggered sync, an owner reconcile button, and a five-minute GET-only background reconciliation. An order whose creation attempt is older than five hours stops for manual review instead of risking a second order.",
+      "webhooks": "Not used. No unsigned webhook endpoint exists.",
+      "setupBoundary": "Credentials being present does not mean anything was verified. payments_enabled, payment_terms_approved and live_actions_enabled all start off, and preview mode always suppresses charging."
+    },
+    "admin": {
+      "files": ["lib/modules.js", "lib/admin.js", "views/admin.ejs", "views/admin-module.ejs", "views/admin-settings.ejs", "public/js/admin.js"],
+      "modules": ["services", "packages", "products", "orders", "messages", "posts", "hours"],
+      "capabilities": ["CRUD with per-field validation", "Filter and count", "Image upload and illustrative generation", "Bilingual settings editor", "Visit and sales statistics", "PayPal reconciliation", "A launch checklist of everything still switched off"],
+      "security": "Every admin page and API checks services.admin.isAdmin. Writes require a same-origin request and an explicit X-Requested-With header. Orders cannot be created by hand, amounts are read-only, and an order that has reached PayPal cannot be deleted."
+    },
+    "gates": {
+      "principle": "Anything that speaks for the business or spends money is off until the owner turns it on from Réglages.",
+      "flags": ["contact_verified", "address_verified", "hours_verified", "booking_url_verified", "privacy_approved", "messages_enabled", "shipping_enabled", "payment_terms_approved", "payments_enabled", "live_actions_enabled"]
+    },
+    "pwa": {
+      "install": "TenantSDK.ui.showInstallBanner",
+      "push": "Only after a real interaction: eight seconds after the first scroll or pointer event, and only when notifications are enabled. The footer also carries an explicit button.",
+      "private": "Cart, order and admin responses are no-store. No payment result is ever inferred offline."
+    }
+  },
+  "source": {
+    "packageId": "b12153e0-d25e-4ce8-9d2f-04ade6e94e76",
+    "origin": "https://www.faitmainmassotherapie.com/",
+    "mode": "modernize",
+    "importedAt": "2026-09-17",
+    "business": {
+      "name": "Fait Main Massothérapie",
+      "owner": "Annie Bouchard",
+      "sourceAddress": "15451-1 rue de Saint-Augustin, Mirabel, QC J7N 2B1",
+      "sourcePhone": "450-475-0101",
+      "sourceEmail": "info@faitmainmassotherapie.com",
+      "publicationRule": "Contact settings are seeded from services.config business fields, not from the account-owner literals, and stay hidden until the owner confirms they belong to the practice."
+    },
+    "assets": {
+      "hosting": "Every reused asset URL is the platform's own R2 copy. The previous host is never hotlinked.",
+      "inspected": "All 23 reused assets were opened and looked at before being placed.",
+      "reused": [
+        { "use": "hero", "what": "Authentic treatment photograph from the source home page" },
+        { "use": "_p_story_image_url / _p_about_image_url", "what": "The two portraits the source itself labels Annie Bouchard, each kept in the context the source used it in" },
+        { "use": "page banners", "what": "The source's own massage, skin-care, nail, body and team banners" },
+        { "use": "_p_location_image_url", "what": "The real photograph of the rental room" },
+        { "use": "collection cards", "what": "The four shop category still lifes" },
+        { "use": "products", "what": "Only 5 of 28: the Camphre+Cachemire candle, the Boho hair towel, the lavender tea, Palo Santo and the Boho headband" },
+        { "use": "articles", "what": "The three journal images, each matched to its article by the source's own alt text" }
+      ],
+      "excludedAfterInspection": "The per-treatment thumbnails (84×84 to 309×207) were left out. They are too small to publish at card size and their order in the import did not reliably identify which treatment each one belongs to — the first two shop thumbnails, for example, are both the same candle."
+    },
+    "contentDecisions": [
+      "All 57 treatments, their durations and their rates are transcribed exactly as the source stated them on 2026-09-17.",
+      "The four shop collections and their wording come from the source. Which product sits in which collection is a merchandising judgement made here, not a fact from the source, and is fully editable in the admin.",
+      "Article bodies were not importable, so each article carries the real title, date, image and opening lines, and the body is left empty for the owner to paste in."
+    ]
+  },
+  "gaps": [
+    "Free-shipping threshold conflicts in the source: the shop page says 75 $ (twice), the about page says 49 $. 75 $ is seeded. Annie must confirm.",
+    "No shipping rate exists anywhere in the source, so shipping is disabled and only pickup is offered until she enters one.",
+    "23 of 28 products have no photograph yet.",
+    "No treatment has a publishable photograph yet — high-resolution images would let the treatment cards carry imagery.",
+    "Article bodies are empty: only titles, dates, images and opening lines were importable.",
+    "booking_url still points at the old domain's booking page and must be repointed before that domain is retired.",
+    "GST and QST registration numbers are empty.",
+    "Team members other than Annie are described but never named in the source.",
+    "The import was capped at 20 pages and 100 images, and long pages with lazy-loaded sections may be incomplete.",
+    "Rates, opening hours and the privacy notice are imported, not verified: each stays behind its own gate until the owner confirms it."
+  ],
+  "safeSmokeScenarios": [
+    { "path": "/", "expectedStatus": 200, "expectedText": "Fait Main" },
+    { "path": "/massotherapie/", "expectedStatus": 200, "expectedText": "Massage Détente" },
+    { "path": "/forfaits/", "expectedStatus": 200, "expectedText": "242,25" },
+    { "path": "/boutique/", "expectedStatus": 200, "expectedText": "Bougie Camphre" },
+    { "path": "/boutique/?collection=ralentir", "expectedStatus": 200 },
+    { "path": "/en/shop/?lang=en", "expectedStatus": 200, "expectedText": "All products" },
+    { "path": "/soins-massotherapie", "expectedStatus": 301, "expectedLocation": "massotherapie/" },
+    { "path": "/pricing-plans/list", "expectedStatus": 301, "expectedLocation": "forfaits/" },
+    { "path": "/massotherapie", "expectedStatus": 301, "note": "bare form redirects once and must not loop" },
+    { "path": "/admin", "identity": "anonymous", "expectedStatus": 302 },
+    { "path": "/admin", "identity": "owner", "expectedStatus": 200, "expectedText": "Tableau de bord" },
+    { "path": "/api/admin/products", "identity": "anonymous", "expectedStatus": 403 },
+    { "path": "/api/orders", "identity": "anonymous", "expectedStatus": 401 },
+    { "scenario": "POST /api/cart/quote with a tampered price", "expected": "ignored — totals come only from the products table" },
+    { "scenario": "POST /api/cart/quote for an out-of-stock or unpublished slug", "expected": "409 stock_changed" },
+    { "scenario": "POST /api/orders twice with the same requestKey", "expected": "the same order is returned, never a duplicate" },
+    { "scenario": "Checkout with fulfilment=shipping while shipping_enabled=0", "expected": "409 operation_disabled" },
+    { "scenario": "Horizontal overflow at 390px on every page", "expected": "document scrollWidth equals the viewport" }
+  ],
+  "verificationStatus": "Every route was booted and probed against a real Postgres (pglite) with the full seed: 34 routes, all 200/301/302 as intended, in both languages and as owner. Zero horizontal overflow at 390px across 12 pages. Live email and PayPal operations have NOT been executed — they stay behind their gates until the owner turns them on."
+}

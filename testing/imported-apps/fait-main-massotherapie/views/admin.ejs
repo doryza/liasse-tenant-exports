@@ -1,0 +1,113 @@
+<%- include('partials/admin-shell', { adminSection: 'dashboard', adminTitle: 'Tableau de bord' }) %>
+
+<div class="admin-stats">
+  <div class="stat">
+    <span class="stat-label" data-lk="admin-stat-visits">Visites (7 jours)</span>
+    <strong class="stat-value"><%= stats.recentVisits %></strong>
+    <span class="stat-sub"><%= stats.totalVisits %> au total</span>
+  </div>
+  <div class="stat">
+    <span class="stat-label" data-lk="admin-stat-orders">Commandes payées</span>
+    <strong class="stat-value"><%= stats.paidOrders %></strong>
+    <span class="stat-sub"><%= money(stats.revenueCents) %></span>
+  </div>
+  <div class="stat<%= stats.awaitingOrders ? ' stat--flag' : '' %>">
+    <span class="stat-label" data-lk="admin-stat-awaiting">En attente de paiement</span>
+    <strong class="stat-value"><%= stats.awaitingOrders %></strong>
+  </div>
+  <div class="stat<%= stats.newMessages ? ' stat--flag' : '' %>">
+    <span class="stat-label" data-lk="admin-stat-messages">Nouveaux messages</span>
+    <strong class="stat-value"><%= stats.newMessages %></strong>
+  </div>
+</div>
+
+<% var pending = []; %>
+<% if (!flags.contact) pending.push(['Confirmez vos coordonnées', 'admin/settings']); %>
+<% if (!flags.address) pending.push(['Confirmez votre adresse', 'admin/settings']); %>
+<% if (!flags.hours) pending.push(['Confirmez vos heures d’ouverture', 'admin/hours']); %>
+<% if (!flags.privacy) pending.push(['Approuvez l’avis de confidentialité', 'admin/settings']); %>
+<% if (!flags.messages) pending.push(['Activez le formulaire de contact', 'admin/settings']); %>
+<% if (!flags.payments) pending.push(['Activez le paiement en ligne PayPal', 'admin/settings']); %>
+<% if (!flags.shipping) pending.push(['Ajoutez un tarif de livraison (ou restez en cueillette)', 'admin/settings']); %>
+
+<% if (pending.length) { %>
+  <section class="admin-card admin-card--todo">
+    <h2 data-lk="admin-todo-title">À faire pour la mise en ligne complète</h2>
+    <p class="muted small" data-lk="admin-todo-sub">Votre site est en ligne. Ces réglages activent ce qui parle en votre nom ou encaisse de l’argent — rien n’est actif tant que vous ne l’avez pas confirmé.</p>
+    <ul class="admin-todo">
+      <% pending.forEach(function (item) { %>
+        <li><a href="<%= item[1] %>"><%= item[0] %></a></li>
+      <% }); %>
+    </ul>
+  </section>
+<% } %>
+
+<div class="admin-grid">
+  <section class="admin-card">
+    <div class="admin-card-head">
+      <h2 data-lk="admin-recent-orders">Dernières commandes</h2>
+      <a class="text-button" href="admin/orders"><%= t.see_all %></a>
+    </div>
+    <% if (!recentOrders.length) { %>
+      <p class="muted small" data-lk="admin-no-orders">Aucune commande pour l’instant.</p>
+    <% } else { %>
+      <div class="table-scroll">
+        <table class="data">
+          <thead><tr><th>#</th><th>Client</th><th class="num">Total</th><th>État</th></tr></thead>
+          <tbody>
+            <% recentOrders.forEach(function (o) { %>
+              <tr>
+                <td><%= o.reference || o.id %></td>
+                <td><%= o.name %></td>
+                <td class="num"><%= money(o.total_cents) %></td>
+                <td><span class="pill pill--<%= o.payment_status === 'paid' ? 'ok' : 'wait' %>"><%= t['status_' + o.status] || o.status %></span></td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    <% } %>
+  </section>
+
+  <section class="admin-card">
+    <div class="admin-card-head">
+      <h2 data-lk="admin-recent-messages">Derniers messages</h2>
+      <a class="text-button" href="admin/messages"><%= t.see_all %></a>
+    </div>
+    <% if (!recentMessages.length) { %>
+      <p class="muted small" data-lk="admin-no-messages">Aucun message pour l’instant.</p>
+    <% } else { %>
+      <ul class="admin-list">
+        <% recentMessages.forEach(function (m) { %>
+          <li>
+            <strong><%= m.first_name %> <%= m.last_name || '' %></strong>
+            <span class="muted small"><%= m.subject || m.email %></span>
+            <span class="muted small"><%= formatDate(m.created_at) %></span>
+          </li>
+        <% }); %>
+      </ul>
+    <% } %>
+  </section>
+</div>
+
+<div class="admin-grid">
+  <% modules.forEach(function (m) { %>
+    <a class="admin-card admin-card--link" href="admin/<%= m.key %>">
+      <h2><%= m.label %></h2>
+      <p class="muted small"><%= m.description %></p>
+      <span class="admin-count"><%= stats.counts[m.key] %></span>
+    </a>
+  <% }); %>
+</div>
+
+<section class="admin-card">
+  <h2 data-lk="admin-services-title">Services connectés</h2>
+  <ul class="admin-list">
+    <li><strong>Courriel</strong><span class="pill pill--<%= emailConfigured ? 'ok' : 'wait' %>"><%= emailConfigured ? 'Configuré' : 'À configurer' %></span></li>
+    <li><strong>PayPal</strong><span class="pill pill--<%= paypalConfigured ? 'ok' : 'wait' %>"><%= paypalConfigured ? 'Clés présentes' : 'Clés manquantes' %></span></li>
+    <li><strong>Notifications</strong><span class="muted small"><%= stats.pushSubscriberCount %> abonné(s)</span></li>
+    <li><strong>Comptes clients</strong><span class="muted small"><%= stats.userCount %></span></li>
+  </ul>
+</section>
+
+<%- include('partials/admin-footer') %>

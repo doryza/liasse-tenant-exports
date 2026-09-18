@@ -1,0 +1,213 @@
+<%- include('partials/header') %>
+
+<section class="hero">
+  <div class="hero-media">
+    <img src="<%= settings._p_hero_image_url %>" data-setting-key="_p_hero_image_url" alt="" width="1440" height="651" fetchpriority="high">
+  </div>
+  <div class="wrap">
+    <div class="hero-inner">
+      <p class="eyebrow" data-lk="hero-eyebrow">Mirabel · Rive-Nord de Montréal</p>
+      <h1 data-setting-key="hero_title"><%= settings.hero_title %></h1>
+      <p data-setting-key="hero_subtitle"><%= settings.hero_subtitle %></p>
+      <div class="hero-actions">
+        <a class="button primary" href="<%= bookingUrl || urls.reservation %>"<%= bookingUrl ? ' target="_blank" rel="noopener"' : '' %> data-lk="t:book"><%= t.book %></a>
+        <a class="button ghost" href="<%= urls.boutique %>" data-lk="t:shop"><%= t.shop %></a>
+      </div>
+      <div class="hero-facts">
+        <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span data-lk="hero-fact-1">Massothérapeutes diplômées · reçu d’assurance</span></span>
+        <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span data-lk="hero-fact-2">Massothérapie, esthétique, ongles &amp; boutique</span></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Annie's story -->
+<section class="section">
+  <div class="wrap split">
+    <div>
+      <hr class="hand-rule">
+      <p class="eyebrow" data-lk="home-story-eyebrow">Notre histoire</p>
+      <h2 data-setting-key="story_title"><%= settings.story_title %></h2>
+      <div class="preserve" data-setting-key="story_text"><%= settings.story_text %></div>
+      <p style="margin-top:26px"><a class="button secondary" href="<%= urls.about %>" data-lk="home-story-cta">Découvrir l’équipe</a></p>
+    </div>
+    <figure class="portrait portrait--tall">
+      <img src="<%= settings._p_story_image_url %>" data-setting-key="_p_story_image_url" alt="Annie Bouchard, propriétaire et massothérapeute" width="407" height="898" loading="lazy">
+    </figure>
+  </div>
+</section>
+
+<!-- The four worlds -->
+<section class="section section--paper">
+  <div class="wrap">
+    <div class="section-head section-head--center">
+      <hr class="hand-rule hand-rule--center">
+      <h2 data-lk="home-univers-title">Prendre soin de vous, à votre façon</h2>
+      <p data-lk="home-univers-sub">Quatre univers de soins et une boutique, sous un même toit à Mirabel.</p>
+    </div>
+    <div class="grid grid--3">
+      <a class="card" href="<%= urls.massotherapie %>" style="text-decoration:none">
+        <div class="card-body">
+          <span class="value-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-4.5-7-9.5A4 4 0 0 1 12 9a4 4 0 0 1 7 2.5C19 16.5 12 21 12 21z"/></svg></span>
+          <h3><%= t.massotherapie %></h3>
+          <p class="muted" data-lk="home-univers-masso">Détente, thérapeutique, sportif, femme enceinte, réflexologie, pierres chaudes.</p>
+          <span class="text-button" aria-hidden="true"><%= t.discover %> →</span>
+        </div>
+      </a>
+      <a class="card" href="<%= urls.esthetique %>" style="text-decoration:none">
+        <div class="card-body">
+          <span class="value-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.2 5.6L20 10l-5 3.5 1.6 6L12 16.8 7.4 19.5 9 13.5 4 10l5.8-1.4z"/></svg></span>
+          <h3><%= t.esthetique %></h3>
+          <p class="muted" data-lk="home-univers-esth">Soins du visage, cils, sourcils, madérothérapie et épilation à la cire.</p>
+          <span class="text-button" aria-hidden="true"><%= t.discover %> →</span>
+        </div>
+      </a>
+      <a class="card" href="<%= urls.ongles %>" style="text-decoration:none">
+        <div class="card-body">
+          <span class="value-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="3" width="10" height="18" rx="5"/></svg></span>
+          <h3><%= t.ongles %></h3>
+          <p class="muted" data-lk="home-univers-ongles">Manucure, pédicure, pose d’ongles et formules express.</p>
+          <span class="text-button" aria-hidden="true"><%= t.discover %> →</span>
+        </div>
+      </a>
+      <a class="card" href="<%= urls.corps %>" style="text-decoration:none">
+        <div class="card-body">
+          <span class="value-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 0 1 16 0M4 12a8 8 0 0 0 16 0"/></svg></span>
+          <h3><%= t.corps %></h3>
+          <p class="muted" data-lk="home-univers-corps">Madérothérapie, enveloppements, soins du dos et anti-cellulite.</p>
+          <span class="text-button" aria-hidden="true"><%= t.discover %> →</span>
+        </div>
+      </a>
+      <a class="card" href="<%= urls.boutique %>" style="text-decoration:none">
+        <div class="card-body">
+          <span class="value-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2l1.5 4h13L19 15H8L6 2H3"/><circle cx="9.5" cy="20" r="1.4"/><circle cx="17.5" cy="20" r="1.4"/></svg></span>
+          <h3><%= t.boutique %></h3>
+          <p class="muted" data-lk="home-univers-boutique">Bougies, tisanes, soins et idées cadeaux choisis avec intention.</p>
+          <span class="text-button" aria-hidden="true"><%= t.discover %> →</span>
+        </div>
+      </a>
+      <a class="card" href="<%= urls.location %>" style="text-decoration:none">
+        <div class="card-body">
+          <span class="value-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/></svg></span>
+          <h3><%= t.location %></h3>
+          <p class="muted" data-lk="home-univers-salle">Un espace lumineux pour vos réunions, ateliers et cercles, jusqu’à 15 personnes.</p>
+          <span class="text-button" aria-hidden="true"><%= t.discover %> →</span>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Featured treatments -->
+<% if (featured && featured.length) { %>
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <hr class="hand-rule">
+      <p class="eyebrow" data-lk="home-soins-eyebrow">Soins</p>
+      <h2 data-lk="home-soins-title">Quelques soins pour commencer</h2>
+    </div>
+    <div class="grid grid--3">
+      <% featured.forEach(function (item) { %><%- include('partials/soin', { item: item }) %><% }); %>
+    </div>
+    <p style="margin-top:32px"><a class="button secondary" href="<%= urls.massotherapie %>" data-lk="t:see_services"><%= t.see_services %></a></p>
+  </div>
+</section>
+<% } %>
+
+<!-- Packages -->
+<% if (packages && packages.length) { %>
+<section class="section section--rose">
+  <div class="wrap">
+    <div class="section-head section-head--center">
+      <hr class="hand-rule hand-rule--center">
+      <p class="eyebrow eyebrow--rose" data-lk="home-forfaits-eyebrow">Forfaits</p>
+      <h2 data-lk="home-forfaits-title">Des formules pensées pour revenir</h2>
+      <p data-lk="home-forfaits-sub">Prendre soin de soi une fois, c’est bien. En faire une habitude, c’est mieux.</p>
+    </div>
+    <div class="grid grid--3">
+      <% packages.forEach(function (p) { %>
+        <article class="forfait<%= p.popular ? ' forfait--popular' : '' %>">
+          <% if (p.popular) { %><span class="forfait-flag" data-lk="home-popular">Populaire</span><% } %>
+          <h3><%= field(p, 'name') %></h3>
+          <div class="forfait-price"><%= money(p.price_cents) %></div>
+          <% if (field(p, 'validity')) { %><div class="forfait-validity"><%= field(p, 'validity') %></div><% } %>
+          <% if (field(p, 'summary')) { %><p class="muted small"><%= field(p, 'summary') %></p><% } %>
+          <a class="button rose small" style="margin-top:8px" href="<%= urls.forfaits %>"><%= t.learn_more %></a>
+        </article>
+      <% }); %>
+    </div>
+    <p class="center" style="margin-top:34px"><a class="button secondary" href="<%= urls.forfaits %>" data-lk="home-forfaits-cta">Voir tous les forfaits</a></p>
+  </div>
+</section>
+<% } %>
+
+<!-- Shop -->
+<% if (products && products.length) { %>
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <hr class="hand-rule">
+      <p class="eyebrow" data-lk="home-boutique-eyebrow">Boutique</p>
+      <h2 data-lk="t:featured"><%= t.featured %></h2>
+      <p data-setting-key="local_products_text"><%= settings.local_products_text %></p>
+    </div>
+    <div class="grid grid--4">
+      <% products.forEach(function (item) { %><%- include('partials/produit', { item: item }) %><% }); %>
+    </div>
+    <p style="margin-top:32px"><a class="button secondary" href="<%= urls.boutique %>" data-lk="t:shop"><%= t.shop %></a></p>
+  </div>
+</section>
+<% } %>
+
+<!-- Journal -->
+<% if (posts && posts.length) { %>
+<section class="section section--paper">
+  <div class="wrap">
+    <div class="section-head">
+      <hr class="hand-rule">
+      <p class="eyebrow" data-lk="home-blog-eyebrow">Journal</p>
+      <h2 data-lk="home-blog-title">Mes bien-être</h2>
+    </div>
+    <div class="grid grid--3">
+      <% posts.forEach(function (post) { %>
+        <article class="article-card">
+          <% if (post.image_url) { %>
+            <a class="article-media" href="<%= urls.article %><%= post.slug %>"><img src="<%= post.image_url %>" alt="<%= field(post, 'title') %>" width="600" height="450" loading="lazy"></a>
+          <% } %>
+          <div class="article-body">
+            <% if (post.published_on) { %><span class="article-date"><%= formatDate(post.published_on) %></span><% } %>
+            <h3><a href="<%= urls.article %><%= post.slug %>"><%= field(post, 'title') %></a></h3>
+            <% if (field(post, 'excerpt')) { %><p class="muted small"><%= field(post, 'excerpt') %></p><% } %>
+          </div>
+        </article>
+      <% }); %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<!-- Visit -->
+<section class="section section--sage">
+  <div class="wrap split">
+    <div>
+      <hr class="hand-rule">
+      <h2 data-lk="home-visit-title">Passez nous voir</h2>
+      <p data-setting-key="contact_intro"><%= settings.contact_intro %></p>
+      <ul class="tick-list" style="margin-top:22px">
+        <li data-lk="home-visit-1">Un espace « mode ZEN » où thé et eau citronnée vous attendent</li>
+        <li data-lk="home-visit-2">Boutique ouverte au public pendant nos heures d’ouverture</li>
+        <li data-lk="home-visit-3">Stationnement sur place, à Mirabel</li>
+      </ul>
+      <div class="row" style="margin-top:28px">
+        <a class="button primary" href="<%= bookingUrl || urls.reservation %>"<%= bookingUrl ? ' target="_blank" rel="noopener"' : '' %> data-lk="t:book"><%= t.book %></a>
+        <a class="button ghost" href="<%= urls.contact %>" data-lk="t:contact"><%= t.contact %></a>
+      </div>
+    </div>
+    <figure class="portrait">
+      <img src="<%= settings._p_contact_image_url %>" data-setting-key="_p_contact_image_url" alt="" width="720" height="698" loading="lazy">
+    </figure>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

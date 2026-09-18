@@ -1,0 +1,84 @@
+<%- include('partials/header') %>
+
+<section class="section">
+  <div class="wrap">
+    <nav class="breadcrumb" aria-label="fil d’Ariane" style="margin-bottom:22px"><a href="<%= urls.home %>"><%= t.home %></a> · <a href="<%= urls.boutique %>"><%= t.boutique %></a> · <%= t.cart %></nav>
+    <hr class="hand-rule">
+    <h1><%= t.cart %></h1>
+
+    <div data-cart-empty hidden>
+      <p class="empty">
+        <span data-lk="t:empty_cart"><%= t.empty_cart %></span><br>
+        <a class="button primary small" style="margin-top:18px" href="<%= urls.boutique %>" data-lk="t:shop"><%= t.shop %></a>
+      </p>
+    </div>
+
+    <div class="cart-layout" data-cart-layout hidden>
+      <div>
+        <div class="cart-lines" data-cart-lines></div>
+        <p style="margin-top:22px"><a class="text-button" href="<%= urls.boutique %>" data-lk="t:continue_shopping"><%= t.continue_shopping %></a></p>
+
+        <div class="form-card" style="margin-top:32px">
+          <h2 style="font-size:1.45rem" data-lk="t:your_details"><%= t.your_details %></h2>
+
+          <% if (!flags.privacy) { %>
+            <div class="notice notice--warn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 9v4m0 4h.01M10.3 3.9L2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg><p data-lk="t:privacy_pending"><%= t.privacy_pending %></p></div>
+          <% } else { %>
+            <div class="login-invitation notice notice--info" data-auth-hide>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0"/></svg>
+              <p>
+                <span data-lk="panier-login">Connectez-vous pour finaliser votre commande et la retrouver ensuite dans votre espace.</span><br>
+                <button class="text-button" type="button" data-login-btn style="margin-top:6px"><%= t.login %></button>
+              </p>
+            </div>
+
+            <form data-checkout-form data-auth-only hidden>
+              <div class="form-row">
+                <label class="field"><span><%= t.first_name %> &amp; <%= t.last_name %></span><input name="name" required autocomplete="name" maxlength="120"></label>
+                <label class="field"><span><%= t.email %></span><input name="email" type="email" required autocomplete="email" maxlength="190"></label>
+              </div>
+              <label class="field"><span><%= t.phone %> <span class="hint">(<%= lang === 'en' ? 'optional' : 'facultatif' %>)</span></span><input name="phone" type="tel" autocomplete="tel" maxlength="40"></label>
+
+              <fieldset style="border:0;padding:0;margin:8px 0 4px">
+                <legend class="field" style="font-size:.86rem;font-weight:600;margin-bottom:10px"><%= t.how_to_receive %></legend>
+                <label class="check"><input type="radio" name="fulfilment" value="pickup" checked data-fulfilment><span><strong><%= t.pickup %></strong><br><span class="small muted"><%= t.pickup_help %></span></span></label>
+                <% if (flags.shipping) { %>
+                  <label class="check"><input type="radio" name="fulfilment" value="shipping" data-fulfilment><span><strong><%= t.delivery %></strong><% if (freeShippingThreshold > 0) { %><br><span class="small muted"><%= t.free_shipping_note.replace('{threshold}', money(freeShippingThreshold)) %></span><% } %></span></label>
+                <% } %>
+              </fieldset>
+
+              <div data-shipping-fields hidden>
+                <label class="field"><span><%= t.address %></span><input name="addressLine" autocomplete="address-line1" maxlength="200"></label>
+                <div class="form-row">
+                  <label class="field"><span><%= t.city %></span><input name="addressCity" autocomplete="address-level2" maxlength="120"></label>
+                  <label class="field"><span><%= t.province %></span><input name="addressProvince" autocomplete="address-level1" maxlength="60" value="Québec"></label>
+                  <label class="field"><span><%= t.postal %></span><input name="addressPostal" autocomplete="postal-code" maxlength="12"></label>
+                </div>
+              </div>
+
+              <label class="field"><span><%= t.order_note %></span><textarea name="note" maxlength="1000" style="min-height:96px"></textarea></label>
+
+              <label class="check"><input type="checkbox" name="consent" required><span><%= t.consent %> <a href="<%= urls.privacy %>"><%= t.privacy %></a>.</span></label>
+
+              <p class="small muted" data-checkout-error role="alert" hidden></p>
+              <button class="button primary block" type="submit" data-checkout-submit><%= t.checkout %></button>
+              <% if (!flags.payments) { %>
+                <p class="small muted center" style="margin-top:14px" data-lk="t:payments_closed"><%= t.payments_closed %></p>
+              <% } %>
+            </form>
+          <% } %>
+        </div>
+      </div>
+
+      <aside class="summary">
+        <h2><%= t.total %></h2>
+        <dl data-cart-summary>
+          <dt><%= t.subtotal %></dt><dd data-sum-subtotal>—</dd>
+        </dl>
+        <p class="small muted" data-sum-note hidden></p>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>
