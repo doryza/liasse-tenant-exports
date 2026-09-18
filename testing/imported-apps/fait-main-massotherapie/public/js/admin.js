@@ -20,12 +20,15 @@
 
   // ------------------------------------------------------------- settings
   var status = document.querySelector('[data-settings-status]');
+  // A save that fails must say so where the operator is looking, not only in a
+  // status line parked at the bottom of a long page.
   function saved(message, bad) {
+    if (bad) App.toast(message);
     if (!status) return;
     status.textContent = message;
     status.style.color = bad ? 'var(--rose-deep)' : 'var(--sage-deep)';
     clearTimeout(saved.timer);
-    saved.timer = setTimeout(function () { status.textContent = ''; }, 3000);
+    saved.timer = setTimeout(function () { status.textContent = ''; }, 4000);
   }
   async function putSetting(key, value) {
     try {

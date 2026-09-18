@@ -3,15 +3,27 @@
   if (!node) return;
   var data = JSON.parse(node.textContent);
 
+  /**
+   * The platform deliberately does NOT load its SDK on /admin pages — it would
+   * hijack the admin login form with the consumer OTP modal. So the SDK is used
+   * when it is there (public pages, where it carries the visitor's session) and
+   * a plain same-origin fetch otherwise, where the admin cookie already
+   * authenticates the request. Relative paths resolve against the injected
+   * <base href>, so both branches hit the tenant, not the platform.
+   */
   async function request(path, options) {
     options = options || {};
-    if (!window.TenantSDK) throw new Error(data.t.sdk_missing);
-    await TenantSDK.ready;
     var headers = Object.assign({ 'X-Requested-With': 'liasse' }, options.headers || {});
     if (options.body) headers['Content-Type'] = 'application/json';
+    var url = path + (path.indexOf('?') > -1 ? '&' : '?') + 'lang=' + data.lang;
     var response;
     try {
-      response = await TenantSDK.fetch(path + (path.indexOf('?') > -1 ? '&' : '?') + 'lang=' + data.lang, Object.assign({}, options, { headers: headers }));
+      if (window.TenantSDK) {
+        await TenantSDK.ready;
+        response = await TenantSDK.fetch(url, Object.assign({}, options, { headers: headers }));
+      } else {
+        response = await fetch(url, Object.assign({}, options, { headers: headers, credentials: 'same-origin' }));
+      }
     } catch (e) { throw new Error(data.t.offline); }
     var result;
     try { result = await response.json(); } catch (e) { throw new Error(data.t.server_error); }
