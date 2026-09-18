@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+<head>
+<meta charset="utf-8">
+<base href="<%= tenantBase %>">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#2858ef">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="description" content="<%= description %>">
+<title><%= title %> — <%= settings.business_name || 'Kilowatt Services' %></title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="public/icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="public/css/styles.css">
+<% if (typeof isAdminPage !== 'undefined' && isAdminPage) { %><link rel="stylesheet" href="public/css/admin-styles.css"><% } %>
+<script>window.KW=<%- JSON.stringify({t,lang,paths:typeof paths !== 'undefined' ? paths : {}}).replace(/</g,'\\u003c') %>;</script>
+</head>
+<body class="<%= isAdminPage ? 'admin-site' : 'public-site' %>">
+<a class="skip" href="<%= link(page) %>#main" data-lk="t:skip"><%= t.skip %></a>
+<header class="site-header wrap">
+<a class="logo" href="<%= link('home') %>" aria-label="<%= settings.business_name || t.home %>"><img src="<%= (typeof settings!=='undefined' && settings._p_nav_logo_url) ? settings._p_nav_logo_url : (appIconUrl || '') %>" data-setting-key="_p_nav_logo_url" alt="Logo"></a>
+<button class="menu-toggle" id="menu-toggle" aria-label="Menu" aria-controls="site-nav" aria-expanded="false" data-lk="t:menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h18M3 12h18M3 17h18"/></svg><span><%= t.menu %></span></button>
+<nav id="site-nav" class="site-nav" aria-label="<%= t.menu %>">
+<a href="<%= link('services') %>" data-lk="t:services" <%= page === 'services' ? 'aria-current=page' : '' %>><%= t.services %></a>
+<a href="<%= link('quote') %>" data-lk="t:quote" <%= page === 'quote' ? 'aria-current=page' : '' %>><%= t.quote %></a>
+<a href="<%= link('contact') %>" data-lk="t:contact" <%= page === 'contact' ? 'aria-current=page' : '' %>><%= t.contact %></a>
+<div class="languages"><a href="<%= switchFr %>" lang="fr" aria-current="<%= lang === 'fr' ? 'true' : 'false' %>" data-lk="nav-fr">FR</a><span aria-hidden="true">|</span><a href="<%= switchEn %>" lang="en" aria-current="<%= lang === 'en' ? 'true' : 'false' %>" data-lk="nav-en">EN</a></div>
+<button class="nav-login" data-login-btn data-lk="t:login"><%= t.login %></button>
+<a href="<%= link('account') %>" data-auth-only style="display:none" data-lk="t:account"><%= t.account %></a>
+<a class="button button-white nav-book" href="<%= link('appointment') %>" data-lk="t:book"><%= t.book %></a>
+</nav>
+</header>
+<script src="public/js/navigation.js" defer></script>

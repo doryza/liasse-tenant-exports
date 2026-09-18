@@ -1,0 +1,8 @@
+<% const installContact = department === 'installation'; const nameKey = installContact ? 'installation_name' : 'service_name'; const phoneKey = installContact ? 'installation_phone' : 'contact_phone'; const emailKey = installContact ? 'installation_email' : 'contact_email'; const contactPhone = settings[phoneKey] || ''; const contactEmail = settings[emailKey] || ''; %>
+<div class="contact-block">
+<h3 data-lk="t:<%= installContact ? 'installationDept' : 'serviceDept' %>"><%= installContact ? t.installationDept : t.serviceDept %></h3>
+<p data-setting-key="<%= nameKey %>"><%= settings[nameKey] || (installContact ? t.installationRole : t.serviceDept) %></p>
+<% if (contactPhone) { %><a class="contact-phone" href="tel:<%= contactPhone.replace(/[^+0-9]/g,'') %>" data-setting-key="<%= phoneKey %>"><%= contactPhone %></a><% } %>
+<% if (contactEmail) { %><a class="contact-email" href="mailto:<%= contactEmail %>" data-setting-key="<%= emailKey %>"><%= contactEmail %></a><% } %>
+<% if (!contactPhone && !contactEmail) { %><p class="muted small" data-lk="t:contactMissing"><%= t.contactMissing %></p><% } %>
+</div>

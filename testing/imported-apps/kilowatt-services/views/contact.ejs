@@ -1,0 +1,7 @@
+<%- include('partials/header') %>
+<main id="main" class="wrap">
+<header class="page-intro"><h1 data-lk="t:contactTitle"><%= t.contactTitle %></h1><p class="lead" data-lk="t:contactIntro"><%= t.contactIntro %></p></header>
+<div class="contact-spread"><section><%- include('partials/contact-block',{department:'installation'}) %><p data-lk="t:proofQuote"><%= t.proofQuote %></p><a class="button button-brand" href="<%= link('quote') %>" data-lk="t:askQuote"><%= t.askQuote %></a></section><section><%- include('partials/contact-block',{department:'service'}) %><p class="small" data-lk="t:president"><%= t.president %></p><p data-lk="t:contactServiceBody"><%= t.contactServiceBody %></p><a class="button button-white" href="<%= link('appointment') %>" data-lk="t:book"><%= t.book %></a></section></div>
+<section class="area section"><h2 data-lk="t:areaTitle"><%= t.areaTitle %></h2><p data-lk="t:areaBody"><%= t.areaBody %></p><% if (settings.business_address) { %><p data-setting-key="business_address"><%= settings.business_address %></p><% } %></section>
+</main>
+<%- include('partials/footer') %>

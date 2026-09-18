@@ -1,0 +1,3 @@
+<%- include('partials/header') %>
+<main id="main" class="wrap page-intro"><h1 data-lk="t:retry"><%= t.retry %></h1><p data-lk="t:serverError"><%= typeof errorMessage !== 'undefined' && errorMessage ? errorMessage : t.serverError %></p><a class="button button-white" href="<%= link('home') %>" data-lk="t:home"><%= t.home %></a><a class="button button-outline" href="<%= link('contact') %>" data-lk="t:contact"><%= t.contact %></a></main>
+<%- include('partials/footer') %>

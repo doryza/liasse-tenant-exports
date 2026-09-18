@@ -1,0 +1,440 @@
+{
+  "exportedAt": "2026-09-18T00:10:22.237Z",
+  "tables": {
+    "admin_invites": {
+      "columns": [
+        "id",
+        "email",
+        "token",
+        "role",
+        "status",
+        "invited_by",
+        "expires_at",
+        "accepted_at",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_users": {
+      "columns": [
+        "id",
+        "name",
+        "email",
+        "password_hash",
+        "display_name",
+        "role",
+        "active",
+        "activation_token",
+        "invited_by",
+        "invite_token",
+        "invite_expires_at",
+        "last_login_at",
+        "is_active",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_webauthn_credentials": {
+      "columns": [
+        "id",
+        "admin_user_id",
+        "credential_id",
+        "public_key",
+        "counter",
+        "device_name",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "admin_settings": {
+      "columns": [
+        "key",
+        "value",
+        "updated_at"
+      ],
+      "totalRows": 19,
+      "sampleRows": [
+        {
+          "key": "business_name",
+          "value": "Kilowatt Services",
+          "updated_at": "2026-09-18T00:10:05.348Z"
+        },
+        {
+          "key": "installation_name",
+          "value": "Jason",
+          "updated_at": "2026-09-18T00:10:05.355Z"
+        },
+        {
+          "key": "installation_email",
+          "value": "",
+          "updated_at": "2026-09-18T00:10:05.362Z"
+        },
+        {
+          "key": "installation_phone",
+          "value": "",
+          "updated_at": "2026-09-18T00:10:05.370Z"
+        },
+        {
+          "key": "service_name",
+          "value": "Benoit Lefebvre",
+          "updated_at": "2026-09-18T00:10:05.376Z"
+        },
+        {
+          "key": "mail_delivery_enabled",
+          "value": "false",
+          "updated_at": "2026-09-18T00:10:05.384Z"
+        },
+        {
+          "key": "_p_nav_logo_url",
+          "value": "https://pub-007338adea45415ba231abbf2404da85.r2.dev/website-imports/70550455-f018-4944-82df-6ca4690e26fe/3a1fcdb26f086a5fc6ad5069e0226dad61d4b1bdbc684ba4de476b4a7338c6ec.webp",
+          "updated_at": "2026-09-18T00:10:05.392Z"
+        },
+        {
+          "key": "_seed_version",
+          "value": "360af3c3c6c2",
+          "updated_at": "2026-09-18T00:10:05.629Z"
+        },
+        {
+          "key": "_seeded_at",
+          "value": "2026-09-18 00:10:05.638431+00",
+          "updated_at": "2026-09-18T00:10:05.638Z"
+        },
+        {
+          "key": "_p_seo_og_image_url",
+          "value": "https://res.cloudinary.com/duhp69meg/image/upload/c_fill,g_auto,w_1200,h_630,f_jpg,q_auto:good/v1789677919/tapavis_tenant_kilowatt-services/build_kilowatt-services_b5feee7e-78e1-4ec5-9094-68439302e28e.jpg",
+          "updated_at": "2026-09-18T00:10:05.888Z"
+        }
+      ]
+    },
+    "site_visits": {
+      "columns": [
+        "id",
+        "path",
+        "created_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    },
+    "posts": {
+      "columns": [
+        "id",
+        "title",
+        "content",
+        "image_url",
+        "category",
+        "published",
+        "title_en",
+        "content_en",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Préparer votre demande d’installation",
+          "content": "Précisez la municipalité, le type de bâtiment et les besoins à discuter lors de la soumission sur place.",
+          "image_url": null,
+          "category": "Installation",
+          "published": 0,
+          "title_en": "Prepare your installation request",
+          "content_en": "Share your municipality, building type and the needs to discuss during the on-site quote.",
+          "created_at": "2026-09-18T00:10:05.520Z",
+          "updated_at": "2026-09-18T00:10:05.520Z"
+        },
+        {
+          "id": 2,
+          "title": "Planifier l’entretien annuel",
+          "content": "Communiquez le modèle de votre génératrice et le motif de votre demande pour préparer le suivi.",
+          "image_url": null,
+          "category": "Entretien",
+          "published": 0,
+          "title_en": "Plan annual maintenance",
+          "content_en": "Share your generator model and the reason for your request to prepare for follow-up.",
+          "created_at": "2026-09-18T00:10:05.529Z",
+          "updated_at": "2026-09-18T00:10:05.529Z"
+        },
+        {
+          "id": 3,
+          "title": "Un projet coordonné",
+          "content": "L’installation réunit plusieurs intervenants. Notre approche clé en main facilite cette coordination.",
+          "image_url": null,
+          "category": "Installation",
+          "published": 0,
+          "title_en": "A coordinated project",
+          "content_en": "Installation involves several specialists. Our turnkey approach helps coordinate their work.",
+          "created_at": "2026-09-18T00:10:05.536Z",
+          "updated_at": "2026-09-18T00:10:05.536Z"
+        },
+        {
+          "id": 4,
+          "title": "Demander une pièce",
+          "content": "Le modèle et le numéro de série aident l’équipe à examiner votre demande de pièces. La disponibilité doit être confirmée.",
+          "image_url": null,
+          "category": "Pièces",
+          "published": 0,
+          "title_en": "Request a part",
+          "content_en": "The model and serial number help our team review a parts request. Availability must be confirmed.",
+          "created_at": "2026-09-18T00:10:05.544Z",
+          "updated_at": "2026-09-18T00:10:05.544Z"
+        }
+      ]
+    },
+    "services": {
+      "columns": [
+        "id",
+        "title",
+        "title_en",
+        "content",
+        "content_en",
+        "anchor",
+        "action",
+        "position",
+        "published",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 5,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Évaluer et choisir",
+          "title_en": "Assess and choose",
+          "content": "Une soumission sur place sans frais permet de préciser les besoins de votre résidence ou de votre entreprise. Nous proposons la génératrice stationnaire et l’inverseur automatique adaptés au projet.",
+          "content_en": "A no-charge on-site quote helps establish what your home or business needs. We help select a standby generator and automatic transfer switch suited to your project.",
+          "anchor": "sale",
+          "action": "quote",
+          "position": 1,
+          "published": 1,
+          "image_url": null,
+          "created_at": "2026-09-18T00:10:05.400Z",
+          "updated_at": "2026-09-18T00:10:05.400Z"
+        },
+        {
+          "id": 2,
+          "title": "Installer, du début à la mise en service",
+          "title_en": "Install, from planning to commissioning",
+          "content": "Nous coordonnons les intervenants électriques et les fournisseurs et techniciens en gaz, puis la mise en service de la génératrice. Une installation en une journée peut être réalisable selon le projet; cette possibilité se confirme lors de l’évaluation.",
+          "content_en": "We coordinate electrical contractors, gas suppliers and gas technicians, followed by generator commissioning. A one-day installation may be possible for some projects; this is confirmed during the assessment.",
+          "anchor": "installation",
+          "action": "quote",
+          "position": 2,
+          "published": 1,
+          "image_url": null,
+          "created_at": "2026-09-18T00:10:05.408Z",
+          "updated_at": "2026-09-18T00:10:05.408Z"
+        },
+        {
+          "id": 3,
+          "title": "Entretenir et remettre en marche",
+          "title_en": "Maintain and start up",
+          "content": "Confiez l’entretien annuel et la mise en marche à des techniciens certifiés Generac. Décrivez votre équipement et votre besoin pour organiser la prochaine intervention.",
+          "content_en": "Arrange annual maintenance and startup with Generac-certified technicians. Tell us about your equipment and what you need to plan the next visit.",
+          "anchor": "maintenance",
+          "action": "maintenance",
+          "position": 3,
+          "published": 1,
+          "image_url": null,
+          "created_at": "2026-09-18T00:10:05.421Z",
+          "updated_at": "2026-09-18T00:10:05.421Z"
+        },
+        {
+          "id": 4,
+          "title": "Réparer et accompagner la garantie",
+          "title_en": "Repair and support warranty service",
+          "content": "Nous offrons les réparations, le soutien après-vente et le service sous garantie. L’admissibilité et les conditions applicables doivent être vérifiées selon votre appareil et sa couverture.",
+          "content_en": "We provide repairs, after-sales support and warranty service. Eligibility and applicable conditions must be checked for your equipment and its coverage.",
+          "anchor": "repair",
+          "action": "repair",
+          "position": 4,
+          "published": 1,
+          "image_url": null,
+          "created_at": "2026-09-18T00:10:05.430Z",
+          "updated_at": "2026-09-18T00:10:05.430Z"
+        },
+        {
+          "id": 5,
+          "title": "Trouver les pièces nécessaires",
+          "title_en": "Find the parts you need",
+          "content": "Nous vendons des pièces pour répondre aux besoins d’entretien et de réparation. Indiquez le modèle et, si possible, le numéro de série; la disponibilité sera confirmée par l’équipe.",
+          "content_en": "We sell parts for maintenance and repair needs. Share the model and, if available, the serial number; our team will confirm availability.",
+          "anchor": "parts",
+          "action": "parts",
+          "position": 5,
+          "published": 1,
+          "image_url": null,
+          "created_at": "2026-09-18T00:10:05.437Z",
+          "updated_at": "2026-09-18T00:10:05.437Z"
+        }
+      ]
+    },
+    "steps": {
+      "columns": [
+        "id",
+        "title",
+        "title_en",
+        "content",
+        "content_en",
+        "target",
+        "position",
+        "published",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Évaluer sur place",
+          "title_en": "Assess on site",
+          "content": "Nous précisons les besoins et le choix de l’équipement avec vous. La soumission sur place est sans frais.",
+          "content_en": "We discuss your needs and equipment options with you. The on-site quote is provided at no charge.",
+          "target": "sale",
+          "position": 1,
+          "published": 1,
+          "image_url": null,
+          "created_at": "2026-09-18T00:10:05.447Z",
+          "updated_at": "2026-09-18T00:10:05.447Z"
+        },
+        {
+          "id": 2,
+          "title": "Coordonner les intervenants",
+          "title_en": "Coordinate the work",
+          "content": "Électricien, alimentation en gaz et technicien : nous réunissons les intervenants du projet. Vous gardez un seul point de contact.",
+          "content_en": "Electrical work, gas supply and technicians: we bring the project’s specialists together. You keep one point of contact.",
+          "target": "installation",
+          "position": 2,
+          "published": 1,
+          "image_url": null,
+          "created_at": "2026-09-18T00:10:05.455Z",
+          "updated_at": "2026-09-18T00:10:05.455Z"
+        },
+        {
+          "id": 3,
+          "title": "Installer et mettre en service",
+          "title_en": "Install and commission",
+          "content": "Nous prenons en charge l’installation complète et la mise en service. Le déroulement est établi selon les besoins du chantier.",
+          "content_en": "We handle complete installation and commissioning. The work is planned around your project’s requirements.",
+          "target": "installation",
+          "position": 3,
+          "published": 1,
+          "image_url": null,
+          "created_at": "2026-09-18T00:10:05.463Z",
+          "updated_at": "2026-09-18T00:10:05.463Z"
+        },
+        {
+          "id": 4,
+          "title": "Assurer le suivi",
+          "title_en": "Provide ongoing support",
+          "content": "Entretien annuel, réparations, garantie et pièces : le suivi continue après l’installation. Faites-nous part du besoin de votre génératrice.",
+          "content_en": "Annual maintenance, repairs, warranty service and parts: support continues after installation. Let us know what your generator needs.",
+          "target": "maintenance",
+          "position": 4,
+          "published": 1,
+          "image_url": null,
+          "created_at": "2026-09-18T00:10:05.469Z",
+          "updated_at": "2026-09-18T00:10:05.469Z"
+        }
+      ]
+    },
+    "faqs": {
+      "columns": [
+        "id",
+        "title",
+        "title_en",
+        "content",
+        "content_en",
+        "position",
+        "published",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 4,
+      "sampleRows": [
+        {
+          "id": 1,
+          "title": "Offrez-vous du financement ?",
+          "title_en": "Is financing available?",
+          "content": "Oui, le financement est offert. Demandez les modalités applicables à votre projet; aucun taux n’est présenté ici.",
+          "content_en": "Yes, financing is available. Ask about the terms for your project; no rates are quoted here.",
+          "position": 1,
+          "published": 1,
+          "image_url": null,
+          "created_at": "2026-09-18T00:10:05.477Z",
+          "updated_at": "2026-09-18T00:10:05.477Z"
+        },
+        {
+          "id": 2,
+          "title": "L’installation se fait-elle en une journée ?",
+          "title_en": "Can installation take one day?",
+          "content": "Cette possibilité existe selon le projet. La durée et les conditions de réalisation sont à confirmer lors de l’évaluation, et non garanties pour chaque installation.",
+          "content_en": "This may be possible depending on the project. The duration and requirements are confirmed during the assessment, not guaranteed for every installation.",
+          "position": 2,
+          "published": 1,
+          "image_url": null,
+          "created_at": "2026-09-18T00:10:05.485Z",
+          "updated_at": "2026-09-18T00:10:05.485Z"
+        },
+        {
+          "id": 3,
+          "title": "Dois-je trouver l’électricien et le fournisseur de gaz ?",
+          "title_en": "Do I need to find an electrician and gas supplier?",
+          "content": "Nous coordonnons les intervenants nécessaires aux raccordements électriques, à l’alimentation en gaz et à la mise en service.",
+          "content_en": "We coordinate the specialists needed for electrical connections, gas supply and commissioning.",
+          "position": 3,
+          "published": 1,
+          "image_url": null,
+          "created_at": "2026-09-18T00:10:05.495Z",
+          "updated_at": "2026-09-18T00:10:05.495Z"
+        },
+        {
+          "id": 4,
+          "title": "Intervenez-vous au résidentiel et au commercial ?",
+          "title_en": "Do you serve homes and businesses?",
+          "content": "Oui. Nous accompagnons les clients résidentiels et commerciaux dans les Laurentides, selon les besoins de leur projet.",
+          "content_en": "Yes. We support residential and commercial customers in the Laurentians according to their project needs.",
+          "position": 4,
+          "published": 1,
+          "image_url": null,
+          "created_at": "2026-09-18T00:10:05.505Z",
+          "updated_at": "2026-09-18T00:10:05.505Z"
+        }
+      ]
+    },
+    "requests": {
+      "columns": [
+        "id",
+        "request_key",
+        "reference",
+        "user_id",
+        "kind",
+        "name",
+        "email",
+        "phone",
+        "municipality",
+        "customer_type",
+        "reason",
+        "requested_date",
+        "preferred_period",
+        "model",
+        "serial_number",
+        "message",
+        "language",
+        "status",
+        "email_status",
+        "internal_notes",
+        "image_url",
+        "created_at",
+        "updated_at"
+      ],
+      "totalRows": 0,
+      "sampleRows": []
+    }
+  }
+}

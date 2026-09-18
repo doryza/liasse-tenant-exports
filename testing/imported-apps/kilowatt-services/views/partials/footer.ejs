@@ -1,0 +1,8 @@
+<footer class="site-footer">
+<div class="wrap footer-top"><div><p class="footer-brand" data-setting-key="business_name"><%= settings.business_name || 'Kilowatt Services' %></p><p data-lk="t:footerLine"><%= t.footerLine %></p><p class="muted" data-lk="t:territory"><%= t.territory %></p></div><div><%- include('contact-block',{department:'installation'}) %></div><div><%- include('contact-block',{department:'service'}) %></div></div>
+<div class="wrap footer-bottom"><nav aria-label="<%= t.menu %>"><a href="<%= link('home') %>" data-lk="t:home"><%= t.home %></a><a href="<%= link('services') %>" data-lk="t:services"><%= t.services %></a><a href="<%= link('quote') %>" data-lk="t:quote"><%= t.quote %></a><a href="<%= link('appointment') %>" data-lk="t:appointment"><%= t.appointment %></a><a href="<%= link('contact') %>" data-lk="t:contact"><%= t.contact %></a><a href="<%= link('privacy') %>" data-lk="t:privacy"><%= t.privacy %></a><a href="admin" data-lk="t:adminLink"><%= t.adminLink %></a></nav><button class="text-button" data-push-btn data-lk="t:notifications"><%= t.notifications %></button></div>
+</footer>
+<% if (!isAdminPage) { %><nav class="mobile-actions" aria-label="<%= t.menu %>"><a href="<%= link('quote') %>" data-lk="t:quote"><%= t.quote %></a><a href="<%= link('appointment') %>" data-lk="t:appointment"><%= t.appointment %></a></nav><% } %>
+<script src="public/js/app.js" defer></script>
+</body>
+</html>
