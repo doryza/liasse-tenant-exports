@@ -1,0 +1,88 @@
+<%
+  var pageData = { account: account ? { vehicles: account.vehicles, profile: account.profile } : null };
+  var scripts = ['account'];
+%>
+<%- include('partials/header', { pageData: pageData, scripts: scripts }) %>
+<section class="page-head">
+  <div class="wrap">
+    <div class="crumbs"><a href="<%= urls.home %>"><%= t.home %></a> / <%= t.account %></div>
+    <h1><%= account && account.profile.first_name ? fmt(t.hello, { name: account.profile.first_name }) : t.sign_in_title %></h1>
+    <% if (account) { %><p><%= account.email || account.phone %></p><% } %>
+  </div>
+</section>
+
+<section class="order-page">
+  <div class="wrap">
+  <% if (!account) { %>
+    <div class="sheet signin">
+      <h2 class="h2"><%= t.sign_in_title %></h2>
+      <p class="muted"><%= t.sign_in_help %></p>
+      <p style="margin-top:22px"><button class="btn btn-neon" type="button" data-login-btn><%- include('partials/icon', { name: 'user' }) %><%= t.login %></button></p>
+      <p class="small muted" style="margin-top:18px"><%= t.sign_in_to_book_help %></p>
+    </div>
+  <% } else { %>
+    <div class="acct">
+      <div>
+        <div class="section-head" style="margin-bottom:16px"><h2 class="h2" style="font-size:34px"><%= t.upcoming %></h2><a class="btn btn-neon btn-sm" href="<%= urls.booking %>"><%= t.book_cta %></a></div>
+        <% if (!account.upcoming.length) { %><div class="panel"><p class="muted" style="margin:0"><%= t.no_upcoming %></p></div><% } %>
+        <% account.upcoming.forEach(function (a) { %>
+          <a class="appt-card" href="<%= urls.appointment %><%= a.reference %>/">
+            <span class="stamp stamp-<%= a.status %>"><%= t['status_' + a.status] %></span>
+            <span class="ref"><%= a.reference %><%= a.preview ? ' · ' + (lang === 'en' ? 'PREVIEW' : 'APERÇU') : '' %></span>
+            <h3><%= formatDateTime(a.start_at) %></h3>
+            <p><%= a.vehicle_label %> — <%= a.service_names %></p>
+          </a>
+        <% }); %>
+        <% if (account.past.length) { %>
+          <h2 class="h2" style="font-size:34px;margin:34px 0 16px"><%= t.past %></h2>
+          <% account.past.slice(0, 20).forEach(function (a) { %>
+            <a class="appt-card" href="<%= urls.appointment %><%= a.reference %>/" style="opacity:.85">
+              <span class="stamp stamp-<%= a.status %>"><%= t['status_' + a.status] %></span>
+              <span class="ref"><%= a.reference %></span>
+              <h3><%= formatDate(a.start_at) %></h3>
+              <p><%= a.vehicle_label %> — <%= a.service_names %></p>
+            </a>
+          <% }); %>
+        <% } %>
+      </div>
+
+      <aside>
+        <div class="panel">
+          <h2><%= t.my_vehicles %></h2>
+          <div data-vehicles></div>
+          <details style="margin-top:12px" data-add-vehicle>
+            <summary class="text-link" style="list-style:none;cursor:pointer">+ <%= t.add_vehicle %></summary>
+            <form data-vehicle-form style="margin-top:12px" novalidate>
+              <div class="grid-2">
+                <label class="field"><span><%= t.year %></span><input name="year" inputmode="numeric" maxlength="4"></label>
+                <label class="field"><span><%= t.make %></span><input name="make" maxlength="60"></label>
+              </div>
+              <div class="grid-2">
+                <label class="field"><span><%= t.model %></span><input name="model" maxlength="80"></label>
+                <label class="field"><span><%= t.odometer %></span><input name="odometer_km" inputmode="numeric" maxlength="7"></label>
+              </div>
+              <label class="field"><span><%= t.vin %></span><input name="vin" maxlength="17" style="text-transform:uppercase"></label>
+              <button class="btn btn-ink btn-sm" type="submit"><%= t.save %></button>
+            </form>
+          </details>
+        </div>
+
+        <form class="panel" data-profile-form novalidate>
+          <h2><%= t.profile %></h2>
+          <label class="field"><span><%= t.first_name %></span><input name="first_name" value="<%= account.profile.first_name || '' %>" maxlength="60"></label>
+          <label class="field"><span><%= t.last_name %></span><input name="last_name" value="<%= account.profile.last_name || '' %>" maxlength="60"></label>
+          <label class="field"><span><%= t.contact_phone %></span><input name="phone" type="tel" value="<%= account.profile.phone || '' %>" maxlength="40"></label>
+          <button class="btn btn-ink btn-sm" type="submit"><%= t.save %></button>
+        </form>
+
+        <div class="panel">
+          <h2><%= t.notifications %></h2>
+          <button class="btn btn-ghost btn-sm" type="button" data-push-btn><%= t.push_optin %></button>
+          <p style="margin:18px 0 0"><button class="text-link" type="button" data-logout><%= t.logout %></button></p>
+        </div>
+      </aside>
+    </div>
+  <% } %>
+  </div>
+</section>
+<%- include('partials/footer', { pageData: pageData, scripts: scripts }) %>

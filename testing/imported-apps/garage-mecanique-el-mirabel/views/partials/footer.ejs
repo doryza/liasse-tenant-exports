@@ -1,0 +1,48 @@
+</main>
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <img class="foot-logo" src="<%= assets.logo.replace('/upload/', '/upload/w_480,f_auto,q_auto/') %>" alt="<%= settings.business_name %>" loading="lazy" width="220" height="147">
+        <p style="margin:0;max-width:34ch"><%= settings.service_areas %></p>
+      </div>
+      <div>
+        <h3><%= t.hours %></h3>
+        <ul>
+          <% (hours || []).forEach(function (h) { %>
+            <li><%= t['day' + h.weekday] %> · <%= h.closed ? t.closed : (clock(h.opens) + ' – ' + clock(h.closes)) %></li>
+          <% }); %>
+        </ul>
+      </div>
+      <div>
+        <h3><%= t.contact %></h3>
+        <ul>
+          <li><a href="<%= phoneHref %>"><%= settings.contact_phone %></a></li>
+          <li><a href="<%= directionsHref %>" target="_blank" rel="noopener"><%= settings.business_address %></a></li>
+          <li><%= t.payment_methods %> : <%= settings.payment_methods %></li>
+        </ul>
+      </div>
+      <div>
+        <h3><%= t.services %></h3>
+        <ul>
+          <% (navServices || []).slice(0, 7).forEach(function (s) { %><li><a href="<%= urls.service %><%= s.slug %>/"><%= field(s, 'name') %></a></li><% }); %>
+          <li><a href="<%= urls.services %>"><%= t.all_services %></a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© <%= currentYear %> <%= settings.business_name %> · <a href="<%= urls.privacy %>"><%= t.privacy %></a></span>
+      <span><%= t.cookies %></span>
+    </div>
+  </div>
+</footer>
+<nav class="callbar" aria-label="<%= t.book_cta %>">
+  <a class="btn btn-line" href="<%= phoneHref %>"><%- include('icon', { name: 'phone' }) %><%= t.call %></a>
+  <a class="btn btn-neon" href="<%= urls.booking %>"><%= t.booking %></a>
+</nav>
+<div class="toast" data-toast role="status" aria-live="polite" hidden></div>
+<script id="page-data" type="application/json"><%- safeJSON(Object.assign({ t: t, lang: lang, urls: urls, page: page, flags: flags, phone: settings.contact_phone }, typeof pageData !== 'undefined' ? pageData : {})) %></script>
+<script src="public/js/app.js"></script>
+<% (typeof scripts !== 'undefined' ? scripts : []).forEach(function (s) { %><script src="public/js/<%= s %>.js"></script><% }); %>
+</body>
+</html>

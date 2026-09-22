@@ -1,0 +1,63 @@
+<%- include('partials/admin-shell', { adminSection: 'settings', adminTitle: lang === 'en' ? 'Settings' : 'Réglages' }) %>
+
+<section class="admin-card">
+  <h2><%= lang === 'en' ? 'What the site is allowed to do' : 'Ce que le site est autorisé à faire' %></h2>
+  <p class="muted small"><%= lang === 'en' ? 'Each switch turns on something that speaks for you. While it is off, the site stays careful: booking runs in preview mode and nothing is sent.' : 'Chaque interrupteur active quelque chose qui parle en votre nom. Tant qu’il est fermé, le site reste prudent : la réservation fonctionne en mode aperçu et rien n’est envoyé.' %></p>
+  <div class="admin-toggles">
+    <% settingsFields.forEach(function (field) { %>
+      <label class="admin-toggle">
+        <input type="checkbox" data-setting-toggle="<%= field.name %>" <%= rawSettings[field.name] === '1' ? 'checked' : '' %>>
+        <span><strong><%= field.label %></strong><span class="muted small"><%= field.description %></span></span>
+      </label>
+    <% }); %>
+  </div>
+</section>
+
+<section class="admin-card">
+  <h2><%= lang === 'en' ? 'Booking rules' : 'Règles de réservation' %></h2>
+  <div class="admin-fields">
+    <% bookingFields.forEach(function (f) { %>
+      <label class="field"><span><%= f.label %></span><input data-setting="<%= f.name %>" inputmode="numeric" value="<%= rawSettings[f.name] != null && rawSettings[f.name] !== '' ? rawSettings[f.name] : f.fallback %>"><% if (f.hint) { %><span class="hint"><%= f.hint %></span><% } %></label>
+    <% }); %>
+  </div>
+</section>
+
+<section class="admin-card">
+  <h2><%= lang === 'en' ? 'Contact details' : 'Coordonnées' %></h2>
+  <div class="admin-fields">
+    <label class="field"><span><%= lang === 'en' ? 'Business name' : 'Nom de l’entreprise' %></span><input data-setting="business_name" value="<%= rawSettings.business_name || '' %>" maxlength="200"></label>
+    <label class="field"><span><%= lang === 'en' ? 'Phone' : 'Téléphone' %></span><input data-setting="contact_phone" value="<%= rawSettings.contact_phone || '' %>" maxlength="40"></label>
+    <label class="field"><span><%= lang === 'en' ? 'Address' : 'Adresse' %></span><input data-setting="business_address" value="<%= rawSettings.business_address || '' %>" maxlength="240"></label>
+    <label class="field"><span><%= lang === 'en' ? 'Where new bookings are emailed' : 'Courriel qui reçoit les nouveaux rendez-vous' %></span><input data-setting="notification_email" type="email" value="<%= rawSettings.notification_email || '' %>" maxlength="190"><span class="hint"><%= lang === 'en' ? 'Leave empty to use your Liasse account email.' : 'Laissez vide pour utiliser le courriel de votre compte Liasse.' %></span></label>
+  </div>
+  <div class="admin-fields admin-fields--wide">
+    <% [['payment_methods', lang === 'en' ? 'Payment accepted' : 'Paiement accepté'], ['service_areas', lang === 'en' ? 'Areas served' : 'Secteurs desservis']].forEach(function (k) { %>
+      <label class="field"><span><%= k[1] %> — <%= lang === 'en' ? 'French' : 'français' %></span><textarea data-setting-json="<%= k[0] %>" data-lang="fr" rows="2"><%= jsonField(rawSettings[k[0]], 'fr') %></textarea></label>
+      <label class="field"><span><%= k[1] %> — <%= lang === 'en' ? 'English' : 'anglais' %></span><textarea data-setting-json="<%= k[0] %>" data-lang="en" rows="2"><%= jsonField(rawSettings[k[0]], 'en') %></textarea></label>
+    <% }); %>
+  </div>
+</section>
+
+<section class="admin-card">
+  <h2><%= lang === 'en' ? 'Privacy notice' : 'Avis de confidentialité' %></h2>
+  <p class="muted small"><%= lang === 'en' ? 'Required by Québec’s Law 25 before collecting personal information. Complete the name of the person responsible, remove the DRAFT line, then approve it above.' : 'Exigé par la Loi 25 avant de recueillir des renseignements personnels. Complétez le nom du responsable, retirez la ligne BROUILLON, puis approuvez-le plus haut.' %></p>
+  <div class="admin-fields admin-fields--wide">
+    <label class="field"><span><%= lang === 'en' ? 'French' : 'Français' %></span><textarea data-setting-json="privacy_notice" data-lang="fr" rows="10"><%= jsonField(rawSettings.privacy_notice, 'fr') %></textarea></label>
+    <label class="field"><span><%= lang === 'en' ? 'English' : 'Anglais' %></span><textarea data-setting-json="privacy_notice" data-lang="en" rows="10"><%= jsonField(rawSettings.privacy_notice, 'en') %></textarea></label>
+  </div>
+</section>
+
+<section class="admin-card">
+  <h2><%= lang === 'en' ? 'Site texts' : 'Textes du site' %></h2>
+  <p class="muted small"><%= lang === 'en' ? 'You can also edit texts directly on the site from your Liasse dashboard.' : 'Vous pouvez aussi modifier les textes directement sur le site depuis votre tableau de bord Liasse.' %></p>
+  <div class="admin-fields admin-fields--wide">
+    <% ['hero_title', 'hero_subtitle', 'how_1', 'how_2', 'how_3', 'how_4', 'about_text', 'contact_intro'].forEach(function (key) { %>
+      <label class="field"><span><%= key.replace(/_/g, ' ') %> — <%= lang === 'en' ? 'French' : 'français' %></span><textarea data-setting-json="<%= key %>" data-lang="fr" rows="3"><%= jsonField(rawSettings[key], 'fr') %></textarea></label>
+      <label class="field"><span><%= key.replace(/_/g, ' ') %> — <%= lang === 'en' ? 'English' : 'anglais' %></span><textarea data-setting-json="<%= key %>" data-lang="en" rows="3"><%= jsonField(rawSettings[key], 'en') %></textarea></label>
+    <% }); %>
+  </div>
+</section>
+
+<p class="admin-save-bar"><span class="small muted" data-settings-status role="status"></span></p>
+
+<%- include('partials/admin-footer') %>
