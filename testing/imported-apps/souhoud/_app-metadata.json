@@ -1,0 +1,44 @@
+{
+  "slug": "souhoud",
+  "displayName": "Souhoud",
+  "reference": "LIASSE-BUILD-2171",
+  "description": "Project: New website — e-commerce\n\nBusiness: Souhoud, sells school supplies (notebooks, books, bags, suitcases, etc.).\n\nGoal: Sell school supplies directly to customers online.\n\nWebsite kind: Online store\n\nKey features:\n- Online payments / secure checkout\n- Product catalog / gallery\n\nDesign & brand:\n- Colors: Sky blue\n- Mood: Fun\n- Signature (what the site is remembered by): The go-to place for school supply shopping.\n- First impression / photos & logo: Studio will create the visual look and provide images, no existing photos provided.",
+  "status": "active",
+  "generationVersion": 1,
+  "primaryColor": "#5BB9EE",
+  "enabledAuthMethods": ["email", "sms", "webauthn"],
+  "notificationsEnabled": true,
+  "geolocationEnabled": false,
+  "customConfig": {
+    "language": "both",
+    "businessName": "Souhoud",
+    "contactEmail": "souh.koanda@gmail.com",
+    "contactPhone": null,
+    "businessAddress": null,
+    "designManifest": {
+      "concept": "Cahier bleu",
+      "palette": { "ink": "#1B2A41", "ground": "#FFFFFF", "primary": "#5BB9EE", "accents": ["#FFC93C", "#F26D5B", "#1D7FC2"] },
+      "summary": "A school-supply store, so the page is a notebook: sky-blue ruled lines and one coral margin line open the hero and every section head, mark the current page and separate ideas; sunshine-yellow stickers carry prices and badges; rounded Baloo 2 display type keeps it fun.",
+      "heroThesis": "A promise in six words — « La rentrée, sans le stress. » — over the ruled page, with the shop and the grade lists offered side by side, because a parent either browses or wants the whole list in one click.",
+      "signatureMove": "The ruled-paper background with its coral margin (--ruled), reused for the hero, section rules, category tiles and every image placeholder; a rotated yellow sticker for every price.",
+      "typography": "Baloo 2 700/800 for display, Nunito 400/700/800 for body and UI.",
+      "copyVoice": "Warm, direct second-person French for parents; English mirrors it at the same brevity.",
+      "iconDirection": "Studio flat-vector illustrations in one style: sky blue and sunshine yellow on notebook paper, generic kinds of school supplies, never a photograph of a specific product.",
+      "elements": { "pages": ["index", "boutique", "produit", "listes", "liste", "panier", "commande", "mes-commandes", "livraison", "about", "contact", "privacy"], "userLogin": true, "shop": true, "schoolLists": true }
+    }
+  },
+  "apiVariables": [
+    { "name": "PAYPAL_CLIENT_ID", "value": "", "description": "PayPal Client ID — from your PayPal Developer dashboard under API credentials" },
+    { "name": "PAYPAL_CLIENT_SECRET", "value": "", "description": "PayPal Client Secret — the secret paired with your Client ID" },
+    { "name": "PAYPAL_MODE", "value": "", "description": "PayPal mode — \"sandbox\" for testing or \"live\" for real payments" },
+    { "name": "PAYPAL_MERCHANT_ID", "value": "", "description": "PayPal Merchant ID — the payee account every order must be paid into" }
+  ],
+  "promptHistory": [
+    {
+      "prompt": "Build this tenant's online school-supply store from the signup brief (no source site, no photos, no catalogue).",
+      "timestamp": "2026-09-21",
+      "changeNotes": "Initial hand build. 12 bilingual pages, 7 categories, a 25-product starter catalogue with every price marked unconfirmed, 4 school lists with one-click add-all, a server-priced cart with GST/QST, PayPal checkout, order tracking, and a 6-module admin console with a launch checklist. 39 studio illustrations generated in one style. Verified by booting against pglite with the full seed (63/63 probes), Playwright at 1440 and 390 with zero horizontal overflow and zero console errors."
+    }
+  ],
+  "exportedAt": "2026-09-21"
+}

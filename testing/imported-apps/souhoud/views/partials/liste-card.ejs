@@ -1,0 +1,11 @@
+<a class="liste" href="<%= urls.liste %><%= b.slug %>">
+  <% if (field(b, 'grade')) { %><span class="sticker liste-grade"><%= field(b, 'grade') %></span><% } %>
+  <span class="liste-media">
+    <% if (b.image_url) { %><img src="<%= b.image_url %>" alt="" width="640" height="400" loading="lazy"><% } else { %><%- include('mark') %><% } %>
+  </span>
+  <span class="liste-body">
+    <h3 data-content-source="bundles:name" data-content-id="<%= b.id %>"><%= field(b, 'name') %></h3>
+    <p><%= field(b, 'description') %></p>
+    <span class="liste-count"><%= bundleCount(b) %> <%= bundleCount(b) === 1 ? t.item : t.items %> · <%= t.add_all %> →</span>
+  </span>
+</a>

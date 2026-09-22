@@ -1,0 +1,116 @@
+<%- include('partials/admin-shell', { adminSection: 'dashboard', adminTitle: lang === 'en' ? 'Dashboard' : 'Tableau de bord' }) %>
+
+<div class="admin-stats">
+  <div class="stat">
+    <span class="stat-label" data-lk="admin-stat-visits"><%= lang === 'en' ? 'Visits (7 days)' : 'Visites (7 jours)' %></span>
+    <strong class="stat-value"><%= stats.recentVisits %></strong>
+    <span class="stat-sub"><%= stats.totalVisits %> <%= lang === 'en' ? 'in total' : 'au total' %></span>
+  </div>
+  <div class="stat">
+    <span class="stat-label" data-lk="admin-stat-orders"><%= lang === 'en' ? 'Paid orders' : 'Commandes payées' %></span>
+    <strong class="stat-value"><%= stats.paidOrders %></strong>
+    <span class="stat-sub"><%= money(stats.revenueCents) %></span>
+  </div>
+  <div class="stat<%= stats.awaitingOrders ? ' stat--flag' : '' %>">
+    <span class="stat-label" data-lk="admin-stat-awaiting"><%= lang === 'en' ? 'Awaiting payment' : 'En attente de paiement' %></span>
+    <strong class="stat-value"><%= stats.awaitingOrders %></strong>
+  </div>
+  <div class="stat<%= stats.unconfirmedPrices ? ' stat--flag' : '' %>">
+    <span class="stat-label" data-lk="admin-stat-prices"><%= lang === 'en' ? 'Prices to confirm' : 'Prix à confirmer' %></span>
+    <strong class="stat-value"><%= stats.unconfirmedPrices %></strong>
+    <span class="stat-sub"><a href="admin/products"><%= lang === 'en' ? 'Open the products' : 'Ouvrir les produits' %></a></span>
+  </div>
+</div>
+
+<% var pending = []; %>
+<% if (stats.unconfirmedPrices) pending.push([lang === 'en' ? 'Check each product price and tick "Price confirmed" (' + stats.unconfirmedPrices + ' left) — nothing can be ordered before that' : 'Vérifiez le prix de chaque produit et cochez « Prix confirmé » (' + stats.unconfirmedPrices + ' restants) — rien ne peut être commandé avant', 'admin/products']); %>
+<% if (!flags.contact) pending.push([lang === 'en' ? 'Confirm your contact details' : 'Confirmez vos coordonnées', 'admin/settings']); %>
+<% if (!flags.address) pending.push([lang === 'en' ? 'Enter and confirm the pickup address' : 'Entrez et confirmez l’adresse de cueillette', 'admin/settings']); %>
+<% if (!flags.hours) pending.push([lang === 'en' ? 'Enter and confirm the pickup hours' : 'Entrez et confirmez les heures de cueillette', 'admin/hours']); %>
+<% if (!flags.privacy) pending.push([lang === 'en' ? 'Approve the privacy notice (required for orders)' : 'Approuvez l’avis de confidentialité (requis pour les commandes)', 'admin/settings']); %>
+<% if (!flags.messages) pending.push([lang === 'en' ? 'Enable the contact form' : 'Activez le formulaire de contact', 'admin/settings']); %>
+<% if (!flags.payments) pending.push([lang === 'en' ? 'Enable PayPal online payment' : 'Activez le paiement en ligne PayPal', 'admin/settings']); %>
+<% if (!flags.shipping) pending.push([lang === 'en' ? 'Add a shipping rate (or stay pickup-only)' : 'Ajoutez un tarif de livraison (ou restez en cueillette seulement)', 'admin/settings']); %>
+<% if (!flags.operations) pending.push([lang === 'en' ? 'Turn on live actions (emails, payments, uploads)' : 'Activez les actions réelles (courriels, paiements, téléversements)', 'admin/settings']); %>
+
+<% if (pending.length) { %>
+  <section class="admin-card admin-card--todo">
+    <h2 data-lk="admin-todo-title"><%= lang === 'en' ? 'To do before the store is fully open' : 'À faire pour ouvrir complètement la boutique' %></h2>
+    <p class="muted small" data-lk="admin-todo-sub"><%= lang === 'en' ? 'Your site is online. The starter catalogue, texts and illustrations are yours to edit. These steps switch on what speaks for you or takes money — nothing is live until you confirm it.' : 'Votre site est en ligne. Le catalogue de départ, les textes et les illustrations sont à vous : modifiez-les. Ces étapes activent ce qui parle en votre nom ou encaisse de l’argent — rien n’est actif tant que vous ne l’avez pas confirmé.' %></p>
+    <ul class="admin-todo">
+      <% pending.forEach(function (item) { %>
+        <li><a href="<%= item[1] %>"><%= item[0] %></a></li>
+      <% }); %>
+    </ul>
+  </section>
+<% } %>
+
+<div class="admin-grid">
+  <section class="admin-card">
+    <div class="admin-card-head">
+      <h2 data-lk="admin-recent-orders"><%= lang === 'en' ? 'Latest orders' : 'Dernières commandes' %></h2>
+      <a class="text-button" href="admin/orders"><%= t.see_all %></a>
+    </div>
+    <% if (!recentOrders.length) { %>
+      <p class="muted small" data-lk="admin-no-orders"><%= lang === 'en' ? 'No orders yet.' : 'Aucune commande pour l’instant.' %></p>
+    <% } else { %>
+      <div class="table-scroll">
+        <table class="data">
+          <thead><tr><th>#</th><th><%= lang === 'en' ? 'Customer' : 'Client' %></th><th class="num">Total</th><th><%= lang === 'en' ? 'Status' : 'État' %></th></tr></thead>
+          <tbody>
+            <% recentOrders.forEach(function (o) { %>
+              <tr>
+                <td><%= o.reference || o.id %></td>
+                <td><%= o.name %></td>
+                <td class="num"><%= money(o.total_cents) %></td>
+                <td><span class="pill pill--<%= o.payment_status === 'paid' ? 'ok' : 'wait' %>"><%= t['status_' + o.status] || o.status %></span></td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    <% } %>
+  </section>
+
+  <section class="admin-card">
+    <div class="admin-card-head">
+      <h2 data-lk="admin-recent-messages"><%= lang === 'en' ? 'Latest messages' : 'Derniers messages' %></h2>
+      <a class="text-button" href="admin/messages"><%= t.see_all %></a>
+    </div>
+    <% if (!recentMessages.length) { %>
+      <p class="muted small" data-lk="admin-no-messages"><%= lang === 'en' ? 'No messages yet.' : 'Aucun message pour l’instant.' %></p>
+    <% } else { %>
+      <ul class="admin-list">
+        <% recentMessages.forEach(function (m) { %>
+          <li>
+            <strong><%= m.first_name %> <%= m.last_name || '' %></strong>
+            <span class="muted small"><%= m.subject || m.email %></span>
+            <span class="muted small"><%= formatDate(m.created_at) %></span>
+          </li>
+        <% }); %>
+      </ul>
+    <% } %>
+  </section>
+</div>
+
+<div class="admin-grid">
+  <% modules.forEach(function (m) { %>
+    <a class="admin-card admin-card--link" href="admin/<%= m.key %>">
+      <h2><%= m.label %></h2>
+      <p class="muted small"><%= m.description %></p>
+      <span class="admin-count"><%= stats.counts[m.key] %></span>
+    </a>
+  <% }); %>
+</div>
+
+<section class="admin-card">
+  <h2 data-lk="admin-services-title"><%= lang === 'en' ? 'Connected services' : 'Services connectés' %></h2>
+  <ul class="admin-list">
+    <li><strong><%= lang === 'en' ? 'Email' : 'Courriel' %></strong><span class="pill pill--<%= emailConfigured ? 'ok' : 'wait' %>"><%= emailConfigured ? (lang === 'en' ? 'Configured' : 'Configuré') : (lang === 'en' ? 'To configure' : 'À configurer') %></span></li>
+    <li><strong>PayPal</strong><span class="pill pill--<%= paypalConfigured ? 'ok' : 'wait' %>"><%= paypalConfigured ? (lang === 'en' ? 'Keys present' : 'Clés présentes') : (lang === 'en' ? 'Keys missing' : 'Clés manquantes') %></span></li>
+    <li><strong>Notifications</strong><span class="muted small"><%= stats.pushSubscriberCount %> <%= lang === 'en' ? 'subscriber(s)' : 'abonné(s)' %></span></li>
+    <li><strong><%= lang === 'en' ? 'Customer accounts' : 'Comptes clients' %></strong><span class="muted small"><%= stats.userCount %></span></li>
+  </ul>
+</section>
+
+<%- include('partials/admin-footer') %>

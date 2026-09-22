@@ -1,0 +1,65 @@
+<%- include('partials/header') %>
+
+<section class="page-banner">
+  <div class="wrap">
+    <div class="page-banner-inner">
+      <nav class="breadcrumb" aria-label="fil d’Ariane"><a href="<%= urls.home %>"><%= t.home %></a> · <%= t.contact %></nav>
+      <hr class="rule">
+      <h1><%= t.contact %></h1>
+      <p data-setting-key="contact_intro"><%= settings.contact_intro %></p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap split split--top">
+    <div>
+      <div class="form-card">
+        <h2 style="font-size:1.4rem" data-lk="t:message"><%= t.message %></h2>
+        <% if (!flags.messages) { %>
+          <div class="notice notice--plain"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 9v4m0 4h.01"/><circle cx="12" cy="12" r="9"/></svg><p data-lk="t:requests_closed"><%= t.requests_closed %></p></div>
+          <% if (flags.contact && settings.contact_email) { %><p style="margin-top:16px"><a class="button primary" href="<%= emailHref %>"><%= settings.contact_email %></a></p><% } %>
+        <% } else { %>
+          <form data-message-form>
+            <div class="form-row">
+              <label class="field"><span><%= t.first_name %></span><input name="firstName" required maxlength="80" autocomplete="given-name"></label>
+              <label class="field"><span><%= t.last_name %></span><input name="lastName" maxlength="80" autocomplete="family-name"></label>
+            </div>
+            <div class="form-row">
+              <label class="field"><span><%= t.email %></span><input name="email" type="email" required maxlength="190" autocomplete="email"></label>
+              <label class="field"><span><%= t.phone %></span><input name="phone" type="tel" maxlength="40" autocomplete="tel"></label>
+            </div>
+            <label class="field"><span><%= t.subject %></span><input name="subject" maxlength="160"></label>
+            <label class="field"><span><%= t.message %></span><textarea name="body" required maxlength="4000"></textarea></label>
+            <label class="check"><input type="checkbox" name="consent" required><span><%= t.consent %> <a href="<%= urls.privacy %>"><%= t.privacy %></a>.</span></label>
+            <p class="small" data-message-status role="status" hidden></p>
+            <button class="button primary" type="submit"><%= t.send %></button>
+          </form>
+        <% } %>
+      </div>
+    </div>
+    <div>
+      <hr class="rule">
+      <h2 style="font-size:1.5rem" data-lk="contact-visit"><%= lang === 'en' ? 'Pickup counter' : 'Comptoir de cueillette' %></h2>
+      <% if (flags.address && settings.business_address) { %>
+        <p class="preserve" data-setting-key="business_address"><%= settings.business_address %></p>
+        <p><a class="text-button" href="<%= directionsHref %>" target="_blank" rel="noopener"><%= t.directions %></a></p>
+      <% } else { %>
+        <p class="muted" data-lk="t:contact_pending"><%= t.contact_pending %></p>
+      <% } %>
+      <% if (flags.contact && settings.contact_phone) { %><p><a href="<%= phoneHref %>" data-setting-key="contact_phone"><%= settings.contact_phone %></a></p><% } %>
+      <% if (flags.contact && settings.contact_email) { %><p><a href="<%= emailHref %>" data-setting-key="contact_email"><%= settings.contact_email %></a></p><% } %>
+      <h3 style="margin-top:28px;font-size:1.1rem"><%= t.hours %></h3>
+      <% if (hours && hours.length) { %>
+        <dl style="display:grid;grid-template-columns:auto 1fr;gap:6px 16px;font-size:.95rem;margin:0">
+          <% hours.forEach(function (h) { %><dt><%= t['day' + h.weekday] %></dt><dd style="margin:0"><%= h.closed ? t.closed : h.opens + ' – ' + h.closes %></dd><% }); %>
+        </dl>
+        <% if (!flags.hours) { %><p class="small muted" style="margin-top:10px"><%= t.pending_note %></p><% } %>
+      <% } else { %>
+        <p class="muted small"><%= t.no_hours %></p>
+      <% } %>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

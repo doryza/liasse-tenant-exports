@@ -1,0 +1,89 @@
+<%- include('partials/header') %>
+
+<section class="page-banner">
+  <div class="wrap">
+    <div class="page-banner-inner">
+      <nav class="breadcrumb" aria-label="fil d’Ariane">
+        <a href="<%= urls.home %>"><%= t.home %></a> · <% if (category) { %><a href="<%= urls.boutique %>"><%= t.boutique %></a> · <%= field(category, 'name') %><% } else { %><%= t.boutique %><% } %>
+      </nav>
+      <hr class="rule">
+      <h1><% if (category) { %><%= field(category, 'name') %><% } else { %><span data-setting-key="boutique_intro"><%= settings.boutique_intro %></span><% } %></h1>
+      <p><% if (category) { %><%= field(category, 'description') %><% } else { %><span data-setting-key="boutique_text"><%= settings.boutique_text %></span><% } %></p>
+      <% if (freeShippingThreshold > 0 && flags.shipping) { %>
+        <p class="small" style="color:var(--sky-deep);font-weight:800"><%= t.free_shipping_note.replace('{threshold}', money(freeShippingThreshold)) %></p>
+      <% } %>
+    </div>
+    <% if (category && category.image_url) { %><figure class="page-banner-media"><img src="<%= category.image_url %>" alt="" width="520" height="520"></figure><% } %>
+  </div>
+</section>
+
+<% if (!category && !q) { %>
+<section class="section section--tight">
+  <div class="wrap">
+    <div class="grid grid--4">
+      <% categories.forEach(function (c) { %><%- include('partials/categorie', { c: c }) %><% }); %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<% if (featured && featured.length) { %>
+<section class="section section--tight">
+  <div class="wrap">
+    <div class="section-head">
+      <hr class="rule">
+      <h2 data-lk="t:featured"><%= t.featured %></h2>
+    </div>
+    <div class="grid grid--3">
+      <% featured.forEach(function (item) { %><%- include('partials/produit', { item: item }) %><% }); %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<section class="section<%= featured && featured.length ? ' section--paper' : '' %>">
+  <div class="wrap">
+    <div class="section-head">
+      <hr class="rule">
+      <h2><% if (category) { %><%= field(category, 'name') %><% } else if (q) { %><%= t.search %> : « <%= q %> »<% } else { %><%= t.all_products %><% } %></h2>
+    </div>
+
+    <form class="search-form" method="get" action="<%= urls.boutique %>">
+      <label class="sr-only" for="shop-q"><%= t.search %></label>
+      <input id="shop-q" type="search" name="q" value="<%= q %>" placeholder="<%= t.search_placeholder %>">
+      <% if (category) { %><input type="hidden" name="category" value="<%= category.slug %>"><% } %>
+      <button class="button secondary" type="submit"><%= t.search %></button>
+      <% if (q || category) { %><a class="text-button" href="<%= urls.boutique %>"><%= t.clear %></a><% } %>
+    </form>
+
+    <div class="chips">
+      <a class="chip" href="<%= urls.boutique %>" aria-current="<%= category ? 'false' : 'true' %>"><%= t.all_products %></a>
+      <% categories.forEach(function (c) { %>
+        <a class="chip" href="<%= urls.category %><%= c.slug %>" aria-current="<%= category && category.slug === c.slug ? 'true' : 'false' %>"><%= field(c, 'name') %></a>
+      <% }); %>
+    </div>
+
+    <% if (!items.length) { %>
+      <p class="empty" data-lk="t:no_products"><%= t.no_products %></p>
+    <% } else { %>
+      <div class="grid grid--4">
+        <% items.forEach(function (item) { %><%- include('partials/produit', { item: item }) %><% }); %>
+      </div>
+    <% } %>
+  </div>
+</section>
+
+<section class="section section--tight">
+  <div class="wrap">
+    <div class="notice notice--info">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2l1.5 4h13L19 15H8L6 2H3"/></svg>
+      <p>
+        <strong data-lk="boutique-pickup-title"><%= lang === 'en' ? 'Free in-store pickup.' : 'Cueillette en boutique gratuite.' %></strong>
+        <span data-lk="boutique-pickup-sub"><%= lang === 'en' ? 'Pick your order up at the counter during pickup hours.' : 'Ramassez votre commande au comptoir pendant nos heures de cueillette.' %></span>
+        <% if (!flags.shipping) { %><span data-lk="boutique-shipping-pending"> <%= lang === 'en' ? 'Delivery will be enabled shortly.' : 'La livraison sera activée sous peu.' %></span><% } %>
+      </p>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

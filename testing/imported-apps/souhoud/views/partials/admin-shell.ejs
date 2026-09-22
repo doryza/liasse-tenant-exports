@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="<%= typeof lang !== 'undefined' ? lang : 'fr' %>">
+<head>
+<meta charset="utf-8">
+<base href="<%= tenantRoot %>">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1B2A41">
+<meta name="robots" content="noindex">
+<title><%= adminTitle || t.admin %> · <%= settings.business_name %></title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="public/css/styles.css">
+<link rel="stylesheet" href="public/css/admin-styles.css">
+</head>
+<body class="admin-body" data-page="admin">
+<a class="skip" href="#admin-main"><%= t.skip %></a>
+
+<div class="admin-shell">
+  <aside class="admin-sidebar" id="admin-sidebar">
+    <a class="admin-brand" href="admin">
+      <strong><%= settings.business_name %></strong>
+      <span><%= t.admin %></span>
+    </a>
+    <nav class="admin-nav" aria-label="<%= t.admin %>">
+      <a href="admin" <%= adminSection === 'dashboard' ? 'aria-current="page"' : '' %>>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+        <span data-lk="admin-nav-dash"><%= lang === 'en' ? 'Dashboard' : 'Tableau de bord' %></span>
+      </a>
+      <% modules.forEach(function (m) { %>
+        <a href="admin/<%= m.key %>" <%= adminSection === m.key ? 'aria-current="page"' : '' %>>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/></svg>
+          <span><%= m.label %></span>
+        </a>
+      <% }); %>
+      <a href="admin/settings" <%= adminSection === 'settings' ? 'aria-current="page"' : '' %>>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1A1.6 1.6 0 0 0 9 19.4a1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1A1.6 1.6 0 0 0 4.6 9a1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg>
+        <span data-lk="admin-nav-settings"><%= lang === 'en' ? 'Settings' : 'Réglages' %></span>
+      </a>
+    </nav>
+    <div class="admin-sidebar-foot">
+      <a href="<%= urls.home %>" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"/></svg>
+        <span data-lk="admin-view-site"><%= lang === 'en' ? 'View the site' : 'Voir le site' %></span>
+      </a>
+    </div>
+  </aside>
+
+  <div class="admin-main-wrap">
+    <header class="admin-topbar">
+      <button class="admin-menu-toggle" type="button" aria-label="Menu" data-admin-menu>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+      <h1><%= adminTitle || t.admin %></h1>
+      <div class="admin-user"><%= adminUser.name %></div>
+    </header>
+    <main class="admin-main" id="admin-main">

@@ -1,0 +1,9 @@
+<a class="cat" href="<%= urls.category %><%= c.slug %>">
+  <span class="cat-media">
+    <% if (c.image_url) { %><img src="<%= c.image_url %>" data-content-source="categories:image_url" data-content-id="<%= c.id %>" alt="" width="640" height="480" loading="lazy"><% } else { %><%- include('mark') %><% } %>
+  </span>
+  <span class="cat-label">
+    <strong data-content-source="categories:name" data-content-id="<%= c.id %>"><%= field(c, 'name') %></strong>
+    <span><%= field(c, 'description') %></span>
+  </span>
+</a>

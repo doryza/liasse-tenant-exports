@@ -1,0 +1,41 @@
+<% var opts = productOptions(item); var verified = !!item.price_verified; %>
+<article class="produit">
+  <a class="produit-media" href="<%= urls.product %><%= item.slug %>" aria-label="<%= field(item, 'name') %>">
+    <% if (!item.in_stock) { %><span class="badge badge--coral" data-lk="t:out_of_stock"><%= t.out_of_stock %></span>
+    <% } else if (item.featured) { %><span class="badge badge--sky" data-lk="produit-essentiel"><%= lang === 'en' ? 'Essential' : 'Essentiel' %></span><% } %>
+    <% if (item.image_url) { %>
+      <img src="<%= item.image_url %>" alt="<%= field(item, 'name') %>" width="600" height="600" loading="lazy">
+    <% } else { %>
+      <span class="produit-placeholder" aria-hidden="true"><%- include('mark') %></span>
+    <% } %>
+  </a>
+  <div class="produit-body">
+    <% if (typeof categoryName !== 'undefined' && categoryName) { %><span class="produit-cat"><%= categoryName %></span><% } %>
+    <h3><a href="<%= urls.product %><%= item.slug %>" data-content-source="products:name" data-content-id="<%= item.id %>"><%= field(item, 'name') %></a></h3>
+    <div class="produit-price">
+      <% if (verified) { %>
+        <span class="sticker"><%= money(item.price_cents) %></span><small data-lk="t:before_tax"><%= t.before_tax %></small>
+      <% } else { %>
+        <span class="sticker sticker--paper sticker--flat" data-lk="t:price_unconfirmed"><%= t.price_unconfirmed %></span>
+      <% } %>
+    </div>
+    <div class="produit-actions">
+      <% if (item.in_stock && verified) { %>
+        <button class="button primary small block" type="button"
+          data-add-to-cart
+          data-slug="<%= item.slug %>"
+          data-name="<%= field(item, 'name') %>"
+          data-price="<%= item.price_cents %>"
+          data-image="<%= item.image_url || '' %>"
+          data-needs-variant="<%= opts.length ? '1' : '0' %>"
+          data-href="<%= urls.product %><%= item.slug %>">
+          <%= t.add_to_cart %>
+        </button>
+      <% } else if (!item.in_stock) { %>
+        <span class="button ghost small block" aria-disabled="true"><%= t.out_of_stock %></span>
+      <% } else { %>
+        <a class="button ghost small block" href="<%= urls.product %><%= item.slug %>"><%= t.discover %></a>
+      <% } %>
+    </div>
+  </div>
+</article>

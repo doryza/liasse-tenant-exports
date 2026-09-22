@@ -1,0 +1,76 @@
+<%- include('partials/header') %>
+
+<section class="section">
+  <div class="wrap">
+    <nav class="breadcrumb" aria-label="fil d’Ariane" style="margin-bottom:22px"><a href="<%= urls.home %>"><%= t.home %></a> · <a href="<%= urls.orders %>"><%= t.my_orders %></a> · <%= t.order %></nav>
+    <hr class="rule">
+    <h1><%= t.order %> <span data-order-ref class="muted" style="font-family:var(--body);font-size:1.1rem;font-weight:700"></span></h1>
+
+    <div class="login-invitation notice notice--info" data-auth-hide>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0"/></svg>
+      <p><span data-lk="commande-login"><%= lang === 'en' ? 'Sign in to see this order.' : 'Connectez-vous pour consulter cette commande.' %></span><br>
+      <button class="text-button" type="button" data-login-btn style="margin-top:6px"><%= t.login %></button></p>
+    </div>
+
+    <div data-order-root data-order-id="<%= orderId %>" data-auth-only hidden>
+      <p class="muted" data-order-loading data-lk="t:loading"><%= t.loading %></p>
+
+      <div data-order-view hidden class="cart-layout" style="margin-top:8px">
+        <div>
+          <div class="form-card">
+            <div class="row row--between" style="margin-bottom:18px">
+              <span class="order-state" data-order-state></span>
+              <span class="small muted" data-order-date></span>
+            </div>
+            <div class="table-scroll">
+              <table class="data">
+                <thead><tr><th><%= t.product %></th><th class="num"><%= t.quantity %></th><th class="num"><%= t.price %></th></tr></thead>
+                <tbody data-order-items></tbody>
+              </table>
+            </div>
+            <div class="summary-rule"></div>
+            <p class="small muted" data-order-fulfilment></p>
+            <p class="small muted" data-order-tracking hidden></p>
+            <p class="small muted" data-order-note hidden></p>
+          </div>
+        </div>
+
+        <aside class="summary">
+          <h2><%= t.total %></h2>
+          <dl>
+            <dt><%= t.subtotal %></dt><dd data-o-subtotal>—</dd>
+            <dt data-o-shipping-label><%= t.shipping %></dt><dd data-o-shipping>—</dd>
+            <dt><%= t.gst %></dt><dd data-o-gst>—</dd>
+            <dt><%= t.qst %></dt><dd data-o-qst>—</dd>
+          </dl>
+          <dl class="total"><dt><%= t.total %></dt><dd data-o-total>—</dd></dl>
+
+          <div data-pay-zone hidden>
+            <div class="summary-rule"></div>
+            <div class="prose small preserve" data-terms style="max-height:190px;overflow:auto;margin-bottom:12px"></div>
+            <label class="check"><input type="checkbox" data-accept-terms><span><%= t.accept_terms %></span></label>
+            <p class="small muted" data-pay-error role="alert" hidden></p>
+            <div data-paypal-button></div>
+          </div>
+
+          <div data-pay-unavailable hidden>
+            <div class="summary-rule"></div>
+            <p class="small muted" data-lk="t:payments_closed"><%= t.payments_closed %></p>
+            <% if (flags.contact && settings.contact_phone) { %>
+              <a class="button ghost small block" style="margin-top:10px" href="<%= phoneHref %>"><%= settings.contact_phone %></a>
+            <% } %>
+          </div>
+
+          <div data-pay-done hidden>
+            <div class="summary-rule"></div>
+            <p class="notice notice--info" style="margin:0"><span data-lk="commande-paid"><%= lang === 'en' ? 'Thank you! Your payment has been received.' : 'Merci! Votre paiement a bien été reçu.' %></span></p>
+          </div>
+        </aside>
+      </div>
+
+      <p class="empty" data-order-missing hidden data-lk="t:not_found"><%= t.not_found %></p>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>
