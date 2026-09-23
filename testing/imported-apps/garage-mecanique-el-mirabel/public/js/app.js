@@ -48,7 +48,33 @@
 
   function money(cents) { return new Intl.NumberFormat(data.lang === 'en' ? 'en-CA' : 'fr-CA', { style: 'currency', currency: 'CAD' }).format(Number(cents) / 100); }
   function formatDate(value) { if (!value) return ''; var v = String(value); if (/^\d{4}-\d{2}-\d{2}$/.test(v)) v += 'T12:00:00Z'; return new Intl.DateTimeFormat(data.lang === 'en' ? 'en-CA' : 'fr-CA', { timeZone: 'America/Toronto', dateStyle: 'medium' }).format(new Date(v)); }
-  window.App = { data: data, t: t, request: request, toast: toast, fmt: fmt, money: money, formatDate: formatDate };
+  // VIN helpers shared by the booking form and « Mes véhicules ».
+  // A phone photo is 3–12 MB; shrink it to 1600 px JPEG (~300–600 KB) first.
+  function shrinkPhoto(file) {
+    return new Promise(function (resolve, reject) {
+      var img = new Image(); var url = URL.createObjectURL(file);
+      img.onload = function () {
+        var max = 1600; var scale = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
+        var c = document.createElement('canvas');
+        c.width = Math.round(img.naturalWidth * scale); c.height = Math.round(img.naturalHeight * scale);
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        URL.revokeObjectURL(url); resolve(c.toDataURL('image/jpeg', 0.85));
+      };
+      img.onerror = function () { URL.revokeObjectURL(url); reject(new Error(t.vin_photo_none)); };
+      img.src = url;
+    });
+  }
+  async function readVinPhoto(file) {
+    var image = await shrinkPhoto(file);
+    return request('api/vin/photo', { method: 'POST', body: JSON.stringify({ image: image }) });
+  }
+  function vinStatus(r) {
+    var car = [r.year, r.make, r.model, r.trim, r.engine].filter(Boolean).join(' · ');
+    var line = car ? t.vin_found + ' : ' + car : r.vin;
+    return r.checked === false ? line + ' — ' + t.vin_check : line;
+  }
+
+  window.App = { data: data, t: t, request: request, toast: toast, fmt: fmt, money: money, formatDate: formatDate, readVinPhoto: readVinPhoto, vinStatus: vinStatus };
 
   // Mobile menu — drawer parked off-canvas to the LEFT (a right-parked fixed
   // drawer widens the document in Chrome and scrolls every page sideways).

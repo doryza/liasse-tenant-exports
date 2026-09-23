@@ -72,12 +72,26 @@
     if (vin.length !== 17) { status.textContent = t.vin_not_found; return; }
     status.textContent = '…';
     try {
-      var r = await App.request('api/vin/' + encodeURIComponent(vin));
-      if (!r.ok) { status.textContent = t.vin_not_found; return; }
-      state.vehicle = Object.assign(state.vehicle, { vin: r.vin, year: r.year, make: r.make, model: r.model, trim: r.trim });
-      fillVehicleInputs(); save(); loadModels();
-      status.textContent = t.vin_found + ' : ' + [r.year, r.make, r.model, r.trim, r.engine].filter(Boolean).join(' · ');
+      applyVin(await App.request('api/vin/' + encodeURIComponent(vin)));
     } catch (e) { status.textContent = e.message; }
+  });
+  function applyVin(r) {
+    var status = $('[data-vin-status]');
+    if (!r.ok) {
+      if (r.vin) { state.vehicle.vin = r.vin; fillVehicleInputs(); save(); }
+      status.textContent = r.reason === 'no_vin' ? t.vin_photo_none : r.reason === 'partial' ? t.vin_partial : r.vin ? App.vinStatus(r) + ' — ' + t.vin_not_found : t.vin_not_found;
+      return;
+    }
+    state.vehicle = Object.assign(state.vehicle, { vin: r.vin, year: r.year, make: r.make, model: r.model, trim: r.trim });
+    fillVehicleInputs(); save(); loadModels();
+    status.textContent = App.vinStatus(r);
+  }
+  var vinPhoto = $('[data-vin-photo]');
+  if (vinPhoto) vinPhoto.addEventListener('change', async function () {
+    var file = vinPhoto.files && vinPhoto.files[0]; vinPhoto.value = '';
+    if (!file) return;
+    var status = $('[data-vin-status]'); status.textContent = t.vin_photo_reading;
+    try { applyVin(await App.readVinPhoto(file)); } catch (e) { status.textContent = e.message; }
   });
   function renderSavedVehicles() {
     var box = $('[data-saved-vehicles]'); var vs = (account && account.vehicles) || [];

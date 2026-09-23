@@ -45,7 +45,11 @@ module.exports = function (services) {
   const cars = makeVehicles(services);
   const db = services.db;
 
-  router.use(express.json({ limit: '200kb' }));
+  // A VIN photo (resized in the browser to ~1600 px) needs more room than
+  // any other request; everything else keeps the tight limit.
+  const jsonBody = express.json({ limit: '200kb' });
+  const jsonPhoto = express.json({ limit: '4mb' });
+  router.use((req, res, next) => (req.path === '/api/vin/photo' ? jsonPhoto : jsonBody)(req, res, next));
   router.use(express.urlencoded({ extended: false, limit: '30kb' }));
 
   function fail(req, res, e) {
@@ -103,6 +107,7 @@ module.exports = function (services) {
     L.priceLabel = (s) => (s && Number(s.price_verified) && s.price_from_cents != null)
       ? (res.locals.t.price_from + ' ' + S.money(s.price_from_cents, lang)) : res.locals.t.price_on_estimate;
     L.assets = assets;
+    L.vinPhoto = cars.canReadPhotos;
     L.serviceImage = (s) => (s && s.image_url) || assets.services[s && s.slug] || '';
     L.clock = (hhmm) => {
       if (!hhmm) return '';
@@ -324,6 +329,24 @@ module.exports = function (services) {
   // --- Vehicle lookup (public, cached) ------------------------------------------
   router.get('/api/vin/:vin', wrap(async (req, res) => {
     try { res.json(await cars.decodeVin(req.params.vin)); } catch (e) { throw S.error('vin_error', 503); }
+  }));
+  // VIN from a photo: 8 reads per visitor per 10 minutes (each costs the
+  // platform a fraction of a cent; the cap only stops a stuck loop).
+  const photoReads = new Map();
+  router.post('/api/vin/photo', wrap(async (req, res) => {
+    if (!cars.canReadPhotos) throw S.error('vin_error', 503);
+    const who = String((req.user && req.user.id) || req.ip || 'anon');
+    const now = Date.now();
+    const recent = (photoReads.get(who) || []).filter((t) => now - t < 600000);
+    if (recent.length >= 8) throw S.error('rate_limit', 429);
+    recent.push(now); photoReads.set(who, recent);
+    if (photoReads.size > 5000) photoReads.delete(photoReads.keys().next().value);
+    const image = String((req.body && req.body.image) || '');
+    if (!/^data:image\/(jpeg|png|webp);base64,/.test(image)) throw S.error('invalid');
+    try { res.json(await cars.readVinPhoto(image)); } catch (e) {
+      console.error('[garage-el] vin photo', e && e.message);
+      throw S.error(e && e.code === 'rate_limited' ? 'rate_limit' : 'vin_error', e && e.code === 'rate_limited' ? 429 : 503);
+    }
   }));
   router.get('/api/models', wrap(async (req, res) => {
     try { res.json({ models: await cars.models(req.query.make, req.query.year) }); } catch (e) { res.json({ models: [] }); }

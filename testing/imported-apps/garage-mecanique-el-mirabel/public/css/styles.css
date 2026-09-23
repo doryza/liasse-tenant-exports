@@ -185,8 +185,12 @@ a.fact:hover span{color:var(--ember)}
 .field.invalid input,.field.invalid select,.field.invalid textarea{border-bottom-color:var(--bad)}
 .grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 16px}
 .grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 16px}
-.vin-row{display:flex;gap:10px;align-items:flex-end}
-.vin-row .field{flex:1;margin-bottom:0}
+.vin-row{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}
+.vin-row .field{flex:1 1 260px;margin-bottom:0}
+.vin-row .btn{flex:1 0 auto}
+.vin-photo{cursor:pointer;white-space:nowrap}
+.vin-photo:focus-within{outline:2px solid var(--ballpoint);outline-offset:2px}
+.vin-note{margin:6px 0 0}
 .check{display:grid;grid-template-columns:22px 1fr;gap:10px;align-items:start;font-size:15px;color:var(--body);margin:12px 0;cursor:pointer}
 .check input{width:20px;height:20px;margin:2px 0 0;accent-color:var(--ballpoint)}
 .step-nav{display:flex;justify-content:space-between;gap:12px;margin-top:26px;padding-top:20px;border-top:1px dashed var(--rule-2)}

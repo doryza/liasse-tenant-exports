@@ -59,7 +59,9 @@
             <div class="vin-row">
               <label class="field"><span><%= t.vin %></span><input name="vin" maxlength="17" autocomplete="off" spellcheck="false" style="text-transform:uppercase;letter-spacing:.08em"></label>
               <button class="btn btn-ghost" type="button" data-vin-decode><%= t.vin_decode %></button>
+              <% if (vinPhoto) { %><label class="btn btn-ghost vin-photo"><input type="file" accept="image/*" capture="environment" data-vin-photo hidden><%= t.vin_photo %></label><% } %>
             </div>
+            <% if (vinPhoto) { %><p class="small muted vin-note"><%= t.vin_photo_note %></p><% } %>
             <p class="small muted" data-vin-status role="status" style="margin:8px 0 14px"></p>
             <div class="grid-3">
               <label class="field"><span><%= t.year %></span><select name="year" data-year></select></label>

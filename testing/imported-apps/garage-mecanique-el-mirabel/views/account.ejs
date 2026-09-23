@@ -53,6 +53,14 @@
           <details style="margin-top:12px" data-add-vehicle>
             <summary class="text-link" style="list-style:none;cursor:pointer">+ <%= t.add_vehicle %></summary>
             <form data-vehicle-form style="margin-top:12px" novalidate>
+              <div class="vin-row">
+                <label class="field"><span><%= t.vin %></span><input name="vin" maxlength="17" autocomplete="off" spellcheck="false" style="text-transform:uppercase;letter-spacing:.08em"></label>
+                <button class="btn btn-ghost btn-sm" type="button" data-vin-decode><%= t.vin_decode %></button>
+                <% if (vinPhoto) { %><label class="btn btn-ghost btn-sm vin-photo"><input type="file" accept="image/*" capture="environment" data-vin-photo hidden><%= t.vin_photo %></label><% } %>
+              </div>
+              <% if (vinPhoto) { %><p class="small muted vin-note"><%= t.vin_photo_note %></p><% } %>
+              <p class="small muted" data-vin-status role="status" style="margin:8px 0 14px"></p>
+              <input type="hidden" name="trim">
               <div class="grid-2">
                 <label class="field"><span><%= t.year %></span><input name="year" inputmode="numeric" maxlength="4"></label>
                 <label class="field"><span><%= t.make %></span><input name="make" maxlength="60"></label>
@@ -61,7 +69,6 @@
                 <label class="field"><span><%= t.model %></span><input name="model" maxlength="80"></label>
                 <label class="field"><span><%= t.odometer %></span><input name="odometer_km" inputmode="numeric" maxlength="7"></label>
               </div>
-              <label class="field"><span><%= t.vin %></span><input name="vin" maxlength="17" style="text-transform:uppercase"></label>
               <button class="btn btn-ink btn-sm" type="submit"><%= t.save %></button>
             </form>
           </details>

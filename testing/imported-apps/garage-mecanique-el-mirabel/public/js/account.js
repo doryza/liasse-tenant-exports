@@ -31,12 +31,37 @@
   }
   renderVehicles();
   var vForm = $('[data-vehicle-form]');
+  if (vForm) {
+    var vStatus = $('[data-vin-status]', vForm);
+    var applyVin = function (r) {
+      if (r.vin) vForm.vin.value = r.vin;
+      if (!r.ok) { vStatus.textContent = r.reason === 'no_vin' ? t.vin_photo_none : r.reason === 'partial' ? t.vin_partial : t.vin_not_found; return; }
+      if (r.year) vForm.year.value = r.year;
+      if (r.make) vForm.make.value = r.make;
+      if (r.model) vForm.model.value = r.model;
+      vForm.trim.value = r.trim || '';
+      vStatus.textContent = App.vinStatus(r);
+    };
+    $('[data-vin-decode]', vForm).addEventListener('click', async function () {
+      var vin = vForm.vin.value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+      if (vin.length !== 17) { vStatus.textContent = t.vin_not_found; return; }
+      vStatus.textContent = '…';
+      try { applyVin(await App.request('api/vin/' + encodeURIComponent(vin))); } catch (e) { vStatus.textContent = e.message; }
+    });
+    var vPhoto = $('[data-vin-photo]', vForm);
+    if (vPhoto) vPhoto.addEventListener('change', async function () {
+      var file = vPhoto.files && vPhoto.files[0]; vPhoto.value = '';
+      if (!file) return;
+      vStatus.textContent = t.vin_photo_reading;
+      try { applyVin(await App.readVinPhoto(file)); } catch (e) { vStatus.textContent = e.message; }
+    });
+  }
   if (vForm) vForm.addEventListener('submit', async function (e) {
     e.preventDefault();
-    var body = { year: vForm.year.value.trim(), make: vForm.make.value.trim(), model: vForm.model.value.trim(), odometer_km: vForm.odometer_km.value.replace(/\D/g, ''), vin: vForm.vin.value.trim() };
+    var body = { year: vForm.year.value.trim(), make: vForm.make.value.trim(), model: vForm.model.value.trim(), odometer_km: vForm.odometer_km.value.replace(/\D/g, ''), vin: vForm.vin.value.trim(), trim: vForm.trim.value };
     try {
       var r = await App.request('api/me/vehicles', { method: 'POST', body: JSON.stringify(body) });
-      acct.vehicles.push(r.vehicle); renderVehicles(); vForm.reset(); $('[data-add-vehicle]').open = false; App.toast(t.saved);
+      acct.vehicles.push(r.vehicle); renderVehicles(); vForm.reset(); vStatus.textContent = ''; $('[data-add-vehicle]').open = false; App.toast(t.saved);
     } catch (err) { App.toast(err.message); }
   });
 
