@@ -80,6 +80,11 @@ module.exports = function (services) {
     L.page = 'home';
     L.user = null;
     L.tenantRoot = tenantPath(req, '/');
+    // Absolute site root (custom domain or /pwa/<slug>/) for hreflang and the sitemap.
+    L.absRoot = absolute(req, '/');
+    // ?_embed=1 = the platform's clean capture render (homepage showcase):
+    // no live open/closed status frozen into the image.
+    L.embed = req.query._embed === '1';
     L.urls = S.urls(lang);
     L.langLinks = { fr: '.?lang=fr', en: 'en/?lang=en' };
     L.safeJSON = S.safeJSON;
@@ -170,6 +175,31 @@ module.exports = function (services) {
   });
 
   for (const [from, to] of REDIRECTS) router.get(from, (req, res) => res.redirect(301, tenantPath(req, to)));
+
+  // --- Icons and crawler files ---------------------------------------------------
+  // Browsers ask for /favicon.ico on their own; answer with the app mark.
+  router.get('/favicon.ico', (req, res) => {
+    res.set('Cache-Control', 'public, max-age=86400');
+    res.redirect(302, assets.mark.replace('/upload/', '/upload/w_48,h_48,c_fill/').replace(/\.png$/i, '.ico'));
+  });
+
+  router.get('/robots.txt', (req, res) => {
+    res.type('text/plain').send(`User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /api/\nDisallow: /mon-compte/\nDisallow: /en/my-account/\n\nSitemap: ${absolute(req, '/sitemap.xml')}\n`);
+  });
+
+  router.get('/sitemap.xml', wrap(async (req, res) => {
+    const fr = S.urls('fr'); const en = S.urls('en');
+    const clean = (u) => (u === '.' ? '' : u);
+    const pairs = ['home', 'services', 'lights', 'booking', 'about', 'contact', 'privacy'].map((k) => [clean(fr[k]), clean(en[k])]);
+    for (const s of await publishedServices()) pairs.push([fr.service + s.slug + '/', en.service + s.slug + '/']);
+    const abs = (p) => absolute(req, '/' + p);
+    const x = (v) => String(v).replace(/&/g, '&amp;');
+    const urls = pairs.flatMap(([f, e]) => [f, e].map((loc) => `  <url><loc>${x(abs(loc))}</loc>`
+      + `<xhtml:link rel="alternate" hreflang="fr-CA" href="${x(abs(f))}"/>`
+      + `<xhtml:link rel="alternate" hreflang="en-CA" href="${x(abs(e))}"/>`
+      + `<xhtml:link rel="alternate" hreflang="x-default" href="${x(abs(f))}"/></url>`));
+    res.type('application/xml').send(`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${urls.join('\n')}\n</urlset>\n`);
+  }));
 
   function languageLinks(req, res, key, param) {
     const links = {};

@@ -1,4 +1,4 @@
-<%- include('partials/header') %>
+<%- include('partials/header', { metaDescription: lang === 'en' ? 'General auto repair in Mirabel: oil change from $95, brakes, suspension, engine codes, tires and rust-proofing for cars, SUVs and pickups — book online.' : 'Mécanique générale à Mirabel : changement d’huile dès 95 $, freins, suspension, code moteur, pneus et antirouille pour voitures, VUS et pick-up — rendez-vous en ligne.' }) %>
 <%
   var pad = function (n) { return n < 10 ? '0' + n : '' + n; };
   var general = services.filter(function (s) { return !classesOf(s).length; });

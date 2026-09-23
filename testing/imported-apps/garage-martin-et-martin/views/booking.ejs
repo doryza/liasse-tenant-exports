@@ -13,7 +13,7 @@
   };
   var scripts = ['booking'];
 %>
-<%- include('partials/header', { pageData: pageData, scripts: scripts }) %>
+<%- include('partials/header', { pageData: pageData, scripts: scripts, title: t.book_cta, metaDescription: lang === 'en' ? 'Book your appointment at ' + settings.business_name + ' in Mirabel online: pick the work, your vehicle and a time. Your account keeps your vehicles and tracks the work.' : 'Prenez rendez-vous en ligne chez ' + settings.business_name + ', à Mirabel : les travaux, votre véhicule et l’heure qui vous convient. Votre compte garde vos véhicules et suit les travaux.' }) %>
 <section class="page-head">
   <div class="wrap">
     <div class="crumbs"><a href="<%= urls.home %>"><%= t.home %></a> / <%= t.booking %></div>

@@ -1,4 +1,4 @@
-<%- include('partials/header', { title: t.lights }) %>
+<%- include('partials/header', { title: lang === 'en' ? 'Dashboard warning lights' : 'Voyants du tableau de bord', metaDescription: t.lights_help }) %>
 <% var byslug = {}; services.forEach(function (s) { byslug[s.slug] = s; }); %>
 <section class="page-head page-head-dash">
   <div class="wrap">

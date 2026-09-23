@@ -16,7 +16,7 @@
 %>
 <div class="topbar">
   <div class="wrap topbar-in">
-    <a class="status <%= os.open ? 'is-open' : 'is-closed' %>" href="<%= urls.about %>#heures"><i aria-hidden="true"></i><b><%= os.open ? t.open_now : t.closed_now %></b><span><%= statusSub %></span></a>
+    <% if (embed) { %><a class="status" href="<%= urls.about %>#heures"><i aria-hidden="true"></i><b><%= t.hours %></b></a><% } else { %><a class="status <%= os.open ? 'is-open' : 'is-closed' %>" href="<%= urls.about %>#heures"><i aria-hidden="true"></i><b><%= os.open ? t.open_now : t.closed_now %></b><span><%= statusSub %></span></a><% } %>
     <% if (earliest) { %><span class="topbar-early"><%= lang === 'en' ? 'Open from ' + clock(earliest) + ', Monday to Friday' : 'Ouvert dès ' + clock(earliest) + ', du lundi au vendredi' %></span><% } %>
     <a class="topbar-phone" href="<%= phoneHref %>"><%- include('icon', { name: 'phone' }) %><%= settings.contact_phone %></a>
     <span class="lang">

@@ -1,4 +1,4 @@
-<%- include('partials/header') %>
+<%- include('partials/header', { title: field(item, 'name'), metaDescription: field(item, 'tagline') + (lang === 'en' ? ' ' + settings.business_name + ', Mirabel — book online.' : ' ' + settings.business_name + ', à Mirabel — rendez-vous en ligne.') }) %>
 <% var signs = listField(item, 'signs'); var pad = function (n) { return n < 10 ? '0' + n : '' + n; }; %>
 <section class="page-head">
   <div class="wrap">

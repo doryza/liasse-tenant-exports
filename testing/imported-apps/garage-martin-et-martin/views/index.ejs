@@ -30,8 +30,9 @@
       <img src="<%= img(assets.hero, 'w_1100,f_auto,q_auto') %>" alt="<%= lang === 'en' ? 'Drawing: a pickup truck raised on a two-post lift' : 'Dessin : un pick-up sur un pont élévateur à deux colonnes' %>" width="896" height="1120" fetchpriority="high">
       <figcaption><span><%= t.fig %> 00</span><%= lang === 'en' ? 'Pickup on a two-post lift' : 'Pick-up sur pont élévateur' %></figcaption>
       <a class="ticket" href="<%= urls.about %>#heures">
-        <small><%= t.today.charAt(0).toUpperCase() + t.today.slice(1) %></small>
-        <b><%= todayRow && !todayRow.closed ? clock(todayRow.opens) + ' – ' + clock(todayRow.closes) : t.closed %></b>
+        <% var monRow = (hours || []).find(function (h) { return h.weekday === 1 && !h.closed; }); if (embed && monRow) { %><small><%= t.day1 %></small>
+        <b><%= clock(monRow.opens) %> – <%= clock(monRow.closes) %></b><% } else { %><small><%= t.today.charAt(0).toUpperCase() + t.today.slice(1) %></small>
+        <b><%= todayRow && !todayRow.closed ? clock(todayRow.opens) + ' – ' + clock(todayRow.closes) : t.closed %></b><% } %>
         <span><%= settings.business_address %></span>
       </a>
     </figure>
