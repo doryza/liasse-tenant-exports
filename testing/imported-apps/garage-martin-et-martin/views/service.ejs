@@ -1,0 +1,52 @@
+<%- include('partials/header') %>
+<% var signs = listField(item, 'signs'); var pad = function (n) { return n < 10 ? '0' + n : '' + n; }; %>
+<section class="page-head">
+  <div class="wrap">
+    <div class="crumbs"><a href="<%= urls.home %>"><%= t.home %></a> / <a href="<%= urls.services %>"><%= t.services %></a> / <%= field(item, 'name') %></div>
+    <h1><%= field(item, 'name') %></h1>
+    <p class="page-lede"><%= field(item, 'tagline') %></p>
+  </div>
+</section>
+<section class="section">
+  <div class="wrap svc-detail">
+    <div>
+      <figure class="blueprint">
+        <img src="<%= img(serviceImage(item), 'w_1200,f_auto,q_auto') %>" alt="" width="1152" height="864">
+        <figcaption><span><%= t.fig %> <%= pad(index) %></span><%= field(item, 'name') %></figcaption>
+      </figure>
+      <h2 class="h3"><%= t.about_service %></h2>
+      <div class="prose" data-content-source="services" data-content-id="<%= item.id %>">
+        <% lines(field(item, 'body')).forEach(function (p) { %><p><%= p %></p><% }); %>
+      </div>
+      <% if (signs.length) { %>
+        <h2 class="h3"><%= t.signs_title %></h2>
+        <ul class="signs"><% signs.forEach(function (x) { %><li><%= x %></li><% }); %></ul>
+      <% } %>
+      <% if (lights.length) { %>
+        <h2 class="h3"><%= lang === 'en' ? 'Related warning lights' : 'Voyants liés' %></h2>
+        <ul class="lamp-row">
+          <% lights.forEach(function (l) { %><li><a class="lamp lamp-<%= l.level %>" href="<%= urls.lights %>#<%= l.key %>"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><%- l.svg %></svg><span><%= field(l, 'name') %></span></a></li><% }); %>
+        </ul>
+      <% } %>
+    </div>
+    <aside class="side-card">
+      <span class="rivets" aria-hidden="true"></span>
+      <dl>
+        <% if (item.bookable == 1 && item.duration_min > 0) { %><dt><%= lang === 'en' ? 'Shop time' : 'Temps en atelier' %></dt><dd><%= fmt(t.duration_about, { n: durationLabel(item.duration_min) }) %></dd><% } %>
+        <% if (item.bookable == 1) { %><dt><%= lang === 'en' ? 'Price' : 'Prix' %></dt><dd class="<%= item.price_verified == 1 ? 'is-priced' : '' %>"><%= priceLabel(item) %><%= item.price_verified == 1 ? (lang === 'en' ? ', taxes extra' : ', taxes en sus') : '' %></dd><% } %>
+        <dt><%= t.phone %></dt><dd><a href="<%= phoneHref %>"><%= settings.contact_phone %></a></dd>
+      </dl>
+      <% if (item.bookable == 1) { %>
+        <a class="btn btn-go btn-block" href="<%= urls.booking %>?service=<%= item.slug %>"><%= t.book_service %></a>
+      <% } else { %>
+        <a class="btn btn-go btn-block" href="<%= phoneHref %>"><%- include('partials/icon', { name: 'phone' }) %><%= t.call %></a>
+        <p class="small muted"><%= t.not_bookable_call %></p>
+      <% } %>
+      <% if (related.length) { %>
+        <h3><%= t.related %></h3>
+        <ul class="related"><% related.forEach(function (r) { %><li><a href="<%= urls.service %><%= r.slug %>/"><%= field(r, 'name') %><%- include('partials/icon', { name: 'arrow' }) %></a></li><% }); %></ul>
+      <% } %>
+    </aside>
+  </div>
+</section>
+<%- include('partials/footer') %>

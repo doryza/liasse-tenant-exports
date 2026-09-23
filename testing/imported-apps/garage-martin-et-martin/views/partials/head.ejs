@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+<head>
+<meta charset="utf-8">
+<base href="<%= tenantRoot %>">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#13233f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<% var pageTitle = page === 'home' ? settings.business_name + ' — ' + (lang === 'en' ? 'Auto repair in Mirabel' : 'Garage à Mirabel') : (typeof title !== 'undefined' && title ? title : (t[page] || t.home)) + ' — ' + settings.business_name; %>
+<title><%= pageTitle %></title>
+<meta name="description" content="<%= typeof metaDescription !== 'undefined' && metaDescription ? metaDescription : settings.hero_subtitle %>">
+<meta property="og:title" content="<%= pageTitle %>">
+<meta property="og:image" content="<%= img(assets.logo, 'w_1200,h_630,c_pad,b_rgb:f3ede1') %>">
+<link rel="icon" href="<%= img(assets.mark, 'w_64,h_64,c_fill') %>">
+<link rel="apple-touch-icon" href="<%= img(assets.mark, 'w_180,h_180,c_fill') %>">
+<link rel="manifest" href="manifest.json">
+<link rel="alternate" hreflang="fr" href="<%= langLinks.fr %>">
+<link rel="alternate" hreflang="en" href="<%= langLinks.en %>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Playfair+Display:ital,wght@0,700;1,700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="public/css/styles.css">
+<script type="application/ld+json"><%- safeJSON({ '@context': 'https://schema.org', '@type': 'AutoRepair', name: settings.business_name, telephone: settings.contact_phone, email: settings.contact_email || undefined, address: { '@type': 'PostalAddress', streetAddress: '17525, rue de la Paix', addressLocality: 'Mirabel', addressRegion: 'QC', postalCode: 'J7J 1M3', addressCountry: 'CA' }, areaServed: ['Mirabel', 'Saint-Jérôme'], openingHoursSpecification: hours.filter(function (h) { return !h.closed; }).map(function (h) { return { '@type': 'OpeningHoursSpecification', dayOfWeek: ['', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'][h.weekday], opens: h.opens, closes: h.closes }; }), image: assets.logo }) %></script>
+</head>

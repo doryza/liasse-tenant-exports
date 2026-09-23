@@ -1,0 +1,66 @@
+<%- include('partials/header') %>
+<%
+  var pad = function (n) { return n < 10 ? '0' + n : '' + n; };
+  var general = services.filter(function (s) { return !classesOf(s).length; });
+  var sized = services.filter(function (s) { return classesOf(s).length && s.bookable == 1; });
+  var classIcon = { voiture: 'car', vus: 'suv', pickup: 'pickup', gros: 'heavy' };
+%>
+<section class="page-head">
+  <div class="wrap">
+    <div class="crumbs"><a href="<%= urls.home %>"><%= t.home %></a> / <%= t.services %></div>
+    <p class="kicker"><%= settings.hero_kicker %></p>
+    <h1><%= lang === 'en' ? 'Everything mechanical.' : 'Toute la mécanique.' %></h1>
+    <p class="page-lede" data-setting-key="not_offered_text"><%= settings.not_offered_text %></p>
+  </div>
+</section>
+<section class="section">
+  <div class="wrap">
+    <div class="section-head"><div><p class="kicker"><%= lang === 'en' ? 'Maintenance & repair' : 'Entretien & réparations' %></p><h2><%= lang === 'en' ? 'In the shop' : 'À l’atelier' %></h2></div></div>
+    <div class="plates">
+      <% general.forEach(function (s, i) { %>
+        <a class="plate" href="<%= urls.service %><%= s.slug %>/">
+          <div class="plate-art"><img src="<%= img(serviceImage(s), 'w_760,f_auto,q_auto') %>" alt="" loading="lazy" width="760" height="570"><span class="fig"><%= t.fig %> <%= pad(i + 1) %></span></div>
+          <div class="plate-body">
+            <h3><%= field(s, 'name') %></h3>
+            <p><%= field(s, 'tagline') %></p>
+            <div class="plate-meta"><span><%= s.duration_min > 0 ? fmt(t.duration_about, { n: durationLabel(s.duration_min) }) : '' %></span><b class="<%= s.price_verified == 1 ? 'is-priced' : '' %>"><%= s.bookable == 1 ? priceLabel(s) : t.not_bookable_call %></b></div>
+          </div>
+        </a>
+      <% }); %>
+    </div>
+  </div>
+</section>
+<section class="section section-navy" id="gabarit">
+  <div class="wrap gabarit">
+    <div class="gabarit-intro">
+      <p class="kicker kicker-light"><%= lang === 'en' ? 'Tires & rust-proofing' : 'Pneus & antirouille' %></p>
+      <h2><%= t.gabarit_title %></h2>
+      <p><%= t.gabarit_help %></p>
+      <p class="winter"><%- include('partials/icon', { name: 'snow' }) %><%= t.winter_rule %></p>
+    </div>
+    <div class="gabarit-tool" data-gabarit>
+      <div class="gabarit-pick" role="radiogroup" aria-label="<%= t.gabarit_title %>">
+        <% CLASSES.forEach(function (c, i) { %>
+          <button type="button" role="radio" aria-checked="<%= i === 0 ? 'true' : 'false' %>" data-class="<%= c %>"><%- include('partials/icon', { name: classIcon[c] }) %><b><%= t['class_' + c] %></b><% if (c === 'gros') { %><small><%= t.class_gros_hint %></small><% } %></button>
+        <% }); %>
+      </div>
+      <ul class="gabarit-list">
+        <% sized.forEach(function (s) { %>
+          <li data-classes="<%= classesOf(s).join(' ') %>">
+            <img src="<%= img(serviceImage(s), 'w_160,h_120,c_fill,f_auto,q_auto') %>" alt="" loading="lazy" width="80" height="60">
+            <div><a href="<%= urls.service %><%= s.slug %>/"><b><%= field(s, 'name') %></b></a><span><%= fmt(t.duration_about, { n: durationLabel(s.duration_min) }) %> · <%= priceLabel(s) %></span></div>
+            <a class="btn btn-go btn-sm" href="<%= urls.booking %>?service=<%= s.slug %>"><%= t.book_for %></a>
+          </li>
+        <% }); %>
+        <li class="gabarit-none" data-none hidden><%= t.gabarit_none %> <a href="<%= phoneHref %>"><%= settings.contact_phone %></a></li>
+      </ul>
+    </div>
+  </div>
+</section>
+<section class="section">
+  <div class="wrap cta-band">
+    <div><h2><%= t.lights_title %></h2><p><%= lang === 'en' ? 'Start with the warning-light guide, then book a scan-tool analysis.' : 'Commencez par le guide des voyants, puis réservez une analyse avec appareil.' %></p></div>
+    <div class="cta-row"><a class="btn btn-line" href="<%= urls.lights %>"><%= t.lights_cta %></a><a class="btn btn-go" href="<%= urls.booking %>?service=diagnostic-code-moteur"><%= t.book_cta %></a></div>
+  </div>
+</section>
+<%- include('partials/footer') %>

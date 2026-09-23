@@ -1,0 +1,21 @@
+<% var scripts = ['board']; var pageData = { board: { mode: 'week', date: boardDate } }; %>
+<%- include('partials/admin-shell', { adminSection: 'board', adminTitle: lang === 'en' ? 'Appointments' : 'Rendez-vous' }) %>
+<section class="admin-card">
+  <div class="admin-card-head board-toolbar">
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <button class="button ghost small" type="button" data-nav="-1">‹</button>
+      <button class="button ghost small" type="button" data-nav="0"><%= lang === 'en' ? 'Today' : 'Aujourd’hui' %></button>
+      <button class="button ghost small" type="button" data-nav="1">›</button>
+      <strong data-range style="margin-left:6px"></strong>
+    </div>
+    <div style="display:flex;gap:6px">
+      <button class="button ghost small" type="button" data-span="1"><%= lang === 'en' ? 'Day' : 'Jour' %></button>
+      <button class="button ghost small" type="button" data-span="7"><%= lang === 'en' ? 'Week' : 'Semaine' %></button>
+    </div>
+  </div>
+  <div class="board-legend small muted">
+    <span class="lg lg-requested"></span><%= t.status_requested %> <span class="lg lg-confirmed"></span><%= t.status_confirmed %> <span class="lg lg-in_progress"></span><%= t.status_in_progress %> <span class="lg lg-ready"></span><%= t.status_ready %> <span class="lg lg-completed"></span><%= t.status_completed %>
+  </div>
+  <div data-board data-days="7"></div>
+</section>
+<%- include('partials/admin-footer', { scripts: scripts, pageData: pageData }) %>

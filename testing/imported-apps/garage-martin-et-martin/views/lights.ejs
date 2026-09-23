@@ -1,0 +1,37 @@
+<%- include('partials/header', { title: t.lights }) %>
+<% var byslug = {}; services.forEach(function (s) { byslug[s.slug] = s; }); %>
+<section class="page-head page-head-dash">
+  <div class="wrap">
+    <div class="crumbs"><a href="<%= urls.home %>"><%= t.home %></a> / <%= t.lights %></div>
+    <h1><%= t.lights_title %></h1>
+    <p class="page-lede"><%= t.lights_help %></p>
+    <ul class="dash-panel dash-panel-wide">
+      <% lights.forEach(function (l) { %>
+        <li><a class="lamp lamp-<%= l.level %>" href="<%= urls.lights %>#<%= l.key %>"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><%- l.svg %></svg><span><%= field(l, 'name') %></span></a></li>
+      <% }); %>
+    </ul>
+    <p class="legend"><span class="dot dot-stop"></span><%= lang === 'en' ? 'Red: pull over safely and call.' : 'Rouge : arrêtez-vous en sécurité et appelez.' %> <span class="dot dot-soon"></span><%= lang === 'en' ? 'Amber: book an appointment soon.' : 'Ambre : prenez rendez-vous bientôt.' %></p>
+  </div>
+</section>
+<section class="section">
+  <div class="wrap light-list">
+    <% lights.forEach(function (l) { var svc = byslug[l.service]; %>
+      <article class="light-card" id="<%= l.key %>">
+        <div class="light-icon lamp-<%= l.level %>"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><%- l.svg %></svg></div>
+        <div class="light-body">
+          <span class="level level-<%= l.level %>"><%= l.level === 'stop' ? t.level_stop : t.level_soon %></span>
+          <h2><%= field(l, 'name') %></h2>
+          <h3><%= t.means %></h3>
+          <p><%= field(l, 'means') %></p>
+          <h3><%= t.what_now %></h3>
+          <p><%= field(l, 'now') %></p>
+          <div class="cta-row">
+            <% if (svc && svc.bookable == 1) { %><a class="btn btn-go btn-sm" href="<%= urls.booking %>?service=<%= svc.slug %>"><%= t.book_for %> — <%= field(svc, 'name') %></a><% } %>
+            <% if (l.level === 'stop') { %><a class="btn btn-line btn-sm" href="<%= phoneHref %>"><%- include('partials/icon', { name: 'phone' }) %><%= settings.contact_phone %></a><% } %>
+          </div>
+        </div>
+      </article>
+    <% }); %>
+  </div>
+</section>
+<%- include('partials/footer') %>

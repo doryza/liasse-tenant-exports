@@ -1,0 +1,55 @@
+<%- include('head') %>
+<body data-page="<%= page %>" class="has-callbar">
+<a class="skip" href="#main"><%= t.skip %></a>
+<%
+  var os = openState || { open: false };
+  var statusSub = '';
+  if (os.open) statusSub = fmt(t.open_until, { time: clock(os.until) });
+  if (!os.open && os.nextOpen) {
+    var when = os.nextOpen.inDays === 0 ? t.today : os.nextOpen.inDays === 1 ? t.tomorrow : t['day' + os.nextOpen.weekday].toLowerCase();
+    statusSub = fmt(t.opens_at, { when: when, time: clock(os.nextOpen.time) });
+  }
+  var openDays = (hours || []).filter(function (h) { return !h.closed && h.opens; });
+  var earliest = openDays.length ? openDays.map(function (h) { return h.opens; }).sort()[0] : null;
+  var navLeft = [['services', urls.services, t.services, ['services', 'service']], ['lights', urls.lights, t.lights, ['lights']]];
+  var navRight = [['about', urls.about, t.about, ['about']], ['contact', urls.contact, t.contact, ['contact']]];
+%>
+<div class="topbar">
+  <div class="wrap topbar-in">
+    <a class="status <%= os.open ? 'is-open' : 'is-closed' %>" href="<%= urls.about %>#heures"><i aria-hidden="true"></i><b><%= os.open ? t.open_now : t.closed_now %></b><span><%= statusSub %></span></a>
+    <% if (earliest) { %><span class="topbar-early"><%= lang === 'en' ? 'Open from ' + clock(earliest) + ', Monday to Friday' : 'Ouvert dès ' + clock(earliest) + ', du lundi au vendredi' %></span><% } %>
+    <a class="topbar-phone" href="<%= phoneHref %>"><%- include('icon', { name: 'phone' }) %><%= settings.contact_phone %></a>
+    <span class="lang">
+      <a href="<%= langLinks.fr %>" lang="fr" aria-current="<%= lang === 'fr' ? 'true' : 'false' %>">FR</a>
+      <a href="<%= langLinks.en %>" lang="en" aria-current="<%= lang === 'en' ? 'true' : 'false' %>">EN</a>
+    </span>
+  </div>
+</div>
+<header class="masthead">
+  <div class="wrap mast">
+    <nav class="mast-nav mast-left" aria-label="<%= t.menu %>">
+      <% navLeft.forEach(function (n) { %><a href="<%= n[1] %>" aria-current="<%= n[3].includes(page) ? 'page' : 'false' %>"><%= n[2] %></a><% }); %>
+    </nav>
+    <a class="brand" href="<%= urls.home %>" aria-label="<%= settings.business_name %> — <%= t.home %>"><%- include('badge') %></a>
+    <div class="mast-right">
+      <nav class="mast-nav" aria-label="<%= t.menu %> 2">
+        <% navRight.forEach(function (n) { %><a href="<%= n[1] %>" aria-current="<%= n[3].includes(page) ? 'page' : 'false' %>"><%= n[2] %></a><% }); %>
+      </nav>
+      <a class="icon-btn" href="<%= urls.account %>" aria-label="<%= t.account %>" title="<%= t.account %>"><%- include('icon', { name: 'user' }) %></a>
+      <a class="btn btn-go btn-sm mast-book" href="<%= urls.booking %>"><%= t.book_cta %></a>
+      <button class="icon-btn menu-toggle" type="button" aria-label="<%= t.menu %>" aria-controls="site-nav" aria-expanded="false" data-menu-toggle><%- include('icon', { name: 'menu' }) %></button>
+    </div>
+  </div>
+</header>
+<nav class="drawer" id="site-nav" aria-label="<%= t.menu %>">
+  <div class="drawer-head"><%- include('badge', { compact: true }) %><button class="icon-btn" type="button" aria-label="<%= t.close %>" data-menu-close><%- include('icon', { name: 'close' }) %></button></div>
+  <a href="<%= urls.home %>" aria-current="<%= page === 'home' ? 'page' : 'false' %>"><%= t.home %></a>
+  <% navLeft.concat(navRight).forEach(function (n) { %><a href="<%= n[1] %>" aria-current="<%= n[3].includes(page) ? 'page' : 'false' %>"><%= n[2] %></a><% }); %>
+  <a href="<%= urls.booking %>" aria-current="<%= page === 'booking' ? 'page' : 'false' %>"><%= t.booking %></a>
+  <a href="<%= urls.account %>" aria-current="<%= ['account','appointment'].includes(page) ? 'page' : 'false' %>"><%= t.account %></a>
+  <div class="drawer-foot">
+    <a class="btn btn-go" href="<%= phoneHref %>"><%- include('icon', { name: 'phone' }) %><%= settings.contact_phone %></a>
+    <span class="lang"><a href="<%= langLinks.fr %>" lang="fr" aria-current="<%= lang === 'fr' ? 'true' : 'false' %>">FR</a><a href="<%= langLinks.en %>" lang="en" aria-current="<%= lang === 'en' ? 'true' : 'false' %>">EN</a></span>
+  </div>
+</nav>
+<main id="main">

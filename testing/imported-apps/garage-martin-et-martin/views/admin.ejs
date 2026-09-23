@@ -1,0 +1,93 @@
+<% var scripts = ['board']; var pageData = { board: { mode: 'dashboard' } }; %>
+<%- include('partials/admin-shell', { adminSection: 'dashboard', adminTitle: lang === 'en' ? 'Dashboard' : 'Tableau de bord' }) %>
+
+<div class="admin-stats">
+  <div class="stat<%= stats.pending ? ' stat--flag' : '' %>">
+    <span class="stat-label"><%= lang === 'en' ? 'Requests to confirm' : 'Demandes à confirmer' %></span>
+    <strong class="stat-value"><%= stats.pending %></strong>
+    <span class="stat-sub"><a href="admin/rendez-vous"><%= lang === 'en' ? 'Open the board' : 'Ouvrir l’horaire' %></a></span>
+  </div>
+  <div class="stat">
+    <span class="stat-label"><%= lang === 'en' ? 'Today' : 'Aujourd’hui' %></span>
+    <strong class="stat-value"><%= stats.todayCount %></strong>
+    <span class="stat-sub"><%= lang === 'en' ? 'appointments' : 'rendez-vous' %></span>
+  </div>
+  <div class="stat">
+    <span class="stat-label"><%= lang === 'en' ? 'Next 7 days' : '7 prochains jours' %></span>
+    <strong class="stat-value"><%= stats.weekCount %></strong>
+  </div>
+  <div class="stat">
+    <span class="stat-label"><%= lang === 'en' ? 'Customer accounts' : 'Comptes clients' %></span>
+    <strong class="stat-value"><%= stats.userCount %></strong>
+    <span class="stat-sub"><%= stats.recentVisits %> <%= lang === 'en' ? 'visits this week' : 'visites cette semaine' %></span>
+  </div>
+</div>
+
+<% var pending = []; %>
+<% if (!flags.contact) pending.push([lang === 'en' ? 'Confirm your phone number (taken from your Google listing)' : 'Confirmez votre numéro de téléphone (repris de votre fiche Google)', 'admin/settings']); %>
+<% if (!flags.address) pending.push([lang === 'en' ? 'Confirm your address' : 'Confirmez votre adresse', 'admin/settings']); %>
+<% if (!flags.hours) pending.push([lang === 'en' ? 'Confirm your opening hours — booking times are built from them' : 'Confirmez vos heures — les plages de rendez-vous en découlent', 'admin/hours']); %>
+<% if (stats.unpriced) pending.push([lang === 'en' ? 'Add your prices (' + stats.unpriced + ' services show "On estimate") — optional' : 'Ajoutez vos prix (' + stats.unpriced + ' services affichent « Sur estimation ») — facultatif', 'admin/services']); %>
+<% if (!flags.privacy) pending.push([lang === 'en' ? 'Read and approve the privacy notice (a Law 25 draft is ready)' : 'Relisez et approuvez l’avis de confidentialité (un brouillon Loi 25 est prêt)', 'admin/settings']); %>
+<% if (!flags.bookingsLive) pending.push([lang === 'en' ? 'Turn on online booking — until then, bookings run in preview mode' : 'Activez la réservation en ligne — d’ici là, elle fonctionne en mode aperçu', 'admin/settings']); %>
+<% if (!flags.live) pending.push([lang === 'en' ? 'Turn on live sending (confirmations, reminders, "your car is ready")' : 'Activez les envois réels (confirmations, rappels, « votre auto est prête »)', 'admin/settings']); %>
+
+<% if (pending.length) { %>
+  <section class="admin-card admin-card--todo">
+    <h2><%= lang === 'en' ? 'Before you open online booking' : 'Avant d’ouvrir la réservation en ligne' %></h2>
+    <p class="muted small"><%= lang === 'en' ? 'Your site is online. The services, hours, address and phone come from your public listing; nothing speaks for you or sends a message until you switch it on.' : 'Votre site est en ligne. Les services, les heures, l’adresse et le téléphone viennent de votre fiche publique; rien ne parle en votre nom ni n’envoie de message tant que vous ne l’activez pas.' %></p>
+    <ul class="admin-todo"><% pending.forEach(function (item) { %><li><a href="<%= item[1] %>"><%= item[0] %></a></li><% }); %></ul>
+  </section>
+<% } %>
+
+<div class="admin-grid">
+  <section class="admin-card">
+    <div class="admin-card-head">
+      <h2><%= lang === 'en' ? 'Requests to confirm' : 'Demandes à confirmer' %></h2>
+      <a class="text-button" href="admin/rendez-vous"><%= t.see_all %></a>
+    </div>
+    <% if (!pendingRequests.length) { %>
+      <p class="muted small"><%= lang === 'en' ? 'Nothing waiting.' : 'Rien en attente.' %></p>
+    <% } else { %>
+      <ul class="admin-list" data-pending>
+        <% pendingRequests.forEach(function (a) { %>
+          <li data-appt-row="<%= a.id %>">
+            <strong><%= formatShort(a.start_at) %> · <%= formatTime(a.start_at) %><%= a.preview ? (lang === 'en' ? ' · preview' : ' · aperçu') : '' %></strong>
+            <span class="muted small"><%= a.contact_name %> — <%= a.vehicle_label %></span>
+            <span class="muted small"><%= a.service_names %></span>
+            <span><button class="button primary small" type="button" data-quick-status="confirmed" data-id="<%= a.id %>"><%= lang === 'en' ? 'Confirm' : 'Confirmer' %></button></span>
+          </li>
+        <% }); %>
+      </ul>
+    <% } %>
+  </section>
+
+  <section class="admin-card">
+    <div class="admin-card-head">
+      <h2><%= lang === 'en' ? 'Latest messages' : 'Derniers messages' %></h2>
+      <a class="text-button" href="admin/messages"><%= t.see_all %></a>
+    </div>
+    <% if (!recentMessages.length) { %>
+      <p class="muted small"><%= flags.messages ? (lang === 'en' ? 'No messages yet.' : 'Aucun message pour l’instant.') : (lang === 'en' ? 'The contact form is off.' : 'Le formulaire de contact est désactivé.') %></p>
+    <% } else { %>
+      <ul class="admin-list"><% recentMessages.forEach(function (m) { %><li><strong><%= m.first_name %> <%= m.last_name || '' %></strong><span class="muted small"><%= m.subject || m.email %></span><span class="muted small"><%= formatShort(m.created_at) %></span></li><% }); %></ul>
+    <% } %>
+  </section>
+</div>
+
+<section class="admin-card">
+  <div class="admin-card-head"><h2><%= lang === 'en' ? 'Today in the shop' : 'Aujourd’hui à l’atelier' %></h2><a class="text-button" href="admin/rendez-vous"><%= lang === 'en' ? 'Week view' : 'Vue semaine' %></a></div>
+  <div data-board data-days="1"></div>
+</section>
+
+<div class="admin-grid">
+  <% modules.forEach(function (m) { %>
+    <a class="admin-card admin-card--link" href="admin/<%= m.key %>">
+      <h2><%= m.label %></h2>
+      <p class="muted small"><%= m.description %></p>
+      <span class="admin-count"><%= stats.counts[m.key] %></span>
+    </a>
+  <% }); %>
+</div>
+
+<%- include('partials/admin-footer', { scripts: scripts, pageData: pageData }) %>
