@@ -6,7 +6,7 @@
   // manual is the reference (said on the page).
   var RULES = [
     { key: 'oil', every: 8000, fr: 'Vidange d’huile et filtre', en: 'Oil and filter change', slug: 'vidange-huile', fromOil: true },
-    { key: 'rotation', every: 10000, fr: 'Permutation des pneus', en: 'Tire rotation', slug: 'equilibrage-permutation' },
+    { key: 'rotation', every: 10000, fr: 'Rotation des pneus', en: 'Tire rotation', slug: 'equilibrage-permutation' },
     { key: 'brakes', every: 20000, fr: 'Inspection des freins', en: 'Brake inspection', slug: 'mecanique' },
     { key: 'air', every: 24000, fr: 'Filtre à air du moteur', en: 'Engine air filter', slug: 'mise-au-point' },
     { key: 'cabin', every: 24000, fr: 'Filtre d’habitacle', en: 'Cabin air filter', slug: 'mise-au-point' },
