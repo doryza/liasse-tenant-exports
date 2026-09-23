@@ -200,7 +200,10 @@ module.exports = function (services) {
     const item = all.find((s) => s.slug === String(req.params.slug || '').slice(0, 80));
     if (!item) return null;
     const related = all.filter((s) => s.slug !== item.slug && Number(s.bookable) && Number(s.featured)).slice(0, 3);
-    return { item, related };
+    // The page's own <title> and description: the platform keeps them on
+    // inner pages (search snippets and link previews per service).
+    const en = req.lang === 'en';
+    return { item, related, title: (en && item.name_en) || item.name, metaDescription: (en && item.tagline_en) || item.tagline || '' };
   });
 
   page(['/rendez-vous/', '/en/appointment/'], 'booking', 'booking', async (req) => {

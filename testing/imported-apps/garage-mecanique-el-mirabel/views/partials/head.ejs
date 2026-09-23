@@ -8,7 +8,9 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <% var pageTitle = page === 'home' ? settings.business_name + ' — ' + (lang === 'en' ? 'Garage in Mirabel' : 'Garage à Mirabel') : (typeof title !== 'undefined' && title ? title : (t[page] || t.home)) + ' — ' + settings.business_name; %>
 <title><%= pageTitle %></title>
-<meta name="description" content="<%= typeof metaDescription !== 'undefined' && metaDescription ? metaDescription : settings.hero_subtitle %>">
+<% if (typeof metaDescription !== 'undefined' && metaDescription) { %><meta name="description" content="<%= metaDescription %>">
+<% } else if (page === 'home') { %><meta name="description" content="<%= settings.hero_subtitle %>">
+<% } %>
 <meta property="og:title" content="<%= pageTitle %>">
 <meta property="og:image" content="<%= assets.logo %>">
 <link rel="icon" href="<%= assets.mark.replace('/upload/', '/upload/w_64,h_64,c_fill/') %>">
