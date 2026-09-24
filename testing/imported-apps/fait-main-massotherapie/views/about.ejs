@@ -1,0 +1,74 @@
+<%- include('partials/header') %>
+
+<section class="page-banner <%= settings._p_banner_equipe_url ? 'has-media' : '' %>">
+  <% if (settings._p_banner_equipe_url) { %>
+    <div class="page-banner-media"><img src="<%= settings._p_banner_equipe_url %>" data-setting-key="_p_banner_equipe_url" alt="" width="1440" height="355"></div>
+  <% } %>
+  <div class="wrap">
+    <div class="page-banner-inner">
+      <nav class="breadcrumb" aria-label="fil d’Ariane"><a href="<%= urls.home %>"><%= t.home %></a> · <%= t.about %></nav>
+      <h1 data-lk="about-title">Nos thérapeutes</h1>
+      <p data-lk="about-sub">Votre espace détente à Mirabel, sur la Rive-Nord de Montréal.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap split split--top">
+    <figure class="portrait portrait--tall">
+      <img src="<%= settings._p_about_image_url %>" data-setting-key="_p_about_image_url" alt="Annie Bouchard, propriétaire et massothérapeute" width="428" height="554" loading="lazy">
+    </figure>
+    <div>
+      <hr class="hand-rule">
+      <p class="eyebrow" data-setting-key="about_role"><%= settings.about_role %></p>
+      <h2 data-setting-key="about_title"><%= settings.about_title %></h2>
+      <div class="preserve" data-setting-key="about_text"><%= settings.about_text %></div>
+    </div>
+  </div>
+</section>
+
+<section class="section section--paper">
+  <div class="wrap">
+    <div class="section-head">
+      <hr class="hand-rule">
+      <h2 data-lk="about-approach-title">Notre approche</h2>
+      <p data-setting-key="approach_text"><%= settings.approach_text %></p>
+    </div>
+
+    <div class="values">
+      <div class="value">
+        <span class="value-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.2 5.6L20 10l-5 3.5 1.6 6L12 16.8 7.4 19.5 9 13.5 4 10l5.8-1.4z"/></svg></span>
+        <h3 data-lk="about-diplomas-title">Diplômes</h3>
+        <p data-setting-key="diplomas_text"><%= settings.diplomas_text %></p>
+      </div>
+      <div class="value">
+        <span class="value-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M12 5v14"/></svg></span>
+        <h3 data-lk="about-zen-title">En mode « ZEN »</h3>
+        <p data-setting-key="zen_text"><%= settings.zen_text %></p>
+      </div>
+      <div class="value">
+        <span class="value-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg></span>
+        <h3 data-lk="about-quali-title">Qualifications</h3>
+        <p data-setting-key="qualifications_text"><%= settings.qualifications_text %></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap split">
+    <div>
+      <hr class="hand-rule">
+      <h2 data-lk="about-shop-title">Nous encourageons les produits d’ici</h2>
+      <p data-setting-key="local_products_text"><%= settings.local_products_text %></p>
+      <p><a class="button primary" href="<%= urls.boutique %>" data-lk="t:shop"><%= t.shop %></a></p>
+    </div>
+    <div class="form-card">
+      <h3 style="margin-bottom:14px" data-lk="about-corp-title">Le massage en entreprise</h3>
+      <p class="muted" data-lk="about-corp-text">Une équipe détendue est bien plus productive. Pratiqué sur vos lieux de travail, le massage sur chaise devient un outil de prévention efficace : une séance régulière d’à peine 15 minutes réduit le stress et augmente la productivité.</p>
+      <a class="button ghost small" href="<%= urls.contact %>" data-lk="about-corp-cta">Nous en parler</a>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

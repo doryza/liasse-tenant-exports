@@ -1,0 +1,16 @@
+<%- include('partials/header') %>
+
+<section class="section">
+  <div class="wrap center" style="max-width:640px">
+    <hr class="hand-rule hand-rule--center">
+    <h1 style="max-width:none"><%= errorText %></h1>
+    <p class="muted" data-lk="error-help">Reprenons depuis le début — nos soins et notre boutique vous attendent.</p>
+    <div class="row" style="justify-content:center;margin-top:26px">
+      <a class="button primary" href="<%= urls.home %>"><%= t.home %></a>
+      <a class="button ghost" href="<%= urls.boutique %>"><%= t.boutique %></a>
+      <a class="button ghost" href="<%= urls.contact %>"><%= t.contact %></a>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

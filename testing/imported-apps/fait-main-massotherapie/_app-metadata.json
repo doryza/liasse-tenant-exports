@@ -1,0 +1,54 @@
+{
+  "slug": "fait-main-massotherapie",
+  "displayName": "Fait Main Massothérapie",
+  "reference": "LIASSE-SIGNUP-1077",
+  "description": "Project: website modernization — faitmainmassotherapie.com\n\nBusiness: Fait Main Massothérapie, in Mirabel; massage therapy, aesthetics, nail and body care, maderotherapy, wellness product shop, and space rental. Built on softness, reconnection to self, and personalized experience by Annie Bouchard and team.\n\nGoal: Modernize interface and graphics while preserving entire content for a more serene feel, making the offering clearer and booking/discovery more direct.\n\nKey features:\n- Preserve all content from current site\n- Add PayPal for e-commerce payments\n- Modern graphics and interface\n\nDesign & brand:\n- Colors: Keep current brand colors\n- Mood: Serene, modern, warm, human\n- Signature: a core promise of softness and reconnection to self, kept central.\n- Original content, branding, and images to remain. Style modernization requested.\n\nIntegrations & extras:\n- Booking link preservation from current site.",
+  "status": "active",
+  "generationVersion": 1,
+  "primaryColor": "#91AB78",
+  "enabledAuthMethods": ["email", "sms", "webauthn"],
+  "notificationsEnabled": true,
+  "geolocationEnabled": false,
+  "customConfig": {
+    "language": "both",
+    "businessName": "Fait Main Massothérapie",
+    "contactEmail": "info@faitmainmassotherapie.com",
+    "contactPhone": "450-475-0101",
+    "businessAddress": "15451-1 rue de Saint-Augustin, Mirabel, QC J7N 2B1",
+    "designManifest": {
+      "concept": "Tracé à la main",
+      "palette": {
+        "ink": "#292929",
+        "ground": "#FBF8F4",
+        "primary": "#91AB78",
+        "accents": ["#E6BEBE", "#6B8455"]
+      },
+      "summary": "The business is named Fait Main — handmade — so one hand-drawn sage line becomes the whole graphic system: it opens every section, underlines the active page and separates ideas, while warm paper and anthracite let Annie's own photographs and words carry the site.",
+      "heroThesis": "A full-bleed authentic treatment photograph under a warm scrim carries the source's own promise — « Offrez-vous un moment de bien-être qui fait vraiment du bien » — with booking and the shop offered side by side, because those are the only two things a visitor ever wants to do here.",
+      "signatureMove": "A hand-drawn wave rule in sage, never a straight 1px border: it opens every section head, marks the current nav item, and is the one thing a returning visitor recognises.",
+      "typography": "Fraunces (soft optical serif) for display and prices, Figtree for body and UI — replacing the source's Arial + Sora mix.",
+      "copyVoice": "The owner's own second-person French, kept verbatim wherever it existed: warm, unhurried, never salesy. English mirrors it at the same brevity.",
+      "iconDirection": "A single sage sprig on warm paper — the same mark the shop uses where a product photograph is still missing.",
+      "elements": {
+        "pages": ["index", "famille", "forfaits", "boutique", "produit", "panier", "commande", "mes-commandes", "location", "about", "blog", "article", "contact", "reservation", "privacy"],
+        "userLogin": true,
+        "blogSurfaced": true,
+        "shop": true
+      }
+    }
+  },
+  "apiVariables": [
+    { "name": "PAYPAL_CLIENT_ID", "value": "", "description": "PayPal Client ID — from your PayPal Developer dashboard under API credentials" },
+    { "name": "PAYPAL_CLIENT_SECRET", "value": "", "description": "PayPal Client Secret — the secret paired with your Client ID" },
+    { "name": "PAYPAL_MODE", "value": "", "description": "PayPal mode — \"sandbox\" for testing or \"live\" for real payments" },
+    { "name": "PAYPAL_MERCHANT_ID", "value": "", "description": "PayPal Merchant ID — the payee account every order must be paid into" }
+  ],
+  "promptHistory": [
+    {
+      "prompt": "Create this tenant's full website from the authorized import of faitmainmassotherapie.com, superior to the old site.",
+      "timestamp": "2026-09-17",
+      "changeNotes": "Initial build. 18 bilingual pages, 57 treatments, 5 packages, 28 products with a server-priced cart and PayPal checkout, room rental, journal, contact form and a 7-module admin console. All content transcribed from the authorized import; every claim that speaks for the business or spends money sits behind an owner gate that starts closed. Verified by booting the whole site against pglite with the full seed (34/34 routes) and by measuring zero horizontal overflow at 390px."
+    }
+  ],
+  "exportedAt": "2026-09-17"
+}

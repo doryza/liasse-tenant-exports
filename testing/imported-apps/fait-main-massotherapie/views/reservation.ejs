@@ -1,0 +1,66 @@
+<%- include('partials/header') %>
+
+<section class="page-banner <%= settings._p_banner_massotherapie_url ? 'has-media' : '' %>">
+  <% if (settings._p_banner_massotherapie_url) { %>
+    <div class="page-banner-media"><img src="<%= settings._p_banner_massotherapie_url %>" data-setting-key="_p_banner_massotherapie_url" alt="" width="1440" height="369"></div>
+  <% } %>
+  <div class="wrap">
+    <div class="page-banner-inner">
+      <nav class="breadcrumb" aria-label="fil d’Ariane"><a href="<%= urls.home %>"><%= t.home %></a> · <%= t.reservation %></nav>
+      <h1 data-lk="reservation-title">Réservez votre moment de détente</h1>
+      <p data-setting-key="reservation_intro"><%= settings.reservation_intro %></p>
+    </div>
+  </div>
+</section>
+
+<section class="section section--tight">
+  <div class="wrap">
+    <div class="form-card center" style="max-width:640px;margin-inline:auto">
+      <hr class="hand-rule hand-rule--center">
+      <h2 style="font-size:1.6rem" data-lk="reservation-cta-title">Choisissez votre soin et votre moment</h2>
+      <p class="muted" data-lk="reservation-cta-sub">La réservation se fait en quelques minutes dans notre système de rendez-vous.</p>
+      <% if (bookingUrl) { %>
+        <a class="button primary" href="<%= bookingUrl %>" target="_blank" rel="noopener" style="margin-top:10px">
+          <%= t.book %>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"/></svg>
+        </a>
+        <% if (!flags.booking) { %>
+          <p class="small muted" style="margin-top:14px" data-lk="reservation-link-pending">Lien de réservation à confirmer.</p>
+        <% } %>
+      <% } %>
+      <% if (flags.contact && settings.contact_phone) { %>
+        <p class="small muted" style="margin-top:16px">
+          <span data-lk="reservation-or-call">Ou téléphonez-nous au</span>
+          <a href="<%= phoneHref %>"><%= settings.contact_phone %></a>
+        </p>
+      <% } %>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <hr class="hand-rule">
+      <h2 data-lk="reservation-catalog">Tous nos services</h2>
+      <p data-lk="reservation-catalog-sub">Voici l’ensemble de nos soins, avec leur durée et leur tarif.</p>
+    </div>
+
+    <div class="chips">
+      <% groups.forEach(function (group) { %>
+        <a class="chip" href="#f-<%= group.family %>"><%= t[group.family] || group.family %></a>
+      <% }); %>
+    </div>
+
+    <% groups.forEach(function (group, index) { %>
+      <div id="f-<%= group.family %>" <%= index ? 'style="margin-top:64px"' : '' %>>
+        <h3 style="font-size:1.5rem;margin-bottom:22px"><%= t[group.family] || group.family %></h3>
+        <div class="grid grid--3">
+          <% group.items.forEach(function (item) { %><%- include('partials/soin', { item: item }) %><% }); %>
+        </div>
+      </div>
+    <% }); %>
+  </div>
+</section>
+
+<%- include('partials/footer') %>
