@@ -1,0 +1,119 @@
+<%- include('partials/header') %>
+
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-inner">
+      <p class="eyebrow" data-lk="hero-eyebrow"><%= lang === 'en' ? 'School supplies · online' : 'Fournitures scolaires · en ligne' %></p>
+      <h1><span class="doodle" data-setting-key="hero_title"><%= settings.hero_title %></span></h1>
+      <p data-setting-key="hero_subtitle"><%= settings.hero_subtitle %></p>
+      <div class="hero-actions">
+        <a class="button primary" href="<%= urls.boutique %>" data-lk="t:shop"><%= t.shop %></a>
+        <a class="button sun" href="<%= urls.listes %>" data-lk="t:see_lists"><%= t.see_lists %></a>
+      </div>
+      <div class="hero-facts">
+        <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span data-lk="hero-fact-1"><%= lang === 'en' ? 'Free in-store pickup' : 'Cueillette en boutique gratuite' %></span></span>
+        <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span data-lk="hero-fact-2"><%= lang === 'en' ? 'Ready-made lists by grade' : 'Listes prêtes par niveau' %></span></span>
+        <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span data-lk="hero-fact-3"><%= lang === 'en' ? 'Secure PayPal checkout' : 'Paiement sécurisé PayPal' %></span></span>
+      </div>
+    </div>
+    <% if (settings._p_hero_image_url) { %>
+      <figure class="hero-media">
+        <img src="<%= settings._p_hero_image_url %>" data-setting-key="_p_hero_image_url" alt="" width="1200" height="900" fetchpriority="high">
+        <span class="sticker" data-lk="hero-sticker-1"><%= lang === 'en' ? 'Back to school!' : 'La rentrée!' %></span>
+        <span class="sticker sticker--sky sticker--two" data-lk="hero-sticker-2"><%= lang === 'en' ? 'Notebooks · bags · pencils' : 'Cahiers · sacs · crayons' %></span>
+      </figure>
+    <% } else { %>
+      <div class="hero-media hero-media--empty" aria-hidden="true"><%- include('partials/mark') %></div>
+    <% } %>
+  </div>
+</section>
+
+<!-- Categories -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-head section-head--row">
+      <div>
+        <hr class="rule">
+        <h2 data-lk="home-cat-title"><%= lang === 'en' ? 'Shop by section' : 'Magasiner par rayon' %></h2>
+        <p data-setting-key="boutique_text"><%= settings.boutique_text %></p>
+      </div>
+      <a class="button secondary small" href="<%= urls.boutique %>" data-lk="t:shop_all"><%= t.shop_all %></a>
+    </div>
+    <div class="grid grid--4">
+      <% (categories || []).forEach(function (c) { %><%- include('partials/categorie', { c: c }) %><% }); %>
+      <a class="cat cat--all" href="<%= urls.boutique %>">
+        <span class="cat-media"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        <span class="cat-label"><strong data-lk="t:shop_all"><%= t.shop_all %></strong><span data-lk="home-cat-all-sub"><%= lang === 'en' ? 'Every item, searchable.' : 'Tous les articles, avec la recherche.' %></span></span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- School lists -->
+<section class="section section--ruled">
+  <div class="wrap">
+    <div class="section-head section-head--center">
+      <hr class="rule rule--center">
+      <p class="eyebrow eyebrow--coral" data-lk="t:listes"><%= t.listes %></p>
+      <h2 data-setting-key="lists_title"><%= settings.lists_title %></h2>
+      <p data-setting-key="lists_text"><%= settings.lists_text %></p>
+    </div>
+    <% if (bundles && bundles.length) { %>
+      <div class="grid grid--4">
+        <% bundles.forEach(function (b) { %><%- include('partials/liste-card', { b: b }) %><% }); %>
+      </div>
+    <% } else { %>
+      <p class="empty" data-lk="t:no_lists"><%= t.no_lists %></p>
+    <% } %>
+  </div>
+</section>
+
+<!-- Featured products -->
+<% if (featured && featured.length) { %>
+<section class="section">
+  <div class="wrap">
+    <div class="section-head section-head--row">
+      <div>
+        <hr class="rule">
+        <h2 data-lk="t:featured"><%= t.featured %></h2>
+        <p data-lk="home-featured-sub"><%= lang === 'en' ? 'The items every list asks for, ready to go in the cart.' : 'Les articles que toutes les listes demandent, prêts pour le panier.' %></p>
+      </div>
+      <a class="button secondary small" href="<%= urls.boutique %>" data-lk="t:see_all"><%= t.see_all %></a>
+    </div>
+    <div class="grid grid--3">
+      <% featured.forEach(function (item) { %><%- include('partials/produit', { item: item }) %><% }); %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<!-- How it works -->
+<section class="section section--sky">
+  <div class="wrap">
+    <div class="section-head">
+      <hr class="rule">
+      <h2 data-setting-key="story_title"><%= settings.story_title %></h2>
+      <div class="preserve" data-setting-key="story_text"><%= settings.story_text %></div>
+    </div>
+    <div class="values">
+      <div class="value">
+        <span class="value-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span>
+        <h3 data-lk="home-step-1-title"><%= lang === 'en' ? '1. Pick a list or browse' : '1. Choisissez une liste ou magasinez' %></h3>
+        <p data-lk="home-step-1"><%= lang === 'en' ? 'Add a whole grade list in one click, then adjust what you already have at home.' : 'Ajoutez une liste complète en un clic, puis ajustez ce que vous avez déjà à la maison.' %></p>
+      </div>
+      <div class="value">
+        <span class="value-mark value-mark--sky"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2l1.5 4h13L19 15H8L6 2H3"/><circle cx="9.5" cy="20" r="1.4"/><circle cx="17.5" cy="20" r="1.4"/></svg></span>
+        <h3 data-lk="home-step-2-title"><%= lang === 'en' ? '2. Check out securely' : '2. Commandez en toute sécurité' %></h3>
+        <p data-lk="home-step-2"><%= lang === 'en' ? 'Taxes and totals are calculated for you. Pay online with PayPal or at pickup.' : 'Les taxes et le total sont calculés pour vous. Payez en ligne avec PayPal ou à la cueillette.' %></p>
+      </div>
+      <div class="value">
+        <span class="value-mark value-mark--coral"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h13v10H3zM16 10h4l2 3v4h-6z"/><circle cx="7" cy="19" r="1.6"/><circle cx="18" cy="19" r="1.6"/></svg></span>
+        <h3 data-lk="home-step-3-title"><%= lang === 'en' ? '3. Pick up or get it delivered' : '3. Ramassez ou faites-vous livrer' %></h3>
+        <p data-lk="home-step-3"><%= lang === 'en' ? 'Pickup in store is always free. Delivery is offered once the shop turns it on.' : 'La cueillette en boutique est toujours gratuite. La livraison s’ajoute dès que la boutique l’active.' %></p>
+      </div>
+    </div>
+    <p style="margin-top:32px"><a class="button primary" href="<%= urls.livraison %>" data-lk="t:livraison"><%= t.livraison %></a></p>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

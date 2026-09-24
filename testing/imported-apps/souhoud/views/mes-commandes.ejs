@@ -1,0 +1,23 @@
+<%- include('partials/header') %>
+
+<section class="section">
+  <div class="wrap">
+    <nav class="breadcrumb" aria-label="fil d’Ariane" style="margin-bottom:22px"><a href="<%= urls.home %>"><%= t.home %></a> · <%= t.my_orders %></nav>
+    <hr class="rule">
+    <h1><%= t.my_orders %></h1>
+
+    <div class="login-invitation notice notice--info" data-auth-hide>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0"/></svg>
+      <p><span data-lk="orders-login"><%= lang === 'en' ? 'Sign in to find your orders.' : 'Connectez-vous pour retrouver vos commandes.' %></span><br>
+      <button class="text-button" type="button" data-login-btn style="margin-top:6px"><%= t.login %></button></p>
+    </div>
+
+    <div data-orders-root data-auth-only hidden>
+      <p class="muted" data-orders-loading data-lk="t:loading"><%= t.loading %></p>
+      <div class="stack" data-orders-list></div>
+      <p class="empty" data-orders-empty hidden data-lk="orders-none"><%= lang === 'en' ? 'You have no orders yet.' : 'Vous n’avez pas encore de commande.' %></p>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

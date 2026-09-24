@@ -1,0 +1,133 @@
+{
+  "version": 1,
+  "slug": "souhoud",
+  "canonical": "https://liasse.tech/pwa/souhoud/",
+  "reference": "LIASSE-BUILD-2171",
+  "languages": {
+    "default": "fr",
+    "supported": ["fr", "en"],
+    "selection": "?lang= wins, then an explicit /en/ path, then the scoped pwa_lang cookie. Language links preserve the current page and its shop filters.",
+    "content": "One JSON-valued admin_settings row per bilingual editorial text; domain tables carry explicit _en columns. text_<key>_<lang> rows override any dictionary key at render time."
+  },
+  "design": {
+    "concept": "Cahier bleu",
+    "thesis": "A school-supply store, so the page itself is a notebook: sky-blue ruled lines with one coral margin line open the hero and every section head, mark the active nav item and separate ideas. Sunshine-yellow stickers carry prices and badges — the one loud thing on an otherwise white, airy page. Rounded display type (Baloo 2) keeps it fun without shouting.",
+    "tokens": {
+      "ink": "#1B2A41",
+      "paper": "#FFFFFF",
+      "paperDeep": "#F3F8FC",
+      "paperLine": "#D9ECF8",
+      "sky": "#5BB9EE",
+      "skyDeep": "#1D7FC2",
+      "sun": "#FFC93C",
+      "coral": "#F26D5B",
+      "line": "#D6E6F1"
+    },
+    "paletteRationale": "The brief asked for sky blue and a fun mood. Sky blue is the brand and every primary action; sunshine yellow is reserved for prices, badges and the school-list call to action; coral appears only as the notebook margin line and for out-of-stock. Navy replaces black for all text so the page never goes hard.",
+    "type": "Baloo 2 700/800 for display, Nunito 400/700/800 for body and UI.",
+    "structure": "1180px container, one image ratio per card type (products 1:1, categories 4:3, school lists 16:10), pill buttons with a hard 3px shadow, 52px minimum control height.",
+    "signatureMove": "The --ruled background (32px sky ruling + coral margin at 56px) used by .hero, .section--ruled, .rule, .cat-media and every image placeholder; .sticker for prices.",
+    "imagery": "Studio-generated flat illustrations in one shared style (see lib/assets.js). They illustrate categories of school supplies; none is a photograph presented as a specific product. The owner replaces any of them from the admin area.",
+    "deviations": [
+      "The mobile drawer opens from the left: a fixed panel parked off-canvas to the right counts toward document scroll width in Chrome.",
+      "No backdrop-filter on the header below the drawer breakpoint: a filtered ancestor traps fixed descendants."
+    ]
+  },
+  "pages": [
+    { "fr": "/", "en": "/en/", "view": "index", "job": "Promise, categories, the four school lists, essentials, how it works" },
+    { "fr": "/boutique/", "en": "/en/shop/", "view": "boutique", "job": "Browse by category (?category=slug) or search (?q=)" },
+    { "fr": "/boutique/produit/:slug", "en": "/en/shop/product/:slug", "view": "produit", "job": "One product, its options and add-to-cart (only once its price is confirmed)" },
+    { "fr": "/listes-scolaires/", "en": "/en/school-lists/", "view": "listes", "job": "The school lists by grade" },
+    { "fr": "/listes-scolaires/:slug", "en": "/en/school-lists/:slug", "view": "liste", "job": "One list with quantities and a one-click add-all" },
+    { "fr": "/panier/", "en": "/en/cart/", "view": "panier", "job": "Review the basket and place an order" },
+    { "fr": "/commande/:id", "en": "/en/order/:id", "view": "commande", "job": "One order, its totals, tracking and PayPal payment" },
+    { "fr": "/mes-commandes/", "en": "/en/my-orders/", "view": "mes-commandes", "job": "A customer's own order history" },
+    { "fr": "/livraison-et-cueillette/", "en": "/en/shipping-and-pickup/", "view": "livraison", "job": "Pickup, delivery and the short FAQ" },
+    { "fr": "/a-propos/", "en": "/en/about/", "view": "about", "job": "What Souhoud is and sells" },
+    { "fr": "/contact/", "en": "/en/contact/", "view": "contact", "job": "Contact form (gated), pickup counter, hours" },
+    { "fr": "/confidentialite/", "en": "/en/privacy/", "view": "privacy", "job": "The owner-approved privacy notice and terms of sale" }
+  ],
+  "redirects": [
+    { "from": "/shop", "to": "/boutique/", "status": 301 },
+    { "from": "/produits", "to": "/boutique/", "status": 301 },
+    { "from": "/listes", "to": "/listes-scolaires/", "status": 301 },
+    { "from": "/cart", "to": "/panier/", "status": 301 },
+    { "note": "Every canonical page also answers on its bare (no trailing slash) form with a 301. The router runs with Express strict routing precisely so those redirects cannot match the canonical URL and loop." }
+  ],
+  "tables": {
+    "content": ["categories", "products", "bundles", "hours"],
+    "transactions": ["orders", "order_items", "messages"],
+    "platformSupport": ["admin_settings", "site_visits"],
+    "seeding": "STARTER STORE, not facts about the business: 7 categories, 25 representative products with typical prices all marked price_verified=0, and 4 school lists. No hours, no address, no phone were seeded because the brief gave none. No fabricated customer, order, payment or review records. The platform _seed_version sentinel prevents reseeding over edited content."
+  },
+  "features": {
+    "priceConfirmation": {
+      "implementation": "products.price_verified (0 by default). The site shows « Prix à confirmer » with no number, hides add-to-cart, and lib/orders.js price() rejects the basket with price_unconfirmed_error (409) whatever the row says. The admin form refuses to confirm a zero price.",
+      "why": "The catalogue was created by the studio from a one-paragraph brief. No price in it was ever stated by the owner, so none may be charged until the owner ticks it. The dashboard counts what is left."
+    },
+    "schoolLists": {
+      "files": ["lib/settings.js (bundleItems)", "views/listes.ejs", "views/liste.ejs", "public/js/cart.js (data-add-bundle)"],
+      "model": "bundles.items is a JSON array of 'product-slug x quantity' lines; lib/admin.js normalises what the owner types and drops malformed lines.",
+      "addAll": "Only items that are in stock, price-confirmed and without a colour/size choice are added in one click; the page says so and links the rest to their own page."
+    },
+    "categories": {
+      "implementation": "A categories table the owner can extend. lib/modules.js receives the current category slugs so the products form's select and lib/admin.js validation always match. A category still holding products cannot be deleted (409)."
+    },
+    "shop": {
+      "files": ["lib/orders.js", "views/boutique.ejs", "views/produit.ejs", "views/panier.ejs", "public/js/cart.js", "public/js/checkout.js"],
+      "cart": "Held in the visitor's own browser (localStorage key sh_cart_v1, guarded for private windows). It carries only slug, chosen option and quantity.",
+      "pricing": "Every amount is computed server-side in lib/orders.js from the products table. The browser never sends a price. Options are validated against the product's own list, and an out-of-stock, unpublished or unconfirmed item fails the whole basket.",
+      "taxes": "GST and QST are read from admin_settings in basis points (500 / 998 by default) and applied to the pre-tax amount including shipping. Printed books are seeded taxable=0 (QST-exempt); the owner adjusts per product.",
+      "fulfilment": "Pickup is always offered and always free. Shipping only appears once the owner has both enabled it and entered a rate — no delivery price is ever invented. Orders carry a tracking field the owner fills when shipped.",
+      "idempotency": "A per-basket request key plus a UNIQUE(user_id, request_key) constraint makes a double submit return the original order instead of creating a second one.",
+      "references": "SH-<5 digits>"
+    },
+    "payments": {
+      "files": ["lib/paypal.js", "views/commande.ejs", "public/js/checkout.js", "crons.js"],
+      "provider": "PayPal Orders v2, Payments v2 and the official JavaScript SDK v6",
+      "credentials": ["PAYPAL_CLIENT_ID", "PAYPAL_CLIENT_SECRET", "PAYPAL_MODE", "PAYPAL_MERCHANT_ID"],
+      "checks": [
+        "Authenticated ownership of the order",
+        "Fixed CAD amount read from the database, never from the browser",
+        "Exact custom_id (order:<id>) and invoice_id (order_key)",
+        "Merchant id, order id and CAPTURE intent",
+        "Capture currency, gross amount and final_capture",
+        "Credential and environment bound to the row at order creation",
+        "Stable create and capture request ids so a retry cannot double-charge"
+      ],
+      "recovery": "Customer-triggered sync, an owner reconcile endpoint, and a five-minute GET-only background reconciliation. An order whose creation attempt is older than five hours stops for manual review instead of risking a second order.",
+      "webhooks": "Not used. No unsigned webhook endpoint exists.",
+      "setupBoundary": "payments_enabled, payment_terms_approved and live_actions_enabled all start off, and preview mode always suppresses charging."
+    },
+    "admin": {
+      "files": ["lib/modules.js", "lib/admin.js", "views/admin.ejs", "views/admin-module.ejs", "views/admin-settings.ejs", "public/js/admin.js", "public/js/app.js"],
+      "modules": ["products", "categories", "bundles", "orders", "messages", "hours"],
+      "capabilities": ["CRUD with per-field validation", "Filter and count", "Image upload and illustrative generation", "Bilingual settings editor", "Visit and sales statistics", "PayPal reconciliation", "A launch checklist of everything still switched off, starting with the unconfirmed prices"],
+      "security": "Every admin page and API checks services.admin.isAdmin. Writes require a same-origin request and an explicit X-Requested-With header. Orders cannot be created by hand, amounts are read-only, and an order that has reached PayPal cannot be deleted.",
+      "sdk": "The platform does not inject its SDK on /admin pages; App.request() in public/js/app.js uses TenantSDK when present and a plain same-origin fetch otherwise, so every admin write works."
+    },
+    "gates": {
+      "principle": "Anything that speaks for the business or spends money is off until the owner turns it on from Réglages.",
+      "flags": ["contact_verified", "address_verified", "hours_verified", "privacy_approved", "messages_enabled", "shipping_enabled", "payment_terms_approved", "payments_enabled", "live_actions_enabled"]
+    },
+    "pwa": {
+      "install": "TenantSDK.ui.showInstallBanner",
+      "push": "Only after a real interaction: eight seconds after the first scroll or pointer event, and only when notifications are enabled. The footer also carries an explicit button.",
+      "private": "Cart, order and admin responses are no-store. No payment result is ever inferred offline."
+    }
+  },
+  "source": {
+    "origin": null,
+    "brief": "Project: New website — e-commerce. Business: Souhoud, sells school supplies (notebooks, books, bags, suitcases, etc.). Goal: Sell school supplies directly to customers online. Key features: online payments / secure checkout, product catalog / gallery. Design: sky blue, fun; signature « The go-to place for school supply shopping »; the studio creates the visual look and images.",
+    "note": "No source site, photographs, catalogue, address, phone or opening hours were supplied."
+  },
+  "gaps": [
+    "Every product price is a placeholder marked unconfirmed; the owner must check each one and tick « Prix confirmé » before it can be sold.",
+    "The catalogue is a representative starter set (25 products in 7 categories). The owner adds, renames and removes items from /admin/products.",
+    "Pickup address, phone number and pickup hours were not in the brief and are not seeded; the site says they will be confirmed.",
+    "Shipping rate: none exists. Pickup only until the owner enters a rate and enables shipping.",
+    "Terms of sale are empty; PayPal keys are not set. Online payment stays off until both are done.",
+    "The About text is a modest description derived from the brief; the owner should personalise it.",
+    "Illustrations are studio placeholders in a shared style; the owner may replace any with a real photo from the admin area."
+  ]
+}

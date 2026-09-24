@@ -1,0 +1,16 @@
+<%- include('partials/header') %>
+
+<section class="section">
+  <div class="wrap center" style="max-width:640px">
+    <hr class="rule rule--center">
+    <h1 style="max-width:none"><%= errorText %></h1>
+    <p class="muted" data-lk="error-help"><%= lang === 'en' ? 'Let us start again — the shop and the school lists are right here.' : 'Reprenons depuis le début — la boutique et les listes scolaires sont juste ici.' %></p>
+    <div class="row" style="justify-content:center;margin-top:26px">
+      <a class="button primary" href="<%= urls.home %>"><%= t.home %></a>
+      <a class="button ghost" href="<%= urls.boutique %>"><%= t.boutique %></a>
+      <a class="button ghost" href="<%= urls.listes %>"><%= t.listes %></a>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

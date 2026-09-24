@@ -1,0 +1,77 @@
+<%- include('partials/header') %>
+<% var addable = items.filter(function (i) { return i.pub.verified && i.pub.inStock && !i.pub.options.length; }); var total = 0; items.forEach(function (i) { total += i.quantity; }); %>
+
+<section class="page-banner">
+  <div class="wrap">
+    <div class="page-banner-inner">
+      <nav class="breadcrumb" aria-label="fil d’Ariane"><a href="<%= urls.home %>"><%= t.home %></a> · <a href="<%= urls.listes %>"><%= t.listes %></a> · <%= field(bundle, 'name') %></nav>
+      <hr class="rule">
+      <% if (field(bundle, 'grade')) { %><p><span class="sticker"><%= field(bundle, 'grade') %></span></p><% } %>
+      <h1 data-content-source="bundles:name" data-content-id="<%= bundle.id %>"><%= field(bundle, 'name') %></h1>
+      <p data-content-source="bundles:description" data-content-id="<%= bundle.id %>"><%= field(bundle, 'description') %></p>
+    </div>
+    <% if (bundle.image_url) { %><figure class="page-banner-media"><img src="<%= bundle.image_url %>" alt="" width="520" height="520"></figure><% } %>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="cart-layout">
+      <div>
+        <% if (!items.length) { %>
+          <p class="empty" data-lk="t:no_products"><%= t.no_products %></p>
+        <% } else { %>
+          <div class="liste-rows">
+            <% items.forEach(function (i) { var p = i.product; %>
+              <div class="liste-row">
+                <a class="liste-row-media" href="<%= urls.product %><%= p.slug %>" aria-label="<%= field(p, 'name') %>">
+                  <% if (p.image_url) { %><img src="<%= p.image_url %>" alt="" width="128" height="128" loading="lazy"><% } else { %><%- include('partials/mark') %><% } %>
+                </a>
+                <div>
+                  <h3><a href="<%= urls.product %><%= p.slug %>"><%= field(p, 'name') %></a></h3>
+                  <span class="small">
+                    <% if (!p.in_stock) { %><%= t.out_of_stock %><% } else if (!p.price_verified) { %><%= t.price_unconfirmed %><% } else { %><%= money(p.price_cents) %> · <%= t.before_tax.toLowerCase() %><% } %>
+                    <% if (i.pub.options.length) { %> · <%= i.pub.variantLabel || t.quantity %> : <%= i.pub.options.join(' / ') %><% } %>
+                  </span>
+                </div>
+                <div class="liste-row-right">
+                  <span class="liste-qty">× <%= i.quantity %></span>
+                  <% if (i.pub.options.length && i.pub.verified && i.pub.inStock) { %><a class="text-button" href="<%= urls.product %><%= p.slug %>"><%= lang === 'en' ? 'Choose' : 'Choisir' %></a><% } %>
+                </div>
+              </div>
+            <% }); %>
+          </div>
+        <% } %>
+      </div>
+
+      <aside class="summary">
+        <h2><%= field(bundle, 'name') %></h2>
+        <dl>
+          <dt><%= t.items %></dt><dd><%= total %></dd>
+          <dt data-lk="liste-addable"><%= lang === 'en' ? 'Addable in one click' : 'Ajoutables en un clic' %></dt><dd><%= addable.reduce(function (n, i) { return n + i.quantity; }, 0) %></dd>
+        </dl>
+        <% if (addable.length) { %>
+          <button class="button sun block" type="button" data-add-bundle><%= t.add_all %></button>
+          <% if (addable.length < items.length) { %><p class="small muted" style="margin-top:12px" data-lk="liste-partial-note"><%= lang === 'en' ? 'Items with a colour or size choice, an unconfirmed price or no stock are added from their own page.' : 'Les articles avec un choix de couleur ou de format, un prix à confirmer ou en rupture s’ajoutent depuis leur page.' %></p><% } %>
+        <% } else { %>
+          <p class="notice notice--sun" style="margin:0"><span data-lk="t:price_unconfirmed_help"><%= t.price_unconfirmed_help %></span></p>
+        <% } %>
+        <p class="center" style="margin:14px 0 0"><a class="text-button" href="<%= urls.cart %>" data-lk="t:view_cart"><%= t.view_cart %></a></p>
+      </aside>
+    </div>
+
+    <% if (more && more.length) { %>
+      <div class="section-head" style="margin-top:56px">
+        <hr class="rule">
+        <h2 data-lk="liste-more"><%= lang === 'en' ? 'Other lists' : 'Les autres listes' %></h2>
+      </div>
+      <div class="grid grid--4">
+        <% more.forEach(function (b) { %><%- include('partials/liste-card', { b: b }) %><% }); %>
+      </div>
+    <% } %>
+  </div>
+</section>
+
+<script id="bundle-data" type="application/json"><%- safeJSON(addable.map(function (i) { return { slug: i.pub.slug, name: i.pub.name, price: i.pub.price, image: i.pub.image, quantity: i.quantity }; })) %></script>
+
+<%- include('partials/footer') %>

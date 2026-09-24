@@ -1,0 +1,30 @@
+<%- include('partials/header') %>
+
+<section class="page-banner">
+  <div class="wrap">
+    <div class="page-banner-inner">
+      <nav class="breadcrumb" aria-label="fil d’Ariane"><a href="<%= urls.home %>"><%= t.home %></a> · <%= t.about %></nav>
+      <hr class="rule">
+      <h1 data-setting-key="story_title"><%= settings.story_title %></h1>
+      <p data-setting-key="tagline"><%= settings.tagline %></p>
+    </div>
+    <% if (settings._p_about_image_url) { %><figure class="page-banner-media"><img src="<%= settings._p_about_image_url %>" data-setting-key="_p_about_image_url" alt="" width="520" height="520"></figure><% } %>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap split split--top">
+    <div class="prose preserve" data-setting-key="about_text"><%= settings.about_text %></div>
+    <div>
+      <div class="form-card">
+        <h2 style="font-size:1.4rem" data-lk="about-what"><%= lang === 'en' ? 'What you will find here' : 'Ce que vous trouverez ici' %></h2>
+        <ul class="tick-list">
+          <% (categories || []).forEach(function (c) { %><li><a href="<%= urls.category %><%= c.slug %>"><%= field(c, 'name') %></a></li><% }); %>
+        </ul>
+        <p style="margin-top:22px"><a class="button sun" href="<%= urls.listes %>" data-lk="t:see_lists"><%= t.see_lists %></a></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

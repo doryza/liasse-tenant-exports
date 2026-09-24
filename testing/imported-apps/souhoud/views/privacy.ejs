@@ -1,0 +1,19 @@
+<%- include('partials/header') %>
+
+<section class="section">
+  <div class="wrap">
+    <nav class="breadcrumb" aria-label="fil d’Ariane" style="margin-bottom:22px"><a href="<%= urls.home %>"><%= t.home %></a> · <%= t.privacy %></nav>
+    <hr class="rule">
+    <h1><%= t.privacy %></h1>
+    <div class="prose preserve" data-setting-key="privacy_notice"><%= settings.privacy_notice %></div>
+    <% if (!flags.privacy) { %>
+      <p class="notice notice--plain" style="margin-top:28px"><span data-lk="privacy-draft"><%= lang === 'en' ? 'This notice is being reviewed by the shop.' : 'Cet avis est en cours de révision par la boutique.' %></span></p>
+    <% } %>
+    <% if (settings.payment_terms) { %>
+      <h2 style="margin-top:44px"><%= lang === 'en' ? 'Terms of sale' : 'Conditions de vente' %></h2>
+      <div class="prose preserve" data-setting-key="payment_terms"><%= settings.payment_terms %></div>
+    <% } %>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

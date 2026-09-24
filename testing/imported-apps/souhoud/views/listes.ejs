@@ -1,0 +1,31 @@
+<%- include('partials/header') %>
+
+<section class="page-banner">
+  <div class="wrap">
+    <div class="page-banner-inner">
+      <nav class="breadcrumb" aria-label="fil d’Ariane"><a href="<%= urls.home %>"><%= t.home %></a> · <%= t.listes %></nav>
+      <hr class="rule">
+      <h1 data-setting-key="listes_intro"><%= settings.listes_intro %></h1>
+      <p data-setting-key="listes_text"><%= settings.listes_text %></p>
+    </div>
+    <% if (settings._p_lists_image_url) { %><figure class="page-banner-media"><img src="<%= settings._p_lists_image_url %>" data-setting-key="_p_lists_image_url" alt="" width="520" height="520"></figure><% } %>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <% if (!bundles.length) { %>
+      <p class="empty" data-lk="t:no_lists"><%= t.no_lists %></p>
+    <% } else { %>
+      <div class="grid grid--4">
+        <% bundles.forEach(function (b) { %><%- include('partials/liste-card', { b: b }) %><% }); %>
+      </div>
+    <% } %>
+    <div class="notice notice--sun" style="margin-top:32px">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 9v4m0 4h.01"/><circle cx="12" cy="12" r="9"/></svg>
+      <p data-lk="listes-note"><%= lang === 'en' ? 'Your school sent its own list? Bring it along or write to us: we will put it together for you.' : 'Votre école a envoyé sa propre liste? Apportez-la ou écrivez-nous : nous la préparons pour vous.' %> <a href="<%= urls.contact %>"><%= t.contact %></a></p>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="<%= typeof lang !== 'undefined' ? lang : 'fr' %>">
+<head>
+<meta charset="utf-8">
+<base href="<%= tenantRoot %>">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#5BB9EE">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="description" content="<%= settings.hero_subtitle || t.request_explain %>">
+<title><%= page === 'home' ? settings.business_name + ' · ' + t.request_explain : (t[page] || t.home) + ' · ' + settings.business_name %></title>
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="public/css/styles.css">
+</head>
+<body data-page="<%= page %>">
+<a class="skip" href="#main" data-lk="t:skip"><%= t.skip %></a>
+
+<div class="utility">
+  <div class="wrap">
+    <div class="row" style="gap:18px">
+      <span data-lk="utility-pickup">🎒 <span data-setting-key="hero_note"><%= settings.hero_note %></span></span>
+      <% if (flags.contact && settings.contact_phone) { %>
+        <a href="<%= phoneHref %>" data-setting-key="contact_phone"><%= settings.contact_phone %></a>
+      <% } %>
+    </div>
+    <div class="utility-right">
+      <button class="text-button" type="button" data-login-btn data-lk="t:login"><%= t.login %></button>
+      <a href="<%= urls.orders %>" data-auth-only hidden data-lk="t:my_orders"><%= t.my_orders %></a>
+    </div>
+  </div>
+</div>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="<%= urls.home %>" aria-label="<%= settings.business_name %>">
+      <span class="brand-mark" aria-hidden="true">S</span>
+      <span>
+        <strong data-setting-key="business_name"><%= settings.business_name %></strong>
+        <span data-lk="brand-sub"><%= lang === 'en' ? 'School supplies' : 'Fournitures scolaires' %></span>
+      </span>
+    </a>
+
+    <nav class="site-nav" id="site-nav" aria-label="<%= t.menu %>">
+      <div class="nav-group <%= ['boutique','product'].includes(page) ? 'is-active' : '' %>">
+        <button type="button" aria-expanded="false" aria-controls="nav-boutique">
+          <span data-lk="t:boutique"><%= t.boutique %></span>
+          <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="nav-menu" id="nav-boutique">
+          <% (navCategories || []).forEach(function (c) { %>
+            <a href="<%= urls.category %><%= c.slug %>"><%= field(c, 'name') %><% if (field(c, 'description')) { %><small><%= field(c, 'description') %></small><% } %></a>
+          <% }); %>
+          <a class="nav-menu-all" href="<%= urls.boutique %>" data-lk="t:shop_all"><%= t.shop_all %> →</a>
+        </div>
+      </div>
+      <a href="<%= urls.listes %>" aria-current="<%= ['listes','liste'].includes(page) ? 'page' : 'false' %>"><%= t.listes %></a>
+      <a href="<%= urls.livraison %>" aria-current="<%= page === 'livraison' ? 'page' : 'false' %>"><%= t.livraison_short %></a>
+      <a href="<%= urls.about %>" aria-current="<%= page === 'about' ? 'page' : 'false' %>"><%= t.about %></a>
+      <a href="<%= urls.contact %>" aria-current="<%= page === 'contact' ? 'page' : 'false' %>"><%= t.contact %></a>
+      <div class="lang" style="margin-left:6px">
+        <a href="<%= langLinks.fr %>" lang="fr" aria-current="<%= lang === 'fr' ? 'true' : 'false' %>" data-lk="nav-fr">FR</a>
+        <span aria-hidden="true">·</span>
+        <a href="<%= langLinks.en %>" lang="en" aria-current="<%= lang === 'en' ? 'true' : 'false' %>" data-lk="nav-en">EN</a>
+      </div>
+    </nav>
+
+    <div class="header-actions">
+      <a class="cart-link" href="<%= urls.cart %>" aria-label="<%= t.cart %>">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2l1.5 4h13L19 15H8L6 2H3"/><circle cx="9.5" cy="20" r="1.4"/><circle cx="17.5" cy="20" r="1.4"/></svg>
+        <span class="cart-count" data-cart-count hidden>0</span>
+      </a>
+      <button class="menu-toggle" type="button" aria-label="<%= t.menu %>" aria-controls="site-nav" aria-expanded="false" data-menu-toggle>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+<div class="nav-backdrop" data-nav-backdrop></div>
+
+<main id="main">

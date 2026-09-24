@@ -1,0 +1,98 @@
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <strong><%= settings.business_name %></strong>
+        <p data-setting-key="tagline"><%= settings.tagline %></p>
+        <div class="row" style="margin-top:20px;gap:10px">
+          <a class="button sun small" href="<%= urls.boutique %>" data-lk="t:shop"><%= t.shop %></a>
+          <a class="button ghost small" href="<%= urls.listes %>" data-lk="t:see_lists"><%= t.see_lists %></a>
+        </div>
+      </div>
+
+      <div>
+        <h4 data-lk="t:categories"><%= t.categories %></h4>
+        <nav class="footer-nav" aria-label="<%= t.categories %>">
+          <% (navCategories || []).forEach(function (c) { %>
+            <a href="<%= urls.category %><%= c.slug %>"><%= field(c, 'name') %></a>
+          <% }); %>
+        </nav>
+      </div>
+
+      <div>
+        <h4 data-lk="footer-boutique"><%= lang === 'en' ? 'The shop' : 'La boutique' %></h4>
+        <nav class="footer-nav" aria-label="<%= t.menu %>">
+          <a href="<%= urls.boutique %>"><%= t.boutique %></a>
+          <a href="<%= urls.listes %>"><%= t.listes %></a>
+          <a href="<%= urls.livraison %>"><%= t.livraison %></a>
+          <a href="<%= urls.about %>"><%= t.about %></a>
+          <a href="<%= urls.contact %>"><%= t.contact %></a>
+          <a href="<%= urls.privacy %>"><%= t.privacy %></a>
+        </nav>
+      </div>
+
+      <div>
+        <h4 data-lk="t:hours"><%= t.hours %></h4>
+        <div class="footer-hours">
+          <% if (typeof hours !== 'undefined' && hours.length) { %>
+            <dl>
+              <% hours.forEach(function (h) { %>
+                <dt data-lk="t:day<%= h.weekday %>"><%= t['day' + h.weekday] %></dt>
+                <dd>
+                  <% if (h.closed) { %><span data-lk="t:closed"><%= t.closed %></span>
+                  <% } else { %><span data-content-source="hours:opens" data-content-id="<%= h.id %>"><%= h.opens %></span> – <span data-content-source="hours:closes" data-content-id="<%= h.id %>"><%= h.closes %></span><% } %>
+                </dd>
+              <% }); %>
+            </dl>
+            <% if (!flags.hours) { %><p class="small" style="margin-top:12px;opacity:.72" data-lk="t:pending_note"><%= t.pending_note %></p><% } %>
+          <% } else { %>
+            <p class="small" data-lk="t:no_hours"><%= t.no_hours %></p>
+          <% } %>
+        </div>
+
+        <h4 style="margin-top:26px" data-lk="footer-visit"><%= lang === 'en' ? 'Pickup' : 'Cueillette' %></h4>
+        <% if (flags.address && settings.business_address) { %>
+          <p class="small preserve" data-setting-key="business_address"><%= settings.business_address %></p>
+          <a class="small" href="<%= directionsHref %>" target="_blank" rel="noopener" data-lk="t:directions"><%= t.directions %></a>
+        <% } else { %>
+          <p class="small" data-lk="t:contact_pending"><%= t.contact_pending %></p>
+        <% } %>
+        <% if (flags.contact && settings.contact_phone) { %>
+          <p class="small" style="margin-top:10px"><a href="<%= phoneHref %>" data-setting-key="contact_phone"><%= settings.contact_phone %></a></p>
+        <% } %>
+        <% if (flags.contact && settings.contact_email) { %>
+          <p class="small"><a href="<%= emailHref %>" data-setting-key="contact_email"><%= settings.contact_email %></a></p>
+        <% } %>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>© <%= currentYear %> <%= settings.business_name %></span>
+      <button type="button" class="text-button" data-push-btn data-lk="t:push"><%= t.push %></button>
+      <div class="lang">
+        <a href="<%= langLinks.fr %>" lang="fr" aria-current="<%= lang === 'fr' ? 'true' : 'false' %>" data-lk="footer-fr">FR</a>
+        <span aria-hidden="true">·</span>
+        <a href="<%= langLinks.en %>" lang="en" aria-current="<%= lang === 'en' ? 'true' : 'false' %>" data-lk="footer-en">EN</a>
+      </div>
+      <a href="admin" data-lk="t:admin"><%= t.admin %></a>
+      <button type="button" class="text-button" data-logout data-auth-only hidden data-lk="t:logout"><%= t.logout %></button>
+    </div>
+  </div>
+</footer>
+
+<div class="mobile-action">
+  <a class="button primary" href="<%= urls.boutique %>" data-lk="t:shop"><%= t.shop %></a>
+  <a class="button sun" href="<%= urls.cart %>" data-lk="t:cart"><%= t.cart %></a>
+</div>
+
+<div class="toast" data-toast role="status" aria-live="polite" hidden></div>
+
+<script id="page-data" type="application/json"><%- safeJSON({ t: t, lang: lang, urls: urls, page: page, flags: flags, freeShippingThreshold: freeShippingThreshold }) %></script>
+<script src="public/js/navigation.js"></script>
+<script src="public/js/app.js"></script>
+<script src="public/js/cart.js"></script>
+<% if (['cart', 'order', 'orders'].includes(page)) { %><script src="public/js/checkout.js"></script><% } %>
+</body>
+</html>

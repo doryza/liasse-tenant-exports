@@ -1,0 +1,60 @@
+<%- include('partials/header') %>
+
+<section class="page-banner">
+  <div class="wrap">
+    <div class="page-banner-inner">
+      <nav class="breadcrumb" aria-label="fil d’Ariane"><a href="<%= urls.home %>"><%= t.home %></a> · <%= t.livraison %></nav>
+      <hr class="rule">
+      <h1><%= t.livraison %></h1>
+      <p class="preserve" data-setting-key="livraison_text"><%= settings.livraison_text %></p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="grid grid--2">
+      <div class="form-card">
+        <span class="value-mark value-mark--sky"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2l1.5 4h13L19 15H8L6 2H3"/><circle cx="9.5" cy="20" r="1.4"/><circle cx="17.5" cy="20" r="1.4"/></svg></span>
+        <h2 style="font-size:1.4rem"><%= t.pickup %></h2>
+        <p data-lk="livraison-pickup"><%= lang === 'en' ? 'Always free. Place your order online; we tell you when it is ready and you pick it up at the counter during pickup hours.' : 'Toujours gratuite. Passez votre commande en ligne; nous vous avertissons quand elle est prête et vous la ramassez au comptoir pendant nos heures de cueillette.' %></p>
+        <% if (flags.address && settings.business_address) { %>
+          <p class="preserve" data-setting-key="business_address"><%= settings.business_address %></p>
+          <a class="text-button" href="<%= directionsHref %>" target="_blank" rel="noopener"><%= t.directions %></a>
+        <% } else { %>
+          <p class="small muted" data-lk="t:contact_pending"><%= t.contact_pending %></p>
+        <% } %>
+        <% if (hours && hours.length) { %>
+          <dl class="footer-hours" style="margin-top:16px;display:grid;grid-template-columns:auto 1fr;gap:6px 16px;font-size:.92rem">
+            <% hours.forEach(function (h) { %><dt><%= t['day' + h.weekday] %></dt><dd style="margin:0"><%= h.closed ? t.closed : h.opens + ' – ' + h.closes %></dd><% }); %>
+          </dl>
+          <% if (!flags.hours) { %><p class="small muted" style="margin-top:10px"><%= t.pending_note %></p><% } %>
+        <% } else { %>
+          <p class="small muted" style="margin-top:12px"><%= t.no_hours %></p>
+        <% } %>
+      </div>
+      <div class="form-card">
+        <span class="value-mark value-mark--coral"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h13v10H3zM16 10h4l2 3v4h-6z"/><circle cx="7" cy="19" r="1.6"/><circle cx="18" cy="19" r="1.6"/></svg></span>
+        <h2 style="font-size:1.4rem"><%= t.delivery %></h2>
+        <% if (flags.shipping) { %>
+          <p data-lk="livraison-ship"><%= lang === 'en' ? 'Shipping is offered at the rate shown in your cart.' : 'La livraison est offerte au tarif affiché dans votre panier.' %></p>
+          <% if (freeShippingThreshold > 0) { %><p class="small" style="color:var(--sky-deep);font-weight:800"><%= t.free_shipping_note.replace('{threshold}', money(freeShippingThreshold)) %></p><% } %>
+        <% } else { %>
+          <p data-lk="livraison-ship-pending"><%= lang === 'en' ? 'Delivery will be enabled shortly. In the meantime every order is available for free pickup.' : 'La livraison sera activée sous peu. D’ici là, chaque commande est offerte en cueillette gratuite.' %></p>
+        <% } %>
+      </div>
+    </div>
+
+    <div class="section-head" style="margin-top:56px">
+      <hr class="rule">
+      <h2 data-lk="livraison-faq"><%= lang === 'en' ? 'Good to know' : 'Bon à savoir' %></h2>
+    </div>
+    <div class="values">
+      <div class="value"><h3 data-lk="faq-1-q"><%= lang === 'en' ? 'When do I pay?' : 'Quand est-ce que je paie?' %></h3><p data-lk="faq-1-a"><%= lang === 'en' ? 'Online with PayPal once payment is enabled, or at pickup. Your order is recorded either way.' : 'En ligne avec PayPal dès que le paiement est activé, ou à la cueillette. Votre commande est enregistrée dans les deux cas.' %></p></div>
+      <div class="value"><h3 data-lk="faq-2-q"><%= lang === 'en' ? 'Are taxes included?' : 'Les taxes sont-elles incluses?' %></h3><p data-lk="faq-2-a"><%= lang === 'en' ? 'Prices are shown before tax. GST and QST are added in the cart and on your order.' : 'Les prix sont affichés hors taxes. La TPS et la TVQ s’ajoutent au panier et sur votre commande.' %></p></div>
+      <div class="value"><h3 data-lk="faq-3-q"><%= lang === 'en' ? 'Can I change my order?' : 'Puis-je modifier ma commande?' %></h3><p data-lk="faq-3-a"><%= lang === 'en' ? 'Write to us with your order number and we will sort it out before it is prepared.' : 'Écrivez-nous avec votre numéro de commande et nous l’ajustons avant sa préparation.' %></p></div>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>
