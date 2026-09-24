@@ -13,9 +13,9 @@
 <section class="hero">
   <div class="wrap hero-grid">
     <div class="hero-copy">
-      <p class="kicker" data-setting-key="hero_kicker"><%= settings.hero_kicker %></p>
-      <h1 data-setting-key="hero_title"><%= settings.hero_title %></h1>
-      <p class="lede" data-setting-key="hero_subtitle"><%= settings.hero_subtitle %></p>
+      <p class="kicker" data-lk="hero_kicker"><%= settings.hero_kicker %></p>
+      <h1 data-lk="hero_title"><%= settings.hero_title %></h1>
+      <p class="lede" data-lk="hero_subtitle"><%= settings.hero_subtitle %></p>
       <div class="cta-row">
         <a class="btn btn-go" href="<%= urls.booking %>"><%- include('partials/icon', { name: 'calendar' }) %><%= t.book_cta %></a>
         <a class="btn btn-line" href="<%= phoneHref %>"><%- include('partials/icon', { name: 'phone' }) %><%= settings.contact_phone %></a>
@@ -149,7 +149,7 @@
     </div>
     <ol class="enamels">
       <% [1, 2, 3, 4].forEach(function (n) { %>
-        <li><span class="rivets" aria-hidden="true"></span><b data-setting-key="why_<%= n %>_title"><%= settings['why_' + n + '_title'] %></b><p data-setting-key="why_<%= n %>_text"><%= settings['why_' + n + '_text'] %></p></li>
+        <li><span class="rivets" aria-hidden="true"></span><b data-lk="why_<%= n %>_title"><%= settings['why_' + n + '_title'] %></b><p data-lk="why_<%= n %>_text"><%= settings['why_' + n + '_text'] %></p></li>
       <% }); %>
     </ol>
   </div>
@@ -164,7 +164,7 @@
         <li><%- include('partials/icon', { name: 'x' }) %><s><%= lang === 'en' ? 'Alignments' : 'Alignements' %></s></li>
       </ul>
     </div>
-    <blockquote><p data-setting-key="not_offered_text"><%= settings.not_offered_text %></p><footer><%= lang === 'en' ? 'Everything else, mechanically speaking — we do.' : 'Tout le reste, côté mécanique — on s’en occupe.' %></footer></blockquote>
+    <blockquote><p data-lk="not_offered_text"><%= settings.not_offered_text %></p><footer><%= lang === 'en' ? 'Everything else, mechanically speaking — we do.' : 'Tout le reste, côté mécanique — on s’en occupe.' %></footer></blockquote>
   </div>
 </section>
 
@@ -178,7 +178,7 @@
       <a class="btn btn-go" href="<%= urls.booking %>"><%= t.book_cta %></a>
     </div>
     <ol class="steps-row">
-      <% [1, 2, 3, 4].forEach(function (n) { %><li><span>N° <%= n %></span><p data-setting-key="how_<%= n %>"><%= settings['how_' + n] %></p></li><% }); %>
+      <% [1, 2, 3, 4].forEach(function (n) { %><li><span>N° <%= n %></span><p data-lk="how_<%= n %>"><%= settings['how_' + n] %></p></li><% }); %>
     </ol>
   </div>
 </section>

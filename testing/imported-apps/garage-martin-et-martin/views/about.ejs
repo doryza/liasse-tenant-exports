@@ -11,7 +11,7 @@
 </section>
 <section class="section">
   <div class="wrap about">
-    <div class="prose prose-lg" data-setting-key="about_text"><% lines(settings.about_text).forEach(function (p) { %><p><%= p %></p><% }); %></div>
+    <div class="prose prose-lg pre-line" data-lk="about_text"><%= settings.about_text %></div>
     <figure class="blueprint">
       <img src="<%= img(assets.wide, 'w_1400,f_auto,q_auto') %>" alt="<%= lang === 'en' ? 'Drawing: a car, an SUV and a heavy-duty pickup side by side in a workshop' : 'Dessin : une voiture, un VUS et un gros pick-up côte à côte dans un atelier' %>" loading="lazy" width="1568" height="672">
       <figcaption><span><%= t.fig %> —</span><%= lang === 'en' ? 'Car, SUV, pickup: one shop' : 'Voiture, VUS, pick-up : un seul atelier' %></figcaption>
@@ -23,7 +23,7 @@
     <div class="section-head"><div><h2><%= lang === 'en' ? 'Why choose us' : 'Pourquoi nous choisir' %></h2></div></div>
     <ol class="enamels">
       <% [1, 2, 3, 4].forEach(function (n) { %>
-        <li><span class="rivets" aria-hidden="true"></span><b data-setting-key="why_<%= n %>_title"><%= settings['why_' + n + '_title'] %></b><p data-setting-key="why_<%= n %>_text"><%= settings['why_' + n + '_text'] %></p></li>
+        <li><span class="rivets" aria-hidden="true"></span><b data-lk="why_<%= n %>_title"><%= settings['why_' + n + '_title'] %></b><p data-lk="why_<%= n %>_text"><%= settings['why_' + n + '_text'] %></p></li>
       <% }); %>
     </ol>
   </div>
@@ -34,7 +34,7 @@
       <p class="kicker"><%= t.not_offered %></p>
       <ul class="refused"><li><%- include('partials/icon', { name: 'x' }) %><s><%= lang === 'en' ? 'Bodywork' : 'Carrosserie' %></s></li><li><%- include('partials/icon', { name: 'x' }) %><s><%= lang === 'en' ? 'Alignments' : 'Alignements' %></s></li></ul>
     </div>
-    <blockquote><p data-setting-key="not_offered_text"><%= settings.not_offered_text %></p></blockquote>
+    <blockquote><p data-lk="not_offered_text"><%= settings.not_offered_text %></p></blockquote>
   </div>
 </section>
 <section class="section">

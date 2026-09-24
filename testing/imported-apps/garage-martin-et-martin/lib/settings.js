@@ -8,6 +8,19 @@ function localized(value, lang) {
   try { const x = JSON.parse(value); if (x && typeof x === 'object' && !Array.isArray(x)) return x[lang] || x.fr || ''; } catch (e) {}
   return value;
 }
+/**
+ * A site text as the visitor sees it: the owner's inline-editor override
+ * (_p_lk_<key>_<lang>, then _p_lk_<key>) wins over the seeded setting.
+ */
+function siteText(raw, key, lang) {
+  const o = raw['_p_lk_' + key + '_' + lang];
+  if (typeof o === 'string' && o.trim()) return o;
+  const n = raw['_p_lk_' + key];
+  if (typeof n === 'string' && n.trim()) return n;
+  return localized(raw[key], lang);
+}
+/** Draft markers the seeded privacy notice ships with. */
+function hasPlaceholders(text) { return /\[(nom|name)[^\]]*\]|BROUILLON|DRAFT FOR/i.test(String(text || '')); }
 function both(value) { try { const x = JSON.parse(value); return !!(x.fr && x.en && x.fr.trim() && x.en.trim()); } catch (e) { return false; } }
 function translate(raw, lang) {
   const t = Object.assign({}, T[lang] || T.fr);
@@ -117,6 +130,7 @@ module.exports = function (services) {
 };
 
 Object.assign(module.exports, {
+  siteText, hasPlaceholders,
   TZ, localized, both, translate, flag, num, safeJSON, error, money, slugify,
   offsetMinutes, zoned, local, addDays, weekdayOf, toMinutes, fromMinutes,
   date, shortDate, time, dateTime, openState, urls,

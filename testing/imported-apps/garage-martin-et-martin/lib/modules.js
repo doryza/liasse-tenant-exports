@@ -1,141 +1,48 @@
 /**
- * Admin module definitions. One entry per editable table: the admin shell
- * builds its list, its form and its API from this spec. Appointments are not
- * here — they have their own board (/admin/rendez-vous) with status actions.
+ * Settings the back office writes (Réglages). Each list says what a setting
+ * is FOR in the words a mechanic uses; the API refuses any key not listed
+ * here. Site texts are not here: they are edited on the site itself with the
+ * Liasse inline editor.
  */
 module.exports = function (lang) {
   const en = lang === 'en';
   const pick = (fr, eng) => (en ? eng : fr);
 
-  const f = (name, type, fr, eng, help = ['', ''], options = {}) => Object.assign({
-    name, type, label: pick(fr, eng), description: pick(help[0], help[1]),
-    placeholder: '', maxLength: type === 'textarea' ? 8000 : 400,
-  }, options);
-  const text = (name, fr, eng, opts = {}) => f(name, 'text', fr, eng, ['', ''], opts);
-  const area = (name, fr, eng, opts = {}) => f(name, 'textarea', fr, eng, ['', ''], opts);
-  const num = (name, fr, eng, min, max, help = ['', '']) => f(name, 'number', fr, eng, help, { min, max, step: 1 });
-  const bool = (name, fr, eng, help = ['', '']) => f(name, 'boolean', fr, eng, help, { default: 0 });
-
-  const modules = [
-    {
-      key: 'services', singular: 'service', icon: 'wrench',
-      label: pick('Services', 'Services'),
-      description: pick('Ce que le garage offre, la durée prévue en atelier et le prix affiché.', 'What the garage offers, the planned shop time and the displayed price.'),
-      fields: [
-        text('name', 'Nom (français)', 'Name (French)', { required: true }),
-        text('name_en', 'Nom (anglais)', 'Name (English)'),
-        f('slug', 'text', 'Adresse web (slug)', 'Web address (slug)', ['Laissez vide : elle sera créée à partir du nom.', 'Leave empty: it is built from the name.'], { maxLength: 80 }),
-        text('tagline', 'Accroche (français)', 'Tagline (French)'),
-        text('tagline_en', 'Accroche (anglais)', 'Tagline (English)'),
-        area('body', 'Description (français)', 'Description (French)'),
-        area('body_en', 'Description (anglais)', 'Description (English)'),
-        f('signs', 'list', 'Quand consulter (français)', 'When to come in (French)', ['Un signe par ligne.', 'One sign per line.'], { maxLength: 2000 }),
-        f('signs_en', 'list', 'Quand consulter (anglais)', 'When to come in (English)', ['Un signe par ligne.', 'One sign per line.'], { maxLength: 2000 }),
-        num('duration_min', 'Temps prévu en atelier (minutes)', 'Planned shop time (minutes)', 0, 600,
-          ['Sert à réserver la bonne durée dans l’horaire. 0 pour une option (voiture de courtoisie, remorquage).', 'Used to hold the right time in the schedule. 0 for an option (courtesy car, towing).']),
-        num('price_from_cents', 'Prix « à partir de » (en cents)', '"From" price (in cents)', 0, 100000000,
-          ['Ex. 8995 pour 89,95 $. Laissez vide pour « Sur estimation ».', 'E.g. 8995 for $89.95. Leave empty for "On estimate".']),
-        bool('price_verified', 'Prix confirmé', 'Price confirmed', ['Tant que ce n’est pas coché, le site affiche « Sur estimation ».', 'Until this is checked the site shows "On estimate".']),
-        bool('bookable', 'Réservable en ligne', 'Bookable online'),
-        bool('featured', 'Mis en avant sur l’accueil', 'Featured on the home page'),
-        bool('published', 'Visible sur le site', 'Visible on the site'),
-        num('sort_order', 'Ordre d’affichage', 'Display order', 0, 9999),
-        f('vehicle_classes', 'text', 'Gabarits (pneus, antirouille)', 'Vehicle sizes (tires, rust-proofing)', ['Séparés par des virgules : voiture, vus, pickup, gros. Vide = tous les véhicules.', 'Comma-separated: voiture, vus, pickup, gros. Empty = every vehicle.'], { maxLength: 60 }),
-        f('image_url', 'image', 'Illustration', 'Illustration', ['Adresse https d’une image.', 'An https image address.']),
-      ],
-    },
-    {
-      key: 'customer_profiles', singular: 'customer', icon: 'user',
-      label: pick('Clients', 'Customers'),
-      description: pick('Les clients qui ont créé un compte pour réserver.', 'Customers who created an account to book.'),
-      fields: [
-        f('user_id', 'readonly', 'Compte', 'Account'),
-        text('first_name', 'Prénom', 'First name'),
-        text('last_name', 'Nom', 'Last name'),
-        text('phone', 'Téléphone', 'Phone', { maxLength: 40 }),
-        f('language', 'select', 'Langue', 'Language', ['', ''], { options: ['fr', 'en'] }),
-        area('notes', 'Notes internes', 'Internal notes', { maxLength: 4000 }),
-      ],
-    },
-    {
-      key: 'vehicles', singular: 'vehicle', icon: 'car',
-      label: pick('Véhicules', 'Vehicles'),
-      description: pick('Les véhicules enregistrés par vos clients.', 'Vehicles saved by your customers.'),
-      fields: [
-        f('user_id', 'readonly', 'Compte', 'Account'),
-        num('year', 'Année', 'Year', 1950, 2100),
-        text('make', 'Marque', 'Make', { maxLength: 60 }),
-        text('model', 'Modèle', 'Model', { maxLength: 80 }),
-        text('trim', 'Version', 'Trim', { maxLength: 80 }),
-        text('vin', 'NIV', 'VIN', { maxLength: 17 }),
-        text('plate', 'Plaque', 'Plate', { maxLength: 12 }),
-        num('odometer_km', 'Kilométrage', 'Mileage', 0, 2000000),
-        num('last_oil_km', 'Km à la dernière vidange', 'Km at last oil change', 0, 2000000),
-        f('last_oil_date', 'date', 'Date de la dernière vidange', 'Last oil change date'),
-        area('notes', 'Notes', 'Notes', { maxLength: 2000 }),
-      ],
-    },
-    {
-      key: 'hours', singular: 'hour', icon: 'clock',
-      label: pick('Heures d’ouverture', 'Opening hours'),
-      description: pick('Un jour par ligne, de lundi (1) à dimanche (7). Les plages de rendez-vous en découlent.', 'One row per day, Monday (1) to Sunday (7). Booking times are built from these.'),
-      fields: [
-        num('weekday', 'Jour (1 = lundi)', 'Day (1 = Monday)', 1, 7),
-        text('opens', 'Ouverture (HH:MM)', 'Opens (HH:MM)', { maxLength: 5 }),
-        text('closes', 'Fermeture (HH:MM)', 'Closes (HH:MM)', { maxLength: 5 }),
-        bool('closed', 'Fermé', 'Closed'),
-      ],
-    },
-    {
-      key: 'closures', singular: 'closure', icon: 'calendar',
-      label: pick('Fermetures', 'Closures'),
-      description: pick('Jours fériés et vacances : aucun rendez-vous n’est offert ces jours-là.', 'Holidays and vacations: no appointments are offered on those days.'),
-      fields: [
-        f('date', 'date', 'Date (AAAA-MM-JJ)', 'Date (YYYY-MM-DD)', ['', ''], { required: true }),
-        text('reason', 'Motif (français)', 'Reason (French)', { maxLength: 120 }),
-        text('reason_en', 'Motif (anglais)', 'Reason (English)', { maxLength: 120 }),
-      ],
-    },
-    {
-      key: 'messages', singular: 'message', icon: 'mail',
-      label: pick('Messages', 'Messages'),
-      description: pick('Les messages reçus par le formulaire de contact.', 'Messages received through the contact form.'),
-      fields: [
-        text('first_name', 'Prénom', 'First name', { required: true }),
-        text('last_name', 'Nom', 'Last name'),
-        f('email', 'email', 'Courriel', 'Email', ['', ''], { required: true }),
-        text('phone', 'Téléphone', 'Phone', { maxLength: 40 }),
-        text('subject', 'Sujet', 'Subject'),
-        area('body', 'Message', 'Message', { required: true }),
-        f('status', 'select', 'État', 'Status', ['', ''], { options: ['new', 'read', 'answered', 'archived'] }),
-      ],
-    },
-  ];
-
-  // Switches on the Réglages page. Every one gates something the site says
-  // or does on the owner's behalf; all start OFF.
+  // On/off switches. Every one gates something the site says or does on the
+  // owner's behalf; all start OFF.
   const settingsFields = [
-    { name: 'contact_verified', label: pick('Coordonnées confirmées', 'Contact details confirmed'), description: pick('Le téléphone vient de votre fiche Google et de votre site actuel. Confirmez qu’il est exact.', 'The phone number comes from your Google listing and your current site. Confirm it is correct.') },
-    { name: 'address_verified', label: pick('Adresse confirmée', 'Address confirmed'), description: pick('L’adresse vient de votre fiche Google. Confirmez qu’elle est exacte.', 'The address comes from your Google listing. Confirm it is correct.') },
-    { name: 'hours_verified', label: pick('Heures confirmées', 'Hours confirmed'), description: pick('Les heures viennent de votre fiche Google. Les plages de rendez-vous en découlent.', 'The hours come from your Google listing. Booking times are built from them.') },
-    { name: 'privacy_approved', label: pick('Avis de confidentialité approuvé', 'Privacy notice approved'), description: pick('Requis avant d’accepter des rendez-vous ou des messages. Un brouillon conforme à la Loi 25 est prêt : relisez-le.', 'Required before taking appointments or messages. A Law 25 draft is ready: read it over.') },
-    { name: 'bookings_live', label: pick('Réservations en ligne actives', 'Online booking live'), description: pick('Les rendez-vous deviennent réels : vous les recevez et les clients reçoivent leurs confirmations. Tant que c’est fermé, la réservation fonctionne en mode aperçu.', 'Appointments become real: you receive them and customers get their confirmations. While off, booking runs in preview mode.') },
-    { name: 'auto_confirm', label: pick('Confirmer automatiquement', 'Confirm automatically'), description: pick('Chaque réservation est confirmée tout de suite. Sinon, vous confirmez chaque demande.', 'Every booking is confirmed right away. Otherwise you confirm each request.') },
-    { name: 'towing_offered', label: pick('Remorquage offert', 'Towing offered'), description: pick('Ajoute « Mon véhicule doit être remorqué » à la prise de rendez-vous. Fermé : votre site n’en annonce pas.', 'Adds "My vehicle needs a tow" to booking. Off: your site does not advertise towing.') },
-    { name: 'messages_enabled', label: pick('Formulaire de contact actif', 'Contact form enabled'), description: pick('Permet aux visiteurs de vous écrire depuis le site.', 'Lets visitors write to you from the site.') },
-    { name: 'live_actions_enabled', label: pick('Envois réels activés', 'Live sending enabled'), description: pick('Interrupteur général : courriels, textos et notifications envoyés, téléversements permis.', 'Master switch: emails, texts and notifications are sent, uploads allowed.') },
+    { name: 'contact_verified', group: 'garage', label: pick('Mon numéro de téléphone est exact', 'My phone number is correct'), description: pick('Il vient de votre fiche publique. Corrigez-le plus haut au besoin, puis cochez.', 'It comes from your public listing. Fix it above if needed, then check this.') },
+    { name: 'address_verified', group: 'garage', label: pick('Mon adresse est exacte', 'My address is correct'), description: pick('Elle paraît sur le site, les estimations et les factures.', 'It shows on the site, estimates and invoices.') },
+    { name: 'bookings_live', group: 'booking', label: pick('Les clients peuvent réserver en ligne', 'Customers can book online'), description: pick('Fermé : la réservation fonctionne en mode aperçu (rien de réel). Ouvert : vous recevez les vrais rendez-vous.', 'Off: booking runs in preview mode (nothing real). On: you receive real appointments.') },
+    { name: 'auto_confirm', group: 'booking', label: pick('Confirmer les réservations tout seul', 'Confirm bookings automatically'), description: pick('Sinon, chaque demande attend que vous la confirmiez.', 'Otherwise each request waits for you to confirm it.') },
+    { name: 'towing_offered', group: 'booking', label: pick('J’offre le remorquage', 'I offer towing'), description: pick('Ajoute « Mon véhicule doit être remorqué » à la réservation en ligne.', 'Adds "My vehicle needs towing" to online booking.') },
+    { name: 'live_actions_enabled', group: 'sending', label: pick('Envoyer les courriels aux clients', 'Send emails to customers'), description: pick('Confirmations, rappels et « votre auto est prête ». Fermé : rien ne part.', 'Confirmations, reminders and "your car is ready". Off: nothing is sent.') },
+    { name: 'messages_enabled', group: 'sending', label: pick('Formulaire de contact actif', 'Contact form on'), description: pick('Les visiteurs peuvent vous écrire depuis le site.', 'Visitors can write to you from the site.') },
+    { name: 'privacy_approved', group: 'privacy', label: pick('J’ai relu et j’approuve l’avis de confidentialité', 'I have read and approve the privacy notice'), description: pick('Exigé par la Loi 25 avant de recevoir des rendez-vous ou des messages.', 'Required by Law 25 before taking appointments or messages.') },
+    { name: 'hours_verified', group: 'hours', label: pick('Mes heures sont exactes', 'My hours are correct'), description: '' },
   ];
 
-  // Numeric booking rules on the same page.
+  // Numbers for online booking.
   const bookingFields = [
-    { name: 'bays', label: pick('Nombre de baies de service', 'Number of service bays'), hint: pick('Combien de véhicules peuvent être en atelier en même temps.', 'How many vehicles can be worked on at once.'), min: 1, max: 12, fallback: 2 },
-    { name: 'slot_minutes', label: pick('Intervalle des plages (minutes)', 'Time-slot interval (minutes)'), hint: '15, 30 ou/or 60.', min: 15, max: 60, fallback: 30 },
-    { name: 'lead_hours', label: pick('Préavis minimum (heures)', 'Minimum notice (hours)'), hint: pick('Délai avant le premier rendez-vous offert.', 'Time before the first bookable slot.'), min: 0, max: 168, fallback: 16 },
-    { name: 'horizon_days', label: pick('Réservation jusqu’à (jours)', 'Book up to (days ahead)'), hint: '', min: 7, max: 120, fallback: 45 },
-    { name: 'max_booking_minutes', label: pick('Durée maximale réservée (minutes)', 'Longest booked job (minutes)'), hint: pick('Au-delà, le reste des travaux se planifie avec le client.', 'Beyond this, the rest of the work is planned with the customer.'), min: 30, max: 600, fallback: 240 },
-    { name: 'courtesy_cars', label: pick('Voitures de courtoisie', 'Courtesy cars'), hint: pick('0 pour ne pas en offrir.', '0 to not offer any.'), min: 0, max: 20, fallback: 1 },
-    { name: 'cancel_cutoff_hours', label: pick('Annulation en ligne jusqu’à (heures avant)', 'Online cancellation until (hours before)'), hint: '', min: 0, max: 168, fallback: 12 },
+    { name: 'bays', label: pick('Autos en même temps à l’atelier', 'Cars in the shop at once'), hint: pick('Le nombre de baies (ponts) où vous travaillez.', 'The number of bays (lifts) you work on.'), min: 1, max: 12, fallback: 2, unit: '' },
+    { name: 'slot_minutes', label: pick('Heures offertes aux', 'Times offered every'), hint: '', min: 15, max: 60, fallback: 30, unit: 'min', choices: [15, 30, 60] },
+    { name: 'lead_hours', label: pick('Délai avant le premier rendez-vous', 'Notice before the first booking'), hint: pick('Ex. 16 h : on ne peut pas réserver pour dans une heure.', 'E.g. 16 h: nobody can book for an hour from now.'), min: 0, max: 168, fallback: 16, unit: 'h' },
+    { name: 'horizon_days', label: pick('Réservation possible jusqu’à', 'Bookable up to'), hint: '', min: 7, max: 120, fallback: 45, unit: pick('jours', 'days') },
+    { name: 'max_booking_minutes', label: pick('Plus long travail réservable en ligne', 'Longest job bookable online'), hint: pick('Au-delà, vous planifiez le reste avec le client.', 'Beyond this, you plan the rest with the customer.'), min: 30, max: 600, fallback: 240, unit: 'min' },
+    { name: 'courtesy_cars', label: pick('Voitures de courtoisie', 'Courtesy cars'), hint: pick('0 pour ne pas en offrir.', '0 to offer none.'), min: 0, max: 20, fallback: 1, unit: '' },
+    { name: 'cancel_cutoff_hours', label: pick('Le client peut annuler jusqu’à', 'Customer can cancel up to'), hint: pick('heures avant le rendez-vous', 'hours before the appointment'), min: 0, max: 168, fallback: 12, unit: 'h' },
   ];
 
-  return { modules, settingsFields, bookingFields };
+  // Numbers for estimates and invoices.
+  const docFields = [
+    { name: 'estimate_valid_days', label: pick('Une estimation est valide pendant', 'An estimate is valid for'), hint: '', min: 1, max: 365, fallback: 30, unit: pick('jours', 'days') },
+  ];
+
+  // Free-text settings and their maximum length.
+  const textKeys = {
+    business_name: 200, contact_phone: 40, business_address: 240, notification_email: 200,
+    tps_number: 40, tvq_number: 40, neq: 20, warranty_text: 2000, document_footer: 500,
+  };
+
+  return { settingsFields, bookingFields, docFields, numberFields: bookingFields.concat(docFields), textKeys };
 };

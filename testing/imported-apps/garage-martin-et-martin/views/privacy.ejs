@@ -1,4 +1,4 @@
 <%- include('partials/header') %>
 <section class="page-head"><div class="wrap"><div class="crumbs"><a href="<%= urls.home %>"><%= t.home %></a> / <%= t.privacy %></div><h1><%= t.privacy %></h1></div></section>
-<section class="section"><div class="wrap"><div class="sheet"><div class="sheet-body prose" data-setting-key="privacy_notice"><% lines(settings.privacy_notice).forEach(function (p) { %><p><%= p %></p><% }); %></div></div></div></section>
+<section class="section"><div class="wrap"><div class="sheet"><div class="sheet-body prose pre-line" data-lk="privacy_notice"><%= settings.privacy_notice %></div></div></div></section>
 <%- include('partials/footer') %>

@@ -1,77 +1,98 @@
+/* The appointment panel (shared by Today and the board) and the bay board. */
 (function () {
-  if (!window.App) return;
-  var t = App.t; var lang = App.data.lang; var cfg = App.data.board || {};
-  var en = lang === 'en';
+  if (!window.App || !window.Admin) return;
+  var A = window.Admin; var tr = A.tr; var el = A.el; var en = A.en;
+  var cfg = App.data.board || {};
+
+  // ---------------------------------------------------------- the panel
+  var panel = A.drawer(tr('Rendez-vous', 'Appointment'));
+  var ORDER = ['requested', 'confirmed', 'in_progress', 'ready', 'completed'];
+
+  function openAppointment(a, onChange) {
+    var body = panel.body; var foot = panel.foot;
+    body.innerHTML = ''; foot.innerHTML = '';
+    panel.title(a.contact_name);
+    var when = new Intl.DateTimeFormat(en ? 'en-CA' : 'fr-CA', { timeZone: 'America/Toronto', weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' }).format(new Date(a.start_at));
+    body.appendChild(el('p', {}, [el('span', { class: 'pill pill-' + a.status, text: A.STATUS[a.status] }), Number(a.preview) ? el('span', { class: 'pill pill-preview', text: tr('aperçu — pas un vrai rendez-vous', 'preview — not a real booking') }) : null]));
+
+    var kv = el('dl', { class: 'kv' });
+    function row(k, v, href) { if (!v) return; kv.appendChild(el('dt', { text: k })); kv.appendChild(el('dd', {}, [href ? el('a', { href: href, text: v }) : v])); }
+    row(tr('Quand', 'When'), when);
+    row(tr('Téléphone', 'Phone'), a.contact_phone, A.tel(a.contact_phone));
+    row(tr('Courriel', 'Email'), a.contact_email, a.contact_email ? 'mailto:' + a.contact_email : null);
+    row(tr('Véhicule', 'Vehicle'), a.vehicle_label);
+    row(tr('Travaux', 'Work'), a.service_names);
+    row(tr('Demande du client', 'Customer’s note'), a.concern);
+    row(tr('Sur place', 'On site'), a.stay === 'wait' ? tr('Attend sur place', 'Waits on site') : tr('Laisse l’auto', 'Drops the car off'));
+    row(tr('Baie', 'Bay'), a.bay ? String(a.bay) : '');
+    if (Number(a.courtesy_car)) row(tr('Voiture de courtoisie', 'Courtesy car'), tr('Demandée', 'Requested'));
+    if (Number(a.towing)) row(tr('Remorquage', 'Towing'), a.towing_address || tr('Demandé', 'Requested'));
+    row(tr('Numéro', 'Reference'), a.reference);
+    body.appendChild(kv);
+
+    // Status: the next step as a big button, every status reachable.
+    var next = A.NEXT[a.status];
+    if (next) {
+      body.appendChild(el('button', { class: 'btn btn-primary btn-block', type: 'button', text: next[1], onclick: function () { save(a, { status: next[0] }, onChange); } }));
+    }
+    body.appendChild(el('p', { class: 'field-label', style: 'margin:18px 0 8px', text: tr('Ou choisir l’étape', 'Or pick the step') }));
+    var steps = el('div', { class: 'steps' });
+    ORDER.concat(['no_show', 'cancelled']).forEach(function (s) {
+      steps.appendChild(el('button', { class: 'chip', type: 'button', 'aria-pressed': a.status === s ? 'true' : 'false', text: A.STATUS[s],
+        onclick: function () {
+          if (s === 'cancelled' && !confirm(tr('Annuler ce rendez-vous ?', 'Cancel this appointment?'))) return;
+          save(a, { status: s }, onChange);
+        } }));
+    });
+    body.appendChild(steps);
+
+    // Estimate / invoice for this job.
+    var docsRow = el('div', { class: 'chips', style: 'margin-bottom:18px' });
+    (a.documents || []).forEach(function (d) {
+      docsRow.appendChild(el('a', { class: 'chip', href: 'admin/documents/' + d.id, text: (d.kind === 'invoice' ? tr('Facture', 'Invoice') : tr('Estimation', 'Estimate')) + ' ' + (d.number || '') }));
+    });
+    ['estimate', 'invoice'].forEach(function (k) {
+      if ((a.documents || []).some(function (d) { return d.kind === k; })) return;
+      docsRow.appendChild(el('button', { class: 'chip', type: 'button', text: '+ ' + (k === 'invoice' ? tr('Facture', 'Invoice') : tr('Estimation', 'Estimate')),
+        onclick: function () { A.newDocument(k, { appointmentId: a.id }); } }));
+    });
+    body.appendChild(el('p', { class: 'field-label', style: 'margin:0 0 8px', text: tr('Estimation et facture', 'Estimate and invoice') }));
+    body.appendChild(docsRow);
+
+    var note = el('textarea', { maxlength: '1000', rows: '3' }); note.value = a.garage_note || '';
+    var inote = el('textarea', { maxlength: '4000', rows: '3' }); inote.value = a.internal_note || '';
+    body.appendChild(A.field(tr('Message au client', 'Message to the customer'), note, a.walkIn ? tr('Visible s’il a un compte en ligne.', 'Visible if they have an online account.') : tr('Visible dans son compte en ligne.', 'Shown in their online account.')));
+    body.appendChild(A.field(tr('Note pour l’atelier (jamais montrée au client)', 'Shop note (never shown to the customer)'), inote));
+
+    if (a.contact_phone) foot.appendChild(el('a', { class: 'btn', href: A.tel(a.contact_phone), text: tr('Appeler', 'Call') }));
+    foot.appendChild(el('button', { class: 'btn btn-primary', type: 'button', text: tr('Enregistrer les notes', 'Save notes'), onclick: function () { save(a, { garage_note: note.value, internal_note: inote.value }, onChange); } }));
+    panel.open();
+  }
+
+  async function save(a, body, onChange) {
+    try {
+      var r = await App.request('api/admin/appointments/' + a.id, { method: 'PUT', body: JSON.stringify(body) });
+      var next = Object.assign({}, r.appointment, { documents: a.documents || [] });
+      App.toast(body.status ? A.STATUS[body.status] + ' ✓' : tr('Enregistré ✓', 'Saved ✓'));
+      if (onChange) onChange(next);
+      if (body.status) panel.close(); else openAppointment(next, onChange);
+    } catch (e) { App.toast(e.message); }
+  }
+  A.openAppointment = openAppointment;
+  A.saveAppointment = save;
+
+  // ------------------------------------------------------------ the board
   var root = document.querySelector('[data-board]');
-  var PX = 1.1; // pixels per minute
-  var state = { from: cfg.date || null, days: Number(root && root.getAttribute('data-days')) || 7, data: null };
-  var STATUSES = ['requested', 'confirmed', 'in_progress', 'ready', 'completed', 'no_show', 'cancelled'];
-  function iso(d) { return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10); }
+  if (!root) return;
+  var PX = 1.15; // pixels per minute
+  var state = { from: cfg.date || null, days: window.innerWidth < 760 ? 1 : (Number(root.getAttribute('data-days')) || 7), data: null };
   function add(isoDate, n) { var p = isoDate.split('-').map(Number); return new Date(Date.UTC(p[0], p[1] - 1, p[2] + n)).toISOString().slice(0, 10); }
   function noon(isoDate) { var p = isoDate.split('-').map(Number); return new Date(Date.UTC(p[0], p[1] - 1, p[2], 12)); }
   function mins(hhmm) { var p = hhmm.split(':').map(Number); return p[0] * 60 + p[1]; }
   function weekday(isoDate) { var w = noon(isoDate).getUTCDay(); return w === 0 ? 7 : w; }
-  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+  function div(cls, text) { return el('div', { class: cls, text: text }); }
 
-  // ------------------------------------------------------------ drawer
-  var drawer = el('aside', 'drawer'); drawer.setAttribute('aria-label', 'Rendez-vous');
-  document.body.appendChild(drawer);
-  function closeDrawer() { drawer.classList.remove('open'); }
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeDrawer(); });
-
-  function openDrawer(a) {
-    drawer.innerHTML = '';
-    var close = el('button', 'button ghost small', '×'); close.style.float = 'right'; close.addEventListener('click', closeDrawer);
-    drawer.appendChild(close);
-    drawer.appendChild(el('span', 'small muted', a.reference + (Number(a.preview) ? (en ? ' · preview (not real)' : ' · aperçu (non réel)') : '')));
-    drawer.appendChild(el('h2', null, a.contact_name));
-    var when = new Intl.DateTimeFormat(en ? 'en-CA' : 'fr-CA', { timeZone: 'America/Toronto', dateStyle: 'full', timeStyle: 'short' }).format(new Date(a.start_at));
-    var kv = el('dl', 'kv');
-    [[t.when, when], [t.phone, a.contact_phone], [t.email, a.contact_email], [t.vehicle, a.vehicle_label], [t.work, a.service_names], [t.notes, a.concern],
-      [t.drop_or_wait, a.stay === 'wait' ? t.wait_onsite : t.drop_off], [en ? 'Bay' : 'Baie', a.bay],
-      [t.courtesy_request, Number(a.courtesy_car) ? '✓' : ''], [t.towing_request, Number(a.towing) ? (a.towing_address || '✓') : '']]
-      .forEach(function (r) { if (!r[1]) return; kv.appendChild(el('dt', null, r[0])); var dd = el('dd'); if (r[0] === t.phone) { var l = el('a', null, r[1]); l.href = 'tel:' + String(r[1]).replace(/[^+\d]/g, ''); dd.appendChild(l); } else dd.textContent = r[1]; kv.appendChild(dd); });
-    drawer.appendChild(kv);
-    drawer.appendChild(el('strong', null, t.status));
-    var row = el('div', 'status-row');
-    STATUSES.forEach(function (s) {
-      var b = el('button', 'button ghost small', t['status_' + s]); b.type = 'button'; b.setAttribute('aria-pressed', a.status === s ? 'true' : 'false');
-      b.addEventListener('click', function () { save(a, { status: s }); });
-      row.appendChild(b);
-    });
-    drawer.appendChild(row);
-    var note = el('label', 'field'); note.appendChild(el('span', null, en ? 'Message to the customer (shown in their account)' : 'Message au client (visible dans son compte)'));
-    var ta = el('textarea'); ta.value = a.garage_note || ''; ta.maxLength = 1000; note.appendChild(ta); drawer.appendChild(note);
-    var inote = el('label', 'field'); inote.appendChild(el('span', null, en ? 'Internal note' : 'Note interne'));
-    var ta2 = el('textarea'); ta2.value = a.internal_note || ''; ta2.maxLength = 4000; inote.appendChild(ta2); drawer.appendChild(inote);
-    var sv = el('button', 'button primary', t.save); sv.type = 'button';
-    sv.addEventListener('click', function () { save(a, { garage_note: ta.value, internal_note: ta2.value }); });
-    drawer.appendChild(sv);
-    if (!Number(a.preview)) drawer.appendChild(el('p', 'small muted', en ? 'Status changes to Confirmed, In the shop, Ready and Completed notify the customer when live sending is on.' : 'Les passages à Confirmé, En atelier, Prêt et Terminé avertissent le client quand les envois réels sont activés.'));
-    drawer.classList.add('open');
-  }
-
-  async function save(a, body) {
-    try {
-      var r = await App.request('api/admin/appointments/' + a.id, { method: 'PUT', body: JSON.stringify(body) });
-      App.toast(t.saved);
-      if (state.data) { state.data.appointments = state.data.appointments.map(function (x) { return x.id === a.id ? r.appointment : x; }); render(); }
-      openDrawer(r.appointment);
-    } catch (e) { App.toast(e.message); }
-  }
-
-  // quick confirm on the dashboard list
-  document.querySelectorAll('[data-quick-status]').forEach(function (b) {
-    b.addEventListener('click', async function () {
-      b.disabled = true;
-      try { await App.request('api/admin/appointments/' + b.getAttribute('data-id'), { method: 'PUT', body: JSON.stringify({ status: b.getAttribute('data-quick-status') }) }); var li = b.closest('li'); if (li) li.remove(); App.toast(t.status_confirmed); load(); }
-      catch (e) { b.disabled = false; App.toast(e.message); }
-    });
-  });
-
-  // ------------------------------------------------------------ board
   async function load() {
-    if (!root) return;
     var q = 'api/admin/board?days=' + state.days + (state.from ? '&from=' + state.from : '');
     try { state.data = await App.request(q); } catch (e) { root.textContent = e.message; return; }
     state.from = state.data.from;
@@ -82,50 +103,57 @@
     var d = state.data; root.innerHTML = '';
     var byDay = {}; d.hours.forEach(function (h) { byDay[h.weekday] = h; });
     var closures = {}; d.closures.forEach(function (c) { closures[String(c.date).slice(0, 10)] = c; });
-    var open = 8 * 60, close = 19 * 60;
+    var open = 8 * 60, close = 18 * 60;
     d.hours.forEach(function (h) { if (!h.closed && h.opens) { open = Math.min(open, mins(h.opens)); close = Math.max(close, mins(h.closes)); } });
     open = Math.floor(open / 60) * 60; close = Math.ceil(close / 60) * 60;
     var height = (close - open) * PX;
-    var grid = el('div', 'board'); grid.style.setProperty('--cols', d.days);
-    var timeCol = el('div', 'board-col board-col--time'); timeCol.appendChild(el('div', 'board-head', ''));
-    var times = el('div', 'board-times'); times.style.height = height + 'px';
-    for (var m = open; m <= close; m += 60) { var s = el('span', null, (en ? ((m / 60) % 12 || 12) + (m / 60 < 12 ? ' am' : ' pm') : (m / 60) + ' h')); s.style.top = ((m - open) * PX) + 'px'; times.appendChild(s); }
+    var grid = div('board'); grid.style.setProperty('--cols', d.days);
+    var timeCol = div('board-col board-col--time'); timeCol.appendChild(div('board-head', ''));
+    var times = div('board-times'); times.style.height = height + 'px';
+    for (var m = open; m <= close; m += 60) { var s = el('span', { text: en ? ((m / 60) % 12 || 12) + (m / 60 < 12 ? ' am' : ' pm') : (m / 60) + ' h' }); s.style.top = ((m - open) * PX) + 'px'; times.appendChild(s); }
     timeCol.appendChild(times); grid.appendChild(timeCol);
     var fmtHead = new Intl.DateTimeFormat(en ? 'en-CA' : 'fr-CA', { weekday: 'short', timeZone: 'UTC' });
     for (var i = 0; i < d.days; i++) {
       var day = add(d.from, i); var h = byDay[weekday(day)];
-      var col = el('div', 'board-col' + ((!h || h.closed || closures[day]) ? ' closed' : '') + (day === d.today ? ' today' : ''));
-      var head = el('div', 'board-head'); head.appendChild(el('span', null, fmtHead.format(noon(day)).replace('.', ''))); head.appendChild(el('b', null, noon(day).getUTCDate()));
+      var col = div('board-col' + ((!h || h.closed || closures[day]) ? ' closed' : '') + (day === d.today ? ' today' : ''));
+      var head = div('board-head'); head.appendChild(el('span', { text: fmtHead.format(noon(day)).replace('.', '') })); head.appendChild(el('b', { text: String(noon(day).getUTCDate()) }));
+      if (closures[day]) head.title = closures[day].reason || '';
       col.appendChild(head);
-      var body = el('div', 'board-body'); body.style.height = height + 'px';
-      for (var mm = open; mm < close; mm += 60) { var ln = el('div', 'board-line'); ln.style.top = ((mm - open) * PX) + 'px'; body.appendChild(ln); }
+      var body = div('board-body'); body.style.height = height + 'px';
+      for (var mm = open; mm < close; mm += 60) { var ln = div('board-line'); ln.style.top = ((mm - open) * PX) + 'px'; body.appendChild(ln); }
       d.appointments.filter(function (a) { return a.local.date === day; }).forEach(function (a) {
-        var top = (mins(a.local.time) - open) * PX; var len = Math.max(26, Number(a.duration_min) * PX);
+        var top = (mins(a.local.time) - open) * PX; var len = Math.max(30, Number(a.duration_min) * PX);
         var bay = Math.max(1, Number(a.bay) || 1); var w = 100 / d.bays;
-        var b = el('button', 'appt st-' + a.status + (Number(a.preview) ? ' is-preview' : '')); b.type = 'button';
+        var b = el('button', { class: 'appt st-' + a.status + (Number(a.preview) ? ' is-preview' : ''), type: 'button' }, [
+          el('b', { text: a.local.time + ' · ' + a.contact_name }), el('small', { text: a.vehicle_label || '' }), el('small', { text: a.service_names || '' })]);
         b.style.top = top + 'px'; b.style.height = len + 'px'; b.style.left = 'calc(' + ((bay - 1) * w) + '% + 3px)'; b.style.width = 'calc(' + w + '% - 6px)';
-        b.appendChild(el('b', null, a.local.time + ' · ' + a.contact_name));
-        b.appendChild(el('small', null, a.vehicle_label));
-        b.appendChild(el('small', null, a.service_names));
-        b.addEventListener('click', function () { openDrawer(a); });
+        b.addEventListener('click', function () { openAppointment(a, function (next) { state.data.appointments = state.data.appointments.map(function (x) { return x.id === next.id ? Object.assign(next, { local: x.local }) : x; }); render(); }); });
         body.appendChild(b);
       });
       if (day === d.today) {
         var now = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Toronto', hourCycle: 'h23', hour: '2-digit', minute: '2-digit' }).format(new Date());
-        var nm = mins(now); if (nm >= open && nm <= close) { var nl = el('div', 'now-line'); nl.style.top = ((nm - open) * PX) + 'px'; body.appendChild(nl); }
+        var nm = mins(now); if (nm >= open && nm <= close) { var nl = div('now-line'); nl.style.top = ((nm - open) * PX) + 'px'; body.appendChild(nl); }
       }
       col.appendChild(body); grid.appendChild(col);
     }
-    root.appendChild(grid);
+    var scroll = div('board-scroll'); scroll.appendChild(grid); root.appendChild(scroll);
     var range = document.querySelector('[data-range]');
-    if (range) { var f = new Intl.DateTimeFormat(en ? 'en-CA' : 'fr-CA', { day: 'numeric', month: 'long', timeZone: 'UTC' }); range.textContent = d.days === 1 ? f.format(noon(d.from)) : f.format(noon(d.from)) + ' – ' + f.format(noon(add(d.from, d.days - 1))); }
+    if (range) {
+      var f = new Intl.DateTimeFormat(en ? 'en-CA' : 'fr-CA', { day: 'numeric', month: 'long', timeZone: 'UTC' });
+      range.textContent = d.days === 1 ? new Intl.DateTimeFormat(en ? 'en-CA' : 'fr-CA', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'UTC' }).format(noon(d.from)) : f.format(noon(d.from)) + ' – ' + f.format(noon(add(d.from, d.days - 1)));
+    }
+    document.querySelectorAll('[data-span]').forEach(function (b) { b.setAttribute('aria-pressed', Number(b.getAttribute('data-span')) === d.days ? 'true' : 'false'); });
   }
 
   document.querySelectorAll('[data-nav]').forEach(function (b) {
-    b.addEventListener('click', function () { var n = Number(b.getAttribute('data-nav')); state.from = n === 0 ? null : add(state.from || iso(new Date()), n * state.days); load(); });
+    b.addEventListener('click', function () {
+      var n = Number(b.getAttribute('data-nav'));
+      state.from = n === 0 ? null : add(state.from || state.data.today, n * state.days);
+      load();
+    });
   });
   document.querySelectorAll('[data-span]').forEach(function (b) {
     b.addEventListener('click', function () { state.days = Number(b.getAttribute('data-span')); load(); });
   });
-  if (root) load();
+  load();
 })();
