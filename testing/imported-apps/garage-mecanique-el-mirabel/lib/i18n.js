@@ -73,7 +73,7 @@ const fr = {
   server_error: 'Une erreur est survenue. Réessayez.', offline: 'Connexion impossible. Vérifiez votre réseau.', rate_limit: 'Trop de demandes. Réessayez dans un instant.',
   slot_taken: 'Cette plage vient d’être prise. Choisissez-en une autre.', auth_required: 'Connectez-vous pour continuer.',
   too_late: 'Ce rendez-vous ne peut plus être modifié en ligne. Appelez le garage.', conflict: 'Cette information existe déjà.',
-  operation_disabled: 'Cette action sera disponible quand le garage l’aura activée.', vin_error: 'Service de NIV indisponible pour le moment.',
+  operation_disabled: 'Cette action sera disponible quand le garage l’aura activée.', vin_error: 'Service de NIV indisponible pour le moment.', privacy_incomplete: 'L’avis de confidentialité n’est pas complet : remplacez [nom à compléter] et retirez la ligne BROUILLON, en français et en anglais.', privacy_first: 'Approuvez d’abord l’avis de confidentialité (plus bas).',
   remove: 'Supprimer', see_all: 'Voir tout', cookies: 'Ce site n’utilise pas de témoins publicitaires.',
 };
 
@@ -138,7 +138,7 @@ const en = {
   server_error: 'Something went wrong. Please try again.', offline: 'Cannot connect. Check your network.', rate_limit: 'Too many requests. Try again in a moment.',
   slot_taken: 'That time was just taken. Please choose another.', auth_required: 'Sign in to continue.',
   too_late: 'This appointment can no longer be changed online. Please call the garage.', conflict: 'This already exists.',
-  operation_disabled: 'This action will be available once the garage turns it on.', vin_error: 'VIN lookup is unavailable right now.',
+  operation_disabled: 'This action will be available once the garage turns it on.', vin_error: 'VIN lookup is unavailable right now.', privacy_incomplete: 'The privacy notice is not complete: replace [name to be completed] and remove the DRAFT line, in French and in English.', privacy_first: 'Approve the privacy notice first (below).',
   remove: 'Delete', see_all: 'See all', cookies: 'This site uses no advertising cookies.',
 };
 

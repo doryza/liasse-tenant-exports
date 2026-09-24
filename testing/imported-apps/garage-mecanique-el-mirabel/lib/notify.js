@@ -66,7 +66,8 @@ module.exports = function (services) {
     if (appt.contact_email) {
       try { out.email = await services.email.send({ to: appt.contact_email, subject: msg.subject, html: msg.html, text: msg.text, replyTo: raw.notification_email || undefined }); } catch (e) { out.email = { error: e.message }; }
     }
-    if (['confirmed', 'ready', 'rescheduled', 'cancelled'].includes(kind)) {
+    // Push goes to platform accounts only — a walk-in the garage entered ("c:<id>") has none.
+    if (['confirmed', 'ready', 'rescheduled', 'cancelled'].includes(kind) && /^\d+$/.test(String(appt.user_id))) {
       try { out.push = await services.push.sendToUser(Number(appt.user_id), { title: msg.title, body: `${appt.reference} · ${S.dateTime(appt.start_at, appt.language)}`, url: link }); } catch (e) { out.push = { error: e.message }; }
     }
     return out;

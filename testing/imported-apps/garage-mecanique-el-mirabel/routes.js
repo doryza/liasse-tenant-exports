@@ -1,8 +1,6 @@
 const S = require('./lib/settings');
 const T = require('./lib/i18n');
 const B = require('./lib/booking');
-const A = require('./lib/admin');
-const getModules = require('./lib/modules');
 const makeNotify = require('./lib/notify');
 const makeVehicles = require('./lib/vehicles');
 const assets = require('./lib/assets');
@@ -118,7 +116,8 @@ module.exports = function (services) {
     L.fmt = (str, vars) => String(str || '').replace(/\{(\w+)\}/g, (m, k) => (vars && vars[k] != null ? vars[k] : m));
     req.isPreview = !!(services.config.isPreview || services.config.preview || req.query.preview === '1');
     try { L.isOwner = !!services.admin.isAdmin(req); } catch (e) { L.isOwner = false; }
-    L.settings = Object.fromEntries(Object.entries(raw).map(([k, v]) => [k, S.localized(v, lang)]));
+    // Owner edits made with the inline editor (_p_lk_<key>_<lang>) win over the seeded text.
+    L.settings = Object.fromEntries(Object.entries(raw).map(([k, v]) => [k, S.siteText(raw, k, lang)]));
     L.t = S.translate(raw, lang);
     L.flags = {
       contact: S.flag(raw, 'contact_verified'),
@@ -449,7 +448,7 @@ module.exports = function (services) {
            VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,1,$22,$23) RETURNING *`,
           [B.reference((a, z) => services.crypto.randomInt(a, z)), uid, requestKey || null, vehicle.id, vehicleLabel(vehicle), JSON.stringify(rows.map((s) => s.slug)),
             names.join(', '), concern, start, end, minutes, b.stay === 'wait' ? 'wait' : 'drop', courtesy, towing, towing ? clip(b.towingAddress, 300) : null,
-            (first + ' ' + last).trim(), phone, req.user.email || null, lang, status, preview, S.localized(raw.privacy_notice, lang).slice(0, 8000),
+            (first + ' ' + last).trim(), phone, req.user.email || null, lang, status, preview, S.siteText(raw, 'privacy_notice', lang).slice(0, 8000),
             status === 'confirmed' ? new Date() : null]);
       } catch (e) {
         if (e.code === '23505' && /reference/.test(e.message || e.detail || '')) continue;
@@ -536,7 +535,7 @@ module.exports = function (services) {
     const recent = await db.get("SELECT COUNT(*)::int AS n FROM messages WHERE email=$1 AND created_at > NOW() - INTERVAL '1 hour'", [m.email]);
     if (recent.n >= 3) throw S.error('rate_limit', 429);
     await db.run('INSERT INTO messages(first_name,last_name,email,phone,subject,body,consent,privacy_snapshot) VALUES($1,$2,$3,$4,$5,$6,1,$7)',
-      [m.first, m.last, m.email, m.phone, m.subject, m.body, S.localized(req.site.privacy_notice, req.lang).slice(0, 8000)]);
+      [m.first, m.last, m.email, m.phone, m.subject, m.body, S.siteText(req.site, 'privacy_notice', req.lang).slice(0, 8000)]);
     if (res.locals.flags.live) {
       const to = req.site.notification_email || services.config.contactEmail;
       if (to) services.email.send({ to, replyTo: m.email, subject: `Message du site — ${m.subject || m.first}`, text: `${m.first} ${m.last}\n${m.email} · ${m.phone}\n\n${m.body}` }).catch(() => {});
@@ -544,155 +543,10 @@ module.exports = function (services) {
     res.status(201).json({ success: true });
   }));
 
-  // --- Admin --------------------------------------------------------------------
-  function requireAdmin(req, res, next) {
-    if (!services.admin.isAdmin(req)) return res.status(403).json({ error: res.locals.t.forbidden });
-    next();
-  }
-  router.use('/api/admin', requireAdmin);
-  const adminUser = () => ({ name: services.config.ownerName || 'Garage' });
-  const STATUSES = ['requested', 'confirmed', 'in_progress', 'ready', 'completed', 'cancelled', 'no_show'];
-
-  function adminAppointment(a) {
-    return Object.assign({}, a, { services: list(a.services), local: S.local(a.start_at), localEnd: S.local(a.end_at) });
-  }
-
-  router.get('/api/admin/board', wrap(async (req, res) => {
-    const today = S.local(new Date()).date;
-    const from = /^\d{4}-\d{2}-\d{2}$/.test(req.query.from || '') ? req.query.from : today;
-    const days = Math.max(1, Math.min(14, Number(req.query.days) || 7));
-    const rows = await db.all(
-      "SELECT * FROM appointments WHERE start_at >= $1 AND start_at < $2 AND status <> 'holding' ORDER BY start_at",
-      [S.zoned(from, '00:00'), S.zoned(S.addDays(from, days), '00:00')]);
-    const hours = await db.all('SELECT * FROM hours ORDER BY weekday');
-    const closures = await db.all("SELECT id, to_char(date,'YYYY-MM-DD') AS date, reason, reason_en FROM closures WHERE date >= $1 AND date < $2", [from, S.addDays(from, days)]);
-    res.json({ from, days, today, bays: B.config(req.site).bays, hours, closures, appointments: rows.map(adminAppointment) });
-  }));
-
-  router.put('/api/admin/appointments/:id', wrap(async (req, res) => {
-    const id = Number(req.params.id);
-    const b = req.body || {};
-    const appt = await db.get('SELECT * FROM appointments WHERE id=$1', [id]);
-    if (!appt) throw S.error('not_found', 404);
-    const status = b.status && STATUSES.includes(b.status) ? b.status : appt.status;
-    const garageNote = b.garage_note !== undefined ? clip(b.garage_note, 1000) : appt.garage_note;
-    const internal = b.internal_note !== undefined ? clip(b.internal_note, 4000) : appt.internal_note;
-    const row = await db.get(
-      `UPDATE appointments SET status=$1, garage_note=$2, internal_note=$3,
-         confirmed_at = CASE WHEN $1='confirmed' AND confirmed_at IS NULL THEN NOW() ELSE confirmed_at END,
-         cancelled_at = CASE WHEN $1='cancelled' AND cancelled_at IS NULL THEN NOW() ELSE cancelled_at END,
-         cancelled_by = CASE WHEN $1='cancelled' AND cancelled_by IS NULL THEN 'garage' ELSE cancelled_by END,
-         updated_at=NOW() WHERE id=$4 RETURNING *`, [status, garageNote, internal, id]);
-    if (['cancelled', 'no_show'].includes(status)) await B.releaseBay(db, id);
-    if (status !== appt.status || (b.garage_note !== undefined && garageNote !== appt.garage_note)) {
-      await db.run('INSERT INTO appointment_events(appointment_id,status,note,actor) VALUES($1,$2,$3,$4)', [id, status, garageNote !== appt.garage_note ? garageNote : null, 'garage']);
-    }
-    if (status !== appt.status && ['confirmed', 'in_progress', 'ready', 'completed', 'cancelled'].includes(status)) {
-      notify.toCustomer(req.site, row, status, absolute(req, '/' + S.urls(row.language).appointment + row.reference + '/')).catch(() => {});
-    }
-    res.json({ appointment: adminAppointment(row) });
-  }));
-
-  router.get('/api/admin/settings', wrap(async (req, res) => res.json({ settings: await store.load() })));
-
-  router.put('/api/admin/settings', wrap(async (req, res) => {
-    const key = String(req.body.key || '');
-    const value = String(req.body.value == null ? '' : req.body.value);
-    if (!/^[a-zA-Z0-9_:-]{1,100}$/.test(key) || key.startsWith('_seed') || value.length > 20000) throw S.error('invalid');
-    const m = getModules(req.lang);
-    if (m.settingsFields.some((x) => x.name === key) && !['0', '1'].includes(value)) throw S.error('invalid');
-    const numeric = m.bookingFields.find((x) => x.name === key);
-    if (numeric && value !== '') {
-      const n = Number(value);
-      if (!Number.isInteger(n) || n < numeric.min || n > numeric.max) throw S.error('invalid');
-      if (key === 'slot_minutes' && ![15, 30, 60].includes(n)) throw S.error('invalid');
-    }
-    if (key === 'privacy_approved' && value === '1' && !S.both(req.site.privacy_notice)) throw S.error('required');
-    if (key === 'bookings_live' && value === '1' && !S.flag(req.site, 'privacy_approved')) throw S.error('required');
-    if (['contact_email', 'notification_email'].includes(key) && value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) throw S.error('invalid');
-    if (key === 'contact_phone' && value && !PHONE_RE.test(value)) throw S.error('invalid');
-    if (key.endsWith('_url') && !A.imageOK(value)) throw S.error('invalid');
-    await db.run('INSERT INTO admin_settings(key,value) VALUES($1,$2) ON CONFLICT(key) DO UPDATE SET value=EXCLUDED.value,updated_at=NOW()', [key, value]);
-    res.json({ success: true });
-  }));
-
-  for (const base of getModules('fr').modules) {
-    const key = base.key;
-    router.get('/api/admin/' + key, wrap(async (req, res) => res.json({ [key]: await db.all('SELECT * FROM ' + key + ' ORDER BY id DESC') })));
-    router.post('/api/admin/' + key, wrap(async (req, res) => {
-      if (['customer_profiles', 'vehicles'].includes(key)) throw S.error('forbidden', 403);
-      const m = getModules(req.lang).modules.find((x) => x.key === key);
-      res.status(201).json({ [m.singular]: await A.save(db, m, req.body, null) });
-    }));
-    router.put('/api/admin/' + key + '/:id', wrap(async (req, res) => {
-      if (!/^\d+$/.test(req.params.id)) throw S.error('invalid');
-      const m = getModules(req.lang).modules.find((x) => x.key === key);
-      res.json({ [m.singular]: await A.save(db, m, req.body, Number(req.params.id)) });
-    }));
-    router.delete('/api/admin/' + key + '/:id', wrap(async (req, res) => {
-      const id = Number(req.params.id);
-      if (!Number.isInteger(id)) throw S.error('invalid');
-      if (key === 'customer_profiles') throw S.error('forbidden', 403);
-      const row = key === 'vehicles'
-        ? await db.get('UPDATE vehicles SET archived=1 WHERE id=$1 RETURNING id', [id])
-        : await db.get('DELETE FROM ' + key + ' WHERE id=$1 RETURNING id', [id]);
-      if (!row) throw S.error('not_found', 404);
-      res.json({ success: true });
-    }));
-  }
-
-  async function adminStats(raw) {
-    const today = S.local(new Date()).date;
-    const counts = {};
-    for (const m of getModules('fr').modules) counts[m.key] = Number((await db.get('SELECT COUNT(*) AS n FROM ' + m.key)).n);
-    const v = await db.get("SELECT COUNT(*) AS total,COUNT(*) FILTER(WHERE created_at>NOW()-INTERVAL '7 days') AS recent FROM site_visits");
-    const a = await db.get(
-      `SELECT COUNT(*) FILTER (WHERE status='requested') AS pending,
-              COUNT(*) FILTER (WHERE status IN ('requested','confirmed','in_progress','ready') AND start_at >= $1 AND start_at < $2) AS today,
-              COUNT(*) FILTER (WHERE status IN ('requested','confirmed') AND start_at >= $2 AND start_at < $3) AS week,
-              COUNT(*) FILTER (WHERE preview=1) AS previews
-       FROM appointments`, [S.zoned(today, '00:00'), S.zoned(S.addDays(today, 1), '00:00'), S.zoned(S.addDays(today, 8), '00:00')]);
-    let userCount = 0; let pushCount = 0;
-    try { userCount = Number(await services.auth.getUserCount()) || 0; } catch (e) {}
-    try { pushCount = Number(await services.push.getSubscriptionCount()) || 0; } catch (e) {}
-    const unpriced = await db.get('SELECT COUNT(*)::int AS n FROM services WHERE published=1 AND bookable=1 AND price_verified=0');
-    return {
-      counts, userCount, pushCount, today,
-      totalVisits: Number(v.total), recentVisits: Number(v.recent),
-      pending: Number(a.pending), todayCount: Number(a.today), weekCount: Number(a.week), previews: Number(a.previews),
-      unpriced: unpriced.n, newMessages: Number((await db.get("SELECT COUNT(*) AS n FROM messages WHERE status='new'")).n),
-    };
-  }
-
-  function adminPage(path, view, section, load) {
-    router.get(path, wrap(async (req, res) => {
-      if (!services.admin.isAdmin(req)) return res.redirect(tenantPath(req, '/admin/login'));
-      res.locals.page = 'admin';
-      const m = getModules(req.lang);
-      const extra = load ? await load(req, res, m) : {};
-      res.render(view, Object.assign({ page: 'admin', modules: m.modules, adminSection: section, adminUser: adminUser() }, extra));
-    }));
-  }
-
-  adminPage('/admin', 'admin', 'dashboard', async (req) => ({
-    stats: await adminStats(req.site),
-    pendingRequests: (await db.all("SELECT * FROM appointments WHERE status='requested' ORDER BY start_at LIMIT 8")).map(adminAppointment),
-    recentMessages: await db.all('SELECT * FROM messages ORDER BY created_at DESC LIMIT 5'),
-    emailConfigured: !!(req.site.notification_email || services.config.contactEmail),
-  }));
-  adminPage('/admin/rendez-vous', 'admin-board', 'board', async (req) => ({ boardDate: /^\d{4}-\d{2}-\d{2}$/.test(req.query.date || '') ? req.query.date : null }));
-  adminPage('/admin/settings', 'admin-settings', 'settings', async (req, res, m) => ({
-    settingsFields: m.settingsFields, bookingFields: m.bookingFields, rawSettings: req.site,
-  }));
-  for (const mod of getModules('fr').modules) {
-    adminPage('/admin/' + mod.key, 'admin-module', mod.key, async (req, res, m) => {
-      const current = m.modules.find((x) => x.key === mod.key);
-      return {
-        items: await db.all('SELECT * FROM ' + mod.key + (mod.key === 'vehicles' ? ' WHERE archived=0' : '') + ' ORDER BY id DESC LIMIT 500'),
-        module: current, fieldsJson: encodeURIComponent(JSON.stringify(current.fields)),
-      };
-    });
-  }
+  // --- Admin (the garage's back office) --------------------------------------
+  require('./lib/adminRoutes')(router, {
+    services, db, store, wrap, tenantPath, absolute, notify, cars, vehicleLabel, cleanVehicle, publishedServices,
+  });
 
   router.use((req, res) => {
     if (req.path.startsWith('/api/')) return res.status(404).json({ error: res.locals.t.not_found });

@@ -4,8 +4,8 @@
 
 <section class="hero" style="--hero-img:url('<%= assets.hero.replace('/upload/', '/upload/w_2000,f_auto,q_auto/') %>')">
   <div class="wrap">
-    <h1 data-setting-key="hero_title"><%= settings.hero_title %></h1>
-    <p class="lede" data-setting-key="hero_subtitle"><%= settings.hero_subtitle %></p>
+    <h1 data-lk="hero_title"><%= settings.hero_title %></h1>
+    <p class="lede" data-lk="hero_subtitle"><%= settings.hero_subtitle %></p>
     <div class="cta-row">
       <a class="btn btn-neon" href="<%= urls.booking %>"><%- include('partials/icon', { name: 'calendar' }) %><%= t.book_cta %></a>
       <a class="btn btn-line" href="<%= phoneHref %>"><%- include('partials/icon', { name: 'phone' }) %><%= settings.contact_phone %></a>
@@ -13,7 +13,7 @@
     <div class="facts">
       <a class="fact" href="<%= urls.about %>#heures"><%- include('partials/icon', { name: 'clock' }) %><span><b><%= t.hours %></b><span><%= todayRow && !todayRow.closed ? (t.today.charAt(0).toUpperCase() + t.today.slice(1) + ' · ' + clock(todayRow.opens) + ' – ' + clock(todayRow.closes)) : (lang === 'en' ? 'Mon–Fri · 9 a.m. – 6 p.m.' : 'Lun–ven · 9 h – 18 h') %></span></span></a>
       <a class="fact" href="<%= directionsHref %>" target="_blank" rel="noopener"><%- include('partials/icon', { name: 'pin' }) %><span><b><%= t.address %></b><span><%= settings.business_address %></span></span></a>
-      <div class="fact"><%- include('partials/icon', { name: 'card' }) %><span><b><%= t.payment_methods %></b><span><%= settings.payment_methods %></span></span></div>
+      <div class="fact"><%- include('partials/icon', { name: 'card' }) %><span><b><%= t.payment_methods %></b><span data-lk="payment_methods"><%= settings.payment_methods %></span></span></div>
     </div>
   </div>
 </section>
@@ -52,10 +52,10 @@
       <a class="btn btn-neon" href="<%= urls.booking %>"><%= t.book_cta %></a>
     </div>
     <ol class="how">
-      <li><p data-setting-key="how_1"><%= settings.how_1 %></p></li>
-      <li><p data-setting-key="how_2"><%= settings.how_2 %></p></li>
-      <li><p data-setting-key="how_3"><%= settings.how_3 %></p></li>
-      <li><p data-setting-key="how_4"><%= settings.how_4 %></p></li>
+      <li><p data-lk="how_1"><%= settings.how_1 %></p></li>
+      <li><p data-lk="how_2"><%= settings.how_2 %></p></li>
+      <li><p data-lk="how_3"><%= settings.how_3 %></p></li>
+      <li><p data-lk="how_4"><%= settings.how_4 %></p></li>
     </ol>
   </div>
 </section>
@@ -78,7 +78,7 @@
           <tr class="<%= h.weekday === todayWd ? 'is-today' : '' %>"><td><%= t['day' + h.weekday] %></td><td><%= h.closed ? t.closed : clock(h.opens) + ' – ' + clock(h.closes) %></td></tr>
         <% }); %>
       </table>
-      <p class="muted small" style="margin-top:14px"><%= t.areas %> : <%= settings.service_areas %></p>
+      <p class="muted small" style="margin-top:14px"><%= t.areas %> : <span data-lk="service_areas"><%= settings.service_areas %></span></p>
     </div>
   </div>
 </section>
@@ -97,8 +97,8 @@
       <ul class="info-list">
         <li><%- include('partials/icon', { name: 'pin' }) %><div><b><%= t.address %></b><a href="<%= directionsHref %>" target="_blank" rel="noopener"><%= settings.business_address %></a></div></li>
         <li><%- include('partials/icon', { name: 'phone' }) %><div><b><%= t.phone %></b><a href="<%= phoneHref %>"><%= settings.contact_phone %></a></div></li>
-        <li><%- include('partials/icon', { name: 'card' }) %><div><b><%= t.payment_methods %></b><%= settings.payment_methods %></div></li>
-        <li><%- include('partials/icon', { name: 'car' }) %><div><b><%= t.areas %></b><%= settings.service_areas %></div></li>
+        <li><%- include('partials/icon', { name: 'card' }) %><div><b><%= t.payment_methods %></b><span data-lk="payment_methods"><%= settings.payment_methods %></span></div></li>
+        <li><%- include('partials/icon', { name: 'car' }) %><div><b><%= t.areas %></b><span data-lk="service_areas"><%= settings.service_areas %></span></div></li>
       </ul>
       <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:24px">
         <a class="btn btn-neon" href="<%= urls.booking %>"><%= t.book_cta %></a>

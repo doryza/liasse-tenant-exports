@@ -1,63 +1,88 @@
-<%- include('partials/admin-shell', { adminSection: 'settings', adminTitle: lang === 'en' ? 'Settings' : 'Réglages' }) %>
+<%- include('partials/admin-shell', { adminTitle: tr('Réglages', 'Settings') }) %>
+<%
+  var group = function (g) { return settingsFields.filter(function (f) { return f.group === g; }); };
+  var val = function (k, fb) { return rawSettings[k] != null && rawSettings[k] !== '' ? rawSettings[k] : fb; };
+  var privacyDraft = /\[(nom|name)[^\]]*\]|BROUILLON|DRAFT FOR/i.test(effPrivacy.fr + effPrivacy.en);
+%>
+<div class="page-head"><div><h1><%= tr('Réglages', 'Settings') %></h1><p><%= tr('Tout s’enregistre dès que vous quittez un champ.', 'Everything saves as soon as you leave a field.') %></p></div></div>
+<nav class="settings-nav chips">
+  <a class="chip" href="admin/reglages#garage"><%= tr('Le garage', 'The garage') %></a>
+  <a class="chip" href="admin/reglages#factures"><%= tr('Estimations et factures', 'Estimates & invoices') %></a>
+  <a class="chip" href="admin/reglages#reservation"><%= tr('Réservation en ligne', 'Online booking') %></a>
+  <a class="chip" href="admin/reglages#envois"><%= tr('Envois', 'Sending') %></a>
+  <a class="chip" href="admin/reglages#confidentialite"><%= tr('Confidentialité', 'Privacy') %></a>
+</nav>
 
-<section class="admin-card">
-  <h2><%= lang === 'en' ? 'What the site is allowed to do' : 'Ce que le site est autorisé à faire' %></h2>
-  <p class="muted small"><%= lang === 'en' ? 'Each switch turns on something that speaks for you. While it is off, the site stays careful: booking runs in preview mode and nothing is sent.' : 'Chaque interrupteur active quelque chose qui parle en votre nom. Tant qu’il est fermé, le site reste prudent : la réservation fonctionne en mode aperçu et rien n’est envoyé.' %></p>
-  <div class="admin-toggles">
-    <% settingsFields.forEach(function (field) { %>
-      <label class="admin-toggle">
-        <input type="checkbox" data-setting-toggle="<%= field.name %>" <%= rawSettings[field.name] === '1' ? 'checked' : '' %>>
-        <span><strong><%= field.label %></strong><span class="muted small"><%= field.description %></span></span>
+<section class="card anchor" id="garage">
+  <h2><%= tr('Le garage', 'The garage') %></h2>
+  <p class="card-sub"><%= tr('Paraît sur le site, les estimations et les factures.', 'Shows on the site, estimates and invoices.') %></p>
+  <div class="grid-2">
+    <label class="field"><span><%= tr('Nom du garage', 'Garage name') %></span><input data-setting="business_name" value="<%= val('business_name', '') %>" maxlength="200"></label>
+    <label class="field"><span><%= tr('Téléphone', 'Phone') %></span><input data-setting="contact_phone" type="tel" value="<%= val('contact_phone', '') %>" maxlength="40"></label>
+    <label class="field"><span><%= tr('Adresse', 'Address') %></span><input data-setting="business_address" value="<%= val('business_address', '') %>" maxlength="240"></label>
+    <label class="field"><span><%= tr('Courriel qui reçoit les rendez-vous et messages', 'Email that receives bookings and messages') %></span><input data-setting="notification_email" type="email" value="<%= val('notification_email', '') %>" maxlength="200"></label>
+  </div>
+  <% group('garage').forEach(function (f) { %>
+    <label class="switch-row"><span><strong><%= f.label %></strong><span class="muted"><%= f.description %></span></span><span class="switch"><input type="checkbox" data-setting-toggle="<%= f.name %>" <%= rawSettings[f.name] === '1' ? 'checked' : '' %>><span></span></span></label>
+  <% }); %>
+</section>
+
+<section class="card anchor" id="factures">
+  <h2><%= tr('Estimations et factures', 'Estimates & invoices') %></h2>
+  <p class="card-sub"><%= tr('Mis d’office sur chaque nouvelle estimation ou facture — vous pouvez toujours le changer sur le document.', 'Filled in on every new estimate or invoice — you can still change it on the document.') %></p>
+  <div class="grid-2">
+    <label class="field"><span><%= tr('Taux horaire de main-d’œuvre', 'Labour hourly rate') %></span><span class="input-money"><input data-setting="labour_rate_cents" data-money inputmode="decimal" value="<%= rawSettings.labour_rate_cents ? (Number(rawSettings.labour_rate_cents) / 100).toFixed(2).replace('.', lang === 'en' ? '.' : ',') : '' %>" placeholder="<%= tr('ex. 110', 'e.g. 110') %>"></span><span class="hint"><%= tr('La loi demande que le taux horaire paraisse sur la facture.', 'The law requires the hourly rate on the invoice.') %></span></label>
+    <% docFields.forEach(function (f) { %>
+      <label class="field"><span><%= f.label %></span><span class="input-unit"><input data-setting="<%= f.name %>" inputmode="numeric" value="<%= val(f.name, f.fallback) %>"><span class="muted"><%= f.unit %></span></span></label>
+    <% }); %>
+    <label class="field"><span><%= tr('No de TPS', 'GST number') %></span><input data-setting="tps_number" value="<%= val('tps_number', '') %>" maxlength="40" placeholder="123456789 RT0001"></label>
+    <label class="field"><span><%= tr('No de TVQ', 'QST number') %></span><input data-setting="tvq_number" value="<%= val('tvq_number', '') %>" maxlength="40" placeholder="1234567890 TQ0001"></label>
+    <label class="field"><span>NEQ</span><input data-setting="neq" value="<%= val('neq', '') %>" maxlength="20"></label>
+  </div>
+  <label class="switch-row"><span><strong><%= tr('Je perçois la TPS et la TVQ', 'I charge GST and QST') %></strong><span class="muted"><%= tr('Décochez seulement si vous n’êtes pas inscrit aux taxes (petit fournisseur).', 'Uncheck only if you are not registered for taxes (small supplier).') %></span></span><span class="switch"><input type="checkbox" data-setting-toggle="charge_taxes" <%= rawSettings.charge_taxes === '0' ? '' : 'checked' %>><span></span></span></label>
+  <label class="field" style="margin-top:10px"><span><%= tr('Garantie imprimée sur les factures', 'Warranty printed on invoices') %></span><textarea data-setting="warranty_text" rows="4" maxlength="2000"><%= val('warranty_text', docSettings.warranty) %></textarea><span class="hint"><%= tr('Le minimum légal est déjà écrit : 3 mois ou 5 000 km. Vous pouvez offrir plus, jamais moins.', 'The legal minimum is already written: 3 months or 5,000 km. You may offer more, never less.') %></span></label>
+  <label class="field"><span><%= tr('Mot au bas des documents (facultatif)', 'Line at the bottom of documents (optional)') %></span><input data-setting="document_footer" value="<%= val('document_footer', '') %>" maxlength="500" placeholder="<%= tr('ex. Merci de votre confiance !', 'e.g. Thank you for your business!') %>"></label>
+</section>
+
+<section class="card anchor" id="reservation">
+  <h2><%= tr('Réservation en ligne', 'Online booking') %></h2>
+  <% group('booking').forEach(function (f) { %>
+    <label class="switch-row"><span><strong><%= f.label %></strong><span class="muted"><%= f.description %></span></span><span class="switch"><input type="checkbox" data-setting-toggle="<%= f.name %>" <%= rawSettings[f.name] === '1' ? 'checked' : '' %>><span></span></span></label>
+  <% }); %>
+  <div class="grid-2" style="margin-top:12px">
+    <% bookingFields.forEach(function (f) { %>
+      <label class="field"><span><%= f.label %></span>
+        <% if (f.choices) { %>
+          <select data-setting="<%= f.name %>"><% f.choices.forEach(function (c) { %><option value="<%= c %>" <%= String(val(f.name, f.fallback)) === String(c) ? 'selected' : '' %>><%= c %> <%= f.unit %></option><% }); %></select>
+        <% } else { %>
+          <span class="input-unit"><input data-setting="<%= f.name %>" inputmode="numeric" value="<%= val(f.name, f.fallback) %>"><span class="muted"><%= f.unit %></span></span>
+        <% } %>
+        <% if (f.hint) { %><span class="hint"><%= f.hint %></span><% } %>
       </label>
     <% }); %>
   </div>
 </section>
 
-<section class="admin-card">
-  <h2><%= lang === 'en' ? 'Booking rules' : 'Règles de réservation' %></h2>
-  <div class="admin-fields">
-    <% bookingFields.forEach(function (f) { %>
-      <label class="field"><span><%= f.label %></span><input data-setting="<%= f.name %>" inputmode="numeric" value="<%= rawSettings[f.name] != null && rawSettings[f.name] !== '' ? rawSettings[f.name] : f.fallback %>"><% if (f.hint) { %><span class="hint"><%= f.hint %></span><% } %></label>
-    <% }); %>
-  </div>
+<section class="card anchor" id="envois">
+  <h2><%= tr('Envois', 'Sending') %></h2>
+  <% group('sending').forEach(function (f) { %>
+    <label class="switch-row"><span><strong><%= f.label %></strong><span class="muted"><%= f.description %></span></span><span class="switch"><input type="checkbox" data-setting-toggle="<%= f.name %>" <%= rawSettings[f.name] === '1' ? 'checked' : '' %>><span></span></span></label>
+  <% }); %>
 </section>
 
-<section class="admin-card">
-  <h2><%= lang === 'en' ? 'Contact details' : 'Coordonnées' %></h2>
-  <div class="admin-fields">
-    <label class="field"><span><%= lang === 'en' ? 'Business name' : 'Nom de l’entreprise' %></span><input data-setting="business_name" value="<%= rawSettings.business_name || '' %>" maxlength="200"></label>
-    <label class="field"><span><%= lang === 'en' ? 'Phone' : 'Téléphone' %></span><input data-setting="contact_phone" value="<%= rawSettings.contact_phone || '' %>" maxlength="40"></label>
-    <label class="field"><span><%= lang === 'en' ? 'Address' : 'Adresse' %></span><input data-setting="business_address" value="<%= rawSettings.business_address || '' %>" maxlength="240"></label>
-    <label class="field"><span><%= lang === 'en' ? 'Where new bookings are emailed' : 'Courriel qui reçoit les nouveaux rendez-vous' %></span><input data-setting="notification_email" type="email" value="<%= rawSettings.notification_email || '' %>" maxlength="190"><span class="hint"><%= lang === 'en' ? 'Leave empty to use your Liasse account email.' : 'Laissez vide pour utiliser le courriel de votre compte Liasse.' %></span></label>
-  </div>
-  <div class="admin-fields admin-fields--wide">
-    <% [['payment_methods', lang === 'en' ? 'Payment accepted' : 'Paiement accepté'], ['service_areas', lang === 'en' ? 'Areas served' : 'Secteurs desservis']].forEach(function (k) { %>
-      <label class="field"><span><%= k[1] %> — <%= lang === 'en' ? 'French' : 'français' %></span><textarea data-setting-json="<%= k[0] %>" data-lang="fr" rows="2"><%= jsonField(rawSettings[k[0]], 'fr') %></textarea></label>
-      <label class="field"><span><%= k[1] %> — <%= lang === 'en' ? 'English' : 'anglais' %></span><textarea data-setting-json="<%= k[0] %>" data-lang="en" rows="2"><%= jsonField(rawSettings[k[0]], 'en') %></textarea></label>
-    <% }); %>
-  </div>
+<section class="card anchor" id="confidentialite">
+  <h2><%= tr('Avis de confidentialité (Loi 25)', 'Privacy notice (Law 25)') %></h2>
+  <p class="card-sub"><%= tr('Le texte se modifie directement sur la page du site, avec l’éditeur de votre tableau de bord Liasse. Complétez le nom du responsable et retirez la ligne « BROUILLON », puis approuvez ici.', 'The text is edited right on the site page, with the editor in your Liasse dashboard. Fill in the person responsible and remove the "DRAFT" line, then approve here.') %></p>
+  <% if (privacyDraft) { %><div class="warn-box" style="margin-bottom:14px"><%= tr('L’avis contient encore des éléments à compléter ([nom à compléter] ou « BROUILLON »).', 'The notice still has parts to complete ([name to be completed] or "DRAFT").') %></div><% } %>
+  <p><a class="btn" href="<%= urls.privacy || 'confidentialite/' %>?_inline_edit=1" target="_blank" rel="noopener"><%= tr('Modifier l’avis sur le site', 'Edit the notice on the site') %> ↗</a></p>
+  <% group('privacy').forEach(function (f) { %>
+    <label class="switch-row"><span><strong><%= f.label %></strong><span class="muted"><%= f.description %></span></span><span class="switch"><input type="checkbox" data-setting-toggle="<%= f.name %>" <%= rawSettings[f.name] === '1' ? 'checked' : '' %>><span></span></span></label>
+  <% }); %>
 </section>
 
-<section class="admin-card">
-  <h2><%= lang === 'en' ? 'Privacy notice' : 'Avis de confidentialité' %></h2>
-  <p class="muted small"><%= lang === 'en' ? 'Required by Québec’s Law 25 before collecting personal information. Complete the name of the person responsible, remove the DRAFT line, then approve it above.' : 'Exigé par la Loi 25 avant de recueillir des renseignements personnels. Complétez le nom du responsable, retirez la ligne BROUILLON, puis approuvez-le plus haut.' %></p>
-  <div class="admin-fields admin-fields--wide">
-    <label class="field"><span><%= lang === 'en' ? 'French' : 'Français' %></span><textarea data-setting-json="privacy_notice" data-lang="fr" rows="10"><%= jsonField(rawSettings.privacy_notice, 'fr') %></textarea></label>
-    <label class="field"><span><%= lang === 'en' ? 'English' : 'Anglais' %></span><textarea data-setting-json="privacy_notice" data-lang="en" rows="10"><%= jsonField(rawSettings.privacy_notice, 'en') %></textarea></label>
-  </div>
+<section class="card">
+  <h2><%= tr('Les textes et les photos du site', 'The site’s texts and photos') %></h2>
+  <p class="card-sub"><%= tr('Titres, présentation du garage, étapes, photos : ils se modifient directement sur le site, là où on les voit. Ouvrez votre tableau de bord Liasse et touchez « Modifier le site ».', 'Headings, the garage’s story, steps, photos: they are edited right on the site, where you see them. Open your Liasse dashboard and tap "Edit the site".') %></p>
+  <a class="btn" href=".?_inline_edit=1" target="_blank" rel="noopener"><%= tr('Modifier les textes du site', 'Edit the site’s texts') %> ↗</a>
 </section>
-
-<section class="admin-card">
-  <h2><%= lang === 'en' ? 'Site texts' : 'Textes du site' %></h2>
-  <p class="muted small"><%= lang === 'en' ? 'You can also edit texts directly on the site from your Liasse dashboard.' : 'Vous pouvez aussi modifier les textes directement sur le site depuis votre tableau de bord Liasse.' %></p>
-  <div class="admin-fields admin-fields--wide">
-    <% ['hero_title', 'hero_subtitle', 'how_1', 'how_2', 'how_3', 'how_4', 'about_text', 'contact_intro'].forEach(function (key) { %>
-      <label class="field"><span><%= key.replace(/_/g, ' ') %> — <%= lang === 'en' ? 'French' : 'français' %></span><textarea data-setting-json="<%= key %>" data-lang="fr" rows="3"><%= jsonField(rawSettings[key], 'fr') %></textarea></label>
-      <label class="field"><span><%= key.replace(/_/g, ' ') %> — <%= lang === 'en' ? 'English' : 'anglais' %></span><textarea data-setting-json="<%= key %>" data-lang="en" rows="3"><%= jsonField(rawSettings[key], 'en') %></textarea></label>
-    <% }); %>
-  </div>
-</section>
-
-<p class="admin-save-bar"><span class="small muted" data-settings-status role="status"></span></p>
-
 <%- include('partials/admin-footer') %>

@@ -10,7 +10,7 @@
   <div class="wrap band">
     <div>
       <img src="<%= assets.logo.replace('/upload/', '/upload/w_1200,f_auto,q_auto/') %>" alt="<%= settings.business_name %>" width="1152" height="768" style="border-radius:16px;border:1px solid #000">
-      <div class="prose" style="margin-top:26px"><% lines(settings.about_text).forEach(function (p) { %><p data-setting-key="about_text"><%= p %></p><% }); %></div>
+      <div class="prose pre-line" style="margin-top:26px" data-lk="about_text"><%= settings.about_text %></div>
       <h2 class="h2" style="font-size:34px;margin:30px 0 14px"><%= t.services %></h2>
       <ul class="signs" style="grid-template-columns:repeat(2,minmax(0,1fr))"><% services.forEach(function (s) { %><li><a href="<%= urls.service %><%= s.slug %>/"><%= field(s, 'name') %></a></li><% }); %></ul>
     </div>
@@ -23,8 +23,8 @@
       <ul class="info-list" style="margin-top:28px">
         <li><%- include('partials/icon', { name: 'pin' }) %><div><b><%= t.address %></b><a href="<%= directionsHref %>" target="_blank" rel="noopener"><%= settings.business_address %></a></div></li>
         <li><%- include('partials/icon', { name: 'phone' }) %><div><b><%= t.phone %></b><a href="<%= phoneHref %>"><%= settings.contact_phone %></a></div></li>
-        <li><%- include('partials/icon', { name: 'card' }) %><div><b><%= t.payment_methods %></b><%= settings.payment_methods %></div></li>
-        <li><%- include('partials/icon', { name: 'car' }) %><div><b><%= t.areas %></b><%= settings.service_areas %></div></li>
+        <li><%- include('partials/icon', { name: 'card' }) %><div><b><%= t.payment_methods %></b><span data-lk="payment_methods"><%= settings.payment_methods %></span></div></li>
+        <li><%- include('partials/icon', { name: 'car' }) %><div><b><%= t.areas %></b><span data-lk="service_areas"><%= settings.service_areas %></span></div></li>
       </ul>
       <div class="map" style="margin-top:24px"><% if (mapEmbed) { %><iframe src="<%= mapEmbed %>" title="<%= t.address %>" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe><% } else { %><div class="map-fallback"><a class="btn btn-line btn-sm" href="<%= directionsHref %>" target="_blank" rel="noopener"><%= t.directions %></a></div><% } %></div>
     </div>

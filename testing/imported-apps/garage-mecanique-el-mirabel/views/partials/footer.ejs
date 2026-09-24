@@ -4,7 +4,7 @@
     <div class="foot-grid">
       <div>
         <img class="foot-logo" src="<%= assets.logo.replace('/upload/', '/upload/w_480,f_auto,q_auto/') %>" alt="<%= settings.business_name %>" loading="lazy" width="220" height="147">
-        <p style="margin:0;max-width:34ch"><%= settings.service_areas %></p>
+        <p style="margin:0;max-width:34ch" data-lk="service_areas"><%= settings.service_areas %></p>
       </div>
       <div>
         <h3><%= t.hours %></h3>
@@ -19,7 +19,7 @@
         <ul>
           <li><a href="<%= phoneHref %>"><%= settings.contact_phone %></a></li>
           <li><a href="<%= directionsHref %>" target="_blank" rel="noopener"><%= settings.business_address %></a></li>
-          <li><%= t.payment_methods %> : <%= settings.payment_methods %></li>
+          <li><%= t.payment_methods %> : <span data-lk="payment_methods"><%= settings.payment_methods %></span></li>
         </ul>
       </div>
       <div>
