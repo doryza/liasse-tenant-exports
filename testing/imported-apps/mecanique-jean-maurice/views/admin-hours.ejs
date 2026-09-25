@@ -1,0 +1,49 @@
+<% var scripts = ['hours']; var pageData = { closures: closures };
+   var DAYS = lang === 'en' ? ['', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] : ['', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
+   var byDay = {}; hours.forEach(function (h) { byDay[h.weekday] = h; });
+   // 15-minute steps from 5 h to 23 h 45, shown the way people say it (« 7 h 30 » / « 7:30 am »).
+   var timeOptions = function (cur) {
+     var out = ''; var have = false;
+     for (var m = 5 * 60; m < 24 * 60; m += 15) {
+       var v = String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0');
+       var h12 = Math.floor(m / 60) % 12 || 12;
+       var label = lang === 'en' ? h12 + ':' + v.slice(3) + (m < 720 ? ' am' : ' pm') : Math.floor(m / 60) + ' h ' + v.slice(3);
+       if (v === cur) have = true;
+       out += '<option value="' + v + '"' + (v === cur ? ' selected' : '') + '>' + label + '</option>';
+     }
+     return have ? out : '<option value="' + cur + '" selected>' + cur + '</option>' + out;
+   }; %>
+<%- include('partials/admin-shell', { adminTitle: tr('Heures d’ouverture', 'Opening hours') }) %>
+<div class="page-head">
+  <div><h1><%= tr('Heures d’ouverture', 'Opening hours') %></h1><p><%= tr('Paraissent sur le site ; les heures de rendez-vous offertes en découlent. Tout s’enregistre tout seul.', 'Shown on the site; the booking times offered come from them. Everything saves by itself.') %></p></div>
+</div>
+<section class="card">
+  <% for (var w = 1; w <= 7; w++) { var h = byDay[w] || { weekday: w, closed: 1 }; %>
+    <div class="hour-row<%= Number(h.closed) ? ' is-closed' : '' %>" data-hour="<%= w %>">
+      <strong><%= DAYS[w] %></strong>
+      <label class="switch" title="<%= tr('Ouvert ce jour-là', 'Open that day') %>"><input type="checkbox" data-open <%= Number(h.closed) ? '' : 'checked' %> aria-label="<%= tr('Ouvert le', 'Open on') %> <%= DAYS[w] %>"><span></span></label>
+      <div class="hour-times">
+        <select data-opens aria-label="<%= tr('Ouverture', 'Opens') %>"><%- timeOptions(h.opens || '08:00') %></select>
+        <span class="muted"><%= tr('à', 'to') %></span>
+        <select data-closes aria-label="<%= tr('Fermeture', 'Closes') %>"><%- timeOptions(h.closes || '17:00') %></select>
+        <span class="muted small" data-closed-label <%= Number(h.closed) ? '' : 'hidden' %>><%= tr('Fermé', 'Closed') %></span>
+        <span class="saved-tick"><%= tr('Enregistré ✓', 'Saved ✓') %></span>
+      </div>
+    </div>
+  <% } %>
+  <label class="switch-row" style="margin-top:8px">
+    <span><strong><%= tr('Mes heures sont exactes', 'My hours are correct') %></strong><span class="muted"><%= tr('Cochez une fois vérifiées.', 'Check once verified.') %></span></span>
+    <span class="switch"><input type="checkbox" data-setting-toggle="hours_verified" <%= flags.hours ? 'checked' : '' %>><span></span></span>
+  </label>
+</section>
+<section class="card">
+  <h2><%= tr('Congés et jours fériés', 'Holidays and days off') %></h2>
+  <p class="card-sub"><%= tr('Aucun rendez-vous n’est offert ces jours-là, et le site affiche la fermeture.', 'No appointments are offered those days, and the site shows the closure.') %></p>
+  <div class="grid-3" style="align-items:end">
+    <label class="field"><span><%= tr('Date', 'Date') %></span><input type="date" data-closure-date></label>
+    <label class="field"><span><%= tr('Raison (facultatif)', 'Reason (optional)') %></span><input data-closure-reason maxlength="120" placeholder="<%= tr('ex. Fête du Travail', 'e.g. Labour Day') %>"></label>
+    <div class="field"><button class="btn btn-primary" type="button" data-closure-add><%= tr('Ajouter', 'Add') %></button></div>
+  </div>
+  <div class="rows" data-closures></div>
+</section>
+<%- include('partials/admin-footer', { scripts: scripts, pageData: pageData }) %>

@@ -1,0 +1,75 @@
+<%
+  var pageData = { appointment: appt ? { reference: appt.reference, services: appt.services, canChange: appt.canChange, status: appt.status, duration: appt.duration_min } : null };
+  var scripts = ['account'];
+%>
+<%- include('partials/header', { pageData: pageData, scripts: scripts }) %>
+<section class="page-head">
+  <div class="wrap">
+    <div class="crumbs"><a href="<%= urls.home %>"><%= t.home %></a> / <a href="<%= urls.account %>"><%= t.account %></a> / <%= appt ? appt.reference : t.appointment %></div>
+    <h1><%= appt ? (justBooked ? t.booked_title : t.appointment) : t.sign_in_title %></h1>
+    <% if (appt && justBooked) { %><p><%= appt.preview ? '' : (appt.status === 'confirmed' ? t.booked_confirmed : t.booked_requested) %></p><% } %>
+  </div>
+</section>
+<section class="order-page">
+  <div class="wrap">
+  <% if (!appt) { %>
+    <div class="sheet signin">
+      <p class="muted"><%= t.sign_in_help %></p>
+      <button class="btn btn-neon" type="button" data-login-btn><%= t.login %></button>
+    </div>
+  <% } else { %>
+    <% if (appt.preview) { %><div class="preview-note"><%- include('partials/icon', { name: 'info' }) %><span><%= fmt(t.preview_banner, { phone: settings.contact_phone }) %></span></div><% } %>
+    <div class="acct">
+      <div class="sheet">
+        <div class="sheet-head">
+          <span class="no"><%= lang === 'en' ? 'Work order' : 'Bon de travail' %> — <%= settings.business_name %></span>
+          <span class="no"><%= t.reference %> <em><%= appt.reference %></em></span>
+        </div>
+        <div class="sheet-body" style="position:relative">
+          <span class="stamp stamp-<%= appt.status %>"><%= t['status_' + appt.status] %></span>
+          <dl class="summary" style="max-width:calc(100% - 150px)">
+            <dt><%= t.when %></dt><dd><%= formatDateTime(appt.start_at) %></dd>
+            <dt><%= t.vehicle %></dt><dd><%= appt.vehicle_label %></dd>
+            <dt><%= t.work %></dt><dd><%= appt.service_names %></dd>
+            <% if (appt.concern) { %><dt><%= t.notes %></dt><dd><%= appt.concern %></dd><% } %>
+            <dt><%= t.drop_or_wait %></dt><dd><%= appt.stay === 'wait' ? t.wait_onsite : t.drop_off %></dd>
+            <% if (appt.courtesy_car) { %><dt><%= t.service %></dt><dd><%= t.courtesy_request %></dd><% } %>
+            <% if (appt.towing) { %><dt><%= t.towing_request %></dt><dd><%= appt.towing_address %></dd><% } %>
+          </dl>
+          <% if (appt.garage_note) { %><div class="notice" style="margin-top:20px"><b><%= t.garage_note %> :</b> <%= appt.garage_note %></div><% } %>
+          <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:26px">
+            <button class="btn btn-ghost btn-sm" type="button" data-ics><%- include('partials/icon', { name: 'calendar' }) %><%= t.add_calendar %></button>
+            <% if (appt.canChange) { %>
+              <button class="btn btn-ghost btn-sm" type="button" data-reschedule-open><%= t.reschedule %></button>
+              <button class="btn btn-ghost btn-sm" type="button" data-cancel style="color:var(--bad)"><%= t.cancel_appt %></button>
+            <% } else if (['requested','confirmed'].includes(appt.status)) { %>
+              <span class="small muted"><%= t.self_service_closed %> <a href="<%= phoneHref %>"><%= settings.contact_phone %></a></span>
+            <% } %>
+          </div>
+          <div data-reschedule hidden style="margin-top:22px;padding-top:20px;border-top:1px dashed var(--rule-2)">
+            <h3 style="font:700 22px/1 var(--display);text-transform:uppercase;margin:0 0 12px"><%= t.reschedule_title %></h3>
+            <div class="cal-head">
+              <button class="btn btn-ghost btn-sm" type="button" data-week="-1"><%= t.earlier %></button>
+              <b data-week-label></b>
+              <button class="btn btn-ghost btn-sm" type="button" data-week="1"><%= t.later %></button>
+            </div>
+            <div class="days" data-days></div>
+            <div class="times" data-times></div>
+            <p class="form-error" data-error hidden></p>
+          </div>
+        </div>
+      </div>
+      <aside class="panel">
+        <h2><%= t.timeline %></h2>
+        <ol class="timeline">
+          <% events.forEach(function (e) { %>
+            <li><b><%= e.note === 'rescheduled' ? t.rescheduled_ok : t['status_' + e.status] %></b><% if (e.note && e.note !== 'rescheduled') { %><br><span class="small"><%= e.note %></span><% } %><time><%= formatDateTime(e.created_at) %></time></li>
+          <% }); %>
+        </ol>
+        <p style="margin:20px 0 0"><a class="text-link" href="<%= urls.account %>"><%= t.manage %></a></p>
+      </aside>
+    </div>
+  <% } %>
+  </div>
+</section>
+<%- include('partials/footer', { pageData: pageData, scripts: scripts }) %>
