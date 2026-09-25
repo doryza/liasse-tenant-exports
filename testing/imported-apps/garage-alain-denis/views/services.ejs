@@ -3,7 +3,12 @@
   <div class="wrap">
     <div class="crumbs"><a href="<%= urls.home %>"><%= t.home %></a> / <%= t.services %></div>
     <h1><%= lang === 'en' ? 'Everything we fix' : 'Tout ce qu’on répare' %></h1>
-    <p><%= lang === 'en' ? 'Eleven services, one garage. Each page explains the work and the signs to watch for; every one of them can be booked online.' : 'Onze services, un garage. Chaque page explique les travaux et les signes à surveiller; chacun se réserve en ligne.' %></p>
+    <% var nSvc = services.length, allBook = services.every(function (s) { return Number(s.bookable) === 1; });
+       var wFr = ['Aucun', 'Un', 'Deux', 'Trois', 'Quatre', 'Cinq', 'Six', 'Sept', 'Huit', 'Neuf', 'Dix', 'Onze', 'Douze', 'Treize', 'Quatorze', 'Quinze', 'Seize', 'Dix-sept', 'Dix-huit', 'Dix-neuf', 'Vingt'];
+       var wEn = ['No', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen', 'Twenty']; %>
+    <p><%= lang === 'en'
+      ? (wEn[nSvc] || nSvc) + (nSvc === 1 ? ' service' : ' services') + ', one garage. Each page explains the work and the signs to watch for' + (allBook ? '; every one of them can be booked online.' : '.')
+      : (wFr[nSvc] || nSvc) + (nSvc === 1 ? ' service' : ' services') + ', un garage. Chaque page explique les travaux et les signes à surveiller' + (allBook ? '; chacun se réserve en ligne.' : '.') %></p>
   </div>
 </section>
 <section class="section">
