@@ -1,0 +1,67 @@
+<%
+  var ICON = {
+    today: '<path d="M9 4h6M9 4a1 1 0 0 0-1 1v1h8V5a1 1 0 0 0-1-1M8 6H6a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-2"/><path d="m9 14 2 2 4-4"/>',
+    board: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+    documents: '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/>',
+    clients: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M18 14a5.5 5.5 0 0 1 3.5 6"/>',
+    services: '<path d="M14.7 6.3a4 4 0 0 0-5.4 5.2L3 17.8V21h3.2l6.3-6.3a4 4 0 0 0 5.2-5.4l-2.6 2.6-2.4-.5-.5-2.4z"/>',
+    hours: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+    messages: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',
+    settings: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
+    more: '<path d="M4 6h16M4 12h16M4 18h16"/>',
+    site: '<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',
+    edit: '<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/>',
+  };
+  var NAV = [
+    ['today', 'admin', tr('Aujourd’hui', 'Today')],
+    ['board', 'admin/rendez-vous', tr('Rendez-vous', 'Appointments'), navCounts.pending],
+    ['documents', 'admin/documents', tr('Estimations et factures', 'Estimates & invoices')],
+    ['clients', 'admin/clients', tr('Clients', 'Customers')],
+    ['services', 'admin/services', tr('Services et prix', 'Services & prices')],
+    ['hours', 'admin/horaire', tr('Heures d’ouverture', 'Opening hours')],
+    ['messages', 'admin/messages', tr('Messages', 'Messages'), navCounts.messages],
+    ['settings', 'admin/reglages', tr('Réglages', 'Settings')],
+  ];
+  var TABS = [['today', 'admin', tr('Aujourd’hui', 'Today')], ['board', 'admin/rendez-vous', tr('Rendez-vous', 'Bookings')], ['documents', 'admin/documents', tr('Factures', 'Invoices')], ['clients', 'admin/clients', tr('Clients', 'Customers')]];
+  var svg = function (k) { return '<svg viewBox="0 0 24 24" aria-hidden="true">' + ICON[k] + '</svg>'; };
+  var markSmall = assets.mark.replace('/upload/', '/upload/w_96,h_96,c_fill/');
+%><!DOCTYPE html>
+<html lang="<%= lang %>">
+<head>
+<meta charset="utf-8">
+<base href="<%= tenantRoot %>">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1c2530">
+<meta name="robots" content="noindex">
+<title><%= adminTitle %> · <%= settings.business_name %></title>
+<link rel="icon" href="<%= assets.mark.replace('/upload/', '/upload/w_64,h_64,c_fill/') %>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="public/css/admin.css">
+</head>
+<body class="admin-body" data-page="admin" data-section="<%= adminSection %>">
+<a class="skip" href="#admin-main"><%= tr('Aller au contenu', 'Skip to content') %></a>
+<div class="admin-shell">
+  <aside class="admin-sidebar" id="admin-sidebar" aria-label="<%= tr('Menu', 'Menu') %>">
+    <a class="admin-brand" href="admin">
+      <img src="<%= markSmall %>" alt="">
+      <span><strong><%= settings.business_name %></strong><span><%= tr('Gestion du garage', 'Garage back office') %></span></span>
+    </a>
+    <nav class="admin-nav">
+      <% NAV.forEach(function (n) { %>
+        <a href="<%= n[1] %>"<%- adminSection === n[0] ? ' aria-current="page"' : '' %>><%- svg(n[0]) %><span><%= n[2] %></span><% if (n[3]) { %><span class="badge"><%= n[3] %></span><% } %></a>
+      <% }); %>
+    </nav>
+    <div class="admin-sidebar-foot">
+      <a href="<%= urls.home %>" target="_blank" rel="noopener"><%- svg('site') %><span><%= tr('Voir le site', 'View the site') %></span></a>
+      <a href=".?_inline_edit=1" target="_blank" rel="noopener" title="<%= tr('Titres, textes et photos du site se modifient directement sur le site.', 'Site headings, texts and photos are edited right on the site.') %>"><%- svg('edit') %><span><%= tr('Modifier les textes du site', 'Edit the site’s texts') %></span></a>
+    </div>
+  </aside>
+
+  <div class="admin-main-wrap">
+    <header class="admin-topbar">
+      <img src="<%= markSmall %>" alt="">
+      <strong><%= settings.business_name %></strong>
+    </header>
+    <main class="admin-main" id="admin-main">
