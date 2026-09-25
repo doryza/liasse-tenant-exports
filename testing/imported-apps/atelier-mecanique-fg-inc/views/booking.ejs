@@ -1,0 +1,152 @@
+<%
+  var pageData = {
+    booking: {
+      services: bookable.map(function (s) { return { slug: s.slug, name: field(s, 'name'), duration: s.duration_min, price: priceLabel(s) }; }),
+      preselect: preselect,
+      makes: bookingConfig.makes,
+      courtesyCars: bookingConfig.courtesyCars,
+      requestMode: !hoursKnown,
+      signedIn: !!user,
+      email: user ? (user.email || '') : '',
+      privacyUrl: urls.privacy,
+      accountUrl: urls.account,
+    },
+  };
+  var scripts = ['booking'];
+%>
+<%- include('partials/header', { pageData: pageData, scripts: scripts }) %>
+<section class="page-head">
+  <div class="wrap">
+    <div class="crumbs"><a href="<%= urls.home %>"><%= t.home %></a> / <%= t.booking %></div>
+    <h1><%= t.book_cta %></h1>
+    <p><%= lang === 'en' ? 'Four short steps. Your account keeps your vehicle for next time.' : 'Quatre courtes étapes. Votre compte garde votre véhicule pour la prochaine fois.' %></p>
+  </div>
+</section>
+
+<section class="order-page">
+  <div class="wrap">
+    <% if (!flags.bookingsLive) { %>
+      <div class="preview-note"><%- include('partials/icon', { name: 'info' }) %><span><%= fmt(t.preview_banner, { phone: settings.contact_phone }) %></span></div>
+    <% } %>
+
+    <form class="sheet" id="booking" novalidate>
+      <div class="sheet-head">
+        <span class="no"><%= lang === 'en' ? 'Work order' : 'Bon de travail' %> — <%= settings.business_name %></span>
+        <span class="no"><%= t.reference %> <em>FG-······</em></span>
+      </div>
+      <ol class="steps" aria-hidden="true">
+        <li data-step-tab="1" class="on"><span>1</span><%= t.step_services %></li>
+        <li data-step-tab="2"><span>2</span><%= t.step_vehicle %></li>
+        <li data-step-tab="3"><span>3</span><%= t.step_when %></li>
+        <li data-step-tab="4"><span>4</span><%= t.step_details %></li>
+        <li data-step-tab="5"><span>5</span><%= t.step_confirm %></li>
+      </ol>
+
+      <div class="sheet-body">
+        <!-- 1 — the work -->
+        <section class="step" data-step="1" aria-labelledby="s1-title">
+          <h2 id="s1-title"><%= t.pick_services %></h2>
+          <p class="help"><%= t.pick_services_help %></p>
+          <div class="choice-grid" data-services></div>
+          <label class="field" style="margin-top:18px"><span><%= t.concern %></span><textarea name="concern" maxlength="2000" placeholder="<%= t.concern_placeholder %>"></textarea></label>
+        </section>
+
+        <!-- 2 — the vehicle -->
+        <section class="step" data-step="2" aria-labelledby="s2-title" hidden>
+          <h2 id="s2-title"><%= t.your_vehicle %></h2>
+          <p class="help"><%= t.vin_help %></p>
+          <div class="choice-grid" data-saved-vehicles style="margin-bottom:18px" hidden></div>
+          <div data-new-vehicle>
+            <div class="vin-row">
+              <label class="field"><span><%= t.vin %></span><input name="vin" maxlength="17" autocomplete="off" spellcheck="false" style="text-transform:uppercase;letter-spacing:.08em"></label>
+              <button class="btn btn-ghost" type="button" data-vin-decode><%= t.vin_decode %></button>
+              <% if (vinPhoto) { %><label class="btn btn-ghost vin-photo"><input type="file" accept="image/*" capture="environment" data-vin-photo hidden><%= t.vin_photo %></label><% } %>
+            </div>
+            <% if (vinPhoto) { %><p class="small muted vin-note"><%= t.vin_photo_note %></p><% } %>
+            <p class="small muted" data-vin-status role="status" style="margin:8px 0 14px"></p>
+            <div class="grid-3">
+              <label class="field"><span><%= t.year %></span><select name="year" data-year></select></label>
+              <label class="field"><span><%= t.make %></span><input name="make" list="makes" maxlength="60" autocomplete="off"></label>
+              <label class="field"><span><%= t.model %></span><input name="model" list="models" maxlength="80" autocomplete="off"></label>
+            </div>
+            <div class="grid-3">
+              <label class="field"><span><%= t.trim %></span><input name="trim" maxlength="80"></label>
+              <label class="field"><span><%= t.odometer %></span><input name="odometer_km" inputmode="numeric" maxlength="7" placeholder="ex. 124500"></label>
+              <label class="field"><span><%= t.plate %></span><input name="plate" maxlength="12" style="text-transform:uppercase"></label>
+            </div>
+            <datalist id="makes"></datalist>
+            <datalist id="models"></datalist>
+          </div>
+        </section>
+
+        <!-- 3 — when -->
+        <section class="step" data-step="3" aria-labelledby="s3-title" hidden>
+          <h2 id="s3-title"><%= hoursKnown ? t.pick_day : t.request_title %></h2>
+          <p class="help" data-duration<%- hoursKnown ? '' : ' hidden' %>></p>
+          <% if (!hoursKnown) { %>
+          <div data-request-when>
+            <p class="help"><%= t.request_help %></p>
+            <div class="grid-2">
+              <label class="field"><span><%= lang === 'en' ? 'Preferred day' : 'Journée souhaitée' %></span><input type="date" data-pref-date></label>
+              <div class="field"><span><%= lang === 'en' ? 'Time of day' : 'Moment' %></span>
+                <div class="choice-grid" style="grid-template-columns:1fr 1fr">
+                  <label class="choice"><input type="radio" name="pref_part" value="09:00"><span class="box"></span><span><b><%= t.morning %></b></span></label>
+                  <label class="choice"><input type="radio" name="pref_part" value="13:00"><span class="box"></span><span><b><%= t.afternoon %></b></span></label>
+                </div>
+              </div>
+            </div>
+          </div>
+          <% } %>
+          <div class="cal-head"<%- hoursKnown ? '' : ' hidden' %>>
+            <button class="btn btn-ghost btn-sm" type="button" data-week="-1"><%= t.earlier %></button>
+            <b data-week-label></b>
+            <button class="btn btn-ghost btn-sm" type="button" data-week="1"><%= t.later %></button>
+          </div>
+          <div class="days" data-days<%- hoursKnown ? '' : ' hidden' %>><p class="muted"><%= t.slots_loading %></p></div>
+          <h3 style="font:700 22px/1 var(--display);text-transform:uppercase;margin:26px 0 0" data-times-title hidden><%= t.pick_time %></h3>
+          <div class="times" data-times></div>
+          <div data-extras hidden style="margin-top:26px">
+            <h3 style="font:700 22px/1 var(--display);text-transform:uppercase;margin:0 0 12px"><%= t.drop_or_wait %></h3>
+            <div class="choice-grid">
+              <label class="choice"><input type="radio" name="stay" value="drop" checked><span class="box"></span><span><b><%= t.drop_off %></b></span></label>
+              <label class="choice"><input type="radio" name="stay" value="wait"><span class="box"></span><span><b><%= t.wait_onsite %></b></span></label>
+              <label class="choice" data-courtesy<%- bookingConfig.courtesyCars ? '' : ' hidden' %>><input type="checkbox" name="courtesyCar"><span class="box"></span><span><b><%= t.courtesy_request %></b><small data-courtesy-note></small></span></label>
+              <label class="choice"<%- settings.towing_offered === '1' ? '' : ' hidden' %>><input type="checkbox" name="towing" data-towing><span class="box"></span><span><b><%= t.towing_request %></b></span></label>
+            </div>
+            <label class="field" data-towing-address hidden style="margin-top:14px"><span><%= t.towing_address %></span><input name="towingAddress" maxlength="300"></label>
+          </div>
+        </section>
+
+        <!-- 4 — details -->
+        <section class="step" data-step="4" aria-labelledby="s4-title" hidden>
+          <div data-signin hidden>
+            <h2 id="s4-title"><%= t.sign_in_to_book %></h2>
+            <p class="help"><%= t.sign_in_to_book_help %></p>
+            <button class="btn btn-neon" type="button" data-login-btn><%- include('partials/icon', { name: 'user' }) %><%= t.login %></button>
+          </div>
+          <div data-details hidden>
+            <h2><%= t.your_contact %></h2>
+            <p class="help" data-signed-as></p>
+            <div class="grid-3">
+              <label class="field"><span><%= t.first_name %></span><input name="first_name" autocomplete="given-name" maxlength="60"></label>
+              <label class="field"><span><%= t.last_name %></span><input name="last_name" autocomplete="family-name" maxlength="60"></label>
+              <label class="field"><span><%= t.contact_phone %></span><input name="phone" type="tel" autocomplete="tel" maxlength="40"></label>
+            </div>
+            <h2 style="margin-top:22px"><%= t.review %></h2>
+            <dl class="summary" data-summary style="margin-top:14px"></dl>
+            <label class="check" style="margin-top:22px"><input type="checkbox" name="consent"><span><%= t.consent_booking %> <a href="<%= urls.privacy %>" target="_blank" rel="noopener"><%= t.privacy %></a></span></label>
+          </div>
+        </section>
+
+        <p class="form-error" data-error role="alert" hidden></p>
+        <div class="step-nav">
+          <button class="btn btn-ghost" type="button" data-prev hidden><%= t.previous %></button>
+          <span></span>
+          <button class="btn btn-ink" type="button" data-next><%= t.next %></button>
+          <button class="btn btn-neon" type="submit" data-submit hidden><%= t.confirm_booking %></button>
+        </div>
+      </div>
+    </form>
+  </div>
+</section>
+<%- include('partials/footer', { pageData: pageData, scripts: scripts }) %>

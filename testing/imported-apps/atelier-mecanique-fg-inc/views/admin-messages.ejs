@@ -1,0 +1,29 @@
+<% var scripts = ['messages']; %>
+<%- include('partials/admin-shell', { adminTitle: tr('Messages', 'Messages') }) %>
+<div class="page-head">
+  <div><h1><%= tr('Messages', 'Messages') %></h1><p><%= flags.messages ? tr('Reçus par le formulaire de contact du site.', 'Received through the site’s contact form.') : tr('Le formulaire de contact est fermé (Réglages → Envois).', 'The contact form is off (Settings → Sending).') %></p></div>
+</div>
+<section class="card">
+  <div class="chips" style="margin-bottom:12px">
+    <a class="chip" href="admin/messages?box=new"<%- box === 'new' ? ' aria-current="page"' : '' %>><%= tr('À traiter', 'To handle') %></a>
+    <a class="chip" href="admin/messages?box=all"<%- box === 'all' ? ' aria-current="page"' : '' %>><%= tr('Tous', 'All') %></a>
+    <a class="chip" href="admin/messages?box=archived"<%- box === 'archived' ? ' aria-current="page"' : '' %>><%= tr('Archivés', 'Archived') %></a>
+  </div>
+  <% if (!rows.length) { %><div class="empty"><strong><%= tr('Aucun message', 'No messages') %></strong></div><% } %>
+  <% rows.forEach(function (m) { %>
+    <article class="msg<%= m.status === 'new' ? ' is-new' : '' %>" data-msg="<%= m.id %>">
+      <div class="msg-head">
+        <div><b><%= m.first_name %> <%= m.last_name || '' %></b><div class="row-sub"><%= m.subject || '' %></div></div>
+        <span class="small muted"><%= formatShort(m.created_at) %> · <%= formatTime(m.created_at) %></span>
+      </div>
+      <div class="msg-body"><%= m.body %></div>
+      <div class="page-actions">
+        <a class="btn btn-sm btn-primary" href="mailto:<%= m.email %>?subject=<%= encodeURIComponent('Re: ' + (m.subject || settings.business_name)) %>" data-msg-reply><%= tr('Répondre par courriel', 'Reply by email') %></a>
+        <% if (m.phone) { %><a class="btn btn-sm" href="tel:<%= String(m.phone).replace(/[^+\d]/g, '') %>"><%= tr('Appeler', 'Call') %> <%= m.phone %></a><% } %>
+        <% if (m.status !== 'answered') { %><button class="btn btn-sm" type="button" data-msg-status="answered"><%= tr('Marquer répondu', 'Mark answered') %></button><% } %>
+        <% if (m.status !== 'archived') { %><button class="btn btn-sm btn-quiet" type="button" data-msg-status="archived"><%= tr('Archiver', 'Archive') %></button><% } %>
+      </div>
+    </article>
+  <% }); %>
+</section>
+<%- include('partials/admin-footer', { scripts: scripts }) %>
