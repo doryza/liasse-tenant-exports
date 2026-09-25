@@ -1,0 +1,44 @@
+<%- include('partials/header') %>
+<section class="page-head">
+  <div class="wrap">
+    <div class="crumbs"><a href="<%= urls.home %>"><%= t.home %></a> / <a href="<%= urls.services %>"><%= t.services %></a> / <%= field(item, 'name') %></div>
+    <h1><%= field(item, 'name') %></h1>
+    <p><%= field(item, 'tagline') %></p>
+  </div>
+</section>
+<section class="section">
+  <div class="wrap svc-detail">
+    <div>
+      <div class="art"><img src="<%= serviceImage(item).replace('/upload/', '/upload/w_1200,f_auto,q_auto/') %>" alt="<%= field(item, 'name') %>" width="1200" height="900"></div>
+      <h2 class="h2" style="font-size:34px;margin:36px 0 14px"><%= t.about_service %></h2>
+      <div class="prose" data-content-source="services" data-content-id="<%= item.id %>">
+        <% lines(field(item, 'body')).forEach(function (p) { %><p><%= p %></p><% }); %>
+      </div>
+      <% var signs = listField(item, 'signs'); if (signs.length) { %>
+        <h2 class="h2" style="font-size:34px;margin:30px 0 14px"><%= t.signs_title %></h2>
+        <ul class="signs"><% signs.forEach(function (x) { %><li><span><%= x %></span></li><% }); %></ul>
+      <% } %>
+    </div>
+    <aside class="side-card">
+      <dl>
+        <% if (item.bookable == 1 && item.duration_min > 0) { %><dt><%= lang === 'en' ? 'Shop time' : 'Temps en atelier' %></dt><dd><%= fmt(t.duration_about, { n: durationLabel(item.duration_min) }) %></dd><% } %>
+        <% if (item.bookable == 1) { %><dt><%= lang === 'en' ? 'Price' : 'Prix' %></dt><dd><%= priceLabel(item) %></dd><% } %>
+        <dt><%= t.phone %></dt><dd><a href="<%= phoneHref %>"><%= settings.contact_phone %></a></dd>
+      </dl>
+      <% if (item.bookable == 1) { %>
+        <a class="btn btn-neon" style="width:100%" href="<%= urls.booking %>?service=<%= item.slug %>"><%= t.book_service %></a>
+      <% } else if (item.option_kind === 'courtesy') { %>
+        <p class="muted small" style="margin:0 0 12px"><%= t.option_courtesy %></p>
+        <a class="btn btn-neon" style="width:100%" href="<%= urls.booking %>"><%= t.book_cta %></a>
+      <% } else { %>
+        <a class="btn btn-neon" style="width:100%" href="<%= phoneHref %>"><%- include('partials/icon', { name: 'phone' }) %><%= t.call %> — <%= settings.contact_phone %></a>
+        <p class="muted small" style="margin:12px 0 0"><%= t.option_towing %></p>
+      <% } %>
+      <% if (related.length) { %>
+        <h3 style="font:700 14px/1 var(--display);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:26px 0 10px"><%= t.related %></h3>
+        <ul class="signs"><% related.forEach(function (r) { %><li><a href="<%= urls.service %><%= r.slug %>/"><%= field(r, 'name') %></a></li><% }); %></ul>
+      <% } %>
+    </aside>
+  </div>
+</section>
+<%- include('partials/footer') %>
