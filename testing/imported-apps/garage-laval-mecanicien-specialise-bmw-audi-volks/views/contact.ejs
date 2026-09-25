@@ -1,0 +1,45 @@
+<%- include('partials/header') %>
+<section class="page-head">
+  <div class="wrap">
+    <div class="crumbs"><a href="<%= urls.home %>"><%= t.home %></a> / <%= t.contact %></div>
+    <h1><%= t.contact %></h1>
+    <p data-lk="contact_intro"><%= settings.contact_intro %></p>
+  </div>
+</section>
+<section class="section">
+  <div class="wrap cols-2">
+    <div>
+      <a class="btn btn-neon" style="font-size:22px;min-height:64px" href="<%= phoneHref %>"><%- include('partials/icon', { name: 'phone' }) %><%= settings.contact_phone %></a>
+      <ul class="info-list" style="margin-top:30px">
+        <li><%- include('partials/icon', { name: 'pin' }) %><div><b><%= t.address %></b><a href="<%= directionsHref %>" target="_blank" rel="noopener"><%= settings.business_address %></a></div></li>
+        <li><%- include('partials/icon', { name: 'clock' }) %><div><b><%= t.hours %></b><%= hoursSummary %></div></li>
+        <li><%- include('partials/icon', { name: 'calendar' }) %><div><b><%= t.booking %></b><a href="<%= urls.booking %>"><%= t.book_cta %></a></div></li>
+      </ul>
+    </div>
+    <div class="sheet">
+      <div class="sheet-head"><span class="no"><%= t.message %></span></div>
+      <div class="sheet-body">
+        <% if (!flags.messages) { %>
+          <p class="notice" style="margin:0"><%= t.messages_off %> <a href="<%= phoneHref %>"><%= settings.contact_phone %></a></p>
+        <% } else { %>
+          <form data-message-form novalidate>
+            <div class="grid-2">
+              <label class="field"><span><%= t.first_name %></span><input name="firstName" required maxlength="60" autocomplete="given-name"></label>
+              <label class="field"><span><%= t.last_name %></span><input name="lastName" maxlength="60" autocomplete="family-name"></label>
+            </div>
+            <div class="grid-2">
+              <label class="field"><span><%= t.email %></span><input name="email" type="email" required maxlength="190" autocomplete="email"></label>
+              <label class="field"><span><%= t.phone %></span><input name="phone" type="tel" maxlength="40" autocomplete="tel"></label>
+            </div>
+            <label class="field"><span><%= t.subject %></span><input name="subject" maxlength="160"></label>
+            <label class="field"><span><%= t.message %></span><textarea name="body" required maxlength="4000"></textarea></label>
+            <label class="check"><input type="checkbox" name="consent"><span><%= t.consent_message %> <a href="<%= urls.privacy %>"><%= t.privacy %></a></span></label>
+            <button class="btn btn-ink" type="submit"><%= t.send %></button>
+            <p class="small" data-message-status role="status"></p>
+          </form>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</section>
+<%- include('partials/footer') %>
