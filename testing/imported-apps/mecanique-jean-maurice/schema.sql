@@ -20,3 +20,4 @@ CREATE TABLE IF NOT EXISTS documents (id SERIAL PRIMARY KEY,kind TEXT NOT NULL C
 CREATE INDEX IF NOT EXISTS documents_kind_idx ON documents(kind, status, created_at DESC);
 CREATE TABLE IF NOT EXISTS document_lines (id SERIAL PRIMARY KEY,document_id INTEGER NOT NULL REFERENCES documents(id) ON DELETE CASCADE,position INTEGER DEFAULT 0,kind TEXT NOT NULL CHECK(kind IN ('part','labour','fee','note')),description TEXT NOT NULL,part_condition TEXT CHECK(part_condition IS NULL OR part_condition IN ('new','used','reman','recond')),part_number TEXT,quantity NUMERIC(10,2) DEFAULT 1,unit_cents INTEGER DEFAULT 0,total_cents INTEGER DEFAULT 0);
 CREATE TABLE IF NOT EXISTS document_counters (kind TEXT PRIMARY KEY,next_number INTEGER NOT NULL DEFAULT 1);
+ALTER TABLE services ADD COLUMN IF NOT EXISTS confirmed INTEGER DEFAULT 1;

@@ -199,11 +199,29 @@
     var chosen = B.services.filter(function (s) { return state.services.indexOf(s.slug) > -1; }).map(function (s) { return s.name; });
     var v = state.vehicleId ? (account.vehicles || []).find(function (x) { return String(x.id) === String(state.vehicleId); }) : state.vehicle;
     var when = state.date ? new Intl.DateTimeFormat(lang === 'en' ? 'en-CA' : 'fr-CA', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'UTC' }).format(dayLabel(state.date)) + ' — ' + (lang === 'en' ? to12(state.time) : state.time.replace(/^0/, '').replace(':', ' h ').replace(' h 00', ' h')) : '';
+    if (B.requestMode && state.date) when = new Intl.DateTimeFormat(lang === 'en' ? 'en-CA' : 'fr-CA', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'UTC' }).format(dayLabel(state.date)) + ' — ' + (state.time === '13:00' ? t.afternoon : t.morning) + ' (' + t.call_back.toLowerCase() + ')';
     [[t.work, chosen.length ? chosen.join(', ') : t.not_sure], [t.notes, state.concern], [t.vehicle, v ? [v.year, v.make, v.model, v.trim].filter(Boolean).join(' ') : ''], [t.when, when],
       [t.drop_or_wait, state.stay === 'wait' ? t.wait_onsite : t.drop_off], [t.courtesy_request, state.courtesyCar ? '✓' : ''], [t.towing_request, state.towing ? state.towingAddress : '']]
       .filter(function (r) { return r[1]; }).forEach(function (r) {
         var dt = document.createElement('dt'); dt.textContent = r[0]; var dd = document.createElement('dd'); dd.textContent = r[1]; dl.appendChild(dt); dl.appendChild(dd);
       });
+  }
+
+  // Request mode: the garage has not published its hours; the customer gives a
+  // preferred day and part of day, and the garage calls back with the time.
+  function initRequest() {
+    var d = $('[data-pref-date]'); if (!d) return;
+    var today = isoToday(); d.min = today;
+    if (state.date && state.date >= today) d.value = state.date;
+    $$('[name=pref_part]').forEach(function (r) { r.checked = r.value === state.time; });
+    function sync() {
+      state.date = d.value || null;
+      var p = $$('[name=pref_part]').find(function (r) { return r.checked; });
+      state.time = p ? p.value : null; save();
+      $('[data-extras]').hidden = !(state.date && state.time);
+    }
+    if (!d._bound) { d.addEventListener('change', sync); $$('[name=pref_part]').forEach(function (r) { r.addEventListener('change', sync); }); d._bound = true; }
+    sync();
   }
 
   // ------------------------------------------------------------ flow
@@ -228,7 +246,7 @@
     $('[data-prev]').hidden = step === 1;
     $('[data-next]').hidden = step >= 4; $('[data-submit]').hidden = true;
     if (step === 2) { await loadAccount(); renderSavedVehicles(); fillVehicleInputs(); }
-    if (step === 3) loadWeek();
+    if (step === 3) { if (B.requestMode) initRequest(); else loadWeek(); }
     if (step === 4) { await loadAccount(); renderDetails(); }
     var top = form.getBoundingClientRect().top + window.scrollY - 90;
     if (window.scrollY > top) window.scrollTo({ top: top, behavior: 'smooth' });

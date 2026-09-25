@@ -20,6 +20,7 @@
       <% } %>
     </div>
     <aside class="side-card">
+      <% if (Number(item.confirmed) === 0) { %><p class="tbc-note" style="margin:0 0 14px"><%= t.service_tbc_note %></p><% } %>
       <dl>
         <% if (item.bookable == 1 && item.duration_min > 0) { %><dt><%= lang === 'en' ? 'Shop time' : 'Temps en atelier' %></dt><dd><%= fmt(t.duration_about, { n: durationLabel(item.duration_min) }) %></dd><% } %>
         <% if (item.bookable == 1) { %><dt><%= lang === 'en' ? 'Price' : 'Prix' %></dt><dd><%= priceLabel(item) %></dd><% } %>

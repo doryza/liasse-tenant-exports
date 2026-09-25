@@ -28,7 +28,12 @@
         el('button', { type: 'button', 'aria-label': tr('Monter', 'Move up'), text: '▲', disabled: i === 0 ? true : null, onclick: function () { move(i, -1); } }),
         el('button', { type: 'button', 'aria-label': tr('Descendre', 'Move down'), text: '▼', disabled: i === rows.length - 1 ? true : null, onclick: function () { move(i, 1); } }),
       ]));
-      row.appendChild(el('div', { class: 'svc-name' }, [el('b', { text: s.name }), el('small', { text: Number(s.published) ? (s.tagline || '') : tr('Caché du site', 'Hidden from the site') })]));
+      var nameCell = el('div', { class: 'svc-name' }, [el('b', { text: s.name }), el('small', { text: Number(s.published) ? (s.tagline || '') : tr('Caché du site', 'Hidden from the site') })]);
+      if (Number(s.confirmed) === 0) {
+        nameCell.appendChild(el('span', { class: 'pill pill-sent', style: 'margin-top:6px', text: tr('À confirmer sur le site', 'To be confirmed on the site') }));
+        nameCell.appendChild(el('button', { class: 'link-btn', type: 'button', style: 'margin-left:10px', text: tr('Je l’offre — confirmer', 'I offer it — confirm'), onclick: async function () { if (await patch(s, { confirmed: true }, row)) render(); } }));
+      }
+      row.appendChild(nameCell);
       var sel = el('select', { class: 'input svc-field', 'aria-label': tr('Temps à l’atelier', 'Shop time') });
       var opts = DURATIONS.indexOf(Number(s.duration_min)) > -1 ? DURATIONS : DURATIONS.concat([Number(s.duration_min)]).sort(function (a, b) { return a - b; });
       opts.forEach(function (m) { var o = el('option', { value: String(m), text: dur(m) }); if (m === Number(s.duration_min)) o.selected = true; sel.appendChild(o); });
@@ -88,9 +93,12 @@
     det.appendChild(A.field(tr('Description (anglais)', 'Description (English)'), f.body_en));
     det.appendChild(A.field(tr('Quand venir (anglais)', 'When to come in (English)'), f.signs_en));
     d.body.appendChild(det);
+    var conf = el('input', { type: 'checkbox' }); conf.checked = isNew || Number(s.confirmed) !== 0;
+    d.body.appendChild(el('label', { class: 'check-card', style: 'margin-bottom:14px' }, [conf, el('span', { text: tr('J’offre ce service (sinon le site affiche « À confirmer »)', 'I offer this service (otherwise the site shows "To be confirmed")') })]));
     d.body.appendChild(A.field(tr('Adresse de l’image', 'Image address'), f.image_url, tr('Les photos du site se changent aussi directement sur le site.', 'Site photos can also be changed right on the site.')));
     d.foot.appendChild(el('button', { class: 'btn btn-primary', type: 'button', text: isNew ? tr('Créer le service', 'Create service') : tr('Enregistrer', 'Save'), onclick: async function () {
       var body = {}; Object.keys(f).forEach(function (k) { body[k] = f[k].value; });
+      body.confirmed = conf.checked;
       if (App.data.vehicleClasses) body.vehicle_classes = classBoxes.filter(function (c) { return c.checked; }).map(function (c) { return c.value; });
       try {
         if (isNew) { body.published = true; var r = await App.request('api/admin/services', { method: 'POST', body: JSON.stringify(body) }); rows.push(r.service); }

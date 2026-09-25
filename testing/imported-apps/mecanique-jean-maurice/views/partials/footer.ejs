@@ -8,11 +8,12 @@
       </div>
       <div>
         <h3><%= t.hours %></h3>
+        <% if (!hoursKnown) { %><p style="margin:0"><%= t.hours_tbc %></p><% } else { %>
         <ul>
           <% (hours || []).forEach(function (h) { %>
             <li><%= t['day' + h.weekday] %> · <%= h.closed ? t.closed : (clock(h.opens) + ' – ' + clock(h.closes)) %></li>
           <% }); %>
-        </ul>
+        </ul><% } %>
       </div>
       <div>
         <h3><%= t.contact %></h3>

@@ -41,7 +41,9 @@ function card(raw, appt, kind, link) {
   const [title, lead] = c[kind] || c.confirmed;
   const biz = raw.business_name || 'Garage';
   const rows = [
-    [c.when, S.dateTime(appt.start_at, lang)],
+    [c.when, appt.bay == null && appt.status === 'requested' && raw.hours_known === '0'
+      ? S.date(appt.start_at, lang) + ' — ' + (S.local(appt.start_at).time < '12:00' ? (lang === 'en' ? 'morning' : 'en matinée') : (lang === 'en' ? 'afternoon' : 'en après-midi')) + (lang === 'en' ? ' (the garage will call to set the time)' : ' (le garage vous rappelle pour fixer l’heure)')
+      : S.dateTime(appt.start_at, lang)],
     [c.ref, appt.reference],
     [c.vehicle, appt.vehicle_label],
     [c.work, appt.service_names],

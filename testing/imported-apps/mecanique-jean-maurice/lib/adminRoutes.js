@@ -82,7 +82,10 @@ module.exports = function registerAdmin(router, ctx) {
     const effPrivacy = S.siteText(raw, 'privacy_notice', 'fr');
     const out = [];
     if (!S.flag(raw, 'contact_verified') || !S.flag(raw, 'address_verified')) out.push({ key: 'contact', href: 'admin/reglages#garage' });
-    if (!S.flag(raw, 'hours_verified')) out.push({ key: 'hours', href: 'admin/horaire' });
+    if (raw.hours_known === '0') out.push({ key: 'hours_unknown', href: 'admin/horaire' });
+    else if (!S.flag(raw, 'hours_verified')) out.push({ key: 'hours', href: 'admin/horaire' });
+    const tbc = await db.get('SELECT COUNT(*)::int AS n FROM services WHERE published=1 AND confirmed=0');
+    if (tbc.n) out.push({ key: 'services_tbc', n: tbc.n, href: 'admin/services' });
     if (!docSettings(raw).labourRate) out.push({ key: 'rate', href: 'admin/reglages#factures' });
     const unpriced = await db.get('SELECT COUNT(*)::int AS n FROM services WHERE published=1 AND bookable=1 AND price_verified=0');
     if (unpriced.n) out.push({ key: 'prices', n: unpriced.n, href: 'admin/services' });
@@ -252,7 +255,31 @@ module.exports = function registerAdmin(router, ctx) {
     const m = Number(req.query.minutes);
     if (Number.isInteger(m) && m >= 15 && m <= 600) minutes = m;
     const from = isDate(req.query.from) ? req.query.from : undefined;
-    res.json(await B.availability(db, shopRules(req.site), { from, days: Math.min(21, Number(req.query.days) || 14), minutes }));
+    const excludeId = /^\d+$/.test(String(req.query.exclude || '')) ? Number(req.query.exclude) : null;
+    res.json(await B.availability(db, shopRules(req.site), { from, days: Math.min(21, Number(req.query.days) || 14), minutes, excludeId }));
+  }));
+
+  // Set or change the time of an appointment (a request made while hours were
+  // unpublished has no bay yet). Confirms it and tells the customer when live.
+  router.put('/api/admin/appointments/:id/moment', wrap(async (req, res) => {
+    const id = Number(req.params.id);
+    const appt = await db.get('SELECT * FROM appointments WHERE id=$1', [id]);
+    if (!appt || ['cancelled', 'no_show', 'completed'].includes(appt.status)) throw S.error('invalid');
+    const b = req.body || {}; const date = String(b.date || ''); const time = String(b.time || '');
+    if (!isDate(date) || !isTime(time)) throw S.error('invalid');
+    const minutes = Number(appt.duration_min) || 60;
+    if (!(await B.isBookable(db, shopRules(req.site), { date, time, minutes, excludeId: id }))) throw S.error('slot_taken', 409);
+    const hours = await db.get('SELECT * FROM hours WHERE weekday=$1', [S.weekdayOf(date)]);
+    const start = S.zoned(date, time); const end = new Date(start.getTime() + minutes * 60000);
+    await B.releaseBay(db, id);
+    const held = await B.holdBay(db, req.site, id, start, minutes, S.toMinutes(hours.closes));
+    if (!held) throw S.error('slot_taken', 409);
+    const row = await db.get(
+      `UPDATE appointments SET start_at=$1, end_at=$2, bay=$3, status=CASE WHEN status='requested' THEN 'confirmed' ELSE status END,
+         confirmed_at=COALESCE(confirmed_at, NOW()), updated_at=NOW() WHERE id=$4 RETURNING *`, [start, end, held.bay, id]);
+    await db.run('INSERT INTO appointment_events(appointment_id,status,note,actor) VALUES($1,$2,$3,$4)', [id, row.status, 'rescheduled', 'garage']);
+    notify.toCustomer(req.site, row, appt.status === 'requested' ? 'confirmed' : 'rescheduled', customerLink(req, row)).catch(() => {});
+    res.json({ appointment: adminAppointment(row) });
   }));
 
   // Book for a customer who called or walked in. Same engine as online
@@ -547,7 +574,7 @@ module.exports = function registerAdmin(router, ctx) {
       out.price_from_cents = cents;
       out.price_verified = cents != null ? 1 : 0; // typing a price is confirming it; clearing it = « Sur estimation »
     }
-    for (const k of ['bookable', 'published', 'featured']) if (has(k)) out[k] = b[k] ? 1 : 0;
+    for (const k of ['bookable', 'published', 'featured', 'confirmed']) if (has(k)) out[k] = b[k] ? 1 : 0;
     // Sites whose services are sized (tires, rust-proofing: Martin & Martin) opt in.
     if (ctx.vehicleClasses && has('vehicle_classes')) {
       const want = (Array.isArray(b.vehicle_classes) ? b.vehicle_classes : String(b.vehicle_classes || '').split(','))
@@ -606,6 +633,8 @@ module.exports = function registerAdmin(router, ctx) {
       `INSERT INTO hours(weekday, opens, closes, closed) VALUES($1,$2,$3,$4)
        ON CONFLICT(weekday) DO UPDATE SET opens=EXCLUDED.opens, closes=EXCLUDED.closes, closed=EXCLUDED.closed, updated_at=NOW() RETURNING *`,
       [wd, closed ? null : b.opens, closed ? null : b.closes, closed]);
+    // Entering hours publishes them: the site stops saying « à confirmer ».
+    await db.run("INSERT INTO admin_settings(key,value) VALUES('hours_known','1') ON CONFLICT(key) DO UPDATE SET value='1',updated_at=NOW()");
     res.json({ hour: row });
   }));
   router.post('/api/admin/closures', wrap(async (req, res) => {

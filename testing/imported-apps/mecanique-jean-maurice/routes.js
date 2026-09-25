@@ -129,6 +129,12 @@ module.exports = function (services) {
       live: S.flag(raw, 'live_actions_enabled'),
     };
     L.phoneHref = 'tel:' + String(raw.contact_phone || '').replace(/[^+\d]/g, '');
+    // Hours the garage has not published yet are never shown: the site says
+    // « à confirmer » and online booking becomes a request (the garage calls back).
+    L.hoursKnown = raw.hours_known !== '0';
+    L.whenLabel = (a) => (a && a.bay == null && a.status === 'requested' && !L.hoursKnown
+      ? L.t.pref_label + ' : ' + S.date(a.start_at, lang) + ' — ' + (S.local(a.start_at).time < '12:00' ? L.t.morning : L.t.afternoon)
+      : S.dateTime(a.start_at, lang));
     L.directionsHref = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(raw.business_address || '');
     // Keyless Google Maps embed: works on any tenant without an API key.
     L.mapEmbed = raw.business_address ? 'https://www.google.com/maps?q=' + encodeURIComponent(raw.business_address) + '&output=embed&hl=' + lang : null;
@@ -136,9 +142,10 @@ module.exports = function (services) {
       L.hours = await db.all('SELECT * FROM hours ORDER BY weekday');
       L.upcomingClosures = await db.all("SELECT id, to_char(date,'YYYY-MM-DD') AS date, reason, reason_en FROM closures WHERE date >= CURRENT_DATE ORDER BY closures.date LIMIT 6");
       L.openState = S.openState(L.hours, L.upcomingClosures);
+      L.hoursSummary = L.hoursKnown ? S.hoursSummary(L.hours, lang) : L.t.hours_tbc;
       L.navServices = await publishedServices();
     } else {
-      L.hours = []; L.upcomingClosures = []; L.openState = { open: false }; L.navServices = [];
+      L.hours = []; L.upcomingClosures = []; L.openState = { open: false }; L.navServices = []; L.hoursSummary = '';
     }
     if (req.path.startsWith('/api/') || req.path.startsWith('/admin') || req.path.includes('compte') || req.path.includes('account')) {
       res.set('Cache-Control', 'private, no-store');
@@ -424,7 +431,12 @@ module.exports = function (services) {
 
     const minutes = B.durationFor(rows.length ? rows : [{ duration_min: 60 }], cfg);
     const date = String(b.date || ''); const time = String(b.time || '');
-    if (!(await B.isBookable(db, raw, { date, time, minutes }))) throw S.error('slot_taken', 409);
+    // Request mode (hours not published yet): a preferred day + part of day, no bay held.
+    const requestMode = raw.hours_known === '0';
+    if (requestMode) {
+      const today = S.local(new Date()).date;
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || date < today || date > S.addDays(today, cfg.horizonDays) || !['09:00', '13:00'].includes(time)) throw S.error('invalid');
+    } else if (!(await B.isBookable(db, raw, { date, time, minutes }))) throw S.error('slot_taken', 409);
     const hours = await db.get('SELECT * FROM hours WHERE weekday=$1', [S.weekdayOf(date)]);
     const start = S.zoned(date, time);
     const end = new Date(start.getTime() + minutes * 60000);
@@ -439,7 +451,7 @@ module.exports = function (services) {
     const names = rows.map((s) => (lang === 'en' && s.name_en) || s.name);
     if (!rows.length) names.push(lang === 'en' ? 'Diagnosis' : 'Diagnostic');
     const preview = S.flag(raw, 'bookings_live') ? 0 : 1;
-    const status = cfg.autoConfirm && !preview ? 'confirmed' : 'requested';
+    const status = cfg.autoConfirm && !preview && !requestMode ? 'confirmed' : 'requested';
 
     let appt = null;
     for (let i = 0; i < 5 && !appt; i++) {
@@ -461,7 +473,7 @@ module.exports = function (services) {
       }
     }
     if (!appt) throw S.error('server_error', 500);
-    const held = await B.holdBay(db, raw, appt.id, start, minutes, S.toMinutes(hours.closes));
+    const held = requestMode ? { bay: null } : await B.holdBay(db, raw, appt.id, start, minutes, S.toMinutes(hours.closes));
     if (!held) {
       await db.run('DELETE FROM appointments WHERE id=$1', [appt.id]);
       throw S.error('slot_taken', 409);

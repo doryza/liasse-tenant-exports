@@ -59,6 +59,34 @@
     body.appendChild(el('p', { class: 'field-label', style: 'margin:0 0 8px', text: tr('Estimation et facture', 'Estimate and invoice') }));
     body.appendChild(docsRow);
 
+    // Set or change the time (a request from the site has no bay yet).
+    if (['requested', 'confirmed'].indexOf(a.status) > -1) {
+      var box = el('div', { style: 'margin:0 0 18px' });
+      var isReq = a.bay == null;
+      box.appendChild(el('p', { class: 'field-label', style: 'margin:0 0 8px', text: isReq ? tr('Demande sans heure fixe — fixez l’heure', 'Request without a set time — set the time') : tr('Changer la date ou l’heure', 'Change the date or time') }));
+      var dateIn = el('input', { type: 'date', class: 'input', value: a.local ? a.local.date : '' });
+      var slotsBox = el('div', { class: 'slots', style: 'margin-top:10px' });
+      async function loadSlots() {
+        slotsBox.innerHTML = '';
+        try {
+          var r = await App.request('api/admin/availability?days=1&from=' + dateIn.value + '&minutes=' + (Number(a.duration_min) || 60) + '&exclude=' + a.id);
+          var d = r.days.find(function (x) { return x.date === dateIn.value; });
+          if (!d || !d.slots.length) { slotsBox.appendChild(el('p', { class: 'muted small', text: tr('Aucune plage libre ce jour-là.', 'No free time that day.') })); return; }
+          d.slots.forEach(function (s) {
+            slotsBox.appendChild(el('button', { class: 'slot', type: 'button', text: s.time.replace(':', en ? ':' : ' h '), onclick: async function () {
+              try { var res = await App.request('api/admin/appointments/' + a.id + '/moment', { method: 'PUT', body: JSON.stringify({ date: dateIn.value, time: s.time }) });
+                App.toast(tr('Heure fixée ✓', 'Time set ✓')); panel.close(); if (onChange) onChange(Object.assign({}, res.appointment, { documents: a.documents || [] })); }
+              catch (e) { App.toast(e.message); }
+            } }));
+          });
+        } catch (e) { App.toast(e.message); }
+      }
+      dateIn.addEventListener('change', loadSlots);
+      box.appendChild(dateIn); box.appendChild(slotsBox);
+      body.appendChild(box);
+      if (dateIn.value) loadSlots();
+    }
+
     var note = el('textarea', { maxlength: '1000', rows: '3' }); note.value = a.garage_note || '';
     var inote = el('textarea', { maxlength: '4000', rows: '3' }); inote.value = a.internal_note || '';
     body.appendChild(A.field(tr('Message au client', 'Message to the customer'), note, a.walkIn ? tr('Visible s’il a un compte en ligne.', 'Visible if they have an online account.') : tr('Visible dans son compte en ligne.', 'Shown in their online account.')));

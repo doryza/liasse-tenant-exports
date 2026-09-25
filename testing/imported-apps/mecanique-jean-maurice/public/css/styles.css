@@ -346,3 +346,9 @@ a.fact:hover span{color:var(--ember)}
   body.has-callbar{padding-bottom:70px}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* « à confirmer »: services the garage has not confirmed, hours it has not published */
+.tbc-tag{display:inline-block;margin-top:6px;padding:2px 8px;border:1.5px dashed currentColor;border-radius:4px;font:600 12px/1.4 var(--text);letter-spacing:.04em;text-transform:uppercase;opacity:.85}
+.tbc-note{padding:12px 14px;border:1.5px dashed var(--rule-2);border-radius:8px;color:var(--body);font-size:15px;margin:0 0 20px}
+.hours-tbc{padding:14px 16px;border:1.5px dashed var(--rule-2);border-radius:8px;margin:0}
+.site-footer .hours-tbc{border-color:var(--steel)}

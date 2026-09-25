@@ -28,7 +28,7 @@
         <div class="sheet-body" style="position:relative">
           <span class="stamp stamp-<%= appt.status %>"><%= t['status_' + appt.status] %></span>
           <dl class="summary" style="max-width:calc(100% - 150px)">
-            <dt><%= t.when %></dt><dd><%= formatDateTime(appt.start_at) %></dd>
+            <dt><%= t.when %></dt><dd><%= whenLabel(appt) %><% if (appt.bay == null && appt.status === 'requested' && !hoursKnown) { %><br><small class="muted"><%= t.call_back %></small><% } %></dd>
             <dt><%= t.vehicle %></dt><dd><%= appt.vehicle_label %></dd>
             <dt><%= t.work %></dt><dd><%= appt.service_names %></dd>
             <% if (appt.concern) { %><dt><%= t.notes %></dt><dd><%= appt.concern %></dd><% } %>

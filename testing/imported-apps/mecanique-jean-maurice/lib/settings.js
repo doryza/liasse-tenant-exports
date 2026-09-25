@@ -21,6 +21,24 @@ function siteText(raw, key, lang) {
 }
 /** Draft markers the seeded privacy notice ships with. */
 function hasPlaceholders(text) { return /\[(nom|name)[^\]]*\]|BROUILLON|DRAFT FOR/i.test(String(text || '')); }
+/** « Lun–ven 8 h – 18 h · sam 9 h – 15 h » from the hours table (consecutive equal days grouped). */
+function hoursSummary(rows, lang) {
+  const en = lang === 'en';
+  const D = en ? ['', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] : ['', 'lun', 'mar', 'mer', 'jeu', 'ven', 'sam', 'dim'];
+  const c = (x) => { const [h, m] = String(x).split(':').map(Number); return en ? (h % 12 || 12) + (m ? ':' + String(m).padStart(2, '0') : '') + (h < 12 ? ' a.m.' : ' p.m.') : h + ' h' + (m ? ' ' + String(m).padStart(2, '0') : ''); };
+  const byDay = {}; (rows || []).forEach((r) => { byDay[r.weekday] = r; });
+  const key = (d) => { const r = byDay[d]; return !r || Number(r.closed) ? null : r.opens + '-' + r.closes; };
+  const parts = [];
+  for (let d = 1; d <= 7; d++) {
+    const k = key(d); if (!k) continue;
+    let e = d; while (e < 7 && key(e + 1) === k) e++;
+    const [o, cl] = k.split('-');
+    parts.push((e > d ? D[d] + '–' + D[e] : D[d]) + ' ' + c(o) + ' – ' + c(cl));
+    d = e;
+  }
+  const s = parts.join(' · ');
+  return s ? s.charAt(0).toUpperCase() + s.slice(1) : (en ? 'Closed' : 'Fermé');
+}
 function both(value) { try { const x = JSON.parse(value); return !!(x.fr && x.en && x.fr.trim() && x.en.trim()); } catch (e) { return false; } }
 function translate(raw, lang) {
   const t = Object.assign({}, T[lang] || T.fr);
@@ -130,6 +148,7 @@ module.exports = function (services) {
 };
 
 Object.assign(module.exports, {
+  hoursSummary,
   siteText, hasPlaceholders,
   TZ, localized, both, translate, flag, num, safeJSON, error, money, slugify,
   offsetMinutes, zoned, local, addDays, weekdayOf, toMinutes, fromMinutes,

@@ -29,7 +29,7 @@
           <a class="appt-card" href="<%= urls.appointment %><%= a.reference %>/">
             <span class="stamp stamp-<%= a.status %>"><%= t['status_' + a.status] %></span>
             <span class="ref"><%= a.reference %><%= a.preview ? ' · ' + (lang === 'en' ? 'PREVIEW' : 'APERÇU') : '' %></span>
-            <h3><%= formatDateTime(a.start_at) %></h3>
+            <h3><%= whenLabel(a) %></h3>
             <p><%= a.vehicle_label %> — <%= a.service_names %></p>
           </a>
         <% }); %>

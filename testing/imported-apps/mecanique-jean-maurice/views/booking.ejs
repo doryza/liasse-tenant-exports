@@ -5,6 +5,7 @@
       preselect: preselect,
       makes: bookingConfig.makes,
       courtesyCars: bookingConfig.courtesyCars,
+      requestMode: !hoursKnown,
       signedIn: !!user,
       email: user ? (user.email || '') : '',
       privacyUrl: urls.privacy,
@@ -80,14 +81,28 @@
 
         <!-- 3 — when -->
         <section class="step" data-step="3" aria-labelledby="s3-title" hidden>
-          <h2 id="s3-title"><%= t.pick_day %></h2>
-          <p class="help" data-duration></p>
-          <div class="cal-head">
+          <h2 id="s3-title"><%= hoursKnown ? t.pick_day : t.request_title %></h2>
+          <p class="help" data-duration<%- hoursKnown ? '' : ' hidden' %>></p>
+          <% if (!hoursKnown) { %>
+          <div data-request-when>
+            <p class="help"><%= t.request_help %></p>
+            <div class="grid-2">
+              <label class="field"><span><%= lang === 'en' ? 'Preferred day' : 'Journée souhaitée' %></span><input type="date" data-pref-date></label>
+              <div class="field"><span><%= lang === 'en' ? 'Time of day' : 'Moment' %></span>
+                <div class="choice-grid" style="grid-template-columns:1fr 1fr">
+                  <label class="choice"><input type="radio" name="pref_part" value="09:00"><span class="box"></span><span><b><%= t.morning %></b></span></label>
+                  <label class="choice"><input type="radio" name="pref_part" value="13:00"><span class="box"></span><span><b><%= t.afternoon %></b></span></label>
+                </div>
+              </div>
+            </div>
+          </div>
+          <% } %>
+          <div class="cal-head"<%- hoursKnown ? '' : ' hidden' %>>
             <button class="btn btn-ghost btn-sm" type="button" data-week="-1"><%= t.earlier %></button>
             <b data-week-label></b>
             <button class="btn btn-ghost btn-sm" type="button" data-week="1"><%= t.later %></button>
           </div>
-          <div class="days" data-days><p class="muted"><%= t.slots_loading %></p></div>
+          <div class="days" data-days<%- hoursKnown ? '' : ' hidden' %>><p class="muted"><%= t.slots_loading %></p></div>
           <h3 style="font:700 22px/1 var(--display);text-transform:uppercase;margin:26px 0 0" data-times-title hidden><%= t.pick_time %></h3>
           <div class="times" data-times></div>
           <div data-extras hidden style="margin-top:26px">

@@ -32,9 +32,9 @@
     </nav>
 
     <div class="header-actions">
-      <a class="neon-sign <%= os.open ? 'is-open' : 'is-closed' %>" href="<%= urls.about %>#heures" title="<%= t.hours %>">
+      <% if (hoursKnown) { %><a class="neon-sign <%= os.open ? 'is-open' : 'is-closed' %>" href="<%= urls.about %>#heures" title="<%= t.hours %>">
         <b><%= signText %></b><small><%= signSub %></small>
-      </a>
+      </a><% } else { %><a class="neon-sign is-closed" href="<%= phoneHref %>" title="<%= t.hours_tbc %>"><b><%= t.call %></b><small><%= settings.contact_phone %></small></a><% } %>
       <a class="icon-btn header-account" href="<%= urls.account %>" aria-label="<%= t.account %>" title="<%= t.account %>"><%- include('icon', { name: 'user' }) %></a>
       <a class="btn btn-neon btn-sm header-book" href="<%= urls.booking %>"><%= t.book_cta %></a>
       <button class="icon-btn menu-toggle" type="button" aria-label="<%= t.menu %>" aria-controls="site-nav" aria-expanded="false" data-menu-toggle><%- include('icon', { name: 'menu' }) %></button>

@@ -12,7 +12,7 @@
       <a class="btn btn-neon" style="font-size:22px;min-height:64px" href="<%= phoneHref %>"><%- include('partials/icon', { name: 'phone' }) %><%= settings.contact_phone %></a>
       <ul class="info-list" style="margin-top:30px">
         <li><%- include('partials/icon', { name: 'pin' }) %><div><b><%= t.address %></b><a href="<%= directionsHref %>" target="_blank" rel="noopener"><%= settings.business_address %></a></div></li>
-        <li><%- include('partials/icon', { name: 'clock' }) %><div><b><%= t.hours %></b><%= lang === 'en' ? 'Monday to Friday, 9 a.m. to 6 p.m.' : 'Du lundi au vendredi, de 9 h à 18 h' %></div></li>
+        <li><%- include('partials/icon', { name: 'clock' }) %><div><b><%= t.hours %></b><%= hoursSummary %></div></li>
         <li><%- include('partials/icon', { name: 'calendar' }) %><div><b><%= t.booking %></b><a href="<%= urls.booking %>"><%= t.book_cta %></a></div></li>
       </ul>
     </div>

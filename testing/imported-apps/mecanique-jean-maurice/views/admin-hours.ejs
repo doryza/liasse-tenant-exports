@@ -17,6 +17,7 @@
 <div class="page-head">
   <div><h1><%= tr('Heures d’ouverture', 'Opening hours') %></h1><p><%= tr('Paraissent sur le site ; les heures de rendez-vous offertes en découlent. Tout s’enregistre tout seul.', 'Shown on the site; the booking times offered come from them. Everything saves by itself.') %></p></div>
 </div>
+<% if (!hoursKnown) { %><div class="warn-box" style="margin-bottom:16px"><%= tr('Vos heures ne sont pas encore sur le site : il affiche « Heures à confirmer » et la réservation en ligne prend des demandes (vous rappelez le client). Dès que vous enregistrez un jour ci-dessous, vos heures apparaissent sur le site.', 'Your hours are not on the site yet: it shows "Hours to be confirmed" and online booking takes requests (you call the customer back). As soon as you save a day below, your hours appear on the site.') %></div><% } %>
 <section class="card">
   <% for (var w = 1; w <= 7; w++) { var h = byDay[w] || { weekday: w, closed: 1 }; %>
     <div class="hour-row<%= Number(h.closed) ? ' is-closed' : '' %>" data-hour="<%= w %>">

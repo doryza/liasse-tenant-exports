@@ -16,9 +16,11 @@
     </div>
     <div>
       <h2 class="h2" id="heures" style="font-size:34px;margin-bottom:14px"><%= t.hours %></h2>
+      <% if (hoursKnown) { %>
       <table class="hours-table">
         <% hours.forEach(function (h) { %><tr class="<%= h.weekday === todayWeekday ? 'is-today' : '' %>"><td><%= t['day' + h.weekday] %></td><td><%= h.closed ? t.closed : clock(h.opens) + ' – ' + clock(h.closes) %></td></tr><% }); %>
       </table>
+      <% } else { %><p class="hours-tbc"><%= t.hours_tbc %> <a href="<%= phoneHref %>"><%= settings.contact_phone %></a></p><% } %>
       <% if (upcomingClosures.length) { %><p class="small muted" style="margin-top:12px"><%= lang === 'en' ? 'Closed on: ' : 'Fermé le : ' %><%= upcomingClosures.map(function (c) { return formatShort(c.date) + (field(c, 'reason') ? ' (' + field(c, 'reason') + ')' : ''); }).join(', ') %></p><% } %>
       <ul class="info-list" style="margin-top:28px">
         <li><%- include('partials/icon', { name: 'pin' }) %><div><b><%= t.address %></b><a href="<%= directionsHref %>" target="_blank" rel="noopener"><%= settings.business_address %></a></div></li>

@@ -8,12 +8,13 @@
 </section>
 <section class="section">
   <div class="wrap">
+    <% if (services.some(function (s) { return Number(s.confirmed) === 0; })) { %><p class="tbc-note"><%= t.services_tbc_note %></p><% } %>
     <div class="svc-grid">
       <% services.forEach(function (s) { %>
-        <a class="svc" href="<%= urls.service %><%= s.slug %>/">
+        <a class="svc<%= Number(s.confirmed) === 0 ? ' is-tbc' : '' %>" href="<%= urls.service %><%= s.slug %>/">
           <div class="svc-img" role="img" aria-label="<%= field(s, 'name') %>" style="background-image:url('<%= serviceImage(s).replace('/upload/', '/upload/w_720,f_auto,q_auto/') %>')"></div>
           <div class="svc-body">
-            <h3><%= field(s, 'name') %></h3>
+            <h3><%= field(s, 'name') %></h3><% if (Number(s.confirmed) === 0) { %><span class="tbc-tag"><%= t.tbc %></span><% } %>
             <p><%= field(s, 'tagline') %></p>
             <div class="svc-meta">
               <span><%= s.bookable == 1 ? (s.duration_min > 0 ? fmt(t.duration_about, { n: durationLabel(s.duration_min) }) : '') : (s.option_kind === 'courtesy' ? t.option_courtesy : t.option_towing) %></span>
