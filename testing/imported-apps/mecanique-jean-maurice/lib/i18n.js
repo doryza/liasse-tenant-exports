@@ -1,5 +1,5 @@
 /**
- * Bilingual dictionary. French is the reference language (Mirabel, QC);
+ * Bilingual dictionary. French is the reference language (Québec);
  * English mirrors it at the same brevity. Any key can be overridden per
  * tenant from admin_settings via `text_<key>_<lang>` (see lib/settings.js).
  */

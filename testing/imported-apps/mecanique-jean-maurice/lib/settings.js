@@ -39,6 +39,8 @@ function hoursSummary(rows, lang) {
   const s = parts.join(' · ');
   return s ? s.charAt(0).toUpperCase() + s.slice(1) : (en ? 'Closed' : 'Fermé');
 }
+/** « …, Mirabel (Québec) J7J 1M3 » → « Mirabel ». */
+function cityOf(address) { const m = String(address || '').match(/,\s*([^,(]+?)\s*\((?:Québec|Quebec|QC)\)/); return m ? m[1].trim() : ''; }
 function both(value) { try { const x = JSON.parse(value); return !!(x.fr && x.en && x.fr.trim() && x.en.trim()); } catch (e) { return false; } }
 function translate(raw, lang) {
   const t = Object.assign({}, T[lang] || T.fr);
@@ -148,6 +150,7 @@ module.exports = function (services) {
 };
 
 Object.assign(module.exports, {
+  cityOf,
   hoursSummary,
   siteText, hasPlaceholders,
   TZ, localized, both, translate, flag, num, safeJSON, error, money, slugify,

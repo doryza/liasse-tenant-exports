@@ -132,6 +132,7 @@ module.exports = function (services) {
     // Hours the garage has not published yet are never shown: the site says
     // « à confirmer » and online booking becomes a request (the garage calls back).
     L.hoursKnown = raw.hours_known !== '0';
+    L.city = raw.city || S.cityOf(raw.business_address);
     L.whenLabel = (a) => (a && a.bay == null && a.status === 'requested' && !L.hoursKnown
       ? L.t.pref_label + ' : ' + S.date(a.start_at, lang) + ' — ' + (S.local(a.start_at).time < '12:00' ? L.t.morning : L.t.afternoon)
       : S.dateTime(a.start_at, lang));
