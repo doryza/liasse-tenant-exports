@@ -1,0 +1,96 @@
+{
+  "version": 1,
+  "slug": "garage-martin-et-martin",
+  "canonical": "https://liasse.tech/pwa/garage-martin-et-martin/",
+  "reference": "PROSPECT site (operator-built on spec, docs/LIASSE_DANCE.md Part 13). Engine (booking, accounts, admin) shared with garage-mecanique-el-mirabel; design, content, pages and features are this garage's own.",
+  "languages": {
+    "default": "fr",
+    "supported": [
+      "fr",
+      "en"
+    ],
+    "selection": "?lang= wins, then /en/ path prefix, then the scoped pwa_lang cookie.",
+    "content": "Bilingual editorial settings are JSON {fr,en} rows in admin_settings; services carry _en columns; text_<key>_<lang> rows override dictionary keys."
+  },
+  "pages": {
+    "fr": [
+      "/",
+      "/services/",
+      "/services/<slug>/",
+      "/voyants/",
+      "/rendez-vous/",
+      "/mon-compte/",
+      "/mon-compte/rendez-vous/<ref>/",
+      "/le-garage/",
+      "/contact/",
+      "/confidentialite/"
+    ],
+    "en": [
+      "/en/",
+      "/en/services/",
+      "/en/services/<slug>/",
+      "/en/warning-lights/",
+      "/en/appointment/",
+      "/en/my-account/",
+      "/en/my-account/appointments/<ref>/",
+      "/en/the-garage/",
+      "/en/contact/",
+      "/en/privacy/"
+    ]
+  },
+  "features": {
+    "gabarit": "Home + /services/#gabarit: vehicle-size selector (voiture, vus, pickup, gros). services.vehicle_classes (comma list) decides which tire / rust-proofing rows show per size; rows with no classes are general services. Choice remembered in localStorage (mm_gabarit). No-JS = every row visible.",
+    "voyants": "lib/lights.js — 11 dashboard warning lights (stroke SVG pictograms, level stop|soon, meaning, what to do now, linked service). /voyants/ lists them with :target anchors; home shows 6; each service page shows its related lights.",
+    "booking": "4-step wizard (work → vehicle with VIN decode via NHTSA vPIC → day/time from real availability → sign-in + details). Bay grid (setting bays × slot_minutes), bay_slots PRIMARY KEY (bay, slot_at) is the concurrency guard; idempotent on (user_id, request_key). References MM-XXXXXX. Courtesy car hidden while courtesy_cars=0; towing hidden and refused server-side while towing_offered=0.",
+    "accounts": "Platform visitor auth (services.auth). customer_profiles + vehicles keyed by users.id TEXT. View, reschedule, cancel (until cancel_cutoff_hours), .ics.",
+    "admin": "/admin dashboard (launch checklist), /admin/rendez-vous board, modules services (incl. vehicle_classes), customer_profiles, vehicles, hours, closures, messages; /admin/settings (gates incl. towing_offered, booking rules, texts, privacy).",
+    "notifications": "lib/notify.js — sends ONLY when live_actions_enabled=1 AND appointment.preview=0. crons.js (garage-mm-reminders) sends 24 h reminders under the same rule.",
+    "seo": "Platform-owned: _p_seo_* rows in admin_settings (title/description/keywords fr+en, twitter summary_large_image, locale fr_CA, canonical, og image 1200x630 seo-og-card.jpg + square seo-og-square.jpg — designed cards, AutoRepair JSON-LD with geo, hours, offer catalog incl. oil change min 95 CAD) injected by platformSeoService on every page. Inner pages keep their own <title>/og:title/description (views pass title + metaDescription); service pages emit their own Service JSON-LD. head.ejs: absolute hreflang fr-CA/en-CA/x-default, icons 32/192/180 from the ampersand mark; subscriber_pwas.icon_url = mark 512. Routes: /favicon.ico (302 to mark .ico), /robots.txt, /sitemap.xml (FR+EN pages and services with xhtml alternates). Prospect sites stay noindex (platform X-Robots-Tag) until claimed.",
+    "embed": "?_embed=1 (homepage showcase capture): the topbar shows « Heures d’ouverture » instead of the live open/closed state, and the hero ticket shows Monday's hours instead of today's."
+  },
+  "gates": {
+    "contact_verified": 0,
+    "address_verified": 0,
+    "hours_verified": 0,
+    "privacy_approved": 0,
+    "bookings_live": 0,
+    "auto_confirm": 0,
+    "messages_enabled": 0,
+    "live_actions_enabled": 0,
+    "towing_offered": 0,
+    "notes": "Phone, address and hours are shown from the public listing; the checklist asks the owner to confirm them. bookings_live requires privacy_approved; while off, appointments are stored with preview=1 and the UI says so."
+  },
+  "design": {
+    "concept": "Plaque émaillée",
+    "tokens": {
+      "navy": "#13233f",
+      "ivory": "#f3ede1",
+      "paper": "#f7f3ea",
+      "red": "#d8342b",
+      "amber": "#f2a93b"
+    },
+    "rules": [
+      "Brand moments = enamel (navy, ivory, red pinstripe); knowledge = patent plates captioned FIG. nn; flows = shop ticket on paper",
+      "The header/footer badge is inline SVG (views/partials/badge.ejs) — never swap it for the raster logo",
+      "No template globals (Number/String/Date/JSON) in .ejs",
+      "Drawer lives outside the sticky masthead and parks off-canvas LEFT",
+      "Callbar ≤ 72 px so the prospect claim ribbon clears it",
+      "All URLs base-relative"
+    ]
+  },
+  "assets": "lib/assets.js — NEW logo (enamel badge, gpt-image-2.5; the garage had none), app mark (the badge ampersand, edited from the logo), hero + wide + 12 patent-drawing plates (gpt-image-2.5-flare), Cloudinary folder tapavis_tenant_garage_martin_et_martin. Illustrations only, never photographs of the shop.",
+  "gaps": [
+    "NAME TO CONFIRM: Google lists « Garage Martin et Martin »; the garage's own GEM-CAR website brands the same address and phone « Mécanique St-Jérôme ». The site uses Garage Martin & Martin; their transcribed texts had the name swapped accordingly.",
+    "The public email (mecaniquestjerome@outlook.com) is shown on the contact page and footer — confirm it is still read.",
+    "Only one price was ever published: oil change from 95 $ (taxes extra) — price_verified=1. Every other service shows « Sur estimation » until the owner prices it; their GEM-CAR price list showed tire and rust-proofing rows by vehicle size without amounts.",
+    "Their price list names no rust-proofing row for a regular pick-up — the gabarit selector shows only the tire rows for that size, plus a call prompt when a size has nothing.",
+    "Inspection sécuritaire: nothing says whether this is a SAAQ-accredited inspection; the page describes a general safety check.",
+    "Service durations are planning estimates (edit in admin/services). Number of service bays unknown — default 2.",
+    "Service area « Mirabel, Saint-Jérôme et les environs » is inferred from the address and the St-Jérôme trade name.",
+    "No courtesy car and no towing were ever advertised — both are off (courtesy_cars=0, towing_offered=0).",
+    "No statutory holidays seeded as closures — the owner adds them.",
+    "Privacy notice is a Law 25 DRAFT with the responsible person's name to complete.",
+    "No photographs of the shop or team were available (Google listing has none); none are shown. Google shows 4.8★ on 89 reviews — not displayed, no review text is reproduced.",
+    "Warning-light guide is general driver guidance; the page tells visitors the vehicle manual is the reference."
+  ]
+}

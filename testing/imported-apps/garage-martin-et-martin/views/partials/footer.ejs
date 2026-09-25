@@ -1,0 +1,49 @@
+</main>
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-top">
+      <div class="foot-brand">
+        <%- include('badge') %>
+        <p><%= settings.hero_kicker %><br><%= settings.service_areas %></p>
+      </div>
+      <div>
+        <h3><%= t.hours %></h3>
+        <ul class="foot-hours">
+          <% (hours || []).forEach(function (h) { %>
+            <li class="<%= h.weekday === todayWeekday ? 'is-today' : '' %>"><span><%= t['day' + h.weekday] %></span><b><%= h.closed ? t.closed : (clock(h.opens) + ' – ' + clock(h.closes)) %></b></li>
+          <% }); %>
+        </ul>
+      </div>
+      <div>
+        <h3><%= t.contact %></h3>
+        <ul>
+          <li><a href="<%= phoneHref %>"><%= settings.contact_phone %></a></li>
+          <% if (settings.contact_email) { %><li><a href="mailto:<%= settings.contact_email %>"><%= settings.contact_email %></a></li><% } %>
+          <li><a href="<%= directionsHref %>" target="_blank" rel="noopener"><%= settings.business_address %></a></li>
+        </ul>
+      </div>
+      <div>
+        <h3><%= t.services %></h3>
+        <ul>
+          <% (navServices || []).filter(function (s) { return s.featured == 1; }).slice(0, 6).forEach(function (s) { %><li><a href="<%= urls.service %><%= s.slug %>/"><%= field(s, 'name') %></a></li><% }); %>
+          <li><a href="<%= urls.services %>#gabarit"><%= lang === 'en' ? 'Tires & rust-proofing' : 'Pneus & antirouille' %></a></li>
+          <li><a href="<%= urls.lights %>"><%= t.lights_cta %></a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© <%= currentYear %> <%= settings.business_name %> · <a href="<%= urls.privacy %>"><%= t.privacy %></a></span>
+      <span><%= t.cookies %></span>
+    </div>
+  </div>
+</footer>
+<nav class="callbar" aria-label="<%= t.book_cta %>">
+  <a class="btn btn-line-light" href="<%= phoneHref %>"><%- include('icon', { name: 'phone' }) %><%= t.call %></a>
+  <a class="btn btn-go" href="<%= urls.booking %>"><%- include('icon', { name: 'calendar' }) %><%= t.booking %></a>
+</nav>
+<div class="toast" data-toast role="status" aria-live="polite" hidden></div>
+<script id="page-data" type="application/json"><%- safeJSON(Object.assign({ t: t, lang: lang, urls: urls, page: page, flags: flags, phone: settings.contact_phone }, typeof pageData !== 'undefined' ? pageData : {})) %></script>
+<script src="public/js/app.js"></script>
+<% (typeof scripts !== 'undefined' ? scripts : []).forEach(function (s) { %><script src="public/js/<%= s %>.js"></script><% }); %>
+</body>
+</html>

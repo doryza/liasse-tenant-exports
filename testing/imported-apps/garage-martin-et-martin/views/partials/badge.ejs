@@ -1,0 +1,13 @@
+<%
+  /* The Martin & Martin enamel badge, drawn as vector so it is sharp at any
+     size. Mirrors the raster logo in lib/assets.js (navy field, ivory
+     letters, signal-red pinstripe). `compact` drops the GARAGE / MIRABEL
+     lines for tight spots. Colours come from CSS (.badge-*). */
+  var isCompact = typeof compact !== 'undefined' && compact === true;
+%><svg class="badge<%= isCompact ? ' badge-compact' : '' %>" viewBox="0 0 440 170" role="img" aria-label="<%= settings.business_name %>" focusable="false">
+  <path class="badge-field" d="M58 8H382L432 85L382 162H58L8 85Z"/>
+  <path class="badge-pin" d="M64 19H376L419 85L376 151H64L21 85Z"/>
+  <% if (!isCompact) { %><text class="badge-small" x="220" y="54" text-anchor="middle">GARAGE</text><% } %>
+  <text class="badge-name" x="220" y="<%= isCompact ? 104 : 108 %>" text-anchor="middle" textLength="330" lengthAdjust="spacingAndGlyphs">MARTIN<tspan class="badge-amp" dx="6">&amp;</tspan><tspan dx="6">MARTIN</tspan></text>
+  <% if (!isCompact) { %><text class="badge-small" x="220" y="138" text-anchor="middle">MIRABEL</text><% } %>
+</svg>

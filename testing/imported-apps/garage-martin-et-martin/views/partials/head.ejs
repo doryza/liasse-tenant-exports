@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="<%= lang === 'en' ? 'en-CA' : 'fr-CA' %>">
+<head>
+<meta charset="utf-8">
+<base href="<%= tenantRoot %>">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#13233f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Martin &amp; Martin">
+<meta name="format-detection" content="telephone=yes">
+<%
+  /* SEO: the platform (platformSeoService) injects canonical, og:*, twitter:*,
+     keywords and the business JSON-LD from the _p_seo_* settings. The home
+     page takes the platform title/description; inner pages keep the <title>,
+     og:title and description emitted here, and their own JSON-LD if any. */
+  var pageTitle = page === 'home'
+    ? settings.business_name + ' — ' + (lang === 'en' ? 'Auto repair in Mirabel' : 'Garage à Mirabel')
+    : (typeof title !== 'undefined' && title ? title : (t[page] || t.home)) + ' — ' + settings.business_name + ', Mirabel';
+  var pageDescription = typeof metaDescription !== 'undefined' && metaDescription ? metaDescription : settings.hero_subtitle;
+  var strip = function (u) { return String(u || '').replace(/[?&]lang=(fr|en)$/, '').replace(/^\.$/, '').replace(/^\.\?/, '?'); };
+  var hrefFr = absRoot + strip(langLinks.fr).replace(/^\.\//, '');
+  var hrefEn = absRoot + strip(langLinks.en);
+  var markImg = function (tr) { return img(assets.mark, tr); };
+%>
+<title><%= pageTitle %></title>
+<meta name="description" content="<%= pageDescription %>">
+<meta property="og:title" content="<%= pageTitle %>">
+<link rel="alternate" hreflang="fr-CA" href="<%= hrefFr %>">
+<link rel="alternate" hreflang="en-CA" href="<%= hrefEn %>">
+<link rel="alternate" hreflang="x-default" href="<%= hrefFr %>">
+<link rel="icon" type="image/png" sizes="32x32" href="<%= markImg('w_32,h_32,c_fill') %>">
+<link rel="icon" type="image/png" sizes="192x192" href="<%= markImg('w_192,h_192,c_fill') %>">
+<link rel="apple-touch-icon" sizes="180x180" href="<%= markImg('w_180,h_180,c_fill') %>">
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://res.cloudinary.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Playfair+Display:ital,wght@0,700;1,700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="public/css/styles.css">
+<% if (page === 'service' && typeof item !== 'undefined' && item && item.slug) { %>
+<script type="application/ld+json"><%- safeJSON({ '@context': 'https://schema.org', '@type': 'Service', name: field(item, 'name'), description: field(item, 'tagline'), serviceType: field(item, 'name'), areaServed: ['Mirabel', 'Saint-Jérôme'], url: absRoot + urls.service + item.slug + '/', image: img(serviceImage(item), 'w_1200,h_630,c_fill,f_jpg'), provider: { '@type': 'AutoRepair', name: settings.business_name, telephone: settings.contact_phone, url: absRoot, address: { '@type': 'PostalAddress', streetAddress: '17525, rue de la Paix', addressLocality: 'Mirabel', addressRegion: 'QC', postalCode: 'J7J 1M3', addressCountry: 'CA' } }, offers: item.price_verified == 1 && item.price_from_cents ? { '@type': 'Offer', priceCurrency: 'CAD', priceSpecification: { '@type': 'PriceSpecification', minPrice: item.price_from_cents / 100, priceCurrency: 'CAD', valueAddedTaxIncluded: false } } : undefined }) %></script>
+<% } %>
+</head>

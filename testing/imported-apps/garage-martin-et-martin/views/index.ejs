@@ -1,0 +1,215 @@
+<%- include('partials/header') %>
+<%
+  var todayRow = (hours || []).find(function (h) { return h.weekday === todayWeekday; });
+  var openDays = (hours || []).filter(function (h) { return !h.closed && h.opens; });
+  var earliest = openDays.length ? openDays.map(function (h) { return h.opens; }).sort()[0] : null;
+  var featured = services.filter(function (s) { return s.featured == 1; });
+  var sized = services.filter(function (s) { return classesOf(s).length && s.bookable == 1; });
+  var oil = services.find(function (s) { return s.slug === 'changement-huile'; });
+  var pad = function (n) { return n < 10 ? '0' + n : '' + n; };
+  var classIcon = { voiture: 'car', vus: 'suv', pickup: 'pickup', gros: 'heavy' };
+%>
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <p class="kicker" data-lk="hero_kicker"><%= settings.hero_kicker %></p>
+      <h1 data-lk="hero_title"><%= settings.hero_title %></h1>
+      <p class="lede" data-lk="hero_subtitle"><%= settings.hero_subtitle %></p>
+      <div class="cta-row">
+        <a class="btn btn-go" href="<%= urls.booking %>"><%- include('partials/icon', { name: 'calendar' }) %><%= t.book_cta %></a>
+        <a class="btn btn-line" href="<%= phoneHref %>"><%- include('partials/icon', { name: 'phone' }) %><%= settings.contact_phone %></a>
+      </div>
+      <ul class="plaques" aria-label="<%= lang === 'en' ? 'At a glance' : 'En bref' %>">
+        <% if (earliest) { %><li><b><%= clock(earliest) %></b><span><%= lang === 'en' ? 'open from, Monday to Friday' : 'ouvert dès, du lundi au vendredi' %></span></li><% } %>
+        <li><b>20+</b><span><%= lang === 'en' ? 'years of expertise' : 'ans d’expertise' %></span></li>
+        <li><b>4</b><span><%= lang === 'en' ? 'sizes: car to heavy-duty pickup' : 'gabarits : de la voiture au gros pick-up' %></span></li>
+      </ul>
+    </div>
+    <figure class="blueprint hero-art">
+      <img src="<%= img(assets.hero, 'w_1100,f_auto,q_auto') %>" alt="<%= lang === 'en' ? 'Drawing: a pickup truck raised on a two-post lift' : 'Dessin : un pick-up sur un pont élévateur à deux colonnes' %>" width="896" height="1120" fetchpriority="high">
+      <figcaption><span><%= t.fig %> 00</span><%= lang === 'en' ? 'Pickup on a two-post lift' : 'Pick-up sur pont élévateur' %></figcaption>
+      <a class="ticket" href="<%= urls.about %>#heures">
+        <% var monRow = (hours || []).find(function (h) { return h.weekday === 1 && !h.closed; }); if (embed && monRow) { %><small><%= t.day1 %></small>
+        <b><%= clock(monRow.opens) %> – <%= clock(monRow.closes) %></b><% } else { %><small><%= t.today.charAt(0).toUpperCase() + t.today.slice(1) %></small>
+        <b><%= todayRow && !todayRow.closed ? clock(todayRow.opens) + ' – ' + clock(todayRow.closes) : t.closed %></b><% } %>
+        <span><%= settings.business_address %></span>
+      </a>
+    </figure>
+  </div>
+</section>
+
+<div class="amp-band" aria-hidden="true">
+  <div class="amp-track">
+    <% for (var r = 0; r < 2; r++) { featured.concat(sized.slice(0, 1)).forEach(function (s) { %><span><%= field(s, 'name').split(' — ')[0] %></span><i>&amp;</i><% }); } %>
+  </div>
+</div>
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <p class="kicker"><%= lang === 'en' ? 'Mechanical repair, start to finish' : 'La mécanique, de A à Z' %></p>
+        <h2><%= t.services %></h2>
+      </div>
+      <a class="btn btn-line" href="<%= urls.services %>"><%= t.all_services %><%- include('partials/icon', { name: 'arrow' }) %></a>
+    </div>
+    <div class="plates">
+      <% featured.forEach(function (s, i) { %>
+        <a class="plate" href="<%= urls.service %><%= s.slug %>/">
+          <div class="plate-art"><img src="<%= img(serviceImage(s), 'w_760,f_auto,q_auto') %>" alt="" loading="lazy" width="760" height="570"><span class="fig"><%= t.fig %> <%= pad(i + 1) %></span></div>
+          <div class="plate-body">
+            <h3><%= field(s, 'name') %></h3>
+            <p><%= field(s, 'tagline') %></p>
+            <div class="plate-meta"><span><%= s.duration_min > 0 ? fmt(t.duration_about, { n: durationLabel(s.duration_min) }) : '' %></span><b class="<%= s.price_verified == 1 ? 'is-priced' : '' %>"><%= priceLabel(s) %></b></div>
+          </div>
+        </a>
+      <% }); %>
+    </div>
+  </div>
+</section>
+
+<section class="section section-navy" id="gabarit">
+  <div class="wrap gabarit">
+    <div class="gabarit-intro">
+      <p class="kicker kicker-light"><%= lang === 'en' ? 'Tires & rust-proofing' : 'Pneus & antirouille' %></p>
+      <h2><%= t.gabarit_title %></h2>
+      <p><%= t.gabarit_help %></p>
+      <p class="winter"><%- include('partials/icon', { name: 'snow' }) %><%= t.winter_rule %></p>
+    </div>
+    <div class="gabarit-tool" data-gabarit>
+      <div class="gabarit-pick" role="radiogroup" aria-label="<%= t.gabarit_title %>">
+        <% CLASSES.forEach(function (c, i) { %>
+          <button type="button" role="radio" aria-checked="<%= i === 0 ? 'true' : 'false' %>" data-class="<%= c %>">
+            <%- include('partials/icon', { name: classIcon[c] }) %>
+            <b><%= t['class_' + c] %></b>
+            <% if (c === 'gros') { %><small><%= t.class_gros_hint %></small><% } %>
+          </button>
+        <% }); %>
+      </div>
+      <ul class="gabarit-list">
+        <% sized.forEach(function (s) { %>
+          <li data-classes="<%= classesOf(s).join(' ') %>">
+            <img src="<%= img(serviceImage(s), 'w_160,h_120,c_fill,f_auto,q_auto') %>" alt="" loading="lazy" width="80" height="60">
+            <div><b><%= field(s, 'name') %></b><span><%= fmt(t.duration_about, { n: durationLabel(s.duration_min) }) %> · <%= priceLabel(s) %></span></div>
+            <a class="btn btn-go btn-sm" href="<%= urls.booking %>?service=<%= s.slug %>"><%= t.book_for %></a>
+          </li>
+        <% }); %>
+        <li class="gabarit-none" data-none hidden><%= t.gabarit_none %> <a href="<%= phoneHref %>"><%= settings.contact_phone %></a></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<% if (oil) { %>
+<section class="section">
+  <div class="wrap oil">
+    <figure class="blueprint oil-art">
+      <img src="<%= img(serviceImage(oil), 'w_900,f_auto,q_auto') %>" alt="" loading="lazy" width="900" height="675">
+      <figcaption><span><%= t.fig %> 01</span><%= field(oil, 'name') %></figcaption>
+    </figure>
+    <div class="oil-copy">
+      <p class="kicker"><%= lang === 'en' ? 'The posted price' : 'Le prix affiché' %></p>
+      <h2><%= field(oil, 'name') %></h2>
+      <div class="price-plate">
+        <small><%= t.price_from %></small>
+        <b><%= oil.price_verified == 1 && oil.price_from_cents ? money(oil.price_from_cents) : t.price_on_estimate %></b>
+        <small><%= lang === 'en' ? 'taxes extra' : 'taxes en sus' %></small>
+      </div>
+      <div class="prose" data-content-source="services" data-content-id="<%= oil.id %>"><% lines(field(oil, 'body')).slice(0, 1).forEach(function (p) { %><p><%= p %></p><% }); %></div>
+      <a class="btn btn-go" href="<%= urls.booking %>?service=<%= oil.slug %>"><%= t.book_service %></a>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<section class="section section-dash">
+  <div class="wrap dash">
+    <div>
+      <p class="kicker kicker-light"><%= t.lights %></p>
+      <h2><%= t.lights_title %></h2>
+      <p><%= lang === 'en' ? 'A light on the dashboard is the car talking. Here is what the common ones mean — and when to pull over.' : 'Un voyant au tableau de bord, c’est la voiture qui parle. Voici ce que veulent dire les plus courants — et quand il faut s’arrêter.' %></p>
+      <a class="btn btn-line-light" href="<%= urls.lights %>"><%= t.lights_cta %><%- include('partials/icon', { name: 'arrow' }) %></a>
+    </div>
+    <ul class="dash-panel">
+      <% lights.forEach(function (l) { %>
+        <li><a class="lamp lamp-<%= l.level %>" href="<%= urls.lights %>#<%= l.key %>" title="<%= field(l, 'name') %>"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><%- l.svg %></svg><span><%= field(l, 'name') %></span></a></li>
+      <% }); %>
+    </ul>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <p class="kicker"><%= lang === 'en' ? 'In their own words' : 'En nos mots' %></p>
+        <h2><%= lang === 'en' ? 'Why choose us' : 'Pourquoi nous choisir' %></h2>
+      </div>
+    </div>
+    <ol class="enamels">
+      <% [1, 2, 3, 4].forEach(function (n) { %>
+        <li><span class="rivets" aria-hidden="true"></span><b data-lk="why_<%= n %>_title"><%= settings['why_' + n + '_title'] %></b><p data-lk="why_<%= n %>_text"><%= settings['why_' + n + '_text'] %></p></li>
+      <% }); %>
+    </ol>
+  </div>
+</section>
+
+<section class="section not-offered-band">
+  <div class="wrap not-offered">
+    <div>
+      <p class="kicker"><%= t.not_offered %></p>
+      <ul class="refused" aria-label="<%= t.not_offered %>">
+        <li><%- include('partials/icon', { name: 'x' }) %><s><%= lang === 'en' ? 'Bodywork' : 'Carrosserie' %></s></li>
+        <li><%- include('partials/icon', { name: 'x' }) %><s><%= lang === 'en' ? 'Alignments' : 'Alignements' %></s></li>
+      </ul>
+    </div>
+    <blockquote><p data-lk="not_offered_text"><%= settings.not_offered_text %></p><footer><%= lang === 'en' ? 'Everything else, mechanically speaking — we do.' : 'Tout le reste, côté mécanique — on s’en occupe.' %></footer></blockquote>
+  </div>
+</section>
+
+<section class="section section-paper">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <p class="kicker"><%= t.why_book %></p>
+        <h2><%= lang === 'en' ? 'Book online, follow along' : 'Réservez en ligne, suivez tout' %></h2>
+      </div>
+      <a class="btn btn-go" href="<%= urls.booking %>"><%= t.book_cta %></a>
+    </div>
+    <ol class="steps-row">
+      <% [1, 2, 3, 4].forEach(function (n) { %><li><span>N° <%= n %></span><p data-lk="how_<%= n %>"><%= settings['how_' + n] %></p></li><% }); %>
+    </ol>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap visit">
+    <div class="map">
+      <% if (mapEmbed) { %>
+        <iframe src="<%= mapEmbed %>" title="<%= t.address %>" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+      <% } else { %>
+        <div class="map-fallback"><a class="btn btn-line btn-sm" href="<%= directionsHref %>" target="_blank" rel="noopener"><%= t.directions %></a></div>
+      <% } %>
+    </div>
+    <div class="visit-card">
+      <p class="kicker"><%= lang === 'en' ? 'Come by' : 'Passez nous voir' %></p>
+      <h2 id="heures"><%= lang === 'en' ? 'Rue de la Paix, Mirabel' : 'Rue de la Paix, à Mirabel' %></h2>
+      <table class="hours-table">
+        <% (hours || []).forEach(function (h) { %>
+          <tr class="<%= h.weekday === todayWeekday ? 'is-today' : '' %>"><td><%= t['day' + h.weekday] %></td><td><%= h.closed ? t.closed : clock(h.opens) + ' – ' + clock(h.closes) %></td></tr>
+        <% }); %>
+      </table>
+      <ul class="info-list">
+        <li><%- include('partials/icon', { name: 'pin' }) %><a href="<%= directionsHref %>" target="_blank" rel="noopener"><%= settings.business_address %></a></li>
+        <li><%- include('partials/icon', { name: 'phone' }) %><a href="<%= phoneHref %>"><%= settings.contact_phone %></a></li>
+      </ul>
+      <div class="cta-row">
+        <a class="btn btn-go" href="<%= urls.booking %>"><%= t.book_cta %></a>
+        <a class="btn btn-line" href="<%= directionsHref %>" target="_blank" rel="noopener"><%= t.directions %></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>
