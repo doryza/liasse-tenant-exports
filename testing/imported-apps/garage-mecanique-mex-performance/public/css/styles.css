@@ -355,6 +355,8 @@ a.fact:hover span{color:var(--ember)}
 .tbc-note{padding:12px 14px;border:1.5px dashed var(--rule-2);border-radius:8px;color:var(--body);font-size:15px;margin:0 0 20px}
 .hours-tbc{padding:14px 16px;border:1.5px dashed var(--rule-2);border-radius:8px;margin:0}
 .site-footer .hours-tbc{border-color:var(--steel)}
+/* Russo One is wide: « SAINT-HUBERT. » must fit a 360 px phone */
+@media (max-width:480px){.hero h1{font-size:clamp(28px,8.4vw,46px)}}
 /* Header fit v2 — the logo block never shrinks: long names wrap to two lines
    at a fixed width, and the nav/actions tighten instead (every desktop width). */
 .brand{flex:none;min-width:auto}
