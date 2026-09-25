@@ -1,0 +1,86 @@
+{
+  "version": 1,
+  "slug": "centre-de-l-auto-nc",
+  "canonical": "https://liasse.tech/pwa/centre-de-l-auto-nc/",
+  "reference": "PROSPECT site (operator-built on spec, docs/LIASSE_DANCE.md Part 13)",
+  "languages": {
+    "default": "fr",
+    "supported": [
+      "fr",
+      "en"
+    ],
+    "selection": "?lang= wins, then /en/ path prefix, then the scoped pwa_lang cookie.",
+    "content": "Bilingual editorial settings are JSON {fr,en} rows in admin_settings; services carry _en columns; text_<key>_<lang> rows override dictionary keys."
+  },
+  "pages": {
+    "fr": [
+      "/",
+      "/services/",
+      "/services/<slug>/",
+      "/rendez-vous/",
+      "/mon-compte/",
+      "/mon-compte/rendez-vous/<ref>/",
+      "/carnet-d-entretien/",
+      "/a-propos/",
+      "/contact/",
+      "/confidentialite/"
+    ],
+    "en": [
+      "/en/",
+      "/en/services/",
+      "/en/services/<slug>/",
+      "/en/appointment/",
+      "/en/my-account/",
+      "/en/my-account/appointments/<ref>/",
+      "/en/maintenance-planner/",
+      "/en/about/",
+      "/en/contact/",
+      "/en/privacy/"
+    ]
+  },
+  "features": {
+    "booking": "4-step wizard (work → vehicle with VIN decode via NHTSA vPIC → day/time from real availability → sign-in + details) → appointment. Availability = hours − closures − lead time, on a bay grid (setting bays × slot_minutes). bay_slots PRIMARY KEY (bay, slot_at) is the concurrency guard; idempotent on (user_id, request_key).",
+    "accounts": "Platform visitor auth (services.auth; email/SMS code, biometrics). customer_profiles + vehicles are keyed by the platform users.id as TEXT. Customers view, reschedule and cancel (until cancel_cutoff_hours) and download .ics.",
+    "admin": "/admin dashboard (launch checklist, requests to confirm), /admin/rendez-vous board (days × bays, status drawer with customer message + internal note), generic modules: services, customer_profiles, vehicles, hours, closures, messages; /admin/settings (gates, booking rules, texts, privacy).",
+    "planner": "Client-side maintenance planner (typical intervals) + Québec winter-tire countdown.",
+    "notifications": "lib/notify.js — sends ONLY when live_actions_enabled=1 AND appointment.preview=0. crons.js sends 24 h reminders under the same rule."
+  },
+  "gates": {
+    "contact_verified": 0,
+    "address_verified": 0,
+    "hours_verified": 0,
+    "privacy_approved": 0,
+    "bookings_live": 0,
+    "auto_confirm": 0,
+    "messages_enabled": 0,
+    "live_actions_enabled": 0,
+    "notes": "Phone/address/hours are shown from the public listing; the checklist asks the owner to confirm them. bookings_live requires privacy_approved; while off, appointments are stored with preview=1 and the UI says so."
+  },
+  "design": {
+    "concept": "Néon d'atelier",
+    "tokens": {
+      "carbon": "#121417",
+      "orange": "#d77522",
+      "ember": "#ffae7a",
+      "paper": "#f2f3f0",
+      "ballpoint": "#2446a6"
+    },
+    "rules": [
+      "Brand moments = charcoal emblem plates; flows = cream shop ticket in orange-brown",
+      "No templates globals (Number/String/Date/JSON) in .ejs",
+      "Drawers never parked off-canvas right",
+      "All URLs base-relative"
+    ]
+  },
+  "assets": "lib/assets.js — logo remake (gpt-image-2.5-sunburst edit of their 411 logo), app mark, hero + 11 service illustrations (gpt-image-2.5-flare), Cloudinary folder tapavis_tenant_garage_el_mirabel. All illustrations, never photographs of the shop.",
+  "gaps": [
+    "No email address known for the garage — notification_email is empty; notifications go to the Liasse account email once claimed.",
+    "No prices published anywhere — every service shows « Sur estimation » until the owner fills price_from_cents and ticks price_verified.",
+    "Service durations are planning estimates (edit in admin/services).",
+    "Number of service bays unknown — default 2 (setting bays).",
+    "Courtesy car count unknown — default 1 because the listing offers « Voiture de courtoisie».",
+    "No statutory holidays seeded as closures — the owner adds them.",
+    "Privacy notice is a Law 25 DRAFT with the responsible person's name to complete.",
+    "No photographs of the shop or team were available; none are shown."
+  ]
+}
