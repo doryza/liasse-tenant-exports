@@ -59,6 +59,8 @@ button,input,select,textarea{font:inherit;color:inherit}
 .neon-sign.is-open{border-color:rgba(255,107,44,.55);box-shadow:0 0 0 1px rgba(255,107,44,.15),0 0 24px rgba(255,107,44,.18) inset}
 .neon-sign.is-closed b{color:#5a3a33;text-shadow:none}
 @keyframes flicker{0%,6%,9%,13%,100%{opacity:1}7%,11%{opacity:.25}8%{opacity:.8}12%{opacity:.4}}
+/* the sign's second line only where the header has room (EN labels are longer) */
+@media (max-width:1440px){.neon-sign small{display:none}}
 
 /* ---------------------------------------------------------------- buttons */
 .btn{white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:50px;padding:0 22px;border-radius:10px;border:1.5px solid transparent;font:700 16px/1 var(--text);text-decoration:none;cursor:pointer;transition:transform .15s,background .15s,box-shadow .15s}
