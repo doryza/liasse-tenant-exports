@@ -1,0 +1,25 @@
+<% var scripts = ['clients']; var pageData = { makes: [] }; %>
+<%- include('partials/admin-shell', { adminTitle: tr('Clients', 'Customers') }) %>
+<div class="page-head">
+  <div><h1><%= tr('Clients', 'Customers') %></h1><p><%= tr('Ceux qui ont réservé en ligne et ceux que vous avez ajoutés.', 'Those who booked online and those you added.') %></p></div>
+  <div class="page-actions"><button class="btn btn-primary" type="button" data-client-add><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><%= tr('Nouveau client', 'New customer') %></button></div>
+</div>
+<section class="card">
+  <form class="search" method="get" action="admin/clients">
+    <input class="input" type="search" name="q" value="<%= q %>" placeholder="<%= tr('Nom, téléphone, courriel ou plaque', 'Name, phone, email or plate') %>">
+    <button class="btn" type="submit"><%= tr('Chercher', 'Search') %></button>
+  </form>
+  <% if (!rows.length) { %>
+    <div class="empty"><strong><%= q ? tr('Aucun client trouvé', 'No customer found') : tr('Aucun client pour l’instant', 'No customers yet') %></strong><%= tr('Ils s’ajoutent tout seuls quand ils réservent en ligne, ou quand vous prenez un rendez-vous pour eux.', 'They are added automatically when they book online, or when you book for them.') %></div>
+  <% } else { %>
+  <div class="rows">
+    <% rows.forEach(function (c) { %>
+      <a class="row" href="admin/clients/<%= c.id %>">
+        <div><div class="row-title"><%= c.name %></div><div class="row-sub"><%= [c.phone, c.email].filter(Boolean).join(' · ') || '—' %></div></div>
+        <div class="row-end"><span class="small muted"><%= c.last_visit ? tr('Dernière visite', 'Last visit') + ' ' + formatShort(c.last_visit) : (String(c.user_id).indexOf('c:') === 0 ? tr('Ajouté au garage', 'Added at the garage') : tr('Compte en ligne', 'Online account')) %></span></div>
+      </a>
+    <% }); %>
+  </div>
+  <% } %>
+</section>
+<%- include('partials/admin-footer', { scripts: scripts, pageData: pageData }) %>
