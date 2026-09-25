@@ -1,0 +1,49 @@
+<%- include('partials/admin-shell', { adminTitle: tr('Estimations et factures', 'Estimates & invoices') }) %>
+<%
+  var DS = { draft: tr('Brouillon', 'Draft'), sent: tr('Remise au client', 'Given to customer'), accepted: tr('Acceptée', 'Accepted'), declined: tr('Refusée', 'Declined'), invoiced: tr('Facturée', 'Invoiced'), unpaid: tr('À payer', 'Unpaid'), paid: tr('Payée', 'Paid'), void: tr('Annulée', 'Cancelled') };
+  var qs = function (k, f) { return 'admin/documents?kind=' + k + '&filter=' + f + (q ? '&q=' + encodeURIComponent(q) : ''); };
+%>
+<div class="page-head">
+  <div><h1><%= tr('Estimations et factures', 'Estimates & invoices') %></h1></div>
+  <div class="page-actions">
+    <button class="btn btn-primary" type="button" data-new-doc="estimate"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><%= tr('Nouvelle estimation', 'New estimate') %></button>
+    <button class="btn btn-primary" type="button" data-new-doc="invoice"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><%= tr('Nouvelle facture', 'New invoice') %></button>
+  </div>
+</div>
+<section class="card">
+  <div class="chips" style="margin-bottom:12px">
+    <a class="chip" href="<%= qs('all', filter) %>"<%- kind === 'all' ? ' aria-current="page"' : '' %>><%= tr('Tout', 'All') %></a>
+    <a class="chip" href="<%= qs('estimate', filter) %>"<%- kind === 'estimate' ? ' aria-current="page"' : '' %>><%= tr('Estimations', 'Estimates') %></a>
+    <a class="chip" href="<%= qs('invoice', filter) %>"<%- kind === 'invoice' ? ' aria-current="page"' : '' %>><%= tr('Factures', 'Invoices') %></a>
+  </div>
+  <div class="chips" style="margin-bottom:16px">
+    <a class="chip" href="<%= qs(kind, 'open') %>"<%- filter === 'open' ? ' aria-current="page"' : '' %>><%= tr('En cours', 'Open') %></a>
+    <a class="chip" href="<%= qs(kind, 'unpaid') %>"<%- filter === 'unpaid' ? ' aria-current="page"' : '' %>><%= tr('À encaisser', 'To collect') %></a>
+    <a class="chip" href="<%= qs(kind, 'paid') %>"<%- filter === 'paid' ? ' aria-current="page"' : '' %>><%= tr('Payées', 'Paid') %></a>
+    <a class="chip" href="<%= qs(kind, 'all') %>"<%- filter === 'all' ? ' aria-current="page"' : '' %>><%= tr('Toutes', 'All') %></a>
+  </div>
+  <form class="search" method="get" action="admin/documents">
+    <input type="hidden" name="kind" value="<%= kind %>"><input type="hidden" name="filter" value="<%= filter %>">
+    <input class="input" type="search" name="q" value="<%= q %>" placeholder="<%= tr('Client, numéro, véhicule ou plaque', 'Customer, number, vehicle or plate') %>">
+    <button class="btn" type="submit"><%= tr('Chercher', 'Search') %></button>
+  </form>
+  <% if (!docs.length) { %>
+    <div class="empty"><strong><%= q ? tr('Aucun résultat', 'No results') : tr('Rien ici pour l’instant', 'Nothing here yet') %></strong><%= tr('Une estimation se fait en une minute, et devient une facture en un clic.', 'An estimate takes a minute, and becomes an invoice in one click.') %></div>
+  <% } else { %>
+  <div class="rows">
+    <% docs.forEach(function (d) { var bal = d.total_cents - d.paid_cents; %>
+      <a class="row" href="admin/documents/<%= d.id %>">
+        <div>
+          <div class="row-title"><%= d.kind === 'invoice' ? tr('Facture', 'Invoice') : tr('Estimation', 'Estimate') %> <%= d.number || tr('(brouillon)', '(draft)') %> · <%= d.client_name || tr('Client à préciser', 'Customer to fill in') %></div>
+          <div class="row-sub"><%= [d.vehicle_label, d.vehicle_plate].filter(Boolean).join(' · ') %><%= d.issued_on ? ' · ' + formatShort(d.issued_on + 'T12:00:00Z') : '' %></div>
+        </div>
+        <div class="row-end">
+          <span class="money"><%= cash(d.total_cents) %></span>
+          <span class="pill pill-<%= d.status %>"><%= DS[d.status] %><%= d.status === 'unpaid' && d.paid_cents ? ' · ' + tr('solde', 'balance') + ' ' + cash(bal) : '' %></span>
+        </div>
+      </a>
+    <% }); %>
+  </div>
+  <% } %>
+</section>
+<%- include('partials/admin-footer') %>
