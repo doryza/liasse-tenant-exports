@@ -1,0 +1,44 @@
+<%- include('head') %>
+<body data-page="<%= page %>" class="has-callbar">
+<a class="skip" href="#main"><%= t.skip %></a>
+<%
+  var os = openState || { open: false };
+  var signText = os.open ? t.open_now : t.closed_now;
+  var signSub = '';
+  if (os.open) signSub = fmt(t.open_until, { time: clock(os.until) });
+  if (!os.open && os.nextOpen) {
+    var when = os.nextOpen.inDays === 0 ? t.today : os.nextOpen.inDays === 1 ? t.tomorrow : t['day' + os.nextOpen.weekday].toLowerCase();
+    signSub = fmt(t.opens_at, { when: when, time: clock(os.nextOpen.time) });
+  }
+%>
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="<%= urls.home %>" aria-label="<%= settings.business_name %>">
+      <img class="brand-mark" src="<%= assets.mark.replace('/upload/', '/upload/w_104,h_104,c_fill,f_auto,q_auto/') %>" alt="" width="52" height="52">
+      <span class="brand-words"><strong>Atelier Mécanique FS</strong><span>Montréal-Nord</span></span>
+    </a>
+
+    <nav class="site-nav" id="site-nav" aria-label="<%= t.menu %>">
+      <a href="<%= urls.services %>" aria-current="<%= ['services','service'].includes(page) ? 'page' : 'false' %>"><%= t.services %></a>
+      <a class="nav-mobile-only" href="<%= urls.booking %>" aria-current="<%= page === 'booking' ? 'page' : 'false' %>"><%= t.booking %></a>
+      <a href="<%= urls.planner %>" aria-current="<%= page === 'planner' ? 'page' : 'false' %>"><%= t.planner %></a>
+      <a href="<%= urls.about %>" aria-current="<%= page === 'about' ? 'page' : 'false' %>"><%= t.about %></a>
+      <a href="<%= urls.contact %>" aria-current="<%= page === 'contact' ? 'page' : 'false' %>"><%= t.contact %></a>
+      <a class="nav-mobile-only" href="<%= urls.account %>" aria-current="<%= ['account','appointment'].includes(page) ? 'page' : 'false' %>"><%= t.account %></a>
+      <div class="lang">
+        <a href="<%= langLinks.fr %>" lang="fr" aria-current="<%= lang === 'fr' ? 'true' : 'false' %>">FR</a>
+        <a href="<%= langLinks.en %>" lang="en" aria-current="<%= lang === 'en' ? 'true' : 'false' %>">EN</a>
+      </div>
+    </nav>
+
+    <div class="header-actions">
+      <% if (hoursKnown) { %><a class="neon-sign <%= os.open ? 'is-open' : 'is-closed' %>" href="<%= urls.about %>#heures" title="<%= t.hours %>">
+        <b><%= signText %></b><small><%= signSub %></small>
+      </a><% } else { %><a class="neon-sign is-closed" href="<%= phoneHref %>" title="<%= t.hours_tbc %>"><b><%= t.call %></b><small><%= settings.contact_phone %></small></a><% } %>
+      <a class="icon-btn header-account" href="<%= urls.account %>" aria-label="<%= t.account %>" title="<%= t.account %>"><%- include('icon', { name: 'user' }) %></a>
+      <a class="btn btn-neon btn-sm header-book" href="<%= urls.booking %>"><%= t.book_cta %></a>
+      <button class="icon-btn menu-toggle" type="button" aria-label="<%= t.menu %>" aria-controls="site-nav" aria-expanded="false" data-menu-toggle><%- include('icon', { name: 'menu' }) %></button>
+    </div>
+  </div>
+</header>
+<main id="main">
