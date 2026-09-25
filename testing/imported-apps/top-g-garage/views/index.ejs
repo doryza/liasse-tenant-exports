@@ -11,7 +11,7 @@
       <a class="btn btn-line" href="<%= phoneHref %>"><%- include('partials/icon', { name: 'phone' }) %><%= settings.contact_phone %></a>
     </div>
     <div class="facts">
-      <a class="fact" href="<%= urls.about %>#heures"><%- include('partials/icon', { name: 'clock' }) %><span><b><%= t.hours %></b><span><%= !hoursKnown ? t.hours_tbc_short : (todayRow && !todayRow.closed ? (t.today.charAt(0).toUpperCase() + t.today.slice(1) + ' · ' + clock(todayRow.opens) + ' – ' + clock(todayRow.closes)) : (lang === 'en' ? 'Mon–Fri · 9 a.m. – 6 p.m.' : 'Lun–ven · 9 h – 18 h')) %></span></span></a>
+      <a class="fact" href="<%= urls.about %>#heures"><%- include('partials/icon', { name: 'clock' }) %><span><b><%= t.hours %></b><span><%= !hoursKnown ? t.hours_tbc_short : (todayRow && !todayRow.closed ? (t.today.charAt(0).toUpperCase() + t.today.slice(1) + ' · ' + clock(todayRow.opens) + ' – ' + clock(todayRow.closes)) : (hoursSummary || (lang === 'en' ? 'Closed today' : 'Fermé aujourd’hui'))) %></span></span></a>
       <a class="fact" href="<%= directionsHref %>" target="_blank" rel="noopener"><%- include('partials/icon', { name: 'pin' }) %><span><b><%= t.address %></b><span><%= settings.business_address %></span></span></a>
       <div class="fact"><%- include('partials/icon', { name: 'card' }) %><span><b><%= t.payment_methods %></b><span data-lk="payment_methods"><%= settings.payment_methods %></span></span></div>
     </div>
