@@ -1,0 +1,113 @@
+<%- include('partials/header') %>
+<% var todayWd = todayWeekday; %>
+<% var todayRow = (hours || []).find(function (h) { return h.weekday === todayWd; }); %>
+
+<section class="hero" style="--hero-img:url('<%= assets.hero.replace('/upload/', '/upload/w_2000,f_auto,q_auto/') %>')">
+  <div class="wrap">
+    <h1 data-lk="hero_title"><%= settings.hero_title %></h1>
+    <p class="lede" data-lk="hero_subtitle"><%= settings.hero_subtitle %></p>
+    <div class="cta-row">
+      <a class="btn btn-neon" href="<%= urls.booking %>"><%- include('partials/icon', { name: 'calendar' }) %><%= t.book_cta %></a>
+      <a class="btn btn-line" href="<%= phoneHref %>"><%- include('partials/icon', { name: 'phone' }) %><%= settings.contact_phone %></a>
+    </div>
+    <div class="facts">
+      <a class="fact" href="<%= urls.about %>#heures"><%- include('partials/icon', { name: 'clock' }) %><span><b><%= t.hours %></b><span><%= !hoursKnown ? t.hours_tbc_short : (todayRow && !todayRow.closed ? (t.today.charAt(0).toUpperCase() + t.today.slice(1) + ' · ' + clock(todayRow.opens) + ' – ' + clock(todayRow.closes)) : (lang === 'en' ? 'Mon–Fri · 9 a.m. – 6 p.m.' : 'Lun–ven · 9 h – 18 h')) %></span></span></a>
+      <a class="fact" href="<%= directionsHref %>" target="_blank" rel="noopener"><%- include('partials/icon', { name: 'pin' }) %><span><b><%= t.address %></b><span><%= settings.business_address %></span></span></a>
+      <div class="fact"><%- include('partials/icon', { name: 'card' }) %><span><b><%= t.payment_methods %></b><span data-lk="payment_methods"><%= settings.payment_methods %></span></span></div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <h2><%= t.services %></h2>
+        <p><%= lang === 'en' ? 'Everything the garage does, with the signs that tell you it is time. Book any of them online.' : 'Tout ce que fait le garage, avec les signes qui disent qu’il est temps. Chacun se réserve en ligne.' %></p>
+      </div>
+      <a class="btn btn-ghost" href="<%= urls.services %>"><%= t.all_services %></a>
+    </div>
+    <div class="svc-grid">
+      <% services.filter(function (s) { return s.featured == 1; }).forEach(function (s) { %>
+        <a class="svc<%= Number(s.confirmed) === 0 ? ' is-tbc' : '' %>" href="<%= urls.service %><%= s.slug %>/">
+          <div class="svc-img" role="img" aria-label="<%= field(s, 'name') %>" style="background-image:url('<%= serviceImage(s).replace('/upload/', '/upload/w_720,f_auto,q_auto/') %>')"></div>
+          <div class="svc-body">
+            <h3><%= field(s, 'name') %></h3><% if (Number(s.confirmed) === 0) { %><span class="tbc-tag"><%= t.tbc %></span><% } %>
+            <p><%= field(s, 'tagline') %></p>
+            <div class="svc-meta"><span><%= s.duration_min > 0 ? fmt(t.duration_about, { n: durationLabel(s.duration_min) }) : '' %></span><b><%= priceLabel(s) %></b></div>
+          </div>
+        </a>
+      <% }); %>
+    </div>
+  </div>
+</section>
+
+<section class="section section-dark">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <h2><%= t.why_book %></h2>
+        <p><%= lang === 'en' ? 'Your account keeps your vehicles, your appointments and the progress of the work — no more calling to ask if it is ready.' : 'Votre compte garde vos véhicules, vos rendez-vous et l’avancement des travaux — plus besoin d’appeler pour savoir si c’est prêt.' %></p>
+      </div>
+      <a class="btn btn-neon" href="<%= urls.booking %>"><%= t.book_cta %></a>
+    </div>
+    <ol class="how">
+      <li><p data-lk="how_1"><%= settings.how_1 %></p></li>
+      <li><p data-lk="how_2"><%= settings.how_2 %></p></li>
+      <li><p data-lk="how_3"><%= settings.how_3 %></p></li>
+      <li><p data-lk="how_4"><%= settings.how_4 %></p></li>
+    </ol>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap band">
+    <div>
+      <h2 class="h2" style="margin-bottom:18px"><%= t.planner_title %></h2>
+      <p class="muted" style="max-width:54ch;margin:0 0 20px"><%= t.planner_help %></p>
+      <div class="winter" data-winter>
+        <%- include('partials/icon', { name: 'snow' }) %>
+        <div><b style="display:block;font:700 20px/1.1 var(--display);text-transform:uppercase"><%= t.winter_tires %></b><span data-winter-count style="color:#aeb3ad"></span></div>
+      </div>
+      <a class="btn btn-ink" href="<%= urls.planner %>"><%= lang === 'en' ? 'Open the planner' : 'Ouvrir le carnet' %></a>
+    </div>
+    <div>
+      <h2 class="h2" id="heures" style="margin-bottom:18px"><%= t.hours %></h2>
+      <% if (hoursKnown) { %>
+      <table class="hours-table">
+        <% (hours || []).forEach(function (h) { %>
+          <tr class="<%= h.weekday === todayWd ? 'is-today' : '' %>"><td><%= t['day' + h.weekday] %></td><td><%= h.closed ? t.closed : clock(h.opens) + ' – ' + clock(h.closes) %></td></tr>
+        <% }); %>
+      </table>
+      <% } else { %><p class="hours-tbc"><%= t.hours_tbc %> <a href="<%= phoneHref %>"><%= settings.contact_phone %></a></p><% } %>
+      <p class="muted small" style="margin-top:14px"><%= t.areas %> : <span data-lk="service_areas"><%= settings.service_areas %></span></p>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0">
+  <div class="wrap band">
+    <div class="map">
+      <% if (mapEmbed) { %>
+        <iframe src="<%= mapEmbed %>" title="<%= t.address %>" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+      <% } else { %>
+        <div class="map-fallback"><div><%- include('partials/icon', { name: 'map' }) %><p><%= settings.business_address %></p><a class="btn btn-line btn-sm" href="<%= directionsHref %>" target="_blank" rel="noopener"><%= t.directions %></a></div></div>
+      <% } %>
+    </div>
+    <div>
+      <h2 class="h2" style="margin-bottom:18px"><%= lang === 'en' ? 'Come by' : 'Passez nous voir' %></h2>
+      <ul class="info-list">
+        <li><%- include('partials/icon', { name: 'pin' }) %><div><b><%= t.address %></b><a href="<%= directionsHref %>" target="_blank" rel="noopener"><%= settings.business_address %></a></div></li>
+        <li><%- include('partials/icon', { name: 'phone' }) %><div><b><%= t.phone %></b><a href="<%= phoneHref %>"><%= settings.contact_phone %></a></div></li>
+        <li><%- include('partials/icon', { name: 'card' }) %><div><b><%= t.payment_methods %></b><span data-lk="payment_methods"><%= settings.payment_methods %></span></div></li>
+        <li><%- include('partials/icon', { name: 'car' }) %><div><b><%= t.areas %></b><span data-lk="service_areas"><%= settings.service_areas %></span></div></li>
+      </ul>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:24px">
+        <a class="btn btn-neon" href="<%= urls.booking %>"><%= t.book_cta %></a>
+        <a class="btn btn-ghost" href="<%= directionsHref %>" target="_blank" rel="noopener"><%= t.directions %></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>
