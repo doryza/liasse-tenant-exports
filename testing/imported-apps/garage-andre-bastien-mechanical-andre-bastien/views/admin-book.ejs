@@ -1,0 +1,86 @@
+<% var scripts = ['book']; var pageData = { book: { client: customer, vehicles: vehicles, services: bookable.map(function (s) { return { slug: s.slug, name: s.name, duration: s.duration_min }; }), makes: makes, courtesyCars: bookCfg.courtesyCars, live: flags.live } }; %>
+<%- include('partials/admin-shell', { adminTitle: tr('Nouveau rendez-vous', 'New appointment') }) %>
+<div class="page-head">
+  <div><h1><%= tr('Nouveau rendez-vous', 'New appointment') %></h1><p><%= tr('Pour un client qui appelle ou qui passe au garage. Le rendez-vous est confirmé tout de suite.', 'For a customer who calls or drops by. The appointment is confirmed right away.') %></p></div>
+  <div class="page-actions"><a class="btn btn-quiet" href="admin/rendez-vous"><%= tr('Annuler', 'Cancel') %></a></div>
+</div>
+
+<div class="stack" data-book>
+  <section class="card book-step" data-step="client">
+    <h2><span class="n">1</span><%= tr('Client', 'Customer') %></h2>
+    <div data-client-chosen hidden></div>
+    <div data-client-find>
+      <div class="field client-pick">
+        <span><%= tr('Chercher par nom, téléphone ou plaque', 'Search by name, phone or plate') %></span>
+        <input type="search" autocomplete="off" data-client-q placeholder="<%= tr('ex. Tremblay, 450 555…, G45 KLM', 'e.g. Tremblay, 450 555…, G45 KLM') %>">
+        <div class="suggest" data-client-results hidden></div>
+      </div>
+      <button class="link-btn" type="button" data-client-new><%= tr('+ Nouveau client', '+ New customer') %></button>
+      <div data-client-form hidden style="margin-top:14px">
+        <div class="grid-3">
+          <label class="field"><span><%= tr('Nom', 'Name') %> *</span><input name="name" autocomplete="off" maxlength="120"></label>
+          <label class="field"><span><%= tr('Téléphone', 'Phone') %></span><input name="phone" type="tel" maxlength="40"></label>
+          <label class="field"><span><%= tr('Courriel (facultatif)', 'Email (optional)') %></span><input name="email" type="email" maxlength="200"></label>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card book-step" data-step="vehicle">
+    <h2><span class="n">2</span><%= tr('Véhicule', 'Vehicle') %></h2>
+    <div class="pick-list" data-vehicle-list></div>
+    <button class="link-btn" type="button" data-vehicle-new style="margin-top:10px"><%= tr('+ Autre véhicule', '+ Another vehicle') %></button>
+    <div data-vehicle-form hidden style="margin-top:14px">
+      <div class="grid-3">
+        <label class="field"><span><%= tr('Année', 'Year') %></span><select name="year" data-year></select></label>
+        <label class="field"><span><%= tr('Marque', 'Make') %> *</span><input name="make" list="admin-makes" maxlength="60" autocomplete="off"></label>
+        <label class="field"><span><%= tr('Modèle', 'Model') %> *</span><input name="model" maxlength="80" autocomplete="off"></label>
+        <label class="field"><span><%= tr('Plaque', 'Plate') %></span><input name="plate" maxlength="12" style="text-transform:uppercase"></label>
+        <label class="field"><span><%= tr('Kilométrage', 'Mileage') %></span><input name="odometer_km" inputmode="numeric" maxlength="7"></label>
+        <label class="field"><span>NIV</span><input name="vin" maxlength="17" style="text-transform:uppercase"></label>
+      </div>
+      <button class="btn btn-sm" type="button" data-vin-fill><%= tr('Remplir avec le NIV', 'Fill in from the VIN') %></button> <span class="small muted" data-vin-status></span>
+      <datalist id="admin-makes"><% makes.forEach(function (m) { %><option value="<%= m %>"><% }); %></datalist>
+    </div>
+  </section>
+
+  <section class="card book-step" data-step="work">
+    <h2><span class="n">3</span><%= tr('Travaux', 'Work') %></h2>
+    <div class="check-grid" data-service-list>
+      <% bookable.forEach(function (s) { %>
+        <label class="check-card"><input type="checkbox" value="<%= s.slug %>" data-duration="<%= s.duration_min %>"><span><%= s.name %><small><%= s.duration_min ? (s.duration_min >= 60 ? qtyf(s.duration_min / 60) + ' h' : s.duration_min + ' min') : tr('option', 'option') %></small></span></label>
+      <% }); %>
+    </div>
+    <label class="field" style="margin-top:14px"><span><%= tr('Ce que le client décrit (bruit, voyant…)', 'What the customer describes (noise, warning light…)') %></span><textarea name="concern" maxlength="2000" rows="2"></textarea></label>
+    <label class="field" style="max-width:320px"><span><%= tr('Temps à bloquer à l’horaire', 'Time to block in the schedule') %></span>
+      <select name="minutes"><option value=""><%= tr('Selon les travaux choisis', 'From the work chosen') %></option><% [30, 60, 90, 120, 180, 240, 300, 360, 480].forEach(function (m) { %><option value="<%= m %>"><%= m < 60 ? m + ' min' : (m / 60 + ' h') %></option><% }); %></select>
+    </label>
+  </section>
+
+  <section class="card book-step" data-step="when">
+    <h2><span class="n">4</span><%= tr('Quand', 'When') %></h2>
+    <div class="days" data-days></div>
+    <div data-slots style="margin-top:14px"><p class="muted"><%= tr('Choisissez les travaux, puis une journée.', 'Pick the work, then a day.') %></p></div>
+  </section>
+
+  <section class="card book-step" data-step="options">
+    <h2><span class="n">5</span><%= tr('Options', 'Options') %></h2>
+    <div class="chips" data-stay>
+      <button class="chip" type="button" data-value="drop" aria-pressed="true"><%= tr('Laisse l’auto', 'Drops the car off') %></button>
+      <button class="chip" type="button" data-value="wait" aria-pressed="false"><%= tr('Attend sur place', 'Waits on site') %></button>
+    </div>
+    <div style="margin-top:14px;display:grid;gap:10px">
+      <% if (bookCfg.courtesyCars > 0) { %><label class="check-card"><input type="checkbox" name="courtesy"><span><%= tr('Voiture de courtoisie', 'Courtesy car') %></span></label><% } %>
+      <label class="check-card"><input type="checkbox" name="towing"><span><%= tr('Remorquage à organiser', 'Towing to arrange') %></span></label>
+      <label class="field" data-towing-address hidden><span><%= tr('Où est le véhicule ?', 'Where is the vehicle?') %></span><input name="towingAddress" maxlength="300"></label>
+      <label class="field"><span><%= tr('Note pour l’atelier', 'Shop note') %></span><textarea name="internalNote" rows="2" maxlength="4000"></textarea></label>
+      <% if (flags.live) { %><label class="check-card"><input type="checkbox" name="notify" checked><span><%= tr('Envoyer la confirmation par courriel au client', 'Email the confirmation to the customer') %><small><%= tr('S’il a une adresse courriel.', 'If they have an email address.') %></small></span></label><% } %>
+    </div>
+  </section>
+
+  <div class="summary-bar">
+    <div><strong data-summary><%= tr('Choisissez le client, le véhicule, les travaux et l’heure.', 'Pick the customer, vehicle, work and time.') %></strong><div class="error-text" data-book-error></div></div>
+    <button class="btn btn-primary" type="button" data-book-submit disabled><%= tr('Réserver', 'Book it') %></button>
+  </div>
+</div>
+<%- include('partials/admin-footer', { scripts: scripts, pageData: pageData }) %>
