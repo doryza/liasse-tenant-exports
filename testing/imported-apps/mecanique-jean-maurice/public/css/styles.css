@@ -17,7 +17,7 @@
 *{box-sizing:border-box}
 html{background:var(--carbon);-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--paper);color:var(--ink);font:400 17px/1.6 var(--text);-webkit-font-smoothing:antialiased;overflow-x:clip}
-img{max-width:100%;display:block}
+img{max-width:100%;display:block;height:auto}
 a{color:inherit}
 button,input,select,textarea{font:inherit;color:inherit}
 :focus-visible{outline:3px solid var(--neon);outline-offset:3px;border-radius:4px}
@@ -376,3 +376,9 @@ a.fact:hover span{color:var(--ember)}
   .brand-words span{display:none}
   .header-actions .neon-sign{display:none}
 }
+
+/* Prospect image integrity: preserve intrinsic proportions at every viewport. */
+.svc-detail .art img{display:block;width:100%;max-width:100%;height:auto}
+
+/* Prospect planner: wrap the seasonal booking callout on narrow screens. */
+.winter{flex-wrap:wrap}.winter>div{flex:1 1 240px;min-width:0}.winter>.btn{max-width:100%;white-space:normal;text-align:center}
