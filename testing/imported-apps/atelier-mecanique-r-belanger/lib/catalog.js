@@ -1,5 +1,5 @@
 /**
- * PROPOSED service list — Atelier Mécanique R. Bélanger has not published its services anywhere we
+ * PROPOSED service list — Atelier Mécanique R. Belanger has not published its services anywhere we
  * could verify. These are the usual services of a general repair shop, each
  * flagged confirmed: 0 so the site shows « À confirmer » until the owner
  * confirms what the garage offers (Services et prix).
