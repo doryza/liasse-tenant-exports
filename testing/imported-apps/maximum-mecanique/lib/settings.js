@@ -134,7 +134,7 @@ module.exports = function (services) {
   async function init() {
     if (!initialized) initialized = (async () => {
       const c = services.config || {};
-      const defaults = { business_name: c.businessName || c.displayName || 'Maximum Mecanique' };
+      const defaults = { business_name: c.businessName || c.displayName || 'Maximum Mécanique' };
       for (const [key, value] of Object.entries(defaults)) {
         if (value) await services.db.run('INSERT INTO admin_settings(key,value) VALUES($1,$2) ON CONFLICT(key) DO NOTHING', [key, String(value)]);
       }
