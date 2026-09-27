@@ -36,7 +36,7 @@
       sm.textContent = (en ? 'Every ' : 'Aux ') + nf.format(r.every) + ' km · ' + (left <= 0 ? (en ? 'overdue by ' : 'dépassé de ') + nf.format(-left) + ' km' : (en ? 'in ' : 'dans ') + nf.format(left) + ' km');
       info.appendChild(b); info.appendChild(sm);
       var meter = document.createElement('div'); meter.className = 'meter'; var i = document.createElement('i'); i.style.width = Math.round(ratio * 100) + '%'; if (state !== 'ok') i.className = state; meter.appendChild(i);
-      var a = document.createElement('a'); a.className = 'btn btn-ghost btn-sm'; a.href = bookUrl + '?service=' + r.slug; a.textContent = t.booking;
+      var a = document.createElement('a'); a.className = 'btn btn-ghost btn-sm'; a.href = bookUrl + (r.slug ? '?service=' + encodeURIComponent(r.slug) : ''); a.textContent = t.booking;
       row.appendChild(badge); row.appendChild(info); row.appendChild(a); info.appendChild(meter);
       plan.appendChild(row);
     });
