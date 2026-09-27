@@ -7,11 +7,11 @@
   var RULES = [
     { key: 'oil', every: 8000, fr: 'Vidange d’huile et filtre', en: 'Oil and filter change', slug: 'vidange-huile', fromOil: true },
     { key: 'rotation', every: 10000, fr: 'Rotation des pneus', en: 'Tire rotation', slug: 'pose-de-pneus' },
-    { key: 'brakes', every: 20000, fr: 'Inspection des freins', en: 'Brake inspection', slug: 'mecanique-generale' },
+    { key: 'brakes', every: 20000, fr: 'Inspection des freins', en: 'Brake inspection', slug: '' },
     { key: 'air', every: 24000, fr: 'Filtre à air du moteur', en: 'Engine air filter', slug: 'mise-au-point' },
     { key: 'cabin', every: 24000, fr: 'Filtre d’habitacle', en: 'Cabin air filter', slug: 'mise-au-point' },
-    { key: 'trans', every: 80000, fr: 'Huile de transmission', en: 'Transmission fluid', slug: 'mecanique-generale' },
-    { key: 'coolant', every: 160000, fr: 'Liquide de refroidissement', en: 'Engine coolant', slug: 'mecanique-generale' },
+    { key: 'trans', every: 80000, fr: 'Huile de transmission', en: 'Transmission fluid', slug: '' },
+    { key: 'coolant', every: 160000, fr: 'Liquide de refroidissement', en: 'Engine coolant', slug: '' },
     { key: 'plugs', every: 160000, fr: 'Bougies d’allumage', en: 'Spark plugs', slug: 'mise-au-point' },
   ];
   var km = document.querySelector('[data-km]'); var last = document.querySelector('[data-last-oil]');
@@ -36,7 +36,7 @@
       sm.textContent = (en ? 'Every ' : 'Aux ') + nf.format(r.every) + ' km · ' + (left <= 0 ? (en ? 'overdue by ' : 'dépassé de ') + nf.format(-left) + ' km' : (en ? 'in ' : 'dans ') + nf.format(left) + ' km');
       info.appendChild(b); info.appendChild(sm);
       var meter = document.createElement('div'); meter.className = 'meter'; var i = document.createElement('i'); i.style.width = Math.round(ratio * 100) + '%'; if (state !== 'ok') i.className = state; meter.appendChild(i);
-      var a = document.createElement('a'); a.className = 'btn btn-ghost btn-sm'; a.href = bookUrl + '?service=' + r.slug; a.textContent = t.booking;
+      var a = document.createElement('a'); a.className = 'btn btn-ghost btn-sm'; a.href = bookUrl + (r.slug ? '?service=' + encodeURIComponent(r.slug) : ''); a.textContent = t.booking;
       row.appendChild(badge); row.appendChild(info); row.appendChild(a); info.appendChild(meter);
       plan.appendChild(row);
     });
