@@ -13,7 +13,7 @@
 *{box-sizing:border-box}
 html{background:var(--carbon);-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--paper);color:var(--ink);font:400 17px/1.6 var(--text);-webkit-font-smoothing:antialiased;overflow-x:clip}
-img{max-width:100%;display:block}
+img{max-width:100%;display:block;height:auto}
 a{color:inherit}
 button,input,select,textarea{font:inherit;color:inherit}
 :focus-visible{outline:3px solid var(--neon);outline-offset:3px;border-radius:4px}
@@ -382,3 +382,15 @@ a.fact:hover span{color:var(--ember)}
   .brand-words span{display:none}
   .header-actions .neon-sign{display:none}
 }
+
+/* Prospect image integrity: preserve intrinsic proportions at every viewport. */
+.svc-detail .art img{display:block;width:100%;max-width:100%;height:auto}
+
+/* Prospect planner: wrap the seasonal booking callout on narrow screens. */
+.winter{flex-wrap:wrap}.winter>div{flex:1 1 240px;min-width:0}.winter>.btn{max-width:100%;white-space:normal;text-align:center}
+
+/* Prospect tablet header: keep the menu and booking controls inside the viewport. */
+@media(min-width:481px) and (max-width:980px){.site-header .header-actions .neon-sign{display:none}.site-header .header-book{padding:0 14px;letter-spacing:.02em;font-size:14px}.site-header .brand-words strong{font-size:19px;line-height:1.02;max-width:11em;white-space:normal}.site-header .brand-words span{font-size:10px;letter-spacing:.12em}}
+
+/* Mobile page titles: fit long service names without clipping. */
+@media(max-width:480px){.page-head h1{font-size:clamp(26px,7.5vw,36px);overflow-wrap:anywhere;hyphens:auto}}
