@@ -1,7 +1,7 @@
 /**
  * First-install seed — facts from the sources below only; nothing invented
  * (no prices, team, warranties beyond the legal one, testimonials or photos).
- * Dossier only (Google Maps: « Granby auto garage », address, phone, rating 4.8/26). No PagesJaunes page with this phone. Draft-to-confirm.
+ * Dossier only (Google Maps: « Granby auto garage », address, phone, rating 4.8/26). No PagesJaunes page with this phone. Postal code J2J 0P3 per Canada Post check (Google said J2J 0P2). Draft-to-confirm.
  * Every gate that speaks for the garage starts OFF.
  */
 const catalog = require('./lib/catalog');
@@ -12,7 +12,7 @@ const J = (fr, en) => JSON.stringify({ fr, en });
 const SETTINGS = {
   business_name: "Granby Auto Garage",
   contact_phone: '450-776-8772',
-  business_address: "49, chemin Milton, Granby (Québec) J2J 0P2",
+  business_address: "49, chemin Milton, Granby (Québec) J2J 0P3",
   payment_methods: J("À confirmer — demandez au garage.", "To be confirmed — ask the garage."),
   service_areas: J("Granby et les environs", "Granby and nearby"),
   hero_title: J("Votre garage, chemin Milton.", "Your garage on chemin Milton."),
@@ -23,7 +23,7 @@ const SETTINGS = {
   how_4: J("Suivez l’avancement : en atelier, prête à récupérer.", "Follow along: in the shop, ready for pickup."),
   about_text: J("Granby Auto Garage est un garage de mécanique automobile situé au 49, chemin Milton, à Granby. Ses clients lui donnent 4,8 sur 5 sur Google (26 avis, septembre 2026).\n\nPour connaître les heures d’ouverture ou faire vérifier votre véhicule, appelez le 450-776-8772.", "Granby Auto Garage is an auto repair shop at 49, chemin Milton in Granby. Its customers rate it 4.8 out of 5 on Google (26 reviews, September 2026).\n\nTo check the opening hours or have your vehicle looked at, call 450-776-8772."),
   contact_intro: J("Une question ou une estimation? Le plus rapide : un coup de fil au 450-776-8772.", "A question or an estimate? The fastest way: a call to 450-776-8772."),
-  privacy_notice: J("BROUILLON À APPROUVER PAR LE GARAGE\n\nGranby Auto Garage recueille votre nom, votre numéro de téléphone, votre adresse courriel et les renseignements sur votre véhicule uniquement pour gérer vos rendez-vous, vous joindre au sujet des travaux et tenir l’historique d’entretien de votre véhicule.\n\nCes renseignements sont conservés de façon sécurisée sur la plateforme Liasse, au Canada, et ne sont jamais vendus ni transmis à des tiers à des fins publicitaires.\n\nVous pouvez consulter, corriger ou supprimer vos renseignements en tout temps depuis votre compte ou en appelant le garage au 450-776-8772.\n\nResponsable de la protection des renseignements personnels : [nom à compléter], Granby Auto Garage, 49, chemin Milton, Granby (Québec) J2J 0P2.", "DRAFT FOR THE GARAGE TO APPROVE\n\nGranby Auto Garage collects your name, phone number, email address and vehicle details only to manage your appointments, reach you about the work and keep your vehicle’s service history.\n\nThis information is stored securely on the Liasse platform, in Canada, and is never sold or shared with third parties for advertising.\n\nYou can view, correct or delete your information at any time from your account or by calling the garage at 450-776-8772.\n\nPerson responsible for personal information: [name to be completed], Granby Auto Garage, 49, chemin Milton, Granby (Québec) J2J 0P2."),
+  privacy_notice: J("BROUILLON À APPROUVER PAR LE GARAGE\n\nGranby Auto Garage recueille votre nom, votre numéro de téléphone, votre adresse courriel et les renseignements sur votre véhicule uniquement pour gérer vos rendez-vous, vous joindre au sujet des travaux et tenir l’historique d’entretien de votre véhicule.\n\nCes renseignements sont conservés de façon sécurisée sur la plateforme Liasse, au Canada, et ne sont jamais vendus ni transmis à des tiers à des fins publicitaires.\n\nVous pouvez consulter, corriger ou supprimer vos renseignements en tout temps depuis votre compte ou en appelant le garage au 450-776-8772.\n\nResponsable de la protection des renseignements personnels : [nom à compléter], Granby Auto Garage, 49, chemin Milton, Granby (Québec) J2J 0P3.", "DRAFT FOR THE GARAGE TO APPROVE\n\nGranby Auto Garage collects your name, phone number, email address and vehicle details only to manage your appointments, reach you about the work and keep your vehicle’s service history.\n\nThis information is stored securely on the Liasse platform, in Canada, and is never sold or shared with third parties for advertising.\n\nYou can view, correct or delete your information at any time from your account or by calling the garage at 450-776-8772.\n\nPerson responsible for personal information: [name to be completed], Granby Auto Garage, 49, chemin Milton, Granby (Québec) J2J 0P3."),
   // Booking rules (editable in Réglages). No courtesy car, no towing (not published).
   bays: '2', slot_minutes: '30', lead_hours: '16', horizon_days: '45', max_booking_minutes: '240', courtesy_cars: '0', cancel_cutoff_hours: '12',
   towing_offered: '0', hours_known: '0',
