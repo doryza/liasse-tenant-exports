@@ -166,5 +166,10 @@ module.exports = function (services) {
     res.json({ success: true, photo_url: url });
   }));
 
+  router.use((req, res) => {
+    if (req.path.startsWith('/api/')) return res.status(404).json({ error: res.locals.t.not_found, code: 'not_found' });
+    res.status(404).render('error', { errorText: res.locals.t.not_found });
+  });
+
   return router;
 };
