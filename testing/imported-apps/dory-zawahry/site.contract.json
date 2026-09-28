@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "slug": "dory-zawahry",
+  "canonical": "https://liasse.tech/pwa/dory-zawahry/",
+  "reference": "LIASSE-BUILD-4368",
+  "purpose": "A bilingual digital business card the owner keeps up to date: one page, profile first, and one memorable act — saving the contact to a phone.",
+  "languages": {
+    "default": "fr",
+    "supported": ["fr", "en"],
+    "selection": "?lang= wins (and sets the scoped pwa_lang cookie), then an explicit /en/ path, then the cookie.",
+    "content": "Bilingual owner text is two admin_settings keys, <field>_fr and <field>_en (title, location, bio). Each language falls back to the other when empty. Interface strings live in lib/i18n.js."
+  },
+  "design": {
+    "concept": "Le geste",
+    "thesis": "The page is the card. Everything is quiet so the person reads first, and the single memorable gesture is « Enregistrer le contact »: a full-width accent pill under the name, mirrored by a dock pinned within thumb reach once the card's own button scrolls away on a phone.",
+    "type": "Instrument Serif for the name (or Hanken Grotesk 700 when the owner picks the sans option), Hanken Grotesk 400–700 for everything else.",
+    "themes": "lib/themes.js: ivoire (default, the account's #2858EF accent), nuit, ardoise, sauge, terre, plus custom from three owner colours. Every theme resolves to the same CSS custom properties; custom text colour is forced to a readable ink when contrast with the background is under 4.5:1.",
+    "signature_details": ["An oversized initials watermark in the accent at 7% behind the card", "Monogram portrait in the accent tint when there is no photo — never an invented portrait", "Two-letter network badges instead of brand logos"]
+  },
+  "pages": [
+    { "fr": "/", "en": "/en/", "view": "card", "job": "The card: portrait, name, title, organization and location, save-contact, quick actions (call, text, email, website), introduction and links" },
+    { "path": "/contact.vcf", "job": "vCard 3.0 download (?lang=en for English title/location/introduction). Embeds the photo (Cloudinary-resized to 400 px) so it shows in the phone's contact; social links become X-SOCIALPROFILE." },
+    { "path": "/admin", "view": "admin", "job": "Owner console: profile and photo, contact details, links, appearance, statistics, with a live phone-sized preview" }
+  ],
+  "data": {
+    "admin_settings": "full_name, title_fr/en, organization, location_fr/en, bio_fr/en, phone, email, website, show_text (0/1), photo_url, theme, theme_bg/ink/accent, theme_font. Defaults for full_name, email and phone come from the account (services.config) until the owner saves their own.",
+    "links": "kind (linkedin, instagram, facebook, x, tiktok, youtube, github, behance, calendar, portfolio, website, other), label_fr, label_en, url, sort_order. Replaced as a whole on save; at most 12.",
+    "card_events": "view and download rows for the statistics panel. Owner visits, embeds (?_embed=1) and bots are not counted."
+  },
+  "api": [
+    "GET /api/admin/card — settings, links, stats (owner only)",
+    "PUT /api/admin/settings {values:{key:value}} — validated per key in lib/settings.js",
+    "PUT /api/admin/links {links:[…]}",
+    "POST /api/admin/photo {image: data URL} — uploaded to Cloudinary, saved as photo_url"
+  ],
+  "editor": "data-setting-key on the name (full_name), title (title_<lang>), introduction (bio_<lang>) and photo (photo_url) for the platform's direct page editor.",
+  "gaps": [
+    "Title, organization, location, introduction, photo and links are empty until the owner fills them in /admin: nothing was invented.",
+    "Phone and email show only what the account provided."
+  ]
+}

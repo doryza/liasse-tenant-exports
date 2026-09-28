@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+<head>
+<meta charset="utf-8">
+<base href="<%= tenantRoot %>">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title><%= settings.full_name %></title>
+<link rel="stylesheet" href="public/css/card.css">
+<style>:root{<%- themeVars %>}</style>
+</head>
+<body class="font-<%= theme.font %>">
+<div class="stage">
+  <main class="card" style="text-align:center">
+    <p class="title"><%= errorText %></p>
+    <p class="save-hint"><a href="<%= lang === 'en' ? 'en/' : '.' %>"><%= t.back_home %></a></p>
+  </main>
+</div>
+</body>
+</html>
