@@ -1,0 +1,145 @@
+<%
+  var field = function (key) { return settings[key] == null ? '' : settings[key]; };
+%><!DOCTYPE html>
+<html lang="<%= lang %>">
+<head>
+<meta charset="utf-8">
+<base href="<%= tenantRoot %>">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title><%= t.admin %> · <%= settings.full_name %></title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Instrument+Serif&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="public/css/admin.css">
+</head>
+<body data-lang="<%= lang %>" data-t-saving="<%= t.saving %>" data-t-saved="<%= t.saved %>" data-t-error="<%= t.server_error %>" data-t-invalid="<%= t.invalid %>" data-t-image-error="<%= t.image_error %>" data-t-too-many="<%= t.too_many_links %>">
+<header class="bar">
+  <div class="bar-in">
+    <a class="brand" href="admin"><span class="brand-mark"><%= initials %></span><span><%= t.admin %></span></a>
+    <nav class="bar-nav">
+      <a href="<%= lang === 'en' ? 'admin?lang=fr' : 'admin?lang=en' %>"><%= t.other_language %></a>
+      <a class="btn ghost" href="<%= lang === 'en' ? 'en/' : '.' %>" target="_blank" rel="noopener"><%= t.admin_view %> ↗</a>
+    </nav>
+  </div>
+</header>
+
+<div class="layout">
+  <main class="forms">
+    <p class="intro"><%= t.admin_intro %></p>
+
+    <section class="panel" id="profil" data-section="settings">
+      <h2><%= t.admin_profile %></h2>
+      <div class="photo-row">
+        <div class="photo-frame" id="photo-frame">
+          <% if (settings.photo_url) { %><img src="<%= settings.photo_url %>" alt="" id="photo-img"><% } else { %><span class="photo-initials" id="photo-img"><%= initials %></span><% } %>
+        </div>
+        <div>
+          <p class="label"><%= t.f_photo %></p>
+          <p class="help"><%= t.f_photo_help %></p>
+          <div class="row">
+            <label class="btn small"><input type="file" accept="image/jpeg,image/png,image/webp" id="photo-input" hidden><%= t.f_photo_choose %></label>
+            <button type="button" class="btn small ghost" id="photo-remove"<%= settings.photo_url ? '' : ' hidden' %>><%= t.f_photo_remove %></button>
+          </div>
+          <input type="hidden" data-key="photo_url" value="<%= field('photo_url') %>">
+        </div>
+      </div>
+      <label class="fld"><span><%= t.f_full_name %></span><input data-key="full_name" maxlength="80" required value="<%= field('full_name') %>" autocomplete="name"></label>
+      <div class="two">
+        <label class="fld"><span><%= t.f_title_fr %></span><input data-key="title_fr" maxlength="100" value="<%= field('title_fr') %>"></label>
+        <label class="fld"><span><%= t.f_title_en %></span><input data-key="title_en" maxlength="100" value="<%= field('title_en') %>"></label>
+      </div>
+      <label class="fld"><span><%= t.f_organization %></span><input data-key="organization" maxlength="100" value="<%= field('organization') %>" autocomplete="organization"></label>
+      <div class="two">
+        <label class="fld"><span><%= t.f_location_fr %></span><input data-key="location_fr" maxlength="100" value="<%= field('location_fr') %>"></label>
+        <label class="fld"><span><%= t.f_location_en %></span><input data-key="location_en" maxlength="100" value="<%= field('location_en') %>"></label>
+      </div>
+      <div class="two">
+        <label class="fld"><span><%= t.f_bio_fr %></span><textarea data-key="bio_fr" maxlength="600" rows="5"><%= field('bio_fr') %></textarea></label>
+        <label class="fld"><span><%= t.f_bio_en %></span><textarea data-key="bio_en" maxlength="600" rows="5"><%= field('bio_en') %></textarea></label>
+      </div>
+      <div class="save-row"><button type="button" class="btn" data-save><%= t.save %></button><span class="status" role="status"></span></div>
+    </section>
+
+    <section class="panel" id="coordonnees" data-section="settings">
+      <h2><%= t.admin_contact %></h2>
+      <div class="two">
+        <label class="fld"><span><%= t.f_phone %></span><input data-key="phone" type="tel" maxlength="30" value="<%= field('phone') %>" autocomplete="tel"></label>
+        <label class="fld"><span><%= t.f_email %></span><input data-key="email" type="email" maxlength="120" value="<%= field('email') %>" autocomplete="email"></label>
+      </div>
+      <label class="fld"><span><%= t.f_website %></span><input data-key="website" type="url" maxlength="200" placeholder="https://" value="<%= field('website') %>"></label>
+      <label class="check"><input type="checkbox" data-key="show_text" data-bool<%= settings.show_text === '1' ? ' checked' : '' %>><span><%= t.f_show_text %></span></label>
+      <div class="save-row"><button type="button" class="btn" data-save><%= t.save %></button><span class="status" role="status"></span></div>
+    </section>
+
+    <section class="panel" id="liens" data-section="links">
+      <h2><%= t.admin_links %></h2>
+      <ol class="link-rows" id="link-rows">
+        <% links.forEach(function (l) { %>
+        <li class="link-row">
+          <select data-f="kind" aria-label="<%= t.f_link_kind %>"><% linkKinds.forEach(function (k) { %><option value="<%= k.key %>"<%= k.key === l.kind ? ' selected' : '' %>><%= k.label %></option><% }) %></select>
+          <input data-f="url" type="url" placeholder="https://" aria-label="<%= t.f_link_url %>" value="<%= l.url %>" maxlength="300">
+          <input data-f="label_fr" placeholder="<%= t.f_link_label_fr %>" aria-label="<%= t.f_link_label_fr %>" value="<%= l.label_fr || '' %>" maxlength="60">
+          <input data-f="label_en" placeholder="<%= t.f_link_label_en %>" aria-label="<%= t.f_link_label_en %>" value="<%= l.label_en || '' %>" maxlength="60">
+          <div class="row-tools"><button type="button" data-move="-1" aria-label="<%= t.move_up %>">↑</button><button type="button" data-move="1" aria-label="<%= t.move_down %>">↓</button><button type="button" data-remove aria-label="<%= t.remove %>">×</button></div>
+        </li>
+        <% }) %>
+      </ol>
+      <template id="link-template">
+        <li class="link-row">
+          <select data-f="kind" aria-label="<%= t.f_link_kind %>"><% linkKinds.forEach(function (k) { %><option value="<%= k.key %>"><%= k.label %></option><% }) %></select>
+          <input data-f="url" type="url" placeholder="https://" aria-label="<%= t.f_link_url %>" maxlength="300">
+          <input data-f="label_fr" placeholder="<%= t.f_link_label_fr %>" aria-label="<%= t.f_link_label_fr %>" maxlength="60">
+          <input data-f="label_en" placeholder="<%= t.f_link_label_en %>" aria-label="<%= t.f_link_label_en %>" maxlength="60">
+          <div class="row-tools"><button type="button" data-move="-1" aria-label="<%= t.move_up %>">↑</button><button type="button" data-move="1" aria-label="<%= t.move_down %>">↓</button><button type="button" data-remove aria-label="<%= t.remove %>">×</button></div>
+        </li>
+      </template>
+      <button type="button" class="btn small ghost" id="add-link">+ <%= t.add_link %></button>
+      <div class="save-row"><button type="button" class="btn" data-save><%= t.save %></button><span class="status" role="status"></span></div>
+    </section>
+
+    <section class="panel" id="apparence" data-section="settings">
+      <h2><%= t.admin_theme %></h2>
+      <div class="themes" role="radiogroup" aria-label="<%= t.admin_theme %>">
+        <% themeList.forEach(function (th) { %>
+        <label class="theme"><input type="radio" name="theme" value="<%= th.key %>"<%= theme.key === th.key ? ' checked' : '' %>>
+          <span class="swatch" style="background:<%= th.bg %>"><span class="swatch-card" style="background:<%= th.surface %>;color:<%= th.ink %>"><b style="background:<%= th.accent %>"></b>Aa</span></span>
+          <span class="theme-name"><%= th.name %></span></label>
+        <% }) %>
+        <label class="theme"><input type="radio" name="theme" value="custom"<%= theme.key === 'custom' ? ' checked' : '' %>>
+          <span class="swatch custom-swatch" id="custom-swatch"><span class="swatch-card">Aa</span></span>
+          <span class="theme-name"><%= t.theme_custom %></span></label>
+      </div>
+      <input type="hidden" data-key="theme" value="<%= theme.key %>">
+      <div class="custom" id="custom-panel"<%= theme.key === 'custom' ? '' : ' hidden' %>>
+        <label class="color"><input type="color" data-key="theme_bg" value="<%= field('theme_bg') || theme.bg %>"><span><%= t.theme_background %></span></label>
+        <label class="color"><input type="color" data-key="theme_ink" value="<%= field('theme_ink') || theme.ink %>"><span><%= t.theme_text %></span></label>
+        <label class="color"><input type="color" data-key="theme_accent" value="<%= field('theme_accent') || theme.accent %>"><span><%= t.theme_accent %></span></label>
+      </div>
+      <fieldset class="fonts"><legend><%= t.theme_font %></legend>
+        <label class="check"><input type="radio" name="theme_font" value="serif"<%= theme.font === 'serif' ? ' checked' : '' %>><span class="font-demo serif"><%= t.font_serif %></span></label>
+        <label class="check"><input type="radio" name="theme_font" value="sans"<%= theme.font === 'sans' ? ' checked' : '' %>><span class="font-demo sans"><%= t.font_sans %></span></label>
+      </fieldset>
+      <input type="hidden" data-key="theme_font" value="<%= theme.font %>">
+      <div class="save-row"><button type="button" class="btn" data-save><%= t.save %></button><span class="status" role="status"></span></div>
+    </section>
+
+    <section class="panel" id="stats">
+      <h2><%= t.admin_stats %></h2>
+      <div class="stats">
+        <div><b><%= stats.views7 %></b><span><%= t.stats_views %> · <%= t.stats_7 %></span></div>
+        <div><b><%= stats.views30 %></b><span><%= t.stats_views %> · <%= t.stats_30 %></span></div>
+        <div><b><%= stats.downloads7 %></b><span><%= t.stats_downloads %> · <%= t.stats_7 %></span></div>
+        <div><b><%= stats.downloads30 %></b><span><%= t.stats_downloads %> · <%= t.stats_30 %></span></div>
+      </div>
+    </section>
+  </main>
+
+  <aside class="preview" aria-label="<%= t.admin_view %>">
+    <div class="phone"><iframe id="preview" src="<%= previewHref %>" title="<%= t.admin_view %>" loading="lazy"></iframe></div>
+  </aside>
+</div>
+<div class="toast" id="toast" role="alert" hidden></div>
+<script src="public/js/admin.js" defer></script>
+</body>
+</html>

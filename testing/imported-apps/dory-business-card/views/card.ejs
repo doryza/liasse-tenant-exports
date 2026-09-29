@@ -1,0 +1,114 @@
+<%
+  var badges = { linkedin: 'in', instagram: 'ig', facebook: 'f', x: 'X', tiktok: 'tk', youtube: 'yt', github: 'gh', behance: 'bē' };
+  var glyphs = { calendar: 'calendar', website: 'globe', portfolio: 'arrow', other: 'arrow' };
+  var title = local('title'); var bio = local('bio'); var location = local('location');
+  var meta = [settings.organization, location].filter(function (x) { return !!x; });
+  var actions = [];
+  if (phoneHref) actions.push({ href: phoneHref, icon: 'phone', label: t.call });
+  if (smsHref) actions.push({ href: smsHref, icon: 'message', label: t.text });
+  if (emailHref) actions.push({ href: emailHref, icon: 'mail', label: t.email });
+  if (settings.website) actions.push({ href: settings.website, icon: 'globe', label: t.website, external: true });
+%><!DOCTYPE html>
+<html lang="<%= lang %>">
+<head>
+<meta charset="utf-8">
+<base href="<%= tenantRoot %>">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="<%= theme.bg %>">
+<meta name="description" content="<%= [settings.full_name, title, settings.organization].filter(function (x) { return !!x; }).join(' · ') %>">
+<title><%= settings.full_name %><%= title ? ' · ' + title : '' %></title>
+<link rel="manifest" href="manifest.json">
+<link rel="alternate" hreflang="fr" href=".">
+<link rel="alternate" hreflang="en" href="en/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="public/css/card.css">
+<style>:root{<%- themeVars %>}</style>
+</head>
+<body class="font-<%= theme.font %><%= theme.dark ? ' is-dark' : '' %>">
+<a class="skip" href="#card"><%= t.skip %></a>
+<div class="stage">
+  <div class="watermark" aria-hidden="true"><%= initials %></div>
+
+  <main id="card" class="card" aria-label="<%= t.card_label %>">
+    <div class="card-top">
+      <span class="card-label"><%= t.card_label %></span>
+      <a class="lang" href="<%= otherLangHref %>" hreflang="<%= lang === 'en' ? 'fr' : 'en' %>" lang="<%= lang === 'en' ? 'fr' : 'en' %>"><%= t.other_language %></a>
+    </div>
+
+    <header class="identity">
+      <% if (settings.photo_url) { %>
+        <img class="portrait" src="<%= settings.photo_url %>" alt="<%= settings.full_name %>" width="120" height="120" data-setting-key="photo_url">
+      <% } else { %>
+        <div class="portrait monogram" aria-hidden="true"><%= initials %></div>
+        <% if (isOwner) { %><a class="owner-hint" href="admin#profil"><%= t.owner_add_photo %></a><% } %>
+      <% } %>
+      <h1 class="name" data-setting-key="full_name"><%= settings.full_name %></h1>
+      <% if (title) { %>
+        <p class="title" data-setting-key="<%= localKey('title') %>"><%= title %></p>
+      <% } else if (isOwner) { %>
+        <a class="owner-hint" href="admin#profil"><%= t.owner_add_title %></a>
+      <% } %>
+      <% if (meta.length) { %><p class="meta"><%= meta.join(' · ') %></p><% } %>
+    </header>
+
+    <div class="save" id="save">
+      <a class="btn-save" href="<%= vcardHref %>" rel="nofollow">
+        <%- include('partials/icon', { name: 'save' }) %>
+        <span><%= t.save_contact %></span>
+      </a>
+      <p class="save-hint"><%= t.save_contact_hint %></p>
+    </div>
+
+    <% if (actions.length) { %>
+    <nav class="actions" aria-label="<%= t.card_label %>">
+      <% actions.forEach(function (a) { %>
+        <a class="action" href="<%= a.href %>"<%- a.external ? ' target="_blank" rel="noopener"' : '' %>>
+          <%- include('partials/icon', { name: a.icon }) %><span><%= a.label %></span>
+        </a>
+      <% }) %>
+    </nav>
+    <% } %>
+
+    <% if (bio) { %>
+    <section class="about" aria-labelledby="about-h">
+      <h2 id="about-h" class="section-h"><%= t.about %></h2>
+      <div class="bio" data-setting-key="<%= localKey('bio') %>"><% lines(bio).forEach(function (p) { %><p><%= p %></p><% }) %></div>
+    </section>
+    <% } else if (isOwner) { %>
+      <a class="owner-hint block" href="admin#profil"><%= t.owner_add_bio %></a>
+    <% } %>
+
+    <% if (links.length) { %>
+    <section class="links" aria-labelledby="links-h">
+      <h2 id="links-h" class="section-h"><%= t.links %></h2>
+      <ul>
+        <% links.forEach(function (l) { %>
+        <li><a class="link" href="<%= l.url %>" target="_blank" rel="noopener me">
+          <% if (badges[l.kind]) { %><span class="badge" aria-hidden="true"><%= badges[l.kind] %></span><% } else { %><span class="badge glyph" aria-hidden="true"><%- include('partials/icon', { name: glyphs[l.kind] || 'arrow' }) %></span><% } %>
+          <span class="link-label"><%= l.label %></span>
+          <%- include('partials/icon', { name: 'arrow' }) %>
+        </a></li>
+        <% }) %>
+      </ul>
+    </section>
+    <% } else if (isOwner) { %>
+      <a class="owner-hint block" href="admin#liens"><%= t.owner_add_links %></a>
+    <% } %>
+
+    <footer class="card-foot">
+      <button class="share" type="button" data-share data-copied="<%= t.link_copied %>" data-title="<%= settings.full_name %>">
+        <%- include('partials/icon', { name: 'share' }) %><span><%= t.share %></span>
+      </button>
+      <% if (isOwner) { %><a class="owner-edit" href="admin"><%- include('partials/icon', { name: 'edit' }) %><span><%= t.owner_edit %></span></a><% } %>
+    </footer>
+  </main>
+</div>
+
+<div class="dock" id="dock" hidden>
+  <a class="btn-save" href="<%= vcardHref %>" rel="nofollow"><%- include('partials/icon', { name: 'save' }) %><span><%= t.save_contact %></span></a>
+</div>
+<script src="public/js/card.js" defer></script>
+</body>
+</html>
