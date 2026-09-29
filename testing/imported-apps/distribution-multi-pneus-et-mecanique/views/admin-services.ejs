@@ -1,0 +1,11 @@
+<% var scripts = ['services']; var pageData = { services: rows, vehicleClasses: !!rows.length && Object.prototype.hasOwnProperty.call(rows[0], 'vehicle_classes') }; %>
+<%- include('partials/admin-shell', { adminTitle: tr('Services et prix', 'Services & prices') }) %>
+<div class="page-head">
+  <div><h1><%= tr('Services et prix', 'Services & prices') %></h1><p><%= tr('Tapez un prix : il paraît sur le site. Laissez vide pour afficher « Sur estimation ». Tout s’enregistre tout seul.', 'Type a price: it shows on the site. Leave it empty to show "On estimate". Everything saves by itself.') %></p></div>
+  <div class="page-actions"><button class="btn btn-primary" type="button" data-svc-add><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><%= tr('Ajouter un service', 'Add a service') %></button></div>
+</div>
+<section class="card">
+  <div class="svc svc-head"><span></span><span><%= tr('Service', 'Service') %></span><span><%= tr('Temps à l’atelier', 'Shop time') %></span><span><%= tr('Prix « à partir de »', '"From" price') %></span><span style="text-align:center"><%= tr('Réservable', 'Bookable') %></span><span style="text-align:center"><%= tr('Sur le site', 'On the site') %></span><span></span></div>
+  <div data-svc-rows></div>
+</section>
+<%- include('partials/admin-footer', { scripts: scripts, pageData: pageData }) %>
