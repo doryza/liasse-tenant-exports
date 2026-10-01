@@ -1,0 +1,50 @@
+<% var scripts = ['clients']; var pageData = { client: customer, vehicles: vehicles, makes: makes };
+   var DS = { draft: tr('Brouillon', 'Draft'), sent: tr('Remise', 'Given'), accepted: tr('Acceptée', 'Accepted'), declined: tr('Refusée', 'Declined'), invoiced: tr('Facturée', 'Invoiced'), unpaid: tr('À payer', 'Unpaid'), paid: tr('Payée', 'Paid'), void: tr('Annulée', 'Cancelled') };
+   var ST = { requested: tr('À confirmer', 'To confirm'), confirmed: tr('Confirmé', 'Confirmed'), in_progress: tr('En atelier', 'In the shop'), ready: tr('Prêt', 'Ready'), completed: tr('Remis', 'Picked up'), cancelled: tr('Annulé', 'Cancelled'), no_show: tr('Absent', 'No-show') };
+   var balance = documents.filter(function (d) { return d.kind === 'invoice' && d.status === 'unpaid'; }).reduce(function (s, d) { return s + d.total_cents - d.paid_cents; }, 0); %>
+<%- include('partials/admin-shell', { adminTitle: customer.name }) %>
+<div class="page-head">
+  <div>
+    <a class="small" href="admin/clients">← <%= tr('Clients', 'Customers') %></a>
+    <h1><%= customer.name %></h1>
+    <p><%= String(customer.user_id).indexOf('c:') === 0 ? tr('Client ajouté au garage', 'Customer added at the garage') : tr('A un compte en ligne', 'Has an online account') %><%= balance ? ' · ' + tr('Solde à payer', 'Balance due') + ' ' + cash(balance) : '' %></p>
+  </div>
+  <div class="page-actions">
+    <% if (customer.phone) { %><a class="btn" href="tel:<%= String(customer.phone).replace(/[^+\d]/g, '') %>"><%= tr('Appeler', 'Call') %></a><% } %>
+    <a class="btn btn-primary" href="admin/rendez-vous/nouveau?client=<%= customer.id %>"><%= tr('Rendez-vous', 'Appointment') %></a>
+    <button class="btn" type="button" data-new-doc="estimate" data-client="<%= customer.id %>"><%= tr('Estimation', 'Estimate') %></button>
+    <button class="btn" type="button" data-new-doc="invoice" data-client="<%= customer.id %>"><%= tr('Facture', 'Invoice') %></button>
+  </div>
+</div>
+
+<div class="grid-2">
+  <section class="card">
+    <div class="card-head"><h2><%= tr('Coordonnées', 'Contact details') %></h2><span class="saved-tick" data-client-tick><%= tr('Enregistré ✓', 'Saved ✓') %></span></div>
+    <form data-client-form>
+      <label class="field"><span><%= tr('Nom', 'Name') %></span><input name="name" value="<%= customer.name %>" maxlength="120" required></label>
+      <label class="field"><span><%= tr('Téléphone', 'Phone') %></span><input name="phone" type="tel" value="<%= customer.phone || '' %>" maxlength="40"></label>
+      <label class="field"><span><%= tr('Courriel', 'Email') %></span><input name="email" type="email" value="<%= customer.email || '' %>" maxlength="200"></label>
+      <label class="field"><span><%= tr('Adresse (pour les estimations et factures)', 'Address (for estimates and invoices)') %></span><input name="address" value="<%= customer.address || '' %>" maxlength="300"></label>
+      <label class="field"><span><%= tr('Notes', 'Notes') %></span><textarea name="notes" rows="3" maxlength="4000"><%= customer.notes || '' %></textarea></label>
+      <button class="btn" type="submit"><%= tr('Enregistrer', 'Save') %></button>
+    </form>
+  </section>
+  <section class="card">
+    <div class="card-head"><h2><%= tr('Véhicules', 'Vehicles') %></h2><button class="btn btn-sm" type="button" data-vehicle-add>+ <%= tr('Véhicule', 'Vehicle') %></button></div>
+    <div class="rows" data-vehicle-rows></div>
+  </section>
+</div>
+
+<section class="card">
+  <h2><%= tr('Historique', 'History') %></h2>
+  <% if (!appts.length && !documents.length) { %><p class="muted"><%= tr('Rien encore.', 'Nothing yet.') %></p><% } %>
+  <div class="rows">
+    <% documents.forEach(function (d) { %>
+      <a class="row" href="admin/documents/<%= d.id %>"><div><div class="row-title"><%= d.kind === 'invoice' ? tr('Facture', 'Invoice') : tr('Estimation', 'Estimate') %> <%= d.number || '' %></div><div class="row-sub"><%= d.vehicle_label || '' %><%= d.issued_on ? ' · ' + formatShort(d.issued_on + 'T12:00:00Z') : '' %></div></div><div class="row-end"><span class="money"><%= cash(d.total_cents) %></span><span class="pill pill-<%= d.status %>"><%= DS[d.status] %></span></div></a>
+    <% }); %>
+    <% appts.forEach(function (a) { %>
+      <div class="row"><div><div class="row-title"><%= tr('Rendez-vous', 'Appointment') %> — <%= formatShort(a.start_at) %> <%= formatTime(a.start_at) %></div><div class="row-sub"><%= a.vehicle_label %> · <%= a.service_names %></div></div><div class="row-end"><span class="pill pill-<%= a.status %>"><%= ST[a.status] %></span></div></div>
+    <% }); %>
+  </div>
+</section>
+<%- include('partials/admin-footer', { scripts: scripts, pageData: pageData }) %>
