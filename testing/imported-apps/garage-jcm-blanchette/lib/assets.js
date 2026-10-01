@@ -9,7 +9,7 @@
 module.exports = {
   "logo": "https://res.cloudinary.com/duhp69meg/image/upload/v1790813000/tapavis_tenant_garage_jcm_blanchette/logo.png",
   "mark": "https://res.cloudinary.com/duhp69meg/image/upload/v1790813000/tapavis_tenant_garage_jcm_blanchette/logo.png",
-  "hero": "https://res.cloudinary.com/duhp69meg/image/upload/v1790814037/tapavis_tenant_garage_jcm_blanchette/hero_35292ed7-16aa-4c3f-9212-f2e25f820d0a.png",
+  "hero": "https://res.cloudinary.com/duhp69meg/image/upload/v1790829496/tapavis_tenant_garage_jcm_blanchette/hero_0d1a2bcc-a4d6-4484-8ebf-e00233dc9e69.png",
   "services": {
     "equilibrage-rotation-pneus": "https://res.cloudinary.com/duhp69meg/image/upload/v1790813025/tapavis_tenant_garage_jcm_blanchette/equilibrage-rotation-pneus_f70bccb8-d23f-45cf-8e06-4d8155ad566f.png",
     "systeme-de-refroidissement": "https://res.cloudinary.com/duhp69meg/image/upload/v1790813026/tapavis_tenant_garage_jcm_blanchette/systeme-de-refroidissement_fb1fb5cb-bb2c-48ef-904b-96fad07e167e.png",
