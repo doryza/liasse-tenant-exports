@@ -1,0 +1,101 @@
+<% var scripts = ['board', 'today']; var pageData = { board: { mode: 'today' } }; %>
+<%- include('partials/admin-shell', { adminTitle: tr('Aujourd’hui', 'Today') }) %>
+<%
+  var STATUS = { requested: tr('À confirmer', 'To confirm'), confirmed: tr('Confirmé', 'Confirmed'), in_progress: tr('En atelier', 'In the shop'), ready: tr('Prêt', 'Ready'), completed: tr('Remis au client', 'Picked up') };
+  var NEXT = { requested: ['confirmed', tr('Confirmer', 'Confirm')], confirmed: ['in_progress', tr('L’auto est arrivée', 'Car is here')], in_progress: ['ready', tr('Prête à récupérer', 'Ready for pickup')], ready: ['completed', tr('Remise au client', 'Picked up')] };
+  var dayTitle = formatDate(date + 'T12:00:00Z');
+  var TODO = {
+    contact: tr('Vérifiez votre téléphone et votre adresse', 'Check your phone number and address'),
+    hours: tr('Vérifiez vos heures d’ouverture', 'Check your opening hours'),
+    hours_unknown: tr('Entrez vos heures d’ouverture — le site affiche « à confirmer » et prend des demandes de rendez-vous', 'Enter your opening hours — the site shows "to be confirmed" and takes appointment requests'),
+    services_tbc: tr('Confirmez vos services — ils affichent « à confirmer »', 'Confirm your services — they show "to be confirmed"'),
+    rate: tr('Entrez votre taux horaire (pour les estimations et factures)', 'Enter your hourly rate (for estimates and invoices)'),
+    prices: tr('Ajoutez vos prix — des services affichent « Sur estimation »', 'Add your prices — some services show "On estimate"'),
+    privacy: tr('Relisez et approuvez l’avis de confidentialité', 'Read and approve the privacy notice'),
+    booking: tr('Ouvrez la réservation en ligne', 'Turn on online booking'),
+    live: tr('Activez les courriels aux clients', 'Turn on customer emails'),
+  };
+%>
+<div class="page-head">
+  <div>
+    <h1><%= dayTitle.charAt(0).toUpperCase() + dayTitle.slice(1) %></h1>
+    <p><%= appointments.length ? (appointments.length + ' ' + (appointments.length > 1 ? tr('autos prévues aujourd’hui', 'cars booked today') : tr('auto prévue aujourd’hui', 'car booked today'))) : tr('Aucune auto prévue aujourd’hui.', 'No cars booked today.') %></p>
+  </div>
+  <div class="page-actions">
+    <a class="btn btn-primary" href="admin/rendez-vous/nouveau"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><%= tr('Rendez-vous', 'Appointment') %></a>
+    <button class="btn" type="button" data-new-doc="estimate"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><%= tr('Estimation', 'Estimate') %></button>
+    <button class="btn" type="button" data-new-doc="invoice"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><%= tr('Facture', 'Invoice') %></button>
+  </div>
+</div>
+
+<% if (money.unpaid_n || money.waiting_n || newMessages || pending.length) { %>
+<div class="strip">
+  <% if (pending.length) { %><a class="alert" href="#a-confirmer"><b><%= pending.length %></b><span><%= pending.length > 1 ? tr('demandes à confirmer', 'requests to confirm') : tr('demande à confirmer', 'request to confirm') %></span></a><% } %>
+  <% if (money.unpaid_n) { %><a href="admin/documents?filter=unpaid"><b><%= cash(money.unpaid_cents) %></b><span><%= money.unpaid_n %> <%= money.unpaid_n > 1 ? tr('factures à encaisser', 'invoices to collect') : tr('facture à encaisser', 'invoice to collect') %></span></a><% } %>
+  <% if (money.waiting_n) { %><a href="admin/documents?kind=estimate&amp;filter=open"><b><%= money.waiting_n %></b><span><%= money.waiting_n > 1 ? tr('estimations en attente de réponse', 'estimates awaiting an answer') : tr('estimation en attente de réponse', 'estimate awaiting an answer') %></span></a><% } %>
+  <% if (newMessages) { %><a href="admin/messages"><b><%= newMessages %></b><span><%= newMessages > 1 ? tr('nouveaux messages', 'new messages') : tr('nouveau message', 'new message') %></span></a><% } %>
+</div>
+<% } %>
+
+<% if (pending.length) { %>
+<section class="card" id="a-confirmer">
+  <div class="card-head"><h2><%= tr('Demandes à confirmer', 'Requests to confirm') %></h2></div>
+  <div class="rows">
+    <% pending.forEach(function (a) { %>
+      <div class="row" data-pending-row="<%= a.id %>">
+        <div>
+          <div class="row-title"><%= formatShort(a.start_at) %> · <%= formatTime(a.start_at) %> — <%= a.contact_name %><% if (Number(a.preview)) { %> <span class="pill pill-preview"><%= tr('aperçu', 'preview') %></span><% } %></div>
+          <div class="row-sub"><%= a.vehicle_label %> · <%= a.service_names %></div>
+        </div>
+        <div class="page-actions">
+          <% if (a.contact_phone) { %><a class="btn btn-sm" href="tel:<%= String(a.contact_phone).replace(/[^+\d]/g, '') %>"><%= tr('Appeler', 'Call') %></a><% } %>
+          <button class="btn btn-sm btn-primary" type="button" data-set-status="confirmed" data-id="<%= a.id %>"><%= tr('Confirmer', 'Confirm') %></button>
+        </div>
+      </div>
+    <% }); %>
+  </div>
+</section>
+<% } %>
+
+<section class="card">
+  <div class="card-head">
+    <h2><%= tr('À l’atelier aujourd’hui', 'In the shop today') %></h2>
+    <a class="btn btn-sm btn-quiet" href="admin/rendez-vous"><%= tr('Voir la semaine', 'See the week') %> →</a>
+  </div>
+  <% if (!appointments.length) { %>
+    <div class="empty"><strong><%= tr('Rien de prévu', 'Nothing booked') %></strong><%= tr('Un client appelle ? Ajoutez son rendez-vous en quelques secondes.', 'A customer calls? Add their appointment in seconds.') %><p><a class="btn btn-primary" href="admin/rendez-vous/nouveau"><%= tr('Nouveau rendez-vous', 'New appointment') %></a></p></div>
+  <% } else { %>
+  <div class="jobs">
+    <% appointments.forEach(function (a) { var nx = NEXT[a.status]; var ds = docsByAppt[a.id] || []; %>
+      <article class="job st-<%= a.status %>" data-job="<%= a.id %>">
+        <div class="job-time"><%= formatTime(a.start_at) %><small><%= a.duration_min < 60 ? a.duration_min + ' min' : qtyf(a.duration_min / 60) + ' h' %></small></div>
+        <div>
+          <div class="job-who"><%= a.contact_name %> <span class="pill pill-<%= a.status %>"><%= STATUS[a.status] %></span></div>
+          <div class="job-car"><%= a.vehicle_label %></div>
+          <div class="job-work"><%= a.service_names %><%= a.stay === 'wait' ? ' · ' + tr('attend sur place', 'waiting on site') : '' %><%= Number(a.courtesy_car) ? ' · ' + tr('voiture de courtoisie', 'courtesy car') : '' %></div>
+        </div>
+        <div class="job-actions">
+          <% if (a.contact_phone) { %><a class="btn btn-sm" href="tel:<%= String(a.contact_phone).replace(/[^+\d]/g, '') %>"><%= tr('Appeler', 'Call') %></a><% } %>
+          <button class="btn btn-sm" type="button" data-open-appt="<%= a.id %>"><%= tr('Détails', 'Details') %></button>
+          <% if (nx) { %><button class="btn btn-sm btn-primary" type="button" data-set-status="<%= nx[0] %>" data-id="<%= a.id %>"><%= nx[1] %></button><% } %>
+        </div>
+        <div class="job-docs">
+          <% ds.forEach(function (d) { %><a class="chip" href="admin/documents/<%= d.id %>"><%= d.kind === 'invoice' ? tr('Facture', 'Invoice') : tr('Estimation', 'Estimate') %> <%= d.number || '' %></a><% }); %>
+          <% if (!ds.some(function (d) { return d.kind === 'estimate'; })) { %><button class="chip" type="button" data-new-doc="estimate" data-appointment="<%= a.id %>">+ <%= tr('Estimation', 'Estimate') %></button><% } %>
+          <% if (!ds.some(function (d) { return d.kind === 'invoice'; })) { %><button class="chip" type="button" data-new-doc="invoice" data-appointment="<%= a.id %>">+ <%= tr('Facture', 'Invoice') %></button><% } %>
+        </div>
+      </article>
+    <% }); %>
+  </div>
+  <% } %>
+</section>
+
+<% if (todo.length) { %>
+<details class="todo">
+  <summary><span><%= tr('Pour terminer l’installation', 'To finish setting up') %> (<%= todo.length %>)</span></summary>
+  <ol><% todo.forEach(function (x) { %><li><a href="<%= x.href %>"><%= TODO[x.key] %></a><% if (x.n) { %> <span class="muted">(<%= x.n %>)</span><% } %></li><% }); %></ol>
+</details>
+<% } %>
+
+<script type="application/json" id="today-appts"><%- safeJSON(appointments) %></script>
+<%- include('partials/admin-footer', { scripts: scripts, pageData: pageData }) %>
