@@ -1,0 +1,36 @@
+<%
+  var pageData = { planner: { vehicles: vehicles.map(function (v) { return { id: v.id, label: [v.year, v.make, v.model].filter(Boolean).join(' '), km: v.odometer_km, lastOil: v.last_oil_km }; }) } };
+  var scripts = ['planner'];
+%>
+<%- include('partials/header', { pageData: pageData, scripts: scripts }) %>
+<section class="page-head">
+  <div class="wrap">
+    <div class="crumbs"><a href="<%= urls.home %>"><%= t.home %></a> / <%= t.planner %></div>
+    <h1><%= t.planner_title %></h1>
+    <p><%= t.planner_help %></p>
+  </div>
+</section>
+<section class="order-page">
+  <div class="wrap">
+    <div class="winter" data-winter>
+      <%- include('partials/icon', { name: 'snow' }) %>
+      <div><b style="display:block;font:700 20px/1.1 var(--display);text-transform:uppercase"><%= t.winter_tires %></b><span data-winter-count style="color:#aeb3ad"></span></div>
+      <a class="btn btn-neon btn-sm" style="margin-left:auto" href="<%= urls.booking %>?service=equilibrage-rotation-pneus"><%= t.book_cta %></a>
+    </div>
+    <div class="sheet">
+      <div class="sheet-head"><span class="no"><%= t.planner %></span><span class="no"><%= settings.business_name %></span></div>
+      <div class="sheet-body">
+        <% if (vehicles.length) { %>
+          <label class="field" style="max-width:420px"><span><%= t.vehicle %></span><select data-planner-vehicle><option value=""><%= t.new_vehicle %></option><% vehicles.forEach(function (v) { %><option value="<%= v.id %>"><%= [v.year, v.make, v.model].filter(Boolean).join(' ') %></option><% }); %></select></label>
+        <% } %>
+        <div class="grid-2" style="max-width:640px">
+          <label class="field"><span><%= t.current_km %></span><input data-km inputmode="numeric" maxlength="7" placeholder="ex. 124500"></label>
+          <label class="field"><span><%= t.last_service_km %></span><input data-last-oil inputmode="numeric" maxlength="7" placeholder="ex. 118000"></label>
+        </div>
+        <div class="plan" data-plan style="margin-top:12px"></div>
+        <p class="small muted" style="margin-top:18px"><%= lang === 'en' ? 'Typical intervals for recent cars in Québec driving conditions. Severe use (short trips, towing, dust, extreme cold) shortens them.' : 'Intervalles typiques pour des véhicules récents dans les conditions de conduite du Québec. Un usage sévère (courts trajets, remorquage, poussière, grand froid) les raccourcit.' %></p>
+      </div>
+    </div>
+  </div>
+</section>
+<%- include('partials/footer', { pageData: pageData, scripts: scripts }) %>
