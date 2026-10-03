@@ -1,0 +1,144 @@
+<%
+  var isInv = doc.kind === 'invoice';
+  var COND = { new: tr('Neuve', 'New'), used: tr('Usagée', 'Used'), reman: tr('Réusinée', 'Remanufactured'), recond: tr('Remise à neuf', 'Reconditioned') };
+  var METHODS = { cash: tr('comptant', 'cash'), debit: tr('débit', 'debit'), credit: tr('crédit', 'credit'), transfer: tr('virement', 'transfer'), cheque: tr('chèque', 'cheque') };
+  var d = function (v) { return v ? formatDate(v + 'T12:00:00Z') : ''; };
+  var title = isInv ? tr('Facture', 'Invoice') : tr('Évaluation écrite (estimation)', 'Written estimate');
+  var draft = doc.status === 'draft' || (isInv && !doc.number);
+  var ids = [docSettings.neq ? 'NEQ ' + docSettings.neq : '', docSettings.tps ? 'TPS ' + docSettings.tps : '', docSettings.tvq ? 'TVQ ' + docSettings.tvq : ''].filter(Boolean);
+  var balance = Math.max(0, doc.total_cents - doc.paid_cents);
+%><!DOCTYPE html>
+<html lang="<%= lang %>">
+<head>
+<meta charset="utf-8">
+<base href="<%= tenantRoot %>">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title><%= title %> <%= doc.number || '' %> · <%= settings.business_name %></title>
+<style>
+  @page{size:letter;margin:14mm 14mm 16mm}
+  *{box-sizing:border-box}
+  body{margin:0;background:#e9eaec;color:#111;font:13px/1.45 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif}
+  .sheet{width:216mm;min-height:279mm;margin:18px auto;background:#fff;padding:14mm;box-shadow:0 4px 24px rgba(0,0,0,.12);position:relative}
+  .bar{max-width:216mm;margin:16px auto 0;display:flex;gap:10px;justify-content:flex-end}
+  .bar button,.bar a{font:600 15px/1 inherit;padding:12px 18px;border-radius:9px;border:1px solid #bbb;background:#fff;color:#111;text-decoration:none;cursor:pointer}
+  .bar button{background:#111;color:#fff;border-color:#111}
+  header{display:flex;justify-content:space-between;gap:20px;border-bottom:2px solid #111;padding-bottom:12px}
+  .biz img{width:54px;height:54px;border-radius:8px;float:left;margin-right:12px}
+  .biz strong{font-size:19px;display:block}
+  .biz div{color:#333}
+  .doc{text-align:right}
+  .doc h1{margin:0;font-size:20px;text-transform:uppercase;letter-spacing:.04em}
+  .doc .no{font-size:15px;font-weight:700;margin-top:2px}
+  .doc div{color:#333}
+  .parties{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:16px 0}
+  .box{border:1px solid #bbb;border-radius:6px;padding:10px 12px}
+  .box h2{margin:0 0 4px;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#555}
+  .box p{margin:0}
+  table{width:100%;border-collapse:collapse;margin-top:6px}
+  th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:#444;text-align:left;border-bottom:1.5px solid #111;padding:6px 6px}
+  td{padding:7px 6px;border-bottom:1px solid #ddd;vertical-align:top}
+  .r{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+  .note td{color:#333;font-style:italic}
+  .kind{font-size:11px;color:#555;display:block}
+  .sum{margin:12px 0 0 auto;width:62mm}
+  .sum div{display:flex;justify-content:space-between;padding:3px 0}
+  .sum .grand{font-size:16px;font-weight:800;border-top:1.5px solid #111;margin-top:4px;padding-top:6px}
+  .legal{margin-top:16px;font-size:11.5px;color:#222;border-top:1px solid #ccc;padding-top:10px}
+  .legal p{margin:0 0 6px}
+  .sign{display:grid;grid-template-columns:2fr 1fr;gap:26px;margin-top:26px}
+  .sign div{border-top:1px solid #111;padding-top:4px;font-size:11px;color:#444}
+  .customer-note{margin-top:12px;white-space:pre-line}
+  .watermark{position:absolute;top:44%;left:0;right:0;text-align:center;font-size:88px;font-weight:800;color:rgba(0,0,0,.06);transform:rotate(-18deg);pointer-events:none}
+  .paid-stamp{display:inline-block;border:2.5px solid #157347;color:#157347;font-weight:800;text-transform:uppercase;padding:4px 10px;border-radius:6px;transform:rotate(-4deg);margin-top:8px}
+  footer{margin-top:18px;text-align:center;color:#555;font-size:11.5px}
+  @media print{body{background:#fff}.bar{display:none}.sheet{margin:0;box-shadow:none;width:auto;min-height:0;padding:0}}
+</style>
+</head>
+<body>
+<div class="bar"><a href="admin/documents/<%= doc.id %>">← <%= tr('Retour', 'Back') %></a><button type="button" onclick="window.print()"><%= tr('Imprimer', 'Print') %></button></div>
+<div class="sheet">
+  <% if (draft) { %><div class="watermark"><%= tr('BROUILLON', 'DRAFT') %></div><% } %>
+  <% if (doc.status === 'void') { %><div class="watermark"><%= tr('ANNULÉE', 'CANCELLED') %></div><% } %>
+  <header>
+    <div class="biz">
+      <img src="<%= assets.mark.replace('/upload/', '/upload/w_160,h_160,c_fill/') %>" alt="">
+      <strong><%= settings.business_name %></strong>
+      <div><%= settings.business_address %></div>
+      <div><%= settings.contact_phone %><%= settings.contact_email ? ' · ' + settings.contact_email : '' %></div>
+      <% if (ids.length) { %><div><%= ids.join(' · ') %></div><% } %>
+    </div>
+    <div class="doc">
+      <h1><%= title %></h1>
+      <div class="no"><%= doc.number || tr('Brouillon', 'Draft') %></div>
+      <div><%= tr('Date', 'Date') %> : <%= d(doc.issued_on) %></div>
+      <% if (!isInv && doc.valid_until) { %><div><%= tr('Valide jusqu’au', 'Valid until') %> : <%= d(doc.valid_until) %></div><% } %>
+      <% if (isInv && doc.delivered_on) { %><div><%= tr('Remise du véhicule', 'Vehicle handed back') %> : <%= d(doc.delivered_on) %></div><% } %>
+    </div>
+  </header>
+
+  <div class="parties">
+    <div class="box">
+      <h2><%= tr('Client', 'Customer') %></h2>
+      <p><strong><%= doc.client_name || '' %></strong></p>
+      <p><%= doc.client_address || '' %></p>
+      <p><%= [doc.client_phone, doc.client_email].filter(Boolean).join(' · ') %></p>
+    </div>
+    <div class="box">
+      <h2><%= tr('Véhicule', 'Vehicle') %></h2>
+      <p><strong><%= doc.vehicle_label || '' %></strong></p>
+      <p><%= tr('Plaque', 'Plate') %> : <%= doc.vehicle_plate || '—' %><%= doc.vehicle_vin ? ' · NIV ' + doc.vehicle_vin : '' %></p>
+      <p><%= isInv ? tr('Kilométrage à la remise', 'Mileage at pickup') : tr('Kilométrage', 'Mileage') %> : <%= doc.odometer_km != null ? Number(doc.odometer_km).toLocaleString(lang === 'en' ? 'en-CA' : 'fr-CA') + ' km' : '—' %></p>
+    </div>
+  </div>
+
+  <table>
+    <thead><tr><th><%= tr('Description', 'Description') %></th><th><%= tr('État', 'Condition') %></th><th class="r"><%= tr('Qté / h', 'Qty / h') %></th><th class="r"><%= tr('Prix', 'Price') %></th><th class="r"><%= tr('Montant', 'Amount') %></th></tr></thead>
+    <tbody>
+      <% doc.lines.forEach(function (l) { %>
+        <% if (l.kind === 'note') { %>
+          <tr class="note"><td colspan="5"><%= l.description %></td></tr>
+        <% } else { %>
+          <tr>
+            <td><%= l.description %><span class="kind"><%= l.kind === 'labour' ? tr('Main-d’œuvre', 'Labour') : l.kind === 'part' ? tr('Pièce', 'Part') + (l.part_number ? ' · ' + l.part_number : '') : tr('Frais', 'Fee') %></span></td>
+            <td><%= l.kind === 'part' ? COND[l.part_condition] || '' : '' %></td>
+            <td class="r"><%= qtyf(l.quantity) %><%= l.kind === 'labour' ? ' h' : '' %></td>
+            <td class="r"><%= cash(l.unit_cents) %><%= l.kind === 'labour' ? tr(' / h', ' / h') : '' %></td>
+            <td class="r"><%= cash(l.total_cents) %></td>
+          </tr>
+        <% } %>
+      <% }); %>
+    </tbody>
+  </table>
+
+  <div class="sum">
+    <div><span><%= tr('Sous-total', 'Subtotal') %></span><span class="r"><%= cash(doc.subtotal_cents) %></span></div>
+    <% if (Number(doc.charge_taxes)) { %>
+      <div><span>TPS (5 %)</span><span class="r"><%= cash(doc.tps_cents) %></span></div>
+      <div><span>TVQ (9,975 %)</span><span class="r"><%= cash(doc.tvq_cents) %></span></div>
+    <% } %>
+    <div class="grand"><span><%= tr('Total', 'Total') %></span><span class="r"><%= cash(doc.total_cents) %></span></div>
+    <% if (isInv && doc.paid_cents > 0) { %>
+      <div><span><%= tr('Payé', 'Paid') %><%= doc.payment_method ? ' (' + METHODS[doc.payment_method] + ')' : '' %></span><span class="r"><%= cash(doc.paid_cents) %></span></div>
+      <div><strong><%= tr('Solde', 'Balance') %></strong><strong class="r"><%= cash(balance) %></strong></div>
+    <% } %>
+    <% if (isInv && doc.status === 'paid') { %><div style="justify-content:flex-end"><span class="paid-stamp"><%= tr('Payée', 'Paid') %><%= doc.paid_on ? ' — ' + d(doc.paid_on) : '' %></span></div><% } %>
+  </div>
+
+  <% if (doc.customer_note) { %><div class="customer-note"><%= doc.customer_note %></div><% } %>
+
+  <div class="legal">
+    <% if (!isInv) { %>
+      <p><%= tr('Cette évaluation est valide jusqu’à la date indiquée. Une fois acceptée, elle lie le garage et le client : aucun travail ni montant supplémentaire sans votre autorisation.', 'This estimate is valid until the date shown. Once accepted, it binds the garage and the customer: no additional work or cost without your authorization.') %></p>
+      <p><%= tr('Pièces remplacées', 'Replaced parts') %> : <%= Number(doc.return_parts) ? tr('à remettre au client.', 'to be given back to the customer.') : tr('le client ne demande pas à les récupérer.', 'the customer does not ask to get them back.') %></p>
+      <div class="sign"><div><%= tr('Signature du client — j’accepte cette évaluation', 'Customer signature — I accept this estimate') %></div><div><%= tr('Date', 'Date') %></div></div>
+    <% } else { %>
+      <p><%= doc.warranty_text || '' %></p>
+      <p><%= tr('Pièces remplacées', 'Replaced parts') %> : <%= Number(doc.return_parts) ? tr('remises au client.', 'given back to the customer.') : tr('non demandées par le client.', 'not requested by the customer.') %></p>
+    <% } %>
+  </div>
+  <% if (docSettings.footer) { %><footer><%= docSettings.footer %></footer><% } %>
+</div>
+<% if (autoPrint) { %><script>window.addEventListener('load', function () { setTimeout(function () { window.print(); }, 350); });</script><% } %>
+</body>
+</html>
