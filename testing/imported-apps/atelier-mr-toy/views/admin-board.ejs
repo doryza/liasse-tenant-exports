@@ -1,0 +1,27 @@
+<% var scripts = ['board']; var pageData = { board: { mode: 'week', date: boardDate } }; %>
+<%- include('partials/admin-shell', { adminTitle: tr('Rendez-vous', 'Appointments') }) %>
+<div class="page-head">
+  <div><h1><%= tr('Rendez-vous', 'Appointments') %></h1><p data-range></p></div>
+  <div class="page-actions"><a class="btn btn-primary" href="admin/rendez-vous/nouveau"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><%= tr('Nouveau rendez-vous', 'New appointment') %></a></div>
+</div>
+<section class="card">
+  <div class="board-toolbar">
+    <div class="chips">
+      <button class="chip" type="button" data-nav="-1" aria-label="<%= tr('Précédent', 'Previous') %>">‹</button>
+      <button class="chip" type="button" data-nav="0"><%= tr('Aujourd’hui', 'Today') %></button>
+      <button class="chip" type="button" data-nav="1" aria-label="<%= tr('Suivant', 'Next') %>">›</button>
+    </div>
+    <div class="chips">
+      <button class="chip" type="button" data-span="1"><%= tr('Jour', 'Day') %></button>
+      <button class="chip" type="button" data-span="7"><%= tr('Semaine', 'Week') %></button>
+    </div>
+  </div>
+  <div data-board data-days="7"></div>
+  <div class="legend">
+    <span class="pill pill-requested"><%= tr('À confirmer', 'To confirm') %></span><span class="pill pill-confirmed"><%= tr('Confirmé', 'Confirmed') %></span>
+    <span class="pill pill-in_progress"><%= tr('En atelier', 'In the shop') %></span><span class="pill pill-ready"><%= tr('Prêt', 'Ready') %></span>
+    <span class="pill pill-completed"><%= tr('Remis', 'Picked up') %></span>
+  </div>
+  <p class="tiny muted" style="margin:10px 0 0"><%= tr('Dans chaque journée, les rendez-vous sont côte à côte par baie. Touchez-en un pour le détail, l’étape ou l’estimation.', 'Within each day, appointments sit side by side by bay. Tap one for details, its step or the estimate.') %></p>
+</section>
+<%- include('partials/admin-footer', { scripts: scripts, pageData: pageData }) %>
