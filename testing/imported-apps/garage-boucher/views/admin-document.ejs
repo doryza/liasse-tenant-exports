@@ -1,0 +1,107 @@
+<%
+  var isInv = doc.kind === 'invoice';
+  var scripts = ['document'];
+  var pageData = { doc: doc, priced: priced, rate: docSettings.labourRate, validDays: docSettings.validDays };
+  var title = (isInv ? tr('Facture', 'Invoice') : tr('Estimation', 'Estimate')) + ' ' + (doc.number || tr('— brouillon', '— draft'));
+%>
+<%- include('partials/admin-shell', { adminTitle: title }) %>
+<div class="page-head">
+  <div>
+    <a class="small" href="admin/documents">← <%= tr('Estimations et factures', 'Estimates & invoices') %></a>
+    <div class="doc-title"><h1><%= title %></h1><span class="pill" data-status-pill></span></div>
+  </div>
+  <div class="page-actions">
+    <span class="small muted" data-save-state></span>
+    <a class="btn" href="admin/documents/<%= doc.id %>/imprimer?print=1" target="_blank" rel="noopener" data-print><svg viewBox="0 0 24 24"><path d="M6 9V3h12v6M6 18H4a1 1 0 0 1-1-1v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6a1 1 0 0 1-1 1h-2"/><path d="M6 14h12v7H6z"/></svg><%= tr('Imprimer', 'Print') %></a>
+  </div>
+</div>
+
+<div class="doc-layout">
+  <div class="stack">
+    <div class="doc-lock" data-lock hidden></div>
+
+    <section class="card">
+      <div class="card-head"><h2><%= tr('Client', 'Customer') %></h2><a class="small" data-client-link hidden><%= tr('Fiche client', 'Customer file') %> →</a></div>
+      <div class="field client-pick" data-client-search>
+        <span><%= tr('Chercher un client existant', 'Find an existing customer') %></span>
+        <input type="search" autocomplete="off" data-client-q placeholder="<%= tr('Nom, téléphone ou plaque', 'Name, phone or plate') %>">
+        <div class="suggest" data-client-results hidden></div>
+      </div>
+      <div class="grid-2">
+        <label class="field"><span><%= tr('Nom', 'Name') %> *</span><input data-f="client_name" maxlength="120"></label>
+        <label class="field"><span><%= tr('Téléphone', 'Phone') %></span><input data-f="client_phone" type="tel" maxlength="40"></label>
+        <label class="field"><span><%= tr('Adresse', 'Address') %></span><input data-f="client_address" maxlength="300" placeholder="<%= tr('Exigée par la loi sur le document', 'Required by law on the document') %>"></label>
+        <label class="field"><span><%= tr('Courriel', 'Email') %></span><input data-f="client_email" type="email" maxlength="200"></label>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-head"><h2><%= tr('Véhicule', 'Vehicle') %></h2></div>
+      <div class="chips" data-vehicle-chips style="margin-bottom:12px"></div>
+      <div class="grid-2">
+        <label class="field"><span><%= tr('Année, marque, modèle', 'Year, make, model') %></span><input data-f="vehicle_label" maxlength="140"></label>
+        <label class="field"><span><%= tr('Plaque', 'Plate') %></span><input data-f="vehicle_plate" maxlength="12" style="text-transform:uppercase"></label>
+        <label class="field"><span>NIV</span><input data-f="vehicle_vin" maxlength="17" style="text-transform:uppercase"></label>
+        <label class="field"><span><%= isInv ? tr('Kilométrage à la remise', 'Mileage at pickup') : tr('Kilométrage', 'Mileage') %></span><input data-f="odometer_km" inputmode="numeric" maxlength="8"></label>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-head"><h2><%= tr('Travaux', 'Work') %></h2></div>
+      <div class="lines">
+        <div class="lines-head"><span><%= tr('Type', 'Type') %></span><span><%= tr('Description', 'Description') %></span><span><%= tr('État de la pièce', 'Part condition') %></span><span style="text-align:right"><%= tr('Qté / heures', 'Qty / hours') %></span><span style="text-align:right"><%= tr('Prix unitaire', 'Unit price') %></span><span style="text-align:right"><%= tr('Montant', 'Amount') %></span><span></span></div>
+        <div data-lines></div>
+      </div>
+      <div class="add-lines" data-add-lines>
+        <button class="btn btn-sm" type="button" data-add="part">+ <%= tr('Pièce', 'Part') %></button>
+        <button class="btn btn-sm" type="button" data-add="labour">+ <%= tr('Main-d’œuvre', 'Labour') %></button>
+        <button class="btn btn-sm" type="button" data-add="fee">+ <%= tr('Frais', 'Fee') %></button>
+        <button class="btn btn-sm" type="button" data-add="note">+ <%= tr('Note', 'Note') %></button>
+        <select class="input" data-add-service style="max-width:280px;min-height:40px;font-size:15px"><option value=""><%= tr('+ Service de votre liste…', '+ Service from your list…') %></option></select>
+      </div>
+      <p class="tiny muted" style="margin:12px 0 0"><%= tr('Main-d’œuvre : inscrivez les heures (ex. 1,5) — le taux horaire est déjà mis. Pièces : l’état (neuve, usagée, réusinée, remise à neuf) paraît sur le document, comme la loi le demande.', 'Labour: enter the hours (e.g. 1.5) — your hourly rate is already filled in. Parts: the condition (new, used, remanufactured, reconditioned) shows on the document, as the law requires.') %></p>
+    </section>
+
+    <section class="card">
+      <h2><%= tr('Notes', 'Notes') %></h2>
+      <label class="field" style="margin-top:12px"><span><%= tr('Note au client (imprimée sur le document)', 'Note to the customer (printed on the document)') %></span><textarea data-f="customer_note" rows="3" maxlength="3000"></textarea></label>
+      <label class="field"><span><%= tr('Note interne (jamais imprimée)', 'Internal note (never printed)') %></span><textarea data-f="internal_note" rows="2" maxlength="4000"></textarea></label>
+    </section>
+  </div>
+
+  <aside class="doc-side">
+    <section class="card">
+      <div class="totals" data-totals></div>
+      <label class="switch-row" style="border-top:1px solid var(--line);margin-top:14px">
+        <span><strong><%= tr('Taxes TPS et TVQ', 'GST and QST') %></strong><span class="muted small"><%= tr('5 % et 9,975 %', '5% and 9.975%') %></span></span>
+        <span class="switch"><input type="checkbox" data-f="charge_taxes"><span></span></span>
+      </label>
+      <label class="field" style="margin:4px 0 0"><span><%= tr('Taux horaire', 'Hourly rate') %></span><span class="input-money"><input data-f="labour_rate" inputmode="decimal"></span><span class="hint" data-rate-hint></span></label>
+    </section>
+
+    <section class="card" data-actions></section>
+
+    <section class="card">
+      <label class="field"><span><%= tr('Date du document', 'Document date') %></span><input type="date" data-f="issued_on"></label>
+      <% if (isInv) { %>
+        <label class="field"><span><%= tr('Remise du véhicule', 'Vehicle handed back') %></span><input type="date" data-f="delivered_on"></label>
+      <% } else { %>
+        <label class="field"><span><%= tr('Valide jusqu’au', 'Valid until') %></span><input type="date" data-f="valid_until"></label>
+      <% } %>
+      <label class="check-card"><input type="checkbox" data-f="return_parts"><span><%= tr('Le client veut récupérer les pièces remplacées', 'Customer wants the replaced parts back') %></span></label>
+      <% if (isInv) { %>
+        <label class="field" style="margin-top:14px"><span><%= tr('Garantie (imprimée sur la facture)', 'Warranty (printed on the invoice)') %></span><textarea data-f="warranty_text" rows="5" maxlength="2000"></textarea></label>
+      <% } %>
+    </section>
+
+    <div class="warn-box" data-missing hidden></div>
+
+    <% if (related.length) { %>
+    <section class="card">
+      <h2 style="font-size:17px"><%= tr('Documents liés', 'Related documents') %></h2>
+      <div class="chips" style="margin-top:10px"><% related.forEach(function (r) { %><a class="chip" href="admin/documents/<%= r.id %>"><%= r.kind === 'invoice' ? tr('Facture', 'Invoice') : tr('Estimation', 'Estimate') %> <%= r.number || '' %></a><% }); %></div>
+    </section>
+    <% } %>
+  </aside>
+</div>
+<%- include('partials/admin-footer', { scripts: scripts, pageData: pageData }) %>
