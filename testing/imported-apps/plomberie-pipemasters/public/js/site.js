@@ -43,6 +43,8 @@
   ['mouseleave', 'blur'].forEach(function (ev) { el.addEventListener(ev, function () { light(n, false); }); });
  });
 
+ $$('.cw-spot[data-href]').forEach(function (el) { el.addEventListener('click', function () { location.href = el.getAttribute('data-href'); }); });
+
  // water-heater age
  var heater = $('[data-heater]');
  if (heater) heater.addEventListener('submit', function (e) {

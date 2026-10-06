@@ -7,7 +7,8 @@
  *
  * render({ house, mirror, spots, title, zone }) → SVG markup (zone = a detail crop). Colours come from CSS
  * custom properties (theme.js), so one drawing serves every palette. `spots` is
- * [{ zone, n, href, label }]: numbered markers linked to the site's own service pages.
+ * [{ zone, n, href, label }]: numbered markers for the site's own service pages (clicked via
+ * site.js; the accessible links are the legend next to the drawing).
  * Markers are drawn outside the mirrored group so their numerals never flip.
  *
  * No real building, no people, no text inside the art.
@@ -212,7 +213,9 @@ function render({ house: kind = 'cottage', mirror = false, spots = [], title = '
  };
  const markers = spots.filter(s => at[s.zone]).map(s => {
   const [x, y] = at[s.zone];
-  return `<a class="cw-spot" href="${s.href}" data-spot="${s.n}" aria-label="${s.label}"><circle cx="${X(x)}" cy="${y}" r="17" class="cw-spot-ring"/><circle cx="${X(x)}" cy="${y}" r="13" class="cw-spot-dot"/><text x="${X(x)}" y="${y + 5}" text-anchor="middle" class="cw-spot-n">${s.n}</text></a>`;
+  // A <g>, not an SVG <a>: an SVG link's href is an object, and Cloudflare's email-decode script
+  // (injected on pages with an address) crashes on it. The numbered legend holds the real links.
+  return `<g class="cw-spot" data-href="${s.href}" data-spot="${s.n}" aria-hidden="true"><circle cx="${X(x)}" cy="${y}" r="17" class="cw-spot-ring"/><circle cx="${X(x)}" cy="${y}" r="13" class="cw-spot-dot"/><text x="${X(x)}" y="${y + 5}" text-anchor="middle" class="cw-spot-n">${s.n}</text></g>`;
  });
  let view = `0 0 ${W} ${H}`;
  if (zone) {
@@ -251,8 +254,7 @@ function css() {
 .cw-cold,.cw-hot{fill:none;stroke-width:5.5;stroke-linecap:round;stroke-linejoin:round}.cw-cold{stroke:var(--cold)}.cw-hot{stroke:var(--hot)}
 .cw-drip path{fill:var(--cold)}
 .cw-spot{cursor:pointer;outline:none}.cw-spot-ring{fill:var(--sheet);opacity:.9}.cw-spot-dot{fill:var(--ink);transition:fill .15s}.cw-spot-n{fill:var(--sheet);font:700 15px/1 var(--font-text),system-ui,sans-serif;pointer-events:none}
-.cw-spot:hover .cw-spot-dot,.cw-spot:focus-visible .cw-spot-dot,.cw-spot.is-lit .cw-spot-dot{fill:var(--accent)}.cw-spot:hover .cw-spot-n,.cw-spot:focus-visible .cw-spot-n,.cw-spot.is-lit .cw-spot-n{fill:var(--on-accent)}
-.cw-spot:focus-visible .cw-spot-ring{stroke:var(--accent);stroke-width:3}`;
+.cw-spot:hover .cw-spot-dot,.cw-spot.is-lit .cw-spot-dot{fill:var(--accent)}.cw-spot:hover .cw-spot-n,.cw-spot.is-lit .cw-spot-n{fill:var(--on-accent)}`;
 }
 
 module.exports = { render, css, standaloneStyle, crops, ZONES, W, H };
