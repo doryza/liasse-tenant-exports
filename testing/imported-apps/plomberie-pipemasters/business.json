@@ -6,6 +6,17 @@
   "business_name": "Plomberie Pipemasters inc.",
   "brand_name": "Plomberie Pipemasters",
   "city": "Pointe-aux-Trembles",
+  "region": {
+    "province": "QC",
+    "lang": "fr",
+    "tz": "America/Toronto",
+    "climate": "cold"
+  },
+  "licence": {
+    "number": "5881-1431-01",
+    "source_url": "https://www.donneesquebec.ca/recherche/dataset/licencesactives",
+    "observed_at": "2026-10-06"
+  },
   "phone": "(438) 379-2352",
   "email": "plomberiepipemasters@gmail.com",
   "areas": {
@@ -14,8 +25,8 @@
   },
   "hours": {
     "text": {
-      "fr": "24 h / 24 · 7 jours / 7",
-      "en": "24 hours · 7 days a week"
+      "en": "24 hours · 7 days a week",
+      "fr": "24 h / 24 · 7 jours / 7"
     },
     "always_open": true,
     "weekly": null
@@ -125,6 +136,7 @@
         "fr": "Repérez dès aujourd’hui votre valve principale d’eau : c’est le premier geste en cas de fuite.",
         "en": "Locate your main water shutoff today: it is the first thing to close when a leak starts."
       },
+      "slug_en": "emergency-plumbing",
       "listed": true,
       "confirmed": true,
       "source_name": "Urgence de plomberie résidentielle, commerciale et industrielle"
@@ -176,6 +188,7 @@
         "fr": "Jamais de flamme nue sur un tuyau gelé. Un séchoir à cheveux, à distance, est plus sûr.",
         "en": "Never use an open flame on a frozen pipe. A hair dryer, held at a distance, is safer."
       },
+      "slug_en": "frozen-pipes",
       "listed": true,
       "confirmed": true,
       "source_name": "Dégel de tuyaux"
@@ -228,6 +241,7 @@
         "fr": "Choisissez vos appareils avant la plomberie brute : les hauteurs et les sorties en dépendent.",
         "en": "Pick your fixtures before the rough-in: heights and outlets depend on them."
       },
+      "slug_en": "bathroom-kitchen-renovations",
       "listed": true,
       "confirmed": true,
       "source_name": "Rénovation de plomberie résidentielle"
@@ -279,6 +293,7 @@
         "fr": "Prévoyez qui donnera accès aux locaux et aux valves d’arrêt le jour des travaux.",
         "en": "Plan who will give access to the premises and shutoff valves on the day of the work."
       },
+      "slug_en": "commercial-plumbing",
       "listed": true,
       "confirmed": true,
       "source_name": "Rénovation de plomberie commerciale"
@@ -330,6 +345,7 @@
         "fr": "Transmettez les plans le plus tôt possible : l’estimation sera plus précise.",
         "en": "Share the plans as early as possible: the estimate will be more precise."
       },
+      "slug_en": "new-construction",
       "listed": true,
       "confirmed": true,
       "source_name": "Plomberie pour construction neuve"
@@ -381,6 +397,7 @@
         "fr": "L’année de fabrication est sur l’étiquette du réservoir. Plusieurs assureurs posent des conditions selon l’âge : vérifiez votre police.",
         "en": "The manufacturing year is on the tank’s label. Many insurers set conditions based on age: check your policy."
       },
+      "slug_en": "water-heaters",
       "listed": true,
       "confirmed": true,
       "source_name": "Remplacement, réparation et installation de chauffe-eau"
@@ -432,6 +449,7 @@
         "fr": "Gardez une photo de l’étiquette de votre chauffe-eau et de votre clapet : c’est utile au téléphone.",
         "en": "Keep a photo of your water heater label and backwater valve: it helps on the phone."
       },
+      "slug_en": "preventive-maintenance",
       "listed": true,
       "confirmed": true,
       "source_name": "Entretien des installations de plomberie"
@@ -484,6 +502,7 @@
         "fr": "Demandez à garder les images : elles sont utiles pour un assureur ou des travaux futurs.",
         "en": "Ask to keep the footage: it helps with an insurer or future work."
       },
+      "slug_en": "camera-inspection",
       "listed": true,
       "confirmed": true,
       "source_name": "Inspection par caméra"
@@ -537,6 +556,7 @@
         "fr": "Si plusieurs appareils se bouchent en même temps, le problème est souvent dans la conduite principale.",
         "en": "When several fixtures clog at once, the problem is often in the main line."
       },
+      "slug_en": "drain-cleaning",
       "listed": true,
       "confirmed": true,
       "source_name": "Débouchage d’égouts"
@@ -588,6 +608,7 @@
         "fr": "Précisez d’avance si un document écrit est demandé par un assureur ou un prêteur.",
         "en": "Say up front if an insurer or lender needs a written document."
       },
+      "slug_en": "plumbing-inspections",
       "listed": true,
       "confirmed": true,
       "source_name": "Service d’inspection de plomberie"
@@ -640,6 +661,7 @@
         "fr": "Photographiez tout avant de nettoyer, et gardez les pièces endommagées si l’assureur le demande.",
         "en": "Photograph everything before cleaning, and keep damaged parts if the insurer asks."
       },
+      "slug_en": "water-damage",
       "listed": true,
       "confirmed": true,
       "source_name": "Inspection après sinistre pour les compagnies d’assurance"
@@ -691,6 +713,7 @@
         "fr": "Au printemps, versez un seau d’eau dans le puisard : la pompe doit démarrer et vider le bassin.",
         "en": "Each spring, pour a bucket of water into the pit: the pump should start and empty it."
       },
+      "slug_en": "sump-pumps",
       "listed": true,
       "confirmed": true,
       "source_name": "Installation de pompe de puisard"
@@ -743,6 +766,7 @@
         "fr": "Le bon endroit est le point le plus bas, à côté de l’appareil qui peut fuir.",
         "en": "The right spot is the lowest point, next to the appliance that may leak."
       },
+      "slug_en": "leak-detectors",
       "listed": true,
       "confirmed": true,
       "source_name": "Installation d’un détecteur de niveau d’eau"
@@ -794,6 +818,7 @@
         "fr": "Fermez et rouvrez votre valve une ou deux fois par année : elle restera facile à manœuvrer.",
         "en": "Close and reopen your main valve once or twice a year so it stays easy to turn."
       },
+      "slug_en": "main-shutoff-valve",
       "listed": true,
       "confirmed": true,
       "source_name": "Remplacement de valve principale"
@@ -846,6 +871,7 @@
         "fr": "Plusieurs municipalités l’exigent pour les appareils sous le niveau de la rue. Un clapet doit rester accessible et être nettoyé régulièrement.",
         "en": "Many municipalities require one for fixtures below street level. A valve must stay accessible and be cleaned regularly."
       },
+      "slug_en": "backwater-valves",
       "listed": true,
       "confirmed": true,
       "source_name": "Installation de valve anti-retour"
@@ -899,6 +925,7 @@
         "fr": "Fermez tous les robinets et regardez le compteur : s’il bouge, l’eau s’échappe quelque part.",
         "en": "Close every tap and watch the meter: if it moves, water is escaping somewhere."
       },
+      "slug_en": "water-leaks",
       "listed": false,
       "confirmed": false,
       "source_name": null
@@ -951,6 +978,7 @@
         "fr": "Votre municipalité peut indiquer si votre adresse figure dans un programme de remplacement.",
         "en": "Your municipality can tell you whether your address is in a replacement program."
       },
+      "slug_en": "water-service-line",
       "listed": false,
       "confirmed": false,
       "source_name": null
@@ -1003,6 +1031,7 @@
         "fr": "Une toilette qui coule peut gaspiller beaucoup d’eau sans bruit : quelques gouttes de colorant dans le réservoir le révèlent.",
         "en": "A running toilet can waste a lot of water quietly: a few drops of food colouring in the tank will show it."
       },
+      "slug_en": "faucets-toilets-fixtures",
       "listed": false,
       "confirmed": false,
       "source_name": null
@@ -1055,6 +1084,7 @@
         "fr": "Pour un puits, une analyse d’eau en laboratoire guide le bon choix d’équipement.",
         "en": "For a well, a lab water test guides the right choice of equipment."
       },
+      "slug_en": "water-treatment",
       "listed": false,
       "confirmed": false,
       "source_name": null
@@ -1063,15 +1093,15 @@
   "sources": [
     {
       "url": "https://www.google.com/maps/place/Plomberie+Pipemasters+inc.+-+Plombier+Pointe-aux-Trembles/data=!4m7!3m6!1s0xe768312a81d3603:0x196c70eb6c8d2838!8m2!3d45.5602195!4d-73.617322!16s%2Fg%2F11nq9512jk!19sChIJAzYdqBKDdg4ROCiNbOtwbBk",
-      "observed_at": "2026-10-06",
       "type": "google_maps",
-      "notes": "Profile individually opened; phone, rating, reviews, address and linked website transcribed."
+      "notes": "Profile individually opened; phone, rating, reviews, address and linked website transcribed.",
+      "observed_at": "2026-10-06"
     },
     {
       "url": "https://www.411habitation.com/plombiers/montreal/pointe-aux-trembles-14/plomberie-pipemasters-inc.htm",
-      "observed_at": "2026-10-06",
       "type": "maps_link",
-      "notes": "Business-linked listing checked. Phone matches Google Maps. Listed service scope, 24/7 hours, service area, email, payments and free estimates transcribed."
+      "notes": "Business-linked listing checked. Phone matches Google Maps. Listed service scope, 24/7 hours, service area, email, payments and free estimates transcribed.",
+      "observed_at": "2026-10-06"
     }
   ]
 }

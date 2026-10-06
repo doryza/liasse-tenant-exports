@@ -7,7 +7,7 @@
   </span>
   <span class="topline-right">
    <% if (b.free_estimates) { %><span class="topline-note"><%= t.factEstimate %> <%= t.estimateFree.toLowerCase() %></span><% } %>
-   <a class="lang" href="<%= other || (lang === 'fr' ? 'en/' : './') %>" hreflang="<%= lang === 'fr' ? 'en' : 'fr' %>" lang="<%= lang === 'fr' ? 'en' : 'fr' %>"><%= t.langOther %></a>
+   <a class="lang" href="<%= other || otherHome %>" hreflang="<%= lang === 'fr' ? 'en' : 'fr' %>" lang="<%= lang === 'fr' ? 'en' : 'fr' %>"><%= t.langOther %></a>
   </span>
  </div>
 </div>

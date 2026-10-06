@@ -15,12 +15,12 @@
   <div class="footer-brand">
    <a class="brand brand-footer" href="<%= U.home || './' %>"><%- mark({ size: 52 }) %><span class="brand-text"><strong><%= b.brand_name %></strong><small><%= b.city %></small></span></a>
    <p data-lk="t:footerLine"><%= t.footerLine %></p>
-   <% if (b.rbq) { %><p class="licence"><%= fmt(t.licence, { n: b.rbq }) %></p><% } %>
+   <% if (b.rbq) { %><p class="licence"><%= b.labels.licence[lang] %> <%= b.rbq %></p><% } %>
   </div>
   <div>
    <h2 class="footer-title"><%= t.services %></h2>
    <ul class="footer-links">
-    <% b.visible.slice(0, 7).forEach(function (s) { %><li><a href="<%= U.service + s.id %>"><%= s.name[lang] %></a></li><% }) %>
+    <% b.visible.slice(0, 7).forEach(function (s) { %><li><a href="<%= svcHref(s) %>"><%= s.name[lang] %></a></li><% }) %>
     <li><a href="<%= U.services %>"><%= t.allServices %></a></li>
    </ul>
   </div>
@@ -41,7 +41,7 @@
  </div>
  <div class="wrap footer-bottom">
   <span>© <%= year %> <%= b.business_name %></span>
-  <span class="footer-bottom-links"><a href="<%= U.privacy %>"><%= t.privacy %></a><a href="admin<%= lang === 'en' ? '?lang=en' : '' %>" rel="nofollow"><%= t.admin %></a></span>
+  <span class="footer-bottom-links"><a href="<%= U.privacy %>"><%= t.privacy %></a><a href="admin<%= lang !== first ? '?lang=' + lang : '' %>" rel="nofollow"><%= t.admin %></a></span>
  </div>
 </footer>
 <div class="mobile-bar" role="navigation" aria-label="<%= t.call %>">

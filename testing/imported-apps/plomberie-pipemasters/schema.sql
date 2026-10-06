@@ -34,6 +34,7 @@ CREATE TABLE IF NOT EXISTS documents (
  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS documents_kind_status ON documents(kind, status);
+ALTER TABLE documents ADD COLUMN IF NOT EXISTS tax_rates TEXT;
 
 CREATE TABLE IF NOT EXISTS document_lines (
  id SERIAL PRIMARY KEY, document_id INTEGER NOT NULL REFERENCES documents(id) ON DELETE CASCADE,

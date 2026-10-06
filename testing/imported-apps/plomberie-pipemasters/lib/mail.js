@@ -22,7 +22,7 @@ function card(b, { title, lead, rows = [], button = null, link = '', foot = '' }
 <p style="margin:0 0 18px;color:${t.body};font-size:15px;line-height:1.55">${esc(lead)}</p>
 ${rows.length ? `<table style="width:100%;border-collapse:collapse;font-size:14px">${rows.filter(r => r[1]).map(r => `<tr><td style="padding:8px 0;color:${t.muted};width:38%;vertical-align:top;border-top:1px solid ${t.line}">${esc(r[0])}</td><td style="padding:8px 0;color:${t.ink};font-weight:600;border-top:1px solid ${t.line};white-space:pre-line">${esc(r[1])}</td></tr>`).join('')}</table>` : ''}
 ${button ? `<p style="margin:22px 0 0"><a href="${esc(link)}" style="display:inline-block;background:${t.accent};color:${t['on-accent']};font-weight:700;text-decoration:none;padding:12px 18px;border-radius:6px">${esc(button)}</a></p>` : ''}
-<p style="margin:22px 0 0;color:${t.muted};font-size:13px;line-height:1.5">${esc(foot || [b.phone, b.email].filter(Boolean).join(' · '))}${b.rbq ? '<br>RBQ ' + esc(b.rbq) : ''}</p></div></div></div>`;
+<p style="margin:22px 0 0;color:${t.muted};font-size:13px;line-height:1.5">${esc(foot || [b.phone, b.email].filter(Boolean).join(' · '))}${b.rbq ? '<br>' + esc(b.labels ? b.labels.licence[b.region.lang] : 'RBQ') + ' ' + esc(b.rbq) : ''}</p></div></div></div>`;
  const text = `${title}\n\n${lead}\n\n${rows.filter(r => r[1]).map(r => r[0] + ' : ' + r[1]).join('\n')}${link ? '\n\n' + link : ''}\n\n${b.business_name} — ${b.phone}`;
  return { html, text };
 }
@@ -54,12 +54,18 @@ module.exports = function (services) {
  /** A new request reaches the business's own inbox. */
  async function requestToOwner(b, r, link) {
   if (!b.notify) return { skipped: 'no_address' };
-  const m = card(b, {
+  // The owner reads the site's first language.
+  const en = b.region && b.region.lang === 'en';
+  const m = card(b, en ? {
+   title: `New request ${r.reference}`, lead: 'A request just came in through the website.',
+   rows: [['Name', r.name], ['Phone', r.phone], ['Email', r.email], ['Address', r.address], ['Work', r.service_label], ['When', r.urgency_label], ['Message', r.message]],
+   button: 'Open the request', link,
+  } : {
    title: `Nouvelle demande ${r.reference}`, lead: 'Une demande vient d’arriver par le site.',
    rows: [['Nom', r.name], ['Téléphone', r.phone], ['Courriel', r.email], ['Adresse', r.address], ['Travaux', r.service_label], ['Quand', r.urgency_label], ['Message', r.message]],
    button: 'Ouvrir la demande', link,
   });
-  return send({ to: b.notify, subject: `Nouvelle demande ${r.reference} — ${r.name}`, html: m.html, text: m.text, replyTo: r.email || undefined });
+  return send({ to: b.notify, subject: `${en ? 'New request' : 'Nouvelle demande'} ${r.reference} — ${r.name}`, html: m.html, text: m.text, replyTo: r.email || undefined });
  }
 
  /** The visitor's copy, only when customer emails are on and they gave an address. */
@@ -78,13 +84,18 @@ module.exports = function (services) {
  async function decisionToOwner(b, doc, link) {
   if (!b.notify) return { skipped: 'no_address' };
   const ok = doc.status === 'accepted';
-  const m = card(b, {
-   title: `Estimation ${doc.number} ${ok ? 'acceptée' : 'refusée'}`,
-   lead: ok ? `${doc.decided_name} a accepté l’estimation en ligne.` : `Le client a refusé l’estimation en ligne.`,
+  const en = b.region && b.region.lang === 'en';
+  const title = en ? `Estimate ${doc.number} ${ok ? 'accepted' : 'declined'}` : `Estimation ${doc.number} ${ok ? 'acceptée' : 'refusée'}`;
+  const m = card(b, en ? {
+   title, lead: ok ? `${doc.decided_name} accepted the estimate online.` : 'The customer declined the estimate online.',
+   rows: [['Customer', doc.customer_name], ['Work', doc.title], ['Total', D.money(doc.total_cents, 'en')], ['Reason', doc.decline_reason]],
+   button: 'Open the estimate', link,
+  } : {
+   title, lead: ok ? `${doc.decided_name} a accepté l’estimation en ligne.` : `Le client a refusé l’estimation en ligne.`,
    rows: [['Client', doc.customer_name], ['Travaux', doc.title], ['Total', D.money(doc.total_cents, 'fr')], ['Raison', doc.decline_reason]],
    button: 'Ouvrir l’estimation', link,
   });
-  return send({ to: b.notify, subject: `Estimation ${doc.number} ${ok ? 'acceptée' : 'refusée'} — ${doc.customer_name || ''}`, html: m.html, text: m.text });
+  return send({ to: b.notify, subject: `${title} — ${doc.customer_name || ''}`, html: m.html, text: m.text });
  }
 
  return { documentToCustomer, requestToOwner, requestAck, decisionToOwner };

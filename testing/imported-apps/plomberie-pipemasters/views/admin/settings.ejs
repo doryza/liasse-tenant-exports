@@ -16,10 +16,10 @@
    <label class="afield"><span><%= tr('Téléphone', 'Phone') %></span><input name="phone" type="tel" maxlength="40" required value="<%= b.phone %>"></label>
    <label class="afield"><span><%= tr('Courriel public', 'Public email') %></span><input name="email" type="email" maxlength="200" value="<%= b.email %>"></label>
    <label class="afield"><span><%= tr('Courriel où recevoir les demandes', 'Email that receives requests') %></span><input name="notification_email" type="email" maxlength="200" value="<%= raw.notification_email || '' %>" placeholder="<%= b.email %>"></label>
-   <label class="afield"><span><%= tr('Numéro de licence RBQ', 'RBQ licence number') %> <small><%= tr('exigé sur le site et les documents', 'required on the site and documents') %></small></span><input name="rbq" maxlength="20" inputmode="numeric" placeholder="0000-0000-00" value="<%= b.rbq %>"></label>
-   <label class="afield"><span>NEQ</span><input name="neq" maxlength="20" inputmode="numeric" value="<%= b.neq %>"></label>
-   <label class="afield"><span><%= tr('Numéro de TPS', 'GST number') %></span><input name="tps_number" maxlength="40" value="<%= b.tps %>"></label>
-   <label class="afield"><span><%= tr('Numéro de TVQ', 'QST number') %></span><input name="tvq_number" maxlength="40" value="<%= b.tvq %>"></label>
+   <% if (b.labels.licenceRequired) { %><label class="afield"><span><%= tr('Numéro de licence RBQ', 'RBQ licence number') %> <small><%= tr('exigé sur le site et les documents', 'required on the site and documents') %></small></span><input name="rbq" maxlength="20" inputmode="numeric" placeholder="0000-0000-00" value="<%= b.rbq %>"></label>
+   <% } else { %><label class="afield"><span><%= tr('Licence ou certificat', 'Licence or certificate') %> <small><%= tr('facultatif, affiché sur le site et les documents', 'optional, shown on the site and documents') %></small></span><input name="rbq" maxlength="40" value="<%= b.rbq %>"></label><% } %>
+   <label class="afield"><span><%= b.labels.neq[lang] %></span><input name="neq" maxlength="20" value="<%= b.neq %>"></label>
+   <% b.labels.taxNumbers.forEach(function (n) { %><label class="afield"><span><%= tr('Numéro de ' + n.label.fr, n.label.en + ' number') %></span><input name="<%= n.key %>" maxlength="40" value="<%= n.key === 'tps_number' ? b.tps : b.tvq %>"></label><% }) %>
   </div>
   <label class="afield"><span><%= tr('Adresse de l’entreprise (estimations et factures)', 'Business address (estimates and invoices)') %></span><input name="business_address" maxlength="240" value="<%= b.address %>"></label>
   <button class="abtn primary" type="submit" data-submit><%= tr('Enregistrer', 'Save') %></button>
@@ -58,12 +58,12 @@
   </div>
   <button class="abtn primary" type="submit" data-submit><%= tr('Enregistrer', 'Save') %></button>
  </form>
- <div class="toggles"><%- toggle('charge_taxes', tr('Ajouter la TPS et la TVQ par défaut', 'Add GST and QST by default'), tr('Fermez si vous n’êtes pas inscrit aux taxes (petit fournisseur).', 'Turn off if you are not registered for taxes (small supplier).'), { on: raw.charge_taxes === undefined }) %></div>
+ <div class="toggles"><%- toggle('charge_taxes', tr('Ajouter les taxes par défaut (' + b.labels.taxes.fr + ')', 'Add taxes by default (' + b.labels.taxes.en + ')'), tr('Fermez si vous n’êtes pas inscrit aux taxes (petit fournisseur).', 'Turn off if you are not registered for taxes (small supplier).'), { on: raw.charge_taxes === undefined }) %></div>
 </section>
 
 <section class="panel" id="confidentialite">
  <h2><%= tr('Politique de confidentialité', 'Privacy policy') %></h2>
- <p class="small"><%= tr('Exigée par la Loi 25 avant de recevoir des demandes. Remplacez chaque passage entre crochets, dans les deux langues, puis approuvez.', 'Required by Québec’s Law 25 before you take requests. Replace every passage in brackets, in both languages, then approve.') %></p>
+ <p class="small"><%= tr(privacyLaw.fr + ' Remplacez chaque passage entre crochets, dans les deux langues, puis approuvez.', privacyLaw.en + ' Replace every passage in brackets, in both languages, then approve.') %></p>
  <form class="settings-form" data-settings>
   <div class="grid2">
    <label class="afield"><span>Français <% if (placeholders.test(b.privacy.fr)) { %><small class="warn-inline"><%= tr('à compléter', 'to complete') %></small><% } %></span><textarea name="privacy_fr" rows="14" maxlength="6000"><%= b.privacy.fr %></textarea></label>

@@ -7,6 +7,15 @@
     "fr",
     "en"
   ],
+  "region": {
+    "province": "QC",
+    "lang": "fr",
+    "tz": "America/Toronto",
+    "climate": "cold",
+    "taxes": "GST 5% + QST 9.975%",
+    "licence": "RBQ 5881-1431-01 (register, 2026-10-06)",
+    "privacy": "qc"
+  },
   "runtime": {
     "entry": "routes.js",
     "mount": "base-relative links; platform tenantPath; custom-domain compatible",
@@ -19,13 +28,13 @@
     "/contact",
     "/estimation",
     "/confidentialite",
-    "/document/:token",
     "/en/",
     "/en/services",
     "/en/services/:id",
     "/en/contact",
     "/en/estimate",
-    "/en/privacy"
+    "/en/privacy",
+    "/document/:token"
   ],
   "ownerRoutes": [
     "/admin",
@@ -72,7 +81,7 @@
     "illustrations": "the home cutaway (lib/cutaway.js): inline SVG coloured by CSS variables; service cards and pages show detail crops of it. No photographs, no real property, no logo copied."
   },
   "contentRules": [
-    "No invented licences, staff, years, testimonials, prices, warranties or response times",
+    "No invented licences, staff, years, testimonials, prices, warranties or response times (a Québec RBQ number only from the register)",
     "Services not confirmed by a verified listing are shown « À confirmer »",
     "Hours, areas, payments and free estimates only from a verified listing or the owner",
     "Rating only with ≥ 10 reviews, dated, linked to Google",
@@ -81,15 +90,15 @@
   "sources": [
     {
       "url": "https://www.google.com/maps/place/Plomberie+Pipemasters+inc.+-+Plombier+Pointe-aux-Trembles/data=!4m7!3m6!1s0xe768312a81d3603:0x196c70eb6c8d2838!8m2!3d45.5602195!4d-73.617322!16s%2Fg%2F11nq9512jk!19sChIJAzYdqBKDdg4ROCiNbOtwbBk",
-      "observed_at": "2026-10-06",
       "type": "google_maps",
-      "notes": "Profile individually opened; phone, rating, reviews, address and linked website transcribed."
+      "notes": "Profile individually opened; phone, rating, reviews, address and linked website transcribed.",
+      "observed_at": "2026-10-06"
     },
     {
       "url": "https://www.411habitation.com/plombiers/montreal/pointe-aux-trembles-14/plomberie-pipemasters-inc.htm",
-      "observed_at": "2026-10-06",
       "type": "maps_link",
-      "notes": "Business-linked listing checked. Phone matches Google Maps. Listed service scope, 24/7 hours, service area, email, payments and free estimates transcribed."
+      "notes": "Business-linked listing checked. Phone matches Google Maps. Listed service scope, 24/7 hours, service area, email, payments and free estimates transcribed.",
+      "observed_at": "2026-10-06"
     }
   ]
 }

@@ -16,7 +16,7 @@
  </div>
 </div>
 
-<form class="doc-editor<%= locked ? ' is-locked' : '' %>" data-doc="<%= doc.id %>" data-kind="<%= doc.kind %>" data-link="<%= link %>" data-lang="<%= lang %>" autocomplete="off">
+<form class="doc-editor<%= locked ? ' is-locked' : '' %>" data-doc="<%= doc.id %>" data-kind="<%= doc.kind %>" data-link="<%= link %>" data-lang="<%= lang %>" data-rates="<%= json(rates) %>" autocomplete="off">
  <div class="doc-grid">
   <section class="panel">
    <div class="grid2">
@@ -58,11 +58,10 @@
    </div>
    <% } %>
    <div class="totals-row">
-    <label class="check"><input type="checkbox" name="charge_taxes"<%- doc.charge_taxes ? ' checked' : '' %><%- locked ? ' disabled' : '' %>><span><%= tr('Ajouter la TPS et la TVQ', 'Add GST and QST') %></span></label>
+    <label class="check"><input type="checkbox" name="charge_taxes"<%- doc.charge_taxes ? ' checked' : '' %><%- locked ? ' disabled' : '' %>><span><%= tr('Ajouter les taxes (' + b.labels.taxes.fr + ')', 'Add taxes (' + b.labels.taxes.en + ')') %></span></label>
     <dl class="totals" data-totals>
      <div><dt><%= tr('Sous-total', 'Subtotal') %></dt><dd data-t="subtotal"><%= money(doc.subtotal_cents) %></dd></div>
-     <div><dt>TPS 5 %</dt><dd data-t="tps"><%= money(doc.tps_cents) %></dd></div>
-     <div><dt>TVQ 9,975 %</dt><dd data-t="tvq"><%= money(doc.tvq_cents) %></dd></div>
+     <% taxLines.forEach(function (x, i) { %><div><dt><%= x.label %></dt><dd data-t="<%= i ? 'tvq' : 'tps' %>"><%= money(x.cents) %></dd></div><% }) %>
      <div class="grand"><dt><%= tr('Total', 'Total') %></dt><dd data-t="total"><%= money(doc.total_cents) %></dd></div>
     </dl>
    </div>
@@ -70,8 +69,8 @@
     <label class="afield"><span><%= tr('Conditions (visibles par le client)', 'Terms (seen by the customer)') %></span><textarea name="terms" rows="4" maxlength="2000"<%- locked ? ' disabled' : '' %>><%= doc.terms || '' %></textarea></label>
     <label class="afield"><span><%= tr('Notes (visibles par le client)', 'Notes (seen by the customer)') %></span><textarea name="notes" rows="4" maxlength="4000"><%= doc.notes || '' %></textarea></label>
    </div>
-   <% if (!b.rbq) { %><p class="warn"><%= tr('Votre numéro de licence RBQ doit figurer sur vos estimations et factures.', 'Your RBQ licence number must appear on your estimates and invoices.') %> <a href="admin/reglages#entreprise"><%= tr('L’inscrire', 'Add it') %></a></p><% } %>
-   <% if (doc.charge_taxes && (!b.tps || !b.tvq)) { %><p class="warn"><%= tr('Ajoutez vos numéros de TPS et de TVQ pour qu’ils figurent sur vos documents.', 'Add your GST and QST numbers so they appear on your documents.') %> <a href="admin/reglages#entreprise"><%= tr('Les inscrire', 'Add them') %></a></p><% } %>
+   <% if (!b.rbq && b.labels.licenceRequired) { %><p class="warn"><%= tr('Votre numéro de licence RBQ doit figurer sur vos estimations et factures.', 'Your RBQ licence number must appear on your estimates and invoices.') %> <a href="admin/reglages#entreprise"><%= tr('L’inscrire', 'Add it') %></a></p><% } %>
+   <% if (doc.charge_taxes && b.labels.taxNumbers.some(function (n) { return !b[n.key === 'tps_number' ? 'tps' : 'tvq']; })) { %><p class="warn"><%= tr('Ajoutez vos numéros de taxes (' + b.labels.taxNumbers.map(function (n) { return n.label.fr; }).join(', ') + ') pour qu’ils figurent sur vos documents.', 'Add your tax numbers (' + b.labels.taxNumbers.map(function (n) { return n.label.en; }).join(', ') + ') so they appear on your documents.') %> <a href="admin/reglages#entreprise"><%= tr('Les inscrire', 'Add them') %></a></p><% } %>
   </section>
 
   <aside class="doc-side">

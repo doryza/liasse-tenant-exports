@@ -1,6 +1,7 @@
 'use strict';
 /**
- * Plumbing website: public pages (French canonical, English under /en/), the estimate
+ * Plumbing website: public pages in the site's first language at the root and the other one
+ * under /en/ or /fr/ (lib/region.js: French first in Québec, English first elsewhere), the estimate
  * request form, the customer's private document link, and the back office (lib/admin.js).
  *
  * Facts come from business.json with the owner's settings on top (lib/store.js).
@@ -16,10 +17,14 @@ const cutaway = require('./lib/cutaway');
 const makeMail = require('./lib/mail');
 const registerAdmin = require('./lib/admin');
 
-const PAGES = {
- fr: { home: './', services: 'services', service: 'services/', contact: 'contact', estimate: 'estimation', privacy: 'confidentialite' },
- en: { home: 'en/', services: 'en/services', service: 'en/services/', contact: 'en/contact', estimate: 'en/estimate', privacy: 'en/privacy' },
-};
+const region = require('./lib/region');
+
+const R = S.R;
+const FIRST = R.lang, SECOND = R.other;
+const PAGES = region.pages(FIRST);
+const { serviceSlug } = region;
+/** Express paths of a page in both languages: ['/estimation', '/en/estimate']. */
+const both = key => ['fr', 'en'].map(l => '/' + PAGES[l][key]);
 const URGENCY = ['urgent', 'soon', 'planned'];
 const PROPERTY = ['house', 'condo', 'plex', 'commercial'];
 
@@ -38,7 +43,7 @@ module.exports = function (services) {
  const router = express.Router();
  const db = services.db;
  const store = S(services);
- const docs = D(db);
+ const docs = D(db, { invoicePrefix: FIRST === 'en' ? 'INV' : 'F' });
  const mail = makeMail(services);
  const limits = new Map();
 
@@ -58,16 +63,19 @@ module.exports = function (services) {
 
  // --- context for every page ------------------------------------------------------
  router.use(wrap(async (req, res, next) => {
-  const isEn = req.path === '/en' || req.path.startsWith('/en/');
+  const isSecond = req.path === '/' + SECOND || req.path.startsWith('/' + SECOND + '/');
   const q = req.query.lang;
-  const adminLang = q === 'en' || q === 'fr' ? q : (req.cookies && req.cookies.pwa_lang === 'en' ? 'en' : 'fr');
-  const lang = req.path.startsWith('/admin') ? adminLang : isEn ? 'en' : 'fr';
+  const cookie = req.cookies && req.cookies.pwa_lang;
+  const adminLang = q === 'en' || q === 'fr' ? q : (cookie === 'en' || cookie === 'fr' ? cookie : FIRST);
+  const lang = req.path.startsWith('/admin') ? adminLang : isSecond ? SECOND : FIRST;
   if (q === 'en' || q === 'fr') res.cookie('pwa_lang', q, { maxAge: 365 * 86400000, path: tenantPath(req, '/'), sameSite: 'lax', secure: true });
   req.lang = lang;
   const raw = await store.raw();
   const b = S.business(raw);
   req.raw = raw; req.b = b;
   const t = { ...T[lang] };
+  if (R.climate === 'mild') t.season = { ...t.season, ...t.seasonMild };
+  if (R.province !== 'QC') t.property = { ...t.property, plex: t.propertyPlex };
   for (const key of Object.keys(t)) { const o = raw['text_' + key + '_' + lang]; if (typeof o === 'string' && o.trim()) t[key] = o; }
   const U = PAGES[lang];
   const now = S.local();
@@ -76,11 +84,12 @@ module.exports = function (services) {
    lang, t, b, raw, U, page: '', active: '', title: '', description: '', other: '', service: null,
    tenantRoot: tenantPath(req, '/'),
    fmt, text: v => (v && typeof v === 'object' ? v[lang] || v.fr || '' : v || ''),
+   first: FIRST, otherHome: PAGES[lang === 'fr' ? 'en' : 'fr'].home, svcHref: s => PAGES[lang].service + serviceSlug(s, lang),
    money: c => D.money(c, lang), qtyf: n => D.qty(n, lang), longDate: d => S.longDate(d, lang), clock: x => S.clock(x, lang),
    fontsHref: b.design.fonts.href, family: b.design.family, heroLayout: b.design.hero,
    mark: (opts) => theme.mark(b.design, b.brand_name, opts),
    detail: zone => cutaway.render({ house: b.design.house, mirror: b.design.mirror, zone }),
-   year: now.year, seasonKey: S.season(now.month), thisYear: now.year, weekday: now.weekday,
+   year: now.year, seasonKey: S.season(now.month), thisYear: now.year, weekday: now.weekday, invoicePrefix: FIRST === 'en' ? 'INV' : 'F',
    hoursSummary: S.hoursSummary(b.hours, lang), openState: S.openState(b.hours),
    isOwner: await isOwner(req), joinList: list => list.filter(Boolean).join(', '),
   });
@@ -102,7 +111,7 @@ module.exports = function (services) {
   const out = [];
   for (const s of b.visible) {
    const zone = [...used.entries()].find(([, id]) => id === s.id);
-   if (zone) out.push({ zone: zone[0], n: out.length + 1, id: s.id, href: PAGES[lang].service + s.id, label: s.name[lang], state: s.state });
+   if (zone) out.push({ zone: zone[0], n: out.length + 1, id: s.id, href: PAGES[lang].service + serviceSlug(s, lang), label: s.name[lang], state: s.state });
   }
   return out;
  }
@@ -115,7 +124,7 @@ module.exports = function (services) {
  function other(lang, key, arg = '') { return PAGES[lang === 'fr' ? 'en' : 'fr'][key] + arg; }
 
  // --- public pages -----------------------------------------------------------------
- router.get(['/', '/en', '/en/'], (req, res) => {
+ router.get(['/', '/' + SECOND, '/' + SECOND + '/'], (req, res) => {
   const { b, t, lang } = res.locals;
   const sp = spots(b, lang);
   const top = b.visible.slice(0, 4).map(s => s.name[lang]);
@@ -136,30 +145,32 @@ module.exports = function (services) {
   });
   res.render('index');
  });
- router.get(['/services', '/en/services'], page('services', 'services', req => ({ other: other(req.lang, 'services'), title: `${T[req.lang].servicesTitle} · ${req.b.brand_name}` })));
- router.get(['/services/:id', '/en/services/:id'], (req, res, next) => {
+ router.get(both('services'), page('services', 'services', req => ({ other: other(req.lang, 'services'), title: `${T[req.lang].servicesTitle} · ${req.b.brand_name}` })));
+ router.get(both('service').map(p => p + ':id'), (req, res, next) => {
   const { b, lang } = res.locals;
-  const service = b.visible.find(s => s.id === req.params.id);
+  const service = b.visible.find(s => s.id === req.params.id || serviceSlug(s, lang) === req.params.id);
   if (!service) return next();
+  // One address per page: an English page reached by its French id moves to its English slug.
+  if (req.params.id !== serviceSlug(service, lang)) return res.redirect(301, tenantPath(req, '/' + PAGES[lang].service + serviceSlug(service, lang)));
   const sp = spots(b, lang).find(s => s.id === service.id);
   Object.assign(res.locals, {
-   page: 'service', active: 'services', service, spot: sp || null, other: other(lang, 'service', service.id),
+   page: 'service', active: 'services', service, spot: sp || null, other: other(lang, 'service', serviceSlug(service, lang === 'fr' ? 'en' : 'fr')),
    zone: (service.zones || [])[0] || 'house',
    related: b.visible.filter(s => s.id !== service.id).slice(0, 3),
    title: `${service.name[lang]} · ${b.brand_name} · ${b.city}`, description: service.intro[lang],
   });
   res.render('service');
  });
- router.get(['/contact', '/en/contact'], page('contact', 'contact', req => ({ other: other(req.lang, 'contact'), title: `${T[req.lang].contactTitle} · ${req.b.brand_name}` })));
- router.get(['/estimation', '/en/estimate'], (req, res) => {
+ router.get(both('contact'), page('contact', 'contact', req => ({ other: other(req.lang, 'contact'), title: `${T[req.lang].contactTitle} · ${req.b.brand_name}` })));
+ router.get(both('estimate'), (req, res) => {
   const { b, lang, t } = res.locals;
   const chosen = b.visible.find(s => s.id === req.query.service && s.state !== 'hidden');
   Object.assign(res.locals, { page: 'request', active: 'request', other: other(lang, 'estimate'), chosen: chosen ? chosen.id : '', URGENCY, PROPERTY, title: `${t.requestTitle} · ${b.brand_name}` });
   res.render('request');
  });
- router.get(['/confidentialite', '/en/privacy'], page('privacy', 'privacy', req => ({ other: other(req.lang, 'privacy'), title: `${T[req.lang].privacyTitle} · ${req.b.brand_name}` })));
- // addresses of the first version
- const MOVED = { '/demande': 'estimation', '/en/demande': 'en/estimate', '/en/confidentialite': 'en/privacy' };
+ router.get(both('privacy'), page('privacy', 'privacy', req => ({ other: other(req.lang, 'privacy'), title: `${T[req.lang].privacyTitle} · ${req.b.brand_name}` })));
+ // addresses of the first version (French-first sites only existed then)
+ const MOVED = FIRST === 'fr' ? { '/demande': 'estimation', '/en/demande': 'en/estimate', '/en/confidentialite': 'en/privacy' } : {};
  for (const [from, to] of Object.entries(MOVED)) router.get(from, (req, res) => res.redirect(301, tenantPath(req, '/' + to)));
 
  // --- the request form -------------------------------------------------------------
@@ -185,13 +196,14 @@ module.exports = function (services) {
   const lim = limits.get(key) || { start: now, count: 0 };
   if (lim.count >= 5) return res.status(429).json({ code: 'rate_limited' });
   lim.count++; limits.set(key, lim);
-  const lang = x.language === 'en' ? 'en' : 'fr';
+  const lang = x.language === 'en' || x.language === 'fr' ? x.language : FIRST;
   const row = await db.get(`INSERT INTO plumbing_requests(name, phone, email, address, service_id, urgency, property_type, message, language, source)
    VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,'web') RETURNING id`, [name, phone, email || null, address, serviceId || null, urgency, property, message, lang]);
   const reference = 'D-' + String(row.id).padStart(4, '0');
   await db.run('UPDATE plumbing_requests SET reference = $1 WHERE id = $2', [reference, row.id]);
   const svc = b.services.find(s => s.id === serviceId);
-  const r = { reference, name, phone, email, address, message, language: lang, service_label: svc ? svc.name.fr : 'Autre', urgency_label: T.fr.urgency[urgency] };
+  // The owner reads it in the site's first language.
+  const r = { reference, name, phone, email, address, message, language: lang, service_label: svc ? svc.name[FIRST] : (FIRST === 'en' ? 'Other' : 'Autre'), urgency_label: T[FIRST].urgency[urgency] };
   await mail.requestToOwner(b, r, absolute(req, '/admin/demandes/' + row.id));
   await mail.requestAck(b, r);
   res.status(201).json({ id: row.id, reference });
@@ -219,7 +231,7 @@ module.exports = function (services) {
   Object.assign(res.locals, {
    lang, t: T[lang], page: 'document', doc, owner, state: D.customerState(doc, S.today()),
    decidedOn: doc.decided_at ? S.local(new Date(doc.decided_at)).date : '',
-   money: c => D.money(c, lang), qtyf: n => D.qty(n, lang), longDate: d => S.longDate(d, lang),
+   money: c => D.money(c, lang), qtyf: n => D.qty(n, lang), longDate: d => S.longDate(d, lang), taxLines: D.taxLines(doc, R, lang, req.b),
    text: v => (v && typeof v === 'object' ? v[lang] || v.fr || '' : v || ''),
    title: `${doc.kind === 'estimate' ? T[lang].docEstimate : T[lang].docInvoice} ${doc.number || ''} · ${req.b.brand_name}`,
   });

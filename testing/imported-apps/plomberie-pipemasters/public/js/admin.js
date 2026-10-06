@@ -202,7 +202,9 @@
    out.textContent = isFinite(t) ? fmt.format(t / 100) : '—';
    if (isFinite(t)) sub += t;
   });
-  var taxes = F('charge_taxes').checked, tps = taxes ? Math.round(sub * 0.05) : 0, tvq = taxes ? Math.round(sub * 0.09975) : 0;
+  var rates = [0.05, 0.09975];
+  try { rates = JSON.parse(ed.getAttribute('data-rates')) || rates; } catch (e) { /* Québec rates */ }
+  var taxes = F('charge_taxes').checked, tps = taxes ? Math.round(sub * (rates[0] || 0)) : 0, tvq = taxes ? Math.round(sub * (rates[1] || 0)) : 0;
   ed.classList.toggle('no-tax', !taxes);
   var set = function (k, v) { var el = $('[data-t="' + k + '"]', ed); if (el) el.textContent = fmt.format(v / 100); };
   set('subtotal', sub); set('tps', tps); set('tvq', tvq); set('total', sub + tps + tvq);

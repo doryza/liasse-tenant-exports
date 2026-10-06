@@ -28,7 +28,7 @@
      <strong><%= b.business_name %></strong>
      <span><%= b.phone %><% if (b.email) { %> · <%= b.email %><% } %></span>
      <% if (b.address) { %><span><%= b.address %></span><% } %>
-     <% if (b.rbq) { %><span><%= t.docRbq %> <%= b.rbq %></span><% } %>
+     <% if (b.rbq) { %><span><%= b.labels.licence[lang] %> <%= b.rbq %></span><% } %>
     </div>
    </div>
    <div class="doc-kind">
@@ -58,8 +58,7 @@
   <dl class="doc-totals">
    <div><dt><%= t.docSubtotal %></dt><dd><%= money(doc.subtotal_cents) %></dd></div>
    <% if (doc.charge_taxes) { %>
-   <div><dt><%= t.docTps %><% if (b.tps) { %> <small><%= b.tps %></small><% } %></dt><dd><%= money(doc.tps_cents) %></dd></div>
-   <div><dt><%= t.docTvq %><% if (b.tvq) { %> <small><%= b.tvq %></small><% } %></dt><dd><%= money(doc.tvq_cents) %></dd></div>
+   <% taxLines.forEach(function (x) { %><div><dt><%= x.label %><% if (x.number) { %> <small><%= x.number %></small><% } %></dt><dd><%= money(x.cents) %></dd></div><% }) %>
    <% } %>
    <div class="grand"><dt><%= t.docTotal %></dt><dd><%= money(doc.total_cents) %></dd></div>
   </dl>
@@ -67,7 +66,7 @@
   <% if (doc.terms) { %><section class="doc-text"><h2><%= t.docTerms %></h2><p><%= doc.terms %></p></section><% } %>
   <% if (doc.notes) { %><section class="doc-text"><h2><%= t.docNotes %></h2><p><%= doc.notes %></p></section><% } %>
   <% if (!est && (b.payments || b.interac)) { %><section class="doc-text"><h2><%= t.docPayHow %></h2><p><% if (b.payments) { %><%= text(b.payments) %>.<% } %><% if (b.interac) { %> <%= fmt(t.docInterac, { email: b.interac }) %>.<% } %></p></section><% } %>
-  <footer class="doc-foot"><%= fmt(t.docQuestions, { phone: b.phone }) %><% if (b.neq) { %> · <%= t.docNeq %> <%= b.neq %><% } %></footer>
+  <footer class="doc-foot"><%= fmt(t.docQuestions, { phone: b.phone }) %><% if (b.neq) { %> · <%= b.labels.neq[lang] %> <%= b.neq %><% } %></footer>
  </article>
 
  <% if (est && state === 'open') { %>

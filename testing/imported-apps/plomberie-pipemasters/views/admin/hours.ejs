@@ -14,7 +14,7 @@
   </section>
   <aside class="panel">
    <h2 class="h-small"><%= tr('Secteur desservi', 'Service area') %></h2>
-   <label class="afield"><span>Français</span><textarea name="areas_fr" rows="3" maxlength="400" placeholder="<%= tr('Ex. Pointe-aux-Trembles, Montréal-Est et les environs', 'E.g. Pointe-aux-Trembles, Montréal-Est and nearby') %>"><%= raw.areas_fr || (b.areas ? b.areas.fr : '') %></textarea></label>
+   <label class="afield"><span>Français</span><textarea name="areas_fr" rows="3" maxlength="400" placeholder="<%= tr('Ex. ' + b.city + ' et les environs', 'E.g. ' + b.city + ' and nearby') %>"><%= raw.areas_fr || (b.areas ? b.areas.fr : '') %></textarea></label>
    <label class="afield"><span>English</span><textarea name="areas_en" rows="3" maxlength="400"><%= raw.areas_en || (b.areas ? b.areas.en : '') %></textarea></label>
    <label class="check"><input type="checkbox" name="hours_verified"<%- raw.hours_verified === '1' ? ' checked' : '' %>><span><%= tr('Mes heures et mon secteur sont exacts', 'My hours and area are correct') %></span></label>
    <button class="abtn primary" type="submit" data-submit><%= tr('Enregistrer', 'Save') %></button>

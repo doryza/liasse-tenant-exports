@@ -1,7 +1,7 @@
 <ul class="cards">
  <% items.forEach(function (s) { var sp = (spots || []).find(function (x) { return x.id === s.id; }); %>
  <li class="card<%= s.state === 'proposed' ? ' is-proposed' : '' %>">
-  <a href="<%= U.service + s.id %>">
+  <a href="<%= svcHref(s) %>">
    <div class="card-art"><%- detail((s.zones || [])[0] || 'house') %><% if (sp) { %><span class="card-detail"><%= fmt(t.detail, { n: sp.n }) %></span><% } %></div>
    <div class="card-body">
     <h3><%= s.name[lang] %></h3>

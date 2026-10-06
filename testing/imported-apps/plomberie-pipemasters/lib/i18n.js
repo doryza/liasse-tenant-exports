@@ -50,6 +50,14 @@ const fr = {
   spring: { name: 'Fonte des neiges', tips: ['Versez un seau d’eau dans le puisard : la pompe doit démarrer et le vider.', 'Vérifiez que le clapet antiretour est accessible et propre.', 'Assurez-vous que la sortie de la pompe éloigne l’eau de la fondation.'] },
   summer: { name: 'Belle saison', tips: ['Rouvrez les robinets extérieurs et vérifiez qu’ils ne fuient pas à l’intérieur.', 'Regardez autour du chauffe-eau : pas d’eau ni de rouille à la base.', 'Fermez tout et regardez le compteur d’eau : s’il tourne, il y a une fuite.'] },
  },
+ // BC coast and islands (region.climate = 'mild'): rain more than deep frost.
+ seasonMild: {
+  autumn: { name: 'Avant les pluies', tips: ['Fermez la valve intérieure de chaque robinet extérieur, puis videz-le : un seul coup de froid suffit à le fendre.', 'Nettoyez les gouttières et vérifiez que les descentes éloignent l’eau de la fondation.', 'Vérifiez que le drain de plancher et le puisard sont dégagés.'] },
+  winter: { name: 'Pluies et coups de froid', tips: ['Pendant un coup de froid, gardez au chaud les pièces où passent des tuyaux.', 'Ouvrez alors les portes d’armoires sous les éviers placés contre un mur extérieur.', 'Pendant les fortes pluies, surveillez le puisard et le drain de plancher.'] },
+  spring: { name: 'Fin de la saison des pluies', tips: ['Versez un seau d’eau dans le puisard : la pompe doit démarrer et le vider.', 'Vérifiez que le clapet antiretour est accessible et propre.', 'Regardez sous les éviers et autour du chauffe-eau : ni humidité ni rouille.'] },
+ },
+ // Outside Québec « plex » is not a word people use.
+ propertyPlex: 'Duplex ou immeuble',
  heaterTitle: 'Quel âge a votre chauffe-eau?', heaterBody: 'L’année de fabrication est sur l’étiquette du réservoir, souvent dans le numéro de série.',
  heaterLabel: 'Année de fabrication', heaterCheck: 'Calculer',
  heaterAge: 'Environ {n} ans.', heaterYoung: 'Pas d’inquiétude pour l’âge. Surveillez quand même l’eau ou la rouille à la base.',
@@ -144,6 +152,12 @@ const en = {
   spring: { name: 'Snowmelt', tips: ['Pour a bucket of water into the sump: the pump should start and empty it.', 'Check that the backwater valve is accessible and clean.', 'Make sure the pump’s discharge carries water away from the foundation.'] },
   summer: { name: 'Warm season', tips: ['Reopen outdoor faucets and check they don’t leak indoors.', 'Look around the water heater: no water or rust at the base.', 'Close everything and watch the water meter: if it turns, there is a leak.'] },
  },
+ seasonMild: {
+  autumn: { name: 'Before the rains', tips: ['Close the indoor valve of each outdoor faucet, then drain it: one cold snap is enough to split it.', 'Clear the gutters and check that downspouts carry water away from the foundation.', 'Check that the floor drain and the sump are clear.'] },
+  winter: { name: 'Rain and cold snaps', tips: ['During a cold snap, keep rooms with pipes warm.', 'Open cabinet doors under sinks on outside walls while it lasts.', 'During heavy rain, keep an eye on the sump and the floor drain.'] },
+  spring: { name: 'End of the rainy season', tips: ['Pour a bucket of water into the sump: the pump should start and empty it.', 'Check that the backwater valve is accessible and clean.', 'Look under sinks and around the water heater: no damp, no rust.'] },
+ },
+ propertyPlex: 'Duplex or apartment building',
  heaterTitle: 'How old is your water heater?', heaterBody: 'The manufacturing year is on the tank’s label, often inside the serial number.',
  heaterLabel: 'Manufacturing year', heaterCheck: 'Calculate',
  heaterAge: 'About {n} years old.', heaterYoung: 'Nothing to worry about age-wise. Still watch for water or rust at the base.',

@@ -11,7 +11,7 @@
     <% [['confirmed', tr('Offert', 'Offered')], ['proposed', tr('À confirmer', 'To confirm')], ['hidden', tr('Masqué', 'Hidden')]].forEach(function (o) { %><label><input type="radio" name="state-<%= s.id %>" value="<%= o[0] %>"<%- s.state === o[0] ? ' checked' : '' %>><span><%= o[1] %></span></label><% }) %>
    </div>
    <label class="svc-price"><span><%= tr('À partir de', 'From') %></span><input name="price" inputmode="decimal" placeholder="—" value="<%= s.price ? (s.price / 100).toFixed(0) : '' %>" aria-label="<%= tr('Prix à partir de', 'Starting price') %>"><span>$</span></label>
-   <% if (s.state !== 'hidden') { %><a class="link small" href="<%= (lang === 'en' ? 'en/services/' : 'services/') + s.id %>" target="_blank" rel="noopener"><%= tr('Voir', 'View') %></a><% } else { %><span></span><% } %>
+   <% if (s.state !== 'hidden') { %><a class="link small" href="<%= PAGES[lang].service + svcSlug(s, lang) %>" target="_blank" rel="noopener"><%= tr('Voir', 'View') %></a><% } else { %><span></span><% } %>
   </li>
   <% }) %>
  </ul>

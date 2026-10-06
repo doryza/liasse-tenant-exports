@@ -20,9 +20,9 @@
  <section class="panel module-card<%= b.documents ? ' is-on' : '' %>">
   <div class="panel-head"><h2><%= tr('Estimations et factures', 'Estimates & invoices') %></h2><% if (b.documents) { %><span class="pill on"><%= tr('Actif', 'On') %></span><% } %></div>
   <% if (!b.documents) { %>
-   <p><%= tr('Préparez vos estimations en quelques minutes, envoyez-les par courriel et laissez vos clients les accepter en ligne. Une estimation acceptée devient une facture en un clic, avec la TPS et la TVQ calculées.', 'Prepare estimates in minutes, email them and let customers accept them online. An accepted estimate becomes an invoice in one click, with GST and QST calculated.') %></p>
+   <p><%= tr('Préparez vos estimations en quelques minutes, envoyez-les par courriel et laissez vos clients les accepter en ligne. Une estimation acceptée devient une facture en un clic, avec les taxes calculées (' + b.labels.taxes.fr + ').', 'Prepare estimates in minutes, email them and let customers accept them online. An accepted estimate becomes an invoice in one click, with taxes calculated (' + b.labels.taxes.en + ').') %></p>
    <ul class="mini-list">
-    <li><%= tr('Numérotation automatique (E2026-0001, F2026-0001)', 'Automatic numbering (E2026-0001, F2026-0001)') %></li>
+    <li><%= tr('Numérotation automatique (E' + thisYear + '-0001, ' + invoicePrefix + thisYear + '-0001)', 'Automatic numbering (E' + thisYear + '-0001, ' + invoicePrefix + thisYear + '-0001)') %></li>
     <li><%= tr('Lien privé pour accepter ou refuser, signé du nom du client', 'Private link to accept or decline, signed with the customer’s name') %></li>
     <li><%= tr('Factures à payer et paiements reçus, d’un coup d’œil', 'Invoices due and payments received, at a glance') %></li>
    </ul>

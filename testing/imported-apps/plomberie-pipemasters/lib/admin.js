@@ -15,9 +15,10 @@
 const S = require('./store');
 const D = require('./documents');
 const T = require('./i18n');
+const region = require('./region');
 
 const TEXT = {
- business_name: 200, phone: 40, email: 200, notification_email: 200, business_address: 240, rbq: 20, neq: 20, tps_number: 40, tvq_number: 40,
+ business_name: 200, phone: 40, email: 200, notification_email: 200, business_address: 240, rbq: 40, neq: 20, tps_number: 40, tvq_number: 40,
  interac_email: 200, areas_fr: 400, areas_en: 400, payments_fr: 300, payments_en: 300, privacy_fr: 6000, privacy_en: 6000, doc_terms_fr: 2000, doc_terms_en: 2000,
 };
 const NUMBERS = { estimate_valid_days: [1, 365], invoice_due_days: [0, 120] };
@@ -25,6 +26,9 @@ const FLAGS = [...S.GATES, 'documents_enabled', 'address_public', 'free_estimate
 const REQUEST_STATUS = ['new', 'contacted', 'done', 'lost'];
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const isDate = v => /^\d{4}-\d{2}-\d{2}$/.test(String(v || ''));
+// A language the visitor or owner did not choose is the site's first language (lib/region.js).
+const langOr = v => (v === 'en' || v === 'fr' ? v : S.R.lang);
+const RATES = S.R.taxes.map(t => t.rate);
 const num = (raw, key, fallback) => { const n = Number(raw[key]); return raw[key] != null && raw[key] !== '' && Number.isFinite(n) ? n : fallback; };
 
 function fail(code, status = 400) { return Object.assign(new Error(code), { code, status }); }
@@ -48,7 +52,7 @@ module.exports = function registerAdmin(router, ctx) {
    invoice: en ? { draft: 'Draft', unpaid: 'To be paid', paid: 'Paid', void: 'Cancelled' } : { draft: 'Brouillon', unpaid: 'À payer', paid: 'Payée', void: 'Annulée' },
    method: en ? { interac: 'Interac e-Transfer', cash: 'Cash', debit: 'Debit', credit: 'Credit card', cheque: 'Cheque', other: 'Other' } : { interac: 'Virement Interac', cash: 'Comptant', debit: 'Débit', credit: 'Carte de crédit', cheque: 'Chèque', other: 'Autre' },
    kind: en ? { labour: 'Labour', material: 'Materials', fee: 'Fee', note: 'Note' } : { labour: 'Main-d’œuvre', material: 'Matériel', fee: 'Frais', note: 'Note' },
-   urgency: T[lang].urgency, property: T[lang].property,
+   urgency: T[lang].urgency, property: S.R.province === 'QC' ? T[lang].property : { ...T[lang].property, plex: T[lang].propertyPlex },
    event: en ? { created: 'Created', sent: 'Sent', emailed: 'Emailed', viewed: 'Opened by the customer', accepted: 'Accepted', declined: 'Declined', invoiced: 'Converted to invoice', issued: 'Invoice issued', paid: 'Payment recorded', unpaid: 'Payment removed', void: 'Cancelled', reopened: 'Reopened' }
     : { created: 'Créée', sent: 'Envoyée', emailed: 'Envoyée par courriel', viewed: 'Ouverte par le client', accepted: 'Acceptée', declined: 'Refusée', invoiced: 'Convertie en facture', issued: 'Facture émise', paid: 'Paiement noté', unpaid: 'Paiement retiré', void: 'Annulée', reopened: 'Rouverte' },
   };
@@ -58,7 +62,8 @@ module.exports = function registerAdmin(router, ctx) {
   const en = lang === 'en';
   return [
    { key: 'contact', done: S.flag(raw, 'contact_verified'), href: 'admin/reglages#entreprise', label: en ? 'Check your phone number and email' : 'Vérifier votre téléphone et votre courriel' },
-   { key: 'rbq', done: !!b.rbq, href: 'admin/reglages#entreprise', label: en ? 'Enter your RBQ licence number' : 'Inscrire votre numéro de licence RBQ' },
+   // Québec only: the RBQ number is required on the site and on documents.
+   ...(b.labels.licenceRequired ? [{ key: 'rbq', done: !!b.rbq, href: 'admin/reglages#entreprise', label: en ? 'Enter your RBQ licence number' : 'Inscrire votre numéro de licence RBQ' }] : []),
    { key: 'services', done: !b.services.some(s => s.state === 'proposed'), href: 'admin/services', label: en ? 'Confirm the services you offer' : 'Confirmer les services que vous offrez' },
    { key: 'hours', done: S.flag(raw, 'hours_verified'), href: 'admin/horaire', label: en ? 'Set your hours and service area' : 'Indiquer vos heures et votre secteur' },
    { key: 'privacy', done: S.flag(raw, 'privacy_approved'), href: 'admin/reglages#confidentialite', label: en ? 'Complete and approve your privacy policy' : 'Compléter et approuver votre politique de confidentialité' },
@@ -81,9 +86,9 @@ module.exports = function registerAdmin(router, ctx) {
    res.render(extra === null ? 'admin/missing' : view, Object.assign({
     page: 'admin', section, navCounts: counts, L: labels(lang), stamp: v => S.stamp(v, lang), today: S.today(),
     tr: (fr, en) => (lang === 'en' ? en : fr), defaults: docDefaults(req.raw), json: v => JSON.stringify(v).replace(/</g, '\\u003c'), enc: encodeURIComponent,
-    siteUrl: tenantPath(req, lang === 'en' ? '/en/' : '/'),
+    siteUrl: tenantPath(req, '/' + ctx.PAGES[lang].home.replace(/^\.\/$/, '')), PAGES: ctx.PAGES,
     // Offer-page trial (platform flag): the inline text editor and every send are unavailable.
-    inTrial: !!req._prospectTrial,
+    inTrial: !!req._prospectTrial, privacyLaw: region.privacyLaw(S.R), svcSlug: region.serviceSlug,
    }, extra || {}));
   }));
  }
@@ -124,6 +129,7 @@ module.exports = function registerAdmin(router, ctx) {
   if (!doc) return null;
   return {
    doc, events: await docs.events(doc.id), link: absolute(req, '/document/' + doc.token),
+   taxLines: D.taxLines(doc, S.R, req.lang, req.b), rates: D.ratesOf(doc),
    customers: await db.all('SELECT id, name, email, phone, address FROM customers ORDER BY name LIMIT 500'),
    source: doc.source_id ? await db.get('SELECT id, kind, number FROM documents WHERE id = $1', [doc.source_id]) : null,
    children: await db.all('SELECT id, kind, number, status FROM documents WHERE source_id = $1 ORDER BY id', [doc.id]),
@@ -170,8 +176,9 @@ module.exports = function registerAdmin(router, ctx) {
    if (key === 'phone' && (!/^\+?[\d ().-]{10,40}$/.test(v) || v.replace(/\D/g, '').length < 10)) throw Object.assign(fail('invalid_phone'), { field: key });
    if (['email', 'notification_email', 'interac_email'].includes(key) && v && !EMAIL.test(v)) throw Object.assign(fail('invalid_email'), { field: key });
    if (key === 'business_name' && !v) throw Object.assign(fail('required'), { field: key });
-   if (key === 'rbq' && v && !/^\d{4}-?\d{4}-?\d{2}$/.test(v)) throw Object.assign(fail('invalid_rbq'), { field: key });
-   entries.push([key, key === 'rbq' && v ? v.replace(/\D/g, '').replace(/^(\d{4})(\d{4})(\d{2})$/, '$1-$2-$3') : (FLAGS.includes(key) ? value : v)]);
+   const rbq = key === 'rbq' && req.b.labels.licenceRequired;
+   if (rbq && v && !/^\d{4}-?\d{4}-?\d{2}$/.test(v)) throw Object.assign(fail('invalid_rbq'), { field: key });
+   entries.push([key, rbq && v ? v.replace(/\D/g, '').replace(/^(\d{4})(\d{4})(\d{2})$/, '$1-$2-$3') : (FLAGS.includes(key) ? value : v)]);
   }
   // Approving the privacy policy needs both languages complete (no [placeholders] left).
   const after = { ...req.raw, ...Object.fromEntries(entries) };
@@ -233,7 +240,7 @@ module.exports = function registerAdmin(router, ctx) {
   const serviceId = req.b.services.some(s => s.id === x.service_id) ? x.service_id : null;
   const row = await db.get(`INSERT INTO plumbing_requests(name, phone, email, address, service_id, urgency, message, language, source, status)
    VALUES($1,$2,$3,$4,$5,$6,$7,$8,'phone','contacted') RETURNING id`,
-  [name, phone, email || null, clip(x.address, 300), serviceId, ctx.URGENCY.includes(x.urgency) ? x.urgency : 'soon', message, x.language === 'en' ? 'en' : 'fr']);
+  [name, phone, email || null, clip(x.address, 300), serviceId, ctx.URGENCY.includes(x.urgency) ? x.urgency : 'soon', message, langOr(x.language)]);
   await db.run('UPDATE plumbing_requests SET reference = $1 WHERE id = $2', ['D-' + String(row.id).padStart(4, '0'), row.id]);
   res.status(201).json({ id: row.id });
  }));
@@ -258,7 +265,7 @@ module.exports = function registerAdmin(router, ctx) {
   return cid;
  }
  function cleanCustomer(x) {
-  const c = { name: clip(x.name, 160), phone: clip(x.phone, 40), email: clip(x.email, 200).toLowerCase(), address: clip(x.address, 300), language: x.language === 'en' ? 'en' : 'fr', notes: clip(x.notes, 4000) };
+  const c = { name: clip(x.name, 160), phone: clip(x.phone, 40), email: clip(x.email, 200).toLowerCase(), address: clip(x.address, 300), language: langOr(x.language), notes: clip(x.notes, 4000) };
   if (c.name.length < 2) throw Object.assign(fail('invalid'), { field: 'name' });
   if (c.email && !EMAIL.test(c.email)) throw Object.assign(fail('invalid_email'), { field: 'email' });
   return c;
@@ -294,7 +301,7 @@ module.exports = function registerAdmin(router, ctx) {
   needModule(req);
   const x = req.body || {}, raw = req.raw, def = docDefaults(raw);
   const kind = x.kind === 'invoice' ? 'invoice' : 'estimate';
-  let customerId = null, requestId = null, title = '', address = '', lang = 'fr', lines = [];
+  let customerId = null, requestId = null, title = '', address = '', lang = S.R.lang, lines = [];
   if (x.request_id) {
    requestId = Number(x.request_id);
    customerId = await customerFromRequest(requestId);
@@ -312,9 +319,9 @@ module.exports = function registerAdmin(router, ctx) {
   const year = S.local().year;
   const number = kind === 'estimate' ? await docs.nextNumber('estimate', year) : null;
   const valid = kind === 'estimate' ? S.addDays(S.today(), def.validDays) : null;
-  const row = await db.get(`INSERT INTO documents(kind, number, token, customer_id, request_id, status, language, title, property_address, issued_on, valid_until, charge_taxes, terms)
-   VALUES($1,$2,$3,$4,$5,'draft',$6,$7,$8,$9,$10,$11,$12) RETURNING id`,
-  [kind, number, D.token(), customerId, requestId, lang, title, address, kind === 'estimate' ? S.today() : null, valid, def.taxes ? 1 : 0, docTerms(raw, lang) || null]);
+  const row = await db.get(`INSERT INTO documents(kind, number, token, customer_id, request_id, status, language, title, property_address, issued_on, valid_until, charge_taxes, terms, tax_rates)
+   VALUES($1,$2,$3,$4,$5,'draft',$6,$7,$8,$9,$10,$11,$12,$13) RETURNING id`,
+  [kind, number, D.token(), customerId, requestId, lang, title, address, kind === 'estimate' ? S.today() : null, valid, def.taxes ? 1 : 0, docTerms(raw, lang) || null, JSON.stringify(RATES)]);
   await docs.writeLines(row.id, lines);
   await docs.log(row.id, 'created');
   res.status(201).json({ id: row.id });
@@ -334,7 +341,7 @@ module.exports = function registerAdmin(router, ctx) {
    lines = x.lines.map((l, i) => D.cleanLine(l, i)).filter(Boolean).map((l, i) => ({ ...l, position: i }));
   }
   const taxes = x.charge_taxes == null ? !!doc.charge_taxes : !!x.charge_taxes;
-  const tot = D.totals(lines, taxes);
+  const tot = D.totals(lines, taxes, RATES);
   let customerId = doc.customer_id;
   if (x.customer_id !== undefined) {
    if (x.customer_id === null || x.customer_id === '') customerId = null;
@@ -342,11 +349,11 @@ module.exports = function registerAdmin(router, ctx) {
   }
   for (const k of ['valid_until', 'due_on']) if (x[k] && !isDate(x[k])) throw Object.assign(fail('invalid_date'), { field: k });
   await db.run(`UPDATE documents SET customer_id=$1, language=$2, title=$3, property_address=$4, valid_until=$5, due_on=$6, charge_taxes=$7,
-   terms=$8, notes=$9, subtotal_cents=$10, tps_cents=$11, tvq_cents=$12, total_cents=$13, updated_at=NOW() WHERE id=$14`, [
+   terms=$8, notes=$9, subtotal_cents=$10, tps_cents=$11, tvq_cents=$12, total_cents=$13, tax_rates=$15, updated_at=NOW() WHERE id=$14`, [
    customerId, x.language === 'en' ? 'en' : x.language === 'fr' ? 'fr' : doc.language, clip(x.title ?? doc.title, 200), clip(x.property_address ?? doc.property_address ?? '', 300),
    doc.kind === 'estimate' ? (x.valid_until || doc.valid_until) : null, doc.kind === 'invoice' ? (x.due_on || doc.due_on || null) : null, taxes ? 1 : 0,
    typeof x.terms === 'string' ? x.terms.slice(0, 2000) || null : doc.terms, typeof x.notes === 'string' ? x.notes.slice(0, 4000) || null : doc.notes,
-   tot.subtotal, tot.tps, tot.tvq, tot.total, doc.id]);
+   tot.subtotal, tot.tps, tot.tvq, tot.total, doc.id, JSON.stringify(tot.rates)]);
   await docs.writeLines(doc.id, lines);
   res.json({ ok: true, totals: tot });
  }));
@@ -386,11 +393,11 @@ module.exports = function registerAdmin(router, ctx) {
   const year = S.local().year;
   const number = kind === 'estimate' ? await docs.nextNumber('estimate', year) : null;
   const row = await db.get(`INSERT INTO documents(kind, number, token, customer_id, request_id, source_id, status, language, title, property_address, issued_on, valid_until,
-   charge_taxes, subtotal_cents, tps_cents, tvq_cents, total_cents, terms, notes)
-   VALUES($1,$2,$3,$4,$5,$6,'draft',$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18) RETURNING id`,
+   charge_taxes, subtotal_cents, tps_cents, tvq_cents, total_cents, terms, notes, tax_rates)
+   VALUES($1,$2,$3,$4,$5,$6,'draft',$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19) RETURNING id`,
   [kind, number, D.token(), doc.customer_id, doc.request_id, sourceId, doc.language, doc.title, doc.property_address, kind === 'estimate' ? S.today() : null,
    kind === 'estimate' ? S.addDays(S.today(), def.validDays) : null, doc.charge_taxes, doc.subtotal_cents, doc.tps_cents, doc.tvq_cents, doc.total_cents,
-   kind === 'invoice' ? (doc.terms || docTerms(raw, doc.language) || null) : doc.terms, null]);
+   kind === 'invoice' ? (doc.terms || docTerms(raw, doc.language) || null) : doc.terms, null, doc.tax_rates || null]);
   await docs.writeLines(row.id, doc.lines);
   await docs.log(row.id, 'created', doc.number || '');
   return row.id;

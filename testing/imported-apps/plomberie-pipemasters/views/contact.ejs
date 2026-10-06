@@ -16,7 +16,7 @@
      <% if (b.addressPublic) { %><div><dt><%= t.addressLabel %></dt><dd><%= b.address %></dd></div><% } %>
      <div><dt><%= t.factArea %></dt><dd><%= b.areas ? text(b.areas) : t.areaAsk %></dd></div>
      <% if (b.payments) { %><div><dt><%= t.factPay %></dt><dd><%= text(b.payments) %></dd></div><% } %>
-     <% if (b.rbq) { %><div><dt><%= t.docRbq %></dt><dd><%= b.rbq %></dd></div><% } %>
+     <% if (b.rbq) { %><div><dt><%= b.labels.licence[lang] %></dt><dd><%= b.rbq %></dd></div><% } %>
     </dl>
     <a class="btn btn-accent btn-lg" href="<%= U.estimate %>"><%= t.estimate %></a>
    </div>

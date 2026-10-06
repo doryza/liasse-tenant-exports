@@ -37,7 +37,7 @@
 <a class="skip" href="#admin-main"><%= tr('Aller au contenu', 'Skip to content') %></a>
 <div class="ad-shell">
  <aside class="ad-side" id="ad-side">
-  <a class="ad-brand admin-brand" href="admin<%= lang === 'en' ? '?lang=en' : '' %>"><%- mark({ size: 38 }) %><span><strong><%= b.brand_name %></strong><small><%= tr('Gestion', 'Back office') %></small></span></a>
+  <a class="ad-brand admin-brand" href="admin<%= lang !== b.region.lang ? '?lang=' + lang : '' %>"><%- mark({ size: 38 }) %><span><strong><%= b.brand_name %></strong><small><%= tr('Gestion', 'Back office') %></small></span></a>
   <nav class="ad-nav" aria-label="<%= tr('Menu', 'Menu') %>">
    <% NAV.forEach(function (n) { %><a href="<%= n[1] %>"<%- section === n[0] ? ' aria-current="page"' : '' %><%- n[4] ? ' class="is-off"' : '' %>><%- svg(n[0]) %><span><%= n[2] %></span><% if (n[3]) { %><span class="badge"><%= n[3] %></span><% } %><% if (n[4]) { %><span class="off-tag"><%= tr('Inactif', 'Off') %></span><% } %></a><% }) %>
   </nav>

@@ -6,8 +6,11 @@
  * migration when the template gains a setting.
  */
 const base = require('../business.json');
+const region = require('./region');
 
-const TZ = 'America/Toronto';
+// The province's profile: first language, clock, taxes, licence, privacy law (lib/region.js).
+const R = region.resolve(base.region);
+const TZ = R.tz;
 const GATES = ['contact_verified', 'address_verified', 'hours_verified', 'privacy_approved', 'messages_enabled', 'live_actions_enabled'];
 const STATES = ['confirmed', 'proposed', 'hidden'];
 const PLACEHOLDER = /\[[^\]\n]{2,80}\]/;
@@ -21,16 +24,16 @@ const pair = (raw, key, fallback) => {
  return fallback || null;
 };
 
-/** « Plomberie Pipemasters inc. » → « Plomberie Pipemasters ». */
+/** « Plomberie Pipemasters inc. » → « Plomberie Pipemasters »; « Bow River Plumbing Ltd. » → « Bow River Plumbing ». */
 function brandOf(name) {
- return String(name || '').replace(/[\s,]+(inc|enr|ltée|ltee|ltd|senc|s\.e\.n\.c)\.?$/i, '').trim();
+ return String(name || '').replace(/[\s,]+(inc|enr|ltée|ltee|ltd|limited|limitée|corp|corporation|incorporated|senc|s\.e\.n\.c|ulc)\.?$/i, '').trim();
 }
 function telHref(phone) {
  const d = String(phone || '').replace(/[^+\d]/g, '');
  return 'tel:' + (d.length === 10 ? '+1' + d : d);
 }
 
-// --- time, always in Québec ----------------------------------------------------
+// --- time, on the business's own clock (region.tz) -------------------------------
 function local(now = new Date()) {
  const p = new Intl.DateTimeFormat('en-CA', { timeZone: TZ, hourCycle: 'h23', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', weekday: 'short' }).formatToParts(now);
  const g = k => p.find(x => x.type === k).value;
@@ -139,10 +142,15 @@ function business(raw) {
   hours: hoursOf(raw) || (base.hours && base.hours.weekly ? hoursOf({ hours_json: JSON.stringify(base.hours.weekly) }) : null),
   hoursText: base.hours && base.hours.text ? base.hours.text : null,
   rating: flag(raw, 'rating_hidden') ? null : base.rating,
-  rbq: (raw.rbq || '').trim(), neq: (raw.neq || '').trim(), tps: (raw.tps_number || '').trim(), tvq: (raw.tvq_number || '').trim(),
+  // Licence: in Québec the RBQ number from the public register (business.json) until the
+  // owner changes it — the law wants it on the site and on every estimate and invoice.
+  rbq: has(raw, 'rbq') ? (raw.rbq || '').trim() : ((base.licence && base.licence.number) || ''),
+  neq: (raw.neq || '').trim(), tps: (raw.tps_number || '').trim(), tvq: (raw.tvq_number || '').trim(),
   interac: (raw.interac_email || '').trim(),
  };
  b.tel = telHref(b.phone);
+ b.region = R;
+ b.labels = labelsFor(R);
  b.services = base.services.map(s => {
   const st = raw['service_' + s.id];
   const state = STATES.includes(st) ? st : (s.listed ? (s.confirmed ? 'confirmed' : 'proposed') : 'hidden');
@@ -163,6 +171,20 @@ function business(raw) {
  return b;
 }
 
+/** Words that change with the province: licence, enterprise number, tax names. */
+function labelsFor(r) {
+ const rbq = r.licence === 'rbq';
+ const two = r.taxes.length > 1;
+ const fed = r.taxes[0].key === 'hst' ? { fr: 'TPS/TVH', en: 'GST/HST' } : { fr: 'TPS', en: 'GST' };
+ return {
+  licence: rbq ? { fr: 'Licence RBQ', en: 'RBQ licence' } : { fr: 'Licence', en: 'Licence' },
+  licenceRequired: rbq,
+  neq: r.province === 'QC' ? { fr: 'NEQ', en: 'NEQ' } : { fr: 'N° d’entreprise', en: 'Business number' },
+  taxNumbers: [{ key: 'tps_number', label: fed }, ...(two ? [{ key: 'tvq_number', label: r.taxes[1].label }] : [])],
+  taxes: { fr: r.taxes.map(x => x.label.fr).join(' et '), en: r.taxes.map(x => x.label.en).join(' and ') },
+ };
+}
+
 function season(month) { return month >= 10 && month <= 11 ? 'autumn' : month === 12 || month <= 2 ? 'winter' : month <= 4 ? 'spring' : 'summer'; }
 
 module.exports = function (services) {
@@ -177,6 +199,6 @@ module.exports = function (services) {
  };
 };
 Object.assign(module.exports, {
- base, GATES, STATES, PLACEHOLDER, TZ, flag, brandOf, telHref, business, hoursOf, hoursSummary, openState, privacyTemplate,
+ base, R, GATES, STATES, PLACEHOLDER, TZ, flag, labelsFor, brandOf, telHref, business, hoursOf, hoursSummary, openState, privacyTemplate,
  local, today, addDays, clock, longDate, stamp, season,
 });
