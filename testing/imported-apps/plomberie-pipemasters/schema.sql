@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS admin_settings (key TEXT PRIMARY KEY, value TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS plumbing_requests (
+ id SERIAL PRIMARY KEY, name TEXT NOT NULL, phone TEXT NOT NULL, address TEXT NOT NULL,
+ service_id TEXT, message TEXT NOT NULL, language TEXT NOT NULL DEFAULT 'fr',
+ status TEXT NOT NULL DEFAULT 'new', created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);

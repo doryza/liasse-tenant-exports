@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "industry": "plumbing",
+  "business": "Plomberie Pipemasters inc.",
+  "languages": [
+    "fr",
+    "en"
+  ],
+  "runtime": {
+    "entry": "routes.js",
+    "mount": "base-relative links; platform tenantPath; custom-domain compatible",
+    "database": "PostgreSQL via services.db; schema.sql and idempotent seed.js"
+  },
+  "publicRoutes": [
+    "/",
+    "/en/",
+    "/services",
+    "/services/:id",
+    "/contact",
+    "/demande",
+    "/confidentialite"
+  ],
+  "ownerRoutes": [
+    "/admin"
+  ],
+  "design": {
+    "concept": "Water & copper",
+    "palette": {
+      "ink": "#173d43",
+      "accent": "#b84d2f",
+      "paper": "#f5f2ea",
+      "water": "#d7ecec",
+      "copper": "#b97d50"
+    },
+    "illustrations": "Original SVG conceptual diagrams, not business photographs",
+    "logo": "Original P typographic mark; owner approval pending"
+  },
+  "features": [
+    "Bilingual service pages",
+    "Click-to-call and public email",
+    "Dated Google rating when at least 10 reviews",
+    "Estimate requests for work at customer properties",
+    "Owner inbox: new/contacted/closed",
+    "Owner contact, service confirmation, area, hours and privacy editor"
+  ],
+  "actions": {
+    "requests": "Off until four launch gates AND two approved privacy texts; stored in owner inbox",
+    "notifications": "No email or SMS",
+    "appointments": "No time slots or automatic confirmation",
+    "payments": "None"
+  },
+  "contentRules": [
+    "No invented licensing, staff, years, testimonials, prices, warranties or arrival promises",
+    "Unverified services are proposals to confirm",
+    "Hours, areas, free estimates and payments require public source verification",
+    "No published storefront address"
+  ],
+  "gaps": [
+    "Owner has not reviewed or approved this proposal",
+    "Independent website and buying entity still need owner confirmation",
+    "No mailing address inferred",
+    "Exact service scope and site constraints confirmed directly"
+  ],
+  "sources": [
+    {
+      "url": "https://www.google.com/maps/place/Plomberie+Pipemasters+inc.+-+Plombier+Pointe-aux-Trembles/data=!4m7!3m6!1s0xe768312a81d3603:0x196c70eb6c8d2838!8m2!3d45.5602195!4d-73.617322!16s%2Fg%2F11nq9512jk!19sChIJAzYdqBKDdg4ROCiNbOtwbBk",
+      "observed_at": "2026-10-06",
+      "type": "google_maps",
+      "notes": "Profile individually opened; phone, rating, reviews, address and linked website transcribed."
+    },
+    {
+      "url": "https://www.411habitation.com/plombiers/montreal/pointe-aux-trembles-14/plomberie-pipemasters-inc.htm",
+      "observed_at": "2026-10-06",
+      "type": "maps_link",
+      "notes": "Business-linked listing checked. Phone matches Google Maps. Listed service scope, 24/7 hours, service area, email, payments and free estimates transcribed."
+    }
+  ]
+}
