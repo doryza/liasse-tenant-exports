@@ -1,0 +1,24 @@
+<%- include('top', { pageTitle: tr('Heures et secteur', 'Hours & area') }) %>
+<div class="ad-head"><div><h1><%= tr('Heures et secteur', 'Hours & area') %></h1><p class="ad-sub"><%= tr('Ce qui paraît en haut de chaque page, sur la page Nous joindre et dans le pied de page.', 'What appears at the top of every page, on the Contact page and in the footer.') %></p></div></div>
+<form class="hours-form" data-hours>
+ <div class="detail-grid">
+  <section class="panel">
+   <h2 class="h-small"><%= tr('Heures d’ouverture', 'Opening hours') %></h2>
+   <label class="check"><input type="checkbox" name="known"<%- b.hours ? ' checked' : '' %>><span><%= tr('Publier un horaire', 'Publish a schedule') %></span></label>
+   <table class="hours-edit">
+    <% for (var d = 1; d <= 7; d++) { var h = b.hours && b.hours[d]; %>
+    <tr data-day="<%= d %>"><th scope="row"><%= t.days[d] %></th><td><label class="check"><input type="checkbox" name="open-<%= d %>"<%- h || !b.hours && d < 6 ? ' checked' : '' %>><span><%= tr('Ouvert', 'Open') %></span></label></td><td><input type="time" name="from-<%= d %>" value="<%= h ? h[0] : '08:00' %>" aria-label="<%= tr('Ouverture', 'Opens') %>"></td><td><input type="time" name="to-<%= d %>" value="<%= h ? h[1] : '17:00' %>" aria-label="<%= tr('Fermeture', 'Closes') %>"></td></tr>
+    <% } %>
+   </table>
+   <label class="check"><input type="checkbox" name="emergency_247"<%- b.emergency ? ' checked' : '' %>><span><%= tr('J’offre un service d’urgence 24 h sur 24, 7 jours sur 7', 'I offer 24/7 emergency service') %></span></label>
+  </section>
+  <aside class="panel">
+   <h2 class="h-small"><%= tr('Secteur desservi', 'Service area') %></h2>
+   <label class="afield"><span>Français</span><textarea name="areas_fr" rows="3" maxlength="400" placeholder="<%= tr('Ex. Pointe-aux-Trembles, Montréal-Est et les environs', 'E.g. Pointe-aux-Trembles, Montréal-Est and nearby') %>"><%= raw.areas_fr || (b.areas ? b.areas.fr : '') %></textarea></label>
+   <label class="afield"><span>English</span><textarea name="areas_en" rows="3" maxlength="400"><%= raw.areas_en || (b.areas ? b.areas.en : '') %></textarea></label>
+   <label class="check"><input type="checkbox" name="hours_verified"<%- raw.hours_verified === '1' ? ' checked' : '' %>><span><%= tr('Mes heures et mon secteur sont exacts', 'My hours and area are correct') %></span></label>
+   <button class="abtn primary" type="submit" data-submit><%= tr('Enregistrer', 'Save') %></button>
+  </aside>
+ </div>
+</form>
+<%- include('bottom') %>

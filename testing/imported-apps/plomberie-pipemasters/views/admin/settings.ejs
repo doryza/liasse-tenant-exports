@@ -1,0 +1,85 @@
+<%- include('top', { pageTitle: tr('Réglages', 'Settings') }) %>
+<%
+ var toggle = function (key, label, help, extra) {
+  return '<label class="switch"><input type="checkbox" data-toggle="' + key + '"' + (raw[key] === '1' || (extra && extra.on) ? ' checked' : '') + '><span class="switch-ui" aria-hidden="true"></span><span class="switch-text"><strong>' + label + '</strong>' + (help ? '<small>' + help + '</small>' : '') + '</span></label>';
+ };
+ var placeholders = /\[[^\]\n]{2,80}\]/;
+%>
+<div class="ad-head"><div><h1><%= tr('Réglages', 'Settings') %></h1></div></div>
+<nav class="tabs-bar jump"><a href="admin/reglages#entreprise"><%= tr('Entreprise', 'Business') %></a><a href="admin/reglages#paiement"><%= tr('Paiement', 'Payment') %></a><a href="admin/reglages#documents"><%= tr('Estimations et factures', 'Estimates & invoices') %></a><a href="admin/reglages#confidentialite"><%= tr('Confidentialité', 'Privacy') %></a><a href="admin/reglages#lancement"><%= tr('Lancement', 'Launch') %></a></nav>
+
+<section class="panel" id="entreprise">
+ <h2><%= tr('Entreprise', 'Business') %></h2>
+ <form class="settings-form" data-settings>
+  <div class="grid2">
+   <label class="afield"><span><%= tr('Nom de l’entreprise', 'Business name') %></span><input name="business_name" maxlength="200" required value="<%= b.business_name %>"></label>
+   <label class="afield"><span><%= tr('Téléphone', 'Phone') %></span><input name="phone" type="tel" maxlength="40" required value="<%= b.phone %>"></label>
+   <label class="afield"><span><%= tr('Courriel public', 'Public email') %></span><input name="email" type="email" maxlength="200" value="<%= b.email %>"></label>
+   <label class="afield"><span><%= tr('Courriel où recevoir les demandes', 'Email that receives requests') %></span><input name="notification_email" type="email" maxlength="200" value="<%= raw.notification_email || '' %>" placeholder="<%= b.email %>"></label>
+   <label class="afield"><span><%= tr('Numéro de licence RBQ', 'RBQ licence number') %> <small><%= tr('exigé sur le site et les documents', 'required on the site and documents') %></small></span><input name="rbq" maxlength="20" inputmode="numeric" placeholder="0000-0000-00" value="<%= b.rbq %>"></label>
+   <label class="afield"><span>NEQ</span><input name="neq" maxlength="20" inputmode="numeric" value="<%= b.neq %>"></label>
+   <label class="afield"><span><%= tr('Numéro de TPS', 'GST number') %></span><input name="tps_number" maxlength="40" value="<%= b.tps %>"></label>
+   <label class="afield"><span><%= tr('Numéro de TVQ', 'QST number') %></span><input name="tvq_number" maxlength="40" value="<%= b.tvq %>"></label>
+  </div>
+  <label class="afield"><span><%= tr('Adresse de l’entreprise (estimations et factures)', 'Business address (estimates and invoices)') %></span><input name="business_address" maxlength="240" value="<%= b.address %>"></label>
+  <button class="abtn primary" type="submit" data-submit><%= tr('Enregistrer', 'Save') %></button>
+ </form>
+ <div class="toggles">
+  <%- toggle('contact_verified', tr('Mon téléphone et mon courriel sont exacts', 'My phone and email are correct'), tr('Ils viennent de votre fiche publique. Corrigez-les plus haut au besoin.', 'They come from your public listing. Fix them above if needed.')) %>
+  <%- toggle('address_public', tr('Afficher l’adresse de l’entreprise sur le site', 'Show the business address on the site'), tr('Laissez fermé si vous travaillez seulement chez vos clients.', 'Leave off if you only work at customers’ places.')) %>
+ </div>
+</section>
+
+<section class="panel" id="paiement">
+ <h2><%= tr('Paiement', 'Payment') %></h2>
+ <form class="settings-form" data-settings>
+  <div class="grid2">
+   <label class="afield"><span><%= tr('Modes de paiement acceptés (français)', 'Payment methods accepted (French)') %></span><input name="payments_fr" maxlength="300" value="<%= raw.payments_fr || (b.payments ? b.payments.fr : '') %>" placeholder="Comptant, débit, virement Interac"></label>
+   <label class="afield"><span><%= tr('Modes de paiement acceptés (anglais)', 'Payment methods accepted (English)') %></span><input name="payments_en" maxlength="300" value="<%= raw.payments_en || (b.payments ? b.payments.en : '') %>" placeholder="Cash, debit, Interac e-Transfer"></label>
+  </div>
+  <label class="afield"><span><%= tr('Courriel pour les virements Interac (factures)', 'Email for Interac e-Transfers (invoices)') %></span><input name="interac_email" type="email" maxlength="200" value="<%= b.interac %>"></label>
+  <button class="abtn primary" type="submit" data-submit><%= tr('Enregistrer', 'Save') %></button>
+ </form>
+ <div class="toggles">
+  <%- toggle('free_estimates', tr('Mes estimations sont gratuites', 'My estimates are free'), tr('Affiché en haut du site.', 'Shown at the top of the site.'), { on: raw.free_estimates === undefined && b.free_estimates }) %>
+  <%- toggle('rating_hidden', tr('Masquer ma note Google', 'Hide my Google rating'), b.rating ? tr('Le site affiche la note relevée sur votre fiche, avec sa date.', 'The site shows the rating found on your listing, with its date.') : tr('Aucune note n’est affichée pour l’instant.', 'No rating is shown at the moment.')) %>
+ </div>
+</section>
+
+<section class="panel" id="documents">
+ <h2><%= tr('Estimations et factures', 'Estimates & invoices') %></h2>
+ <div class="toggles"><%- toggle('documents_enabled', tr('Utiliser les estimations et factures', 'Use estimates & invoices'), tr('Ajoute le module au menu. Vos clients reçoivent un lien pour consulter et accepter.', 'Adds the module to the menu. Customers get a link to review and accept.')) %></div>
+ <form class="settings-form" data-settings>
+  <div class="grid2">
+   <label class="afield"><span><%= tr('Une estimation est valide pendant (jours)', 'An estimate is valid for (days)') %></span><input name="estimate_valid_days" type="number" min="1" max="365" value="<%= defaults.validDays %>"></label>
+   <label class="afield"><span><%= tr('Délai de paiement des factures (jours, 0 = sur réception)', 'Invoice payment terms (days, 0 = on receipt)') %></span><input name="invoice_due_days" type="number" min="0" max="120" value="<%= defaults.dueDays %>"></label>
+   <label class="afield"><span><%= tr('Conditions par défaut (français)', 'Default terms (French)') %></span><textarea name="doc_terms_fr" rows="4" maxlength="2000" placeholder="<%= tr('Ex. Le prix comprend le matériel indiqué. Tout travail supplémentaire fera l’objet d’une entente écrite.', 'E.g. Le prix comprend le matériel indiqué…') %>"><%= raw.doc_terms_fr || '' %></textarea></label>
+   <label class="afield"><span><%= tr('Conditions par défaut (anglais)', 'Default terms (English)') %></span><textarea name="doc_terms_en" rows="4" maxlength="2000" placeholder="E.g. The price includes the materials listed. Any additional work will be agreed in writing."><%= raw.doc_terms_en || '' %></textarea></label>
+  </div>
+  <button class="abtn primary" type="submit" data-submit><%= tr('Enregistrer', 'Save') %></button>
+ </form>
+ <div class="toggles"><%- toggle('charge_taxes', tr('Ajouter la TPS et la TVQ par défaut', 'Add GST and QST by default'), tr('Fermez si vous n’êtes pas inscrit aux taxes (petit fournisseur).', 'Turn off if you are not registered for taxes (small supplier).'), { on: raw.charge_taxes === undefined }) %></div>
+</section>
+
+<section class="panel" id="confidentialite">
+ <h2><%= tr('Politique de confidentialité', 'Privacy policy') %></h2>
+ <p class="small"><%= tr('Exigée par la Loi 25 avant de recevoir des demandes. Remplacez chaque passage entre crochets, dans les deux langues, puis approuvez.', 'Required by Québec’s Law 25 before you take requests. Replace every passage in brackets, in both languages, then approve.') %></p>
+ <form class="settings-form" data-settings>
+  <div class="grid2">
+   <label class="afield"><span>Français <% if (placeholders.test(b.privacy.fr)) { %><small class="warn-inline"><%= tr('à compléter', 'to complete') %></small><% } %></span><textarea name="privacy_fr" rows="14" maxlength="6000"><%= b.privacy.fr %></textarea></label>
+   <label class="afield"><span>English <% if (placeholders.test(b.privacy.en)) { %><small class="warn-inline"><%= tr('à compléter', 'to complete') %></small><% } %></span><textarea name="privacy_en" rows="14" maxlength="6000"><%= b.privacy.en %></textarea></label>
+  </div>
+  <button class="abtn primary" type="submit" data-submit><%= tr('Enregistrer', 'Save') %></button>
+ </form>
+ <div class="toggles"><%- toggle('privacy_approved', tr('J’ai relu et j’approuve cette politique', 'I have read and approve this policy'), b.privacyComplete ? tr('Elle sera publiée sur la page Confidentialité.', 'It will be published on the Privacy page.') : tr('Complétez d’abord les passages entre crochets.', 'First complete the passages in brackets.')) %></div>
+</section>
+
+<section class="panel" id="lancement">
+ <h2><%= tr('Lancement', 'Launch') %></h2>
+ <p class="small"><%= b.formLive ? tr('Le formulaire de demande est ouvert sur votre site.', 'The request form is open on your site.') : tr('Le formulaire s’ouvre quand vos coordonnées sont confirmées, la politique approuvée et la réception activée.', 'The form opens once your contact details are confirmed, the policy approved and receiving turned on.') %></p>
+ <div class="toggles">
+  <%- toggle('messages_enabled', tr('Recevoir les demandes du site', 'Receive requests from the site'), tr('Ouvre le formulaire « Demander une estimation ». Chaque demande arrive dans Demandes et par courriel.', 'Opens the “Request an estimate” form. Each request arrives in Requests and by email.')) %>
+  <%- toggle('live_actions_enabled', tr('Envoyer des courriels à mes clients', 'Send emails to my customers'), tr('Accusés de réception, estimations et factures. Fermé : rien ne part.', 'Acknowledgments, estimates and invoices. Off: nothing is sent.')) %>
+ </div>
+</section>
+<%- include('bottom') %>

@@ -1,1 +1,59 @@
-<%- include('partials/head') %><%- include('partials/header') %><main id="main" class="wrap section"><p class="eyebrow"><%= b.brand_name %></p><h1 class="page-title"><%= t.request %></h1><p class="lead"><%= t.requestNote %></p><div class="request-layout"><form data-request action="api/requests" data-success="<%= t.sent %>" data-error="<%= t.error %>"><% if(!live){ %><div class="notice"><%= t.pending %> <a href="<%= b.tel %>"><%= b.phone %></a></div><% } %><fieldset <%- !live?'disabled':'' %>><label><%= t.name %><input name="name" autocomplete="name" required minlength="2" maxlength="120"></label><label><%= t.phone %><input name="phone" type="tel" autocomplete="tel" required maxlength="40"></label><label><%= t.serviceAddress %><input name="address" autocomplete="street-address" required minlength="5" maxlength="300"></label><label><%= t.services %><select name="service_id"><option value=""><%= t.other %></option><% b.services.filter(function(s){return s.confirmed;}).forEach(function(s){ %><option value="<%= s.id %>" <%- selectedService===s.id?'selected':'' %>><%= text(s.name) %></option><% }); %></select></label><label><%= t.problem %><textarea name="message" required minlength="5" maxlength="3000" rows="5"></textarea></label><label class="honeypot" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off"></label><label class="checkbox"><input type="checkbox" name="consent" required><span><%= t.consent %> <a href="<%= url('confidentialite') %>"><%= t.privacy %></a></span></label><input type="hidden" name="language" value="<%= lang %>"><button class="btn" type="submit"><%= t.send %> →</button></fieldset><p class="form-status" role="status" aria-live="polite"></p></form><aside><h2><%= t.urgent %></h2><p><%= t.availability %></p><a class="btn outline" href="<%= b.tel %>"><%= b.phone %> ↗</a><img src="public/images/repair.svg" width="600" height="420" alt="" loading="lazy"></aside></div></main><%- include('partials/footer') %>
+<%- include('partials/head') %>
+<%- include('partials/header') %>
+<main id="main">
+ <section class="page-head">
+  <div class="wrap">
+   <h1 class="page-title" data-lk="t:requestTitle"><%= t.requestTitle %></h1>
+   <p class="section-intro" data-lk="t:requestIntro"><%= t.requestIntro %></p>
+  </div>
+ </section>
+ <section class="section section-tight">
+  <div class="wrap request-grid">
+   <form class="request-form" data-request action="api/requests" novalidate
+    data-sent="<%= t.fSent %>" data-ref="<%= t.fSentRef %>" data-error="<%= t.fError %>" data-limit="<%= t.fLimit %>" data-sending="<%= t.fSending %>">
+    <% if (!b.formLive) { %><p class="notice notice-strong"><%= fmt(t.requestOff, { phone: b.phone }) %> <a href="<%= b.tel %>"><%= t.call %></a></p><% } %>
+    <fieldset<%- b.formLive ? '' : ' disabled' %>>
+     <legend class="sr"><%= t.requestTitle %></legend>
+     <div class="field-row">
+      <label class="field"><span><%= t.fName %></span><input name="name" autocomplete="name" required minlength="2" maxlength="120"></label>
+      <label class="field"><span><%= t.fPhone %></span><input name="phone" type="tel" autocomplete="tel" required maxlength="40"></label>
+     </div>
+     <label class="field"><span><%= t.fEmail %> <small><%= t.fEmailHint %></small></span><input name="email" type="email" autocomplete="email" maxlength="200"></label>
+     <label class="field"><span><%= t.fAddress %></span><input name="address" autocomplete="street-address" required minlength="5" maxlength="300"></label>
+     <label class="field"><span><%= t.fService %></span>
+      <select name="service_id">
+       <option value=""><%= t.fOther %></option>
+       <% b.visible.forEach(function (s) { %><option value="<%= s.id %>"<%- chosen === s.id ? ' selected' : '' %>><%= s.name[lang] %></option><% }) %>
+      </select>
+     </label>
+     <fieldset class="choice">
+      <legend><%= t.fUrgency %></legend>
+      <% URGENCY.forEach(function (u, i) { %><label class="pill"><input type="radio" name="urgency" value="<%= u %>"<%- i === 1 ? ' checked' : '' %>><span><%= t.urgency[u] %></span></label><% }) %>
+     </fieldset>
+     <fieldset class="choice">
+      <legend><%= t.fProperty %></legend>
+      <% PROPERTY.forEach(function (p) { %><label class="pill"><input type="radio" name="property_type" value="<%= p %>"><span><%= t.property[p] %></span></label><% }) %>
+     </fieldset>
+     <label class="field"><span><%= t.fMessage %> <small><%= t.fMessageHint %></small></span><textarea name="message" rows="5" required minlength="5" maxlength="3000"></textarea></label>
+     <label class="hp" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off"></label>
+     <label class="consent"><input type="checkbox" name="consent" required><span><%= t.fConsent %> <a href="<%= U.privacy %>"><%= t.fConsentLink %></a>.</span></label>
+     <input type="hidden" name="language" value="<%= lang %>">
+     <button class="btn btn-accent btn-lg" type="submit"><%= t.fSend %></button>
+    </fieldset>
+    <p class="form-status" role="status" aria-live="polite"></p>
+   </form>
+   <aside class="request-aside">
+    <div class="aside-card urgent">
+     <h2 data-lk="t:urgentTitle"><%= t.urgentTitle %></h2>
+     <p data-lk="t:urgentBody"><%= t.urgentBody %></p>
+     <a class="phone-big" href="<%= b.tel %>"><%= b.phone %></a>
+    </div>
+    <div class="aside-card">
+     <h2><%= t.processTitle %></h2>
+     <ol class="process-mini"><% t.process.forEach(function (p, i) { %><li><%= i === 2 && b.documents ? t.processOnline : p %></li><% }) %></ol>
+    </div>
+   </aside>
+  </div>
+ </section>
+</main>
+<%- include('partials/footer') %>

@@ -1,308 +1,1063 @@
 {
   "slug": "plomberie-pipemasters",
   "research_key": "plumbing-qc-20261006-plomberie-pipemasters-inc-plombier-pointe-aux-trembles",
+  "industry": "plumbing",
+  "template_version": 2,
   "business_name": "Plomberie Pipemasters inc.",
   "brand_name": "Plomberie Pipemasters",
   "city": "Pointe-aux-Trembles",
   "phone": "(438) 379-2352",
   "email": "plomberiepipemasters@gmail.com",
   "areas": {
-    "verification_status": "listing_verified",
-    "source_url": "https://www.411habitation.com/plombiers/montreal/pointe-aux-trembles-14/plomberie-pipemasters-inc.htm",
     "fr": "Pointe-aux-Trembles et les environs",
     "en": "Pointe-aux-Trembles and nearby areas"
   },
   "hours": {
-    "verification_status": "listing_verified",
-    "source_url": "https://www.411habitation.com/plombiers/montreal/pointe-aux-trembles-14/plomberie-pipemasters-inc.htm",
-    "always_open": true,
     "text": {
       "fr": "24 h / 24 · 7 jours / 7",
       "en": "24 hours · 7 days a week"
-    }
+    },
+    "always_open": true,
+    "weekly": null
   },
-  "free_estimates": true,
   "payments": {
-    "verification_status": "listing_verified",
     "fr": "Chèque, comptant, virement Interac, débit et carte de crédit",
     "en": "Cheque, cash, Interac transfer, debit and credit card"
   },
+  "free_estimates": true,
   "rating": {
     "value": 5,
     "count": 108,
     "observed_at": "2026-10-06",
     "url": "https://www.google.com/maps/place/Plomberie+Pipemasters+inc.+-+Plombier+Pointe-aux-Trembles/data=!4m7!3m6!1s0xe768312a81d3603:0x196c70eb6c8d2838!8m2!3d45.5602195!4d-73.617322!16s%2Fg%2F11nq9512jk!19sChIJAzYdqBKDdg4ROCiNbOtwbBk"
   },
+  "headline": 2,
+  "design": {
+    "family": "camion",
+    "label": "Camion de service",
+    "palette": 0,
+    "index": 2,
+    "tokens": {
+      "paper": "#f3f4f6",
+      "ink": "#13233a",
+      "accent": "#ffc629",
+      "on-accent": "#13233a",
+      "cold": "#3d8fe0",
+      "hot": "#e8513a",
+      "sheet": "#ffffff",
+      "body": "#3b495c",
+      "muted": "#5f6a7a",
+      "line": "#d4d7dc",
+      "line2": "#b9bec5",
+      "wash": "#dde8f3",
+      "warm": "#f2e4e3",
+      "band": "#13233a",
+      "band-text": "#ffffff",
+      "band-muted": "#acb2ba",
+      "drain": "#2e3a4c",
+      "soil": "#c6cad0",
+      "soil-dot": "#9ea5af",
+      "room": "#f1f2f3",
+      "wall": "#13233a",
+      "glass": "#cfe3f7"
+    },
+    "fonts": {
+      "display": "Barlow Condensed",
+      "text": "Barlow",
+      "displayWeight": 800,
+      "displayCase": "uppercase",
+      "displayTracking": "0",
+      "wf": 0.48,
+      "href": "https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@800&family=Barlow:wght@400;500;600&display=swap"
+    },
+    "radius": "4px",
+    "radiusLg": "8px",
+    "hero": "stack",
+    "house": "plex",
+    "mirror": false,
+    "mark": "square"
+  },
   "services": [
     {
       "id": "urgence",
+      "zones": [
+        "leak"
+      ],
       "name": {
-        "fr": "Urgence de plomberie",
+        "fr": "Urgences de plomberie",
         "en": "Plumbing emergencies"
       },
       "tagline": {
-        "fr": "Une fuite ou un refoulement?",
-        "en": "A leak or a backup?"
+        "fr": "Fuite, refoulement ou dégât d’eau.",
+        "en": "A leak, a backup or water damage."
       },
-      "body": {
-        "fr": "Une fuite, un refoulement ou une perte d’eau exige de décrire la situation au téléphone. Le plombier confirme la disponibilité et la prochaine étape.",
-        "en": "For a leak, backup or loss of water, describe the situation by phone. The plumber confirms availability and the next step."
+      "intro": {
+        "fr": "Quand l’eau sort là où elle ne devrait pas, chaque minute compte. Appelez et décrivez ce que vous voyez : le plombier vous dit quoi faire en attendant et confirme la suite.",
+        "en": "When water shows up where it shouldn’t, every minute counts. Call and describe what you see: the plumber tells you what to do in the meantime and confirms the next step."
       },
-      "art": "repair",
+      "signs": {
+        "fr": [
+          "De l’eau coule d’un plafond ou d’un mur",
+          "Un tuyau a fendu ou un raccord fuit",
+          "Les drains refoulent au sous-sol",
+          "L’eau ne ferme plus à un robinet ou à la toilette"
+        ],
+        "en": [
+          "Water is dripping from a ceiling or a wall",
+          "A pipe has split or a fitting is leaking",
+          "Drains are backing up in the basement",
+          "A faucet or toilet won’t stop running"
+        ]
+      },
+      "steps": {
+        "fr": [
+          "Vous appelez et décrivez la situation",
+          "On convient de l’intervention et des mesures à prendre d’ici là",
+          "La réparation est faite et expliquée"
+        ],
+        "en": [
+          "You call and describe the situation",
+          "You agree on the visit and on what to do in the meantime",
+          "The repair is made and explained"
+        ]
+      },
+      "tip": {
+        "fr": "Repérez dès aujourd’hui votre valve principale d’eau : c’est le premier geste en cas de fuite.",
+        "en": "Locate your main water shutoff today: it is the first thing to close when a leak starts."
+      },
+      "listed": true,
       "confirmed": true,
       "source_name": "Urgence de plomberie résidentielle, commerciale et industrielle"
     },
     {
       "id": "degel",
+      "zones": [
+        "outdoor"
+      ],
       "name": {
         "fr": "Dégel de tuyaux",
         "en": "Frozen pipes"
       },
       "tagline": {
-        "fr": "Quand l’eau ne circule plus.",
-        "en": "When the water stops flowing."
+        "fr": "Quand l’eau ne coule plus en hiver.",
+        "en": "When the water stops in winter."
       },
-      "body": {
-        "fr": "Un tuyau gelé nécessite une évaluation de son emplacement et de son état avant une intervention.",
-        "en": "A frozen pipe needs an assessment of its location and condition before work begins."
+      "intro": {
+        "fr": "Par grand froid, une conduite près d’un mur extérieur ou d’un vide sanitaire peut geler. Le dégel doit être fait sans endommager le tuyau, puis on cherche pourquoi il a gelé.",
+        "en": "In deep cold, a pipe near an outside wall or a crawl space can freeze. It has to be thawed without damaging it, then the cause is found."
       },
-      "art": "repair",
+      "signs": {
+        "fr": [
+          "Un robinet ne donne plus d’eau par temps très froid",
+          "Du givre sur un tuyau apparent",
+          "Un robinet extérieur oublié avant l’hiver",
+          "Une fuite qui apparaît au redoux"
+        ],
+        "en": [
+          "A tap stops flowing in very cold weather",
+          "Frost on an exposed pipe",
+          "An outdoor faucet left on before winter",
+          "A leak that appears when it warms up"
+        ]
+      },
+      "steps": {
+        "fr": [
+          "Localisation de la portion gelée",
+          "Dégel sécuritaire et vérification des fuites",
+          "Conseils pour protéger la conduite"
+        ],
+        "en": [
+          "Locate the frozen section",
+          "Safe thawing and a leak check",
+          "Advice to protect the pipe"
+        ]
+      },
+      "tip": {
+        "fr": "Jamais de flamme nue sur un tuyau gelé. Un séchoir à cheveux, à distance, est plus sûr.",
+        "en": "Never use an open flame on a frozen pipe. A hair dryer, held at a distance, is safer."
+      },
+      "listed": true,
       "confirmed": true,
       "source_name": "Dégel de tuyaux"
     },
     {
       "id": "renovation-residentielle",
+      "zones": [
+        "bath",
+        "kitchen"
+      ],
       "name": {
-        "fr": "Rénovation résidentielle",
-        "en": "Residential renovations"
+        "fr": "Rénovation de salle de bain et de cuisine",
+        "en": "Bathroom and kitchen renovations"
       },
       "tagline": {
-        "fr": "Votre projet commence ici.",
-        "en": "Your project starts here."
+        "fr": "La plomberie de votre projet.",
+        "en": "The plumbing for your project."
       },
-      "body": {
-        "fr": "Cuisine ou salle de bain : décrivez les appareils à déplacer ou à remplacer et l’étape de vos travaux pour préparer une estimation.",
-        "en": "For kitchens or bathrooms, describe the fixtures to relocate or replace and the stage of your project to prepare an estimate."
+      "intro": {
+        "fr": "Déplacer une douche, ajouter un îlot avec évier, refaire une salle de bain complète : la plomberie se planifie tôt, avant que les murs se referment.",
+        "en": "Moving a shower, adding an island sink, redoing a whole bathroom: plumbing is planned early, before the walls close up."
       },
-      "art": "fixture",
+      "signs": {
+        "fr": [
+          "Un plan de rénovation en préparation",
+          "Des appareils à déplacer",
+          "Des conduites anciennes à remplacer pendant les travaux",
+          "Un entrepreneur général à coordonner"
+        ],
+        "en": [
+          "A renovation plan in progress",
+          "Fixtures to relocate",
+          "Old pipes to replace during the work",
+          "A general contractor to coordinate with"
+        ]
+      },
+      "steps": {
+        "fr": [
+          "Visite et revue du plan",
+          "Estimation écrite des travaux de plomberie",
+          "Plomberie brute, puis finition à la pose des appareils"
+        ],
+        "en": [
+          "Visit and plan review",
+          "Written estimate for the plumbing work",
+          "Rough-in, then finishing when fixtures go in"
+        ]
+      },
+      "tip": {
+        "fr": "Choisissez vos appareils avant la plomberie brute : les hauteurs et les sorties en dépendent.",
+        "en": "Pick your fixtures before the rough-in: heights and outlets depend on them."
+      },
+      "listed": true,
       "confirmed": true,
       "source_name": "Rénovation de plomberie résidentielle"
     },
     {
       "id": "renovation-commerciale",
+      "zones": [
+        "house"
+      ],
       "name": {
-        "fr": "Rénovation commerciale",
-        "en": "Commercial renovations"
+        "fr": "Plomberie commerciale",
+        "en": "Commercial plumbing"
       },
       "tagline": {
-        "fr": "Planifier les travaux de plomberie.",
-        "en": "Plan the plumbing work."
+        "fr": "Locaux, commerces et immeubles.",
+        "en": "Premises, shops and buildings."
       },
-      "body": {
-        "fr": "Précisez le type de local, les installations concernées et les contraintes d’accès. Le périmètre et l’échéancier sont convenus avant les travaux.",
-        "en": "Describe the premises, installations and access constraints. Scope and timing are agreed before work begins."
+      "intro": {
+        "fr": "Restaurant, bureau, commerce ou immeuble à logements : les travaux se planifient selon les heures d’ouverture, les locataires et les accès.",
+        "en": "Restaurant, office, shop or apartment building: work is planned around opening hours, tenants and access."
       },
-      "art": "fixture",
+      "signs": {
+        "fr": [
+          "Un réaménagement de local",
+          "Des appareils commerciaux à raccorder",
+          "Un entretien à planifier hors des heures d’ouverture",
+          "Un problème qui touche plusieurs logements"
+        ],
+        "en": [
+          "A premises fit-out",
+          "Commercial equipment to connect",
+          "Maintenance to schedule after hours",
+          "A problem affecting several units"
+        ]
+      },
+      "steps": {
+        "fr": [
+          "Visite et relevé des installations",
+          "Estimation et calendrier des travaux",
+          "Travaux coordonnés avec vos activités"
+        ],
+        "en": [
+          "Visit and survey of the installations",
+          "Estimate and work schedule",
+          "Work coordinated with your operations"
+        ]
+      },
+      "tip": {
+        "fr": "Prévoyez qui donnera accès aux locaux et aux valves d’arrêt le jour des travaux.",
+        "en": "Plan who will give access to the premises and shutoff valves on the day of the work."
+      },
+      "listed": true,
       "confirmed": true,
       "source_name": "Rénovation de plomberie commerciale"
     },
     {
       "id": "construction-neuve",
+      "zones": [
+        "house"
+      ],
       "name": {
         "fr": "Construction neuve",
         "en": "New construction"
       },
       "tagline": {
-        "fr": "Préparer une nouvelle installation.",
-        "en": "Plan a new installation."
+        "fr": "De la plomberie brute à la finition.",
+        "en": "From rough-in to finish."
       },
-      "body": {
-        "fr": "Les plans, les appareils et l’avancement du chantier permettent de définir les travaux de plomberie à prévoir.",
-        "en": "Plans, fixtures and construction progress help define the plumbing work required."
+      "intro": {
+        "fr": "Pour une maison, un agrandissement ou un immeuble, la plomberie suit les plans et l’avancement du chantier, de l’entrée d’eau aux derniers appareils.",
+        "en": "For a house, an addition or a building, plumbing follows the plans and the site’s progress, from the water entry to the last fixtures."
       },
-      "art": "fixture",
+      "signs": {
+        "fr": [
+          "Des plans prêts ou en préparation",
+          "Un agrandissement avec salle de bain",
+          "Un calendrier de chantier à respecter",
+          "Un sous-sol à aménager"
+        ],
+        "en": [
+          "Plans ready or in progress",
+          "An addition with a bathroom",
+          "A site schedule to keep",
+          "A basement to finish"
+        ]
+      },
+      "steps": {
+        "fr": [
+          "Revue des plans et des appareils prévus",
+          "Estimation écrite et calendrier",
+          "Plomberie brute, inspection, puis finition"
+        ],
+        "en": [
+          "Review of the plans and planned fixtures",
+          "Written estimate and schedule",
+          "Rough-in, inspection, then finishing"
+        ]
+      },
+      "tip": {
+        "fr": "Transmettez les plans le plus tôt possible : l’estimation sera plus précise.",
+        "en": "Share the plans as early as possible: the estimate will be more precise."
+      },
+      "listed": true,
       "confirmed": true,
       "source_name": "Plomberie pour construction neuve"
     },
     {
       "id": "chauffe-eau",
+      "zones": [
+        "heater"
+      ],
       "name": {
         "fr": "Chauffe-eau",
         "en": "Water heaters"
       },
       "tagline": {
-        "fr": "Retrouver le confort de l’eau chaude.",
-        "en": "Get comfortable with hot water again."
+        "fr": "Réparation, remplacement, installation.",
+        "en": "Repair, replacement, installation."
       },
-      "body": {
-        "fr": "Un manque d’eau chaude ou une fuite? Indiquez le modèle, la capacité et l’âge approximatif du chauffe-eau pour discuter d’une réparation ou d’un remplacement.",
-        "en": "No hot water or a leak? Share the model, capacity and approximate age of the water heater to discuss repair or replacement."
+      "intro": {
+        "fr": "Plus d’eau chaude, de l’eau rouillée ou une fuite à la base du réservoir? On regarde l’appareil, son âge et son état avant de parler réparation ou remplacement.",
+        "en": "No hot water, rusty water or a leak at the base of the tank? The unit, its age and its condition are checked before talking repair or replacement."
       },
-      "art": "heater",
+      "signs": {
+        "fr": [
+          "Plus d’eau chaude, ou pas assez",
+          "De l’eau autour de la base du réservoir",
+          "De l’eau chaude rouillée ou trouble",
+          "Un appareil de plus de dix ans"
+        ],
+        "en": [
+          "No hot water, or not enough",
+          "Water around the base of the tank",
+          "Rusty or cloudy hot water",
+          "A unit more than ten years old"
+        ]
+      },
+      "steps": {
+        "fr": [
+          "Vous donnez la marque, la capacité et l’année inscrites sur l’étiquette",
+          "Diagnostic, ou choix du nouvel appareil",
+          "Installation ou réparation, puis remise en service"
+        ],
+        "en": [
+          "You share the brand, capacity and year on the label",
+          "Diagnosis, or choice of a new unit",
+          "Installation or repair, then restart"
+        ]
+      },
+      "tip": {
+        "fr": "L’année de fabrication est sur l’étiquette du réservoir. Plusieurs assureurs posent des conditions selon l’âge : vérifiez votre police.",
+        "en": "The manufacturing year is on the tank’s label. Many insurers set conditions based on age: check your policy."
+      },
+      "listed": true,
       "confirmed": true,
       "source_name": "Remplacement, réparation et installation de chauffe-eau"
     },
     {
       "id": "entretien",
+      "zones": [
+        "house"
+      ],
       "name": {
-        "fr": "Entretien de plomberie",
-        "en": "Plumbing maintenance"
+        "fr": "Entretien préventif",
+        "en": "Preventive maintenance"
       },
       "tagline": {
         "fr": "Faire le point sur vos installations.",
-        "en": "Review your installations."
+        "en": "A check-up of your installations."
       },
-      "body": {
-        "fr": "L’entretien permet d’examiner les équipements concernés et de discuter des correctifs à prévoir selon leur état.",
-        "en": "Maintenance is an opportunity to inspect the relevant equipment and discuss repairs based on its condition."
+      "intro": {
+        "fr": "Valves, chauffe-eau, clapet, pompe et drains : une visite d’entretien repère l’usure avant qu’elle cause un dégât.",
+        "en": "Valves, water heater, backwater valve, pump and drains: a maintenance visit spots wear before it causes damage."
       },
-      "art": "repair",
+      "signs": {
+        "fr": [
+          "Vous venez d’acheter la propriété",
+          "Des installations jamais vérifiées",
+          "Un immeuble à logements à entretenir",
+          "Avant l’hiver ou la fonte des neiges"
+        ],
+        "en": [
+          "You just bought the property",
+          "Installations that were never checked",
+          "An apartment building to maintain",
+          "Before winter or the spring thaw"
+        ]
+      },
+      "steps": {
+        "fr": [
+          "Liste des installations à vérifier",
+          "Visite et vérification",
+          "Résumé des correctifs à prévoir"
+        ],
+        "en": [
+          "List of the installations to check",
+          "Visit and check",
+          "Summary of the fixes to plan"
+        ]
+      },
+      "tip": {
+        "fr": "Gardez une photo de l’étiquette de votre chauffe-eau et de votre clapet : c’est utile au téléphone.",
+        "en": "Keep a photo of your water heater label and backwater valve: it helps on the phone."
+      },
+      "listed": true,
       "confirmed": true,
       "source_name": "Entretien des installations de plomberie"
     },
     {
       "id": "inspection-camera",
+      "zones": [
+        "sewer",
+        "floordrain"
+      ],
       "name": {
         "fr": "Inspection par caméra",
         "en": "Camera inspection"
       },
       "tagline": {
-        "fr": "Voir ce qui se passe dans la conduite.",
+        "fr": "Voir l’intérieur de la conduite.",
         "en": "See inside the pipe."
       },
-      "body": {
-        "fr": "Une inspection par caméra aide à observer l’intérieur d’une conduite et à documenter les anomalies visibles. Les accès et la portée sont à confirmer.",
-        "en": "A camera inspection helps observe the inside of a pipe and document visible issues. Access and scope must be confirmed."
+      "intro": {
+        "fr": "Une caméra introduite dans le drain montre l’état réel de la conduite : racines, affaissement, fissure ou dépôt. On répare ensuite au bon endroit.",
+        "en": "A camera sent down the drain shows the pipe’s real condition: roots, a sag, a crack or buildup. The repair then happens in the right place."
       },
-      "art": "drain",
+      "signs": {
+        "fr": [
+          "Des refoulements qui reviennent",
+          "Avant d’acheter une maison plus ancienne",
+          "Avant d’installer un clapet antiretour",
+          "Après des travaux d’excavation à proximité"
+        ],
+        "en": [
+          "Backups that keep coming back",
+          "Before buying an older home",
+          "Before installing a backwater valve",
+          "After excavation work nearby"
+        ]
+      },
+      "steps": {
+        "fr": [
+          "Accès par un regard ou un drain existant",
+          "Inspection et images de la conduite",
+          "Explication de ce qui a été observé"
+        ],
+        "en": [
+          "Access through a cleanout or an existing drain",
+          "Inspection and footage of the line",
+          "Explanation of what was found"
+        ]
+      },
+      "tip": {
+        "fr": "Demandez à garder les images : elles sont utiles pour un assureur ou des travaux futurs.",
+        "en": "Ask to keep the footage: it helps with an insurer or future work."
+      },
+      "listed": true,
       "confirmed": true,
       "source_name": "Inspection par caméra"
     },
     {
       "id": "debouchage",
+      "zones": [
+        "floordrain",
+        "kitchen",
+        "sewer"
+      ],
       "name": {
-        "fr": "Débouchage d’égouts",
-        "en": "Sewer clearing"
+        "fr": "Débouchage de drains et d’égouts",
+        "en": "Drain and sewer clearing"
       },
       "tagline": {
-        "fr": "Quand l’écoulement ralentit.",
-        "en": "When drainage slows down."
+        "fr": "Quand l’eau ne s’écoule plus.",
+        "en": "When the water won’t drain."
       },
-      "body": {
-        "fr": "Décrivez les drains touchés, la fréquence du problème et la présence d’un refoulement. Ces renseignements aident à préparer l’intervention.",
-        "en": "Describe the affected drains, how often the issue occurs and any backup. This information helps prepare the work."
+      "intro": {
+        "fr": "Un évier lent, une toilette qui déborde ou un drain de plancher qui remonte : le bouchon peut être tout près ou loin dans la conduite principale.",
+        "en": "A slow sink, an overflowing toilet or a floor drain coming back up: the blockage may be close by or far down the main line."
       },
-      "art": "drain",
+      "signs": {
+        "fr": [
+          "L’eau s’écoule lentement dans plusieurs appareils",
+          "Des gargouillements dans les drains",
+          "Une odeur d’égout",
+          "L’eau remonte par le drain de plancher"
+        ],
+        "en": [
+          "Water drains slowly in several fixtures",
+          "Gurgling sounds in the drains",
+          "A sewer smell",
+          "Water comes up through the floor drain"
+        ]
+      },
+      "steps": {
+        "fr": [
+          "Vous indiquez les appareils touchés",
+          "Débouchage avec l’équipement adapté à la conduite",
+          "Conseils pour éviter que ça revienne"
+        ],
+        "en": [
+          "You list the fixtures affected",
+          "Clearing with equipment suited to the line",
+          "Advice to keep it from coming back"
+        ]
+      },
+      "tip": {
+        "fr": "Si plusieurs appareils se bouchent en même temps, le problème est souvent dans la conduite principale.",
+        "en": "When several fixtures clog at once, the problem is often in the main line."
+      },
+      "listed": true,
       "confirmed": true,
       "source_name": "Débouchage d’égouts"
     },
     {
       "id": "inspection-plomberie",
+      "zones": [
+        "house"
+      ],
       "name": {
         "fr": "Inspection de plomberie",
-        "en": "Plumbing inspection"
+        "en": "Plumbing inspections"
       },
       "tagline": {
-        "fr": "Comprendre l’état de la plomberie.",
-        "en": "Understand the plumbing condition."
+        "fr": "Comprendre l’état des installations.",
+        "en": "Understand the condition of the plumbing."
       },
-      "body": {
-        "fr": "Précisez le contexte de l’inspection et les installations à examiner. Le contenu du rapport et les limites de la visite sont à convenir.",
-        "en": "Share the reason for the inspection and installations to examine. Report contents and visit limitations must be agreed."
+      "intro": {
+        "fr": "Avant un achat, une rénovation ou une demande d’assureur, l’inspection fait le point sur les conduites, les appareils et les protections en place.",
+        "en": "Before a purchase, a renovation or an insurer’s request, an inspection reviews the pipes, fixtures and protections in place."
       },
-      "art": "drain",
+      "signs": {
+        "fr": [
+          "Un achat de propriété",
+          "Une demande de votre assureur",
+          "Une plomberie d’origine dans un bâtiment ancien",
+          "Des problèmes qui se répètent"
+        ],
+        "en": [
+          "A property purchase",
+          "A request from your insurer",
+          "Original plumbing in an older building",
+          "Recurring problems"
+        ]
+      },
+      "steps": {
+        "fr": [
+          "Vous précisez le contexte et ce qu’il faut vérifier",
+          "Inspection des installations accessibles",
+          "Compte rendu des observations"
+        ],
+        "en": [
+          "You explain the context and what to check",
+          "Inspection of the accessible installations",
+          "Summary of the findings"
+        ]
+      },
+      "tip": {
+        "fr": "Précisez d’avance si un document écrit est demandé par un assureur ou un prêteur.",
+        "en": "Say up front if an insurer or lender needs a written document."
+      },
+      "listed": true,
       "confirmed": true,
       "source_name": "Service d’inspection de plomberie"
     },
     {
       "id": "apres-sinistre",
+      "zones": [
+        "floordrain",
+        "house"
+      ],
       "name": {
-        "fr": "Inspection après sinistre",
-        "en": "Post-loss inspection"
+        "fr": "Après un dégât d’eau",
+        "en": "After water damage"
       },
       "tagline": {
-        "fr": "Documenter les installations touchées.",
-        "en": "Document the affected installations."
+        "fr": "Constater et documenter.",
+        "en": "Assess and document."
       },
-      "body": {
-        "fr": "Après un sinistre, indiquez les installations touchées et les renseignements demandés par votre compagnie d’assurance.",
-        "en": "After a loss, describe affected installations and the information requested by your insurance company."
+      "intro": {
+        "fr": "Après une inondation ou un refoulement, il faut trouver la cause, sécuriser les installations et documenter ce qui a été touché pour votre réclamation.",
+        "en": "After a flood or a backup, the cause has to be found, the installations made safe and the damage documented for your claim."
       },
-      "art": "drain",
+      "signs": {
+        "fr": [
+          "Un refoulement ou une inondation récente",
+          "Un dossier ouvert avec votre assureur",
+          "Des installations à remettre en service",
+          "Une cause encore inconnue"
+        ],
+        "en": [
+          "A recent backup or flood",
+          "A claim open with your insurer",
+          "Installations to restore",
+          "A cause still unknown"
+        ]
+      },
+      "steps": {
+        "fr": [
+          "Vous décrivez le sinistre et ce que l’assureur demande",
+          "Constat sur place",
+          "Correctifs et documents utiles"
+        ],
+        "en": [
+          "You describe the loss and what the insurer needs",
+          "On-site assessment",
+          "Fixes and useful documents"
+        ]
+      },
+      "tip": {
+        "fr": "Photographiez tout avant de nettoyer, et gardez les pièces endommagées si l’assureur le demande.",
+        "en": "Photograph everything before cleaning, and keep damaged parts if the insurer asks."
+      },
+      "listed": true,
       "confirmed": true,
       "source_name": "Inspection après sinistre pour les compagnies d’assurance"
     },
     {
       "id": "pompe-puisard",
+      "zones": [
+        "sump"
+      ],
       "name": {
         "fr": "Pompe de puisard",
         "en": "Sump pumps"
       },
       "tagline": {
-        "fr": "Préparer l’évacuation de l’eau.",
-        "en": "Plan water drainage."
+        "fr": "Évacuer l’eau du drain de fondation.",
+        "en": "Move water away from the foundation."
       },
-      "body": {
-        "fr": "Pour une installation de pompe de puisard, précisez la configuration du sous-sol et du puisard existant. Le choix de l’équipement dépend de l’évaluation sur place.",
-        "en": "For a sump pump installation, describe your basement and existing sump. Equipment selection depends on an on-site assessment."
+      "intro": {
+        "fr": "La pompe vide le puisard où arrive l’eau du drain français. Si elle flanche pendant la fonte des neiges ou un orage, le sous-sol est en première ligne.",
+        "en": "The pump empties the pit where the foundation drain collects water. If it fails during snowmelt or a storm, the basement is first in line."
       },
-      "art": "heater",
+      "signs": {
+        "fr": [
+          "La pompe part et s’arrête sans arrêt",
+          "Elle ne démarre plus",
+          "Un bruit nouveau ou des vibrations",
+          "L’eau monte dans le puisard"
+        ],
+        "en": [
+          "The pump cycles on and off constantly",
+          "It no longer starts",
+          "A new noise or vibration",
+          "Water rising in the pit"
+        ]
+      },
+      "steps": {
+        "fr": [
+          "Vérification du puisard et de la sortie d’eau",
+          "Remplacement ou installation de la pompe",
+          "Essai complet du cycle"
+        ],
+        "en": [
+          "Check of the pit and the discharge",
+          "Pump replacement or installation",
+          "Full cycle test"
+        ]
+      },
+      "tip": {
+        "fr": "Au printemps, versez un seau d’eau dans le puisard : la pompe doit démarrer et vider le bassin.",
+        "en": "Each spring, pour a bucket of water into the pit: the pump should start and empty it."
+      },
+      "listed": true,
       "confirmed": true,
       "source_name": "Installation de pompe de puisard"
     },
     {
       "id": "detecteur-eau",
+      "zones": [
+        "sump",
+        "heater"
+      ],
       "name": {
-        "fr": "Détecteur de niveau d’eau",
-        "en": "Water-level sensors"
+        "fr": "Détecteurs de fuite et de niveau d’eau",
+        "en": "Leak and water-level sensors"
       },
       "tagline": {
-        "fr": "Surveiller le niveau d’eau.",
-        "en": "Monitor the water level."
+        "fr": "Être averti avant le dégât.",
+        "en": "Get warned before the damage."
       },
-      "body": {
-        "fr": "Un détecteur de niveau d’eau doit être choisi et installé selon le contexte. Décrivez l’équipement ou l’espace que vous souhaitez surveiller.",
-        "en": "A water-level sensor must be selected and installed for the situation. Describe the equipment or space you want to monitor."
+      "intro": {
+        "fr": "Placé près du chauffe-eau, de la laveuse ou du puisard, un détecteur avertit dès que l’eau apparaît. Certains modèles ferment l’eau automatiquement.",
+        "en": "Placed near the water heater, the washer or the sump, a sensor warns you as soon as water appears. Some models shut the water off automatically."
       },
-      "art": "heater",
+      "signs": {
+        "fr": [
+          "Un sous-sol aménagé",
+          "Un chauffe-eau ou une laveuse au-dessus d’un plancher fini",
+          "Des absences prolongées",
+          "Une demande de votre assureur"
+        ],
+        "en": [
+          "A finished basement",
+          "A water heater or washer above a finished floor",
+          "Long periods away",
+          "A request from your insurer"
+        ]
+      },
+      "steps": {
+        "fr": [
+          "Choix des endroits à surveiller",
+          "Installation et raccordement si nécessaire",
+          "Essai de l’alarme"
+        ],
+        "en": [
+          "Choose the spots to monitor",
+          "Installation, and hookup if needed",
+          "Alarm test"
+        ]
+      },
+      "tip": {
+        "fr": "Le bon endroit est le point le plus bas, à côté de l’appareil qui peut fuir.",
+        "en": "The right spot is the lowest point, next to the appliance that may leak."
+      },
+      "listed": true,
       "confirmed": true,
       "source_name": "Installation d’un détecteur de niveau d’eau"
     },
     {
       "id": "valve-principale",
+      "zones": [
+        "main"
+      ],
       "name": {
-        "fr": "Valve principale",
-        "en": "Main shutoff valves"
+        "fr": "Valve principale et entrée d’eau",
+        "en": "Main shutoff and water entry"
       },
       "tagline": {
-        "fr": "Votre arrivée d’eau.",
-        "en": "Your water supply."
+        "fr": "Pouvoir fermer l’eau d’un geste.",
+        "en": "Shut the water off in one move."
       },
-      "body": {
-        "fr": "Le remplacement de la valve principale demande de vérifier son emplacement et les modalités d’arrêt de l’eau avant les travaux.",
-        "en": "Replacing a main shutoff valve requires checking its location and how the water will be shut off before work begins."
+      "intro": {
+        "fr": "La valve principale coupe l’eau de toute la maison. Grippée, introuvable ou qui fuit, elle doit être remplacée avant d’en avoir besoin.",
+        "en": "The main valve cuts water to the whole house. Seized, hard to find or leaking, it should be replaced before you need it."
       },
-      "art": "repair",
+      "signs": {
+        "fr": [
+          "La valve ne tourne plus ou ferme mal",
+          "Une fuite à la valve ou au compteur",
+          "Une ancienne valve à volant",
+          "Vous ne savez pas où elle se trouve"
+        ],
+        "en": [
+          "The valve won’t turn or doesn’t close fully",
+          "A leak at the valve or the meter",
+          "An old wheel-handle valve",
+          "You don’t know where it is"
+        ]
+      },
+      "steps": {
+        "fr": [
+          "Repérage de l’entrée d’eau",
+          "Coordination de l’arrêt d’eau",
+          "Remplacement et essai"
+        ],
+        "en": [
+          "Locate the water entry",
+          "Plan the water shutoff",
+          "Replacement and test"
+        ]
+      },
+      "tip": {
+        "fr": "Fermez et rouvrez votre valve une ou deux fois par année : elle restera facile à manœuvrer.",
+        "en": "Close and reopen your main valve once or twice a year so it stays easy to turn."
+      },
+      "listed": true,
       "confirmed": true,
       "source_name": "Remplacement de valve principale"
     },
     {
       "id": "clapet-antiretour",
+      "zones": [
+        "backflow",
+        "sewer"
+      ],
       "name": {
         "fr": "Clapet antiretour",
         "en": "Backwater valves"
       },
       "tagline": {
-        "fr": "Évaluer la protection contre le refoulement.",
-        "en": "Assess backup protection."
+        "fr": "Protéger le sous-sol du refoulement.",
+        "en": "Protect the basement from backups."
       },
-      "body": {
-        "fr": "L’installation d’un clapet antiretour dépend de la configuration des conduites. Une évaluation permet de définir les travaux appropriés.",
-        "en": "Installing a backwater valve depends on the pipe layout. An assessment helps define appropriate work."
+      "intro": {
+        "fr": "Lors de fortes pluies, l’égout municipal peut refouler vers les maisons. Le clapet antiretour laisse sortir les eaux usées et bloque leur retour.",
+        "en": "During heavy rain, the city sewer can back up into homes. A backwater valve lets wastewater out and blocks it from coming back."
       },
-      "art": "drain",
+      "signs": {
+        "fr": [
+          "Un sous-sol avec drain de plancher, toilette ou douche",
+          "Un refoulement déjà vécu",
+          "Une exigence de votre assureur",
+          "Un clapet existant jamais nettoyé"
+        ],
+        "en": [
+          "A basement with a floor drain, toilet or shower",
+          "A backup in the past",
+          "A requirement from your insurer",
+          "An existing valve that was never cleaned"
+        ]
+      },
+      "steps": {
+        "fr": [
+          "Vérification de la configuration des conduites",
+          "Installation ou remplacement du clapet",
+          "Explication de l’entretien à faire"
+        ],
+        "en": [
+          "Check of the pipe layout",
+          "Valve installation or replacement",
+          "Explanation of the upkeep it needs"
+        ]
+      },
+      "tip": {
+        "fr": "Plusieurs municipalités l’exigent pour les appareils sous le niveau de la rue. Un clapet doit rester accessible et être nettoyé régulièrement.",
+        "en": "Many municipalities require one for fixtures below street level. A valve must stay accessible and be cleaned regularly."
+      },
+      "listed": true,
       "confirmed": true,
       "source_name": "Installation de valve anti-retour"
+    },
+    {
+      "id": "fuites",
+      "zones": [
+        "leak",
+        "kitchen",
+        "bath"
+      ],
+      "name": {
+        "fr": "Fuites d’eau",
+        "en": "Water leaks"
+      },
+      "tagline": {
+        "fr": "Trouver la source et réparer.",
+        "en": "Find the source and fix it."
+      },
+      "intro": {
+        "fr": "Une tache au plafond, un compteur qui tourne sans raison ou une facture d’eau qui grimpe : une fuite se cache souvent loin de l’endroit où elle se voit.",
+        "en": "A stain on the ceiling, a meter that turns for no reason or a rising water bill: a leak often hides far from where it shows."
+      },
+      "signs": {
+        "fr": [
+          "Une tache ou une cerne au plafond",
+          "Le compteur d’eau tourne quand tout est fermé",
+          "Une odeur d’humidité ou de moisi",
+          "Un plancher qui gonfle près d’un appareil"
+        ],
+        "en": [
+          "A stain or ring on the ceiling",
+          "The water meter turns with everything off",
+          "A damp or musty smell",
+          "Flooring that swells near a fixture"
+        ]
+      },
+      "steps": {
+        "fr": [
+          "Description des signes et de leur emplacement",
+          "Recherche de la source sur place",
+          "Réparation, puis vérification"
+        ],
+        "en": [
+          "Describe the signs and where they appear",
+          "On-site search for the source",
+          "Repair, then a check"
+        ]
+      },
+      "tip": {
+        "fr": "Fermez tous les robinets et regardez le compteur : s’il bouge, l’eau s’échappe quelque part.",
+        "en": "Close every tap and watch the meter: if it moves, water is escaping somewhere."
+      },
+      "listed": false,
+      "confirmed": false,
+      "source_name": null
+    },
+    {
+      "id": "entree-eau",
+      "zones": [
+        "main",
+        "street"
+      ],
+      "name": {
+        "fr": "Entrée de service d’eau",
+        "en": "Water service line"
+      },
+      "tagline": {
+        "fr": "La conduite entre la rue et la maison.",
+        "en": "The pipe between the street and the house."
+      },
+      "intro": {
+        "fr": "Dans les bâtiments plus anciens, l’entrée d’eau peut être en plomb ou en acier galvanisé. Son remplacement se coordonne souvent avec la municipalité pour la portion publique.",
+        "en": "In older buildings, the water line may be lead or galvanized steel. Replacing it is often coordinated with the municipality for the public portion."
+      },
+      "signs": {
+        "fr": [
+          "Une faible pression dans toute la maison",
+          "Une conduite grise et molle à l’entrée d’eau",
+          "Un avis de votre municipalité",
+          "Des travaux de rue prévus"
+        ],
+        "en": [
+          "Low pressure throughout the house",
+          "A soft grey pipe at the water entry",
+          "A notice from your municipality",
+          "Planned street work"
+        ]
+      },
+      "steps": {
+        "fr": [
+          "Vérification de la conduite existante",
+          "Planification avec les autorisations requises",
+          "Remplacement et remise en eau"
+        ],
+        "en": [
+          "Check of the existing line",
+          "Planning with the required permits",
+          "Replacement and water restored"
+        ]
+      },
+      "tip": {
+        "fr": "Votre municipalité peut indiquer si votre adresse figure dans un programme de remplacement.",
+        "en": "Your municipality can tell you whether your address is in a replacement program."
+      },
+      "listed": false,
+      "confirmed": false,
+      "source_name": null
+    },
+    {
+      "id": "robinetterie",
+      "zones": [
+        "bath",
+        "kitchen"
+      ],
+      "name": {
+        "fr": "Robinets, toilettes et appareils",
+        "en": "Faucets, toilets and fixtures"
+      },
+      "tagline": {
+        "fr": "Installer, remplacer, réparer.",
+        "en": "Install, replace, repair."
+      },
+      "intro": {
+        "fr": "Robinet qui goutte, toilette qui coule, nouvel évier ou lave-vaisselle à raccorder : les petits travaux bien faits évitent les gros dégâts.",
+        "en": "A dripping faucet, a running toilet, a new sink or a dishwasher to hook up: small jobs done right prevent big damage."
+      },
+      "signs": {
+        "fr": [
+          "Un robinet qui goutte",
+          "Une toilette qui coule en continu",
+          "Un appareil neuf à installer",
+          "Des valves d’arrêt grippées sous l’évier"
+        ],
+        "en": [
+          "A dripping faucet",
+          "A toilet that runs constantly",
+          "A new fixture to install",
+          "Seized shutoff valves under the sink"
+        ]
+      },
+      "steps": {
+        "fr": [
+          "Vous indiquez les appareils et le modèle choisi",
+          "Installation ou réparation",
+          "Vérification de l’étanchéité"
+        ],
+        "en": [
+          "You list the fixtures and the chosen model",
+          "Installation or repair",
+          "Leak check"
+        ]
+      },
+      "tip": {
+        "fr": "Une toilette qui coule peut gaspiller beaucoup d’eau sans bruit : quelques gouttes de colorant dans le réservoir le révèlent.",
+        "en": "A running toilet can waste a lot of water quietly: a few drops of food colouring in the tank will show it."
+      },
+      "listed": false,
+      "confirmed": false,
+      "source_name": null
+    },
+    {
+      "id": "traitement-eau",
+      "zones": [
+        "kitchen",
+        "main"
+      ],
+      "name": {
+        "fr": "Traitement de l’eau",
+        "en": "Water treatment"
+      },
+      "tagline": {
+        "fr": "Adoucisseurs et filtres.",
+        "en": "Softeners and filters."
+      },
+      "intro": {
+        "fr": "Eau dure, goût de chlore ou eau de puits : le choix d’un adoucisseur ou d’un filtre commence par savoir ce qu’il y a dans votre eau.",
+        "en": "Hard water, a chlorine taste or well water: choosing a softener or a filter starts with knowing what is in your water."
+      },
+      "signs": {
+        "fr": [
+          "Du calcaire sur les robinets et la douche",
+          "Un goût ou une odeur désagréable",
+          "Une maison alimentée par un puits",
+          "Un appareil existant à remplacer"
+        ],
+        "en": [
+          "Scale on faucets and the shower",
+          "An unpleasant taste or smell",
+          "A home on a well",
+          "An existing unit to replace"
+        ]
+      },
+      "steps": {
+        "fr": [
+          "Discussion de vos besoins et de l’analyse d’eau",
+          "Choix de l’équipement",
+          "Installation et réglages"
+        ],
+        "en": [
+          "Talk about your needs and the water test",
+          "Choice of equipment",
+          "Installation and settings"
+        ]
+      },
+      "tip": {
+        "fr": "Pour un puits, une analyse d’eau en laboratoire guide le bon choix d’équipement.",
+        "en": "For a well, a lab water test guides the right choice of equipment."
+      },
+      "listed": false,
+      "confirmed": false,
+      "source_name": null
     }
   ],
   "sources": [
@@ -318,21 +1073,5 @@
       "type": "maps_link",
       "notes": "Business-linked listing checked. Phone matches Google Maps. Listed service scope, 24/7 hours, service area, email, payments and free estimates transcribed."
     }
-  ],
-  "observed_at": "2026-10-06",
-  "theme": {
-    "ink": "#173d43",
-    "accent": "#b84d2f",
-    "paper": "#f5f2ea",
-    "water": "#d7ecec",
-    "copper": "#b97d50"
-  },
-  "initial_gates": {
-    "contact_verified": "0",
-    "address_verified": "0",
-    "hours_verified": "0",
-    "privacy_approved": "0",
-    "messages_enabled": "0",
-    "live_actions_enabled": "0"
-  }
+  ]
 }

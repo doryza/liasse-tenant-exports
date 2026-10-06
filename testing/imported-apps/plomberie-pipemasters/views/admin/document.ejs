@@ -1,0 +1,156 @@
+<%- include('top', { pageTitle: (doc.number || tr('Brouillon', 'Draft')) }) %>
+<%
+ var est = doc.kind === 'estimate';
+ var S = est ? L.estimate : L.invoice;
+ var shown = state === 'expired' ? 'expired' : doc.status;
+ var locked = est ? ['accepted', 'declined', 'invoiced'].indexOf(doc.status) >= 0 : doc.status !== 'draft';
+%>
+<a class="back" href="admin/documents<%= est ? '' : '?type=factures' %>"><%= est ? tr('Estimations', 'Estimates') : tr('Factures', 'Invoices') %></a>
+<div class="ad-head">
+ <div>
+  <h1><%= est ? tr('Estimation', 'Estimate') : tr('Facture', 'Invoice') %> <%= doc.number || '' %> <span class="status s-<%= shown %>"><%= (shown === 'expired' ? L.estimate.expired : S[doc.status]) %></span></h1>
+  <p class="ad-sub"><% if (source) { %><%= tr('Créée à partir de', 'Created from') %> <a href="admin/documents/<%= source.id %>"><%= source.number %></a>. <% } %><% children.forEach(function (c) { %><%= tr('Facture', 'Invoice') %> <a href="admin/documents/<%= c.id %>"><%= c.number || tr('brouillon', 'draft') %></a>. <% }) %><% if (doc.viewed_at) { %><%= tr('Ouverte par le client le', 'Opened by the customer on') %> <%= stamp(doc.viewed_at) %>.<% } %></p>
+ </div>
+ <div class="row-actions">
+  <a class="abtn" href="document/<%= doc.token %>" target="_blank" rel="noopener"><%= tr('Aperçu client', 'Customer view') %></a>
+ </div>
+</div>
+
+<form class="doc-editor<%= locked ? ' is-locked' : '' %>" data-doc="<%= doc.id %>" data-kind="<%= doc.kind %>" data-link="<%= link %>" data-lang="<%= lang %>" autocomplete="off">
+ <div class="doc-grid">
+  <section class="panel">
+   <div class="grid2">
+    <label class="afield"><span><%= tr('Client', 'Customer') %></span>
+     <div class="with-btn">
+      <select name="customer_id"<%- locked ? ' disabled' : '' %>><option value=""><%= tr('Choisir un client', 'Choose a customer') %></option><% customers.forEach(function (c) { %><option value="<%= c.id %>" data-address="<%= c.address || '' %>"<%- c.id === doc.customer_id ? ' selected' : '' %>><%= c.name %><%= c.email ? ' · ' + c.email : '' %></option><% }) %></select>
+      <% if (!locked) { %><button class="abtn" type="button" data-open="new-customer">+</button><% } %>
+     </div>
+    </label>
+    <label class="afield"><span><%= tr('Langue du document', 'Document language') %></span><select name="language"<%- locked ? ' disabled' : '' %>><option value="fr"<%- doc.language === 'fr' ? ' selected' : '' %>>Français</option><option value="en"<%- doc.language === 'en' ? ' selected' : '' %>>English</option></select></label>
+   </div>
+   <label class="afield"><span><%= tr('Titre des travaux', 'Work title') %></span><input name="title" maxlength="200" value="<%= doc.title %>" placeholder="<%= tr('Ex. Remplacement du chauffe-eau 60 gallons', 'E.g. Replace 60-gallon water heater') %>"<%- locked ? ' disabled' : '' %>></label>
+   <div class="grid2">
+    <label class="afield"><span><%= tr('Adresse des travaux', 'Address of the work') %></span><input name="property_address" maxlength="300" value="<%= doc.property_address || '' %>"<%- locked ? ' disabled' : '' %>></label>
+    <% if (est) { %><label class="afield"><span><%= tr('Valide jusqu’au', 'Valid until') %></span><input type="date" name="valid_until" value="<%= doc.valid_until || '' %>"<%- locked ? ' disabled' : '' %>></label>
+    <% } else { %><label class="afield"><span><%= tr('Payable le (vide = sur réception)', 'Due (empty = on receipt)') %></span><input type="date" name="due_on" value="<%= doc.due_on || '' %>"<%- locked ? ' disabled' : '' %>></label><% } %>
+   </div>
+
+   <h2 class="h-small"><%= tr('Lignes', 'Lines') %></h2>
+   <div class="lines" data-lines>
+    <div class="line line-head" aria-hidden="true"><span><%= tr('Type', 'Type') %></span><span><%= tr('Description', 'Description') %></span><span><%= tr('Qté', 'Qty') %></span><span><%= tr('Prix', 'Price') %></span><span><%= tr('Montant', 'Amount') %></span><span></span></div>
+    <% doc.lines.forEach(function (l) { %>
+    <div class="line" data-line>
+     <select name="kind" aria-label="<%= tr('Type', 'Type') %>"<%- locked ? ' disabled' : '' %>><% ['labour', 'material', 'fee', 'note'].forEach(function (k) { %><option value="<%= k %>"<%- l.kind === k ? ' selected' : '' %>><%= L.kind[k] %></option><% }) %></select>
+     <input name="description" aria-label="<%= tr('Description', 'Description') %>" maxlength="500" value="<%= l.description %>"<%- locked ? ' disabled' : '' %>>
+     <input name="quantity" aria-label="<%= tr('Quantité', 'Quantity') %>" inputmode="decimal" value="<%= l.kind === 'note' ? '' : qtyf(l.quantity) %>"<%- locked ? ' disabled' : '' %>>
+     <input name="unit" aria-label="<%= tr('Prix unitaire', 'Unit price') %>" inputmode="decimal" value="<%= l.kind === 'note' ? '' : (l.unit_cents / 100).toFixed(2).replace('.', lang === 'en' ? '.' : ',') %>"<%- locked ? ' disabled' : '' %>>
+     <output class="line-total"><%= l.kind === 'note' ? '' : money(l.total_cents) %></output>
+     <% if (!locked) { %><button class="icon-btn" type="button" data-remove-line aria-label="<%= tr('Retirer la ligne', 'Remove line') %>">×</button><% } else { %><span></span><% } %>
+    </div>
+    <% }) %>
+   </div>
+   <% if (!locked) { %>
+   <div class="row-actions add-lines">
+    <button class="abtn small" type="button" data-add-line="labour">+ <%= L.kind.labour %></button>
+    <button class="abtn small" type="button" data-add-line="material">+ <%= L.kind.material %></button>
+    <button class="abtn small" type="button" data-add-line="fee">+ <%= L.kind.fee %></button>
+    <button class="abtn small" type="button" data-add-line="note">+ <%= L.kind.note %></button>
+   </div>
+   <% } %>
+   <div class="totals-row">
+    <label class="check"><input type="checkbox" name="charge_taxes"<%- doc.charge_taxes ? ' checked' : '' %><%- locked ? ' disabled' : '' %>><span><%= tr('Ajouter la TPS et la TVQ', 'Add GST and QST') %></span></label>
+    <dl class="totals" data-totals>
+     <div><dt><%= tr('Sous-total', 'Subtotal') %></dt><dd data-t="subtotal"><%= money(doc.subtotal_cents) %></dd></div>
+     <div><dt>TPS 5 %</dt><dd data-t="tps"><%= money(doc.tps_cents) %></dd></div>
+     <div><dt>TVQ 9,975 %</dt><dd data-t="tvq"><%= money(doc.tvq_cents) %></dd></div>
+     <div class="grand"><dt><%= tr('Total', 'Total') %></dt><dd data-t="total"><%= money(doc.total_cents) %></dd></div>
+    </dl>
+   </div>
+   <div class="grid2">
+    <label class="afield"><span><%= tr('Conditions (visibles par le client)', 'Terms (seen by the customer)') %></span><textarea name="terms" rows="4" maxlength="2000"<%- locked ? ' disabled' : '' %>><%= doc.terms || '' %></textarea></label>
+    <label class="afield"><span><%= tr('Notes (visibles par le client)', 'Notes (seen by the customer)') %></span><textarea name="notes" rows="4" maxlength="4000"><%= doc.notes || '' %></textarea></label>
+   </div>
+   <% if (!b.rbq) { %><p class="warn"><%= tr('Votre numéro de licence RBQ doit figurer sur vos estimations et factures.', 'Your RBQ licence number must appear on your estimates and invoices.') %> <a href="admin/reglages#entreprise"><%= tr('L’inscrire', 'Add it') %></a></p><% } %>
+   <% if (doc.charge_taxes && (!b.tps || !b.tvq)) { %><p class="warn"><%= tr('Ajoutez vos numéros de TPS et de TVQ pour qu’ils figurent sur vos documents.', 'Add your GST and QST numbers so they appear on your documents.') %> <a href="admin/reglages#entreprise"><%= tr('Les inscrire', 'Add them') %></a></p><% } %>
+  </section>
+
+  <aside class="doc-side">
+   <section class="panel actions-panel">
+    <p class="save-state" data-save-state><%= locked ? tr('Ce document n’est plus modifiable. Les notes restent modifiables.', 'This document can no longer be changed. Notes stay editable.') : tr('Les changements sont enregistrés automatiquement.', 'Changes are saved automatically.') %></p>
+    <% if (est) { %>
+     <% if (doc.status === 'draft' || doc.status === 'sent') { %>
+      <button class="abtn primary block" type="button" data-send="email"><%= doc.status === 'sent' ? tr('Renvoyer par courriel', 'Email again') : tr('Envoyer par courriel', 'Send by email') %></button>
+      <button class="abtn block" type="button" data-send="link"><%= tr('Copier le lien client', 'Copy the customer link') %></button>
+      <div class="split">
+       <button class="abtn block" type="button" data-status="accepted" title="<%= tr('Le client a accepté par téléphone ou en personne', 'The customer accepted by phone or in person') %>"><%= tr('Acceptée', 'Accepted') %></button>
+       <button class="abtn block" type="button" data-status="declined"><%= tr('Refusée', 'Declined') %></button>
+      </div>
+     <% } %>
+     <% if (doc.status === 'accepted') { %>
+      <p class="ok-note"><%= tr('Acceptée par', 'Accepted by') %> <strong><%= doc.decided_name %></strong> · <%= stamp(doc.decided_at) %></p>
+      <button class="abtn primary block" type="button" data-act="invoice"><%= tr('Créer la facture', 'Create the invoice') %></button>
+      <button class="abtn block subtle" type="button" data-status="sent"><%= tr('Remettre en attente', 'Set back to waiting') %></button>
+     <% } %>
+     <% if (doc.status === 'declined') { %>
+      <p class="warn"><%= tr('Refusée', 'Declined') %><%= doc.decline_reason ? ' : « ' + doc.decline_reason + ' »' : '.' %></p>
+      <button class="abtn block subtle" type="button" data-status="sent"><%= tr('Remettre en attente', 'Set back to waiting') %></button>
+     <% } %>
+    <% } else { %>
+     <% if (doc.status === 'draft') { %>
+      <button class="abtn primary block" type="button" data-act="issue"><%= tr('Émettre la facture', 'Issue the invoice') %></button>
+      <p class="small"><%= tr('Le numéro est attribué à l’émission. Une facture émise ne peut plus être supprimée, seulement annulée.', 'The number is assigned when issued. An issued invoice can no longer be deleted, only cancelled.') %></p>
+     <% } %>
+     <% if (doc.status === 'unpaid') { %>
+      <button class="abtn primary block" type="button" data-send="email"><%= tr('Envoyer par courriel', 'Send by email') %></button>
+      <button class="abtn block" type="button" data-send="link"><%= tr('Copier le lien client', 'Copy the customer link') %></button>
+      <div class="pay-box">
+       <h3><%= tr('Paiement reçu', 'Payment received') %></h3>
+       <div class="grid2">
+        <label class="afield"><span><%= tr('Mode', 'Method') %></span><select name="method" data-pay-method><% ['interac', 'cash', 'debit', 'credit', 'cheque', 'other'].forEach(function (m) { %><option value="<%= m %>"><%= L.method[m] %></option><% }) %></select></label>
+        <label class="afield"><span><%= tr('Date', 'Date') %></span><input type="date" data-pay-date value="<%= today %>"></label>
+       </div>
+       <button class="abtn primary block" type="button" data-act="pay"><%= tr('Marquer comme payée', 'Mark as paid') %></button>
+      </div>
+      <button class="abtn block subtle" type="button" data-act="void"><%= tr('Annuler la facture', 'Cancel the invoice') %></button>
+     <% } %>
+     <% if (doc.status === 'paid') { %>
+      <p class="ok-note"><%= tr('Payée le', 'Paid on') %> <%= longDate(doc.paid_on) %> · <%= L.method[doc.payment_method] || '' %></p>
+      <button class="abtn block subtle" type="button" data-act="unpay"><%= tr('Retirer le paiement', 'Remove the payment') %></button>
+     <% } %>
+    <% } %>
+    <button class="abtn block subtle" type="button" data-act="duplicate"><%= tr('Dupliquer', 'Duplicate') %></button>
+    <% if (!(doc.kind === 'invoice' && doc.number) && doc.status !== 'invoiced') { %><button class="abtn block danger" type="button" data-act="delete"><%= tr('Supprimer', 'Delete') %></button><% } %>
+    <p class="small link-line"><%= tr('Lien client', 'Customer link') %> : <a href="document/<%= doc.token %>" target="_blank" rel="noopener"><%= tr('ouvrir', 'open') %></a></p>
+   </section>
+   <section class="panel">
+    <h2 class="h-small"><%= tr('Historique', 'History') %></h2>
+    <ol class="timeline"><% events.forEach(function (e) { %><li><strong><%= L.event[e.kind] || e.kind %></strong><% if (e.detail) { %> · <%= e.detail %><% } %><small><%= stamp(e.created_at) %></small></li><% }) %></ol>
+   </section>
+  </aside>
+ </div>
+ <template id="line-template">
+  <div class="line" data-line>
+   <select name="kind" aria-label="<%= tr('Type', 'Type') %>"><% ['labour', 'material', 'fee', 'note'].forEach(function (k) { %><option value="<%= k %>"><%= L.kind[k] %></option><% }) %></select>
+   <input name="description" aria-label="<%= tr('Description', 'Description') %>" maxlength="500">
+   <input name="quantity" aria-label="<%= tr('Quantité', 'Quantity') %>" inputmode="decimal" value="1">
+   <input name="unit" aria-label="<%= tr('Prix unitaire', 'Unit price') %>" inputmode="decimal" placeholder="0,00">
+   <output class="line-total"></output>
+   <button class="icon-btn" type="button" data-remove-line aria-label="<%= tr('Retirer la ligne', 'Remove line') %>">×</button>
+  </div>
+ </template>
+</form>
+
+<dialog class="sheet" id="new-customer" aria-labelledby="new-customer-title">
+ <form method="dialog" class="sheet-form" data-api="api/admin/customers" data-method="POST" data-pick-customer>
+  <h2 id="new-customer-title"><%= tr('Nouveau client', 'New customer') %></h2>
+  <label class="afield"><span><%= tr('Nom', 'Name') %></span><input name="name" required minlength="2" maxlength="160"></label>
+  <div class="grid2">
+   <label class="afield"><span><%= tr('Téléphone', 'Phone') %></span><input name="phone" type="tel" maxlength="40"></label>
+   <label class="afield"><span><%= tr('Courriel', 'Email') %></span><input name="email" type="email" maxlength="200"></label>
+  </div>
+  <label class="afield"><span><%= tr('Adresse', 'Address') %></span><input name="address" maxlength="300"></label>
+  <label class="afield"><span><%= tr('Langue', 'Language') %></span><select name="language"><option value="fr">Français</option><option value="en">English</option></select></label>
+  <div class="sheet-actions"><button class="abtn" value="cancel" formnovalidate><%= tr('Annuler', 'Cancel') %></button><button class="abtn primary" type="submit" data-submit><%= tr('Ajouter', 'Add') %></button></div>
+ </form>
+</dialog>
+<%- include('bottom') %>

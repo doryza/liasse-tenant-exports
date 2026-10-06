@@ -1,1 +1,14 @@
-<div class="service-grid"><% items.forEach(function(svc){ %><a class="service-card" href="<%= url('services/'+svc.id) %>"><div class="card-art"><img src="public/images/<%= svc.art %>.svg" width="600" height="420" alt="" loading="lazy"><span class="card-arrow" aria-hidden="true">↗</span></div><div class="card-copy"><% if(!svc.confirmed){ %><small class="unconfirmed"><%= t.draftService %></small><% } %><h3><%= text(svc.name) %></h3><p><%= text(svc.tagline) %></p><span class="card-link"><%= t.view %> <span aria-hidden="true">→</span></span></div></a><% }); %></div>
+<ul class="cards">
+ <% items.forEach(function (s) { var sp = (spots || []).find(function (x) { return x.id === s.id; }); %>
+ <li class="card<%= s.state === 'proposed' ? ' is-proposed' : '' %>">
+  <a href="<%= U.service + s.id %>">
+   <div class="card-art"><%- detail((s.zones || [])[0] || 'house') %><% if (sp) { %><span class="card-detail"><%= fmt(t.detail, { n: sp.n }) %></span><% } %></div>
+   <div class="card-body">
+    <h3><%= s.name[lang] %></h3>
+    <p><%= s.tagline[lang] %></p>
+    <span class="card-meta"><% if (s.state === 'proposed') { %><span class="chip"><%= t.proposed %></span><% } %><% if (s.price) { %><span class="price"><%= fmt(t.priceFrom, { price: money(s.price) }) %></span><% } %></span>
+   </div>
+  </a>
+ </li>
+ <% }) %>
+</ul>

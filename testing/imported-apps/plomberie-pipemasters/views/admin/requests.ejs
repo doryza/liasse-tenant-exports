@@ -1,0 +1,42 @@
+<%- include('top', { pageTitle: tr('Demandes', 'Requests') }) %>
+<div class="ad-head">
+ <div><h1><%= tr('Demandes', 'Requests') %></h1><p class="ad-sub"><%= tr('Les demandes envoyées par le site et les appels que vous notez.', 'Requests sent from the site and the calls you log.') %></p></div>
+ <button class="abtn primary" type="button" data-open="new-request">+ <%= tr('Noter un appel', 'Log a call') %></button>
+</div>
+<nav class="tabs-bar" aria-label="<%= tr('Filtrer', 'Filter') %>">
+ <% [['open', tr('En cours', 'Open')], ['new', tr('Nouvelles', 'New')], ['closed', tr('Terminées', 'Closed')], ['all', tr('Toutes', 'All')]].forEach(function (f) { %><a href="admin/demandes?filtre=<%= f[0] %>"<%- filter === f[0] ? ' aria-current="page"' : '' %>><%= f[1] %></a><% }) %>
+</nav>
+<section class="panel">
+ <% if (!requests.length) { %>
+  <div class="empty-inline"><p><%= filter === 'closed' ? tr('Aucune demande terminée.', 'No closed requests.') : tr('Aucune demande en cours. Notez un appel pour garder la trace d’un client et préparer son estimation.', 'No open requests. Log a call to keep track of a customer and prepare their estimate.') %></p></div>
+ <% } else { %>
+ <ul class="rows">
+  <% requests.forEach(function (r) { var svc = b.services.find(function (s) { return s.id === r.service_id; }); %>
+  <li><a href="admin/demandes/<%= r.id %>">
+   <span class="row-main"><strong><%= r.name %></strong><span><%= svc ? svc.name[lang] : tr('Autre', 'Other') %><% if (r.address) { %> · <%= r.address %><% } %></span></span>
+   <span class="row-side"><% if (r.urgency === 'urgent') { %><span class="status s-urgent"><%= L.urgency.urgent %></span><% } %><span class="status s-<%= r.status %>"><%= L.request[r.status] || r.status %></span><small><%= r.source === 'phone' ? tr('Appel', 'Call') : tr('Site', 'Site') %> · <%= stamp(r.created_at) %></small></span>
+  </a></li>
+  <% }) %>
+ </ul>
+ <% } %>
+</section>
+
+<dialog class="sheet" id="new-request" aria-labelledby="new-request-title">
+ <form method="dialog" class="sheet-form" data-api="api/admin/requests" data-method="POST" data-then="admin/demandes/{id}">
+  <h2 id="new-request-title"><%= tr('Noter un appel', 'Log a call') %></h2>
+  <div class="grid2">
+   <label class="afield"><span><%= tr('Nom', 'Name') %></span><input name="name" required minlength="2" maxlength="120" autocomplete="off"></label>
+   <label class="afield"><span><%= tr('Téléphone', 'Phone') %></span><input name="phone" type="tel" required maxlength="40"></label>
+  </div>
+  <label class="afield"><span><%= tr('Courriel (facultatif)', 'Email (optional)') %></span><input name="email" type="email" maxlength="200"></label>
+  <label class="afield"><span><%= tr('Adresse des travaux', 'Address of the work') %></span><input name="address" maxlength="300"></label>
+  <div class="grid2">
+   <label class="afield"><span><%= tr('Service', 'Service') %></span><select name="service_id"><option value=""><%= tr('Autre', 'Other') %></option><% b.visible.forEach(function (s) { %><option value="<%= s.id %>"><%= s.name[lang] %></option><% }) %></select></label>
+   <label class="afield"><span><%= tr('Urgence', 'Urgency') %></span><select name="urgency"><% ['urgent', 'soon', 'planned'].forEach(function (u) { %><option value="<%= u %>"<%- u === 'soon' ? ' selected' : '' %>><%= L.urgency[u] %></option><% }) %></select></label>
+  </div>
+  <label class="afield"><span><%= tr('Ce que le client décrit', 'What the customer describes') %></span><textarea name="message" rows="4" required maxlength="3000"></textarea></label>
+  <label class="afield"><span><%= tr('Langue du client', 'Customer language') %></span><select name="language"><option value="fr">Français</option><option value="en">English</option></select></label>
+  <div class="sheet-actions"><button class="abtn" value="cancel" formnovalidate><%= tr('Annuler', 'Cancel') %></button><button class="abtn primary" type="submit" data-submit><%= tr('Enregistrer la demande', 'Save the request') %></button></div>
+ </form>
+</dialog>
+<%- include('bottom') %>

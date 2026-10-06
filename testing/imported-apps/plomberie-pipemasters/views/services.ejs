@@ -1,1 +1,14 @@
-<%- include('partials/head') %><%- include('partials/header') %><main id="main" class="section wrap"><p class="eyebrow"><%= b.city %></p><h1 class="page-title"><%= t.servicesIntro %></h1><p class="lead"><%= t.servicesBody %></p><%- include('partials/cards',{items:b.services}) %></main><%- include('partials/footer') %>
+<%- include('partials/head') %>
+<%- include('partials/header') %>
+<main id="main">
+ <section class="page-head">
+  <div class="wrap">
+   <h1 class="page-title" data-lk="t:servicesTitle"><%= t.servicesTitle %></h1>
+   <p class="section-intro" data-lk="t:servicesIntro"><%= t.servicesIntro %></p>
+  </div>
+ </section>
+ <section class="section section-tight">
+  <div class="wrap"><%- include('partials/cards', { items: b.visible, spots: [] }) %></div>
+ </section>
+</main>
+<%- include('partials/footer') %>

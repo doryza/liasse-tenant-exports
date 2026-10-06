@@ -1,2 +1,53 @@
-<footer><div class="wrap footer-top"><div><span class="eyebrow"><%= b.brand_name %></span><p class="footer-title"><%= t.footer %></p></div><div><a class="footer-phone" href="<%= b.tel %>"><%= b.phone %></a><p><%= b.city %></p><a href="<%= url('contact') %>"><%= t.contact %> ↗</a></div></div><div class="wrap footer-bottom"><span>© <%= currentYear %> <%= b.business_name %></span><a href="<%= url('confidentialite') %>"><%= t.privacy %></a><a href="admin">Administration</a></div></footer>
-<div class="mobile-actions"><a href="<%= b.tel %>"><%= t.call %> ↗</a><a href="<%= url('demande') %>"><%= t.request %></a></div><script src="public/js/app.js" defer></script></body></html>
+<section class="cta-band">
+ <div class="wrap cta-row">
+  <div>
+   <h2 data-lk="t:ctaTitle"><%= t.ctaTitle %></h2>
+   <p data-lk="t:ctaBody"><%= t.ctaBody %></p>
+  </div>
+  <div class="cta-actions">
+   <a class="btn btn-accent btn-lg" href="<%= b.tel %>"><%= t.call %> <%= b.phone %></a>
+   <a class="btn btn-ghost btn-lg" href="<%= U.estimate %>"><%= t.estimate %></a>
+  </div>
+ </div>
+</section>
+<footer class="site-footer">
+ <div class="wrap footer-grid">
+  <div class="footer-brand">
+   <a class="brand brand-footer" href="<%= U.home || './' %>"><%- mark({ size: 52 }) %><span class="brand-text"><strong><%= b.brand_name %></strong><small><%= b.city %></small></span></a>
+   <p data-lk="t:footerLine"><%= t.footerLine %></p>
+   <% if (b.rbq) { %><p class="licence"><%= fmt(t.licence, { n: b.rbq }) %></p><% } %>
+  </div>
+  <div>
+   <h2 class="footer-title"><%= t.services %></h2>
+   <ul class="footer-links">
+    <% b.visible.slice(0, 7).forEach(function (s) { %><li><a href="<%= U.service + s.id %>"><%= s.name[lang] %></a></li><% }) %>
+    <li><a href="<%= U.services %>"><%= t.allServices %></a></li>
+   </ul>
+  </div>
+  <div>
+   <h2 class="footer-title"><%= t.contact %></h2>
+   <ul class="footer-links">
+    <li><a href="<%= b.tel %>"><%= b.phone %></a></li>
+    <% if (b.email) { %><li><a href="mailto:<%= b.email %>"><%= b.email %></a></li><% } %>
+    <% if (b.addressPublic) { %><li><%= b.address %></li><% } %>
+    <li><%= b.areas ? text(b.areas) : b.city %></li>
+   </ul>
+  </div>
+  <div>
+   <h2 class="footer-title"><%= t.hoursTitle %></h2>
+   <p class="footer-hours"><%= b.hours ? hoursSummary : (b.emergency ? t.always : (b.hoursText ? text(b.hoursText) : t.hoursUnknown)) %></p>
+   <% if (b.emergency && b.hours) { %><p class="footer-hours"><%= t.emergencyLine %></p><% } %>
+  </div>
+ </div>
+ <div class="wrap footer-bottom">
+  <span>© <%= year %> <%= b.business_name %></span>
+  <span class="footer-bottom-links"><a href="<%= U.privacy %>"><%= t.privacy %></a><a href="admin<%= lang === 'en' ? '?lang=en' : '' %>" rel="nofollow"><%= t.admin %></a></span>
+ </div>
+</footer>
+<div class="mobile-bar" role="navigation" aria-label="<%= t.call %>">
+ <a class="mobile-call" href="<%= b.tel %>"><%= t.call %></a>
+ <a class="mobile-estimate" href="<%= U.estimate %>"><%= t.estimateShort %></a>
+</div>
+<script src="public/js/site.js" defer></script>
+</body>
+</html>

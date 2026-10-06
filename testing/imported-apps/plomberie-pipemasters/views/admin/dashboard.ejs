@@ -1,0 +1,59 @@
+<%- include('top', { pageTitle: tr('Tableau de bord', 'Dashboard') }) %>
+<% var done = steps.filter(function (s) { return s.done; }).length; %>
+<div class="ad-head">
+ <div>
+  <h1><%= tr('Tableau de bord', 'Dashboard') %></h1>
+  <p class="ad-sub"><%= b.formLive ? tr('Votre formulaire de demande est ouvert. Les nouvelles demandes arrivent ici.', 'Your request form is open. New requests arrive here.') : tr('Votre site est en ligne. Le formulaire de demande s’ouvrira quand vous aurez terminé les étapes ci-dessous.', 'Your site is online. The request form opens once you finish the steps below.') %></p>
+ </div>
+ <a class="abtn primary" href="admin/demandes?nouvelle=1">+ <%= tr('Noter un appel', 'Log a call') %></a>
+</div>
+
+<div class="dash-grid">
+ <section class="panel checklist">
+  <div class="panel-head"><h2><%= tr('Mise en route', 'Getting started') %></h2><span class="progress-label"><%= done %> / <%= steps.length %></span></div>
+  <div class="progress" aria-hidden="true"><span style="width:<%= (done / steps.length * 100).toFixed(0) %>%"></span></div>
+  <ol class="steps-list">
+   <% steps.forEach(function (s) { %><li class="<%= s.done ? 'done' : '' %>"><a href="<%= s.href %>"><span class="tick" aria-hidden="true"></span><span><%= s.label %></span><span class="sr"><%= s.done ? tr('fait', 'done') : tr('à faire', 'to do') %></span></a></li><% }) %>
+  </ol>
+ </section>
+
+ <section class="panel module-card<%= b.documents ? ' is-on' : '' %>">
+  <div class="panel-head"><h2><%= tr('Estimations et factures', 'Estimates & invoices') %></h2><% if (b.documents) { %><span class="pill on"><%= tr('Actif', 'On') %></span><% } %></div>
+  <% if (!b.documents) { %>
+   <p><%= tr('Préparez vos estimations en quelques minutes, envoyez-les par courriel et laissez vos clients les accepter en ligne. Une estimation acceptée devient une facture en un clic, avec la TPS et la TVQ calculées.', 'Prepare estimates in minutes, email them and let customers accept them online. An accepted estimate becomes an invoice in one click, with GST and QST calculated.') %></p>
+   <ul class="mini-list">
+    <li><%= tr('Numérotation automatique (E2026-0001, F2026-0001)', 'Automatic numbering (E2026-0001, F2026-0001)') %></li>
+    <li><%= tr('Lien privé pour accepter ou refuser, signé du nom du client', 'Private link to accept or decline, signed with the customer’s name') %></li>
+    <li><%= tr('Factures à payer et paiements reçus, d’un coup d’œil', 'Invoices due and payments received, at a glance') %></li>
+   </ul>
+   <button class="abtn primary" type="button" data-module="1"><%= tr('Activer les estimations et factures', 'Turn on estimates & invoices') %></button>
+  <% } else { %>
+   <div class="stat-row">
+    <a class="stat" href="admin/documents"><strong><%= stats.waiting %></strong><span><%= tr('estimations en attente de réponse', 'estimates awaiting an answer') %></span></a>
+    <a class="stat" href="admin/documents?type=factures"><strong><%= money(stats.due) %></strong><span><%= tr('à recevoir', 'to collect') %></span></a>
+    <a class="stat" href="admin/documents?type=factures"><strong><%= money(stats.paid_month) %></strong><span><%= tr('payé ce mois-ci', 'paid this month') %></span></a>
+   </div>
+   <div class="row-actions"><button class="abtn primary" type="button" data-new-doc="estimate">+ <%= tr('Nouvelle estimation', 'New estimate') %></button><button class="abtn" type="button" data-new-doc="invoice">+ <%= tr('Nouvelle facture', 'New invoice') %></button></div>
+  <% } %>
+ </section>
+
+ <section class="panel recent">
+  <div class="panel-head"><h2><%= tr('Dernières demandes', 'Latest requests') %></h2><a class="link" href="admin/demandes?filtre=all"><%= tr('Tout voir', 'See all') %></a></div>
+  <% if (!recent.length) { %>
+   <div class="empty-inline"><p><%= tr('Aucune demande pour l’instant. Les demandes du site et les appels que vous notez apparaissent ici.', 'No requests yet. Requests from the site and the calls you log appear here.') %></p><a class="abtn" href="admin/demandes?nouvelle=1">+ <%= tr('Noter un appel', 'Log a call') %></a></div>
+  <% } else { %>
+   <ul class="rows">
+    <% recent.forEach(function (r) { var svc = b.services.find(function (s) { return s.id === r.service_id; }); %>
+    <li><a href="admin/demandes/<%= r.id %>"><span class="row-main"><strong><%= r.name %></strong><span><%= svc ? svc.name[lang] : tr('Autre', 'Other') %><% if (r.address) { %> · <%= r.address %><% } %></span></span><span class="row-side"><span class="status s-<%= r.status %>"><%= L.request[r.status] || r.status %></span><small><%= stamp(r.created_at) %></small></span></a></li>
+    <% }) %>
+   </ul>
+  <% } %>
+ </section>
+
+ <section class="panel site-card">
+  <div class="panel-head"><h2><%= tr('Votre site', 'Your site') %></h2></div>
+  <p><%= tr('Les titres et les textes se modifient directement sur le site. Vos coordonnées, vos services, vos heures et votre secteur se règlent ici.', 'Headings and texts are edited right on the site. Your contact details, services, hours and area are set here.') %></p>
+  <div class="row-actions"><a class="abtn" href="<%= siteUrl %>" target="_blank" rel="noopener"><%= tr('Voir le site', 'View the site') %></a><% if (!inTrial) { %><a class="abtn" href="<%= siteUrl %>?_inline_edit=1" target="_blank" rel="noopener"><%= tr('Modifier les textes', 'Edit texts') %></a><% } %></div>
+ </section>
+</div>
+<%- include('bottom') %>

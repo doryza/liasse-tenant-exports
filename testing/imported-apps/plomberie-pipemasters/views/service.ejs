@@ -1,1 +1,45 @@
-<%- include('partials/head') %><%- include('partials/header') %><main id="main" class="wrap section"><a class="text-link" href="<%= url('services') %>">← <%= t.back %></a><div class="service-detail"><div><p class="eyebrow"><%= b.brand_name %></p><h1 class="page-title"><%= text(service.name) %></h1><p class="lead"><%= text(service.tagline) %></p><p><%= text(service.body) %></p><% if(!service.confirmed){ %><div class="notice"><strong><%= t.draftService %></strong><p><%= t.draftServiceBody %></p></div><% } %><a class="btn" href="<%= b.tel %>"><%= t.call %> ↗</a></div><div class="art"><img src="public/images/<%= service.art %>.svg" width="600" height="420" alt="<%= t.illustration %>"></div></div><div class="next-step"><h2><%= t.serviceTitle %></h2><p><%= t.serviceBody %></p><a class="text-link" href="<%= url('demande?service='+service.id) %>"><%= t.request %> →</a></div></main><%- include('partials/footer') %>
+<%- include('partials/head') %>
+<%- include('partials/header') %>
+<main id="main">
+ <section class="service-hero">
+  <div class="wrap service-grid">
+   <div>
+    <a class="back" href="<%= U.services %>"><%= t.backServices %></a>
+    <h1 class="page-title" data-lk="svc-<%= service.id %>-name"><%= service.name[lang] %></h1>
+    <p class="hero-lead" data-lk="svc-<%= service.id %>-intro"><%= service.intro[lang] %></p>
+    <% if (service.price) { %><p class="price-line"><%= fmt(t.priceFrom, { price: money(service.price) }) %></p><% } %>
+    <% if (service.state === 'proposed') { %><p class="notice"><strong><%= t.proposed %>.</strong> <%= t.proposedBody %></p><% } %>
+    <div class="hero-actions">
+     <a class="btn btn-accent btn-lg" href="<%= b.tel %>"><%= t.call %> <%= b.phone %></a>
+     <a class="btn btn-ghost btn-lg" href="<%= U.estimate %>?service=<%= service.id %>"><%= t.estimate %></a>
+    </div>
+   </div>
+   <figure class="service-art"><%- detail(zone) %><% if (spot) { %><figcaption><%= fmt(t.detail, { n: spot.n }) %></figcaption><% } %></figure>
+  </div>
+ </section>
+ <section class="section section-tight">
+  <div class="wrap service-body">
+   <div class="service-block">
+    <h2><%= t.signsTitle %></h2>
+    <ul class="checks"><% service.signs[lang].forEach(function (s, i) { %><li data-lk="svc-<%= service.id %>-sign-<%= i %>"><%= s %></li><% }) %></ul>
+   </div>
+   <div class="service-block">
+    <h2><%= t.stepsTitle %></h2>
+    <ol class="steps"><% service.steps[lang].forEach(function (s, i) { %><li data-lk="svc-<%= service.id %>-step-<%= i %>"><%= s %></li><% }) %></ol>
+   </div>
+   <aside class="tip">
+    <h2><%= t.tipTitle %></h2>
+    <p data-lk="svc-<%= service.id %>-tip"><%= service.tip[lang] %></p>
+   </aside>
+  </div>
+ </section>
+ <% if (related.length) { %>
+ <section class="section section-tight related">
+  <div class="wrap">
+   <h2 class="section-title small"><%= t.otherServices %></h2>
+   <%- include('partials/cards', { items: related, spots: [] }) %>
+  </div>
+ </section>
+ <% } %>
+</main>
+<%- include('partials/footer') %>

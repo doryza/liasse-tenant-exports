@@ -1,73 +1,269 @@
 'use strict';
-const express=require('express');
-const original=require('./business.json'), words=require('./lib/i18n');
-const gates=Object.keys(original.initial_gates);
-const editable=['business_name','phone','email','areas_fr','areas_en','hours_fr','hours_en','privacy_fr','privacy_en'];
-const serviceKeys=original.services.map(s=>'service_confirmed_'+s.id);
-module.exports=function(services){
- const router=express.Router(), db=services.db, limits=new Map();
- router.use(express.json({limit:'16kb'}));
- const wrap=fn=>(req,res,next)=>Promise.resolve(fn(req,res,next)).catch(next);
- const owner=wrap(async(req,res,next)=>{if(!await services.admin.isAdmin(req))return res.status(403).json({error:'Owner access required'});next();});
- const sameOrigin=(req,res,next)=>{let host='';try{host=new URL(req.get('origin')||'').host;}catch(_){}if(host!==req.get('host')||req.get('x-requested-with')!=='plumbing-site')return res.status(403).json({error:'Invalid request origin'});next();};
- async function settings(){return Object.fromEntries((await db.all('SELECT key,value FROM admin_settings')).map(r=>[r.key,r.value]));}
- function business(s){const b={...original,theme:{...original.theme},services:original.services.map(item=>({...item,confirmed:s['service_confirmed_'+item.id]===undefined?item.confirmed:s['service_confirmed_'+item.id]==='1'}))};for(const k of ['business_name','phone','email'])if(s[k])b[k]=s[k];b.brand_name=b.business_name.replace(/\s+inc\.?$/i,'');
-  if(s.areas_fr||s.areas_en)b.areas={fr:s.areas_fr||s.areas_en,en:s.areas_en||s.areas_fr};
-  if(s.hours_fr||s.hours_en)b.hours={text:{fr:s.hours_fr||s.hours_en,en:s.hours_en||s.hours_fr}};
-  const digits=b.phone.replace(/[^+\d]/g,'');b.tel='tel:'+(digits.length===10?'+1'+digits:digits);return b;
+/**
+ * Plumbing website: public pages (French canonical, English under /en/), the estimate
+ * request form, the customer's private document link, and the back office (lib/admin.js).
+ *
+ * Facts come from business.json with the owner's settings on top (lib/store.js).
+ * Every URL is base-relative; the platform sets <base href> (custom domains included).
+ * Views never call globals (String, JSON, Date…): every helper is a render local.
+ */
+const express = require('express');
+const S = require('./lib/store');
+const T = require('./lib/i18n');
+const D = require('./lib/documents');
+const theme = require('./lib/theme');
+const cutaway = require('./lib/cutaway');
+const makeMail = require('./lib/mail');
+const registerAdmin = require('./lib/admin');
+
+const PAGES = {
+ fr: { home: './', services: 'services', service: 'services/', contact: 'contact', estimate: 'estimation', privacy: 'confidentialite' },
+ en: { home: 'en/', services: 'en/services', service: 'en/services/', contact: 'en/contact', estimate: 'en/estimate', privacy: 'en/privacy' },
+};
+const URGENCY = ['urgent', 'soon', 'planned'];
+const CUTAWAY_CSS = cutaway.css().replace(/\n/g, '');
+const PROPERTY = ['house', 'condo', 'plex', 'commercial'];
+
+function tenantPath(req, target) {
+ if (typeof req.tenantPath === 'function') return req.tenantPath(target);
+ return String(req.baseUrl || '').replace(/\/$/, '') + target;
+}
+function absolute(req, target) {
+ const host = req.get('host');
+ return host ? `${req.protocol}://${host}${tenantPath(req, target)}` : tenantPath(req, target);
+}
+const fmt = (str, vars) => String(str == null ? '' : str).replace(/\{(\w+)\}/g, (m, k) => (vars && vars[k] != null ? vars[k] : m));
+const clip = (v, n) => (typeof v === 'string' ? v.trim().slice(0, n) : '');
+
+module.exports = function (services) {
+ const router = express.Router();
+ const db = services.db;
+ const store = S(services);
+ const docs = D(db);
+ const mail = makeMail(services);
+ const limits = new Map();
+
+ router.use(express.json({ limit: '64kb' }));
+
+ const wrap = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
+ /** State-changing calls come from our own pages only. */
+ function sameOrigin(req, res, next) {
+  let host = '';
+  try { host = new URL(req.get('origin') || '').host; } catch (_) { /* no origin */ }
+  if (host !== req.get('host') || req.get('x-requested-with') !== 'plumbing-site') return res.status(403).json({ error: 'origin', code: 'origin' });
+  next();
  }
- const live=s=>['contact_verified','privacy_approved','messages_enabled','live_actions_enabled'].every(k=>s[k]==='1')&&Boolean(s.privacy_fr?.trim()&&s.privacy_en?.trim());
- router.use(wrap(async(req,res,next)=>{
-  const lang=req.path==='/en'||req.path.startsWith('/en/')?'en':'fr',s=await settings(),b=business(s);
-  const prefix=lang==='en'?'en/':'',url=p=>prefix+p;
-  // Always derive the base from the platform helper when available (custom domains included).
-  let root=typeof req.tenantPath==='function'?req.tenantPath('/'):(req.baseUrl||'')+'/';if(!root.endsWith('/'))root+='/';
-  const cleanPath=req.path.replace(/^\/en\/?/,'').replace(/^\//,'');
-  const t={...words[lang]};for(const key of Object.keys(t))if(s['text_'+key+'_'+lang])t[key]=s['text_'+key+'_'+lang];
-  res.locals={...res.locals,lang,t,b,s,live:live(s),url,base:root,currentPath:cleanPath,
-   otherLang:lang==='fr'?'en/'+cleanPath:cleanPath||'./',text:v=>v?.[lang]||v?.fr||'',
-   currentYear:new Date().getFullYear(),selectedService:'',error:false,sent:false,
-   title:b.business_name+' · '+b.city,active:'',page:'',service:null,
-   ratingText:b.rating?b.rating.value.toLocaleString(lang==='fr'?'fr-CA':'en-CA',{minimumFractionDigits:1}):'',
-   themeStyle:Object.entries(b.theme).map(([k,v])=>'--'+k+':'+v).join(';')};next();
+ router.use((req, res, next) => (['POST', 'PUT', 'DELETE', 'PATCH'].includes(req.method) ? sameOrigin(req, res, next) : next()));
+
+ async function isOwner(req) { try { return !!(await services.admin.isAdmin(req)); } catch (_) { return false; } }
+
+ // --- context for every page ------------------------------------------------------
+ router.use(wrap(async (req, res, next) => {
+  const isEn = req.path === '/en' || req.path.startsWith('/en/');
+  const q = req.query.lang;
+  const adminLang = q === 'en' || q === 'fr' ? q : (req.cookies && req.cookies.pwa_lang === 'en' ? 'en' : 'fr');
+  const lang = req.path.startsWith('/admin') ? adminLang : isEn ? 'en' : 'fr';
+  if (q === 'en' || q === 'fr') res.cookie('pwa_lang', q, { maxAge: 365 * 86400000, path: tenantPath(req, '/'), sameSite: 'lax', secure: true });
+  req.lang = lang;
+  const raw = await store.raw();
+  const b = S.business(raw);
+  req.raw = raw; req.b = b;
+  const t = { ...T[lang] };
+  for (const key of Object.keys(t)) { const o = raw['text_' + key + '_' + lang]; if (typeof o === 'string' && o.trim()) t[key] = o; }
+  const U = PAGES[lang];
+  const now = S.local();
+  const L = res.locals;
+  Object.assign(L, {
+   lang, t, b, raw, U, page: '', active: '', title: '', description: '', other: '', service: null,
+   tenantRoot: tenantPath(req, '/'),
+   fmt, text: v => (v && typeof v === 'object' ? v[lang] || v.fr || '' : v || ''),
+   money: c => D.money(c, lang), qtyf: n => D.qty(n, lang), longDate: d => S.longDate(d, lang), clock: x => S.clock(x, lang),
+   themeVars: theme.vars(b.design), cutawayCss: CUTAWAY_CSS, fontsHref: b.design.fonts.href, family: b.design.family, heroLayout: b.design.hero,
+   mark: (opts) => theme.mark(b.design, b.brand_name, opts),
+   detail: zone => cutaway.render({ house: b.design.house, mirror: b.design.mirror, zone }),
+   year: now.year, seasonKey: S.season(now.month), thisYear: now.year, weekday: now.weekday,
+   hoursSummary: S.hoursSummary(b.hours, lang), openState: S.openState(b.hours),
+   isOwner: await isOwner(req), joinList: list => list.filter(Boolean).join(', '),
+  });
+  next();
  }));
- function page(name,active){return(req,res)=>{res.locals.active=active||name;res.locals.page=name;res.render(name);};}
- router.get(['/', '/en','/en/'],page('index','home'));
- router.get(['/services','/en/services'],page('services','services'));
- router.get(['/services/:id','/en/services/:id'],(req,res)=>{const service=res.locals.b.services.find(s=>s.id===req.params.id);if(!service)return res.status(404).render('not-found');res.locals.service=service;res.locals.active='services';res.locals.title=res.locals.text(service.name)+' · '+res.locals.b.business_name;res.render('service');});
- router.get(['/contact','/en/contact'],page('contact','contact'));
- router.get(['/demande','/en/demande'],(req,res)=>{res.locals.active='request';res.locals.selectedService=original.services.some(s=>s.id===req.query.service)?req.query.service:'';res.render('request');});
- router.get(['/confidentialite','/en/confidentialite'],page('privacy'));
- router.post('/api/requests',sameOrigin,wrap(async(req,res)=>{
-  const s=await settings();if(!live(s))return res.status(403).json({error:'Not activated'});
-  if(!req.is('application/json'))return res.status(415).json({error:'JSON required'});
-  const x=req.body||{};if(x.website)return res.status(400).json({error:'Invalid submission'});
-  const clean=(k,n)=>typeof x[k]==='string'?x[k].trim().slice(0,n):'';
-  const name=clean('name',120),phone=clean('phone',40),address=clean('address',300),message=clean('message',3000),serviceId=clean('service_id',80);
-  if(name.length<2||phone.replace(/\D/g,'').length<10||phone.replace(/\D/g,'').length>15||address.length<5||message.length<5||x.consent!==true)return res.status(400).json({error:'Invalid fields'});
-  if(serviceId&&!business(s).services.some(e=>e.id===serviceId&&e.confirmed))return res.status(400).json({error:'Invalid service'});
-  const key=req.ip||'unknown',now=Date.now();for(const [k,v] of limits)if(now-v.start>600000)limits.delete(k);
-  const limit=limits.get(key)||{start:now,count:0};if(limit.count>=5)return res.status(429).json({error:'Try again later'});limit.count++;limits.set(key,limit);
-  const row=await db.get('INSERT INTO plumbing_requests(name,phone,address,service_id,message,language) VALUES($1,$2,$3,$4,$5,$6) RETURNING id',[name,phone,address,serviceId||null,message,x.language==='en'?'en':'fr']);
-  res.status(201).json({id:row.id,status:'new',appointment_confirmed:false});
- }));
- router.get('/admin',owner,wrap(async(req,res)=>{res.locals.requests=await db.all('SELECT * FROM plumbing_requests ORDER BY created_at DESC LIMIT 200');res.locals.gates=gates;res.locals.editable=editable;res.locals.fieldLabels={business_name:'Nom de l’entreprise',phone:'Téléphone',email:'Courriel',areas_fr:'Secteurs — français',areas_en:'Secteurs — anglais',hours_fr:'Disponibilité — français',hours_en:'Disponibilité — anglais',privacy_fr:'Confidentialité — français',privacy_en:'Confidentialité — anglais',contact_verified:'Coordonnées confirmées (requis)',address_verified:'Adresse confirmée, si publiée',hours_verified:'Horaire confirmé',privacy_approved:'Confidentialité approuvée (requis)',messages_enabled:'Recevoir les demandes (requis)',live_actions_enabled:'Activer les demandes (requis)'};res.locals.statusLabels={new:'Nouvelle',contacted:'Contact établi',closed:'Terminée'};res.render('admin');}));
- router.put('/api/admin/settings',owner,sameOrigin,wrap(async(req,res)=>{
-  const x=req.body||{};if(!x||Array.isArray(x)||Object.keys(x).some(k=>!gates.includes(k)&&!editable.includes(k)&&!serviceKeys.includes(k)))return res.status(400).json({error:'Invalid setting'});
-  for(const [key,value]of Object.entries(x)){
-   if(typeof value!=='string'||value.length>(key.startsWith('privacy_')&&!gates.includes(key)?5000:300)||((gates.includes(key)||serviceKeys.includes(key))&&!['0','1'].includes(value)))return res.status(400).json({error:'Invalid value'});
-   if(key==='phone'&&(!/^\+?[\d ()-]{10,40}$/.test(value)||value.replace(/\D/g,'').length<10||value.replace(/\D/g,'').length>15))return res.status(400).json({error:'Invalid phone'});
-   if(key==='email'&&value&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value))return res.status(400).json({error:'Invalid email'});
-   if(key==='business_name'&&!value.trim())return res.status(400).json({error:'Invalid name'});
+
+ // Services that carry a numbered marker on the house: each takes its own first zone if it
+ // is free, then a fallback zone; numbered in the order the services are listed.
+ function spots(b, lang) {
+  const used = new Map();
+  for (const pass of [0, 1]) {
+   for (const s of b.visible) {
+    if ([...used.values()].includes(s.id)) continue;
+    const zones = (s.zones || []).filter(z => cutaway.ZONES.includes(z));
+    const zone = pass === 0 ? (zones[0] && !used.has(zones[0]) ? zones[0] : null) : zones.find(z => !used.has(z));
+    if (zone) used.set(zone, s.id);
+   }
   }
-  // Validate the full payload before any mutation.
-  for(const [key,value]of Object.entries(x))await db.run('INSERT INTO admin_settings(key,value) VALUES($1,$2) ON CONFLICT(key) DO UPDATE SET value=EXCLUDED.value',[key,value]);res.json({ok:true});
+  const out = [];
+  for (const s of b.visible) {
+   const zone = [...used.entries()].find(([, id]) => id === s.id);
+   if (zone) out.push({ zone: zone[0], n: out.length + 1, id: s.id, href: PAGES[lang].service + s.id, label: s.name[lang], state: s.state });
+  }
+  return out;
+ }
+ function page(name, active, extra = {}) {
+  return (req, res) => {
+   Object.assign(res.locals, { page: name, active: active || name }, typeof extra === 'function' ? extra(req, res) : extra);
+   res.render(name);
+  };
+ }
+ function other(lang, key, arg = '') { return PAGES[lang === 'fr' ? 'en' : 'fr'][key] + arg; }
+
+ // --- public pages -----------------------------------------------------------------
+ router.get(['/', '/en', '/en/'], (req, res) => {
+  const { b, t, lang } = res.locals;
+  const sp = spots(b, lang);
+  const top = b.visible.slice(0, 4).map(s => s.name[lang]);
+  const h1 = b.emergency ? t.h1Always : t.h1[(b.headline || 0) % t.h1.length];
+  // The title sizes itself so its longest word fits the column (--hero-chars, site.css); on
+  // phones it is sized by the longest hyphen segment and a long town breaks at a hyphen.
+  // Plain text only: the inline editor rewrites a heading that holds a single text node.
+  const heading = fmt(h1, { city: b.city, brand: b.brand_name });
+  const words = heading.split(/\s+/);
+  Object.assign(res.locals, {
+   page: 'home', active: 'home', other: other(lang, 'home'), spots: sp,
+   h1: heading, heroChars: Math.max(8, ...words.map(w => w.length)),
+   heroCharsM: Math.max(8, ...words.flatMap(w => w.split(/(?<=-)/)).map(w => w.length)),
+   lead: top.length ? fmt(b.formLive ? t.lead : t.leadPhone, { list: top.slice(0, 3).map((n, i) => (i ? n.charAt(0).toLowerCase() + n.slice(1) : n)).join(', ') }) : t.leadOther,
+   hero: cutaway.render({ house: b.design.house, mirror: b.design.mirror, spots: sp, title: t.cutawayAlt }),
+   title: `${b.brand_name} · ${lang === 'en' ? 'Plumber in' : 'Plombier à'} ${b.city}`,
+   description: fmt(lang === 'en' ? 'Plumber in {city}: {list}. Call {phone} or request an estimate online.' : 'Plombier à {city} : {list}. Appelez au {phone} ou demandez une estimation en ligne.', { city: b.city, list: top.join(', ').toLowerCase(), phone: b.phone }),
+  });
+  res.render('index');
+ });
+ router.get(['/services', '/en/services'], page('services', 'services', req => ({ other: other(req.lang, 'services'), title: `${T[req.lang].servicesTitle} · ${req.b.brand_name}` })));
+ router.get(['/services/:id', '/en/services/:id'], (req, res, next) => {
+  const { b, lang } = res.locals;
+  const service = b.visible.find(s => s.id === req.params.id);
+  if (!service) return next();
+  const sp = spots(b, lang).find(s => s.id === service.id);
+  Object.assign(res.locals, {
+   page: 'service', active: 'services', service, spot: sp || null, other: other(lang, 'service', service.id),
+   zone: (service.zones || [])[0] || 'house',
+   related: b.visible.filter(s => s.id !== service.id).slice(0, 3),
+   title: `${service.name[lang]} · ${b.brand_name} · ${b.city}`, description: service.intro[lang],
+  });
+  res.render('service');
+ });
+ router.get(['/contact', '/en/contact'], page('contact', 'contact', req => ({ other: other(req.lang, 'contact'), title: `${T[req.lang].contactTitle} · ${req.b.brand_name}` })));
+ router.get(['/estimation', '/en/estimate'], (req, res) => {
+  const { b, lang, t } = res.locals;
+  const chosen = b.visible.find(s => s.id === req.query.service && s.state !== 'hidden');
+  Object.assign(res.locals, { page: 'request', active: 'request', other: other(lang, 'estimate'), chosen: chosen ? chosen.id : '', URGENCY, PROPERTY, title: `${t.requestTitle} · ${b.brand_name}` });
+  res.render('request');
+ });
+ router.get(['/confidentialite', '/en/privacy'], page('privacy', 'privacy', req => ({ other: other(req.lang, 'privacy'), title: `${T[req.lang].privacyTitle} · ${req.b.brand_name}` })));
+ // addresses of the first version
+ const MOVED = { '/demande': 'estimation', '/en/demande': 'en/estimate', '/en/confidentialite': 'en/privacy' };
+ for (const [from, to] of Object.entries(MOVED)) router.get(from, (req, res) => res.redirect(301, tenantPath(req, '/' + to)));
+
+ // --- the request form -------------------------------------------------------------
+ router.post('/api/requests', wrap(async (req, res) => {
+  const b = req.b;
+  if (!b.formLive) return res.status(403).json({ code: 'closed' });
+  const x = req.body || {};
+  if (x.website) return res.status(400).json({ code: 'invalid' });
+  const name = clip(x.name, 120), phone = clip(x.phone, 40), email = clip(x.email, 200).toLowerCase(), address = clip(x.address, 300), message = clip(x.message, 3000);
+  const serviceId = clip(x.service_id, 80), urgency = URGENCY.includes(x.urgency) ? x.urgency : 'soon', property = PROPERTY.includes(x.property_type) ? x.property_type : null;
+  const digits = phone.replace(/\D/g, '').length;
+  const bad = [];
+  if (name.length < 2) bad.push('name');
+  if (digits < 10 || digits > 15) bad.push('phone');
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) bad.push('email');
+  if (address.length < 5) bad.push('address');
+  if (message.length < 5) bad.push('message');
+  if (x.consent !== true) bad.push('consent');
+  if (serviceId && !b.visible.some(s => s.id === serviceId)) bad.push('service_id');
+  if (bad.length) return res.status(400).json({ code: 'invalid', fields: bad });
+  const key = req.ip || 'unknown', now = Date.now();
+  for (const [k, v] of limits) if (now - v.start > 600000) limits.delete(k);
+  const lim = limits.get(key) || { start: now, count: 0 };
+  if (lim.count >= 5) return res.status(429).json({ code: 'rate_limited' });
+  lim.count++; limits.set(key, lim);
+  const lang = x.language === 'en' ? 'en' : 'fr';
+  const row = await db.get(`INSERT INTO plumbing_requests(name, phone, email, address, service_id, urgency, property_type, message, language, source)
+   VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,'web') RETURNING id`, [name, phone, email || null, address, serviceId || null, urgency, property, message, lang]);
+  const reference = 'D-' + String(row.id).padStart(4, '0');
+  await db.run('UPDATE plumbing_requests SET reference = $1 WHERE id = $2', [reference, row.id]);
+  const svc = b.services.find(s => s.id === serviceId);
+  const r = { reference, name, phone, email, address, message, language: lang, service_label: svc ? svc.name.fr : 'Autre', urgency_label: T.fr.urgency[urgency] };
+  await mail.requestToOwner(b, r, absolute(req, '/admin/demandes/' + row.id));
+  await mail.requestAck(b, r);
+  res.status(201).json({ id: row.id, reference });
  }));
- router.put('/api/admin/requests/:id',owner,sameOrigin,wrap(async(req,res)=>{
-  if(!/^\d+$/.test(req.params.id)||!['new','contacted','closed'].includes(req.body?.status))return res.status(400).json({error:'Invalid status'});
-  const row=await db.get('UPDATE plumbing_requests SET status=$1 WHERE id=$2 RETURNING id',[req.body.status,req.params.id]);if(!row)return res.status(404).json({error:'Not found'});res.json({ok:true});
+
+ // --- the customer's private document link ------------------------------------------
+ async function customerDoc(req, res) {
+  const doc = await docs.byToken(req.params.token);
+  if (!doc) return null;
+  const owner = res.locals.isOwner;
+  if (doc.status === 'draft' && !owner) return null;
+  return { doc, owner };
+ }
+ router.get('/document/:token', wrap(async (req, res, next) => {
+  const found = await customerDoc(req, res);
+  if (!found) return next();
+  const { doc, owner } = found;
+  const lang = doc.language === 'en' ? 'en' : 'fr';
+  if (!owner && !doc.viewed_at) {
+   await db.run('UPDATE documents SET viewed_at = NOW() WHERE id = $1 AND viewed_at IS NULL', [doc.id]);
+   await docs.log(doc.id, 'viewed');
+  }
+  res.set('X-Robots-Tag', 'noindex, nofollow');
+  res.set('Cache-Control', 'no-store');
+  Object.assign(res.locals, {
+   lang, t: T[lang], page: 'document', doc, owner, state: D.customerState(doc, S.today()),
+   decidedOn: doc.decided_at ? S.local(new Date(doc.decided_at)).date : '',
+   money: c => D.money(c, lang), qtyf: n => D.qty(n, lang), longDate: d => S.longDate(d, lang),
+   text: v => (v && typeof v === 'object' ? v[lang] || v.fr || '' : v || ''),
+   title: `${doc.kind === 'estimate' ? T[lang].docEstimate : T[lang].docInvoice} ${doc.number || ''} · ${req.b.brand_name}`,
+  });
+  res.render('document');
  }));
- router.use((req,res)=>res.status(404).render('not-found'));
- router.use((err,req,res,_next)=>{if(err.type==='entity.too.large')return res.status(413).json({error:'Request too large'});if(err instanceof SyntaxError&&err.status===400)return res.status(400).json({error:'Invalid JSON'});res.status(500).json({error:'Unable to complete the request'});});
+ router.post('/api/document/:token/:decision(accept|decline)', wrap(async (req, res) => {
+  const found = await customerDoc(req, res);
+  if (!found || found.doc.kind !== 'estimate') return res.status(404).json({ code: 'not_found' });
+  const { doc } = found;
+  if (D.customerState(doc, S.today()) !== 'open') return res.status(409).json({ code: 'closed' });
+  const x = req.body || {};
+  if (req.params.decision === 'accept') {
+   const name = clip(x.name, 120);
+   if (name.length < 2 || x.agree !== true) return res.status(400).json({ code: 'invalid' });
+   await db.run("UPDATE documents SET status = 'accepted', decided_at = NOW(), decided_name = $1, updated_at = NOW() WHERE id = $2 AND status = 'sent'", [name, doc.id]);
+   await docs.log(doc.id, 'accepted', name);
+  } else {
+   const reason = clip(x.reason, 500);
+   await db.run("UPDATE documents SET status = 'declined', decided_at = NOW(), decline_reason = $1, updated_at = NOW() WHERE id = $2 AND status = 'sent'", [reason || null, doc.id]);
+   await docs.log(doc.id, 'declined', reason);
+  }
+  const fresh = await docs.load(doc.id);
+  await mail.decisionToOwner(req.b, fresh, absolute(req, '/admin/documents/' + doc.id));
+  res.json({ ok: true, status: fresh.status });
+ }));
+
+ registerAdmin(router, { services, db, store, docs, mail, wrap, tenantPath, absolute, isOwner, PAGES, URGENCY, PROPERTY, fmt, clip });
+
+ router.use((req, res) => {
+  if (req.path.startsWith('/api/')) return res.status(404).json({ code: 'not_found' });
+  res.status(404);
+  res.locals.page = 'not-found';
+  res.locals.title = res.locals.t ? res.locals.t.notFound : 'Page introuvable.';
+  res.render('not-found');
+ });
+ // eslint-disable-next-line no-unused-vars
+ router.use((err, req, res, _next) => {
+  if (err && err.type === 'entity.too.large') return res.status(413).json({ code: 'too_large' });
+  if (err instanceof SyntaxError && err.status === 400) return res.status(400).json({ code: 'invalid_json' });
+  const status = err && err.status && err.status < 500 ? err.status : 500;
+  if (status >= 500) console.error('[plumbing]', req.method, req.path, err && (err.stack || err.message));
+  if (req.path.startsWith('/api/') || req.method !== 'GET') return res.status(status).json({ code: (err && err.code) || 'server_error', message: status < 500 && err ? err.message : undefined });
+  res.status(status).type('text').send(status === 403 && err && err.message ? err.message : 'Erreur. Réessayez dans un instant.');
+ });
  return router;
 };
