@@ -1,9 +1,9 @@
 'use strict';
 /**
  * The site's design (business.json → design, picked by scripts/prospect_build/plumbing/design.js)
- * as CSS custom properties, the Google Fonts link and the logo mark.
- * The stylesheet only ever reads var(--…); a family adds structural rules through
- * html[data-family="…"] selectors in site.css.
+ * as CSS custom properties (written into the stylesheets by scaffold.js), the Google Fonts link
+ * and the logo mark. A family adds structural rules through html[data-family="…"] in styles.css.
+ * The mark carries data-brand-mark: the offer page's logo customisation swaps it for the emblem.
  */
 function vars(design) {
  const t = design.tokens, f = design.fonts;
@@ -13,6 +13,7 @@ function vars(design) {
  out.push(`--font-text:'${f.text}',system-ui,-apple-system,'Segoe UI',sans-serif`);
  out.push(`--wf:${f.wf || 0.62}`, `--display-weight:${f.displayWeight}`, `--display-case:${f.displayCase}`, `--display-tracking:${f.displayTracking}`);
  out.push(`--r:${design.radius}`, `--r-lg:${design.radiusLg}`);
+ out.push(`--brand:${t.accent}`);
  return out.join(';');
 }
 
@@ -39,7 +40,7 @@ function mark(design, brand, { size = 44, label = '' } = {}) {
  const shape = SHAPES[design.mark] || SHAPES.square;
  const fs = letters.length > 1 ? 24 : 32;
  const y = design.mark === 'drop' ? 47 : 43;
- return `<svg class="mark mark-${design.mark}" width="${size}" height="${size}" viewBox="0 0 64 64" ${label ? `role="img" aria-label="${label}"` : 'aria-hidden="true"'}>${shape}<text x="32" y="${y}" text-anchor="middle" class="mk-letter" style="font-size:${fs}px">${letters}</text></svg>`;
+ return `<svg class="mark mark-${design.mark}" data-brand-mark width="${size}" height="${size}" viewBox="0 0 64 64" ${label ? `role="img" aria-label="${label}"` : 'aria-hidden="true"'}>${shape}<text x="32" y="${y}" text-anchor="middle" class="mk-letter" style="font-size:${fs}px">${letters}</text></svg>`;
 }
 
 module.exports = { vars, mark, initials, SHAPES };

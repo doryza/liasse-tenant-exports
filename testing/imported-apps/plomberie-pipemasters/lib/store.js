@@ -124,7 +124,10 @@ function business(raw) {
  const b = {
   ...base,
   business_name: name,
-  brand_name: brandOf(name),
+  // A name the owner (or the offer page's name change) set renders exactly as typed; only the
+  // listing's name loses its legal suffix. Re-deriving a short form from a new name would let
+  // the platform's rename replace an old alias inside it a second time.
+  brand_name: (raw.business_name || '').trim() || brandOf(base.business_name),
   phone: (raw.phone || '').trim() || base.phone,
   email: pick(raw, 'email', base.email || '').trim(),
   address: (raw.business_address || '').trim(),

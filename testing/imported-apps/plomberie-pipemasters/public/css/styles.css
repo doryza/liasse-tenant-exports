@@ -1,7 +1,30 @@
 /* Plumbing family — one structure, four personalities (html[data-family]), three hero layouts
-   (html[data-hero]). Colours, fonts and radii arrive as custom properties from lib/theme.js. */
-:root{--paper:#f6f8fb;--ink:#12284a;--accent:#c34e0f;--on-accent:#fff;--cold:#2f6fd6;--hot:#d8412f;--sheet:#fff;--body:#2e3f5a;--muted:#5b6a80;--line:#dfe4ec;--line2:#c9d0db;--wash:#e4ecf6;--warm:#fbe9e6;--band:#10233f;--band-text:#fff;--band-muted:#b9c2cf;--drain:#3f4f66;--soil:#d5dbe4;--soil-dot:#a9b3c2;--room:#fafbfd;--wall:#12284a;--glass:#c6d8f3;
- --font-display:system-ui,sans-serif;--font-text:system-ui,sans-serif;--display-weight:800;--display-case:none;--display-tracking:-0.02em;--r:4px;--r-lg:8px;--wrap:1200px;--gutter:clamp(16px,4vw,40px);--header-h:76px}
+   (html[data-hero]). Colours, fonts and radii are the custom properties of the tokens block below;
+   change a site's colours there (or regenerate it with scaffold.js). The platform reads --brand. */
+/* tokens:start — written by scaffold.js from business.json design (site colours, fonts, --brand) */
+:root{--paper:#f3f4f6;--ink:#13233a;--accent:#ffc629;--on-accent:#13233a;--cold:#3d8fe0;--hot:#e8513a;--sheet:#ffffff;--body:#3b495c;--muted:#5f6a7a;--line:#d4d7dc;--line2:#b9bec5;--wash:#dde8f3;--warm:#f2e4e3;--band:#13233a;--band-text:#ffffff;--band-muted:#acb2ba;--drain:#2e3a4c;--soil:#c6cad0;--soil-dot:#9ea5af;--room:#f1f2f3;--wall:#13233a;--glass:#cfe3f7;--font-display:'Barlow Condensed',system-ui,sans-serif;--font-text:'Barlow',system-ui,-apple-system,'Segoe UI',sans-serif;--wf:0.48;--display-weight:800;--display-case:uppercase;--display-tracking:0;--r:4px;--r-lg:8px;--brand:#ffc629;--wrap:1200px;--gutter:clamp(16px,4vw,40px);--header-h:76px}
+/* tokens:end */
+/* cutaway:start — written by scaffold.js from lib/cutaway.js */
+.cw-soil{fill:var(--soil)}.cw-stone{fill:var(--soil-dot)}.cw-grass{fill:var(--soil-dot)}.cw-curb{fill:var(--line2)}.cw-road{fill:var(--ink);opacity:.82}
+.cw-shrub{fill:var(--soil-dot);opacity:.55}.cw-trunk{fill:var(--soil-dot);opacity:.7}
+.cw-room{fill:var(--room)}.cw-cellar{fill:var(--wash)}.cw-attic{fill:var(--wash)}.cw-roof{fill:none;stroke:var(--wall);stroke-width:14;stroke-linejoin:round;stroke-linecap:round}
+.cw-wall,.cw-slab{fill:var(--wall)}.cw-cornice{fill:var(--wall)}.cw-dent{fill:var(--room)}.cw-glass{fill:var(--glass)}.cw-part{fill:var(--line2)}
+.cw-balcony{fill:var(--wall)}.cw-rail{fill:none;stroke:var(--wall);stroke-width:4;stroke-linecap:round}
+.cw-fix{fill:var(--sheet);stroke:var(--wall);stroke-width:3;stroke-linejoin:round}.cw-fix-line{fill:none;stroke:var(--wall);stroke-width:3}.cw-basin{fill:var(--glass);stroke:var(--wall);stroke-width:3}
+.cw-tap{fill:var(--wall)}.cw-tap-line{fill:none;stroke:var(--wall);stroke-width:4;stroke-linecap:round}
+.cw-heater{fill:var(--sheet);stroke:var(--wall);stroke-width:3}.cw-heater-line{fill:none;stroke:var(--wall);stroke-width:3}.cw-heater-panel{fill:var(--wall)}.cw-gauge{fill:var(--accent)}
+.cw-meter{fill:var(--sheet);stroke:var(--wall);stroke-width:3;rx:4}.cw-valve{fill:var(--accent)}.cw-valve-stem{stroke:var(--wall);stroke-width:4;stroke-linecap:round}
+.cw-sensor{fill:var(--accent)}.cw-pit{fill:var(--soil);stroke:var(--wall);stroke-width:4}.cw-water{fill:var(--cold);opacity:.35}.cw-pump{fill:var(--wall);rx:4}
+.cw-discharge{stroke:var(--drain);stroke-width:8;stroke-linecap:round}.cw-grate{fill:var(--wall)}
+.cw-backflow{fill:var(--sheet);stroke:var(--wall);stroke-width:3;rx:5}.cw-flap{fill:var(--accent)}
+.cw-main{fill:var(--sheet);stroke:var(--cold);stroke-width:6}.cw-sewer{fill:var(--sheet);stroke:var(--drain);stroke-width:8}.cw-sewer-in{fill:var(--line2)}
+.cw-curbstop{stroke:var(--wall);stroke-width:5}.cw-curbcap{fill:var(--wall)}.cw-sillcock{fill:none;stroke:var(--wall);stroke-width:5;stroke-linejoin:round;stroke-linecap:round}
+.cw-drain{fill:none;stroke:var(--drain);stroke-width:9;stroke-linecap:round;stroke-linejoin:round}
+.cw-cold,.cw-hot{fill:none;stroke-width:5.5;stroke-linecap:round;stroke-linejoin:round}.cw-cold{stroke:var(--cold)}.cw-hot{stroke:var(--hot)}
+.cw-drip path{fill:var(--cold)}
+.cw-spot{cursor:pointer;outline:none}.cw-spot-ring{fill:var(--sheet);opacity:.9}.cw-spot-dot{fill:var(--ink);transition:fill .15s}.cw-spot-n{fill:var(--sheet);font:700 15px/1 var(--font-text),system-ui,sans-serif;pointer-events:none}
+.cw-spot:hover .cw-spot-dot,.cw-spot.is-lit .cw-spot-dot{fill:var(--accent)}.cw-spot:hover .cw-spot-n,.cw-spot.is-lit .cw-spot-n{fill:var(--on-accent)}
+/* cutaway:end */
 *,*::before,*::after{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%;scroll-padding-top:calc(var(--header-h) + 16px)}
 body{margin:0;background:var(--paper);color:var(--body);font:400 17px/1.6 var(--font-text);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}

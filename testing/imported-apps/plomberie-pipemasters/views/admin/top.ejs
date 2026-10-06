@@ -32,13 +32,12 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="<%= fontsHref %>">
 <link rel="stylesheet" href="public/css/admin.css">
-<style>:root{<%- themeVars %>}</style>
 </head>
 <body class="admin" data-section="<%= section %>" data-lang="<%= lang %>">
 <a class="skip" href="#admin-main"><%= tr('Aller au contenu', 'Skip to content') %></a>
 <div class="ad-shell">
  <aside class="ad-side" id="ad-side">
-  <a class="ad-brand" href="admin<%= lang === 'en' ? '?lang=en' : '' %>"><%- mark({ size: 38 }) %><span><strong><%= b.brand_name %></strong><small><%= tr('Gestion', 'Back office') %></small></span></a>
+  <a class="ad-brand admin-brand" href="admin<%= lang === 'en' ? '?lang=en' : '' %>"><%- mark({ size: 38 }) %><span><strong><%= b.brand_name %></strong><small><%= tr('Gestion', 'Back office') %></small></span></a>
   <nav class="ad-nav" aria-label="<%= tr('Menu', 'Menu') %>">
    <% NAV.forEach(function (n) { %><a href="<%= n[1] %>"<%- section === n[0] ? ' aria-current="page"' : '' %><%- n[4] ? ' class="is-off"' : '' %>><%- svg(n[0]) %><span><%= n[2] %></span><% if (n[3]) { %><span class="badge"><%= n[3] %></span><% } %><% if (n[4]) { %><span class="off-tag"><%= tr('Inactif', 'Off') %></span><% } %></a><% }) %>
   </nav>
@@ -50,7 +49,7 @@
  </aside>
  <div class="ad-body">
   <header class="ad-top">
-   <a class="ad-brand" href="admin"><%- mark({ size: 32 }) %><strong><%= b.brand_name %></strong></a>
+   <a class="ad-brand admin-brand" href="admin"><%- mark({ size: 32 }) %><strong><%= b.brand_name %></strong></a>
    <button class="ad-menu" type="button" aria-controls="ad-side" aria-expanded="false"><%= tr('Menu', 'Menu') %></button>
   </header>
   <main class="ad-main" id="admin-main">

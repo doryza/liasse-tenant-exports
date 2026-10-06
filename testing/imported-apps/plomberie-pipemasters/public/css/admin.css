@@ -1,4 +1,7 @@
-/* Back office. Same tokens as the site (lib/theme.js); text face only, display face for page titles. */
+/* Back office. Same tokens as the site; text face only, display face for page titles. */
+/* tokens:start — written by scaffold.js from business.json design */
+:root{--paper:#f3f4f6;--ink:#13233a;--accent:#ffc629;--on-accent:#13233a;--cold:#3d8fe0;--hot:#e8513a;--sheet:#ffffff;--body:#3b495c;--muted:#5f6a7a;--line:#d4d7dc;--line2:#b9bec5;--wash:#dde8f3;--warm:#f2e4e3;--band:#13233a;--band-text:#ffffff;--band-muted:#acb2ba;--drain:#2e3a4c;--soil:#c6cad0;--soil-dot:#9ea5af;--room:#f1f2f3;--wall:#13233a;--glass:#cfe3f7;--font-display:'Barlow Condensed',system-ui,sans-serif;--font-text:'Barlow',system-ui,-apple-system,'Segoe UI',sans-serif;--wf:0.48;--display-weight:800;--display-case:uppercase;--display-tracking:0;--r:4px;--r-lg:8px;--brand:#ffc629}
+/* tokens:end */
 *,*::before,*::after{box-sizing:border-box}
 body.admin{margin:0;background:#f3f4f6;background:color-mix(in srgb,var(--paper) 55%,#eef0f3);color:var(--body);font:400 15.5px/1.5 var(--font-text);-webkit-font-smoothing:antialiased}
 a{color:var(--ink)}

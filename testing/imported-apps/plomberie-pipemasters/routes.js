@@ -21,7 +21,6 @@ const PAGES = {
  en: { home: 'en/', services: 'en/services', service: 'en/services/', contact: 'en/contact', estimate: 'en/estimate', privacy: 'en/privacy' },
 };
 const URGENCY = ['urgent', 'soon', 'planned'];
-const CUTAWAY_CSS = cutaway.css().replace(/\n/g, '');
 const PROPERTY = ['house', 'condo', 'plex', 'commercial'];
 
 function tenantPath(req, target) {
@@ -78,7 +77,7 @@ module.exports = function (services) {
    tenantRoot: tenantPath(req, '/'),
    fmt, text: v => (v && typeof v === 'object' ? v[lang] || v.fr || '' : v || ''),
    money: c => D.money(c, lang), qtyf: n => D.qty(n, lang), longDate: d => S.longDate(d, lang), clock: x => S.clock(x, lang),
-   themeVars: theme.vars(b.design), cutawayCss: CUTAWAY_CSS, fontsHref: b.design.fonts.href, family: b.design.family, heroLayout: b.design.hero,
+   fontsHref: b.design.fonts.href, family: b.design.family, heroLayout: b.design.hero,
    mark: (opts) => theme.mark(b.design, b.brand_name, opts),
    detail: zone => cutaway.render({ house: b.design.house, mirror: b.design.mirror, zone }),
    year: now.year, seasonKey: S.season(now.month), thisYear: now.year, weekday: now.weekday,
@@ -121,7 +120,7 @@ module.exports = function (services) {
   const sp = spots(b, lang);
   const top = b.visible.slice(0, 4).map(s => s.name[lang]);
   const h1 = b.emergency ? t.h1Always : t.h1[(b.headline || 0) % t.h1.length];
-  // The title sizes itself so its longest word fits the column (--hero-chars, site.css); on
+  // The title sizes itself so its longest word fits the column (--hero-chars, styles.css); on
   // phones it is sized by the longest hyphen segment and a long town breaks at a hyphen.
   // Plain text only: the inline editor rewrites a heading that holds a single text node.
   const heading = fmt(h1, { city: b.city, brand: b.brand_name });

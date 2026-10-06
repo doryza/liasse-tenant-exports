@@ -1,3 +1,4 @@
+/* eslint-env browser */
 /* Public pages: menu, emergency tabs, the house legend, the water-heater tool, the request
    form and the estimate decision. Works without it: tabs fall back to stacked panels. */
 'use strict';

@@ -1,3 +1,4 @@
+/* eslint-env browser */
 /* Back office. No platform SDK on /admin (it is stripped there): plain fetch, same-origin,
    X-Requested-With header for the router's guard. Failures show at the control and in a toast. */
 'use strict';
