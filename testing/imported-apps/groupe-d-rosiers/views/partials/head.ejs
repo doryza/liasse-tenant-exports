@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="<%= lang %>" data-family="<%= family %>" data-hero="<%= heroLayout %>">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<base href="<%= tenantRoot %>">
+<title><%= title || (b.brand_name + ' · ' + b.city) %></title>
+<% if (description) { %><meta name="description" content="<%= description %>"><% } %>
+<meta name="theme-color" content="<%= b.design.tokens.ink %>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="<%= fontsHref %>">
+<link rel="stylesheet" href="public/css/styles.css">
+<link rel="manifest" href="manifest.json">
+</head>
+<body class="page-<%= page %>">
+<a class="skip" href="#main"><%= t.skip %></a>
