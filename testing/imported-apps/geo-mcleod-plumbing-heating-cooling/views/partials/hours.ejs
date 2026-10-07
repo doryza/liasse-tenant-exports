@@ -1,0 +1,16 @@
+<div class="hours-card">
+ <h3><%= t.hoursTitle %></h3>
+ <% if (b.hours) { %>
+ <table class="hours-table">
+  <% for (var d = 1; d <= 7; d++) { %><tr<%- d === weekday ? ' class="is-today"' : '' %>><th scope="row"><%= t.days[d] %></th><td><%= b.hours[d] ? clock(b.hours[d][0]) + ' – ' + clock(b.hours[d][1]) : t.closed %></td></tr><% } %>
+ </table>
+ <% if (b.emergency) { %><p class="hours-note"><%= t.emergencyLine %></p><% } %>
+ <% } else if (b.emergency) { %>
+ <p class="hours-big"><%= t.always %></p>
+ <% } else if (b.hoursText) { %>
+ <p class="hours-big"><%= text(b.hoursText) %></p>
+ <% } else { %>
+ <p><%= t.hoursUnknown %></p>
+ <% } %>
+ <a class="phone-big" href="<%= b.tel %>"><%= b.phone %></a>
+</div>
