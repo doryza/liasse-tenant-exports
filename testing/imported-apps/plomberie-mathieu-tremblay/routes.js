@@ -89,6 +89,8 @@ module.exports = function (services) {
    first: FIRST, bilingual: !!SECOND, otherHome: SECOND ? PAGES[lang === 'fr' ? 'en' : 'fr'].home : '', svcHref: s => PAGES[lang].service + serviceSlug(s, lang),
    money: c => D.money(c, lang), qtyf: n => D.qty(n, lang), longDate: d => S.longDate(d, lang), clock: x => S.clock(x, lang),
    fontsHref: b.design.fonts.href, family: b.design.family, heroLayout: b.design.hero,
+   // A long name needs the header room the phone number takes (styles.css, data-long-brand).
+   longBrand: b.brand_name.length > 24,
    mark: (opts) => theme.mark(b.design, b.brand_name, opts),
    detail: zone => cutaway.render({ house: b.design.house, mirror: b.design.mirror, zone }),
    year: now.year, seasonKey: S.season(now.month), thisYear: now.year, weekday: now.weekday, invoicePrefix: FIRST === 'en' ? 'INV' : 'F',
