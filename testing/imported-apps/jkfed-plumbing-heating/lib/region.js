@@ -47,7 +47,7 @@ const TZ_TOWNS = {
  'NL:labrador city': 'America/Goose_Bay', 'NL:wabush': 'America/Goose_Bay', 'NL:happy valley-goose bay': 'America/Goose_Bay', 'NL:churchill falls': 'America/Goose_Bay',
 };
 /** Coast and islands of BC: rain, rarely deep frost — the seasonal tips are named for it. */
-const MILD = new Set(['vancouver', 'north vancouver', 'west vancouver', 'burnaby', 'richmond', 'surrey', 'delta', 'langley', 'langley twp', 'new westminster', 'coquitlam',
+const MILD = new Set(['vancouver', 'north vancouver', 'west vancouver', 'burnaby', 'richmond', 'surrey', 'delta', 'langley', 'langley twp', 'langley township', 'new westminster', 'coquitlam',
  'port coquitlam', 'port moody', 'maple ridge', 'pitt meadows', 'white rock', 'abbotsford', 'mission', 'chilliwack', 'squamish', 'victoria', 'saanich', 'langford',
  'colwood', 'sooke', 'sidney', 'nanaimo', 'parksville', 'qualicum beach', 'errington', 'courtenay', 'comox', 'campbell river', 'duncan', 'cowichan bay',
  'port alberni', 'powell river', 'sechelt', 'gibsons', 'garden bay', 'prince rupert', 'ladysmith', 'chemainus', 'tofino', 'ucluelet']);
