@@ -442,6 +442,12 @@ html[data-family="camion"] .card-detail{background:var(--accent);color:var(--on-
  .tip{grid-column:1/-1}
  .process-list{grid-template-columns:1fr 1fr}
 }
+/* A long business name: the header shows the phone icon only, up to laptop widths. */
+@media (max-width:1180px){
+ html[data-long-brand] .phone-link span{display:none}
+ html[data-long-brand] .phone-link{width:46px;height:46px;justify-content:center;border:1px solid var(--line2);border-radius:var(--r)}
+ html[data-long-brand][data-family="camion"] .phone-link{border-color:rgba(255,255,255,.35)}
+}
 @media (max-width:960px){
  .phone-link span{display:none}
  .phone-link{width:46px;height:46px;justify-content:center;border:1px solid var(--line2);border-radius:var(--r)}
@@ -455,7 +461,7 @@ html[data-family="camion"] .card-detail{background:var(--accent);color:var(--on-
  .header-actions{margin-left:auto;gap:10px}
  .hero-grid,html[data-hero="stack"] .hero-art{grid-template-columns:1fr}
  html[data-hero="split-rev"] .hero-copy{order:0}
- .guide-grid,.prevent-grid,.area-grid,.faq-grid,.service-grid,.request-grid,.contact-grid{grid-template-columns:1fr}
+ .guide-grid,.prevent-grid,.area-grid,.faq-grid,.service-grid,.request-grid,.contact-grid{grid-template-columns:minmax(0,1fr)}
  .legend-list,html[data-hero="stack"] .legend-list{grid-template-columns:1fr 1fr}
 }
 @media (max-width:720px){
@@ -472,6 +478,7 @@ html[data-family="camion"] .card-detail{background:var(--accent);color:var(--on-
  .process-list{grid-template-columns:1fr}
  .contact-list>div{grid-template-columns:1fr;gap:4px}
  .footer-grid{grid-template-columns:1fr}
+ .btn{white-space:normal;text-align:center}
  .cta-actions,.cta-actions .btn{width:100%}
  .hero-actions .btn{flex:1 1 100%}
  .doc-kind{text-align:left}.doc-kind dl>div{justify-content:flex-start}
