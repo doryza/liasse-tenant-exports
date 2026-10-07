@@ -1,0 +1,29 @@
+<%- include('top', { pageTitle: customer.name }) %>
+<a class="back" href="admin/clients"><%= tr('Clients', 'Customers') %></a>
+<div class="ad-head">
+ <div><h1><%= customer.name %></h1><p class="ad-sub"><%= tr('Client depuis le', 'Customer since') %> <%= stamp(customer.created_at) %></p></div>
+ <div class="row-actions"><% if (customer.phone) { %><a class="abtn" href="tel:<%= customer.phone %>"><%= tr('Appeler', 'Call') %></a><% } %><% if (b.documents) { %><button class="abtn primary" type="button" data-new-doc="estimate" data-customer="<%= customer.id %>">+ <%= tr('Nouvelle estimation', 'New estimate') %></button><% } %></div>
+</div>
+<div class="detail-grid">
+ <section class="panel">
+  <form class="sheet-form" data-api="api/admin/customers/<%= customer.id %>" data-method="PUT" data-reload>
+   <label class="afield"><span><%= tr('Nom', 'Name') %></span><input name="name" required minlength="2" maxlength="160" value="<%= customer.name %>"></label>
+   <div class="grid2"><label class="afield"><span><%= tr('Téléphone', 'Phone') %></span><input name="phone" type="tel" maxlength="40" value="<%= customer.phone || '' %>"></label><label class="afield"><span><%= tr('Courriel', 'Email') %></span><input name="email" type="email" maxlength="200" value="<%= customer.email || '' %>"></label></div>
+   <label class="afield"><span><%= tr('Adresse', 'Address') %></span><input name="address" maxlength="300" value="<%= customer.address || '' %>"></label>
+   <% if (bilingual) { %><label class="afield"><span><%= tr('Langue', 'Language') %></span><select name="language"><option value="fr"<%- customer.language === 'fr' ? ' selected' : '' %>>Français</option><option value="en"<%- customer.language === 'en' ? ' selected' : '' %>>English</option></select></label><% } else { %><input type="hidden" name="language" value="<%= first %>"><% } %>
+   <label class="afield"><span><%= tr('Notes', 'Notes') %></span><textarea name="notes" rows="4" maxlength="4000"><%= customer.notes || '' %></textarea></label>
+   <button class="abtn primary" type="submit" data-submit><%= tr('Enregistrer', 'Save') %></button>
+  </form>
+ </section>
+ <aside class="panel">
+  <h2 class="h-small"><%= tr('Demandes', 'Requests') %></h2>
+  <% if (!requests.length) { %><p class="small"><%= tr('Aucune.', 'None.') %></p><% } %>
+  <ul class="mini-docs"><% requests.forEach(function (r) { %><li><a href="admin/demandes/<%= r.id %>"><%= r.reference %></a> <span class="status s-<%= r.status %>"><%= L.request[r.status] %></span> <small><%= stamp(r.created_at) %></small></li><% }) %></ul>
+  <% if (b.documents) { %>
+  <h2 class="h-small"><%= tr('Estimations et factures', 'Estimates & invoices') %></h2>
+  <% if (!documents.length) { %><p class="small"><%= tr('Aucun document.', 'No documents.') %></p><% } %>
+  <ul class="mini-docs"><% documents.forEach(function (d) { %><li><a href="admin/documents/<%= d.id %>"><%= d.number || tr('Facture (brouillon)', 'Invoice (draft)') %></a> <span class="status s-<%= d.status %>"><%= (d.kind === 'estimate' ? L.estimate : L.invoice)[d.status] %></span> <%= money(d.total_cents) %></li><% }) %></ul>
+  <% } %>
+ </aside>
+</div>
+<%- include('bottom') %>
