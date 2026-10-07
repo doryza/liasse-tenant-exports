@@ -1,0 +1,159 @@
+{
+  "city": "Alma",
+  "hours": {
+    "verification_status": "needs_verification"
+  },
+  "contact": {
+    "email": null,
+    "phone": "(418) 662-6662"
+  },
+  "licence": {
+    "neq": "1148335921",
+    "rbq": "8229-7037-27",
+    "holder": "9073-9210 Québec inc.",
+    "status": "active",
+    "plumbing": true,
+    "matched_on": [
+      "phone",
+      "name"
+    ],
+    "source_url": "https://www.donneesquebec.ca/recherche/dataset/licencesactives",
+    "observed_at": "2026-10-06",
+    "subcategories": [
+      "15.4",
+      "15.5"
+    ],
+    "verification_status": "listing_verified"
+  },
+  "sources": [
+    {
+      "url": "https://www.google.com/maps/place/Plomberie+Expert/data=!4m7!3m6!1s0x4cea762feea14c37:0x1deb56a71b4f704a!8m2!3d48.5677855!4d-71.6425494!16s%2Fg%2F11b5wjzd5c!19sChIJN0yh7i926kwRSnBPG6dW6x0",
+      "type": "google_maps",
+      "notes": "Profile individually opened; phone, rating, reviews, address and linked website transcribed.",
+      "observed_at": "2026-10-06"
+    }
+  ],
+  "version": 1,
+  "branding": {
+    "permission_status": "original design; owner approval pending"
+  },
+  "campaign": "plumbing-quebec-2026-10-06",
+  "industry": "plumbing",
+  "services": {
+    "items": [],
+    "verification_status": "needs_verification"
+  },
+  "research_key": "plumbing-qc-20261006-plomberie-expert",
+  "build_handoff": {
+    "mode": "draft-to-confirm",
+    "mailing_ready": true,
+    "content_constraints": [
+      "Do not invent hours, services, licenses, team, prices, promises or testimonials.",
+      "Google rating is a dated observation.",
+      "Keep customer submissions and outgoing actions disabled pending owner verification.",
+      "No business photos cleared; use original illustrations.",
+      "Check actual independent website and capacity before speculative build.",
+      "If transactional features are built, complete the dossier's regional requirements before enabling live charges: confirm job location, tax registrations, supply taxability, current rates, payment timing, CAD totals and applicable customer terms. Reference rates are not an active tax configuration."
+    ],
+    "regional_requirements": {
+      "taxes": {
+        "source_urls": [
+          "https://www.canada.ca/en/revenue-agency/services/tax/businesses/topics/gst-hst-businesses/charge-collect-which-rate/calculator.html",
+          "https://www.canada.ca/en/revenue-agency/services/tax/businesses/topics/gst-hst-businesses/charge-collect-place-supply.html",
+          "https://www.canada.ca/en/revenue-agency/services/tax/businesses/topics/gst-hst-businesses/when-register-charge.html",
+          "https://www.canada.ca/en/revenue-agency/services/tax/businesses/topics/gst-hst-businesses/charge-collect-home-construction.html",
+          "https://www.revenuquebec.ca/en/businesses/consumption-taxes/gsthst-and-qst/special-cases-gsthst-and-qst/deposits/"
+        ],
+        "active_rates": null,
+        "jurisdiction_rule": "For ordinary on-site plumbing tied to one property, use the job property's province. Apply the appropriate place-of-supply rules separately to goods and other services; the business address alone does not determine tax.",
+        "reference_rates_only": true,
+        "reverify_before_live_use": true,
+        "tax_registration_numbers": null,
+        "business_province_reference": {
+          "note": "For applicable taxable supplies, calculate GST and QST separately on the pretax amount. Preserve QST precision and show separate tax amounts.",
+          "sources": [
+            "https://www.canada.ca/en/revenue-agency/services/tax/businesses/topics/gst-hst-businesses/charge-collect-which-rate/calculator.html",
+            "https://www.revenuquebec.ca/en/businesses/consumption-taxes/gsthst-and-qst/collecting-gst-and-qst/calculating-the-taxes/"
+          ],
+          "reference_rates": [
+            {
+              "tax": "GST",
+              "percent": 5
+            },
+            {
+              "tax": "QST",
+              "percent": 9.975
+            }
+          ]
+        },
+        "confirm_before_configuration": [
+          "Supplier legal identity, GST/HST and applicable QST/PST/RST registrations, effective dates and exemptions",
+          "Actual job/delivery location and supply classification for labour, materials, installed fixtures and retail-only goods",
+          "Current effective rates and taxability for each line item and applicable customer exemption evidence",
+          "Tax-inclusive or tax-exclusive pricing, separate tax labels, subtotal, rounding and final CAD total",
+          "Whether a payment is a true deposit, advance, progress payment or holdback, including refund or forfeiture treatment"
+        ],
+        "merchant_registration_status": "unknown",
+        "reference_jurisdiction_requires_confirmation": false
+      },
+      "country": "CA",
+      "currency": "CAD",
+      "timezone": {
+        "status": "confirm_for_actual_service_location",
+        "iana_zone": null,
+        "instruction": "Use the local booking timezone and its daylight-saving rules. Do not infer a single timezone from the province."
+      },
+      "reviewed_at": "2026-10-06",
+      "customer_terms": "Confirm province-appropriate estimate, deposit, cancellation, refund and warranty terms for the enabled features. Display only verified licence or permit claims.",
+      "policy_version": 1,
+      "business_province": "QC",
+      "province_evidence": {
+        "status": "public_source_observed",
+        "province": "QC",
+        "source_url": "https://www.google.com/maps/place/Plomberie+Expert/data=!4m7!3m6!1s0x4cea762feea14c37:0x1deb56a71b4f704a!8m2!3d48.5677855!4d-71.6425494!16s%2Fg%2F11b5wjzd5c!19sChIJN0yh7i926kwRSnBPG6dW6x0"
+      },
+      "transaction_setup": {
+        "status": "unconfigured",
+        "required_if": [
+          "checkout",
+          "paid_booking",
+          "deposit",
+          "advance_payment",
+          "invoice",
+          "online_payment"
+        ],
+        "tax_configuration_verified": false,
+        "live_charges_require_configuration_verification": true
+      },
+      "builder_validation": "Before activation, verify representative taxable and exempt cases, job provinces, rate dates, mixed labour/materials, deposits and refunds. Confirm displayed totals match the payment provider and invoice.",
+      "address_and_service_area": "Use Canadian address, province, postal-code and phone formats. Confirm job eligibility, service area, travel and call-out charges with the owner."
+    }
+  },
+  "business_name": "Plomberie Expert",
+  "qualification": {
+    "reason": "Plumber on Google Maps; 4.4/5 with 31 reviews; public phone; No website linked on Maps. Confirm independence, residential work, website ownership and new-job capacity",
+    "priority": "A — Verify & contact first",
+    "residential_scope": "unverified",
+    "independent_business": "unverified",
+    "recent_positive_sample": "5 months ago"
+  },
+  "mailing_address": {
+    "city": "Alma",
+    "street": "880 Av. Tanguay",
+    "country": "CA",
+    "province": "QC",
+    "source_url": "https://www.google.com/maps/place/Plomberie+Expert/data=!4m7!3m6!1s0x4cea762feea14c37:0x1deb56a71b4f704a!8m2!3d48.5677855!4d-71.6425494!16s%2Fg%2F11b5wjzd5c!19sChIJN0yh7i926kwRSnBPG6dW6x0",
+    "observed_at": "2026-10-06",
+    "postal_code": "G8B 5Y3",
+    "verification_status": "listing_verified"
+  },
+  "online_presence": {
+    "observed_at": "2026-10-06",
+    "website_url": null,
+    "google_rating": 4.4,
+    "website_status": "maps_gap_only; independent website verification pending",
+    "google_maps_url": "https://www.google.com/maps/place/Plomberie+Expert/data=!4m7!3m6!1s0x4cea762feea14c37:0x1deb56a71b4f704a!8m2!3d48.5677855!4d-71.6425494!16s%2Fg%2F11b5wjzd5c!19sChIJN0yh7i926kwRSnBPG6dW6x0",
+    "google_review_count": 31
+  },
+  "province": "QC"
+}
