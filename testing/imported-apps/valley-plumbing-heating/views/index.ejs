@@ -1,0 +1,124 @@
+<%- include('partials/head') %>
+<%- include('partials/header') %>
+<main id="main">
+ <section class="hero">
+  <div class="wrap hero-grid">
+   <div class="hero-copy">
+    <h1 class="hero-title" data-lk="hero-title" style="--hero-chars:<%= heroChars %>;--hero-chars-m:<%= heroCharsM %>"><%= h1 %></h1>
+    <p class="hero-lead" data-lk="hero-lead"><%= lead %></p>
+    <div class="hero-actions">
+     <a class="btn btn-accent btn-lg" href="<%= b.tel %>"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15.5 15.5 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg><%= b.phone %></a>
+     <a class="btn btn-ghost btn-lg" href="<%= U.estimate %>"><%= t.estimate %></a>
+    </div>
+    <% if (b.rating) { %>
+    <a class="rating" href="<%= b.rating.url %>" target="_blank" rel="noopener">
+     <span class="stars" aria-hidden="true"><% for (var i = 1; i <= 5; i++) { %><svg viewBox="0 0 20 20" class="<%= i <= b.rating.value + 0.25 ? 'on' : '' %>"><path d="M10 1.6l2.6 5.4 5.9.8-4.3 4.1 1 5.9L10 15l-5.2 2.8 1-5.9L1.5 7.8l5.9-.8z"/></svg><% } %></span>
+     <span><strong><%= fmt(t.rating, { value: b.rating.value.toLocaleString(lang === 'en' ? 'en-CA' : 'fr-CA', { minimumFractionDigits: 1 }), count: b.rating.count }) %></strong><small><%= fmt(t.ratingAsOf, { date: longDate(b.rating.observed_at) }) %></small></span>
+    </a>
+    <% } %>
+   </div>
+   <figure class="hero-art">
+    <div class="hero-drawing"><%- hero %></div>
+    <figcaption class="legend">
+     <h2 class="legend-title" data-lk="t:cutawayTitle"><%= t.cutawayTitle %></h2>
+     <p class="legend-hint" data-lk="t:cutawayHint"><%= t.cutawayHint %></p>
+     <ol class="legend-list">
+      <% spots.forEach(function (s) { %><li><a href="<%= s.href %>" data-spot="<%= s.n %>"><span class="legend-n"><%= s.n %></span><span><%= s.label %></span></a></li><% }) %>
+     </ol>
+    </figcaption>
+   </figure>
+  </div>
+  <div class="wrap">
+   <dl class="facts">
+    <div><dt><%= t.factHours %></dt><dd><%= b.hours ? hoursSummary : (b.emergency ? t.always : (b.hoursText ? text(b.hoursText) : t.hoursAsk)) %></dd></div>
+    <div><dt><%= t.factArea %></dt><dd><%= b.areas ? text(b.areas) : t.areaAsk %></dd></div>
+    <% if (b.payments) { %><div><dt><%= t.factPay %></dt><dd><%= text(b.payments) %></dd></div><% } %>
+    <% if (b.free_estimates) { %><div><dt><%= t.factEstimate %></dt><dd><%= t.estimateFree %></dd></div><% } %>
+   </dl>
+  </div>
+ </section>
+
+ <section class="section guide" id="urgence">
+  <div class="wrap guide-grid">
+   <div class="guide-head">
+    <h2 class="section-title" data-lk="t:guideTitle"><%= t.guideTitle %></h2>
+    <p class="section-intro" data-lk="t:guideIntro"><%= t.guideIntro %></p>
+    <a class="btn btn-accent" href="<%= b.tel %>"><%= t.guideCall %></a>
+   </div>
+   <div class="tabs" data-tabs>
+    <div class="tab-list" role="tablist">
+     <% t.guide.forEach(function (g, i) { %><button class="tab" type="button" role="tab" id="tab-<%= g.key %>" aria-controls="panel-<%= g.key %>" aria-selected="<%= i === 0 %>"><%= g.label %></button><% }) %>
+    </div>
+    <% t.guide.forEach(function (g, i) { %>
+    <div class="tab-panel" role="tabpanel" id="panel-<%= g.key %>" aria-labelledby="tab-<%= g.key %>">
+     <h3 class="tab-panel-title"><%= g.label %></h3>
+     <ol class="steps"><% g.steps.forEach(function (s) { %><li><%= s %></li><% }) %></ol>
+    </div>
+    <% }) %>
+   </div>
+  </div>
+ </section>
+
+ <section class="section services" id="services">
+  <div class="wrap">
+   <div class="section-head">
+    <h2 class="section-title" data-lk="t:servicesTitle"><%= t.servicesTitle %></h2>
+    <p class="section-intro" data-lk="t:servicesIntro"><%= t.servicesIntro %></p>
+   </div>
+   <%- include('partials/cards', { items: b.visible.slice(0, 6), spots: spots }) %>
+   <% if (b.visible.length > 6) { %><p class="more"><a class="text-link" href="<%= U.services %>"><%= t.allServices %> (<%= b.visible.length %>)</a></p><% } %>
+  </div>
+ </section>
+
+ <section class="section process">
+  <div class="wrap">
+   <h2 class="section-title" data-lk="t:processTitle"><%= t.processTitle %></h2>
+   <ol class="process-list">
+    <% t.process.forEach(function (p, i) { %><li><span class="process-n" aria-hidden="true"><%= i + 1 %></span><p><%= i === 2 && b.documents ? t.processOnline : p %></p></li><% }) %>
+   </ol>
+  </div>
+ </section>
+
+ <section class="section prevent">
+  <div class="wrap prevent-grid<%= b.visible.some(function (s) { return s.id === 'chauffe-eau'; }) ? '' : ' single' %>">
+   <div class="season">
+    <h2 class="section-title" data-lk="t:preventTitle"><%= t.preventTitle %></h2>
+    <p class="season-name"><%= t.season[seasonKey].name %></p>
+    <ul class="checks"><% t.season[seasonKey].tips.forEach(function (tip) { %><li><%= tip %></li><% }) %></ul>
+   </div>
+   <% if (b.visible.some(function (s) { return s.id === 'chauffe-eau'; })) { %>
+   <form class="heater-tool" data-heater data-year="<%= thisYear %>" data-young="<%= t.heaterYoung %>" data-mid="<%= t.heaterMid %>" data-old="<%= t.heaterOld %>" data-age="<%= t.heaterAge %>" data-bad="<%= t.heaterBad %>">
+    <h3><%= t.heaterTitle %></h3>
+    <p><%= t.heaterBody %></p>
+    <label for="heater-year"><%= t.heaterLabel %></label>
+    <div class="heater-row"><input id="heater-year" name="year" type="number" inputmode="numeric" min="1980" max="<%= thisYear %>" placeholder="<%= thisYear - 9 %>"><button class="btn btn-ink" type="submit"><%= t.heaterCheck %></button></div>
+    <div class="heater-result" role="status" aria-live="polite" hidden><p class="heater-age"></p><p class="heater-advice"></p><a class="text-link" href="<%= U.estimate %>?service=chauffe-eau"><%= t.heaterCta %></a></div>
+   </form>
+   <% } %>
+  </div>
+ </section>
+
+ <section class="section area">
+  <div class="wrap area-grid">
+   <div>
+    <h2 class="section-title" data-lk="t:areaTitle"><%= t.areaTitle %></h2>
+    <p class="area-text"><%= b.areas ? text(b.areas) : t.areaAsk %></p>
+    <p data-lk="t:areaBody"><%= t.areaBody %></p>
+    <% if (b.rating && b.rating.url) { %><a class="text-link" href="<%= b.rating.url %>" target="_blank" rel="noopener"><%= t.mapsLink %></a><% } %>
+   </div>
+   <%- include('partials/hours') %>
+  </div>
+ </section>
+
+ <section class="section faq">
+  <div class="wrap faq-grid">
+   <h2 class="section-title" data-lk="t:faqTitle"><%= t.faqTitle %></h2>
+   <div class="faq-list">
+    <% t.faq.forEach(function (q) { %><details><summary><%= q[0] %></summary><p><%= fmt(q[1], { area: b.areas ? text(b.areas) + '.' : '' }) %></p></details><% }) %>
+    <% if (b.payments) { %><details><summary><%= t.faqPay[0] %></summary><p><%= text(b.payments) %>.</p></details><% } %>
+    <% if (b.documents) { %><details><summary><%= t.faqOnline[0] %></summary><p><%= t.faqOnline[1] %></p></details><% } %>
+   </div>
+  </div>
+ </section>
+</main>
+<%- include('partials/footer') %>
