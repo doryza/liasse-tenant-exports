@@ -1,0 +1,19 @@
+<%- include('top', { pageTitle: tr('Services', 'Services') }) %>
+<div class="ad-head">
+ <div><h1><%= tr('Services', 'Services') %></h1><p class="ad-sub"><%= tr('Choisissez ce qui paraît sur votre site. « À confirmer » affiche le service avec une mention ; « Offert » le présente sans réserve ; « Masqué » le retire.', 'Choose what appears on your site. “To confirm” shows the service with a note; “Offered” shows it plainly; “Hidden” removes it.') %></p></div>
+</div>
+<section class="panel">
+ <ul class="svc-list">
+  <% b.services.forEach(function (s) { %>
+  <li class="svc state-<%= s.state %>" data-service="<%= s.id %>">
+   <div class="svc-main"><strong><%= s.name[lang] %></strong><span><%= s.tagline[lang] %></span><% if (s.source_name) { %><small><%= tr('Sur votre fiche publique', 'On your public listing') %> : « <%= s.source_name %> »</small><% } %></div>
+   <div class="seg" role="radiogroup" aria-label="<%= s.name[lang] %>">
+    <% [['confirmed', tr('Offert', 'Offered')], ['proposed', tr('À confirmer', 'To confirm')], ['hidden', tr('Masqué', 'Hidden')]].forEach(function (o) { %><label><input type="radio" name="state-<%= s.id %>" value="<%= o[0] %>"<%- s.state === o[0] ? ' checked' : '' %>><span><%= o[1] %></span></label><% }) %>
+   </div>
+   <label class="svc-price"><span><%= tr('À partir de', 'From') %></span><input name="price" inputmode="decimal" placeholder="—" value="<%= s.price ? (s.price / 100).toFixed(0) : '' %>" aria-label="<%= tr('Prix à partir de', 'Starting price') %>"><span>$</span></label>
+   <% if (s.state !== 'hidden') { %><a class="link small" href="<%= PAGES[lang].service + svcSlug(s, lang) %>" target="_blank" rel="noopener"><%= tr('Voir', 'View') %></a><% } else { %><span></span><% } %>
+  </li>
+  <% }) %>
+ </ul>
+</section>
+<%- include('bottom') %>
