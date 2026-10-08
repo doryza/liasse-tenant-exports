@@ -1,0 +1,97 @@
+{
+  "version": 2,
+  "industry": "plumbing",
+  "template": "scripts/prospect_build/plumbing/template (liasse.tech)",
+  "business": "Moira Plumbing & Heating",
+  "languages": [
+    "en"
+  ],
+  "region": {
+    "province": "ON",
+    "lang": "en",
+    "tz": "America/Toronto",
+    "climate": "cold",
+    "taxes": "HST 13%",
+    "licence": null,
+    "privacy": "federal"
+  },
+  "runtime": {
+    "entry": "routes.js",
+    "mount": "base-relative links; platform tenantPath; custom-domain compatible",
+    "database": "PostgreSQL via services.db; schema.sql idempotent; every setting has a default in lib/store.js (seed.js optional)"
+  },
+  "publicRoutes": [
+    "/",
+    "/services",
+    "/services/:id",
+    "/contact",
+    "/estimate",
+    "/privacy",
+    "/document/:token"
+  ],
+  "ownerRoutes": [
+    "/admin",
+    "/admin/demandes",
+    "/admin/demandes/:id",
+    "/admin/documents",
+    "/admin/documents/:id",
+    "/admin/clients",
+    "/admin/clients/:id",
+    "/admin/services",
+    "/admin/horaire",
+    "/admin/reglages"
+  ],
+  "data": {
+    "business.json": "facts from the public listing at build time + the full service catalog (listed/confirmed) + the design; owner settings override at read time",
+    "admin_settings": "owner settings: business_name, phone, email, areas_fr/en, payments_fr/en, hours_json, emergency_247, rbq, neq, tps_number, tvq_number, interac_email, business_address/address_public, privacy_fr/en, service_<id> = confirmed|proposed|hidden, service_<id>_price (cents), doc_terms_fr/en, estimate_valid_days, invoice_due_days, charge_taxes, notification_email; inline-editor text overrides _p_lk_*",
+    "plumbing_requests": "estimate requests (web form or logged calls): status new|contacted|done|lost",
+    "customers": "customer file",
+    "documents": "estimates (E<year>-0001 at creation) and invoices (F<year>-0001 when issued); token = private customer link",
+    "document_lines": "labour|material|fee|note, integer cents",
+    "document_events": "timeline",
+    "document_counters": "numbering"
+  },
+  "gates": {
+    "contact_verified": "owner checked phone/email",
+    "privacy_approved": "bilingual privacy policy completed (no [placeholders]) and approved",
+    "messages_enabled": "request form open (needs contact_verified + privacy_approved)",
+    "live_actions_enabled": "emails to customers (estimates, invoices, acknowledgments)",
+    "hours_verified": "hours and area checked",
+    "address_verified": "address checked",
+    "documents_enabled": "estimates & invoices module (optional)"
+  },
+  "design": {
+    "family": "chaudfroid",
+    "palette": 1,
+    "fonts": [
+      "Bricolage Grotesque",
+      "DM Sans"
+    ],
+    "hero": "split",
+    "house": "cottage",
+    "mirror": true,
+    "mark": "circle",
+    "illustrations": "the home cutaway (lib/cutaway.js): inline SVG coloured by CSS variables; service cards and pages show detail crops of it. No photographs, no real property, no logo copied."
+  },
+  "contentRules": [
+    "No invented licences, staff, years, testimonials, prices, warranties or response times (a Québec RBQ number only from the register)",
+    "Services not confirmed by a verified listing are shown « À confirmer »",
+    "Hours, areas, payments and free estimates only from a verified listing or the owner",
+    "Rating only with ≥ 10 reviews, dated, linked to Google",
+    "No public address unless the owner sets one and ticks address_public"
+  ],
+  "sources": [
+    {
+      "url": "https://www.google.com/maps/place/?q=place_id%3AChIJCQaUjGIl1okRJ9AamBqpYFY",
+      "type": "google_maps",
+      "notes": "Profile individually opened; business identity, phone, rating, review count, address if displayed and outbound website observed.",
+      "observed_at": "2026-10-06"
+    },
+    {
+      "url": "https://plumberdirectories.com/canada/ontario/belleville",
+      "type": "secondary_research",
+      "notes": "no_owned_site_identified_by_search web search by business name/location or exact public phone; follow linked company-domain evidence if surfaced No search match is not proof that no website exists. Google Maps profile facts remain in originating candidate file.",
+      "observed_at": "2026-10-06"
+    }
+  ]
+}
