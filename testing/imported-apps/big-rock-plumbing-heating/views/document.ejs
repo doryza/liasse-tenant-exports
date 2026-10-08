@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="<%= lang %>" data-family="<%= family %>">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<base href="<%= tenantRoot %>">
+<title><%= title %></title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="<%= fontsHref %>">
+<link rel="stylesheet" href="public/css/styles.css">
+</head>
+<body class="page-document">
+<% var est = doc.kind === 'estimate'; %>
+<main class="doc-page" id="main">
+ <% if (owner) { %><p class="doc-owner-note"><%= lang === 'en' ? 'You are viewing this document as your customer will.' : 'Vous voyez ce document comme votre client le verra.' %> <% if (doc.status === 'draft') { %><%= t.docDraft %><% } %></p><% } %>
+ <% if (state === 'accepted') { %><p class="doc-banner ok"><%= fmt(t.docAccepted, { date: longDate(decidedOn), name: doc.decided_name || '' }) %></p><% } %>
+ <% if (state === 'declined') { %><p class="doc-banner"><%= fmt(t.docDeclined, { date: longDate(decidedOn) }) %></p><% } %>
+ <% if (state === 'expired') { %><p class="doc-banner"><%= t.docExpired %></p><% } %>
+ <% if (state === 'paid') { %><p class="doc-banner ok"><%= fmt(t.docPaid, { date: longDate(doc.paid_on) }) %></p><% } %>
+ <% if (state === 'void') { %><p class="doc-banner"><%= t.docVoid %></p><% } %>
+ <article class="doc-sheet">
+  <header class="doc-head">
+   <div class="doc-biz">
+    <%- mark({ size: 54 }) %>
+    <div>
+     <strong><%= b.business_name %></strong>
+     <span><%= b.phone %><% if (b.email) { %> · <%= b.email %><% } %></span>
+     <% if (b.address) { %><span><%= b.address %></span><% } %>
+     <% if (b.rbq) { %><span><%= b.labels.licence[lang] %> <%= b.rbq %></span><% } %>
+    </div>
+   </div>
+   <div class="doc-kind">
+    <h1><%= est ? t.docEstimate : t.docInvoice %></h1>
+    <dl>
+     <% if (doc.number) { %><div><dt><%= t.docNumber %></dt><dd><%= doc.number %></dd></div><% } %>
+     <div><dt><%= t.docDate %></dt><dd><%= longDate(doc.issued_on || '') %></dd></div>
+     <% if (est && doc.valid_until) { %><div><dt><%= t.docValid %></dt><dd><%= longDate(doc.valid_until) %></dd></div><% } %>
+     <% if (!est && doc.status !== 'draft') { %><div><dt><%= t.docDue %></dt><dd><%= doc.due_on ? longDate(doc.due_on) : t.docDueNow %></dd></div><% } %>
+    </dl>
+   </div>
+  </header>
+  <section class="doc-parties">
+   <div><h2><%= t.docFor %></h2><p><strong><%= doc.customer_name || '—' %></strong><% if (doc.customer_phone) { %><br><%= doc.customer_phone %><% } %><% if (doc.customer_email) { %><br><%= doc.customer_email %><% } %></p></div>
+   <% if (doc.property_address) { %><div><h2><%= t.docProperty %></h2><p><%= doc.property_address %></p></div><% } %>
+  </section>
+  <% if (doc.title) { %><h2 class="doc-title"><%= doc.title %></h2><% } %>
+  <table class="doc-lines">
+   <thead><tr><th scope="col"><%= t.docWork %></th><th scope="col" class="num"><%= t.docQty %></th><th scope="col" class="num"><%= t.docUnit %></th><th scope="col" class="num"><%= t.docAmount %></th></tr></thead>
+   <tbody>
+    <% doc.lines.forEach(function (l) { %>
+     <% if (l.kind === 'note') { %><tr class="note"><td colspan="4"><%= l.description %></td></tr>
+     <% } else { %><tr><td><span class="line-kind"><%= l.kind === 'labour' ? t.docLabour : l.kind === 'material' ? t.docMaterial : t.docFee %></span><%= l.description %></td><td class="num"><%= qtyf(l.quantity) %></td><td class="num"><%= money(l.unit_cents) %></td><td class="num"><%= money(l.total_cents) %></td></tr><% } %>
+    <% }) %>
+   </tbody>
+  </table>
+  <dl class="doc-totals">
+   <div><dt><%= t.docSubtotal %></dt><dd><%= money(doc.subtotal_cents) %></dd></div>
+   <% if (doc.charge_taxes) { %>
+   <% taxLines.forEach(function (x) { %><div><dt><%= x.label %><% if (x.number) { %> <small><%= x.number %></small><% } %></dt><dd><%= money(x.cents) %></dd></div><% }) %>
+   <% } %>
+   <div class="grand"><dt><%= t.docTotal %></dt><dd><%= money(doc.total_cents) %></dd></div>
+  </dl>
+  <% if (!doc.charge_taxes) { %><p class="doc-small"><%= t.docNoTax %></p><% } %>
+  <% if (doc.terms) { %><section class="doc-text"><h2><%= t.docTerms %></h2><p><%= doc.terms %></p></section><% } %>
+  <% if (doc.notes) { %><section class="doc-text"><h2><%= t.docNotes %></h2><p><%= doc.notes %></p></section><% } %>
+  <% if (!est && (b.payments || b.interac)) { %><section class="doc-text"><h2><%= t.docPayHow %></h2><p><% if (b.payments) { %><%= text(b.payments) %>.<% } %><% if (b.interac) { %> <%= fmt(t.docInterac, { email: b.interac }) %>.<% } %></p></section><% } %>
+  <footer class="doc-foot"><%= fmt(t.docQuestions, { phone: b.phone }) %><% if (b.neq) { %> · <%= b.labels.neq[lang] %> <%= b.neq %><% } %></footer>
+ </article>
+
+ <% if (est && state === 'open') { %>
+ <section class="doc-decide" data-decide data-token="<%= doc.token %>" data-thanks="<%= t.docThanks %>" data-error="<%= t.fError %>">
+  <form class="doc-accept" data-action="accept">
+   <h2><%= t.docAccept %></h2>
+   <label class="field"><span><%= t.docAcceptName %></span><input name="name" autocomplete="name" required minlength="2" maxlength="120"></label>
+   <label class="consent"><input type="checkbox" name="agree" required><span><%= t.docAcceptCheck %></span></label>
+   <button class="btn btn-accent btn-lg" type="submit"><%= t.docAcceptSend %></button>
+  </form>
+  <details class="doc-decline">
+   <summary><%= t.docDecline %></summary>
+   <form data-action="decline">
+    <label class="field"><span><%= t.docDeclineReason %></span><textarea name="reason" rows="3" maxlength="500"></textarea></label>
+    <button class="btn btn-ghost" type="submit"><%= t.docDeclineSend %></button>
+   </form>
+  </details>
+  <p class="form-status" role="status" aria-live="polite"></p>
+ </section>
+ <% } %>
+ <p class="doc-print"><button class="btn btn-ghost" type="button" data-print><%= t.docPrint %></button></p>
+</main>
+<script src="public/js/site.js" defer></script>
+</body>
+</html>
