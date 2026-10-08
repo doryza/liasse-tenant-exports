@@ -132,7 +132,9 @@ module.exports = function (services) {
   const { b, t, lang } = res.locals;
   const sp = spots(b, lang);
   const top = b.visible.slice(0, 4).map(s => s.name[lang]);
-  const h1 = b.emergency ? t.h1Always : t.h1[(b.headline || 0) % t.h1.length];
+  // A name over 32 characters would stack the brand variant 6–7 lines beside the cutaway.
+  const pick = (b.headline || 0) % t.h1.length;
+  const h1 = b.emergency ? t.h1Always : t.h1[t.h1[pick].includes('{brand}') && b.brand_name.length > 32 ? 1 : pick];
   // The title sizes itself so its longest word fits the column (--hero-chars, styles.css); on
   // phones it is sized by the longest hyphen segment and a long town breaks at a hyphen.
   // Plain text only: the inline editor rewrites a heading that holds a single text node.
