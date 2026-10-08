@@ -1,0 +1,25 @@
+<%- include('top', { pageTitle: tr('Clients', 'Customers') }) %>
+<div class="ad-head">
+ <div><h1><%= tr('Clients', 'Customers') %></h1><p class="ad-sub"><%= tr('Vos clients, leurs demandes et leurs documents.', 'Your customers, their requests and documents.') %></p></div>
+ <button class="abtn primary" type="button" data-open="new-customer">+ <%= tr('Nouveau client', 'New customer') %></button>
+</div>
+<form class="search" method="get" action="admin/clients" role="search"><input name="q" value="<%= q %>" placeholder="<%= tr('Nom, téléphone, courriel ou adresse', 'Name, phone, email or address') %>" aria-label="<%= tr('Rechercher', 'Search') %>"><button class="abtn" type="submit"><%= tr('Rechercher', 'Search') %></button></form>
+<section class="panel">
+ <% if (!list.length) { %><div class="empty-inline"><p><%= q ? tr('Aucun client ne correspond.', 'No customer matches.') : tr('Aucun client pour l’instant. Une fiche se crée à partir d’une demande, d’une estimation ou ici.', 'No customers yet. A file is created from a request, an estimate or here.') %></p></div>
+ <% } else { %>
+ <ul class="rows">
+  <% list.forEach(function (c) { %><li><a href="admin/clients/<%= c.id %>"><span class="row-main"><strong><%= c.name %></strong><span><%= [c.phone, c.email, c.address].filter(function (x) { return x; }).join(' · ') %></span></span><span class="row-side"><small><%= stamp(c.created_at) %></small></span></a></li><% }) %>
+ </ul>
+ <% } %>
+</section>
+<dialog class="sheet" id="new-customer" aria-labelledby="nc-title">
+ <form method="dialog" class="sheet-form" data-api="api/admin/customers" data-method="POST" data-then="admin/clients/{id}">
+  <h2 id="nc-title"><%= tr('Nouveau client', 'New customer') %></h2>
+  <label class="afield"><span><%= tr('Nom', 'Name') %></span><input name="name" required minlength="2" maxlength="160"></label>
+  <div class="grid2"><label class="afield"><span><%= tr('Téléphone', 'Phone') %></span><input name="phone" type="tel" maxlength="40"></label><label class="afield"><span><%= tr('Courriel', 'Email') %></span><input name="email" type="email" maxlength="200"></label></div>
+  <label class="afield"><span><%= tr('Adresse', 'Address') %></span><input name="address" maxlength="300"></label>
+  <% if (bilingual) { %><label class="afield"><span><%= tr('Langue', 'Language') %></span><select name="language"><option value="fr">Français</option><option value="en">English</option></select></label><% } else { %><input type="hidden" name="language" value="<%= first %>"><% } %>
+  <div class="sheet-actions"><button class="abtn" value="cancel" formnovalidate><%= tr('Annuler', 'Cancel') %></button><button class="abtn primary" type="submit" data-submit><%= tr('Ajouter', 'Add') %></button></div>
+ </form>
+</dialog>
+<%- include('bottom') %>
