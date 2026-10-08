@@ -1,0 +1,29 @@
+<%- include('top', { pageTitle: tr('Estimations et factures', 'Estimates & invoices') }) %>
+<% if (off) { %>
+<div class="ad-head"><div><h1><%= tr('Estimations et factures', 'Estimates & invoices') %></h1></div></div>
+<section class="panel module-card">
+ <p><%= tr('Ce module est inactif. Activez-le pour préparer des estimations, les envoyer par courriel, les faire accepter en ligne et les convertir en factures.', 'This module is off. Turn it on to prepare estimates, email them, have them accepted online and turn them into invoices.') %></p>
+ <button class="abtn primary" type="button" data-module="1"><%= tr('Activer les estimations et factures', 'Turn on estimates & invoices') %></button>
+</section>
+<% } else { %>
+<div class="ad-head">
+ <div><h1><%= tr('Estimations et factures', 'Estimates & invoices') %></h1></div>
+ <div class="row-actions"><button class="abtn primary" type="button" data-new-doc="<%= kind %>">+ <%= kind === 'estimate' ? tr('Nouvelle estimation', 'New estimate') : tr('Nouvelle facture', 'New invoice') %></button></div>
+</div>
+<nav class="tabs-bar"><a href="admin/documents"<%- kind === 'estimate' ? ' aria-current="page"' : '' %>><%= tr('Estimations', 'Estimates') %></a><a href="admin/documents?type=factures"<%- kind === 'invoice' ? ' aria-current="page"' : '' %>><%= tr('Factures', 'Invoices') %></a></nav>
+<section class="panel">
+ <% if (!list.length) { %>
+  <div class="empty-inline"><p><%= kind === 'estimate' ? tr('Aucune estimation. Créez-en une ici ou depuis une demande : le client et l’adresse sont repris automatiquement.', 'No estimates yet. Create one here or from a request: the customer and address are filled in for you.') : tr('Aucune facture. Une estimation acceptée devient une facture en un clic.', 'No invoices yet. An accepted estimate becomes an invoice in one click.') %></p></div>
+ <% } else { %>
+ <table class="atable">
+  <thead><tr><th><%= tr('Numéro', 'Number') %></th><th><%= tr('Client', 'Customer') %></th><th class="hide-sm"><%= tr('Travaux', 'Work') %></th><th><%= tr('État', 'Status') %></th><th class="num"><%= tr('Total', 'Total') %></th></tr></thead>
+  <tbody>
+   <% list.forEach(function (d) { var st = d.kind === 'estimate' && d.status === 'sent' && d.valid_until && d.valid_until < today ? 'expired' : d.status; %>
+   <tr data-href="admin/documents/<%= d.id %>"><td><a href="admin/documents/<%= d.id %>"><%= d.number || tr('Brouillon', 'Draft') %></a></td><td><%= d.customer_name || '—' %></td><td class="hide-sm"><%= d.title %></td><td><span class="status s-<%= st %>"><%= (d.kind === 'estimate' ? L.estimate : L.invoice)[st] %></span><% if (d.viewed_at && d.status === 'sent') { %> <small class="seen"><%= tr('vue', 'opened') %></small><% } %></td><td class="num"><%= money(d.total_cents) %></td></tr>
+   <% }) %>
+  </tbody>
+ </table>
+ <% } %>
+</section>
+<% } %>
+<%- include('bottom') %>
