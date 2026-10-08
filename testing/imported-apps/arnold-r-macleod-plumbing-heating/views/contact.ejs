@@ -1,0 +1,27 @@
+<%- include('partials/head') %>
+<%- include('partials/header') %>
+<main id="main">
+ <section class="page-head">
+  <div class="wrap">
+   <h1 class="page-title" data-lk="t:contactTitle"><%= t.contactTitle %></h1>
+   <p class="section-intro" data-lk="t:contactIntro"><%= t.contactIntro %></p>
+  </div>
+ </section>
+ <section class="section section-tight">
+  <div class="wrap contact-grid">
+   <div class="contact-main">
+    <dl class="contact-list">
+     <div><dt><%= t.phone %></dt><dd><a class="phone-big" href="<%= b.tel %>"><%= b.phone %></a></dd></div>
+     <% if (b.email) { %><div><dt><%= t.email %></dt><dd><a href="mailto:<%= b.email %>"><%= b.email %></a></dd></div><% } %>
+     <% if (b.addressPublic) { %><div><dt><%= t.addressLabel %></dt><dd><%= b.address %></dd></div><% } %>
+     <div><dt><%= t.factArea %></dt><dd><%= b.areas ? text(b.areas) : t.areaAsk %></dd></div>
+     <% if (b.payments) { %><div><dt><%= t.factPay %></dt><dd><%= text(b.payments) %></dd></div><% } %>
+     <% if (b.rbq) { %><div><dt><%= b.labels.licence[lang] %></dt><dd><%= b.rbq %></dd></div><% } %>
+    </dl>
+    <a class="btn btn-accent btn-lg" href="<%= U.estimate %>"><%= t.estimate %></a>
+   </div>
+   <%- include('partials/hours') %>
+  </div>
+ </section>
+</main>
+<%- include('partials/footer') %>
