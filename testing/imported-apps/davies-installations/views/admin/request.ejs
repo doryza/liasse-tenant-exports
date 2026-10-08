@@ -1,0 +1,38 @@
+<%- include('top', { pageTitle: r.reference || tr('Demande', 'Request') }) %>
+<% var svc = b.services.find(function (s) { return s.id === r.service_id; }); %>
+<a class="back" href="admin/demandes"><%= tr('Demandes', 'Requests') %></a>
+<div class="ad-head">
+ <div><h1><%= r.name %></h1><p class="ad-sub"><%= r.reference %> · <%= r.source === 'phone' ? tr('appel noté', 'logged call') : tr('demande du site', 'site request') %> · <%= stamp(r.created_at) %></p></div>
+ <div class="row-actions">
+  <a class="abtn" href="tel:<%= r.phone %>"><%= tr('Appeler', 'Call') %></a>
+  <% if (b.documents) { %><button class="abtn primary" type="button" data-new-doc="estimate" data-request="<%= r.id %>">+ <%= tr('Préparer l’estimation', 'Prepare the estimate') %></button><% } %>
+ </div>
+</div>
+<div class="detail-grid">
+ <section class="panel">
+  <dl class="kv">
+   <div><dt><%= tr('Téléphone', 'Phone') %></dt><dd><a href="tel:<%= r.phone %>"><%= r.phone %></a></dd></div>
+   <% if (r.email) { %><div><dt><%= tr('Courriel', 'Email') %></dt><dd><a href="mailto:<%= r.email %>"><%= r.email %></a></dd></div><% } %>
+   <% if (r.address) { %><div><dt><%= tr('Adresse', 'Address') %></dt><dd><%= r.address %> · <a href="https://www.google.com/maps/search/?api=1&query=<%= enc(r.address) %>" target="_blank" rel="noopener"><%= tr('carte', 'map') %></a></dd></div><% } %>
+   <div><dt><%= tr('Travaux', 'Work') %></dt><dd><%= svc ? svc.name[lang] : tr('Autre', 'Other') %></dd></div>
+   <% if (r.urgency) { %><div><dt><%= tr('Quand', 'When') %></dt><dd><%= L.urgency[r.urgency] || r.urgency %></dd></div><% } %>
+   <% if (r.property_type) { %><div><dt><%= tr('Bâtiment', 'Building') %></dt><dd><%= L.property[r.property_type] || r.property_type %></dd></div><% } %>
+   <% if (bilingual) { %><div><dt><%= tr('Langue', 'Language') %></dt><dd><%= r.language === 'en' ? 'English' : 'Français' %></dd></div><% } %>
+  </dl>
+  <h2 class="h-small"><%= tr('Message', 'Message') %></h2>
+  <p class="message"><%= r.message %></p>
+ </section>
+ <aside class="panel">
+  <label class="afield"><span><%= tr('Suivi', 'Follow-up') %></span>
+   <select data-patch="api/admin/requests/<%= r.id %>" name="status"><% ['new', 'contacted', 'done', 'lost'].forEach(function (k) { %><option value="<%= k %>"<%- r.status === k ? ' selected' : '' %>><%= L.request[k] %></option><% }) %></select>
+  </label>
+  <label class="afield"><span><%= tr('Notes internes', 'Internal notes') %></span><textarea name="notes" rows="6" maxlength="4000" data-patch="api/admin/requests/<%= r.id %>" data-on="blur"><%= r.notes || '' %></textarea></label>
+  <% if (customer) { %><p class="small"><%= tr('Fiche client', 'Customer file') %> : <a href="admin/clients/<%= customer.id %>"><%= customer.name %></a></p>
+  <% } else { %><button class="abtn" type="button" data-post="api/admin/requests/<%= r.id %>/customer" data-then="admin/clients/{id}"><%= tr('Créer la fiche client', 'Create the customer file') %></button><% } %>
+  <% if (related.length) { %>
+   <h2 class="h-small"><%= tr('Documents', 'Documents') %></h2>
+   <ul class="mini-docs"><% related.forEach(function (d) { %><li><a href="admin/documents/<%= d.id %>"><%= d.number || tr('Facture (brouillon)', 'Invoice (draft)') %></a> <span class="status s-<%= d.status %>"><%= (d.kind === 'estimate' ? L.estimate : L.invoice)[d.status] %></span> <%= money(d.total_cents) %></li><% }) %></ul>
+  <% } %>
+ </aside>
+</div>
+<%- include('bottom') %>
