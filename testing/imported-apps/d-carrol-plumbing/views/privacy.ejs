@@ -1,0 +1,20 @@
+<%- include('partials/head') %>
+<%- include('partials/header') %>
+<main id="main">
+ <section class="page-head">
+  <div class="wrap">
+   <h1 class="page-title"><%= t.privacyTitle %></h1>
+  </div>
+ </section>
+ <section class="section section-tight">
+  <div class="wrap prose">
+   <% if (raw.privacy_approved === '1' && b.privacyComplete) { %>
+    <% b.privacy[lang].split(/\n{2,}/).forEach(function (para) { %><p><%= para %></p><% }) %>
+   <% } else { %>
+    <p><%= t.privacyDraft %></p>
+   <% } %>
+   <p class="muted"><%= b.business_name %> · <a href="<%= b.tel %>"><%= b.phone %></a><% if (b.email) { %> · <a href="mailto:<%= b.email %>"><%= b.email %></a><% } %></p>
+  </div>
+ </section>
+</main>
+<%- include('partials/footer') %>
