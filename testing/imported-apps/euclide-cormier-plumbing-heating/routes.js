@@ -138,8 +138,9 @@ module.exports = function (services) {
   // The title sizes itself so its longest word fits the column (--hero-chars, styles.css); on
   // phones it is sized by the longest hyphen segment and a long town breaks at a hyphen.
   // Plain text only: the inline editor rewrites a heading that holds a single text node.
-  const heading = fmt(h1, { city: b.city, brand: b.brand_name });
-  const words = heading.split(/\s+/);
+  // « St. Albert » never breaks after the abbreviation; the pair is sized as one word.
+  const heading = fmt(h1, { city: b.city.replace(/\b(St|Ste|Mt)\. /g, '$1.\u00a0'), brand: b.brand_name });
+  const words = heading.split(/ +/);
   Object.assign(res.locals, {
    page: 'home', active: 'home', other: other(lang, 'home'), spots: sp,
    h1: heading, heroChars: Math.max(8, ...words.map(w => w.length)),
