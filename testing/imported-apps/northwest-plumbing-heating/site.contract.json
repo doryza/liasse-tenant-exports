@@ -4,11 +4,12 @@
   "template": "scripts/prospect_build/plumbing/template (liasse.tech)",
   "business": "NorthWest Plumbing & Heating Inc",
   "languages": [
+    "fr",
     "en"
   ],
   "region": {
     "province": "NB",
-    "lang": "en",
+    "lang": "fr",
     "tz": "America/Moncton",
     "climate": "cold",
     "taxes": "HST 15%",
@@ -25,8 +26,14 @@
     "/services",
     "/services/:id",
     "/contact",
-    "/estimate",
-    "/privacy",
+    "/estimation",
+    "/confidentialite",
+    "/en/",
+    "/en/services",
+    "/en/services/:id",
+    "/en/contact",
+    "/en/estimate",
+    "/en/privacy",
     "/document/:token"
   ],
   "ownerRoutes": [
