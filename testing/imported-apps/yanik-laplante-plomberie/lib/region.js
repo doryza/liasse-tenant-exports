@@ -5,8 +5,10 @@
  * policy answers to. business.json carries `region` ({ province, lang, tz, climate }); a site
  * built before regions existed (no `region`) is a Québec site.
  *
- * Languages: Québec sites are French first with an English version; every site outside
- * Québec is English only (no French pages, no language switch, English admin and emails).
+ * Languages: Québec sites are French first with an English version, and so are sites in New
+ * Brunswick's French towns and NB businesses named in French (`region.lang` = 'fr'). Every
+ * other site outside Québec is English only (no French pages, no language switch, English
+ * admin and emails).
  *
  * Taxes are what a plumbing contractor charges the customer for work on a home (checked
  * 2026-10-06): HST in ON (13 %), NS (14 % since 2025-04-01), NB/NL/PE (15 %); GST + QST in
@@ -51,6 +53,10 @@ const MILD = new Set(['vancouver', 'north vancouver', 'west vancouver', 'burnaby
  'port coquitlam', 'port moody', 'maple ridge', 'pitt meadows', 'white rock', 'abbotsford', 'mission', 'chilliwack', 'squamish', 'victoria', 'saanich', 'langford',
  'colwood', 'sooke', 'sidney', 'nanaimo', 'parksville', 'qualicum beach', 'errington', 'courtenay', 'comox', 'campbell river', 'duncan', 'cowichan bay',
  'port alberni', 'powell river', 'sechelt', 'gibsons', 'garden bay', 'prince rupert', 'ladysmith', 'chemainus', 'tofino', 'ucluelet']);
+/** New Brunswick towns where French comes first (francophone majority). */
+const NB_FRENCH = new Set(['caraquet', 'bas-caraquet', 'shippagan', 'lameque', 'tracadie', 'tracadie-sheila', 'edmundston', 'grand-sault', 'grand falls', 'dieppe',
+ 'bouctouche', 'shediac', 'saint-quentin', 'kedgwick', 'neguac', 'richibucto', 'memramcook', 'saint-louis-de-kent', 'clair', 'saint-leonard', 'beresford', 'petit-rocher', 'nigadoo']);
+const FRENCH_NAME = /^(plomberie|plombier|plombiers|les plombiers)\b|\bplomberie$/i;
 // Canada Post: first letter of the postal code → province (X = NT or NU: ask).
 const POSTAL = { A: 'NL', B: 'NS', C: 'PE', E: 'NB', G: 'QC', H: 'QC', J: 'QC', K: 'ON', L: 'ON', M: 'ON', N: 'ON', P: 'ON', R: 'MB', S: 'SK', T: 'AB', V: 'BC', Y: 'YT' };
 
@@ -68,16 +74,22 @@ function provinceOf(d = {}) {
  return /^plumbing-qu[eé]bec-|^plumbing-qc-/i.test(String(d.campaign || d.research_key || '')) ? 'QC' : null;
 }
 
-/** The languages a site speaks, first one first: Québec ['fr', 'en'], elsewhere ['en']. */
-function languagesFor(province) { return province === 'QC' || !PROVINCES[province] ? ['fr', 'en'] : ['en']; }
+/** French first in Québec, in New Brunswick's French towns, and for an NB business named in French. */
+function frenchFirst(province, { city = '', business = '' } = {}) {
+ if (province === 'QC' || !PROVINCES[province]) return true;
+ return province === 'NB' && (NB_FRENCH.has(fold(city)) || FRENCH_NAME.test(String(business).trim()));
+}
+
+/** The languages a site speaks, first one first: Québec and French New Brunswick ['fr', 'en'], elsewhere ['en']. */
+function languagesFor(province, lang = null) { return province === 'QC' || !PROVINCES[province] || (province === 'NB' && lang === 'fr') ? ['fr', 'en'] : ['en']; }
 
 /** What business.json carries. */
-function regionFor(province, { city = '' } = {}) {
+function regionFor(province, { city = '', business = '' } = {}) {
  const p = profile(province);
  const town = fold(city);
  return {
   province: PROVINCES[province] ? province : 'QC',
-  lang: languagesFor(province)[0],
+  lang: frenchFirst(province, { city, business }) ? 'fr' : 'en',
   tz: TZ_TOWNS[province + ':' + town] || p.tz,
   climate: province === 'BC' && MILD.has(town) ? 'mild' : 'cold',
  };
@@ -89,7 +101,7 @@ function regionFor(province, { city = '' } = {}) {
  */
 function resolve(region) {
  const r = region && PROVINCES[region.province] ? region : { province: 'QC', tz: PROVINCES.QC.tz, climate: 'cold' };
- const languages = languagesFor(r.province);
+ const languages = languagesFor(r.province, r.lang);
  return { ...profile(r.province), ...r, lang: languages[0], languages, bilingual: languages.length > 1, other: languages[1] || null };
 }
 
@@ -123,4 +135,4 @@ function percent(rate, lang) {
  return lang === 'en' ? n + '%' : n + ' %';
 }
 
-module.exports = { PROVINCES, TZ_TOWNS, MILD, POSTAL, PRIVACY, SLUGS, pages, serviceSlug, profile, provinceOf, languagesFor, regionFor, resolve, percent, privacyLaw };
+module.exports = { PROVINCES, TZ_TOWNS, MILD, NB_FRENCH, POSTAL, PRIVACY, SLUGS, pages, serviceSlug, profile, provinceOf, frenchFirst, languagesFor, regionFor, resolve, percent, privacyLaw };
