@@ -1,3 +1,8 @@
+// Homepage menu cache. Module scope on purpose: the platform calls the
+// exported factory on every request but keeps this module loaded, so state
+// kept here lasts across requests (and resets on each deploy).
+const crMenuCache = { menu: null, nextAt: 0, pending: null };
+
 module.exports = function(services) {
   const express = require('express');
   const router = express.Router();
@@ -117,14 +122,10 @@ module.exports = function(services) {
   function formatDateTime(d, lang) { if (!d) return ''; try { return new Date(d).toLocaleString(lang === 'en' ? 'en-CA' : 'fr-CA', { year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'}); } catch(e) { return String(d); } }
   function pickLang(item, field, lang) { if (!item) return ''; return item[field + '_' + lang] || item[field + '_fr'] || item[field] || ''; }
 
-  // Static menu preview for the one-pager homepage slider. Baked from the
-  // Liasse Restaurants ordering-system export (Tandoori Route). Last refreshed
-  // 2026-07-17: added the new "Crevette" (shrimp) category + 5 dishes and
-  // removed the discontinued Chana Bhatura, mirroring GET /order/menu.json.
-  // The live source of truth for ordering is
-  // https://order.command.restaurant/b/tandoori-route-blain/order — the tenant menu_items
-  // table no longer feeds the homepage. Image URLs carry a Cloudinary
-  // w_640,h_480,c_fill transform so the slider stays light.
+  // Fallback for the homepage slider, used only when the command.restaurant
+  // menu feed could not be read yet (see homepageMenu below). Snapshot of that
+  // feed from 2026-07-17. Image URLs carry a Cloudinary w_640,h_480,c_fill
+  // transform so the slider stays light.
   const MENU_PREVIEW = {
     "categories": [
       "Poulet",
@@ -541,6 +542,75 @@ module.exports = function(services) {
   };
   const MENU_PREVIEW_CAT_EN = { 'Poulet': 'Chicken', 'Agneau': 'Lamb', 'Végétarien': 'Vegetarian', 'À la carte': 'À la carte', 'Poutine': 'Poutine', 'Dessert': 'Desserts', 'Chai / Boissons': 'Chai / Drinks', 'Midi Special Thali': 'Lunch Thali Special', 'Wraps': 'Wraps', 'Crevette': 'Shrimp' };
 
+  // The homepage slider shows the live command.restaurant menu, read from the
+  // public feed its ordering page uses, so menu edits there reach the site
+  // without a code change. Category order follows command.restaurant and
+  // options are left out. Unavailable dishes stay listed: the feed's flag mixes
+  // lunch hours with out-of-stock, and ordering enforces it anyway. The copy is
+  // kept 10 min and refreshed in the background; a failed read keeps the last
+  // good copy and retries after a minute.
+  const CR_MENU_URL = 'https://order.command.restaurant/b/tandoori-route-blain/order/menu.json';
+  const CR_MENU_TTL_MS = 10 * 60 * 1000;
+  const CR_MENU_RETRY_MS = 60 * 1000;
+  // Categories whose dishes get the "Midi seulement · 11h30–15h00" badge.
+  const LUNCH_ONLY_CATEGORIES = { 'Wraps': true };
+  const httpFetch = services.fetch || (typeof fetch === 'function' ? fetch : null);
+
+  function sliderImage(url) {
+    if (!url) return '';
+    if (String(url).indexOf('res.cloudinary.com/') === -1) return url;
+    return String(url).replace(/\/image\/upload\/(?!w_)/, '/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/');
+  }
+
+  function previewFromFeed(feed) {
+    const menu = feed && feed.menu;
+    if (!menu || !Array.isArray(menu.items)) return null;
+    const order = Array.isArray(menu.categoryOrder) ? menu.categoryOrder.slice() : [];
+    const items = menu.items.filter(function(it) { return it && it.name; }).map(function(it) {
+      const category = it.category || '';
+      if (category && order.indexOf(category) === -1) order.push(category);
+      return {
+        id: it.id,
+        name: it.name,
+        price: it.price,
+        category: category,
+        description: String(it.description || '').replace(/\s+/g, ' ').trim(),
+        imageUrl: sliderImage(it.imageUrl),
+        note: LUNCH_ONLY_CATEGORIES[category] === true
+      };
+    });
+    if (items.length === 0) return null;
+    function rank(c) { const i = order.indexOf(c); return i === -1 ? order.length : i; }
+    items.sort(function(a, b) { return rank(a.category) - rank(b.category); });
+    const categories = order.filter(function(c) { return items.some(function(it) { return it.category === c; }); });
+    return { categories: categories, items: items };
+  }
+
+  async function loadCrMenu() {
+    try {
+      if (!httpFetch) throw new Error('fetch unavailable');
+      const r = await httpFetch(CR_MENU_URL, { signal: AbortSignal.timeout(4000), headers: { accept: 'application/json' } });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const next = previewFromFeed(await r.json());
+      if (!next) throw new Error('feed has no dishes');
+      crMenuCache.menu = next;
+      crMenuCache.nextAt = Date.now() + CR_MENU_TTL_MS;
+    } catch (e) {
+      console.error('[menu] command.restaurant feed:', e.message);
+      crMenuCache.nextAt = Date.now() + CR_MENU_RETRY_MS;
+    }
+  }
+
+  async function homepageMenu() {
+    if (!crMenuCache.pending && Date.now() >= crMenuCache.nextAt) {
+      crMenuCache.pending = loadCrMenu().then(function() { crMenuCache.pending = null; });
+    }
+    // Only the first read after a deploy is waited on (nextAt is still 0);
+    // after that the page answers at once and refreshes behind the scenes.
+    if (crMenuCache.pending && crMenuCache.nextAt === 0) await crMenuCache.pending;
+    return crMenuCache.menu || MENU_PREVIEW;
+  }
+
   // Short-code generation: 8 chars, no ambiguous (0/O, 1/I/L, U/V)
   const SHORT_CODE_ALPHABET = 'BCDFGHJKMNPQRSTWXYZ23456789';
   function generateShortCode() {
@@ -889,7 +959,7 @@ module.exports = function(services) {
     try {
       const ctx = await renderCtx(req);
       const platforms = await db.all('SELECT * FROM delivery_platforms WHERE active = 1 ORDER BY position ASC').catch(function(){ return []; });
-      res.render('index', Object.assign(ctx, { platforms: platforms, preview: MENU_PREVIEW, previewCatEn: MENU_PREVIEW_CAT_EN }));
+      res.render('index', Object.assign(ctx, { platforms: platforms, preview: await homepageMenu(), previewCatEn: MENU_PREVIEW_CAT_EN }));
     } catch(e) { res.status(500).send('Erreur'); }
   });
 
@@ -1123,8 +1193,8 @@ module.exports = function(services) {
   // wins via Express's first-match-wins routing.
   router.get('/admin/team', isAdminPage, function(req, res) { res.render('admin-team', { page: 'team' }); });
   // Retired admin sections. The one-page site never read them: the homepage
-  // menu is the static MENU_PREVIEW (ordering lives on command.restaurant),
-  // and posts, offers and members had no place on the page. Old bookmarks
+  // menu comes from command.restaurant's menu feed (see homepageMenu), and
+  // posts, offers and members had no place on the page. Old bookmarks
   // land on the dashboard instead of the /admin/:module fallback, which no
   // longer has a view for them.
   router.get(['/admin/menu', '/admin/posts', '/admin/offers', '/admin/members'], isAdminPage, function(req, res) {
