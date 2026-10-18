@@ -1,3 +1,8 @@
+// Homepage menu cache. Module scope on purpose: the platform calls the
+// exported factory on every request but keeps this module loaded, so state
+// kept here lasts across requests (and resets on each deploy).
+const crMenuCache = { menu: null, nextAt: 0, pending: null };
+
 module.exports = function(services) {
   const express = require('express');
   const router = express.Router();
@@ -116,11 +121,9 @@ module.exports = function(services) {
   function formatDateTime(d, lang) { if (!d) return ''; try { return new Date(d).toLocaleString(lang === 'en' ? 'en-CA' : 'fr-CA', { year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'}); } catch(e) { return String(d); } }
   function pickLang(item, field, lang) { if (!item) return ''; return item[field + '_' + lang] || item[field + '_fr'] || item[field] || ''; }
 
-  // Static menu preview for the one-pager homepage slider. Baked from the
-  // Liasse Restaurants ordering-system export (Ali Baba Grillades, 2026-06-19).
-  // The live source of truth for ordering is
-  // https://ali-baba-boucherie.liasse.tech/order — the tenant menu_items
-  // table no longer feeds the homepage. Image URLs carry a Cloudinary
+  // Fallback for the homepage slider, used only when the command.restaurant
+  // menu feed could not be read yet (see homepageMenu below). Snapshot of the
+  // Liasse Restaurants export from 2026-06-19. Image URLs carry a Cloudinary
   // w_640,h_480,c_fill transform so the slider stays light.
   const MENU_PREVIEW = {
     "categories": [
@@ -474,6 +477,72 @@ module.exports = function(services) {
   };
   const MENU_PREVIEW_CAT_EN = {"Entrées":"Starters","Sandwichs":"Sandwiches","Tartares":"Tartares","Assiettes":"Platters","Breuvages":"Drinks","Dessert":"Desserts"};
 
+  // The homepage slider shows the live command.restaurant menu, read from the
+  // public feed its ordering page uses, so menu edits there reach the site
+  // without a code change. Category order follows command.restaurant and
+  // options are left out. Unavailable dishes stay listed; ordering enforces
+  // availability anyway. The copy is kept 10 min and refreshed in the
+  // background; a failed read keeps the last good copy and retries after a
+  // minute.
+  const CR_MENU_URL = 'https://order.command.restaurant/b/ali-baba-boucherie/order/menu.json';
+  const CR_MENU_TTL_MS = 10 * 60 * 1000;
+  const CR_MENU_RETRY_MS = 60 * 1000;
+  const httpFetch = services.fetch || (typeof fetch === 'function' ? fetch : null);
+
+  function sliderImage(url) {
+    if (!url) return '';
+    if (String(url).indexOf('res.cloudinary.com/') === -1) return url;
+    return String(url).replace(/\/image\/upload\/(?!w_)/, '/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/');
+  }
+
+  function previewFromFeed(feed) {
+    const menu = feed && feed.menu;
+    if (!menu || !Array.isArray(menu.items)) return null;
+    const order = Array.isArray(menu.categoryOrder) ? menu.categoryOrder.slice() : [];
+    const items = menu.items.filter(function(it) { return it && it.name; }).map(function(it) {
+      const category = it.category || '';
+      if (category && order.indexOf(category) === -1) order.push(category);
+      return {
+        id: it.id,
+        name: it.name,
+        price: it.price,
+        category: category,
+        description: String(it.description || '').replace(/\s+/g, ' ').trim(),
+        imageUrl: sliderImage(it.imageUrl)
+      };
+    });
+    if (items.length === 0) return null;
+    function rank(c) { const i = order.indexOf(c); return i === -1 ? order.length : i; }
+    items.sort(function(a, b) { return rank(a.category) - rank(b.category); });
+    const categories = order.filter(function(c) { return items.some(function(it) { return it.category === c; }); });
+    return { categories: categories, items: items };
+  }
+
+  async function loadCrMenu() {
+    try {
+      if (!httpFetch) throw new Error('fetch unavailable');
+      const r = await httpFetch(CR_MENU_URL, { signal: AbortSignal.timeout(4000), headers: { accept: 'application/json' } });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const next = previewFromFeed(await r.json());
+      if (!next) throw new Error('feed has no dishes');
+      crMenuCache.menu = next;
+      crMenuCache.nextAt = Date.now() + CR_MENU_TTL_MS;
+    } catch (e) {
+      console.error('[menu] command.restaurant feed:', e.message);
+      crMenuCache.nextAt = Date.now() + CR_MENU_RETRY_MS;
+    }
+  }
+
+  async function homepageMenu() {
+    if (!crMenuCache.pending && Date.now() >= crMenuCache.nextAt) {
+      crMenuCache.pending = loadCrMenu().then(function() { crMenuCache.pending = null; });
+    }
+    // Only the first read after a deploy is waited on (nextAt is still 0);
+    // after that the page answers at once and refreshes behind the scenes.
+    if (crMenuCache.pending && crMenuCache.nextAt === 0) await crMenuCache.pending;
+    return crMenuCache.menu || MENU_PREVIEW;
+  }
+
   // Short-code generation: 8 chars, no ambiguous (0/O, 1/I/L, U/V)
   const SHORT_CODE_ALPHABET = 'BCDFGHJKMNPQRSTWXYZ23456789';
   function generateShortCode() {
@@ -822,7 +891,7 @@ module.exports = function(services) {
     try {
       const ctx = await renderCtx(req);
       const platforms = await db.all('SELECT * FROM delivery_platforms WHERE active = 1 ORDER BY position ASC').catch(function(){ return []; });
-      res.render('index', Object.assign(ctx, { platforms: platforms, preview: MENU_PREVIEW, previewCatEn: MENU_PREVIEW_CAT_EN }));
+      res.render('index', Object.assign(ctx, { platforms: platforms, preview: await homepageMenu(), previewCatEn: MENU_PREVIEW_CAT_EN }));
     } catch(e) { res.status(500).send('Erreur'); }
   });
 
