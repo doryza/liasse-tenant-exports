@@ -625,13 +625,6 @@ module.exports = function(services) {
     next();
   });
 
-  router.use(async function(req, res, next) {
-    if (req.method === 'GET' && !req.path.startsWith('/api/') && !req.path.includes('.')) {
-      try { await db.run('INSERT INTO site_visits (path) VALUES ($1)', [req.path]); } catch(e) {}
-    }
-    next();
-  });
-
   // =========================================================================
   // Keychain attribution middlewares — MUST be registered BEFORE the route
   // handlers (Express middleware only applies to subsequent routes). Earlier
@@ -1104,62 +1097,23 @@ module.exports = function(services) {
     next();
   }
 
-  router.get('/admin', async function(req, res) {
-    if (!services.admin.isAdmin(req)) return res.redirect('admin/login');
-    try {
-      const safeCount = async function(sql) { try { const r = await db.get(sql); return (r && (r.c || r.count)) || 0; } catch(e) { return 0; } };
-      const stats = {
-        menu: await safeCount('SELECT COUNT(*) AS c FROM menu_items'),
-        platforms: await safeCount('SELECT COUNT(*) AS c FROM delivery_platforms'),
-        posts: await safeCount('SELECT COUNT(*) AS c FROM posts'),
-        users: await services.auth.getUserCount().catch(function(){ return 0; }),
-        pushSubs: await services.push.getSubscriptionCount().catch(function(){ return 0; }),
-        visits: await safeCount('SELECT COUNT(*) AS c FROM site_visits'),
-        visits7: await safeCount("SELECT COUNT(*) AS c FROM site_visits WHERE visited_at > NOW() - INTERVAL '7 days'"),
-        availableMenu: await safeCount("SELECT COUNT(*) AS c FROM menu_items WHERE available = 1"),
-        activePlatforms: await safeCount("SELECT COUNT(*) AS c FROM delivery_platforms WHERE active = 1")
-      };
-      res.render('admin', { stats: stats, page: 'dashboard' });
-    } catch(e) { res.status(500).send('Erreur: ' + e.message); }
-  });
+  // The dashboard is only shortcuts to the admin pages. Visit statistics live
+  // in the owner's Liasse dashboard (platform session tracking); this site no
+  // longer counts page views itself.
+  router.get('/admin', isAdminPage, function(req, res) { res.render('admin', { page: 'dashboard' }); });
 
-  router.get('/admin/menu', isAdminPage, function(req, res) { res.render('admin-menu', { page: 'menu' }); });
   router.get('/admin/delivery', isAdminPage, function(req, res) { res.render('admin-delivery', { page: 'delivery' }); });
-  router.get('/admin/posts', isAdminPage, function(req, res) { res.render('admin-posts', { page: 'posts' }); });
   // Explicit /admin/team registered BEFORE the auto-injected /admin/:module
   // handler (which `return`s without responding for mod === 'team'), so this
   // wins via Express's first-match-wins routing.
   router.get('/admin/team', isAdminPage, function(req, res) { res.render('admin-team', { page: 'team' }); });
-  router.get('/admin/members', isAdminPage, async function(req, res) {
-    var stats = await fetchMemberStats().catch(function(){ return null; });
-    res.render('admin-members', { page: 'members', stats: stats });
-  });
-
-  // Aggregate-only, anonymized counts about the tenant's audience. No PII
-  // ever leaves this endpoint — only totals. Mirrors the email-reach filter
-  // used by the broadcast endpoint (email present, not unsubscribed,
-  // email_verified NULL-or-1) so the "joignable" number matches what a
-  // broadcast would actually deliver to.
-  async function fetchMemberStats() {
-    function coerceInt(row) { return row && row.c != null ? parseInt(row.c, 10) || 0 : 0; }
-    var totalMembers = await db.get('SELECT COUNT(*) AS c FROM users').then(coerceInt).catch(function(){ return 0; });
-    var emailReachable = await db.get(
-      "SELECT COUNT(*) AS c FROM users WHERE email IS NOT NULL AND email <> '' AND (email_verified IS NULL OR email_verified = 1) AND email_unsubscribed_at IS NULL"
-    ).then(coerceInt).catch(function(){ return 0; });
-    var pushReachable = await db.get('SELECT COUNT(DISTINCT user_id) AS c FROM push_subscriptions').then(coerceInt).catch(function(){ return 0; });
-    var visits7 = await db.get("SELECT COUNT(*) AS c FROM site_visits WHERE visited_at > NOW() - INTERVAL '7 days'").then(coerceInt).catch(function(){ return 0; });
-    var newMembers7 = await db.get("SELECT COUNT(*) AS c FROM users WHERE created_at > NOW() - INTERVAL '7 days'").then(coerceInt).catch(function(){ return 0; });
-    return {
-      totalMembers: totalMembers,
-      emailReachable: emailReachable,
-      pushReachable: pushReachable,
-      visits7: visits7,
-      newMembers7: newMembers7
-    };
-  }
-  router.get('/api/admin/members/stats', isAdminApi, async function(req, res) {
-    try { res.json({ stats: await fetchMemberStats() }); }
-    catch(e) { res.status(500).json({ error: e.message }); }
+  // Retired admin sections. The one-page site never read them: the homepage
+  // menu comes from command.restaurant's menu feed (see homepageMenu), and
+  // posts, offers and members had no place on the page. Old bookmarks
+  // land on the dashboard instead of the /admin/:module fallback, which no
+  // longer has a view for them.
+  router.get(['/admin/menu', '/admin/posts', '/admin/offers', '/admin/members'], isAdminPage, function(req, res) {
+    res.redirect(tpath(req, '/admin'));
   });
 
   // --- Admin team management (admin_users + admin_invites are platform tables in tenant schema) ---
@@ -1241,34 +1195,17 @@ module.exports = function(services) {
     } catch(e) { res.status(500).json({ error: e.message }); }
   });
 
+  // Audience counts for the Communications page.
   router.get('/api/admin/stats', isAdminApi, async function(req, res) {
-    const safeCount = async function(sql) { try { const r = await db.get(sql); return (r && (r.c || r.count)) || 0; } catch(e) { return 0; } };
     res.json({
       userCount: await services.auth.getUserCount().catch(function(){ return 0; }),
-      pushSubscriberCount: await services.push.getSubscriptionCount().catch(function(){ return 0; }),
-      totalVisits: await safeCount('SELECT COUNT(*) AS c FROM site_visits'),
-      recentVisits: await safeCount("SELECT COUNT(*) AS c FROM site_visits WHERE visited_at > NOW() - INTERVAL '7 days'")
+      pushSubscriberCount: await services.push.getSubscriptionCount().catch(function(){ return 0; })
     });
   });
 
   router.get('/api/admin/modules', isAdminApi, function(req, res) {
     res.json({
       modules: [
-        {
-          key: 'menu_items', label: 'Menu', icon: 'utensils',
-          fields: [
-            { name: 'name_fr', label: 'Nom (FR)', type: 'text', required: true, maxLength: 100, description: 'Nom du plat en français.', placeholder: 'ex. Brochette de taouk' },
-            { name: 'name_en', label: 'Nom (EN)', type: 'text', required: false, maxLength: 100, description: 'Name in English (optional).', placeholder: 'e.g. Chicken Taouk Skewer' },
-            { name: 'description_fr', label: 'Description (FR)', type: 'textarea', description: 'Description courte en français (1-2 phrases).', placeholder: 'ex. Poitrine de poulet marinée, grillée sur charbon, houmous et pita.' },
-            { name: 'description_en', label: 'Description (EN)', type: 'textarea', description: 'English description (optional).', placeholder: 'e.g. Marinated chicken breast, charcoal-grilled, with hummus and pita.' },
-            { name: 'price', label: 'Prix de base ($ CAD)', type: 'number', required: true, min: 0, step: 0.01, description: 'Prix affiché si aucune taille n\'est définie. Sinon les tailles ci-dessous prennent le dessus.', placeholder: '12.99' },
-            { name: 'sizes_json', label: 'Tailles & prix (optionnel)', type: 'size_list', description: 'Ajoutez plusieurs tailles avec leur prix (ex. Petit 10$, Moyen 15$, Grand 20$). Si vide, le prix de base s\'affiche.' },
-            { name: 'category', label: 'Catégorie', type: 'select_dynamic', source: 'menu_categories', valueField: 'slug', labelField: 'name_fr', editable: true, description: 'Choisissez une catégorie, renommez-la, ou créez-en une nouvelle ici.' },
-            { name: 'image_url', label: 'Photo du plat', type: 'image', description: 'Photo du plat. Recommandé: 800x600px (4:3).' },
-            { name: 'featured', label: 'À la une (accueil)', type: 'boolean', default: false, description: "Afficher sur la page d'accueil (max 6 plats à la une)." },
-            { name: 'available', label: 'Disponible', type: 'boolean', default: true, description: 'Disponible à la commande. Décochez pour masquer.' }
-          ]
-        },
         {
           key: 'delivery_platforms', label: 'Plateformes de livraison', icon: 'truck',
           fields: [
@@ -1277,33 +1214,6 @@ module.exports = function(services) {
             { name: 'link_url', label: 'Lien vers la commande', type: 'url', required: true, description: 'Lien direct vers votre restaurant sur cette plateforme.', placeholder: 'https://www.ubereats.com/...' },
             { name: 'position', label: "Ordre d'affichage", type: 'number', default: 0, description: 'Plus petit = en premier.', placeholder: '0' },
             { name: 'active', label: 'Active', type: 'boolean', default: true, description: 'Afficher cette plateforme publiquement.' }
-          ]
-        },
-        {
-          key: 'offers', label: 'Offres', icon: 'tag',
-          fields: [
-            { name: 'title_fr', label: 'Titre (FR)', type: 'text', required: true, maxLength: 120, description: "Titre de l'offre en français.", placeholder: 'ex. Sandwich taouk + frites + boisson pour 16,99$' },
-            { name: 'title_en', label: 'Titre (EN)', type: 'text', maxLength: 120, description: 'Title in English (optional).', placeholder: 'e.g. Taouk sandwich + fries + drink for $16.99' },
-            { name: 'description_fr', label: 'Description (FR)', type: 'textarea', description: 'Détails de l\'offre en français.', placeholder: 'ex. Valide sur les assiettes grillées sur charbon.' },
-            { name: 'description_en', label: 'Description (EN)', type: 'textarea', description: 'Details in English (optional).' },
-            { name: 'discount_label', label: 'Étiquette de rabais', type: 'text', maxLength: 40, description: 'Affichée en grand sur la carte (ex. "-20%", "1 gratuit").', placeholder: 'ex. -20%' },
-            { name: 'image_url', label: 'Image', type: 'image', description: 'Image de l\'offre. Recommandé : 1200×900 px (4:3) — la carte d\'offre utilise un cadre 4:3, toute autre proportion sera recadrée.' },
-            { name: 'starts_at', label: 'Date de début', type: 'datetime', description: "Quand l'offre devient visible. Laissez vide pour activer immédiatement." },
-            { name: 'expires_at', label: 'Date d\'expiration', type: 'datetime', required: true, description: "Après cette date, l'offre disparaît et les codes existants ne peuvent plus être utilisés." },
-            { name: 'max_per_user', label: 'Limite par client', type: 'number', min: 0, default: 1, description: '0 = illimité. Par défaut: 1 réservation par client.' },
-            { name: 'max_claims', label: 'Total maximum (optionnel)', type: 'number', min: 0, description: 'Plafond total de réservations toutes personnes confondues. Laissez vide pour illimité.' },
-            { name: 'position', label: "Ordre d'affichage", type: 'number', default: 0, description: 'Plus petit = en premier.' },
-            { name: 'active', label: 'Active', type: 'boolean', default: true, description: 'Décochez pour masquer sans supprimer.' }
-          ]
-        },
-        {
-          key: 'posts', label: 'Nouvelles', icon: 'edit',
-          fields: [
-            { name: 'title', label: 'Titre', type: 'text', required: true, maxLength: 200, description: 'Titre de la nouvelle / publication.', placeholder: 'ex. Nouveau menu d\'automne!' },
-            { name: 'content', label: 'Contenu', type: 'textarea', description: "Contenu en texte simple. Sera affiché sur la page d'accueil.", placeholder: 'Détails de votre annonce...' },
-            { name: 'image_url', label: 'Image principale', type: 'image', description: 'Image principale. Recommandé : 1200×675 px (16:9).' },
-            { name: 'category', label: 'Catégorie', type: 'text', maxLength: 50, description: 'Catégorie / étiquette (ex. Événement, Menu, Annonce).', placeholder: 'ex. Événement' },
-            { name: 'published', label: 'Publié', type: 'boolean', default: true, description: 'Visible publiquement. Décochez pour brouillon.' }
           ]
         }
       ]
@@ -1351,117 +1261,6 @@ module.exports = function(services) {
     };
   }
 
-  // --- CRUD: menu_items ---
-  router.get('/api/admin/menu_items', isAdminApi, async function(req, res) {
-    try {
-      const rows = await db.all('SELECT m.* FROM menu_items m LEFT JOIN menu_categories c ON c.slug = m.category ORDER BY COALESCE(c.position, 999999) ASC, m.position ASC, m.id ASC');
-      res.json({ menu_items: rows });
-    } catch(e) { res.status(500).json({ error: e.message }); }
-  });
-  router.post('/api/admin/menu_items', isAdminApi, async function(req, res) {
-    try {
-      const b = Object.assign({}, req.body || {});
-      // Auto-position new items at the bottom of their category so manual
-      // ordering (drag-drop) is preserved and additions land at the end.
-      if (b.position == null || b.position === '') {
-        try {
-          const maxRow = await db.get('SELECT COALESCE(MAX(position), -1) + 1 AS next FROM menu_items WHERE category IS NOT DISTINCT FROM $1', [b.category || null]);
-          b.position = (maxRow && maxRow.next != null) ? Number(maxRow.next) : 0;
-        } catch(_) { b.position = 0; }
-      }
-      const q = adminInsert('menu_items', ['name_fr','name_en','description_fr','description_en','price','category','image_url','position','featured','available','sizes_json'], b);
-      if (!q) return res.status(400).json({ error: 'No fields' });
-      const r = await db.run(q.sql, q.vals);
-      const row = await db.get('SELECT * FROM menu_items WHERE id = $1', [r.lastInsertRowid]);
-      res.json({ item: row, id: r.lastInsertRowid });
-    } catch(e) { res.status(500).json({ error: e.message }); }
-  });
-
-  router.post('/api/admin/menu_items/reorder', isAdminApi, async function(req, res) {
-    try {
-      const b = req.body || {};
-      const ids = Array.isArray(b.ordered_ids) ? b.ordered_ids : [];
-      const category = b.category == null ? null : String(b.category);
-      if (!ids.length) return res.status(400).json({ error: 'no_ids' });
-      // Update positions sequentially. Scoped to a category so items in
-      // other categories aren't disturbed.
-      let i = 0;
-      for (const rawId of ids) {
-        const id = parseInt(rawId, 10);
-        if (!id) continue;
-        if (category === null) {
-          await db.run('UPDATE menu_items SET position = $1, updated_at = NOW() WHERE id = $2 AND category IS NULL', [i, id]);
-        } else {
-          await db.run('UPDATE menu_items SET position = $1, updated_at = NOW() WHERE id = $2 AND category = $3', [i, id, category]);
-        }
-        i++;
-      }
-      res.json({ success: true, updated: i });
-    } catch(e) { console.error('Reorder error:', e.message); res.status(500).json({ error: e.message }); }
-  });
-  router.put('/api/admin/menu_items/:id', isAdminApi, async function(req, res) {
-    try {
-      const q = adminUpdate('menu_items', ['name_fr','name_en','description_fr','description_en','price','category','image_url','position','featured','available','sizes_json'], req.body, req.params.id);
-      if (!q) return res.status(400).json({ error: 'No fields' });
-      await db.run(q.sql, q.vals);
-      const row = await db.get('SELECT * FROM menu_items WHERE id = $1', [req.params.id]);
-      res.json({ item: row });
-    } catch(e) { res.status(500).json({ error: e.message }); }
-  });
-  router.delete('/api/admin/menu_items/:id', isAdminApi, async function(req, res) {
-    try { await db.run('DELETE FROM menu_items WHERE id = $1', [req.params.id]); res.json({ success: true }); }
-    catch(e) { res.status(500).json({ error: e.message }); }
-  });
-
-  // --- CRUD: menu_categories ---
-  const MENU_CATEGORY_FIELDS = ['slug','name_fr','name_en','position','active'];
-  function slugify(s) { return String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60); }
-  router.get('/api/admin/menu_categories', isAdminApi, async function(req, res) {
-    try {
-      const rows = await db.all('SELECT * FROM menu_categories ORDER BY position ASC, id ASC');
-      res.json({ menu_categories: rows });
-    } catch(e) { res.status(500).json({ error: e.message }); }
-  });
-  router.post('/api/admin/menu_categories', isAdminApi, async function(req, res) {
-    try {
-      const b = Object.assign({}, req.body || {});
-      if (!b.slug && b.name_fr) b.slug = slugify(b.name_fr);
-      b.slug = slugify(b.slug);
-      if (!b.slug) return res.status(400).json({ error: 'invalid_slug' });
-      const q = adminInsert('menu_categories', MENU_CATEGORY_FIELDS, b);
-      if (!q) return res.status(400).json({ error: 'No fields' });
-      const r = await db.run(q.sql, q.vals);
-      const row = await db.get('SELECT * FROM menu_categories WHERE id = $1', [r.lastInsertRowid]);
-      res.json({ item: row, id: r.lastInsertRowid });
-    } catch(e) {
-      if ((e.message || '').toLowerCase().includes('duplicate') || (e.code === '23505')) return res.status(409).json({ error: 'slug_exists' });
-      res.status(500).json({ error: e.message });
-    }
-  });
-  router.put('/api/admin/menu_categories/:id', isAdminApi, async function(req, res) {
-    try {
-      const b = Object.assign({}, req.body || {});
-      if (b.slug != null) b.slug = slugify(b.slug);
-      // Keep existing menu_items.category in sync if slug changes
-      const before = await db.get('SELECT slug FROM menu_categories WHERE id = $1', [req.params.id]);
-      const q = adminUpdate('menu_categories', MENU_CATEGORY_FIELDS, b, req.params.id);
-      if (!q) return res.status(400).json({ error: 'No fields' });
-      await db.run(q.sql, q.vals);
-      if (before && b.slug && before.slug !== b.slug) {
-        try { await db.run('UPDATE menu_items SET category = $1 WHERE category = $2', [b.slug, before.slug]); } catch(_) {}
-      }
-      const row = await db.get('SELECT * FROM menu_categories WHERE id = $1', [req.params.id]);
-      res.json({ item: row });
-    } catch(e) {
-      if ((e.message || '').toLowerCase().includes('duplicate') || (e.code === '23505')) return res.status(409).json({ error: 'slug_exists' });
-      res.status(500).json({ error: e.message });
-    }
-  });
-  router.delete('/api/admin/menu_categories/:id', isAdminApi, async function(req, res) {
-    try { await db.run('DELETE FROM menu_categories WHERE id = $1', [req.params.id]); res.json({ success: true }); }
-    catch(e) { res.status(500).json({ error: e.message }); }
-  });
-
   // --- CRUD: delivery_platforms ---
   router.get('/api/admin/delivery_platforms', isAdminApi, async function(req, res) {
     try {
@@ -1490,142 +1289,6 @@ module.exports = function(services) {
   router.delete('/api/admin/delivery_platforms/:id', isAdminApi, async function(req, res) {
     try { await db.run('DELETE FROM delivery_platforms WHERE id = $1', [req.params.id]); res.json({ success: true }); }
     catch(e) { res.status(500).json({ error: e.message }); }
-  });
-
-  // --- CRUD: posts ---
-  router.get('/api/admin/posts', isAdminApi, async function(req, res) {
-    try {
-      const rows = await db.all('SELECT * FROM posts ORDER BY created_at DESC, id DESC');
-      res.json({ posts: rows });
-    } catch(e) { res.status(500).json({ error: e.message }); }
-  });
-  router.post('/api/admin/posts', isAdminApi, async function(req, res) {
-    try {
-      const q = adminInsert('posts', ['title','content','image_url','category','published'], req.body);
-      if (!q) return res.status(400).json({ error: 'No fields' });
-      const r = await db.run(q.sql, q.vals);
-      const row = await db.get('SELECT * FROM posts WHERE id = $1', [r.lastInsertRowid]);
-      res.json({ item: row, id: r.lastInsertRowid });
-    } catch(e) { res.status(500).json({ error: e.message }); }
-  });
-  router.put('/api/admin/posts/:id', isAdminApi, async function(req, res) {
-    try {
-      const q = adminUpdate('posts', ['title','content','image_url','category','published'], req.body, req.params.id);
-      if (!q) return res.status(400).json({ error: 'No fields' });
-      await db.run(q.sql, q.vals);
-      const row = await db.get('SELECT * FROM posts WHERE id = $1', [req.params.id]);
-      res.json({ item: row });
-    } catch(e) { res.status(500).json({ error: e.message }); }
-  });
-  router.delete('/api/admin/posts/:id', isAdminApi, async function(req, res) {
-    try { await db.run('DELETE FROM posts WHERE id = $1', [req.params.id]); res.json({ success: true }); }
-    catch(e) { res.status(500).json({ error: e.message }); }
-  });
-
-  // --- CRUD: offers ---
-  const OFFER_FIELDS = ['title_fr','title_en','description_fr','description_en','image_url','discount_label','starts_at','expires_at','max_claims','max_per_user','position','active'];
-  router.get('/api/admin/offers', isAdminApi, async function(req, res) {
-    try {
-      const rows = await db.all(
-        "SELECT o.*, " +
-        "(SELECT COUNT(*) FROM offer_claims c WHERE c.offer_id = o.id) AS claim_count, " +
-        "(SELECT COUNT(*) FROM offer_claims c WHERE c.offer_id = o.id AND c.status = 'redeemed') AS redeem_count " +
-        "FROM offers o ORDER BY position ASC, id DESC"
-      );
-      res.json({ offers: rows });
-    } catch(e) { res.status(500).json({ error: e.message }); }
-  });
-  router.post('/api/admin/offers', isAdminApi, async function(req, res) {
-    try {
-      const q = adminInsert('offers', OFFER_FIELDS, req.body);
-      if (!q) return res.status(400).json({ error: 'No fields' });
-      const r = await db.run(q.sql, q.vals);
-      const row = await db.get('SELECT * FROM offers WHERE id = $1', [r.lastInsertRowid]);
-      res.json({ item: row, id: r.lastInsertRowid });
-    } catch(e) { res.status(500).json({ error: e.message }); }
-  });
-  router.put('/api/admin/offers/:id', isAdminApi, async function(req, res) {
-    try {
-      const q = adminUpdate('offers', OFFER_FIELDS, req.body, req.params.id);
-      if (!q) return res.status(400).json({ error: 'No fields' });
-      await db.run(q.sql, q.vals);
-      const row = await db.get('SELECT * FROM offers WHERE id = $1', [req.params.id]);
-      res.json({ item: row });
-    } catch(e) { res.status(500).json({ error: e.message }); }
-  });
-  router.delete('/api/admin/offers/:id', isAdminApi, async function(req, res) {
-    try { await db.run('DELETE FROM offers WHERE id = $1', [req.params.id]); res.json({ success: true }); }
-    catch(e) { res.status(500).json({ error: e.message }); }
-  });
-
-  // --- Admin: offer_claims listing + redemption ---
-  router.get('/api/admin/offer_claims', isAdminApi, async function(req, res) {
-    try {
-      const params = [];
-      let where = '1=1';
-      if (req.query.status) { params.push(req.query.status); where += ' AND c.status = $' + params.length; }
-      if (req.query.code) { params.push(String(req.query.code).toUpperCase().trim()); where += ' AND c.short_code = $' + params.length; }
-      if (req.query.offer_id) { params.push(parseInt(req.query.offer_id)); where += ' AND c.offer_id = $' + params.length; }
-      const rows = await db.all(
-        "SELECT c.*, o.title_fr, o.title_en, o.discount_label, o.expires_at AS offer_expires_at, o.active AS offer_active " +
-        "FROM offer_claims c JOIN offers o ON o.id = c.offer_id " +
-        "WHERE " + where + " ORDER BY c.claimed_at DESC LIMIT 200",
-        params
-      );
-      // Enrich with user info (best effort)
-      for (const row of rows) {
-        try {
-          const u = await services.auth.getUser(row.user_id);
-          if (u) row._user = { display_name: u.display_name || null, email: u.email || null, phone: u.phone || null };
-        } catch(e) { /* ignore */ }
-      }
-      res.json({ claims: rows });
-    } catch(e) { res.status(500).json({ error: e.message }); }
-  });
-
-  router.post('/api/admin/offer_claims/lookup', isAdminApi, async function(req, res) {
-    try {
-      const code = (req.body && req.body.short_code ? String(req.body.short_code) : '').toUpperCase().trim();
-      if (!code) return res.status(400).json({ error: 'missing_code' });
-      const row = await db.get(
-        "SELECT c.*, o.title_fr, o.title_en, o.discount_label, o.expires_at AS offer_expires_at, o.active AS offer_active " +
-        "FROM offer_claims c JOIN offers o ON o.id = c.offer_id WHERE c.short_code = $1",
-        [code]
-      );
-      if (!row) return res.status(404).json({ error: 'not_found' });
-      try {
-        const u = await services.auth.getUser(row.user_id);
-        if (u) row._user = { display_name: u.display_name || null, email: u.email || null, phone: u.phone || null };
-      } catch(e) { /* ignore */ }
-      res.json({ claim: row });
-    } catch(e) { res.status(500).json({ error: e.message }); }
-  });
-
-  router.post('/api/admin/offer_claims/redeem', isAdminApi, async function(req, res) {
-    try {
-      const code = (req.body && req.body.short_code ? String(req.body.short_code) : '').toUpperCase().trim();
-      if (!code) return res.status(400).json({ error: 'missing_code' });
-      const claim = await db.get(
-        "SELECT c.*, o.expires_at AS offer_expires_at, o.active AS offer_active, o.title_fr, o.title_en, o.discount_label " +
-        "FROM offer_claims c JOIN offers o ON o.id = c.offer_id WHERE c.short_code = $1",
-        [code]
-      );
-      if (!claim) return res.status(404).json({ error: 'not_found' });
-      if (claim.status === 'redeemed') return res.status(409).json({ error: 'already_redeemed', claim: claim });
-      if (claim.offer_active == 0) return res.status(400).json({ error: 'offer_inactive', claim: claim });
-      if (claim.offer_expires_at && new Date(claim.offer_expires_at) <= new Date()) return res.status(400).json({ error: 'expired', claim: claim });
-
-      const adminUserId = (req.adminUser && req.adminUser.id) || (services.admin.getAdminUserId ? services.admin.getAdminUserId(req) : null);
-      await db.run(
-        "UPDATE offer_claims SET status = 'redeemed', redeemed_at = NOW(), redeemed_by_user_id = $1 WHERE id = $2 AND status = 'claimed'",
-        [adminUserId, claim.id]
-      );
-      const updated = await db.get('SELECT * FROM offer_claims WHERE id = $1', [claim.id]);
-      res.json({ success: true, claim: Object.assign({}, claim, updated) });
-    } catch(e) {
-      console.error('Redeem error:', e.message);
-      res.status(500).json({ error: e.message });
-    }
   });
 
   router.post('/api/admin/upload', isAdminApi, async function(req, res) {
