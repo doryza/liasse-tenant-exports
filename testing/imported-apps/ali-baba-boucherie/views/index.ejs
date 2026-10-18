@@ -91,30 +91,30 @@
 <% } %>
 
 <section class="hero hero-squeeze">
-  <img src="<%= (typeof settings!=='undefined' && settings._p_hero_image_url) ? settings._p_hero_image_url : 'https://placehold.co/1600x900/0d0c0b/D8B45A/png?text=Ali+Baba+Grillades' %>" alt="<%= t.brand %>" class="hero-img">
+  <img src="<%= (typeof settings!=='undefined' && settings._p_hero_image_url) ? settings._p_hero_image_url : 'https://placehold.co/1600x900/0d0c0b/D8B45A/png?text=Ali+Baba+Grillades' %>" alt="<%= t.brand %>" class="hero-img" data-setting-key="_p_hero_image_url">
   <div class="hero-overlay"></div>
   <div class="hero-banner">
     <div class="hero-banner-inner">
       <span class="hero-banner-badge"><img src="<%= BRAND_LOGO %>" alt="<%= t.brand %>" class="hero-banner-logo" onerror="var b=this.closest('.hero-banner-badge'); if(b){b.style.display='none';}"></span>
       <span class="hero-banner-divider"></span>
       <span class="hero-banner-title">
-        <span class="hero-banner-name"><%= settings.business_name || t.brand %></span>
-        <span class="hero-banner-sub">sur charbon</span>
+        <span class="hero-banner-name" data-setting-key="business_name"><%= settings.business_name || t.brand %></span>
+        <span class="hero-banner-sub" data-lk="hero-banner-sub">sur charbon</span>
       </span>
     </div>
   </div>
-  <h1 class="hero-slogan"><%= lang === 'en' ? 'The Taste of Real Charcoal' : 'Le goût du charbon de bois' %></h1>
+  <h1 class="hero-slogan" data-lk="hero-slogan"><%= lang === 'en' ? 'The Taste of Real Charcoal' : 'Le goût du charbon de bois' %></h1>
 </section>
 
 <section class="section squeeze-section" id="menu">
   <div class="container">
-    <h2 class="section-title"><%= t.menu_title %></h2>
-    <p class="section-sub"><%= t.menu_subtitle %></p>
+    <h2 class="section-title" data-lk="t:menu_title"><%= t.menu_title %></h2>
+    <p class="section-sub" data-lk="t:menu_subtitle"><%= t.menu_subtitle %></p>
   </div>
   <% if (typeof preview !== 'undefined' && preview && preview.items && preview.items.length > 0) { %>
   <div class="container">
     <div class="menu-chips" id="menuChips">
-      <button class="chip active" data-cat="*"><%= lang === 'en' ? 'All' : 'Tout' %></button>
+      <button class="chip active" data-cat="*" data-lk="menu-chip-all"><%= lang === 'en' ? 'All' : 'Tout' %></button>
       <% preview.categories.forEach(function(cat) { %>
       <button class="chip" data-cat="<%= cat %>"><%= (CAT_EMOJI[cat] ? CAT_EMOJI[cat] + ' ' : '') %><%= (lang === 'en' && typeof previewCatEn !== 'undefined' && previewCatEn[cat]) ? previewCatEn[cat] : cat %></button>
       <% }); %>
@@ -144,29 +144,29 @@
     <div class="slider-progress"><span id="sliderBar"></span></div>
   </div>
   <% } else { %>
-  <div class="container"><p class="empty-state"><%= t.no_menu %></p></div>
+  <div class="container"><p class="empty-state" data-lk="t:no_menu"><%= t.no_menu %></p></div>
   <% } %>
 </section>
 
 <section class="section squeeze-section alt-section">
   <div class="container order-band">
     <div class="order-band-text">
-      <h2><%= lang === 'en' ? 'Your next meal is waiting.' : 'Votre prochain repas vous attend.' %></h2>
-      <p><%= lang === 'en' ? 'Charcoal-grilled meats, Lebanese tartares and house pastries — fresh from the butcher, made to order.' : 'Viandes grillées sur charbon, tartares libanais et pâtisseries maison — fraîches de la boucherie, préparées à la commande.' %></p>
+      <h2 data-lk="order-band-title"><%= lang === 'en' ? 'Your next meal is waiting.' : 'Votre prochain repas vous attend.' %></h2>
+      <p data-lk="order-band-text"><%= lang === 'en' ? 'Charcoal-grilled meats, Lebanese tartares and house pastries — fresh from the butcher, made to order.' : 'Viandes grillées sur charbon, tartares libanais et pâtisseries maison — fraîches de la boucherie, préparées à la commande.' %></p>
     </div>
-    <a href="<%= ORDER_URL %>" target="_blank" rel="noopener" class="btn btn-primary btn-order"><%= lang === 'en' ? 'Order now' : 'Commander maintenant' %> →</a>
+    <a href="<%= ORDER_URL %>" target="_blank" rel="noopener" class="btn btn-primary btn-order" data-lk="order-band-cta"><%= lang === 'en' ? 'Order now' : 'Commander maintenant' %> →</a>
     <% if (typeof platforms !== 'undefined' && platforms && platforms.length > 0) { %>
     <div class="order-band-platforms">
-      <span><%= lang === 'en' ? 'Also on' : 'Aussi sur' %></span>
+      <span data-lk="order-band-also-on"><%= lang === 'en' ? 'Also on' : 'Aussi sur' %></span>
       <% platforms.forEach(function(p) { %>
-        <a href="<%= p.link_url %>" target="_blank" rel="noopener" title="<%= p.name %>"><% if (p.logo_url) { %><img src="<%= p.logo_url %>" alt="<%= p.name %>"><% } else { %><%= p.name %><% } %></a>
+        <a href="<%= p.link_url %>" target="_blank" rel="noopener" title="<%= p.name %>"><% if (p.logo_url) { %><img src="<%= p.logo_url %>" alt="<%= p.name %>" data-content-source="delivery_platforms:logo_url" data-content-id="<%= p.id %>"><% } else { %><%= p.name %><% } %></a>
       <% }); %>
     </div>
     <% } %>
   </div>
 </section>
 
-<a href="<%= ORDER_URL %>" target="_blank" rel="noopener" class="sticky-order-cta"><%= lang === 'en' ? 'Order now' : 'Commander' %> →</a>
+<a href="<%= ORDER_URL %>" target="_blank" rel="noopener" class="sticky-order-cta" data-lk="sticky-order-cta"><%= lang === 'en' ? 'Order now' : 'Commander' %> →</a>
 
 <script>
 (function(){
