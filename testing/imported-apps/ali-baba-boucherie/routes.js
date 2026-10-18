@@ -11,68 +11,30 @@ module.exports = function(services) {
   const T = {
     fr: {
       brand: 'Ali Baba Grillades',
-      nav_home: 'Accueil', nav_menu: 'Menu', nav_delivery: 'Livraison', nav_about: 'À propos',
-      login: 'Connexion', enable_notif: 'Activer les notifications',
-      hero_title: 'Le goût du charbon de bois',
+      enable_notif: 'Activer les notifications',
       hero_subtitle: 'Grillades libanaises sur charbon de bois à Blainville. Boucherie, brochettes taouk & kafta, filet mignon, côtelettes d\'agneau et tartares — préparés à la commande.',
-      cta_menu: 'Voir le menu', cta_visit: 'Nous visiter',
       menu_title: 'Notre menu', menu_subtitle: "Des viandes fraîches de notre boucherie, marinées maison et grillées sur charbon de bois. Servies en assiette ou en sandwich, avec houmous, pita épicé et sauce à l'ail.",
-      delivery_title: 'Faites-vous livrer', delivery_subtitle: 'Commandez via vos plateformes préférées.',
-      delivery_intro: 'Choisissez votre plateforme de livraison préférée.',
-      about_title: 'Notre histoire',
       no_menu: 'Le menu sera bientôt disponible.',
-      no_platforms: 'Aucune plateforme de livraison configurée pour le moment.',
       footer_rights: 'Tous droits réservés',
       contact_us: 'Nous joindre',
-      view_full_menu: 'Voir tout le menu',
-      order_now: 'Commander',
-      back_home: 'Retour à l\'accueil',
-      values_title: 'Notre feu',
-      val1_t: 'Grillé sur charbon', val1_d: "Toutes nos viandes passent sur le charbon de bois — ce goût fumé qu'aucun gril ordinaire ne donne.",
-      val2_t: 'Boucherie & grillades', val2_d: "Viandes fraîches de notre vitrine, marinées maison et grillées à la commande. Aussi offertes au kilo.",
-      val3_t: 'Saveurs libanaises', val3_d: "Taouk, kafta, soujouk, makanek, tartares et pâtisseries orientales — la tradition dans l'assiette.",
-      open_hours: 'Heures d\'ouverture', address: 'Adresse', phone: 'Téléphone', email: 'Courriel',
-      latest_news: 'Dernières nouvelles', read_more: 'Lire plus',
-      visit_title: 'Venez nous visiter', visit_subtitle: 'Notre boucherie-grillades vous accueille à Blainville. Suivez l\'odeur du charbon.',
-      visit_cta: "Voir l'adresse & les heures",
+      open_hours: 'Heures d\'ouverture', phone: 'Téléphone', email: 'Courriel',
       day_mon: 'Lundi', day_tue: 'Mardi', day_wed: 'Mercredi', day_thu: 'Jeudi', day_fri: 'Vendredi', day_sat: 'Samedi', day_sun: 'Dimanche',
-      closed: 'Fermé',
-      follow_us: 'Nous suivre'
+      closed: 'Fermé'
     },
     en: {
       brand: 'Ali Baba Grillades',
-      nav_home: 'Home', nav_menu: 'Menu', nav_delivery: 'Delivery', nav_about: 'About',
-      login: 'Sign In', enable_notif: 'Enable notifications',
-      hero_title: 'The Taste of Real Charcoal',
+      enable_notif: 'Enable notifications',
       hero_subtitle: 'Lebanese charcoal grill in Blainville. Butcher shop, taouk & kafta skewers, filet mignon, lamb chops and tartares — made to order.',
-      cta_menu: 'See the menu', cta_visit: 'Visit us',
       menu_title: 'Our menu', menu_subtitle: 'Fresh meats from our butcher counter, house-marinated and grilled over wood charcoal. Served on a platter or in a sandwich, with hummus, spiced pita and garlic sauce.',
-      delivery_title: 'Get it delivered', delivery_subtitle: 'Order via your favorite platforms.',
-      delivery_intro: 'Pick your favorite delivery platform.',
-      about_title: 'Our story',
       no_menu: 'Menu coming soon.',
-      no_platforms: 'No delivery platforms configured yet.',
       footer_rights: 'All rights reserved',
       contact_us: 'Contact us',
-      view_full_menu: 'View full menu',
-      order_now: 'Order',
-      back_home: 'Back to home',
-      values_title: 'Our fire',
-      val1_t: 'Charcoal-grilled', val1_d: 'Every cut goes over wood charcoal — a smoky flavour no ordinary grill delivers.',
-      val2_t: 'Butcher & grill', val2_d: "Fresh meats from our case, house-marinated and grilled to order. Also available by the kilo.",
-      val3_t: 'Lebanese flavours', val3_d: 'Taouk, kafta, soujouk, makanek, tartares and Oriental pastries — tradition on the plate.',
-      open_hours: 'Hours', address: 'Address', phone: 'Phone', email: 'Email',
-      latest_news: 'Latest news', read_more: 'Read more',
-      visit_title: 'Come visit us', visit_subtitle: 'Our butcher-grill welcomes you in Blainville. Just follow the charcoal smoke.',
-      visit_cta: 'See address & hours',
+      open_hours: 'Hours', phone: 'Phone', email: 'Email',
       day_mon: 'Monday', day_tue: 'Tuesday', day_wed: 'Wednesday', day_thu: 'Thursday', day_fri: 'Friday', day_sat: 'Saturday', day_sun: 'Sunday',
-      closed: 'Closed',
-      follow_us: 'Follow us'
+      closed: 'Closed'
     }
   };
   function formatPrice(p) { if (p == null || p === '') return ''; return Number(p).toFixed(2) + ' $'; }
-  function formatDate(d, lang) { if (!d) return ''; try { return new Date(d).toLocaleDateString(lang === 'en' ? 'en-CA' : 'fr-CA', { year:'numeric', month:'long', day:'numeric'}); } catch(e) { return String(d); } }
-  function pickLang(item, field, lang) { if (!item) return ''; return item[field + '_' + lang] || item[field + '_fr'] || item[field] || ''; }
 
   // Fallback for the homepage slider, used only when the command.restaurant
   // menu feed could not be read yet (see homepageMenu below). Snapshot of the
@@ -791,8 +753,6 @@ module.exports = function(services) {
       settings: settings,
       googlePlaceId: googlePlaceId,
       formatPrice: formatPrice,
-      formatDate: formatDate,
-      pickLang: pickLang,
       hours: parseHours(settings.hours_json),
     };
   }
@@ -805,25 +765,11 @@ module.exports = function(services) {
     } catch(e) { res.status(500).send('Erreur'); }
   });
 
-  // The menu lives in the homepage slider (from command.restaurant); the old
-  // /menu page read the retired tenant menu tables. Old links land on the
-  // homepage's menu section.
+  // The site is this one page. The menu lives in its slider (from
+  // command.restaurant); old /menu links land on that section. The other old
+  // pages (/livraison, /apropos, /offres) fall through to the catch-all at the
+  // bottom, which sends them to the homepage.
   router.get('/menu', function(req, res) { res.redirect(301, tpath(req, '/') + '#menu'); });
-
-  router.get('/livraison', async function(req, res) {
-    try {
-      const ctx = await renderCtx(req);
-      const platforms = await db.all('SELECT * FROM delivery_platforms WHERE active = 1 ORDER BY position ASC').catch(function(){ return []; });
-      res.render('livraison', Object.assign(ctx, { platforms: platforms }));
-    } catch(e) { res.status(500).send('Erreur'); }
-  });
-
-  router.get('/apropos', async function(req, res) {
-    try {
-      const ctx = await renderCtx(req);
-      res.render('apropos', ctx);
-    } catch(e) { res.status(500).send('Erreur'); }
-  });
 
   // Captures 1-3 star feedback from the in-page review modal. Emails the
   // tenant's contact_email. 4 and 5 star paths are handled client-side
