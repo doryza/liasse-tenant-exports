@@ -693,13 +693,6 @@ module.exports = function(services) {
     next();
   });
 
-  router.use(async function(req, res, next) {
-    if (req.method === 'GET' && !req.path.startsWith('/api/') && !req.path.includes('.')) {
-      try { await db.run('INSERT INTO site_visits (path) VALUES ($1)', [req.path]); } catch(e) {}
-    }
-    next();
-  });
-
   // =========================================================================
   // Keychain attribution middlewares — MUST be registered BEFORE the route
   // handlers (Express middleware only applies to subsequent routes). Earlier
@@ -1172,20 +1165,10 @@ module.exports = function(services) {
     next();
   }
 
-  router.get('/admin', async function(req, res) {
-    if (!services.admin.isAdmin(req)) return res.redirect('admin/login');
-    try {
-      const safeCount = async function(sql) { try { const r = await db.get(sql); return (r && (r.c || r.count)) || 0; } catch(e) { return 0; } };
-      const stats = {
-        platforms: await safeCount('SELECT COUNT(*) AS c FROM delivery_platforms'),
-        pushSubs: await services.push.getSubscriptionCount().catch(function(){ return 0; }),
-        visits: await safeCount('SELECT COUNT(*) AS c FROM site_visits'),
-        visits7: await safeCount("SELECT COUNT(*) AS c FROM site_visits WHERE visited_at > NOW() - INTERVAL '7 days'"),
-        activePlatforms: await safeCount("SELECT COUNT(*) AS c FROM delivery_platforms WHERE active = 1")
-      };
-      res.render('admin', { stats: stats, page: 'dashboard' });
-    } catch(e) { res.status(500).send('Erreur: ' + e.message); }
-  });
+  // The dashboard is only shortcuts to the admin pages. Visit statistics live
+  // in the owner's Liasse dashboard (platform session tracking); this site no
+  // longer counts page views itself.
+  router.get('/admin', isAdminPage, function(req, res) { res.render('admin', { page: 'dashboard' }); });
 
   router.get('/admin/delivery', isAdminPage, function(req, res) { res.render('admin-delivery', { page: 'delivery' }); });
   // Explicit /admin/team registered BEFORE the auto-injected /admin/:module
@@ -1280,13 +1263,11 @@ module.exports = function(services) {
     } catch(e) { res.status(500).json({ error: e.message }); }
   });
 
+  // Audience counts for the Communications page.
   router.get('/api/admin/stats', isAdminApi, async function(req, res) {
-    const safeCount = async function(sql) { try { const r = await db.get(sql); return (r && (r.c || r.count)) || 0; } catch(e) { return 0; } };
     res.json({
       userCount: await services.auth.getUserCount().catch(function(){ return 0; }),
-      pushSubscriberCount: await services.push.getSubscriptionCount().catch(function(){ return 0; }),
-      totalVisits: await safeCount('SELECT COUNT(*) AS c FROM site_visits'),
-      recentVisits: await safeCount("SELECT COUNT(*) AS c FROM site_visits WHERE visited_at > NOW() - INTERVAL '7 days'")
+      pushSubscriberCount: await services.push.getSubscriptionCount().catch(function(){ return 0; })
     });
   });
 
