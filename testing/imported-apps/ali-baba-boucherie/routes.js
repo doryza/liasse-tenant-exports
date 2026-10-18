@@ -56,7 +56,7 @@ module.exports = function(services) {
         "price": 25.99,
         "category": "Assiettes",
         "description": "Poulet entier en crapaudine, grillé sur charbon de bois.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898961/tapavis_menu/296/zkpkruhfiq2vqdzvisx0.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898961/tapavis_menu/296/zkpkruhfiq2vqdzvisx0.jpg"
       },
       {
         "id": "ab2",
@@ -64,7 +64,7 @@ module.exports = function(services) {
         "price": 32,
         "category": "Assiettes",
         "description": "Taouk, kafta et filet mignon grillés sur charbon. Servi avec légumes grillés, pain pita épicé, houmous et sauce à l'ail. ½ kg ou 1 kg.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898959/tapavis_menu/296/l6qrlo9ykavj0wszyh2c.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898959/tapavis_menu/296/l6qrlo9ykavj0wszyh2c.jpg"
       },
       {
         "id": "ab3",
@@ -72,7 +72,7 @@ module.exports = function(services) {
         "price": 39,
         "category": "Assiettes",
         "description": "Bœuf tendre grillé sur charbon. Servi avec légumes grillés, pain pita épicé, houmous et sauce à l'ail. ½ kg ou 1 kg.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898960/tapavis_menu/296/w9hcgfmjapohgaglmm4a.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898960/tapavis_menu/296/w9hcgfmjapohgaglmm4a.jpg"
       },
       {
         "id": "ab4",
@@ -80,7 +80,7 @@ module.exports = function(services) {
         "price": 30,
         "category": "Assiettes",
         "description": "Bœuf haché, persil, oignon et épices, grillé sur charbon. Servi avec légumes grillés, pain pita épicé, houmous et sauce à l'ail. ½ kg ou 1 kg.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898962/tapavis_menu/296/pwmlbzi4kkrjrn6aazi0.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898962/tapavis_menu/296/pwmlbzi4kkrjrn6aazi0.jpg"
       },
       {
         "id": "ab5",
@@ -88,7 +88,7 @@ module.exports = function(services) {
         "price": 32,
         "category": "Assiettes",
         "description": "Poitrine de poulet marinée, grillée sur charbon. Servi avec légumes grillés, pain pita épicé, houmous et sauce à l'ail. ½ kg ou 1 kg.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898962/tapavis_menu/296/iruy1v5h35zxwriqzabi.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898962/tapavis_menu/296/iruy1v5h35zxwriqzabi.jpg"
       },
       {
         "id": "ab6",
@@ -96,7 +96,7 @@ module.exports = function(services) {
         "price": 32,
         "category": "Assiettes",
         "description": "Saucisses libanaises non piquantes, grillées sur charbon. Servi avec légumes grillés, pain pita épicé, houmous et sauce à l'ail. ½ kg ou 1 kg.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898963/tapavis_menu/296/qoo2efrlejjtvlbodfzh.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898963/tapavis_menu/296/qoo2efrlejjtvlbodfzh.jpg"
       },
       {
         "id": "ab7",
@@ -104,7 +104,7 @@ module.exports = function(services) {
         "price": 40,
         "category": "Assiettes",
         "description": "Côtelettes d'agneau grillées sur charbon. Servi avec légumes grillés, pain pita épicé, houmous et sauce à l'ail. ½ kg ou 1 kg.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898966/tapavis_menu/296/yt9pwpwp02y7vnrcxkm3.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898966/tapavis_menu/296/yt9pwpwp02y7vnrcxkm3.jpg"
       },
       {
         "id": "ab8",
@@ -112,7 +112,7 @@ module.exports = function(services) {
         "price": 32,
         "category": "Assiettes",
         "description": "Saucisses arméniennes piquantes, grillées sur charbon. Servi avec légumes grillés, pain pita épicé, houmous et sauce à l'ail. ½ kg ou 1 kg.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898965/tapavis_menu/296/fpruetusiyssanepfoea.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898965/tapavis_menu/296/fpruetusiyssanepfoea.jpg"
       },
       {
         "id": "ab9",
@@ -120,7 +120,7 @@ module.exports = function(services) {
         "price": 32,
         "category": "Assiettes",
         "description": "Saucisses marocaines non piquantes, grillées sur charbon. Servi avec légumes grillés, pain pita épicé, houmous et sauce à l'ail. ½ kg ou 1 kg.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898964/tapavis_menu/296/rxbuefnkkkmleg7prcjl.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898964/tapavis_menu/296/rxbuefnkkkmleg7prcjl.jpg"
       },
       {
         "id": "ab10",
@@ -128,7 +128,7 @@ module.exports = function(services) {
         "price": 35,
         "category": "Assiettes",
         "description": "Foie de veau de grain grillé sur charbon. Servi avec légumes grillés, pain pita épicé, houmous et sauce à l'ail. ½ kg ou 1 kg.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782061818/tapavis_menu/296/foie_de_veau_de_grain_1782061816066.png"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782061818/tapavis_menu/296/foie_de_veau_de_grain_1782061816066.png"
       },
       {
         "id": "ab11",
@@ -136,7 +136,7 @@ module.exports = function(services) {
         "price": 40,
         "category": "Assiettes",
         "description": "Agneau du Québec en cubes, grillé sur charbon. Servi avec légumes grillés, pain pita épicé, houmous et sauce à l'ail. ½ kg ou 1 kg.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782061816/tapavis_menu/296/agneau_qc_en_cubes_1782061814979.png"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782061816/tapavis_menu/296/agneau_qc_en_cubes_1782061814979.png"
       },
       {
         "id": "ab12",
@@ -144,7 +144,7 @@ module.exports = function(services) {
         "price": 7.5,
         "category": "Entrées",
         "description": "Caviar d'aubergine grillée au tahini, citron et ail.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782061795/tapavis_menu/296/babaghanouge_1782061794032.png"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782061795/tapavis_menu/296/babaghanouge_1782061794032.png"
       },
       {
         "id": "ab13",
@@ -152,7 +152,7 @@ module.exports = function(services) {
         "price": 4.99,
         "category": "Entrées",
         "description": "Pommes de terre sautées à l'ail et coriandre. Format petit ou grand.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782061795/tapavis_menu/296/patates_a_l_ail_1782061793656.png"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782061795/tapavis_menu/296/patates_a_l_ail_1782061793656.png"
       },
       {
         "id": "ab14",
@@ -160,7 +160,7 @@ module.exports = function(services) {
         "price": 3.99,
         "category": "Entrées",
         "description": "Riz libanais parfumé. Format petit ou grand.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782061828/tapavis_menu/296/riz_1782061826840.png"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782061828/tapavis_menu/296/riz_1782061826840.png"
       },
       {
         "id": "ab15",
@@ -168,7 +168,7 @@ module.exports = function(services) {
         "price": 7.5,
         "category": "Entrées",
         "description": "Purée de pois chiches au tahini, citron et huile d'olive. Format petit ou grand.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782061793/tapavis_menu/296/hommous_1782061791979.png"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782061793/tapavis_menu/296/hommous_1782061791979.png"
       },
       {
         "id": "ab16",
@@ -176,7 +176,7 @@ module.exports = function(services) {
         "price": 4.99,
         "category": "Entrées",
         "description": "Salade de légumes croquants et pain pita grillé, vinaigrette au sumac.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782062416/tapavis_menu/296/fattouche_1782062414159.png"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782062416/tapavis_menu/296/fattouche_1782062414159.png"
       },
       {
         "id": "ab17",
@@ -184,7 +184,7 @@ module.exports = function(services) {
         "price": 4.99,
         "category": "Entrées",
         "description": "Salade de persil, boulgour, tomate et menthe, citron et huile d'olive.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782062428/tapavis_menu/296/taboule_1782062426682.png"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782062428/tapavis_menu/296/taboule_1782062426682.png"
       },
       {
         "id": "ab18",
@@ -192,7 +192,7 @@ module.exports = function(services) {
         "price": 7.5,
         "category": "Entrées",
         "description": "Notre sauce à l'ail maison, crémeuse et généreuse.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782061795/tapavis_menu/296/sauce_a_l_ail_1782061794060.png"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782061795/tapavis_menu/296/sauce_a_l_ail_1782061794060.png"
       },
       {
         "id": "ab19",
@@ -200,7 +200,7 @@ module.exports = function(services) {
         "price": 3.57,
         "category": "Entrées",
         "description": "Pain pita moyen assaisonné de sauce piquante et d'oignons, le tout grillé.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782062440/tapavis_menu/296/pain_pita_epice_1782062438515.png"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782062440/tapavis_menu/296/pain_pita_epice_1782062438515.png"
       },
       {
         "id": "ab20",
@@ -208,7 +208,7 @@ module.exports = function(services) {
         "price": 2.5,
         "category": "Entrées",
         "description": "Sac de 5 pains pita moyens.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782062655/tapavis_menu/296/dgjoct5idueftu4qfxxs.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782062655/tapavis_menu/296/dgjoct5idueftu4qfxxs.jpg"
       },
       {
         "id": "ab21",
@@ -216,7 +216,7 @@ module.exports = function(services) {
         "price": 9.99,
         "category": "Sandwichs",
         "description": "Poitrine de poulet marinée, grillée sur charbon. Garni de tomate, cornichon, oignon, houmous ou sauce à l'ail.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898972/tapavis_menu/296/zxacvy75nmtgrcl0jd1t.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898972/tapavis_menu/296/zxacvy75nmtgrcl0jd1t.jpg"
       },
       {
         "id": "ab22",
@@ -224,7 +224,7 @@ module.exports = function(services) {
         "price": 9.99,
         "category": "Sandwichs",
         "description": "Filet mignon grillé sur charbon. Garni de tomate, cornichon, oignon, houmous ou sauce à l'ail.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898973/tapavis_menu/296/okka7eig9hv5cczktkff.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898973/tapavis_menu/296/okka7eig9hv5cczktkff.jpg"
       },
       {
         "id": "ab23",
@@ -232,7 +232,7 @@ module.exports = function(services) {
         "price": 9.99,
         "category": "Sandwichs",
         "description": "Steak grillé sur charbon. Garni de tomate, cornichon, oignon, houmous ou sauce à l'ail.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898975/tapavis_menu/296/un8hwnr3asdhm68gpxho.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898975/tapavis_menu/296/un8hwnr3asdhm68gpxho.jpg"
       },
       {
         "id": "ab24",
@@ -240,7 +240,7 @@ module.exports = function(services) {
         "price": 9.99,
         "category": "Sandwichs",
         "description": "Brochette de bœuf haché, persil, oignon et épices, grillée sur charbon. Garni de tomate, cornichon, oignon, houmous ou sauce à l'ail.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898974/tapavis_menu/296/ac30uszwyjejexi27bhr.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898974/tapavis_menu/296/ac30uszwyjejexi27bhr.jpg"
       },
       {
         "id": "ab25",
@@ -248,7 +248,7 @@ module.exports = function(services) {
         "price": 9.99,
         "category": "Sandwichs",
         "description": "Saucisses libanaises non piquantes, grillées sur charbon. Garni de tomate, cornichon, oignon, houmous ou sauce à l'ail.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898977/tapavis_menu/296/suycuncj0ylxjb5qo3x4.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898977/tapavis_menu/296/suycuncj0ylxjb5qo3x4.jpg"
       },
       {
         "id": "ab26",
@@ -256,7 +256,7 @@ module.exports = function(services) {
         "price": 9.99,
         "category": "Sandwichs",
         "description": "Saucisses arméniennes piquantes, grillées sur charbon. Garni de tomate, cornichon, oignon, houmous ou sauce à l'ail.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898977/tapavis_menu/296/klmcglqmwktai6dbdm1d.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898977/tapavis_menu/296/klmcglqmwktai6dbdm1d.jpg"
       },
       {
         "id": "ab27",
@@ -264,7 +264,7 @@ module.exports = function(services) {
         "price": 12.99,
         "category": "Sandwichs",
         "description": "Pain pita farci de kafta et grillé sur charbon, croustillant. Garni de tomate, cornichon, oignon, houmous ou sauce à l'ail.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898978/tapavis_menu/296/eqcby2c0p8avm0lmxdde.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898978/tapavis_menu/296/eqcby2c0p8avm0lmxdde.jpg"
       },
       {
         "id": "ab28",
@@ -272,7 +272,7 @@ module.exports = function(services) {
         "price": 9.99,
         "category": "Sandwichs",
         "description": "Foie grillé sur charbon. Garni de tomate, cornichon, oignon, houmous ou sauce à l'ail.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782061807/tapavis_menu/296/sandwich_foie_1782061805486.png"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782061807/tapavis_menu/296/sandwich_foie_1782061805486.png"
       },
       {
         "id": "ab29",
@@ -280,7 +280,7 @@ module.exports = function(services) {
         "price": 9.99,
         "category": "Sandwichs",
         "description": "Crevettes grillées sur charbon. Garni de tomate, cornichon, oignon, houmous ou sauce à l'ail.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782061806/tapavis_menu/296/sandwich_crevettes_1782061804583.png"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782061806/tapavis_menu/296/sandwich_crevettes_1782061804583.png"
       },
       {
         "id": "ab30",
@@ -288,7 +288,7 @@ module.exports = function(services) {
         "price": 9.99,
         "category": "Sandwichs",
         "description": "Galette de bœuf grillée sur charbon. Garni de tomate, cornichon, oignon, houmous ou sauce à l'ail.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782061808/tapavis_menu/296/hamburger_1782061806892.png"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782061808/tapavis_menu/296/hamburger_1782061806892.png"
       },
       {
         "id": "ab31",
@@ -296,7 +296,7 @@ module.exports = function(services) {
         "price": 9.99,
         "category": "Sandwichs",
         "description": "Agneau grillé sur charbon. Garni de tomate, cornichon, oignon, houmous ou sauce à l'ail.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782061808/tapavis_menu/296/sandwich_agneau_1782061806619.png"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782061808/tapavis_menu/296/sandwich_agneau_1782061806619.png"
       },
       {
         "id": "ab32",
@@ -304,7 +304,7 @@ module.exports = function(services) {
         "price": 9.99,
         "category": "Sandwichs",
         "description": "Saucisses marocaines non piquantes, grillées sur charbon. Garni de tomate, cornichon, oignon, houmous ou sauce à l'ail.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782061818/tapavis_menu/296/sandwich_merguez_1782061815915.png"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782061818/tapavis_menu/296/sandwich_merguez_1782061815915.png"
       },
       {
         "id": "ab33",
@@ -312,7 +312,7 @@ module.exports = function(services) {
         "price": 9.5,
         "category": "Tartares",
         "description": "Tartare de bœuf libanais. Styles tablé, kebbeh, kafta ou malsé. Sandwich ou au kilo.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781899013/tapavis_menu/296/yyhhj3jhqznnjyqmujre.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781899013/tapavis_menu/296/yyhhj3jhqznnjyqmujre.jpg"
       },
       {
         "id": "ab34",
@@ -320,7 +320,7 @@ module.exports = function(services) {
         "price": 9.99,
         "category": "Tartares",
         "description": "Tartare d'agneau libanais. Styles tablé, kebbeh, kafta ou malsé. Sandwich ou au kilo.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781899015/tapavis_menu/296/i86zl9dfmhfnf1widnya.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781899015/tapavis_menu/296/i86zl9dfmhfnf1widnya.jpg"
       },
       {
         "id": "ab35",
@@ -328,49 +328,49 @@ module.exports = function(services) {
         "price": 9.5,
         "category": "Tartares",
         "description": "Tartare de veau libanais. Styles tablé, kebbeh, kafta ou malsé. Sandwich ou au kilo.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781899014/tapavis_menu/296/f4zigtnpkzxgxttfvngu.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781899014/tapavis_menu/296/f4zigtnpkzxgxttfvngu.jpg"
       },
       {
         "id": "ab36",
         "name": "Pepsi",
         "price": 3.25,
         "category": "Breuvages",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782063139/tapavis_menu/296/x7whccqlumhpcdenctur.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782063139/tapavis_menu/296/x7whccqlumhpcdenctur.jpg"
       },
       {
         "id": "ab37",
         "name": "Pepsi Diète",
         "price": 3.25,
         "category": "Breuvages",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782063175/tapavis_menu/296/jtqhze789mplbs2etd5f.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782063175/tapavis_menu/296/jtqhze789mplbs2etd5f.jpg"
       },
       {
         "id": "ab38",
         "name": "Coca-Cola",
         "price": 3.25,
         "category": "Breuvages",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782063303/tapavis_menu/296/gs2kjjq1k8le6dvuu4rh.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782063303/tapavis_menu/296/gs2kjjq1k8le6dvuu4rh.jpg"
       },
       {
         "id": "ab39",
         "name": "7 UP",
         "price": 3.25,
         "category": "Breuvages",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782063329/tapavis_menu/296/nie5drrrzijmhovts7ha.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782063329/tapavis_menu/296/nie5drrrzijmhovts7ha.jpg"
       },
       {
         "id": "ab40",
         "name": "Crush",
         "price": 3.25,
         "category": "Breuvages",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782063354/tapavis_menu/296/pfdafxggjox2pculd1ui.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782063354/tapavis_menu/296/pfdafxggjox2pculd1ui.jpg"
       },
       {
         "id": "ab41",
         "name": "Bouteille d'Eau",
         "price": 3.25,
         "category": "Breuvages",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782063406/tapavis_menu/296/pf1xgiqhcdqgxmlbgabv.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782063406/tapavis_menu/296/pf1xgiqhcdqgxmlbgabv.jpg"
       },
       {
         "id": "ab42",
@@ -378,7 +378,7 @@ module.exports = function(services) {
         "price": 4.5,
         "category": "Breuvages",
         "description": "Boisson lactée rafraîchissante à base de yogourt.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782063412/tapavis_menu/296/py7om9aueqptdelwfyom.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1782063412/tapavis_menu/296/py7om9aueqptdelwfyom.jpg"
       },
       {
         "id": "ab43",
@@ -386,7 +386,7 @@ module.exports = function(services) {
         "price": 9.86,
         "category": "Dessert",
         "description": "10 morceaux de baklavas frais.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898981/tapavis_menu/296/bor0dhsbt3tdtyx1xzpk.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781898981/tapavis_menu/296/bor0dhsbt3tdtyx1xzpk.jpg"
       }
     ]
   };
@@ -406,8 +406,11 @@ module.exports = function(services) {
 
   function sliderImage(url) {
     if (!url) return '';
-    if (String(url).indexOf('res.cloudinary.com/') === -1) return url;
-    return String(url).replace(/\/image\/upload\/(?!w_)/, '/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/');
+    const s = String(url);
+    // Images live on media.liasse.tech since 2026-10-18 (same /upload/ layout as Cloudinary had).
+    if (s.indexOf('media.liasse.tech/upload/') !== -1) return s.replace(/\/upload\/(?!w_)/, '/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/');
+    if (s.indexOf('res.cloudinary.com/') === -1) return url;
+    return s.replace(/\/image\/upload\/(?!w_)/, '/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/');
   }
 
   function previewFromFeed(feed) {

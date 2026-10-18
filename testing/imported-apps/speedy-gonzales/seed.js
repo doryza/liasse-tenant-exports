@@ -1,6 +1,6 @@
 module.exports = async function(db) {
   const settings = [
-    ['_p_hero_image_url', 'https://res.cloudinary.com/duhp69meg/image/upload/v1778991712/tapavis_tenant_speedy-gonzales/build_speedy-gonzales_1778991712855.png'],
+    ['_p_hero_image_url', 'https://media.liasse.tech/upload/v1778991712/tapavis_tenant_speedy-gonzales/build_speedy-gonzales_1778991712855.png'],
     ['hero_title_fr', 'Livraison rapide à Montréal et Laval'],
     ['hero_title_en', 'Fast delivery across Montreal and Laval'],
     ['hero_subtitle_fr', 'Service de courrier dédié aux entreprises. Express, jour même ou jour suivant — vous choisissez.'],

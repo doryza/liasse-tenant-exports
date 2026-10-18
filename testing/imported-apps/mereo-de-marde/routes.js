@@ -201,8 +201,8 @@ module.exports = function(services) {
   function courrielValide(e) { return typeof e === 'string' && e.length <= 160 && /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e); }
   function echap(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
   function urlSite(settings) { return String((settings && settings.site_url) || 'https://meteodmarde.com').replace(/\/+$/, ''); }
-  const LOGO_COURRIEL = 'https://res.cloudinary.com/duhp69meg/image/upload/v1783041536/tapavis_tenant_mereo-de-marde/icon_mereo-de-marde_1783041536175.png';
-  const HEROS_COURRIEL = 'https://res.cloudinary.com/duhp69meg/image/upload/v1783039813/tapavis_tenant_mereo-de-marde/build_mereo-de-marde_1783039813099.png';
+  const LOGO_COURRIEL = 'https://media.liasse.tech/upload/v1783041536/tapavis_tenant_mereo-de-marde/icon_mereo-de-marde_1783041536175.png';
+  const HEROS_COURRIEL = 'https://media.liasse.tech/upload/v1783039813/tapavis_tenant_mereo-de-marde/build_mereo-de-marde_1783039813099.png';
 
   // Le courriel de confirmation : même ton que le site, zéro langue de bois.
   // Tout ce qui vient du public (nom, message, village) passe par echap().

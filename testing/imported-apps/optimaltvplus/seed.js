@@ -19,17 +19,17 @@ module.exports = async function(db) {
   for (const [k, v] of settings) {
     await db.run('INSERT INTO admin_settings (key, value) VALUES ($1, $2) ON CONFLICT (key) DO NOTHING', [k, v]);
   }
-  await db.run("INSERT INTO admin_settings (key, value) VALUES ('_p_hero_image_url', 'https://res.cloudinary.com/duhp69meg/image/upload/v1778609717/tapavis_tenant_optimaltvplus/build_optimaltvplus_1778609716936.png') ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = NOW()");
-  await db.run("INSERT INTO admin_settings (key, value) VALUES ('_p_about_image_url', 'https://res.cloudinary.com/duhp69meg/image/upload/v1778609724/tapavis_tenant_optimaltvplus/build_optimaltvplus_1778609724549.png') ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = NOW()");
-  await db.run("INSERT INTO admin_settings (key, value) VALUES ('_p_devices_image_url', 'https://res.cloudinary.com/duhp69meg/image/upload/v1778609716/tapavis_tenant_optimaltvplus/build_optimaltvplus_1778609716503.png') ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = NOW()");
-  await db.run("INSERT INTO admin_settings (key, value) VALUES ('_p_cta_image_url', 'https://res.cloudinary.com/duhp69meg/image/upload/v1778609725/tapavis_tenant_optimaltvplus/build_optimaltvplus_1778609724977.png') ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = NOW()");
+  await db.run("INSERT INTO admin_settings (key, value) VALUES ('_p_hero_image_url', 'https://media.liasse.tech/upload/v1778609717/tapavis_tenant_optimaltvplus/build_optimaltvplus_1778609716936.png') ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = NOW()");
+  await db.run("INSERT INTO admin_settings (key, value) VALUES ('_p_about_image_url', 'https://media.liasse.tech/upload/v1778609724/tapavis_tenant_optimaltvplus/build_optimaltvplus_1778609724549.png') ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = NOW()");
+  await db.run("INSERT INTO admin_settings (key, value) VALUES ('_p_devices_image_url', 'https://media.liasse.tech/upload/v1778609716/tapavis_tenant_optimaltvplus/build_optimaltvplus_1778609716503.png') ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = NOW()");
+  await db.run("INSERT INTO admin_settings (key, value) VALUES ('_p_cta_image_url', 'https://media.liasse.tech/upload/v1778609725/tapavis_tenant_optimaltvplus/build_optimaltvplus_1778609724977.png') ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = NOW()");
 
   const planCount = await db.get('SELECT COUNT(*)::int AS c FROM plans');
   if (!planCount || planCount.c === 0) {
-    await db.run("INSERT INTO plans (name, name_en, description, description_en, price_cents, duration_days, features, features_en, image_url, badge, featured, sort_order, active) VALUES ('Essentiel', 'Essential', 'Idéal pour découvrir le service.', 'Perfect to discover the service.', 1499, 30, '5 000+ chaînes\nQualité HD 1080p\n1 appareil simultané\nSupport par courriel\nVOD inclus', '5,000+ channels\nHD 1080p quality\n1 simultaneous device\nEmail support\nVOD included', 'https://res.cloudinary.com/duhp69meg/image/upload/v1778609735/tapavis_tenant_optimaltvplus/build_optimaltvplus_1778609735474.png', NULL, 0, 1, 1)");
-    await db.run("INSERT INTO plans (name, name_en, description, description_en, price_cents, duration_days, features, features_en, image_url, badge, featured, sort_order, active) VALUES ('Famille', 'Family', 'Le meilleur rapport qualité-prix.', 'Best value for the family.', 2499, 30, '10 000+ chaînes\nQualité 4K Ultra HD\n3 appareils simultanés\nSupport prioritaire 24/7\nVOD + Séries premium\nGuide TV intégré', '10,000+ channels\n4K Ultra HD quality\n3 simultaneous devices\n24/7 priority support\nVOD + Premium series\nIntegrated TV guide', 'https://res.cloudinary.com/duhp69meg/image/upload/v1778609727/tapavis_tenant_optimaltvplus/build_optimaltvplus_1778609727042.png', 'POPULAIRE', 1, 2, 1)");
-    await db.run("INSERT INTO plans (name, name_en, description, description_en, price_cents, duration_days, features, features_en, image_url, badge, featured, sort_order, active) VALUES ('Premium', 'Premium', 'L''expérience ultime sans compromis.', 'The ultimate no-compromise experience.', 3999, 30, '15 000+ chaînes mondiales\nQualité 4K HDR\n5 appareils simultanés\nSupport VIP dédié 24/7\nVOD illimité + Adulte\nChaînes PPV incluses\nEnregistrement cloud', '15,000+ global channels\n4K HDR quality\n5 simultaneous devices\nDedicated VIP 24/7 support\nUnlimited VOD + Adult\nPPV channels included\nCloud recording', 'https://res.cloudinary.com/duhp69meg/image/upload/v1778609717/tapavis_tenant_optimaltvplus/build_optimaltvplus_1778609717593.png', 'VIP', 0, 3, 1)");
-    await db.run("INSERT INTO plans (name, name_en, description, description_en, price_cents, duration_days, features, features_en, image_url, badge, featured, sort_order, active) VALUES ('Annuel Famille', 'Annual Family', '12 mois au prix de 10 - économisez 50$.', '12 months at the price of 10 - save $50.', 24999, 365, '10 000+ chaînes\nQualité 4K Ultra HD\n3 appareils simultanés\nSupport 24/7\nÉconomie de 50$\nGarantie de remboursement 7 jours', '10,000+ channels\n4K Ultra HD quality\n3 simultaneous devices\n24/7 support\n$50 savings\n7-day money back', 'https://res.cloudinary.com/duhp69meg/image/upload/v1778609727/tapavis_tenant_optimaltvplus/build_optimaltvplus_1778609727042.png', 'MEILLEURE OFFRE', 0, 4, 1)");
+    await db.run("INSERT INTO plans (name, name_en, description, description_en, price_cents, duration_days, features, features_en, image_url, badge, featured, sort_order, active) VALUES ('Essentiel', 'Essential', 'Idéal pour découvrir le service.', 'Perfect to discover the service.', 1499, 30, '5 000+ chaînes\nQualité HD 1080p\n1 appareil simultané\nSupport par courriel\nVOD inclus', '5,000+ channels\nHD 1080p quality\n1 simultaneous device\nEmail support\nVOD included', 'https://media.liasse.tech/upload/v1778609735/tapavis_tenant_optimaltvplus/build_optimaltvplus_1778609735474.png', NULL, 0, 1, 1)");
+    await db.run("INSERT INTO plans (name, name_en, description, description_en, price_cents, duration_days, features, features_en, image_url, badge, featured, sort_order, active) VALUES ('Famille', 'Family', 'Le meilleur rapport qualité-prix.', 'Best value for the family.', 2499, 30, '10 000+ chaînes\nQualité 4K Ultra HD\n3 appareils simultanés\nSupport prioritaire 24/7\nVOD + Séries premium\nGuide TV intégré', '10,000+ channels\n4K Ultra HD quality\n3 simultaneous devices\n24/7 priority support\nVOD + Premium series\nIntegrated TV guide', 'https://media.liasse.tech/upload/v1778609727/tapavis_tenant_optimaltvplus/build_optimaltvplus_1778609727042.png', 'POPULAIRE', 1, 2, 1)");
+    await db.run("INSERT INTO plans (name, name_en, description, description_en, price_cents, duration_days, features, features_en, image_url, badge, featured, sort_order, active) VALUES ('Premium', 'Premium', 'L''expérience ultime sans compromis.', 'The ultimate no-compromise experience.', 3999, 30, '15 000+ chaînes mondiales\nQualité 4K HDR\n5 appareils simultanés\nSupport VIP dédié 24/7\nVOD illimité + Adulte\nChaînes PPV incluses\nEnregistrement cloud', '15,000+ global channels\n4K HDR quality\n5 simultaneous devices\nDedicated VIP 24/7 support\nUnlimited VOD + Adult\nPPV channels included\nCloud recording', 'https://media.liasse.tech/upload/v1778609717/tapavis_tenant_optimaltvplus/build_optimaltvplus_1778609717593.png', 'VIP', 0, 3, 1)");
+    await db.run("INSERT INTO plans (name, name_en, description, description_en, price_cents, duration_days, features, features_en, image_url, badge, featured, sort_order, active) VALUES ('Annuel Famille', 'Annual Family', '12 mois au prix de 10 - économisez 50$.', '12 months at the price of 10 - save $50.', 24999, 365, '10 000+ chaînes\nQualité 4K Ultra HD\n3 appareils simultanés\nSupport 24/7\nÉconomie de 50$\nGarantie de remboursement 7 jours', '10,000+ channels\n4K Ultra HD quality\n3 simultaneous devices\n24/7 support\n$50 savings\n7-day money back', 'https://media.liasse.tech/upload/v1778609727/tapavis_tenant_optimaltvplus/build_optimaltvplus_1778609727042.png', 'MEILLEURE OFFRE', 0, 4, 1)");
   }
 
   // Firstaru server plans
@@ -88,7 +88,7 @@ module.exports = async function(db) {
         16000,
         'Android 10\nCPU Quad-core\n2GB RAM / 8GB ROM\n4K HDR10+\nUSB 3.0\nmyTV Online 2 préinstallé\nTélécommande IR premium',
         'Android 10\nQuad-core CPU\n2GB RAM / 8GB ROM\n4K HDR10+\nUSB 3.0\nmyTV Online 2 pre-installed\nPremium IR remote',
-        'https://res.cloudinary.com/duhp69meg/image/upload/v1778771061/managed_agent_updates/ma_update_image_1778771061394.png',
+        'https://media.liasse.tech/upload/v1778771061/managed_agent_updates/ma_update_image_1778771061394.png',
         null, 1, 1
       ]
     );
@@ -101,7 +101,7 @@ module.exports = async function(db) {
         21000,
         'Android 11\nCPU Quad-core\n2GB RAM / 16GB ROM\n4K HDR10+\nMicro SD\nmyTV Online 3 préinstallé\nTélécommande IR premium\nDesign carbone premium',
         'Android 11\nQuad-core CPU\n2GB RAM / 16GB ROM\n4K HDR10+\nMicro SD slot\nmyTV Online 3 pre-installed\nPremium IR remote\nPremium carbon design',
-        'https://res.cloudinary.com/duhp69meg/image/upload/v1778771103/managed_agent_updates/ma_update_image_1778771103595.png',
+        'https://media.liasse.tech/upload/v1778771103/managed_agent_updates/ma_update_image_1778771103595.png',
         'TOP VENTE', 2, 1
       ]
     );
@@ -114,7 +114,7 @@ module.exports = async function(db) {
         18000,
         'Android 9\n1GB RAM / 8GB ROM\n4K HDR\nHDMI direct\nmyTV Online 2 préinstallé\nTélécommande BT vocale\nUltra-compact et portable',
         'Android 9\n1GB RAM / 8GB ROM\n4K HDR\nDirect HDMI\nmyTV Online 2 pre-installed\nBluetooth voice remote\nUltra-compact and portable',
-        'https://res.cloudinary.com/duhp69meg/image/upload/v1778771144/managed_agent_updates/ma_update_image_1778771144235.png',
+        'https://media.liasse.tech/upload/v1778771144/managed_agent_updates/ma_update_image_1778771144235.png',
         null, 3, 1
       ]
     );

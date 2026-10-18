@@ -21,23 +21,23 @@ module.exports = async function(db, services){
   if(cfg.contactEmail) await setP('contact_email', cfg.contactEmail);
   if(cfg.contactPhone) await setP('contact_phone', cfg.contactPhone);
   if(cfg.businessAddress) await setP('business_address', cfg.businessAddress);
-  await setImg('_p_hero_image_url','https://res.cloudinary.com/duhp69meg/image/upload/v1783657218/tapavis_tenant_sushi-moodz/build_sushi-moodz_1783657218908.png');
+  await setImg('_p_hero_image_url','https://media.liasse.tech/upload/v1783657218/tapavis_tenant_sushi-moodz/build_sushi-moodz_1783657218908.png');
 
   var mc=await db.get("SELECT COUNT(*) c FROM menu_items");
   if(!mc || parseInt(mc.c)==0){
     var items=[
-      ['Nigiri saumon','Salmon nigiri','Saumon frais, riz vinaigré tiède.','Fresh salmon over warm seasoned rice.',4.25,'nigiri','https://res.cloudinary.com/duhp69meg/image/upload/v1783657217/tapavis_tenant_sushi-moodz/build_sushi-moodz_1783657217689.png','',1,1,10],
+      ['Nigiri saumon','Salmon nigiri','Saumon frais, riz vinaigré tiède.','Fresh salmon over warm seasoned rice.',4.25,'nigiri','https://media.liasse.tech/upload/v1783657217/tapavis_tenant_sushi-moodz/build_sushi-moodz_1783657217689.png','',1,1,10],
       ['Nigiri thon','Tuna nigiri','Thon rouge, une pointe de wasabi frais.','Bluefin tuna, a touch of fresh wasabi.',4.75,'nigiri','','',0,1,20],
       ['Nigiri crevette','Shrimp nigiri','Crevette pochée, riz tiède.','Poached shrimp, warm rice.',3.95,'nigiri','','',0,1,30],
       ['Nigiri anguille','Eel nigiri','Anguille grillée, sauce unagi.','Grilled eel, unagi glaze.',5.25,'nigiri','','grillé',0,1,40],
       ['Rouleau California','California roll','Crabe, avocat, concombre, sésame.','Crab, avocado, cucumber, sesame.',6.50,'maki','','',0,1,50],
       ['Maki épicé au thon','Spicy tuna roll','Thon, mayo épicée, ciboule.','Tuna, spicy mayo, scallion.',7.25,'maki','','épicé',0,1,60],
       ['Maki concombre-avocat','Cucumber-avocado roll','Concombre croquant, avocat.','Crisp cucumber, avocado.',5.50,'maki','','végé',0,1,70],
-      ['Dragon roll','Dragon roll','Crevette tempura, anguille, avocat.','Tempura shrimp, eel, avocado.',12.95,'maki','https://res.cloudinary.com/duhp69meg/image/upload/v1783657219/tapavis_tenant_sushi-moodz/build_sushi-moodz_1783657219415.png','',1,1,80],
+      ['Dragon roll','Dragon roll','Crevette tempura, anguille, avocat.','Tempura shrimp, eel, avocado.',12.95,'maki','https://media.liasse.tech/upload/v1783657219/tapavis_tenant_sushi-moodz/build_sushi-moodz_1783657219415.png','',1,1,80],
       ['Sashimi de saumon (5 mcx)','Salmon sashimi (5 pc)','Cinq tranches épaisses de saumon.','Five thick slices of salmon.',11.50,'sashimi','','',0,1,90],
       ['Sashimi assorti (9 mcx)','Assorted sashimi (9 pc)','Saumon, thon, poisson blanc du jour.','Salmon, tuna, white fish of the day.',18.95,'sashimi','','',0,1,100],
       ['Plateau découverte (24 mcx)','Discovery platter (24 pc)','Assortiment nigiri et maki pour deux.','Nigiri and maki selection for two.',32.00,'plateaux','','',0,1,110],
-      ['Plateau Moodz (38 mcx)','Moodz platter (38 pc)','Le grand partage : sashimi, nigiri, makis signature.','The big share: sashimi, nigiri, signature rolls.',49.00,'plateaux','https://res.cloudinary.com/duhp69meg/image/upload/v1783657218/tapavis_tenant_sushi-moodz/build_sushi-moodz_1783657218175.png','',1,1,120],
+      ['Plateau Moodz (38 mcx)','Moodz platter (38 pc)','Le grand partage : sashimi, nigiri, makis signature.','The big share: sashimi, nigiri, signature rolls.',49.00,'plateaux','https://media.liasse.tech/upload/v1783657218/tapavis_tenant_sushi-moodz/build_sushi-moodz_1783657218175.png','',1,1,120],
       ['Mochi glacé (3 mcx)','Ice cream mochi (3 pc)','Matcha, mangue, sésame noir.','Matcha, mango, black sesame.',6.00,'desserts','','végé',0,1,130],
       ['Tempura de banane','Banana tempura','Banane croustillante, miel, glace.','Crispy banana, honey, ice cream.',6.50,'desserts','','',0,1,140],
       ['Thé vert','Green tea','Sencha infusé à la commande.','Sencha brewed to order.',3.00,'boissons','','végé',0,1,150],
@@ -50,14 +50,14 @@ module.exports = async function(db, services){
   var gc=await db.get("SELECT COUNT(*) c FROM gallery");
   if(!gc || parseInt(gc.c)==0){
     var gal=[
-      ['https://res.cloudinary.com/duhp69meg/image/upload/v1783657218/tapavis_tenant_sushi-moodz/build_sushi-moodz_1783657218110.png','Comptoir','Le comptoir','The counter',10],
-      ['https://res.cloudinary.com/duhp69meg/image/upload/v1783657218/tapavis_tenant_sushi-moodz/build_sushi-moodz_1783657218072.png','Mains','Les mains','The hands',20],
-      ['https://res.cloudinary.com/duhp69meg/image/upload/v1783657217/tapavis_tenant_sushi-moodz/build_sushi-moodz_1783657217111.png','Sashimi','Sashimi','Sashimi',30],
-      ['https://res.cloudinary.com/duhp69meg/image/upload/v1783657218/tapavis_tenant_sushi-moodz/build_sushi-moodz_1783657218152.png','Découpe','La découpe','The cut',40],
-      ['https://res.cloudinary.com/duhp69meg/image/upload/v1783657217/tapavis_tenant_sushi-moodz/build_sushi-moodz_1783657217523.png','Saké','Le saké','The sake',50],
-      ['https://res.cloudinary.com/duhp69meg/image/upload/v1783657217/tapavis_tenant_sushi-moodz/build_sushi-moodz_1783657217331.png','Mochi','Le mochi','The mochi',60],
-      ['https://res.cloudinary.com/duhp69meg/image/upload/v1783657218/tapavis_tenant_sushi-moodz/build_sushi-moodz_1783657218791.png','Salle','La salle','The room',70],
-      ['https://res.cloudinary.com/duhp69meg/image/upload/v1783657217/tapavis_tenant_sushi-moodz/build_sushi-moodz_1783657217689.png','Nigiri','Nigiri','Nigiri',80]
+      ['https://media.liasse.tech/upload/v1783657218/tapavis_tenant_sushi-moodz/build_sushi-moodz_1783657218110.png','Comptoir','Le comptoir','The counter',10],
+      ['https://media.liasse.tech/upload/v1783657218/tapavis_tenant_sushi-moodz/build_sushi-moodz_1783657218072.png','Mains','Les mains','The hands',20],
+      ['https://media.liasse.tech/upload/v1783657217/tapavis_tenant_sushi-moodz/build_sushi-moodz_1783657217111.png','Sashimi','Sashimi','Sashimi',30],
+      ['https://media.liasse.tech/upload/v1783657218/tapavis_tenant_sushi-moodz/build_sushi-moodz_1783657218152.png','Découpe','La découpe','The cut',40],
+      ['https://media.liasse.tech/upload/v1783657217/tapavis_tenant_sushi-moodz/build_sushi-moodz_1783657217523.png','Saké','Le saké','The sake',50],
+      ['https://media.liasse.tech/upload/v1783657217/tapavis_tenant_sushi-moodz/build_sushi-moodz_1783657217331.png','Mochi','Le mochi','The mochi',60],
+      ['https://media.liasse.tech/upload/v1783657218/tapavis_tenant_sushi-moodz/build_sushi-moodz_1783657218791.png','Salle','La salle','The room',70],
+      ['https://media.liasse.tech/upload/v1783657217/tapavis_tenant_sushi-moodz/build_sushi-moodz_1783657217689.png','Nigiri','Nigiri','Nigiri',80]
     ];
     for(var j=0;j<gal.length;j++){ await db.run("INSERT INTO gallery (image_url,title,caption_fr,caption_en,sort_order) VALUES ($1,$2,$3,$4,$5)", gal[j]); }
   }

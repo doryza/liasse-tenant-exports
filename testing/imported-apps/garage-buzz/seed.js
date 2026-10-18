@@ -1,9 +1,9 @@
 module.exports = async function(db){
 async function setImg(k,v){ await db.run('INSERT INTO admin_settings (key,value) VALUES ($1,$2) ON CONFLICT (key) DO UPDATE SET value=EXCLUDED.value, updated_at=NOW()',[k,v]); }
 async function set(k,v){ await db.run('INSERT INTO admin_settings (key,value) VALUES ($1,$2) ON CONFLICT (key) DO NOTHING',[k,v]); }
-await setImg('_p_hero_image_url','https://res.cloudinary.com/duhp69meg/image/upload/v1788579329/tapavis_tenant_garage-buzz/build_garage-buzz_1788579329342.png');
-await setImg('_p_trans_image_url','https://res.cloudinary.com/duhp69meg/image/upload/v1788579329/tapavis_tenant_garage-buzz/build_garage-buzz_1788579329286.png');
-await setImg('_p_garage_image_url','https://res.cloudinary.com/duhp69meg/image/upload/v1788579328/tapavis_tenant_garage-buzz/build_garage-buzz_1788579328799.png');
+await setImg('_p_hero_image_url','https://media.liasse.tech/upload/v1788579329/tapavis_tenant_garage-buzz/build_garage-buzz_1788579329342.png');
+await setImg('_p_trans_image_url','https://media.liasse.tech/upload/v1788579329/tapavis_tenant_garage-buzz/build_garage-buzz_1788579329286.png');
+await setImg('_p_garage_image_url','https://media.liasse.tech/upload/v1788579328/tapavis_tenant_garage-buzz/build_garage-buzz_1788579328799.png');
 await set('hours_mon','08:00 – 17:00');
 await set('hours_tue','08:00 – 17:00');
 await set('hours_wed','08:00 – 17:00');

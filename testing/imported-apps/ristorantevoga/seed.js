@@ -1,7 +1,7 @@
 module.exports = async function(db, services) {
   services = services || {};
   const cfg = services.config || {};
-  const IMG = 'https://res.cloudinary.com/duhp69meg/image/upload';
+  const IMG = 'https://media.liasse.tech/upload';
   const site = function(name){ return IMG + '/ristorantevoga/site/' + name; };
   const g = function(n){ return IMG + '/ristorantevoga/gallery/' + n + '.jpg'; };
 

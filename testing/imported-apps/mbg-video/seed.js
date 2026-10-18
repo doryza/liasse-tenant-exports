@@ -18,12 +18,12 @@ module.exports = async function(db){
  var vc=await db.get('SELECT COUNT(*)::int AS n FROM videos');
  if(vc.n===0){
   var vids=[
-   ["Épisode 12 — Le documentaire de rue","Un montage long format : sélection des meilleurs plans, rythme au souffle, étalonnage sobre.","","Montage YouTube","00:00:12:00","14:22","https://res.cloudinary.com/duhp69meg/image/upload/v1783139714/tapavis_tenant_mbg-video/build_mbg-video_1783139714906.png",1,0],
-   ["Vlog voyage — Lisbonne au petit matin","Le calme avant la ville. Coupes lentes, respiration, lumière rasante.","","Montage YouTube","00:01:24:12","11:48","https://res.cloudinary.com/duhp69meg/image/upload/v1783139712/tapavis_tenant_mbg-video/build_mbg-video_1783139712707.png",0,1],
-   ["Short — Le raccord invisible","Une seule idée, quarante secondes. Le hook tombe à la première image.","","Short","00:01:41:03","0:47","https://res.cloudinary.com/duhp69meg/image/upload/v1783139715/tapavis_tenant_mbg-video/build_mbg-video_1783139715732.png",0,2],
-   ["Pub — Café de quartier","Trente secondes, un produit, une émotion. Rythme calé sur la musique.","","Pub","00:02:03:19","0:30","https://res.cloudinary.com/duhp69meg/image/upload/v1783139713/tapavis_tenant_mbg-video/build_mbg-video_1783139713242.png",0,3],
-   ["Podcast — Multicam trois caméras","Montage multicam propre : on suit la parole, jamais l'inverse.","","Montage YouTube","00:02:22:07","52:10","https://res.cloudinary.com/duhp69meg/image/upload/v1783139714/tapavis_tenant_mbg-video/build_mbg-video_1783139714639.png",0,4],
-   ["Short — Recette express","Gestes serrés, sound design gourmand, texte animé lisible sur mobile.","","Short","00:02:39:21","0:38","https://res.cloudinary.com/duhp69meg/image/upload/v1783139714/tapavis_tenant_mbg-video/build_mbg-video_1783139714255.png",0,5]
+   ["Épisode 12 — Le documentaire de rue","Un montage long format : sélection des meilleurs plans, rythme au souffle, étalonnage sobre.","","Montage YouTube","00:00:12:00","14:22","https://media.liasse.tech/upload/v1783139714/tapavis_tenant_mbg-video/build_mbg-video_1783139714906.png",1,0],
+   ["Vlog voyage — Lisbonne au petit matin","Le calme avant la ville. Coupes lentes, respiration, lumière rasante.","","Montage YouTube","00:01:24:12","11:48","https://media.liasse.tech/upload/v1783139712/tapavis_tenant_mbg-video/build_mbg-video_1783139712707.png",0,1],
+   ["Short — Le raccord invisible","Une seule idée, quarante secondes. Le hook tombe à la première image.","","Short","00:01:41:03","0:47","https://media.liasse.tech/upload/v1783139715/tapavis_tenant_mbg-video/build_mbg-video_1783139715732.png",0,2],
+   ["Pub — Café de quartier","Trente secondes, un produit, une émotion. Rythme calé sur la musique.","","Pub","00:02:03:19","0:30","https://media.liasse.tech/upload/v1783139713/tapavis_tenant_mbg-video/build_mbg-video_1783139713242.png",0,3],
+   ["Podcast — Multicam trois caméras","Montage multicam propre : on suit la parole, jamais l'inverse.","","Montage YouTube","00:02:22:07","52:10","https://media.liasse.tech/upload/v1783139714/tapavis_tenant_mbg-video/build_mbg-video_1783139714639.png",0,4],
+   ["Short — Recette express","Gestes serrés, sound design gourmand, texte animé lisible sur mobile.","","Short","00:02:39:21","0:38","https://media.liasse.tech/upload/v1783139714/tapavis_tenant_mbg-video/build_mbg-video_1783139714255.png",0,5]
   ];
   for(var v=0;v<vids.length;v++){ await db.run('INSERT INTO videos (title,description,youtube_url,video_type,timecode,duration,image_url,featured,sort_order) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)',vids[v]); }
  }
@@ -33,8 +33,8 @@ module.exports = async function(db){
   var clips=[
    ["2022","Les débuts","2022. Je coupe trop tard. Le rythme traîne. Je le vois seulement aujourd'hui.","","","",0],
    ["2023","Le rythme","2023. J'apprends le J-cut. Le son entre avant l'image. Ça respire enfin.","","","",1],
-   ["2024","L'étalonnage","2024. Je pose une vraie colorimétrie. Le raccord devient invisible.","https://res.cloudinary.com/duhp69meg/image/upload/v1783139713/tapavis_tenant_mbg-video/build_mbg-video_1783139713644.png","https://res.cloudinary.com/duhp69meg/image/upload/v1783139713/tapavis_tenant_mbg-video/build_mbg-video_1783139713481.png","",2],
-   ["Aujourd'hui","Maintenant","Aujourd'hui. Je monte à l'intention. Chaque coupe a une raison.","https://res.cloudinary.com/duhp69meg/image/upload/v1783139714/tapavis_tenant_mbg-video/build_mbg-video_1783139714322.png","https://res.cloudinary.com/duhp69meg/image/upload/v1783139713/tapavis_tenant_mbg-video/build_mbg-video_1783139713345.png","",3]
+   ["2024","L'étalonnage","2024. Je pose une vraie colorimétrie. Le raccord devient invisible.","https://media.liasse.tech/upload/v1783139713/tapavis_tenant_mbg-video/build_mbg-video_1783139713644.png","https://media.liasse.tech/upload/v1783139713/tapavis_tenant_mbg-video/build_mbg-video_1783139713481.png","",2],
+   ["Aujourd'hui","Maintenant","Aujourd'hui. Je monte à l'intention. Chaque coupe a une raison.","https://media.liasse.tech/upload/v1783139714/tapavis_tenant_mbg-video/build_mbg-video_1783139714322.png","https://media.liasse.tech/upload/v1783139713/tapavis_tenant_mbg-video/build_mbg-video_1783139713345.png","",3]
   ];
   for(var c=0;c<clips.length;c++){ await db.run('INSERT INTO timeline_clips (year,title,note,before_image_url,after_image_url,image_url,sort_order) VALUES ($1,$2,$3,$4,$5,$6,$7)',clips[c]); }
  }

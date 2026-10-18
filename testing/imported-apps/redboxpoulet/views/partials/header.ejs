@@ -7,9 +7,9 @@
 <%
   var _name = settings.business_name || t.brand;
   var _desc = (typeof sx === 'function' ? sx('seo_description') : '') || settings.tagline || t.footer_intro || '';
-  var _logoRed = settings._p_nav_logo_url || 'https://res.cloudinary.com/duhp69meg/image/upload/v1782232049/redboxpoulet/site/logo_red.png';
+  var _logoRed = settings._p_nav_logo_url || 'https://media.liasse.tech/upload/v1782232049/redboxpoulet/site/logo_red.png';
   var _ci = (typeof cimg === 'function') ? cimg : function(u){ return u; };
-  var _ogImg = _ci(settings._p_hero_image_url || 'https://res.cloudinary.com/duhp69meg/image/upload/v1782232050/redboxpoulet/site/hero.png', 'f_auto,q_auto,w_1200,h_630,c_fill,g_auto');
+  var _ogImg = _ci(settings._p_hero_image_url || 'https://media.liasse.tech/upload/v1782232050/redboxpoulet/site/hero.png', 'f_auto,q_auto,w_1200,h_630,c_fill,g_auto');
   var _pageTitle = (typeof pageTitle !== 'undefined' && pageTitle) ? (pageTitle + ' — ' + _name) : (_name + ' — ' + (t.brand_tag || 'Poulet Nashville'));
   var _active = (typeof activeNav !== 'undefined') ? activeNav : '';
   var _addrParts = (settings.business_address || '').split(',').map(function(s){ return s.trim(); }).filter(Boolean);

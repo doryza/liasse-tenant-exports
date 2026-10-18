@@ -3,8 +3,8 @@ module.exports = async function(db, services) {
   const cfg = services.config || {};
 
   const settingsUpsert = [
-    ['_p_hero_image_url', 'https://res.cloudinary.com/duhp69meg/image/upload/v1779215127/tapavis_tenant_poutinefest/build_poutinefest_1779215127049.png'],
-    ['_p_about_image_url', 'https://res.cloudinary.com/duhp69meg/image/upload/v1779215130/tapavis_tenant_poutinefest/build_poutinefest_1779215130910.png'],
+    ['_p_hero_image_url', 'https://media.liasse.tech/upload/v1779215127/tapavis_tenant_poutinefest/build_poutinefest_1779215127049.png'],
+    ['_p_about_image_url', 'https://media.liasse.tech/upload/v1779215130/tapavis_tenant_poutinefest/build_poutinefest_1779215130910.png'],
     // Real business facts (Google Places, 2026-06-18) — force-synced so they reach
     // already-live tenants too; mirrored in migrations.sql.
     ['contact_phone', '(450) 516-0044'],
@@ -30,12 +30,12 @@ module.exports = async function(db, services) {
   const menuCount = await db.get('SELECT COUNT(*) AS c FROM menu_items').catch(function(){ return { c: 0 }; });
   if (!menuCount || Number(menuCount.c) === 0) {
     const items = [
-      ['Classique', 'Classic Poutine', 'Frites fraîches maison, fromage en grains du jour et sauce brune mijotée 6 heures. La base intemporelle.', 'House-cut fresh fries, daily cheese curds, and 6-hour simmered house gravy. The timeless classic.', 9.99, 'classique', 'https://res.cloudinary.com/duhp69meg/image/upload/v1779215126/tapavis_tenant_poutinefest/build_poutinefest_1779215126366.png', 1, 1, 1],
-      ['Italienne', 'Italian', 'Sauce à la viande maison, parmesan râpé et fromage en grains. Une signature québécoise.', 'House meat sauce, grated parmesan, cheese curds. A Quebec staple.', 12.99, 'signature', 'https://res.cloudinary.com/duhp69meg/image/upload/v1779215125/tapavis_tenant_poutinefest/build_poutinefest_1779215125800.png', 2, 1, 1],
-      ['BBQ Pulled Pork', 'BBQ Pulled Pork', 'Effiloché de porc fumé 12 heures, sauce BBQ maison, oignons frits croustillants et fromage en grains.', '12hr smoked pulled pork, house BBQ sauce, crispy fried onions, cheese curds.', 14.99, 'signature', 'https://res.cloudinary.com/duhp69meg/image/upload/v1779215126/tapavis_tenant_poutinefest/build_poutinefest_1779215126577.png', 3, 1, 1],
-      ['Bacon Deluxe', 'Bacon Deluxe', 'Bacon croustillant double portion, oignons caramélisés et sauce au poivre noir.', 'Double crispy bacon, caramelized onions, black peppercorn gravy.', 13.99, 'signature', 'https://res.cloudinary.com/duhp69meg/image/upload/v1779215133/tapavis_tenant_poutinefest/build_poutinefest_1779215133562.png', 4, 0, 1],
-      ['Forestière Végé', 'Forest Veggie', 'Champignons sauvages sautés au beurre à l\'ail, sauce aux champignons et fromage en grains. 100% végétarienne.', 'Wild mushrooms sautéed in garlic butter, mushroom gravy, cheese curds. 100% vegetarian.', 12.99, 'vegan', 'https://res.cloudinary.com/duhp69meg/image/upload/v1779215123/tapavis_tenant_poutinefest/build_poutinefest_1779215123464.png', 5, 1, 1],
-      ['Deluxe Festival', 'Festival Deluxe', 'Bacon, saucisse fumée, poulet effiloché, double portion de fromage et sauce maison. Pour les grandes faims.', 'Bacon, smoked sausage, pulled chicken, double cheese, house gravy. For big appetites.', 17.99, 'signature', 'https://res.cloudinary.com/duhp69meg/image/upload/v1779215133/tapavis_tenant_poutinefest/build_poutinefest_1779215133750.png', 6, 1, 1]
+      ['Classique', 'Classic Poutine', 'Frites fraîches maison, fromage en grains du jour et sauce brune mijotée 6 heures. La base intemporelle.', 'House-cut fresh fries, daily cheese curds, and 6-hour simmered house gravy. The timeless classic.', 9.99, 'classique', 'https://media.liasse.tech/upload/v1779215126/tapavis_tenant_poutinefest/build_poutinefest_1779215126366.png', 1, 1, 1],
+      ['Italienne', 'Italian', 'Sauce à la viande maison, parmesan râpé et fromage en grains. Une signature québécoise.', 'House meat sauce, grated parmesan, cheese curds. A Quebec staple.', 12.99, 'signature', 'https://media.liasse.tech/upload/v1779215125/tapavis_tenant_poutinefest/build_poutinefest_1779215125800.png', 2, 1, 1],
+      ['BBQ Pulled Pork', 'BBQ Pulled Pork', 'Effiloché de porc fumé 12 heures, sauce BBQ maison, oignons frits croustillants et fromage en grains.', '12hr smoked pulled pork, house BBQ sauce, crispy fried onions, cheese curds.', 14.99, 'signature', 'https://media.liasse.tech/upload/v1779215126/tapavis_tenant_poutinefest/build_poutinefest_1779215126577.png', 3, 1, 1],
+      ['Bacon Deluxe', 'Bacon Deluxe', 'Bacon croustillant double portion, oignons caramélisés et sauce au poivre noir.', 'Double crispy bacon, caramelized onions, black peppercorn gravy.', 13.99, 'signature', 'https://media.liasse.tech/upload/v1779215133/tapavis_tenant_poutinefest/build_poutinefest_1779215133562.png', 4, 0, 1],
+      ['Forestière Végé', 'Forest Veggie', 'Champignons sauvages sautés au beurre à l\'ail, sauce aux champignons et fromage en grains. 100% végétarienne.', 'Wild mushrooms sautéed in garlic butter, mushroom gravy, cheese curds. 100% vegetarian.', 12.99, 'vegan', 'https://media.liasse.tech/upload/v1779215123/tapavis_tenant_poutinefest/build_poutinefest_1779215123464.png', 5, 1, 1],
+      ['Deluxe Festival', 'Festival Deluxe', 'Bacon, saucisse fumée, poulet effiloché, double portion de fromage et sauce maison. Pour les grandes faims.', 'Bacon, smoked sausage, pulled chicken, double cheese, house gravy. For big appetites.', 17.99, 'signature', 'https://media.liasse.tech/upload/v1779215133/tapavis_tenant_poutinefest/build_poutinefest_1779215133750.png', 6, 1, 1]
     ];
     for (const it of items) {
       await db.run('INSERT INTO menu_items (name_fr,name_en,description_fr,description_en,price,category,image_url,position,featured,available) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)', it);

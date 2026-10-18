@@ -24,18 +24,18 @@ module.exports = async function(db) {
   for (const [k, v] of settings) {
     await db.run('INSERT INTO admin_settings (key, value) VALUES ($1, $2) ON CONFLICT (key) DO NOTHING', [k, v]);
   }
-  await db.run("INSERT INTO admin_settings (key, value) VALUES ('_p_hero_image_url', 'https://res.cloudinary.com/duhp69meg/image/upload/v1778946322/tapavis_tenant_remax-3/build_remax-3_1778946322209.png') ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = NOW()");
-  await db.run("INSERT INTO admin_settings (key, value) VALUES ('_p_joe_photo_url', 'https://res.cloudinary.com/duhp69meg/image/upload/v1778946327/tapavis_tenant_remax-3/build_remax-3_1778946327162.png') ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = NOW()");
+  await db.run("INSERT INTO admin_settings (key, value) VALUES ('_p_hero_image_url', 'https://media.liasse.tech/upload/v1778946322/tapavis_tenant_remax-3/build_remax-3_1778946322209.png') ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = NOW()");
+  await db.run("INSERT INTO admin_settings (key, value) VALUES ('_p_joe_photo_url', 'https://media.liasse.tech/upload/v1778946327/tapavis_tenant_remax-3/build_remax-3_1778946327162.png') ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = NOW()");
 
   const propCount = (await db.get('SELECT COUNT(*)::int AS c FROM sold_properties')).c;
   if (propCount === 0) {
     const props = [
-      ['Charming Plateau Condo', 'Plateau-Mont-Royal', '$685,000', 'https://res.cloudinary.com/duhp69meg/image/upload/v1778946324/tapavis_tenant_remax-3/build_remax-3_1778946323984.png', 2, 1, '2024-09-15', 1],
-      ['Elegant Outremont Townhouse', 'Outremont', '$1,485,000', 'https://res.cloudinary.com/duhp69meg/image/upload/v1778946323/tapavis_tenant_remax-3/build_remax-3_1778946323500.png', 4, 3, '2024-08-22', 1],
-      ['Sun-Filled Rosemont Duplex', 'Rosemont-La Petite-Patrie', '$925,000', 'https://res.cloudinary.com/duhp69meg/image/upload/v1778946339/tapavis_tenant_remax-3/build_remax-3_1778946339003.png', 5, 2, '2024-07-30', 0],
-      ['Modern Verdun Family Home', 'Verdun', '$745,000', 'https://res.cloudinary.com/duhp69meg/image/upload/v1778946323/tapavis_tenant_remax-3/build_remax-3_1778946323131.png', 3, 2, '2024-06-18', 0],
-      ['Bright NDG Bungalow', 'Notre-Dame-de-Grâce', '$815,000', 'https://res.cloudinary.com/duhp69meg/image/upload/v1778946324/tapavis_tenant_remax-3/build_remax-3_1778946323984.png', 3, 2, '2024-05-12', 0],
-      ['Mile End Loft with Terrace', 'Mile End', '$795,000', 'https://res.cloudinary.com/duhp69meg/image/upload/v1778946323/tapavis_tenant_remax-3/build_remax-3_1778946323500.png', 2, 2, '2024-04-08', 0]
+      ['Charming Plateau Condo', 'Plateau-Mont-Royal', '$685,000', 'https://media.liasse.tech/upload/v1778946324/tapavis_tenant_remax-3/build_remax-3_1778946323984.png', 2, 1, '2024-09-15', 1],
+      ['Elegant Outremont Townhouse', 'Outremont', '$1,485,000', 'https://media.liasse.tech/upload/v1778946323/tapavis_tenant_remax-3/build_remax-3_1778946323500.png', 4, 3, '2024-08-22', 1],
+      ['Sun-Filled Rosemont Duplex', 'Rosemont-La Petite-Patrie', '$925,000', 'https://media.liasse.tech/upload/v1778946339/tapavis_tenant_remax-3/build_remax-3_1778946339003.png', 5, 2, '2024-07-30', 0],
+      ['Modern Verdun Family Home', 'Verdun', '$745,000', 'https://media.liasse.tech/upload/v1778946323/tapavis_tenant_remax-3/build_remax-3_1778946323131.png', 3, 2, '2024-06-18', 0],
+      ['Bright NDG Bungalow', 'Notre-Dame-de-Grâce', '$815,000', 'https://media.liasse.tech/upload/v1778946324/tapavis_tenant_remax-3/build_remax-3_1778946323984.png', 3, 2, '2024-05-12', 0],
+      ['Mile End Loft with Terrace', 'Mile End', '$795,000', 'https://media.liasse.tech/upload/v1778946323/tapavis_tenant_remax-3/build_remax-3_1778946323500.png', 2, 2, '2024-04-08', 0]
     ];
     for (const p of props) {
       await db.run('INSERT INTO sold_properties (title, neighborhood, price, image_url, bedrooms, bathrooms, sold_date, featured) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)', p);

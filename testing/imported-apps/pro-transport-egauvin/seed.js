@@ -1,6 +1,6 @@
 module.exports = async function(db) {
   const settings = [
-    ['_p_hero_image_url', 'https://res.cloudinary.com/duhp69meg/image/upload/v1778951421/tapavis_tenant_pro-transport-egauvin/build_pro-transport-egauvin_1778951421318.png'],
+    ['_p_hero_image_url', 'https://media.liasse.tech/upload/v1778951421/tapavis_tenant_pro-transport-egauvin/build_pro-transport-egauvin_1778951421318.png'],
     ['business_name', 'Pro Transport E. Gauvin'],
     ['tagline', 'Camionnage 12 roues — Service 24/7'],
     ['hero_title', 'Transport de matériaux en vrac'],
@@ -25,20 +25,20 @@ module.exports = async function(db) {
   }
 
   const services = [
-    ['Terre', 'Terre noire de qualité, terre de remblai et terre tamisée. Idéale pour aménagement paysager, nivellement de terrain et préparation de jardin. Livraison directement sur votre site selon vos besoins.', 'https://res.cloudinary.com/duhp69meg/image/upload/v1778951421/tapavis_tenant_pro-transport-egauvin/build_pro-transport-egauvin_1778951421782.png', 'Sur devis selon volume', 1, 1],
-    ['Sable', 'Sable de construction, sable à béton, sable de remplissage. Matériau essentiel pour vos travaux de maçonnerie, drainage et fondations. Disponible en différentes granulométries.', 'https://res.cloudinary.com/duhp69meg/image/upload/v1778951428/tapavis_tenant_pro-transport-egauvin/build_pro-transport-egauvin_1778951428131.png', 'Sur devis selon volume', 1, 2],
-    ['Gravier', 'Gravier concassé, gravier de drainage, pierre nette de différentes tailles (0-3/4, 3/4 net, 1\"-2\"). Parfait pour entrées, fondations, drains français et finition de chantier.', 'https://res.cloudinary.com/duhp69meg/image/upload/v1778951424/tapavis_tenant_pro-transport-egauvin/build_pro-transport-egauvin_1778951424203.png', 'Sur devis selon volume', 1, 3],
-    ['Asphalte', 'Transport d\'asphalte chaud et asphalte recyclé pour vos projets de pavage, réparation de routes et entrées commerciales. Livraisons coordonnées avec votre équipe de pavage.', 'https://res.cloudinary.com/duhp69meg/image/upload/v1778951435/tapavis_tenant_pro-transport-egauvin/build_pro-transport-egauvin_1778951435000.png', 'Sur devis selon volume', 1, 4]
+    ['Terre', 'Terre noire de qualité, terre de remblai et terre tamisée. Idéale pour aménagement paysager, nivellement de terrain et préparation de jardin. Livraison directement sur votre site selon vos besoins.', 'https://media.liasse.tech/upload/v1778951421/tapavis_tenant_pro-transport-egauvin/build_pro-transport-egauvin_1778951421782.png', 'Sur devis selon volume', 1, 1],
+    ['Sable', 'Sable de construction, sable à béton, sable de remplissage. Matériau essentiel pour vos travaux de maçonnerie, drainage et fondations. Disponible en différentes granulométries.', 'https://media.liasse.tech/upload/v1778951428/tapavis_tenant_pro-transport-egauvin/build_pro-transport-egauvin_1778951428131.png', 'Sur devis selon volume', 1, 2],
+    ['Gravier', 'Gravier concassé, gravier de drainage, pierre nette de différentes tailles (0-3/4, 3/4 net, 1\"-2\"). Parfait pour entrées, fondations, drains français et finition de chantier.', 'https://media.liasse.tech/upload/v1778951424/tapavis_tenant_pro-transport-egauvin/build_pro-transport-egauvin_1778951424203.png', 'Sur devis selon volume', 1, 3],
+    ['Asphalte', 'Transport d\'asphalte chaud et asphalte recyclé pour vos projets de pavage, réparation de routes et entrées commerciales. Livraisons coordonnées avec votre équipe de pavage.', 'https://media.liasse.tech/upload/v1778951435/tapavis_tenant_pro-transport-egauvin/build_pro-transport-egauvin_1778951435000.png', 'Sur devis selon volume', 1, 4]
   ];
   for (const s of services) {
     await db.run('INSERT INTO services (name, description, image_url, price_info, featured, sort_order) VALUES ($1, $2, $3, $4, $5, $6)', s);
   }
 
   const gallery = [
-    ['Livraison de gravier', 'Camion 12 roues sur chantier de construction', 'https://res.cloudinary.com/duhp69meg/image/upload/v1778951424/tapavis_tenant_pro-transport-egauvin/build_pro-transport-egauvin_1778951424229.png', 'Chantier', 1],
-    ['Déchargement', 'Déchargement de gravier sur site', 'https://res.cloudinary.com/duhp69meg/image/upload/v1778951423/tapavis_tenant_pro-transport-egauvin/build_pro-transport-egauvin_1778951423536.png', 'Opération', 2],
-    ['Flotte en action', 'Vue aérienne d\'un chantier desservi par notre flotte', 'https://res.cloudinary.com/duhp69meg/image/upload/v1778951421/tapavis_tenant_pro-transport-egauvin/build_pro-transport-egauvin_1778951420965.png', 'Chantier', 3],
-    ['Notre flotte', 'Camion 12 roues de notre flotte professionnelle', 'https://res.cloudinary.com/duhp69meg/image/upload/v1778951421/tapavis_tenant_pro-transport-egauvin/build_pro-transport-egauvin_1778951421603.png', 'Flotte', 4]
+    ['Livraison de gravier', 'Camion 12 roues sur chantier de construction', 'https://media.liasse.tech/upload/v1778951424/tapavis_tenant_pro-transport-egauvin/build_pro-transport-egauvin_1778951424229.png', 'Chantier', 1],
+    ['Déchargement', 'Déchargement de gravier sur site', 'https://media.liasse.tech/upload/v1778951423/tapavis_tenant_pro-transport-egauvin/build_pro-transport-egauvin_1778951423536.png', 'Opération', 2],
+    ['Flotte en action', 'Vue aérienne d\'un chantier desservi par notre flotte', 'https://media.liasse.tech/upload/v1778951421/tapavis_tenant_pro-transport-egauvin/build_pro-transport-egauvin_1778951420965.png', 'Chantier', 3],
+    ['Notre flotte', 'Camion 12 roues de notre flotte professionnelle', 'https://media.liasse.tech/upload/v1778951421/tapavis_tenant_pro-transport-egauvin/build_pro-transport-egauvin_1778951421603.png', 'Flotte', 4]
   ];
   for (const g of gallery) {
     await db.run('INSERT INTO gallery (title, description, image_url, category, sort_order) VALUES ($1, $2, $3, $4, $5)', g);

@@ -1,13 +1,13 @@
 <%- include('partials/header', { activeNav: 'home' }) %>
 <%
-  var _hero = settings._p_hero_image_url || 'https://res.cloudinary.com/duhp69meg/image/upload/v1782232050/redboxpoulet/site/hero.png';
+  var _hero = settings._p_hero_image_url || 'https://media.liasse.tech/upload/v1782232050/redboxpoulet/site/hero.png';
   // Hero slider: one image URL per line in the hero_slides setting. >=2 enables
   // the crossfade slideshow; empty falls back to the single hero image above.
   var _heroSlides = (settings.hero_slides || '').split(/\r?\n/).map(function(s){ return s.trim(); }).filter(Boolean);
   if (!_heroSlides.length) _heroSlides = [_hero];
-  var _story = settings._p_story_image_url || 'https://res.cloudinary.com/duhp69meg/image/upload/v1782232050/redboxpoulet/site/vibe.png';
-  var _family = settings._p_feature_family_url || 'https://res.cloudinary.com/duhp69meg/image/upload/v1782232051/redboxpoulet/site/packaging.png';
-  var _burger = settings._p_feature_burger_url || 'https://res.cloudinary.com/duhp69meg/image/upload/v1782232052/redboxpoulet/site/action.png';
+  var _story = settings._p_story_image_url || 'https://media.liasse.tech/upload/v1782232050/redboxpoulet/site/vibe.png';
+  var _family = settings._p_feature_family_url || 'https://media.liasse.tech/upload/v1782232051/redboxpoulet/site/packaging.png';
+  var _burger = settings._p_feature_burger_url || 'https://media.liasse.tech/upload/v1782232052/redboxpoulet/site/action.png';
 %>
 
 <!-- ============================ HERO ============================ -->

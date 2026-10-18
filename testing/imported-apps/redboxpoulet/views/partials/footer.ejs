@@ -4,7 +4,7 @@
   <div class="container">
     <div class="footer-grid">
       <div class="footer-brand">
-        <% var _logoWhite = settings._p_footer_logo_url || 'https://res.cloudinary.com/duhp69meg/image/upload/v1782232049/redboxpoulet/site/logo_white.png';
+        <% var _logoWhite = settings._p_footer_logo_url || 'https://media.liasse.tech/upload/v1782232049/redboxpoulet/site/logo_white.png';
            var _ciF = (typeof cimg === 'function') ? cimg : function(u){ return u; }; %>
         <img src="<%= _ciF(_logoWhite, 'f_auto,q_auto,w_240') %>" alt="<%= settings.business_name || t.brand %>" onerror="this.style.display='none'">
         <div class="tagline"><%= t.brand_tag || 'Poulet Nashville' %></div>

@@ -6,8 +6,8 @@ module.exports = async function(db){
   await setDN('stat_years', '18');
   await setDN('stat_reviews', '4.9');
   await setDN('booking_slot_minutes', '60');
-  await setIMG('_p_hero_image_url', 'https://res.cloudinary.com/duhp69meg/image/upload/v1788106519/tapavis_tenant_m360/build_m360_1788106519808.png');
-  await setIMG('_p_about_image_url', 'https://res.cloudinary.com/duhp69meg/image/upload/v1788106519/tapavis_tenant_m360/build_m360_1788106519585.png');
+  await setIMG('_p_hero_image_url', 'https://media.liasse.tech/upload/v1788106519/tapavis_tenant_m360/build_m360_1788106519808.png');
+  await setIMG('_p_about_image_url', 'https://media.liasse.tech/upload/v1788106519/tapavis_tenant_m360/build_m360_1788106519585.png');
 
   const bh = await db.get(`SELECT COUNT(*) c FROM business_hours`);
   if(Number(bh.c)===0){
@@ -33,12 +33,12 @@ module.exports = async function(db){
   const gc = await db.get(`SELECT COUNT(*) c FROM gallery`);
   if(Number(gc.c)===0){
     const g=[
-      [`Aire de diagnostic`, '1', `Banc de diagnostic électronique`, 'https://res.cloudinary.com/duhp69meg/image/upload/v1788106519/tapavis_tenant_m360/build_m360_1788106519558.png', 1],
-      [`Levage lourd`, '2', `Pont élévateur 4 tonnes`, 'https://res.cloudinary.com/duhp69meg/image/upload/v1788106519/tapavis_tenant_m360/build_m360_1788106519732.png', 2],
-      [`Atelier de freins`, '3', `Poste de rectification`, 'https://res.cloudinary.com/duhp69meg/image/upload/v1788106519/tapavis_tenant_m360/build_m360_1788106519332.png', 3],
-      [`Montage de pneus`, '4', `Équilibreuse numérique`, 'https://res.cloudinary.com/duhp69meg/image/upload/v1788106519/tapavis_tenant_m360/build_m360_1788106519773.png', 4],
-      [`Banc d'alignement`, '5', `Système de géométrie laser`, 'https://res.cloudinary.com/duhp69meg/image/upload/v1788106519/tapavis_tenant_m360/build_m360_1788106519486.png', 5],
-      [`Comptoir client`, '6', `Accueil et suivi en direct`, 'https://res.cloudinary.com/duhp69meg/image/upload/v1788106518/tapavis_tenant_m360/build_m360_1788106518405.png', 6]
+      [`Aire de diagnostic`, '1', `Banc de diagnostic électronique`, 'https://media.liasse.tech/upload/v1788106519/tapavis_tenant_m360/build_m360_1788106519558.png', 1],
+      [`Levage lourd`, '2', `Pont élévateur 4 tonnes`, 'https://media.liasse.tech/upload/v1788106519/tapavis_tenant_m360/build_m360_1788106519732.png', 2],
+      [`Atelier de freins`, '3', `Poste de rectification`, 'https://media.liasse.tech/upload/v1788106519/tapavis_tenant_m360/build_m360_1788106519332.png', 3],
+      [`Montage de pneus`, '4', `Équilibreuse numérique`, 'https://media.liasse.tech/upload/v1788106519/tapavis_tenant_m360/build_m360_1788106519773.png', 4],
+      [`Banc d'alignement`, '5', `Système de géométrie laser`, 'https://media.liasse.tech/upload/v1788106519/tapavis_tenant_m360/build_m360_1788106519486.png', 5],
+      [`Comptoir client`, '6', `Accueil et suivi en direct`, 'https://media.liasse.tech/upload/v1788106518/tapavis_tenant_m360/build_m360_1788106518405.png', 6]
     ];
     for(const x of g){ await db.run(`INSERT INTO gallery (title,bay_number,equipment,image_url,sort_order,created_at,updated_at) VALUES ($1,$2,$3,$4,$5,NOW(),NOW())`,[x[0],x[1],x[2],x[3],x[4]]); }
   }
@@ -46,10 +46,10 @@ module.exports = async function(db){
   const pc = await db.get(`SELECT COUNT(*) c FROM posts`);
   if(Number(pc.c)===0){
     const posts=[
-      [`Nouveau banc d'alignement laser`, `On vient d'installer un banc d'alignement laser dernière génération. Résultat: une géométrie plus précise et un rapport avant/après remis à chaque client. Prenez rendez-vous pour vérifier l'usure de vos pneus.`, `Équipement`, 'https://res.cloudinary.com/duhp69meg/image/upload/v1788106519/tapavis_tenant_m360/build_m360_1788106519486.png'],
-      [`Préparez votre véhicule pour l'hiver`, `Batterie, pneus, liquide lave-glace et freins: quatre points à vérifier avant les premiers froids. Réservez une inspection saisonnière, on s'occupe du reste.`, `Conseil`, 'https://res.cloudinary.com/duhp69meg/image/upload/v1788106519/tapavis_tenant_m360/build_m360_1788106519332.png'],
-      [`Pourquoi nos taux sont affichés`, `Un garage rapide n'a rien à cacher. Nos taux sont publics et la durée estimée aussi. Vous savez à quoi vous attendre avant même d'arriver.`, `Nouvelle`, 'https://res.cloudinary.com/duhp69meg/image/upload/v1788106519/tapavis_tenant_m360/build_m360_1788106519585.png'],
-      [`Le diagnostic honnête, notre signature`, `Avant toute réparation, on lit les codes et on vous explique clairement le problème. Aucune surprise sur la facture, aucune réparation inutile.`, `Nouvelle`, 'https://res.cloudinary.com/duhp69meg/image/upload/v1788106519/tapavis_tenant_m360/build_m360_1788106519558.png']
+      [`Nouveau banc d'alignement laser`, `On vient d'installer un banc d'alignement laser dernière génération. Résultat: une géométrie plus précise et un rapport avant/après remis à chaque client. Prenez rendez-vous pour vérifier l'usure de vos pneus.`, `Équipement`, 'https://media.liasse.tech/upload/v1788106519/tapavis_tenant_m360/build_m360_1788106519486.png'],
+      [`Préparez votre véhicule pour l'hiver`, `Batterie, pneus, liquide lave-glace et freins: quatre points à vérifier avant les premiers froids. Réservez une inspection saisonnière, on s'occupe du reste.`, `Conseil`, 'https://media.liasse.tech/upload/v1788106519/tapavis_tenant_m360/build_m360_1788106519332.png'],
+      [`Pourquoi nos taux sont affichés`, `Un garage rapide n'a rien à cacher. Nos taux sont publics et la durée estimée aussi. Vous savez à quoi vous attendre avant même d'arriver.`, `Nouvelle`, 'https://media.liasse.tech/upload/v1788106519/tapavis_tenant_m360/build_m360_1788106519585.png'],
+      [`Le diagnostic honnête, notre signature`, `Avant toute réparation, on lit les codes et on vous explique clairement le problème. Aucune surprise sur la facture, aucune réparation inutile.`, `Nouvelle`, 'https://media.liasse.tech/upload/v1788106519/tapavis_tenant_m360/build_m360_1788106519558.png']
     ];
     for(const p of posts){ await db.run(`INSERT INTO posts (title,content,category,image_url,published,created_at,updated_at) VALUES ($1,$2,$3,$4,1,NOW(),NOW())`,[p[0],p[1],p[2],p[3]]); }
   }

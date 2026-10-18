@@ -1,6 +1,6 @@
 module.exports = async function(db) {
   const slug = 'la-box-dici';
-  const heroToken = 'https://res.cloudinary.com/duhp69meg/image/upload/v1779305141/tapavis_tenant_la-box-dici/build_la-box-dici_1779305141310.png';
+  const heroToken = 'https://media.liasse.tech/upload/v1779305141/tapavis_tenant_la-box-dici/build_la-box-dici_1779305141310.png';
   const settings = [
     ['hero_title_fr','Un réseau social fait pour les vrais liens'],
     ['hero_title_en','A social network built for real connections'],

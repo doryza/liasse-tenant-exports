@@ -7,7 +7,7 @@
 <%
   var _name = settings.business_name || t.brand;
   var _desc = sx('seo_description') || sx('tagline') || '';
-  var _logo = settings._p_nav_logo_url || 'https://res.cloudinary.com/duhp69meg/image/upload/ristorantevoga/site/voga_logo.png';
+  var _logo = settings._p_nav_logo_url || 'https://media.liasse.tech/upload/ristorantevoga/site/voga_logo.png';
   var _ogImg = cimg(settings._p_hero_image_url || '', 'f_auto,q_auto,w_1200,h_630,c_fill,g_auto');
   var _pageTitle = (typeof pageTitle !== 'undefined' && pageTitle) ? (pageTitle + ' — ' + _name) : (_name + ' — ' + sx('tagline'));
   var _active = (typeof activeNav !== 'undefined') ? activeNav : '';

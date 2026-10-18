@@ -1,6 +1,6 @@
 module.exports = async function(db) {
   const settings = [
-    ['_p_hero_image_url', 'https://res.cloudinary.com/duhp69meg/image/upload/v1778467522/tapavis_tenant_noxa-service/build_noxa-service_1778467522148.png'],
+    ['_p_hero_image_url', 'https://media.liasse.tech/upload/v1778467522/tapavis_tenant_noxa-service/build_noxa-service_1778467522148.png'],
     ['business_name', 'Noxa Service'],
     ['tagline', 'Service professionnel de ménage au Québec'],
     ['hero_title', 'Un ménage impeccable, à chaque fois'],
@@ -29,21 +29,21 @@ module.exports = async function(db) {
       ['Ménage après construction', 'menage-apres-construction',
        'Nettoyage complet et minutieux après vos travaux de construction ou rénovation.',
        'Vous venez de terminer des travaux de construction ou de rénovation? Noxa Service prend en charge le nettoyage complet de votre chantier pour que vous puissiez profiter pleinement de votre nouvel espace. Nous éliminons la poussière de plâtre, les résidus de peinture, les traces de colle, les débris et les particules fines qui s\'incrustent partout après les travaux. Notre équipe utilise des équipements professionnels (aspirateurs HEPA, nettoyeurs vapeur, échelles télescopiques) pour atteindre chaque recoin: planchers, plafonds, ventilations, fenêtres, armoires, salles de bain, garages. Que ce soit pour une résidence neuve, un condo rénové ou un commerce en construction, nous vous remettons les clés d\'un espace prêt à habiter, sain et étincelant. Service offert aux entrepreneurs généraux, promoteurs immobiliers et propriétaires.',
-       '🏗️', 'https://res.cloudinary.com/duhp69meg/image/upload/v1778467516/tapavis_tenant_noxa-service/build_noxa-service_1778467516104.png', 1, 1]
+       '🏗️', 'https://media.liasse.tech/upload/v1778467516/tapavis_tenant_noxa-service/build_noxa-service_1778467516104.png', 1, 1]
     );
     await db.run(
       'INSERT INTO services (name, slug, short_description, description, icon, image_url, display_order, published) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)',
       ['Ménage commercial', 'menage-commercial',
        'Entretien régulier ou ponctuel pour bureaux, commerces et espaces professionnels.',
        'Un environnement de travail propre, c\'est une équipe productive et des clients confiants. Noxa Service offre des services d\'entretien commercial sur mesure pour bureaux, cliniques, boutiques, restaurants, centres de conditionnement physique, entrepôts et copropriétés. Nous établissons avec vous un horaire de nettoyage flexible — quotidien, hebdomadaire, bihebdomadaire ou mensuel — adapté à votre réalité opérationnelle. Nos services incluent: aspiration et lavage des planchers, désinfection des surfaces de contact, nettoyage des salles de bain et cuisinettes, vidage des poubelles, dépoussiérage des espaces de travail, nettoyage des vitres intérieures, désinfection complète selon les normes sanitaires en vigueur. Tous nos employés sont assurés, formés et discrets. Soumission personnalisée gratuite selon la superficie et la fréquence requise.',
-       '🏢', 'https://res.cloudinary.com/duhp69meg/image/upload/v1778467523/tapavis_tenant_noxa-service/build_noxa-service_1778467523628.png', 2, 1]
+       '🏢', 'https://media.liasse.tech/upload/v1778467523/tapavis_tenant_noxa-service/build_noxa-service_1778467523628.png', 2, 1]
     );
     await db.run(
       'INSERT INTO services (name, slug, short_description, description, icon, image_url, display_order, published) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)',
       ['Ménage avant/après déménagement', 'menage-demenagement',
        'Préparez votre logement avant la livraison ou nettoyez en profondeur après votre départ.',
        'Le déménagement est déjà une période stressante — laissez-nous prendre en charge le ménage. Noxa Service offre un nettoyage en profondeur de votre logement, que ce soit avant votre emménagement (pour vous accueillir dans un espace impeccable) ou après votre départ (pour remettre les clés sans souci et récupérer votre dépôt). Nous nettoyons à fond toutes les pièces vidées: planchers, plinthes, fenêtres, armoires intérieures et extérieures, électroménagers (four, frigo, micro-ondes), salles de bain (bain, douche, toilette, lavabo, joints), cuisine (comptoirs, dosserets, hottes), lumières, ventilations, garde-robes et placards. Idéal pour locataires, propriétaires, agents immobiliers et entreprises de déménagement. Tarification au logement ou à l\'heure selon vos besoins. Soumission rapide en moins de 24h.',
-       '📦', 'https://res.cloudinary.com/duhp69meg/image/upload/v1778467527/tapavis_tenant_noxa-service/build_noxa-service_1778467527227.png', 3, 1]
+       '📦', 'https://media.liasse.tech/upload/v1778467527/tapavis_tenant_noxa-service/build_noxa-service_1778467527227.png', 3, 1]
     );
   }
 

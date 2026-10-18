@@ -61,7 +61,7 @@ module.exports = function(services) {
         "price": 15.99,
         "category": "Poulet",
         "description": "Poulet désossé dans une sauce crémeuse et onctueuse à la tomate, préparée avec beurre et épices traditionnelles",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781384062/tapavis_menu/639/febuvbwvuqq9cqjgytfv.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781384062/tapavis_menu/639/febuvbwvuqq9cqjgytfv.jpg"
       },
       {
         "id": "dzr6cha0svf",
@@ -76,7 +76,7 @@ module.exports = function(services) {
         "price": 15.99,
         "category": "Poulet",
         "description": "Poulet mijoté dans une sauce curry savoureuse aux épices, riche et bien relevée",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780844492/tapavis_menu/639/svxljnat31y2bwt4nrvi.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780844492/tapavis_menu/639/svxljnat31y2bwt4nrvi.jpg"
       },
       {
         "id": "vi1sb65lvg",
@@ -84,7 +84,7 @@ module.exports = function(services) {
         "price": 15.99,
         "category": "Poulet",
         "description": "Épinards et Poulet mijotés ensemble dans un curry savoureux",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781380355/tapavis_menu/639/byifw5gig6lnuwzhdb7g.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781380355/tapavis_menu/639/byifw5gig6lnuwzhdb7g.jpg"
       },
       {
         "id": "7szghnhz8fg",
@@ -92,7 +92,7 @@ module.exports = function(services) {
         "price": 16.99,
         "category": "Poulet",
         "description": "Morceaux de poulet marinés et grillés, servis dans une sauce tomate crémeuse et épicée.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781381955/tapavis_menu/639/gnczsat7shsy602pwm84.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781381955/tapavis_menu/639/gnczsat7shsy602pwm84.jpg"
       },
       {
         "id": "33rapmwyg0i",
@@ -100,7 +100,7 @@ module.exports = function(services) {
         "price": 17.99,
         "category": "Poulet",
         "description": "Poulet désossé mijoté dans une sauce tomate épicée avec des herbes fraîches et des épices",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781379431/tapavis_menu/639/yo3jz3nh77ip7vkzkytn.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781379431/tapavis_menu/639/yo3jz3nh77ip7vkzkytn.jpg"
       },
       {
         "id": "ulib4ukabye",
@@ -108,7 +108,7 @@ module.exports = function(services) {
         "price": 7.99,
         "category": "Poulet",
         "description": "Cuisse de poulet marinée dans du yogourt, de l'ail, du gingembre et un mélange traditionnel d'épices indiennes.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781383461/tapavis_menu/639/lkmwv9jltjnulpdcwzap.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781383461/tapavis_menu/639/lkmwv9jltjnulpdcwzap.jpg"
       },
       {
         "id": "ymul5c3n2b",
@@ -151,7 +151,7 @@ module.exports = function(services) {
         "price": 17.99,
         "category": "Agneau",
         "description": "Agneau braisé dans une sauce curry et crémeuse au yogourt, aux épices, riche et savoureuse.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781383478/tapavis_menu/639/cxqhpyvxrjgllhsseskf.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781383478/tapavis_menu/639/cxqhpyvxrjgllhsseskf.jpg"
       },
       {
         "id": "3f51t8g93e6",
@@ -166,7 +166,7 @@ module.exports = function(services) {
         "price": 17.99,
         "category": "Agneau",
         "description": "Épinards et Agneau mijotés ensemble dans un curry savoureux.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780760423/tapavis_menu/639/tzi2onyi8uep4bxcgyui.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780760423/tapavis_menu/639/tzi2onyi8uep4bxcgyui.jpg"
       },
       {
         "id": "6qqo7dj8onm",
@@ -181,7 +181,7 @@ module.exports = function(services) {
         "price": 12.99,
         "category": "Végétarien",
         "description": "Lentilles noires crémeuses mijotées lentement avec beurre et épices.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780760237/tapavis_menu/639/khcsg7tx884iph5b6amd.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780760237/tapavis_menu/639/khcsg7tx884iph5b6amd.jpg"
       },
       {
         "id": "jdqcsxsvjp",
@@ -189,7 +189,7 @@ module.exports = function(services) {
         "price": 14.99,
         "category": "Végétarien",
         "description": "Sauce au yogourt légèrement acidulée et épicée, garnie de beignets de légumes frits.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780799589/tapavis_menu/639/uy1gvywxcmo0hkduba7a.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780799589/tapavis_menu/639/uy1gvywxcmo0hkduba7a.jpg"
       },
       {
         "id": "2bweljiotrp",
@@ -197,7 +197,7 @@ module.exports = function(services) {
         "price": 15.99,
         "category": "Végétarien",
         "description": "Paneer cuit dans une sauce crémeuse et onctueuse à la tomate, préparée avec beurre et épices traditionnelles.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781384302/tapavis_menu/639/g7o3lslov3vyxl2wnsgj.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781384302/tapavis_menu/639/g7o3lslov3vyxl2wnsgj.jpg"
       },
       {
         "id": "6bnw4lbyy9k",
@@ -205,7 +205,7 @@ module.exports = function(services) {
         "price": 16.99,
         "category": "Végétarien",
         "description": "Morceaux de Paneer marinés et grillés, servis dans une sauce tomate crémeuse et épicée.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780844190/tapavis_menu/639/ucyfsongb9gmdessy241.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780844190/tapavis_menu/639/ucyfsongb9gmdessy241.jpg"
       },
       {
         "id": "aqs0loi9dco",
@@ -213,7 +213,7 @@ module.exports = function(services) {
         "price": 15.99,
         "category": "Végétarien",
         "description": "Épinards et paneer mijotés ensemble dans un curry savoureux.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781380427/tapavis_menu/639/sphxrdqs7yphkbz5lhfp.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781380427/tapavis_menu/639/sphxrdqs7yphkbz5lhfp.jpg"
       },
       {
         "id": "qffenokml2r",
@@ -221,7 +221,7 @@ module.exports = function(services) {
         "price": 11.99,
         "category": "Végétarien",
         "description": "Curry savoureux de pois chiches épicé avec des assaisonnements traditionnels.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780800108/tapavis_menu/639/d23drzv8c4fzsgp57mcp.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780800108/tapavis_menu/639/d23drzv8c4fzsgp57mcp.jpg"
       },
       {
         "id": "e94jzitgo2",
@@ -229,7 +229,7 @@ module.exports = function(services) {
         "price": 3.99,
         "category": "À la carte",
         "description": "Feuilleté croustillant farci de pommes de terre épicées et de petits pois, servi chaud. Un en-cas salé traditionnel et savoureux.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781374571/tapavis_menu/639/yca5no4diz6fdv9k8few.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781374571/tapavis_menu/639/yca5no4diz6fdv9k8few.jpg"
       },
       {
         "id": "r9ktoxvpoyn",
@@ -243,14 +243,14 @@ module.exports = function(services) {
         "name": "Rouleaux de printemps (5 mcx)",
         "price": 4.99,
         "category": "À la carte",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781374225/tapavis_menu/639/tomdavlseoubttaah9co.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781374225/tapavis_menu/639/tomdavlseoubttaah9co.jpg"
       },
       {
         "id": "fegu0dhsxm",
         "name": "Frites",
         "price": 4.99,
         "category": "À la carte",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781374154/tapavis_menu/639/hjgmoyekon5ltung4jiy.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781374154/tapavis_menu/639/hjgmoyekon5ltung4jiy.jpg"
       },
       {
         "id": "svk9v5gqt9h",
@@ -258,7 +258,7 @@ module.exports = function(services) {
         "price": 6.99,
         "category": "À la carte",
         "description": "Frites croustillantes assaisonnées d'un mélange d'épices savoureux. Un accompagnement épicé et gourmand.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781373903/tapavis_menu/639/o1eodt4nhpvm8cuzwaff.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781373903/tapavis_menu/639/o1eodt4nhpvm8cuzwaff.jpg"
       },
       {
         "id": "wx9e8kzrxe9",
@@ -266,7 +266,7 @@ module.exports = function(services) {
         "price": 8.99,
         "category": "À la carte",
         "description": "Samosas croustillants garnis de pois chiches, yogourt, chutneys maison et épices indiennes savoureuses.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780845248/tapavis_menu/639/g3o9y6iiia7dm5z3to7e.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780845248/tapavis_menu/639/g3o9y6iiia7dm5z3to7e.jpg"
       },
       {
         "id": "20cxcou4g17",
@@ -274,35 +274,35 @@ module.exports = function(services) {
         "price": 8.99,
         "category": "À la carte",
         "description": "Galettes de pommes de terre croustillantes garnies de chutneys maison, de yogourt et d'épices indiennes savoureuses.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781373822/tapavis_menu/639/itjxwit3z9lhcwlfuibt.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781373822/tapavis_menu/639/itjxwit3z9lhcwlfuibt.jpg"
       },
       {
         "id": "eg0q2rq9h4q",
         "name": "Naan",
         "price": 2.5,
         "category": "À la carte",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781373182/tapavis_menu/639/j4d8folg38sie0lyxdpf.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781373182/tapavis_menu/639/j4d8folg38sie0lyxdpf.jpg"
       },
       {
         "id": "dhvt27lc49",
         "name": "Naan à l'ail",
         "price": 3.5,
         "category": "À la carte",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781373382/tapavis_menu/639/hj5ieow4hqcfqhwudbth.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781373382/tapavis_menu/639/hj5ieow4hqcfqhwudbth.jpg"
       },
       {
         "id": "m748tc41fda",
         "name": "Riz Basmati",
         "price": 4.99,
         "category": "À la carte",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780799317/tapavis_menu/639/a8p9pilyxvbqobllyhgt.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780799317/tapavis_menu/639/a8p9pilyxvbqobllyhgt.jpg"
       },
       {
         "id": "zty70bf5xde",
         "name": "Biryani au poulet",
         "price": 14.99,
         "category": "À la carte",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780845042/tapavis_menu/639/na7eowzxdihnqm1zzhzz.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780845042/tapavis_menu/639/na7eowzxdihnqm1zzhzz.jpg"
       },
       {
         "id": "xewrmal5709",
@@ -310,7 +310,7 @@ module.exports = function(services) {
         "price": 4.99,
         "category": "À la carte",
         "description": "Accompagnement frais à base de yaourt, assaisonné d'épices douces.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780799950/tapavis_menu/639/ejvhob27q0gpcsz0y6kk.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780799950/tapavis_menu/639/ejvhob27q0gpcsz0y6kk.jpg"
       },
       {
         "id": "7yptnrxoqto",
@@ -318,7 +318,7 @@ module.exports = function(services) {
         "price": 12.99,
         "category": "Poutine",
         "description": "Frites dorées nappées de sauce au poulet crémeuse aux épices indiennes et garnies de fromage en grains fondant.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781377708/tapavis_menu/639/mngwevic7l7llylntgt3.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781377708/tapavis_menu/639/mngwevic7l7llylntgt3.jpg"
       },
       {
         "id": "kwin3tgsx1t",
@@ -326,7 +326,7 @@ module.exports = function(services) {
         "price": 12.99,
         "category": "Poutine",
         "description": "Frites dorées nappées d'une sauce crémeuse aux épices indiennes, Paneer et garnies de fromage en grains fondant.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781377850/tapavis_menu/639/xqttdeo1dbttjyfocqys.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781377850/tapavis_menu/639/xqttdeo1dbttjyfocqys.jpg"
       },
       {
         "id": "2qlovg1pbks",
@@ -334,7 +334,7 @@ module.exports = function(services) {
         "price": 4.5,
         "category": "Dessert",
         "description": "Boulettes de fromage cottage moelleuses trempées dans un lait sucré crémeux. Un dessert traditionnel et délicat.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780799455/tapavis_menu/639/xstkrezkvtqrgbzqnfoe.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780799455/tapavis_menu/639/xstkrezkvtqrgbzqnfoe.jpg"
       },
       {
         "id": "f4b8lerwyaj",
@@ -342,7 +342,7 @@ module.exports = function(services) {
         "price": 3.99,
         "category": "Dessert",
         "description": "Boulettes moelleuses à base de lait, trempées dans un sirop sucré parfumé. Un dessert classique, riche et fondant.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780844873/tapavis_menu/639/atplbdpwazfjqrtgggym.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780844873/tapavis_menu/639/atplbdpwazfjqrtgggym.jpg"
       },
       {
         "id": "iols3l2qffk",
@@ -384,7 +384,7 @@ module.exports = function(services) {
         "name": "Canette",
         "price": 2.5,
         "category": "Chai / Boissons",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781377368/tapavis_menu/639/lpebwi4rz6oi2goflhp9.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781377368/tapavis_menu/639/lpebwi4rz6oi2goflhp9.jpg"
       },
       {
         "id": "d1ajzp103jt",
@@ -392,7 +392,7 @@ module.exports = function(services) {
         "price": 1.99,
         "category": "Chai / Boissons",
         "description": "ESKA",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781377278/tapavis_menu/639/ftzbteaoadrkzcvabgcu.jpg"
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781377278/tapavis_menu/639/ftzbteaoadrkzcvabgcu.jpg"
       },
       {
         "id": "1y9uf0og85z",
@@ -414,7 +414,7 @@ module.exports = function(services) {
         "price": 11.99,
         "category": "Wraps",
         "description": "Poulet au beurre dans un naan, garni de laitue, tomates et oignons.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780760707/tapavis_menu/639/psp34mviazjd0uedruoc.jpg",
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780760707/tapavis_menu/639/psp34mviazjd0uedruoc.jpg",
         "note": true
       },
       {
@@ -423,7 +423,7 @@ module.exports = function(services) {
         "price": 11.99,
         "category": "Wraps",
         "description": "Poulet tandoori dans un naan, garni de laitue, tomates et oignons, sauce maison et sauce tandoori.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781375460/tapavis_menu/639/ytjikrtx6mkt7m40imx6.jpg",
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781375460/tapavis_menu/639/ytjikrtx6mkt7m40imx6.jpg",
         "note": true
       },
       {
@@ -432,7 +432,7 @@ module.exports = function(services) {
         "price": 11.99,
         "category": "Wraps",
         "description": "Shahi paneer dans un naan, garni de laitue, tomates et oignons.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780760876/tapavis_menu/639/mhdec8duxsnebrkct1p1.jpg",
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1780760876/tapavis_menu/639/mhdec8duxsnebrkct1p1.jpg",
         "note": true
       },
       {
@@ -441,7 +441,7 @@ module.exports = function(services) {
         "price": 12.99,
         "category": "Wraps",
         "description": "Kabab dans un naan, garni de laitue, tomates et oignons, sauce maison et sauce tandoori.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781375433/tapavis_menu/639/hgwaodnilhb65kzufowc.jpg",
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781375433/tapavis_menu/639/hgwaodnilhb65kzufowc.jpg",
         "note": true
       },
       {
@@ -450,7 +450,7 @@ module.exports = function(services) {
         "price": 4.99,
         "category": "Wraps",
         "description": "Ajoutez des frites et une canette à votre wrap.",
-        "imageUrl": "https://res.cloudinary.com/duhp69meg/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781375648/tapavis_menu/639/pnwttp264baz1fcaspgj.jpg",
+        "imageUrl": "https://media.liasse.tech/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/v1781375648/tapavis_menu/639/pnwttp264baz1fcaspgj.jpg",
         "note": true
       }
     ]
@@ -473,8 +473,11 @@ module.exports = function(services) {
 
   function sliderImage(url) {
     if (!url) return '';
-    if (String(url).indexOf('res.cloudinary.com/') === -1) return url;
-    return String(url).replace(/\/image\/upload\/(?!w_)/, '/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/');
+    const s = String(url);
+    // Images live on media.liasse.tech since 2026-10-18 (same /upload/ layout as Cloudinary had).
+    if (s.indexOf('media.liasse.tech/upload/') !== -1) return s.replace(/\/upload\/(?!w_)/, '/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/');
+    if (s.indexOf('res.cloudinary.com/') === -1) return url;
+    return s.replace(/\/image\/upload\/(?!w_)/, '/image/upload/w_640,h_480,c_fill,g_auto,q_auto,f_auto/');
   }
 
   function previewFromFeed(feed) {

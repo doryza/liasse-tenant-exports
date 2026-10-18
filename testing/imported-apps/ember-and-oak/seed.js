@@ -25,18 +25,18 @@ module.exports = async function(db) {
   await S('footer_tagline', 'Roasted by hand in Mile End, Montreal.');
   await S('this_week', 'Roasted this week: Lot 47 — Guji, Ethiopia');
 
-  await IMG('_p_hero_image_url', 'https://res.cloudinary.com/duhp69meg/image/upload/v1783455919/tapavis_tenant_ember-and-oak/build_ember-and-oak_1783455919003.png');
-  await IMG('_p_about_image_url', 'https://res.cloudinary.com/duhp69meg/image/upload/v1783455918/tapavis_tenant_ember-and-oak/build_ember-and-oak_1783455918410.png');
-  await IMG('_p_map_image_url', 'https://res.cloudinary.com/duhp69meg/image/upload/v1783455916/tapavis_tenant_ember-and-oak/build_ember-and-oak_1783455916718.png');
-  await IMG('_p_wholesale_image_url', 'https://res.cloudinary.com/duhp69meg/image/upload/v1783455919/tapavis_tenant_ember-and-oak/build_ember-and-oak_1783455919045.png');
+  await IMG('_p_hero_image_url', 'https://media.liasse.tech/upload/v1783455919/tapavis_tenant_ember-and-oak/build_ember-and-oak_1783455919003.png');
+  await IMG('_p_about_image_url', 'https://media.liasse.tech/upload/v1783455918/tapavis_tenant_ember-and-oak/build_ember-and-oak_1783455918410.png');
+  await IMG('_p_map_image_url', 'https://media.liasse.tech/upload/v1783455916/tapavis_tenant_ember-and-oak/build_ember-and-oak_1783455916718.png');
+  await IMG('_p_wholesale_image_url', 'https://media.liasse.tech/upload/v1783455919/tapavis_tenant_ember-and-oak/build_ember-and-oak_1783455919045.png');
 
   var rc = await db.get('SELECT COUNT(*)::int c FROM roasts');
   if (!rc || !rc.c) {
     var roasts = [
-      ['Alleyway', 'Guji, Ethiopia', 'Blueberry, Jasmine, Cane sugar', 1, 'Our first-ever profile, and still the one people come back for. A washed Guji dropped just past first crack at 198C, so the florals stay loud and the sweetness stays clean.', '$21 / 340g', 'https://res.cloudinary.com/duhp69meg/image/upload/v1783455918/tapavis_tenant_ember-and-oak/build_ember-and-oak_1783455918099.png', 1],
-      ['Bernard', 'Huila, Colombia', 'Red apple, Toffee, Cocoa nib', 2, 'The cafe order that turned a hobby into a shop. Balanced and forgiving, built to shine in milk and to hold its own black. We pull the batch at 205C.', '$19 / 340g', 'https://res.cloudinary.com/duhp69meg/image/upload/v1783455917/tapavis_tenant_ember-and-oak/build_ember-and-oak_1783455917634.png', 2],
-      ['Nightshift', 'Sumatra + Brazil', 'Dark cocoa, Molasses, Toasted walnut', 3, 'Roasted long into second crack for the espresso bar. Heavy body, low acidity, and enough backbone to carry a double through a busy morning.', '$18 / 340g', 'https://res.cloudinary.com/duhp69meg/image/upload/v1783455917/tapavis_tenant_ember-and-oak/build_ember-and-oak_1783455917238.png', 3],
-      ['Ember Seasonal', 'Antigua, Guatemala', 'Dried fig, Brown butter, Orange peel', 2, 'This month rotating lot. Whatever is singing loudest on the cupping table gets the ember mark and a spot in the hopper.', '$22 / 340g', 'https://res.cloudinary.com/duhp69meg/image/upload/v1783455916/tapavis_tenant_ember-and-oak/build_ember-and-oak_1783455916667.png', 4]
+      ['Alleyway', 'Guji, Ethiopia', 'Blueberry, Jasmine, Cane sugar', 1, 'Our first-ever profile, and still the one people come back for. A washed Guji dropped just past first crack at 198C, so the florals stay loud and the sweetness stays clean.', '$21 / 340g', 'https://media.liasse.tech/upload/v1783455918/tapavis_tenant_ember-and-oak/build_ember-and-oak_1783455918099.png', 1],
+      ['Bernard', 'Huila, Colombia', 'Red apple, Toffee, Cocoa nib', 2, 'The cafe order that turned a hobby into a shop. Balanced and forgiving, built to shine in milk and to hold its own black. We pull the batch at 205C.', '$19 / 340g', 'https://media.liasse.tech/upload/v1783455917/tapavis_tenant_ember-and-oak/build_ember-and-oak_1783455917634.png', 2],
+      ['Nightshift', 'Sumatra + Brazil', 'Dark cocoa, Molasses, Toasted walnut', 3, 'Roasted long into second crack for the espresso bar. Heavy body, low acidity, and enough backbone to carry a double through a busy morning.', '$18 / 340g', 'https://media.liasse.tech/upload/v1783455917/tapavis_tenant_ember-and-oak/build_ember-and-oak_1783455917238.png', 3],
+      ['Ember Seasonal', 'Antigua, Guatemala', 'Dried fig, Brown butter, Orange peel', 2, 'This month rotating lot. Whatever is singing loudest on the cupping table gets the ember mark and a spot in the hopper.', '$22 / 340g', 'https://media.liasse.tech/upload/v1783455916/tapavis_tenant_ember-and-oak/build_ember-and-oak_1783455916667.png', 4]
     ];
     for (var i = 0; i < roasts.length; i++) {
       var r = roasts[i];
