@@ -33,34 +33,11 @@ module.exports = function(services) {
       val3_t: 'Saveurs libanaises', val3_d: "Taouk, kafta, soujouk, makanek, tartares et pâtisseries orientales — la tradition dans l'assiette.",
       open_hours: 'Heures d\'ouverture', address: 'Adresse', phone: 'Téléphone', email: 'Courriel',
       latest_news: 'Dernières nouvelles', read_more: 'Lire plus',
-      category_all: 'Tous',
       visit_title: 'Venez nous visiter', visit_subtitle: 'Notre boucherie-grillades vous accueille à Blainville. Suivez l\'odeur du charbon.',
       visit_cta: "Voir l'adresse & les heures",
       day_mon: 'Lundi', day_tue: 'Mardi', day_wed: 'Mercredi', day_thu: 'Jeudi', day_fri: 'Vendredi', day_sat: 'Samedi', day_sun: 'Dimanche',
       closed: 'Fermé',
-      follow_us: 'Nous suivre',
-      nav_offers: 'Offres',
-      offers_title: 'Offres spéciales', offers_subtitle: 'Réservez votre offre, présentez votre code en restaurant.',
-      offers_empty: 'Aucune offre active pour l\'instant. Revenez bientôt!',
-      offer_starts: 'Commence le', offer_ends: 'Expire le',
-      offer_remaining: 'restantes',
-      offer_only_left: 'Plus que',
-      offer_only_left_low: 'Vite, plus que',
-      offer_claim_btn: 'Réserver l\'offre',
-      offer_login_to_claim: 'Connectez-vous pour réserver',
-      offer_already_claimed: 'Déjà réservée',
-      offer_sold_out: 'Épuisée',
-      offer_upcoming: 'Bientôt disponible',
-      offer_expired: 'Expirée',
-      offer_max_per_user: 'Limite atteinte',
-      offer_code_label: 'Votre code à présenter',
-      offer_code_hint: 'Montrez ce code au comptoir avant l\'expiration.',
-      offer_status_claimed: 'Réservée',
-      offer_status_redeemed: 'Utilisée',
-      offer_claim_success: 'Offre réservée! Présentez ce code en restaurant.',
-      offer_claim_error: 'Impossible de réserver. Veuillez réessayer.',
-      my_offers_title: 'Mes offres',
-      no_my_offers: 'Vous n\'avez réservé aucune offre.'
+      follow_us: 'Nous suivre'
     },
     en: {
       brand: 'Ali Baba Grillades',
@@ -86,39 +63,15 @@ module.exports = function(services) {
       val3_t: 'Lebanese flavours', val3_d: 'Taouk, kafta, soujouk, makanek, tartares and Oriental pastries — tradition on the plate.',
       open_hours: 'Hours', address: 'Address', phone: 'Phone', email: 'Email',
       latest_news: 'Latest news', read_more: 'Read more',
-      category_all: 'All',
       visit_title: 'Come visit us', visit_subtitle: 'Our butcher-grill welcomes you in Blainville. Just follow the charcoal smoke.',
       visit_cta: 'See address & hours',
       day_mon: 'Monday', day_tue: 'Tuesday', day_wed: 'Wednesday', day_thu: 'Thursday', day_fri: 'Friday', day_sat: 'Saturday', day_sun: 'Sunday',
       closed: 'Closed',
-      follow_us: 'Follow us',
-      nav_offers: 'Offers',
-      offers_title: 'Special offers', offers_subtitle: 'Reserve an offer, show your code in-store.',
-      offers_empty: 'No active offers right now. Check back soon!',
-      offer_starts: 'Starts', offer_ends: 'Expires',
-      offer_remaining: 'left',
-      offer_only_left: 'Only',
-      offer_only_left_low: 'Hurry — only',
-      offer_claim_btn: 'Reserve offer',
-      offer_login_to_claim: 'Sign in to reserve',
-      offer_already_claimed: 'Already reserved',
-      offer_sold_out: 'Sold out',
-      offer_upcoming: 'Coming soon',
-      offer_expired: 'Expired',
-      offer_max_per_user: 'Limit reached',
-      offer_code_label: 'Your code to show',
-      offer_code_hint: 'Show this code at the counter before it expires.',
-      offer_status_claimed: 'Reserved',
-      offer_status_redeemed: 'Used',
-      offer_claim_success: 'Offer reserved! Show this code in-store.',
-      offer_claim_error: 'Could not reserve. Please try again.',
-      my_offers_title: 'My offers',
-      no_my_offers: 'You haven\'t reserved any offers yet.'
+      follow_us: 'Follow us'
     }
   };
   function formatPrice(p) { if (p == null || p === '') return ''; return Number(p).toFixed(2) + ' $'; }
   function formatDate(d, lang) { if (!d) return ''; try { return new Date(d).toLocaleDateString(lang === 'en' ? 'en-CA' : 'fr-CA', { year:'numeric', month:'long', day:'numeric'}); } catch(e) { return String(d); } }
-  function formatDateTime(d, lang) { if (!d) return ''; try { return new Date(d).toLocaleString(lang === 'en' ? 'en-CA' : 'fr-CA', { year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'}); } catch(e) { return String(d); } }
   function pickLang(item, field, lang) { if (!item) return ''; return item[field + '_' + lang] || item[field + '_fr'] || item[field] || ''; }
 
   // Fallback for the homepage slider, used only when the command.restaurant
@@ -543,25 +496,6 @@ module.exports = function(services) {
     return crMenuCache.menu || MENU_PREVIEW;
   }
 
-  // Short-code generation: 8 chars, no ambiguous (0/O, 1/I/L, U/V)
-  const SHORT_CODE_ALPHABET = 'BCDFGHJKMNPQRSTWXYZ23456789';
-  function generateShortCode() {
-    let s = '';
-    for (let i = 0; i < 8; i++) s += SHORT_CODE_ALPHABET.charAt(Math.floor(Math.random() * SHORT_CODE_ALPHABET.length));
-    return s;
-  }
-  function offerStatus(o, now) {
-    now = now || new Date();
-    if (!o || o.active == 0) return 'inactive';
-    if (o.expires_at && new Date(o.expires_at) <= now) return 'expired';
-    if (o.starts_at && new Date(o.starts_at) > now) return 'upcoming';
-    // claim_count is only populated by callers that selected it (the public
-    // /offres list). When absent we treat the offer as having stock and let
-    // the claim endpoint's own sold-out check enforce the cap at claim time.
-    if (o.max_claims != null && Number(o.max_claims) > 0 && Number(o.claim_count || 0) >= Number(o.max_claims)) return 'sold_out';
-    return 'active';
-  }
-
   const DAY_KEYS = ['mon','tue','wed','thu','fri','sat','sun'];
   function parseHours(raw) {
     if (!raw) return null;
@@ -582,22 +516,6 @@ module.exports = function(services) {
 
   function resolveContactEmail(settings) {
     return (settings && (settings.admin_email || settings.contact_email)) || (services.config && services.config.contactEmail) || '';
-  }
-
-  function parseSizes(raw) {
-    if (!raw) return null;
-    try {
-      const arr = typeof raw === 'string' ? JSON.parse(raw) : raw;
-      if (!Array.isArray(arr) || !arr.length) return null;
-      return arr
-        .map(function(r){ return r && (r.label_fr || r.label_en) ? { label_fr: String(r.label_fr || r.label_en || ''), label_en: String(r.label_en || r.label_fr || ''), price: r.price == null || r.price === '' ? null : Number(r.price) } : null; })
-        .filter(Boolean);
-    } catch(e) { return null; }
-  }
-
-  async function getMenuCategories() {
-    try { return await db.all('SELECT * FROM menu_categories WHERE active = 1 ORDER BY position ASC, id ASC'); }
-    catch(e) { return []; }
   }
 
   async function getSettings() {
@@ -628,7 +546,7 @@ module.exports = function(services) {
   // =========================================================================
   // Keychain attribution middlewares — MUST be registered BEFORE the route
   // handlers (Express middleware only applies to subsequent routes). Earlier
-  // version had these below /offres etc. → never fired on the landing pages.
+  // version had these below the page routes → never fired on the landing pages.
   // =========================================================================
   function tpath(req, sub) {
     return typeof req.tenantPath === 'function' ? req.tenantPath(sub) : sub;
@@ -876,7 +794,6 @@ module.exports = function(services) {
       formatDate: formatDate,
       pickLang: pickLang,
       hours: parseHours(settings.hours_json),
-      parseSizes: parseSizes,
     };
   }
 
@@ -888,14 +805,10 @@ module.exports = function(services) {
     } catch(e) { res.status(500).send('Erreur'); }
   });
 
-  router.get('/menu', async function(req, res) {
-    try {
-      const ctx = await renderCtx(req);
-      const menu = await db.all('SELECT m.* FROM menu_items m LEFT JOIN menu_categories c ON c.slug = m.category ORDER BY COALESCE(c.position, 999999) ASC, m.position ASC, m.id ASC').catch(function(){ return []; });
-      const categories = await getMenuCategories();
-      res.render('menu', Object.assign(ctx, { menu: menu, categories: categories }));
-    } catch(e) { res.status(500).send('Erreur'); }
-  });
+  // The menu lives in the homepage slider (from command.restaurant); the old
+  // /menu page read the retired tenant menu tables. Old links land on the
+  // homepage's menu section.
+  router.get('/menu', function(req, res) { res.redirect(301, tpath(req, '/') + '#menu'); });
 
   router.get('/livraison', async function(req, res) {
     try {
@@ -910,113 +823,6 @@ module.exports = function(services) {
       const ctx = await renderCtx(req);
       res.render('apropos', ctx);
     } catch(e) { res.status(500).send('Erreur'); }
-  });
-
-  router.get('/offres', services.auth.optionalAuth, async function(req, res) {
-    try {
-      const ctx = await renderCtx(req);
-      const now = new Date();
-      const offers = await db.all(
-        "SELECT o.*, (SELECT COUNT(*) FROM offer_claims c WHERE c.offer_id = o.id) AS claim_count " +
-        "FROM offers o WHERE o.active = 1 AND o.expires_at > NOW() ORDER BY o.position ASC, o.expires_at ASC"
-      ).catch(function(){ return []; });
-      let claimsByOffer = {};
-      let myClaims = [];
-      if (req.user) {
-        myClaims = await db.all(
-          "SELECT c.*, o.title_fr, o.title_en, o.image_url, o.discount_label, o.expires_at " +
-          "FROM offer_claims c JOIN offers o ON o.id = c.offer_id " +
-          "WHERE c.user_id = $1 ORDER BY c.claimed_at DESC",
-          [req.user.id]
-        ).catch(function(){ return []; });
-        myClaims.forEach(function(c){ if (!claimsByOffer[c.offer_id]) claimsByOffer[c.offer_id] = []; claimsByOffer[c.offer_id].push(c); });
-      }
-      // Annotate offers with display status
-      offers.forEach(function(o){
-        // pg returns COUNT(*) (bigint) as a string — coerce before any math
-        o.claim_count = Number(o.claim_count || 0);
-        if (o.max_claims != null && Number(o.max_claims) > 0) {
-          var maxClaims = Number(o.max_claims);
-          o._remaining = Math.max(0, maxClaims - o.claim_count);
-          // Urgency threshold: ≤ 5 absolute or ≤ 20% of the original cap,
-          // whichever is more permissive (so a 100-cap offer pulses at 20
-          // left, while a 6-cap offer pulses at 3 left).
-          var lowThreshold = Math.max(5, Math.ceil(maxClaims * 0.2));
-          o._low_stock = o._remaining > 0 && o._remaining <= lowThreshold;
-        } else {
-          o._remaining = null;
-          o._low_stock = false;
-        }
-        o._status = offerStatus(o, now);
-        if (req.user) {
-          const mine = claimsByOffer[o.id] || [];
-          o._my_claim_count = mine.length;
-          o._my_active_claim = mine.find(function(c){ return c.status === 'claimed'; }) || null;
-        } else {
-          o._my_claim_count = 0;
-          o._my_active_claim = null;
-        }
-      });
-      res.render('offres', Object.assign(ctx, { offers: offers, myClaims: myClaims, user: req.user || null, formatDateTime: formatDateTime }));
-    } catch(e) { console.error('Offers page error:', e.message); res.status(500).send('Erreur'); }
-  });
-
-  // Public API namespaced under /api/promos (not /api/offers) so it doesn't
-  // collide with the platform's legacy /api/offers/* router, which
-  // intercepts that prefix on custom-domain tenants before the
-  // customDomainResolver runs.
-  router.post('/api/promos/:id/claim', services.auth.requireAuth, async function(req, res) {
-    try {
-      const offerId = parseInt(req.params.id);
-      if (!offerId) return res.status(400).json({ error: 'invalid_offer' });
-      const o = await db.get('SELECT * FROM offers WHERE id = $1', [offerId]);
-      if (!o) return res.status(404).json({ error: 'not_found' });
-      const status = offerStatus(o, new Date());
-      if (status === 'inactive') return res.status(400).json({ error: 'inactive' });
-      if (status === 'expired') return res.status(400).json({ error: 'expired' });
-      if (status === 'upcoming') return res.status(400).json({ error: 'not_started' });
-
-      const maxPerUser = o.max_per_user == null ? 1 : Number(o.max_per_user);
-      if (maxPerUser > 0) {
-        const userCount = await db.get('SELECT COUNT(*) AS c FROM offer_claims WHERE offer_id = $1 AND user_id = $2', [offerId, req.user.id]);
-        if ((userCount && Number(userCount.c)) >= maxPerUser) return res.status(400).json({ error: 'max_per_user' });
-      }
-      if (o.max_claims != null && Number(o.max_claims) > 0) {
-        const total = await db.get('SELECT COUNT(*) AS c FROM offer_claims WHERE offer_id = $1', [offerId]);
-        if ((total && Number(total.c)) >= Number(o.max_claims)) return res.status(400).json({ error: 'sold_out' });
-      }
-
-      // Generate unique short code with retry on collision
-      let code = null;
-      for (let attempt = 0; attempt < 6; attempt++) {
-        const candidate = generateShortCode();
-        const exists = await db.get('SELECT 1 AS x FROM offer_claims WHERE short_code = $1', [candidate]);
-        if (!exists) { code = candidate; break; }
-      }
-      if (!code) return res.status(500).json({ error: 'code_gen_failed' });
-
-      const r = await db.run(
-        'INSERT INTO offer_claims (offer_id, user_id, short_code, status) VALUES ($1,$2,$3,$4) RETURNING id',
-        [offerId, req.user.id, code, 'claimed']
-      );
-      const claim = await db.get('SELECT * FROM offer_claims WHERE id = $1', [r.lastInsertRowid]);
-      res.json({ success: true, claim: claim });
-    } catch(e) {
-      console.error('Claim error:', e.message);
-      res.status(500).json({ error: 'server' });
-    }
-  });
-
-  router.get('/api/promos/my-claims', services.auth.requireAuth, async function(req, res) {
-    try {
-      const rows = await db.all(
-        "SELECT c.*, o.title_fr, o.title_en, o.image_url, o.discount_label, o.expires_at " +
-        "FROM offer_claims c JOIN offers o ON o.id = c.offer_id " +
-        "WHERE c.user_id = $1 ORDER BY c.claimed_at DESC",
-        [req.user.id]
-      );
-      res.json({ claims: rows });
-    } catch(e) { res.status(500).json({ error: e.message }); }
   });
 
   // Captures 1-3 star feedback from the in-page review modal. Emails the
