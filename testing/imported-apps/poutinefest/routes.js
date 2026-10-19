@@ -547,36 +547,13 @@ module.exports = function(services) {
     }
   }
 
-  // Liasse Restaurants ordering page for this restaurant. business_id 642
-  // is the ordering-system business whose menu this app mirrors (the baked
-  // MENU_PREVIEW images live under tapavis_menu/642). The subdomain is read
-  // from the PLATFORM businesses table at request time — same shared-pool
-  // search_path trick as fetchAppGooglePlaceId — so the link survives a
-  // subdomain rename. Cached per process after the first successful lookup;
-  // when the lookup fails the homepage simply hides its order CTAs.
-  const ORDER_BUSINESS_ID = 642;
-  const ORDER_HOST = 'order.command.restaurant';
-  let orderUrlCache = null;
+  // command.restaurant ordering page for this restaurant (CR business 642,
+  // subdomain lepoutinefest-et-ram). liasse.tech has its own database since
+  // 2026-10-19 and no longer reads command.restaurant's businesses table, so
+  // the link is fixed here; update it if the restaurant's CR subdomain changes.
+  const ORDER_URL = 'https://order.command.restaurant/b/lepoutinefest-et-ram/order';
   async function fetchOrderUrl() {
-    if (orderUrlCache) return orderUrlCache;
-    try {
-      const row = await db.get(
-        'SELECT subdomain FROM public.businesses WHERE id = $1',
-        [ORDER_BUSINESS_ID]
-      );
-      if (row && row.subdomain) {
-        orderUrlCache = 'https://' + ORDER_HOST + '/b/' + row.subdomain + '/order';
-        if (!fetchOrderUrl._loggedOnce) {
-          console.log('[order-url] resolved ' + orderUrlCache);
-          fetchOrderUrl._loggedOnce = true;
-        }
-        return orderUrlCache;
-      }
-      console.warn('[order-url] business ' + ORDER_BUSINESS_ID + ' not found — hiding order CTAs');
-    } catch (err) {
-      console.warn('[order-url] businesses lookup failed:', err && err.message);
-    }
-    return null;
+    return ORDER_URL;
   }
 
   async function renderCtx(req) {

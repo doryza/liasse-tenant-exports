@@ -1,35 +1,35 @@
 <%- include('partials/header') %>
 <section class="section" style="padding-top:3rem">
   <div class="container">
-    <h1 class="section-title" id="pageTitle"><%= t.reserve_title %></h1>
-    <p class="section-sub" id="pageSub"><%= t.reserve_subtitle %></p>
+    <h1 class="section-title" id="pageTitle" data-lk="t:reserve_title"><%= t.reserve_title %></h1>
+    <p class="section-sub" id="pageSub" data-lk="t:reserve_subtitle"><%= t.reserve_subtitle %></p>
 
     <div class="form-wrap" id="formWrap">
       <div id="errorMsg" class="alert alert-error" style="display:none"></div>
       <form id="reserveForm">
         <div class="form-row">
-          <div class="form-group"><label><%= t.form_name %> <span class="req">*</span></label><input type="text" name="contact_name" class="form-control" required></div>
-          <div class="form-group"><label><%= t.form_email %> <span class="req">*</span></label><input type="email" name="contact_email" class="form-control" required></div>
+          <div class="form-group"><label data-lk="t:form_name"><%= t.form_name %> <span class="req">*</span></label><input type="text" name="contact_name" class="form-control" required></div>
+          <div class="form-group"><label data-lk="t:form_email"><%= t.form_email %> <span class="req">*</span></label><input type="email" name="contact_email" class="form-control" required></div>
         </div>
         <div class="form-row">
-          <div class="form-group"><label><%= t.form_phone %></label><input type="tel" name="contact_phone" class="form-control"></div>
-          <div class="form-group"><label><%= t.form_event_date %> <span class="req">*</span></label><input type="date" name="event_date" class="form-control" required></div>
+          <div class="form-group"><label data-lk="t:form_phone"><%= t.form_phone %></label><input type="tel" name="contact_phone" class="form-control"></div>
+          <div class="form-group"><label data-lk="t:form_event_date"><%= t.form_event_date %> <span class="req">*</span></label><input type="date" name="event_date" class="form-control" required></div>
         </div>
         <div class="form-row">
-          <div class="form-group"><label><%= t.form_event_type %></label><input type="text" name="event_type" class="form-control" placeholder="<%= lang === 'fr' ? 'Mariage, Festival, Corpo...' : 'Wedding, Festival, Corporate...' %>"></div>
-          <div class="form-group"><label><%= t.form_guests %></label><input type="number" name="guests" class="form-control" min="0" placeholder="50"></div>
+          <div class="form-group"><label data-lk="t:form_event_type"><%= t.form_event_type %></label><input type="text" name="event_type" class="form-control" placeholder="<%= lang === 'fr' ? 'Mariage, Festival, Corpo...' : 'Wedding, Festival, Corporate...' %>"></div>
+          <div class="form-group"><label data-lk="t:form_guests"><%= t.form_guests %></label><input type="number" name="guests" class="form-control" min="0" placeholder="50"></div>
         </div>
-        <div class="form-group"><label><%= t.form_location %></label><input type="text" name="location" class="form-control" placeholder="<%= lang === 'fr' ? 'Adresse complète ou nom du lieu' : 'Full address or venue name' %>"></div>
-        <div class="form-group"><label><%= t.form_message %></label><textarea name="message" class="form-control" rows="4" placeholder="<%= lang === 'fr' ? 'Détails supplémentaires, contraintes, etc.' : 'Additional details, constraints, etc.' %>"></textarea></div>
-        <button type="submit" class="btn btn-primary btn-block" style="background-color:#39FF14;color:#000" id="submitBtn"><%= t.form_submit %></button>
+        <div class="form-group"><label data-lk="t:form_location"><%= t.form_location %></label><input type="text" name="location" class="form-control" placeholder="<%= lang === 'fr' ? 'Adresse complète ou nom du lieu' : 'Full address or venue name' %>"></div>
+        <div class="form-group"><label data-lk="t:form_message"><%= t.form_message %></label><textarea name="message" class="form-control" rows="4" placeholder="<%= lang === 'fr' ? 'Détails supplémentaires, contraintes, etc.' : 'Additional details, constraints, etc.' %>"></textarea></div>
+        <button type="submit" class="btn btn-primary btn-block" style="background-color:#39FF14;color:#000" id="submitBtn" data-lk="t:form_submit"><%= t.form_submit %></button>
       </form>
     </div>
 
     <div id="thankYouPanel" style="display:none;text-align:center;padding:3rem 1.5rem;background:rgba(57,255,20,0.06);border:2px solid rgba(57,255,20,0.4);border-radius:18px;max-width:640px;margin:0 auto">
       <div style="font-size:4rem;line-height:1;margin-bottom:1rem">🎉</div>
-      <h2 style="color:#39FF14;margin:0 0 0.75rem;font-size:1.8rem"><%= t.reserve_success_title %></h2>
-      <p style="color:#ddd;margin:0 0 1.5rem;font-size:1.05rem;line-height:1.55"><%= t.reserve_success_body %></p>
-      <button class="btn btn-secondary" id="resetBtn" style="border-color:#39FF14;color:#39FF14"><%= t.reserve_back_form %></button>
+      <h2 style="color:#39FF14;margin:0 0 0.75rem;font-size:1.8rem" data-lk="t:reserve_success_title"><%= t.reserve_success_title %></h2>
+      <p style="color:#ddd;margin:0 0 1.5rem;font-size:1.05rem;line-height:1.55" data-lk="t:reserve_success_body"><%= t.reserve_success_body %></p>
+      <button class="btn btn-secondary" id="resetBtn" style="border-color:#39FF14;color:#39FF14" data-lk="t:reserve_back_form"><%= t.reserve_back_form %></button>
     </div>
   </div>
 </section>

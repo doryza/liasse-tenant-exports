@@ -1,11 +1,11 @@
 <%- include('partials/header') %>
 <section class="section" style="padding-top:3rem">
   <div class="container">
-    <h1 class="section-title"><%= t.offers_title %></h1>
-    <p class="section-sub"><%= t.offers_subtitle %></p>
+    <h1 class="section-title" data-lk="t:offers_title"><%= t.offers_title %></h1>
+    <p class="section-sub" data-lk="t:offers_subtitle"><%= t.offers_subtitle %></p>
 
     <% if (!offers || offers.length === 0) { %>
-      <p class="empty-state"><%= t.offers_empty %></p>
+      <p class="empty-state" data-lk="t:offers_empty"><%= t.offers_empty %></p>
     <% } else { %>
       <div class="menu-grid" id="offersGrid">
         <% offers.forEach(function(o) {
@@ -16,11 +16,11 @@
           var atUserLimit = (typeof user !== 'undefined' && user) && o.max_per_user > 0 && o._my_claim_count >= o.max_per_user && !mine;
         %>
         <article class="menu-card offer-card" data-offer-id="<%= o.id %>" data-status="<%= status %>">
-          <% if (o.image_url) { %><img src="<%= o.image_url %>" alt="<%= title %>" class="menu-card-img"><% } else { %><div class="menu-card-img"></div><% } %>
-          <% if (o.discount_label) { %><div class="offer-badge"><%= o.discount_label %></div><% } %>
+          <% if (o.image_url) { %><img src="<%= o.image_url %>" alt="<%= title %>" class="menu-card-img" data-content-source="offers:image_url" data-content-id="<%= o.id %>"><% } else { %><div class="menu-card-img"></div><% } %>
+          <% if (o.discount_label) { %><div class="offer-badge" data-content-source="offers:discount_label" data-content-id="<%= o.id %>"><%= o.discount_label %></div><% } %>
           <div class="menu-card-body">
-            <h3><%= title %></h3>
-            <% if (desc) { %><p class="desc"><%= desc %></p><% } %>
+            <h3 data-content-source="offers:title_fr" data-content-id="<%= o.id %>"><%= title %></h3>
+            <% if (desc) { %><p class="desc" data-content-source="offers:description_fr" data-content-id="<%= o.id %>"><%= desc %></p><% } %>
             <div class="offer-meta">
               <% if (o._remaining != null && o._remaining > 0 && status !== 'expired' && status !== 'sold_out') { %>
                 <div class="offer-stock<%= o._low_stock ? ' low' : '' %>" role="status">

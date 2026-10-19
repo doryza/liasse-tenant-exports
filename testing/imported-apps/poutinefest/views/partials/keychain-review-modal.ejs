@@ -79,11 +79,11 @@
     <!-- Step 2: 5★ → Google review redirect -->
     <div id="krm-step-google" class="krm-step">
       <div class="krm-hero">🌟</div>
-      <h3 class="krm-h3"><%= lang === 'en' ? "You're a star!" : 'Vous êtes une étoile !' %></h3>
+      <h3 class="krm-h3" data-lk="krm-google-title"><%= lang === 'en' ? "You're a star!" : 'Vous êtes une étoile !' %></h3>
       <p class="krm-p"><%= lang === 'en'
         ? (settings.business_name_en || settings.business_name || 'The team') + " will be delighted! Share it on Google so others can find them too."
         : (settings.business_name_fr || settings.business_name || "L'équipe") + " sera ravie ! Partagez-le sur Google pour aider d'autres à les trouver." %></p>
-      <a id="krm-google-link" href="#" target="_blank" rel="noopener noreferrer" class="krm-btn-google">
+      <a id="krm-google-link" href="#" target="_blank" rel="noopener noreferrer" class="krm-btn-google" data-lk="krm-google-btn">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
           <polyline points="15 3 21 3 21 9"></polyline>
@@ -96,33 +96,33 @@
     <!-- Step 3: 4★ → simple thank-you (no Google, no form) -->
     <div id="krm-step-thanks" class="krm-step">
       <div class="krm-hero">🙌</div>
-      <h3 class="krm-h3"><%= lang === 'en' ? 'Thank you!' : 'Merci !' %></h3>
-      <p class="krm-p"><%= lang === 'en' ? 'Thanks for rating us.' : 'Merci pour votre note.' %></p>
-      <button type="button" id="krm-thanks-close" class="krm-btn-secondary"><%= lang === 'en' ? 'Close' : 'Fermer' %></button>
+      <h3 class="krm-h3" data-lk="krm-thanks-title"><%= lang === 'en' ? 'Thank you!' : 'Merci !' %></h3>
+      <p class="krm-p" data-lk="krm-thanks-body"><%= lang === 'en' ? 'Thanks for rating us.' : 'Merci pour votre note.' %></p>
+      <button type="button" id="krm-thanks-close" class="krm-btn-secondary" data-lk="krm-thanks-close-label"><%= lang === 'en' ? 'Close' : 'Fermer' %></button>
     </div>
 
     <!-- Step 4: 1-3★ → contact form -->
     <form id="krm-step-feedback" class="krm-step" novalidate>
-      <h3 class="krm-h3"><%= lang === 'en' ? 'Help us improve' : 'Aidez-nous à nous améliorer' %></h3>
-      <p class="krm-p"><%= lang === 'en' ? 'The team will reply to you directly.' : "L'équipe vous répondra directement." %></p>
+      <h3 class="krm-h3" data-lk="krm-feedback-title"><%= lang === 'en' ? 'Help us improve' : 'Aidez-nous à nous améliorer' %></h3>
+      <p class="krm-p" data-lk="krm-feedback-body"><%= lang === 'en' ? 'The team will reply to you directly.' : "L'équipe vous répondra directement." %></p>
       <div class="krm-row">
-        <label class="krm-label" for="krm-email"><%= lang === 'en' ? 'Your email' : 'Votre courriel' %></label>
+        <label class="krm-label" for="krm-email" data-lk="krm-feedback-email-label"><%= lang === 'en' ? 'Your email' : 'Votre courriel' %></label>
         <input id="krm-email" type="email" required autocomplete="email" class="krm-input" placeholder="you@example.com" />
       </div>
       <div class="krm-row">
-        <label class="krm-label" for="krm-message"><%= lang === 'en' ? 'Message' : 'Message' %></label>
+        <label class="krm-label" for="krm-message" data-lk="krm-feedback-message-label"><%= lang === 'en' ? 'Message' : 'Message' %></label>
         <textarea id="krm-message" required rows="4" class="krm-textarea" placeholder="<%= lang === 'en' ? 'What could we do better?' : 'Que pourrions-nous mieux faire ?' %>"></textarea>
       </div>
-      <button type="submit" id="krm-send" class="krm-btn-primary"><%= lang === 'en' ? 'Send' : 'Envoyer' %></button>
+      <button type="submit" id="krm-send" class="krm-btn-primary" data-lk="krm-feedback-send-label"><%= lang === 'en' ? 'Send' : 'Envoyer' %></button>
       <p id="krm-error" class="krm-error" role="alert"></p>
     </form>
 
     <!-- Step 5: done (after low-rating submission) -->
     <div id="krm-step-done" class="krm-step">
       <div class="krm-hero">🙏</div>
-      <h3 class="krm-h3"><%= lang === 'en' ? 'Thanks for your feedback' : 'Merci pour vos commentaires' %></h3>
-      <p class="krm-p"><%= lang === 'en' ? "We'll get back to you as soon as we can." : 'Nous reviendrons vers vous dès que possible.' %></p>
-      <button type="button" id="krm-done-close" class="krm-btn-secondary"><%= lang === 'en' ? 'Close' : 'Fermer' %></button>
+      <h3 class="krm-h3" data-lk="krm-done-title"><%= lang === 'en' ? 'Thanks for your feedback' : 'Merci pour vos commentaires' %></h3>
+      <p class="krm-p" data-lk="krm-done-body"><%= lang === 'en' ? "We'll get back to you as soon as we can." : 'Nous reviendrons vers vous dès que possible.' %></p>
+      <button type="button" id="krm-done-close" class="krm-btn-secondary" data-lk="krm-done-close-label"><%= lang === 'en' ? 'Close' : 'Fermer' %></button>
     </div>
   </div>
 </div>

@@ -2,22 +2,22 @@
 <% var CAT_EMOJI = { 'POUTINE': '🍟', 'LES DELECTABLES / RAMEN': '🍜', 'GUÉDILLES (SUBS)': '🥪', 'AUTRES': '🧀', 'MENU ENFANT': '🧒', 'BREUVAGES': '🥤' }; %>
 
 <section class="hero hero-squeeze">
-  <img src="<%= (typeof settings!=='undefined' && settings._p_hero_image_url) ? settings._p_hero_image_url : 'https://placehold.co/1600x900/0a0a0a/39FF14/png?text=PoutineFest' %>" alt="<%= t.brand %>" class="hero-img">
+  <img src="<%= (typeof settings!=='undefined' && settings._p_hero_image_url) ? settings._p_hero_image_url : 'https://placehold.co/1600x900/0a0a0a/39FF14/png?text=PoutineFest' %>" alt="<%= t.brand %>" class="hero-img" data-setting-key="_p_hero_image_url">
   <div class="hero-overlay"></div>
   <div class="hero-banner">
     <div class="hero-banner-inner">
-      <img src="<%= (typeof settings!=='undefined' && settings._p_nav_logo_url) ? settings._p_nav_logo_url : (typeof appIconUrl !== 'undefined' ? appIconUrl : '') %>" alt="<%= t.brand %>" class="hero-banner-logo" onerror="this.style.display='none'">
+      <img src="<%= (typeof settings!=='undefined' && settings._p_nav_logo_url) ? settings._p_nav_logo_url : (typeof appIconUrl !== 'undefined' ? appIconUrl : '') %>" alt="<%= t.brand %>" class="hero-banner-logo" onerror="this.style.display='none'" data-setting-key="_p_nav_logo_url">
       <span class="hero-banner-divider"></span>
-      <span class="hero-banner-name"><%= settings.business_name || t.brand %></span>
+      <span class="hero-banner-name" data-setting-key="business_name"><%= settings.business_name || t.brand %></span>
     </div>
   </div>
-  <h1 class="hero-slogan"><%= t.hero_title %></h1>
+  <h1 class="hero-slogan" data-lk="t:hero_title"><%= t.hero_title %></h1>
 </section>
 
 <section class="section squeeze-section" id="menu">
   <div class="container">
-    <h2 class="section-title"><%= t.menu_title %></h2>
-    <p class="section-sub"><%= t.menu_subtitle %></p>
+    <h2 class="section-title" data-lk="t:menu_title"><%= t.menu_title %></h2>
+    <p class="section-sub" data-lk="t:menu_subtitle"><%= t.menu_subtitle %></p>
   </div>
   <% if (typeof preview !== 'undefined' && preview && preview.items && preview.items.length > 0) { %>
   <div class="container">
@@ -51,27 +51,27 @@
     <div class="slider-progress"><span id="sliderBar"></span></div>
   </div>
   <% } else { %>
-  <div class="container"><p class="empty-state"><%= t.no_menu %></p></div>
+  <div class="container"><p class="empty-state" data-lk="t:no_menu"><%= t.no_menu %></p></div>
   <% } %>
 </section>
 
 <section class="section squeeze-section alt-section">
   <div class="container order-band">
     <div class="order-band-text">
-      <h2><%= lang === 'en' ? 'Craving a hot poutine? It only takes a minute.' : 'Une envie de poutine bien chaude? Ça prend une minute.' %></h2>
-      <p><%= lang === 'en' ? 'Order for pickup directly from the restaurant — squeaky cheese curds guaranteed.' : 'Commandez pour emporter directement du restaurant — fromage en grains couinant garanti.' %></p>
+      <h2 data-lk="order-band-title"><%= lang === 'en' ? 'Craving a hot poutine? It only takes a minute.' : 'Une envie de poutine bien chaude? Ça prend une minute.' %></h2>
+      <p data-lk="order-band-subtitle"><%= lang === 'en' ? 'Order for pickup directly from the restaurant — squeaky cheese curds guaranteed.' : 'Commandez pour emporter directement du restaurant — fromage en grains couinant garanti.' %></p>
     </div>
     <div class="order-band-ctas">
       <% if (typeof orderUrl !== 'undefined' && orderUrl) { %>
-      <a href="<%= orderUrl %>" target="_blank" rel="noopener" class="btn btn-primary btn-order"><%= lang === 'en' ? 'Order now' : 'Commander maintenant' %> →</a>
+      <a href="<%= orderUrl %>" target="_blank" rel="noopener" class="btn btn-primary btn-order" data-lk="order-band-cta-order"><%= lang === 'en' ? 'Order now' : 'Commander maintenant' %> →</a>
       <% } %>
-      <a href="reserver" class="btn btn-secondary"><%= t.nav_reserve %></a>
+      <a href="reserver" class="btn btn-secondary" data-lk="t:nav_reserve"><%= t.nav_reserve %></a>
     </div>
     <% if (typeof platforms !== 'undefined' && platforms && platforms.length > 0) { %>
     <div class="order-band-platforms">
-      <span><%= lang === 'en' ? 'Also on' : 'Aussi sur' %></span>
+      <span data-lk="order-band-also-on"><%= lang === 'en' ? 'Also on' : 'Aussi sur' %></span>
       <% platforms.forEach(function(p) { %>
-        <a href="<%= p.link_url %>" target="_blank" rel="noopener" title="<%= p.name %>"><% if (p.logo_url) { %><img src="<%= p.logo_url %>" alt="<%= p.name %>"><% } else { %><%= p.name %><% } %></a>
+        <a href="<%= p.link_url %>" target="_blank" rel="noopener" title="<%= p.name %>"><% if (p.logo_url) { %><img src="<%= p.logo_url %>" alt="<%= p.name %>" data-content-source="delivery_platforms:logo_url" data-content-id="<%= p.id %>"><% } else { %><%= p.name %><% } %></a>
       <% }); %>
     </div>
     <% } %>
@@ -79,7 +79,7 @@
 </section>
 
 <% if (typeof orderUrl !== 'undefined' && orderUrl) { %>
-<a href="<%= orderUrl %>" target="_blank" rel="noopener" class="sticky-order-cta"><%= lang === 'en' ? 'Order now' : 'Commander' %> →</a>
+<a href="<%= orderUrl %>" target="_blank" rel="noopener" class="sticky-order-cta" data-lk="order-sticky-cta"><%= lang === 'en' ? 'Order now' : 'Commander' %> →</a>
 <% } %>
 
 <script>
