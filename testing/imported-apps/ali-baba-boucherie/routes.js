@@ -8,6 +8,18 @@ module.exports = function(services) {
   const router = express.Router();
   const db = services.db;
 
+  // Public welcome gift comes only from this site's linked CR account.
+  // Mount before visitor attribution: polling must not trigger side effects.
+  router.get('/api/welcome-gift', async function(req, res) {
+    res.set('Cache-Control', 'no-store');
+    try {
+      const response = await httpFetch(CR_MENU_URL.replace(/menu\.json$/, 'welcome-gift.json'), { signal: AbortSignal.timeout(9500), headers: { accept: 'application/json' } });
+      if (!response.ok) return res.json({ gift: null });
+      const data = await response.json();
+      return res.json({ gift: data.gift || null });
+    } catch (_) { return res.json({ gift: null }); }
+  });
+
   const T = {
     fr: {
       brand: 'Ali Baba Grillades',
