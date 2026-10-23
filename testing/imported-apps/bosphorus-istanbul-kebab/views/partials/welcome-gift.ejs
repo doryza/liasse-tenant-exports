@@ -1,0 +1,18 @@
+<section class="welcome-gift" data-welcome-gift data-endpoint="api/welcome-gift" data-language="<%= lang %>" aria-labelledby="welcome-gift-title" hidden>
+  <div class="wrap"><div class="welcome-gift-card">
+    <div class="welcome-gift-mark" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 27h44v10H10zM15 37v21h34V37M32 27v31M10 27h44"/><path d="M32 27C9 28 15 7 23 13c7 4 9 14 9 14Zm0 0c23 1 17-20 9-14-7 4-9 14-9 14Z"/></svg></div>
+    <div class="welcome-gift-copy">
+      <p class="welcome-gift-kicker"><%= lang === 'en' ? 'A welcome gift, just for you' : 'Un cadeau pour vous souhaiter la bienvenue' %></p>
+      <h2 id="welcome-gift-title" data-gift-title></h2>
+      <p class="welcome-gift-condition" data-gift-condition hidden></p>
+      <p class="welcome-gift-description" data-gift-description hidden></p>
+      <details class="welcome-gift-terms" data-gift-terms-wrap hidden><summary><%= lang === 'en' ? 'Gift conditions' : 'Conditions du cadeau' %></summary><p data-gift-terms></p></details>
+    </div>
+    <div class="welcome-gift-action">
+      <p><%= lang === 'en' ? 'Join our club and keep your gift on your phone.' : 'Rejoignez notre club et gardez votre cadeau sur votre téléphone.' %></p>
+      <a class="welcome-gift-claim" data-gift-claim><%= lang === 'en' ? 'Get my welcome gift' : 'Obtenir mon cadeau' %> <span aria-hidden="true">↗</span></a>
+      <span class="welcome-gift-validity" data-gift-validity></span>
+      <small><%= lang === 'en' ? 'Show your Promo Pass at the counter. Applied in person when the conditions are met; not deducted from the online total.' : 'Présentez votre Promo Pass à la caisse. Appliqué sur place si les conditions sont remplies; non déduit du total en ligne.' %></small>
+    </div>
+  </div></div>
+</section>

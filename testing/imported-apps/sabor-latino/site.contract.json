@@ -1,0 +1,32 @@
+{
+  "name": "Sabor Latino Cuisine",
+  "owner": "dory@liasse.tech",
+  "slug": "sabor-latino",
+  "sourceOfTruth": "Command.Restaurant business 838",
+  "menuFeed": "https://order.command.restaurant/b/sabor-latino-brossard/order/menu.json",
+  "menuRefreshMinutes": 10,
+  "fallback": "36 items, 8 categories, 22 core modifier groups, 64 choices as of 2026-10-19",
+  "publicPages": [
+    "/",
+    "/menu"
+  ],
+  "admin": "/admin; platform owner session required",
+  "languages": [
+    "fr",
+    "en"
+  ],
+  "design": "Navy, lime-yellow and ivory; actual storefront branding, sun app icon, real food and storefront photography.",
+  "dataPolicy": {
+    "items": 36,
+    "categories": 8,
+    "modifierGroups": 22,
+    "choices": 64,
+    "images": 28,
+    "panelsChecked": 36,
+    "excludedUpsellGroups": 18,
+    "pricing": "Zero-base size-priced source items normalized to cheapest required size; surcharges preserve exact totals.",
+    "optionalCoreModifiers": "Venezuelan empanada filling is optional on Uber Eats and remains optional.",
+    "hoursSource": "Uber Eats pickup availability; displayed as pickup hours, not independently verified storefront closing times.",
+    "source": "https://www.ubereats.com/ca/store/sabor-latino-cuisine/k9O_WD6YRVOC_Z1xckypoQ?diningMode=PICKUP"
+  }
+}

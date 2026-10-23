@@ -1,0 +1,50 @@
+{
+  "name": "Acropole",
+  "owner": "dory@liasse.tech",
+  "slug": "acropole",
+  "sourceOfTruth": "Command.Restaurant business 841",
+  "menuFeed": "https://order.command.restaurant/b/acropole-brossard/order/menu.json",
+  "menuRefreshMinutes": 10,
+  "fallback": "78 items in 14 categories, verified 2026-10-19",
+  "publicPages": [
+    "/",
+    "/menu"
+  ],
+  "admin": "/admin; platform owner session required",
+  "languages": [
+    "fr",
+    "en"
+  ],
+  "design": "Aegean navy, white and pale blue. Redesigned Greek temple identity and real dish photography.",
+  "dataPolicy": {
+    "source": "https://www.ubereats.com/ca/store/acropole/OQFDztPQW2W_Z2nYIb2NZQ?diningMode=PICKUP",
+    "captured": "2026-10-19",
+    "items": 78,
+    "categories": 14,
+    "photos": 22,
+    "coreGroups": 46,
+    "coreChoices": 176,
+    "dialogsCaptured": 39,
+    "allCustomizableItemsVerified": true,
+    "excludedUpsells": [
+      {
+        "item": "Kafteji Assiette",
+        "group": "Extra Viande"
+      },
+      {
+        "item": "Kafteji Sandwich",
+        "group": "Extra Viande"
+      },
+      {
+        "item": "Pita Poulet / Chicken Pita",
+        "group": "Choisissez votre option / Choose your option"
+      },
+      {
+        "item": "Sous-marin (10\") / Submarine (10\")",
+        "group": "Choisissez votre option / Choose your option"
+      }
+    ],
+    "policy": "Core size, sauces, vegetables and included trio choices retained. Extra-meat groups, extra pizza toppings and frequently-bought-together recommendations omitted. Featured duplicates removed. Original base prices retained.",
+    "specialNotes": "Vegetarian submarine source size group is optional; retained as optional single size selection."
+  }
+}

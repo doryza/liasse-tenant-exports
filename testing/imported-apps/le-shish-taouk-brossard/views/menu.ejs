@@ -1,0 +1,51 @@
+<%- include('partials/header') %>
+<main id="main">
+
+  <section class="menu-head">
+    <div class="wrap">
+      <p class="eyebrow" data-lk="t:menu_label"><%= t.menu_label %></p>
+      <h1 data-lk="t:menu_title"><%= t.menu_title %></h1>
+      <p class="lead" data-lk="t:menu_lead"><%= t.menu_lead %></p>
+    </div>
+  </section>
+<%- include('partials/welcome-gift') %>
+
+  <nav class="cat-nav" aria-label="<%= t.menu_jump %>">
+    <div class="wrap cat-nav-row">
+      <% menu.categories.forEach(function (c) { %><a href="menu#<%= c.slug %>" data-cat="<%= c.slug %>"><%= pick(c.label) %></a><% }) %>
+    </div>
+  </nav>
+
+  <div class="wrap menu-body">
+    <% menu.categories.forEach(function (c) { %>
+    <section class="menu-cat" id="<%= c.slug %>" aria-labelledby="h-<%= c.slug %>">
+      <header class="menu-cat-head">
+        <h2 id="h-<%= c.slug %>"><%= pick(c.label) %></h2>
+        <% if (other(c.label) !== pick(c.label)) { %><span class="menu-cat-other" lang="<%= lang === 'en' ? 'fr' : 'en' %>"><%= other(c.label) %></span><% } %>
+      </header>
+      <ul class="dishes">
+        <% c.items.forEach(function (it) { %>
+        <li class="dish<%= it.thumb ? ' has-photo' : '' %>">
+          <% if (it.thumb) { %><img src="<%= it.thumb %>" alt="" width="300" height="300" loading="lazy"><% } %>
+          <div class="dish-text">
+            <div class="dish-top">
+              <h3><%= pick(it.name) %></h3>
+              <span class="dish-price"><% if (it.from) { %><small><%= t.menu_from %></small> <% } %><%= price(it.price) %></span>
+            </div>
+            <% if (other(it.name) !== pick(it.name)) { %><p class="dish-other" lang="<%= lang === 'en' ? 'fr' : 'en' %>"><%= other(it.name) %></p><% } %>
+            <% if (pick(it.description)) { %><p class="dish-desc"><%= pick(it.description) %></p><% } %>
+            <% if (it.choices.length) { %><p class="dish-choices"><span><%= t.menu_choose %></span> <%= it.choices.map(function (ch) { return pick(ch); }).join(' · ') %></p><% } %>
+          </div>
+        </li>
+        <% }) %>
+      </ul>
+    </section>
+    <% }) %>
+  </div>
+
+  <div class="order-dock">
+    <a class="btn btn-amber btn-lg" href="<%= orderUrl %>" data-lk="t:menu_order"><%= t.menu_order %></a>
+  </div>
+
+</main>
+<%- include('partials/footer') %>

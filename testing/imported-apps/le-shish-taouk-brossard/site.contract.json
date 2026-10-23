@@ -1,0 +1,32 @@
+{
+  "slug": "le-shish-taouk-brossard",
+  "business": "Le Shish Taouk — 9105-E, boulevard Taschereau, Brossard (Québec) J4Y 3B8 — (450) 724-9999",
+  "builtBy": "operator, by hand (2026-10-19), for Dory's account (dory@liasse.tech)",
+  "languages": ["fr", "en"],
+  "defaultLanguage": "fr",
+  "primaryAction": "Order for pickup on command.restaurant: https://order.command.restaurant/b/le-shish-taouk-bross/order (admin setting order_url overrides it)",
+  "pages": {
+    "/": "Hero (title, lead, order + menu buttons, Google rating, plate photo), « Composez votre bol » 4 steps, « Les incontournables » (feed dishes that have a photo, drinks excluded), menu sections grid, « Nous trouver » (address, phone, hours when set, directions), order band",
+    "/menu": "The full command.restaurant menu: sticky section bar, every dish with photo, both-language name, description, required choices and price (« à partir de » when a required choice costs more), order dock on phones",
+    "/admin": "Owner settings (phone, address, maps link, hours FR/EN, rating display, order link) + pointer to Command.Restaurant for the menu"
+  },
+  "menuSource": {
+    "feed": "https://order.command.restaurant/b/le-shish-taouk-bross/order/menu.json (command.restaurant business 833)",
+    "how": "lib/menu.js — fetched server-side, cached 10 min, last good copy kept, lib/menu-fallback.js snapshot (2026-10-19) until the first good read. Names/descriptions/categories are « FR / EN » pairs split by language. The volatile `available` flag is ignored (ordering enforces it). Never copy dishes into this site's database: the restaurant edits its menu in Command.Restaurant only."
+  },
+  "design": {
+    "concept": "La broche — the logo's stacked amber bands on a skewer are the single motif (hero, footer, eyebrows, section accents)",
+    "palette": { "ink": "#17110c", "cream": "#fbf5ea", "paper": "#fffdf8", "amber": "#c2640b → #ee9a10 → #f8c51c" },
+    "type": { "display": "Bodoni Moda 800 (echoes the logo lettering)", "text": "Figtree" }
+  },
+  "editing": "Every static string carries data-lk=\"t:<key>\" (strings in lib/i18n.js); logo/hero/phone/address/rating carry data-setting-key. Menu content is not editable here by design.",
+  "settings": ["contact_phone", "business_address", "maps_url", "order_url", "hours_fr", "hours_en", "rating_enabled", "rating_value", "rating_count", "_p_nav_logo_url", "_p_hero_image_url"],
+  "gaps": [
+    "Opening hours unknown: command.restaurant has a 24/7 placeholder and Uber Eats shows only its delivery window (11:00–20:43 Sun–Wed, 11:00–21:43 Thu–Sat). The Hours block stays hidden until the owner fills hours_fr / hours_en in /admin.",
+    "Google rating (4.8, 1 356 reviews) is the 2026-10-19 figure synced by command.restaurant; it is static here. The owner can update or hide it in /admin.",
+    "Menu prices were imported from the Uber Eats pickup menu and may be higher than in-store prices; confirm with the restaurant (change them in Command.Restaurant).",
+    "Pitas have no topping or sauce options on Uber Eats, so none are listed.",
+    "86 of 107 dishes have no photo.",
+    "Logo is a 400 px JPEG on a white ground (no vector or transparent version on file)."
+  ]
+}

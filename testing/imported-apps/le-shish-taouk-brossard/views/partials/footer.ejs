@@ -1,0 +1,22 @@
+<footer class="site-foot">
+  <div class="wrap foot-grid">
+    <div class="foot-brand">
+      <div class="broche broche-sm" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+      <p class="foot-name">Le Shish Taouk</p>
+      <% if (addressLines.length) { %><p class="foot-addr" data-setting-key="business_address"><% addressLines.forEach(function (l) { %><%= l %><br><% }) %></p><% } %>
+      <% if (phone) { %><p><a href="<%= telHref %>" data-setting-key="contact_phone"><%= phone %></a></p><% } %>
+    </div>
+    <div class="foot-links">
+      <a href="<%= menuHref %>" data-lk="t:footer_menu_link"><%= t.nav_menu %></a>
+      <a href="<%= orderUrl %>" data-lk="t:footer_order"><%= t.footer_order %></a>
+      <span class="lang"><a href="<%= langFr %>" class="<%= lang === 'fr' ? 'on' : '' %>">Français</a><a href="<%= langEn %>" class="<%= lang === 'en' ? 'on' : '' %>">English</a></span>
+    </div>
+  </div>
+  <div class="wrap foot-legal">
+    <span data-lk="t:footer_note"><%= t.footer_note %></span>
+    <span>© <%= year %> Le Shish Taouk. <span data-lk="t:footer_rights"><%= t.footer_rights %></span></span>
+  </div>
+</footer>
+<script src="public/js/site.js" defer></script>
+<script src="public/js/welcome-gift.js" defer></script></body>
+</html>

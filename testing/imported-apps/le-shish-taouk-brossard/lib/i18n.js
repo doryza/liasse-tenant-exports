@@ -1,0 +1,128 @@
+// Every visible string, FR first. Elements carry data-lk="t:<key>" so the
+// owner can retouch any of them with the inline editor (the platform stores
+// those edits as _p_lk_* rows and applies them on the way out).
+
+module.exports = {
+  fr: {
+    meta_title: 'Shish taouk, shawarma et grillades à Brossard',
+    meta_desc: 'Bols, trios, pitas, brochettes et poutines au 9105, boulevard Taschereau à Brossard. Commandez en ligne pour emporter.',
+    menu_meta_title: 'Le menu — Le Shish Taouk Brossard',
+    menu_meta_desc: 'Tout le menu du Shish Taouk de Brossard : bols, trios, pitas, grillades, poutines, menu enfant, desserts et boissons, avec les prix.',
+    nav_home: 'Accueil', nav_menu: 'Menu', nav_visit: 'Nous trouver', nav_order: 'Commander',
+    skip: 'Aller au contenu',
+
+    hero_eyebrow: 'Brossard · boulevard Taschereau',
+    hero_title: 'Shish taouk, shawarma & grillades.',
+    hero_lead: 'Bols, trios, pitas et brochettes à emporter, avec patates à l’ail, sauce à l’ail et dix salades au choix.',
+    hero_cta: 'Commander pour emporter',
+    hero_menu: 'Voir le menu',
+    hero_img_alt: 'Assiette de shish taouk avec patates, riz, taboulé et légumes',
+    rating_on: 'sur Google',
+    rating_reviews: 'avis',
+
+    bowl_label: 'Le bol, étape par étape',
+    bowl_title: 'Composez votre bol.',
+    bowl_s1_title: 'La viande',
+    bowl_s1_text: 'Shish taouk, shawarma, gyro, ou le combo shish taouk et shawarma.',
+    bowl_s2_title: 'Deux accompagnements',
+    bowl_s2_text: 'Riz, patates ou frites. Deux fois le même, si le cœur vous en dit.',
+    bowl_s3_title: 'Deux salades',
+    bowl_s3_text: 'Parmi dix : taboulé, fattouche, betteraves, chou, couscous, lentilles, légumineuses…',
+    bowl_s4_title: 'Pitas & sauces',
+    bowl_s4_text: 'Trois au choix : sauce à l’ail, hummus, pain pita ou sauce piquante.',
+    bowl_cta: 'Composer mon bol',
+
+    fav_label: 'Sortis de la cuisine',
+    fav_title: 'Les incontournables',
+    fav_all: 'Tout le menu',
+
+    cats_label: 'Au menu',
+    cats_title: 'Par où commencer ?',
+    cats_dishes: 'plats',
+
+    visit_label: 'Nous trouver',
+    visit_title: 'Passez nous voir.',
+    visit_address: 'Adresse',
+    visit_phone: 'Téléphone',
+    visit_hours: 'Heures',
+    visit_directions: 'Itinéraire',
+    visit_call: 'Appeler',
+
+    band_title: 'Commandez en ligne, ramassez au comptoir.',
+    band_text: 'Le menu complet, les choix et les prix, sans intermédiaire.',
+    band_cta: 'Commander pour emporter',
+
+    menu_label: 'Le menu',
+    menu_title: 'Tout le menu',
+    menu_lead: 'Les plats et les prix viennent directement de notre commande en ligne : ce que vous voyez ici est ce que vous commandez.',
+    menu_from: 'à partir de',
+    menu_choose: 'Au choix :',
+    menu_order: 'Commander',
+    menu_jump: 'Sections du menu',
+
+    footer_order: 'Commander en ligne',
+    footer_note: 'Menu et prix sujets à changement.',
+    footer_rights: 'Tous droits réservés.',
+  },
+  en: {
+    meta_title: 'Shish taouk, shawarma and grills in Brossard',
+    meta_desc: 'Bowls, trios, pitas, skewers and poutines at 9105 Taschereau Boulevard in Brossard. Order online for pickup.',
+    menu_meta_title: 'The menu — Le Shish Taouk Brossard',
+    menu_meta_desc: 'The full Le Shish Taouk Brossard menu: bowls, trios, pitas, skewers, poutines, kids’ menu, desserts and drinks, with prices.',
+    nav_home: 'Home', nav_menu: 'Menu', nav_visit: 'Find us', nav_order: 'Order',
+    skip: 'Skip to content',
+
+    hero_eyebrow: 'Brossard · Taschereau Boulevard',
+    hero_title: 'Shish taouk, shawarma & grills.',
+    hero_lead: 'Bowls, trios, pitas and skewers for pickup, with garlic potatoes, garlic sauce and ten salads to choose from.',
+    hero_cta: 'Order for pickup',
+    hero_menu: 'See the menu',
+    hero_img_alt: 'Shish taouk plate with potatoes, rice, tabbouleh and vegetables',
+    rating_on: 'on Google',
+    rating_reviews: 'reviews',
+
+    bowl_label: 'The bowl, step by step',
+    bowl_title: 'Build your bowl.',
+    bowl_s1_title: 'The meat',
+    bowl_s1_text: 'Shish taouk, shawarma, gyro, or the shish taouk and shawarma combo.',
+    bowl_s2_title: 'Two sides',
+    bowl_s2_text: 'Rice, potatoes or fries. The same one twice, if you like.',
+    bowl_s3_title: 'Two salads',
+    bowl_s3_text: 'Out of ten: tabbouleh, fattouche, beet, coleslaw, couscous, lentil, legume…',
+    bowl_s4_title: 'Pitas & sauces',
+    bowl_s4_text: 'Three of your choice: garlic sauce, hummus, pita bread or hot sauce.',
+    bowl_cta: 'Build my bowl',
+
+    fav_label: 'Out of the kitchen',
+    fav_title: 'The essentials',
+    fav_all: 'The whole menu',
+
+    cats_label: 'On the menu',
+    cats_title: 'Where to start?',
+    cats_dishes: 'dishes',
+
+    visit_label: 'Find us',
+    visit_title: 'Come see us.',
+    visit_address: 'Address',
+    visit_phone: 'Phone',
+    visit_hours: 'Hours',
+    visit_directions: 'Directions',
+    visit_call: 'Call',
+
+    band_title: 'Order online, pick up at the counter.',
+    band_text: 'The full menu, every choice and every price, with no middleman.',
+    band_cta: 'Order for pickup',
+
+    menu_label: 'The menu',
+    menu_title: 'The whole menu',
+    menu_lead: 'Dishes and prices come straight from our online ordering, so what you see here is what you order.',
+    menu_from: 'from',
+    menu_choose: 'Your choice of:',
+    menu_order: 'Order',
+    menu_jump: 'Menu sections',
+
+    footer_order: 'Order online',
+    footer_note: 'Menu and prices subject to change.',
+    footer_rights: 'All rights reserved.',
+  },
+};

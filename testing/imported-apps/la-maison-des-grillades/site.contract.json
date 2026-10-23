@@ -1,0 +1,25 @@
+{
+  "name": "La Maison Des Grillades",
+  "owner": "dory@liasse.tech",
+  "slug": "la-maison-des-grillades",
+  "sourceOfTruth": "Command.Restaurant business 834",
+  "menuFeed": "https://order.command.restaurant/b/la-maison-des-grilla/order/menu.json",
+  "menuRefreshMinutes": 10,
+  "fallback": "lib/menu-fallback.js; 70 items, 16 categories, 82 groups, 435 choices as of 2026-10-19",
+  "publicPages": [
+    "/",
+    "/menu"
+  ],
+  "admin": "/admin, platform owner session required",
+  "languages": [
+    "fr",
+    "en"
+  ],
+  "design": "Charcoal, ember orange and cream; restaurant flame logo from Command business 834; actual restaurant dish photography. Inspired by Alibaba, Tandoori Route and Le Shish Taouk.",
+  "dataPolicy": "No invented reviews or hours. All core modifiers retained; ordering through existing Command storefront.",
+  "validation": [
+    "Seeded pglite render and admin access checks",
+    "All 70 items and 435 choice prices match loaded menu",
+    "Chrome desktop and mobile; bilingual menu, search, disclosures, order links"
+  ]
+}

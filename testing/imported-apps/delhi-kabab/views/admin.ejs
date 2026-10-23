@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Administration — Delhi Kabab</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,700..900&family=Figtree:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="public/css/admin.css">
+</head>
+<body>
+<header class="a-head">
+  <div class="a-wrap a-head-row">
+    <div>
+      <p class="a-kicker">Administration</p>
+      <h1>Delhi Kabab</h1>
+    </div>
+    <a class="a-btn a-btn-line" href="<%= siteHref %>">Voir le site</a>
+  </div>
+</header>
+
+<main class="a-wrap a-main">
+
+  <section class="a-card a-menu">
+    <h2>Le menu</h2>
+    <p>Le menu du site (<strong><%= menuCount %> plats</strong> en <strong><%= categoryCount %> sections</strong>) est celui de votre commande en ligne Command.Restaurant. Pour changer un plat, un prix, une photo ou l’ordre des sections, modifiez-le là-bas : le site suit dans les 10 minutes.</p>
+    <a class="a-btn a-btn-ink" href="https://app.command.restaurant/owner" target="_blank" rel="noopener">Ouvrir Command.Restaurant</a>
+  </section>
+
+  <section class="a-card a-tip">
+    <h2>Les textes et les photos</h2>
+    <p>Chaque titre, phrase et photo du site se modifie directement sur la page : ouvrez le site connecté et utilisez l’éditeur.</p>
+  </section>
+
+  <form class="a-card" id="settingsForm" novalidate>
+    <h2>Informations du restaurant</h2>
+
+    <label class="a-field">
+      <span>Téléphone</span>
+      <input name="contact_phone" type="tel" autocomplete="off" value="<%= settings.contact_phone || '' %>">
+    </label>
+
+    <label class="a-field">
+      <span>Adresse <em>une ligne par ligne d’adresse</em></span>
+      <textarea name="business_address" rows="3"><%= settings.business_address || '' %></textarea>
+    </label>
+
+    <label class="a-field">
+      <span>Lien « Itinéraire » <em>adresse https:// de votre fiche Google Maps</em></span>
+      <input name="maps_url" type="url" value="<%= settings.maps_url || '' %>">
+    </label>
+
+    <div class="a-two">
+      <label class="a-field">
+        <span>Heures (français) <em>vide = section cachée</em></span>
+        <textarea name="hours_fr" rows="4" placeholder="Lun – Mer : 11 h – 21 h"><%= settings.hours_fr || '' %></textarea>
+      </label>
+      <label class="a-field">
+        <span>Heures (anglais) <em>vide = reprend le français</em></span>
+        <textarea name="hours_en" rows="4" placeholder="Mon – Wed: 11 a.m. – 9 p.m."><%= settings.hours_en || '' %></textarea>
+      </label>
+    </div>
+
+    <fieldset class="a-field a-rating">
+      <legend>Note Google affichée sur l’accueil</legend>
+      <label class="a-check"><input type="checkbox" name="rating_enabled" value="1" <%= settings.rating_enabled === '1' ? 'checked' : '' %>> Afficher la note</label>
+      <div class="a-two">
+        <label class="a-field"><span>Note</span><input name="rating_value" value="<%= settings.rating_value || '' %>" placeholder="4,8"></label>
+        <label class="a-field"><span>Nombre d’avis</span><input name="rating_count" value="<%= settings.rating_count || '' %>" placeholder="1 356"></label>
+      </div>
+    </fieldset>
+
+    <label class="a-field">
+      <span>Lien des boutons « Commander » <em>vide = votre page Command.Restaurant</em></span>
+      <input name="order_url" type="url" value="<%= settings.order_url || '' %>" placeholder="<%= orderUrl %>">
+    </label>
+
+    <div class="a-actions">
+      <button class="a-btn a-btn-amber" type="submit">Enregistrer</button>
+      <span class="a-status" id="saveStatus" role="status" aria-live="polite"></span>
+    </div>
+  </form>
+
+</main>
+<script src="public/js/admin.js" defer></script>
+</body>
+</html>

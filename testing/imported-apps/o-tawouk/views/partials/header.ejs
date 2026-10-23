@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="<%= lang %>"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#243b4b"><title><%= page === 'menu' ? t.menu_meta_title : t.meta_title %></title>
+<meta name="description" content="<%= page === 'menu' ? t.menu_meta_desc : t.meta_desc %>">
+<link rel="manifest" href="manifest.json"><link rel="icon" href="<%= logoUrl || 'https://media.liasse.tech/upload/v1792455017/business_logos/o_tawouk_rooster_837_v2.png' %>">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display:ital@0;1&family=Oswald:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="public/css/styles.css"><link rel="stylesheet" href="public/css/welcome-gift.css">
+</head>
+<body class="page-<%= page %>">
+<a class="skip" href="<%= page === 'menu' ? menuHref : homeHref %>#main"><%= t.skip %></a>
+<header class="site-head"><div class="wrap head-row">
+<a class="brand" href="<%= homeHref %>" aria-label="O Tawouk — <%= t.nav_home %>">
+<% if (logoUrl) { %><img src="<%= logoUrl %>" alt="" class="brand-logo" width="54" height="54" data-setting-key="_p_nav_logo_url"><% } else { %><span class="brand-monogram" aria-hidden="true">Ô</span><% } %>
+<span class="brand-word"><small>BROSSARD</small>O TAWOUK</span></a>
+<nav class="head-nav" aria-label="<%= t.menu_jump %>">
+<a href="<%= menuHref %>" class="nav-menu <%= page === 'menu' ? 'on' : '' %>" data-lk="t:nav_menu"><%= t.nav_menu %></a>
+<a class="hide-sm" href="<%= homeHref %>#visit" data-lk="t:nav_visit"><%= t.nav_visit %></a>
+<span class="lang"><a href="<%= langFr %>" hreflang="fr" lang="fr" class="<%= lang === 'fr' ? 'on' : '' %>" aria-label="Français">FR</a><span>/</span><a href="<%= langEn %>" hreflang="en" lang="en" class="<%= lang === 'en' ? 'on' : '' %>" aria-label="English">EN</a></span>
+<a class="btn btn-fire btn-sm" href="<%= orderUrl %>" data-lk="t:nav_order"><%= t.nav_order %></a>
+</nav></div></header>

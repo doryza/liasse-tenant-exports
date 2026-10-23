@@ -1,0 +1,117 @@
+<%- include('partials/header') %>
+<main id="main">
+
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow" data-lk="t:hero_eyebrow"><%= t.hero_eyebrow %></p>
+        <h1 data-lk="t:hero_title"><%= t.hero_title %></h1>
+        <p class="lead" data-lk="t:hero_lead"><%= t.hero_lead %></p>
+        <div class="cta-row">
+          <a class="btn btn-ink btn-lg" href="<%= orderUrl %>" data-lk="t:hero_cta"><%= t.hero_cta %></a>
+          <a class="btn btn-line btn-lg" href="<%= menuHref %>" data-lk="t:hero_menu"><%= t.hero_menu %></a>
+        </div>
+        <% if (rating) { %>
+        <p class="rating">
+          <span class="rating-stars" aria-hidden="true">★★★★★</span>
+          <strong data-setting-key="rating_value"><%= rating.value %></strong>
+          <span data-lk="t:rating_on"><%= t.rating_on %></span>
+          <% if (rating.count) { %><span class="rating-count">· <span data-setting-key="rating_count"><%= rating.count %></span> <span data-lk="t:rating_reviews"><%= t.rating_reviews %></span></span><% } %>
+        </p>
+        <% } %>
+      </div>
+      <figure class="hero-plate">
+        <div class="broche broche-hero" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+        <% if (heroUrl) { %><img src="<%= heroUrl %>" alt="<%= t.hero_img_alt %>" width="550" height="550" fetchpriority="high" data-setting-key="_p_hero_image_url"><% } %>
+      </figure>
+    </div>
+  </section>
+<%- include('partials/welcome-gift') %>
+
+  <section class="bowl" aria-labelledby="bowl-title">
+    <div class="wrap">
+      <p class="eyebrow eyebrow-amber" data-lk="t:bowl_label"><%= t.bowl_label %></p>
+      <h2 id="bowl-title" data-lk="t:bowl_title"><%= t.bowl_title %></h2>
+      <ol class="steps">
+        <li><span class="step-n" aria-hidden="true">1</span><h3 data-lk="t:bowl_s1_title"><%= t.bowl_s1_title %></h3><p data-lk="t:bowl_s1_text"><%= t.bowl_s1_text %></p></li>
+        <li><span class="step-n" aria-hidden="true">2</span><h3 data-lk="t:bowl_s2_title"><%= t.bowl_s2_title %></h3><p data-lk="t:bowl_s2_text"><%= t.bowl_s2_text %></p></li>
+        <li><span class="step-n" aria-hidden="true">3</span><h3 data-lk="t:bowl_s3_title"><%= t.bowl_s3_title %></h3><p data-lk="t:bowl_s3_text"><%= t.bowl_s3_text %></p></li>
+        <li><span class="step-n" aria-hidden="true">4</span><h3 data-lk="t:bowl_s4_title"><%= t.bowl_s4_title %></h3><p data-lk="t:bowl_s4_text"><%= t.bowl_s4_text %></p></li>
+      </ol>
+      <a class="btn btn-amber btn-lg" href="<%= orderUrl %>" data-lk="t:bowl_cta"><%= t.bowl_cta %></a>
+    </div>
+  </section>
+
+  <% if (favourites.length) { %>
+  <section class="favs" aria-labelledby="favs-title">
+    <div class="wrap section-head">
+      <div>
+        <p class="eyebrow" data-lk="t:fav_label"><%= t.fav_label %></p>
+        <h2 id="favs-title" data-lk="t:fav_title"><%= t.fav_title %></h2>
+      </div>
+      <a class="link-arrow" href="<%= menuHref %>" data-lk="t:fav_all"><%= t.fav_all %></a>
+    </div>
+    <div class="wrap">
+      <ul class="fav-row">
+        <% favourites.forEach(function (it) { %>
+        <li class="fav">
+          <a href="<%= orderUrl %>">
+            <img src="<%= it.image %>" alt="<%= pick(it.name) %>" width="400" height="400" loading="lazy">
+            <span class="fav-name"><%= pick(it.name) %></span>
+            <span class="fav-price"><% if (it.from) { %><small><%= t.menu_from %></small> <% } %><%= price(it.price) %></span>
+          </a>
+        </li>
+        <% }) %>
+      </ul>
+    </div>
+  </section>
+  <% } %>
+
+  <section class="cats" aria-labelledby="cats-title">
+    <div class="wrap">
+      <p class="eyebrow" data-lk="t:cats_label"><%= t.cats_label %></p>
+      <h2 id="cats-title" data-lk="t:cats_title"><%= t.cats_title %></h2>
+      <ul class="cat-grid">
+        <% menu.categories.forEach(function (c) { %>
+        <li><a href="<%= menuHref %>#<%= c.slug %>"><span class="cat-name"><%= pick(c.label) %></span><span class="cat-count"><%= c.items.length %> <%= t.cats_dishes %></span></a></li>
+        <% }) %>
+      </ul>
+    </div>
+  </section>
+
+  <section class="visit" id="visit" aria-labelledby="visit-title">
+    <div class="wrap visit-grid">
+      <div>
+        <p class="eyebrow" data-lk="t:visit_label"><%= t.visit_label %></p>
+        <h2 id="visit-title" data-lk="t:visit_title"><%= t.visit_title %></h2>
+        <div class="cta-row">
+          <% if (mapsUrl) { %><a class="btn btn-ink" href="<%= mapsUrl %>" target="_blank" rel="noopener" data-lk="t:visit_directions"><%= t.visit_directions %></a><% } %>
+          <% if (phone) { %><a class="btn btn-line" href="<%= telHref %>" data-lk="t:visit_call"><%= t.visit_call %></a><% } %>
+        </div>
+      </div>
+      <dl class="facts">
+        <% if (addressLines.length) { %>
+        <div><dt data-lk="t:visit_address"><%= t.visit_address %></dt><dd data-setting-key="business_address"><% addressLines.forEach(function (l) { %><%= l %><br><% }) %></dd></div>
+        <% } %>
+        <% if (phone) { %>
+        <div><dt data-lk="t:visit_phone"><%= t.visit_phone %></dt><dd><a href="<%= telHref %>"><%= phone %></a></dd></div>
+        <% } %>
+        <% if (hoursLines.length) { %>
+        <div><dt data-lk="t:visit_hours"><%= t.visit_hours %></dt><dd><% hoursLines.forEach(function (l) { %><%= l %><br><% }) %></dd></div>
+        <% } %>
+      </dl>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="wrap band-row">
+      <div>
+        <h2 data-lk="t:band_title"><%= t.band_title %></h2>
+        <p data-lk="t:band_text"><%= t.band_text %></p>
+      </div>
+      <a class="btn btn-ink btn-lg" href="<%= orderUrl %>" data-lk="t:band_cta"><%= t.band_cta %></a>
+    </div>
+  </section>
+
+</main>
+<%- include('partials/footer') %>
